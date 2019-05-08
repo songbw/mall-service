@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiBaseFulladdressMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiBaseFulladdress" >
+    <id column="aid" property="aid" jdbcType="INTEGER" />
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="secondPid" property="secondpid" jdbcType="VARCHAR" />
+    <result column="zipcode" property="zipcode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    aid, id, pid, level, name, secondPid, zipcode
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from aoyi_base_fulladdress
+    where aid = #{aid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from aoyi_base_fulladdress
+    where aid = #{aid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseFulladdress" >
+    insert into aoyi_base_fulladdress (aid, id, pid, 
+      level, name, secondPid, 
+      zipcode)
+    values (#{aid,jdbcType=INTEGER}, #{id,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
+      #{level,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{secondpid,jdbcType=VARCHAR}, 
+      #{zipcode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseFulladdress" >
+    insert into aoyi_base_fulladdress
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="aid != null" >
+        aid,
+      </if>
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="secondpid != null" >
+        secondPid,
+      </if>
+      <if test="zipcode != null" >
+        zipcode,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="aid != null" >
+        #{aid,jdbcType=INTEGER},
+      </if>
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="secondpid != null" >
+        #{secondpid,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null" >
+        #{zipcode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseFulladdress" >
+    update aoyi_base_fulladdress
+    <set >
+      <if test="id != null" >
+        id = #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="secondpid != null" >
+        secondPid = #{secondpid,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null" >
+        zipcode = #{zipcode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where aid = #{aid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseFulladdress" >
+    update aoyi_base_fulladdress
+    set id = #{id,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=VARCHAR},
+      level = #{level,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      secondPid = #{secondpid,jdbcType=VARCHAR},
+      zipcode = #{zipcode,jdbcType=VARCHAR}
+    where aid = #{aid,jdbcType=INTEGER}
+  </update>
+</mapper>
