@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
+import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
@@ -29,7 +30,7 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public PageBean findList(ProductQueryBean queryBean) {
+    public PageBean findList(ProductQueryBean queryBean) throws ProductException {
         PageBean pageBean = new PageBean();
         int total = 0;
         int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
@@ -71,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public OperaResult findPrice(PriceQueryBean queryBean) {
+    public OperaResult findPrice(PriceQueryBean queryBean) throws ProductException {
         List<PriceSkus> list = new ArrayList<>();
         QueryCityPrice cityPrice = new QueryCityPrice();
         cityPrice.setCityId(queryBean.getCityId());
@@ -85,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<InventoryBean> findInventory(InventoryQueryBean queryBean) {
+    public List<InventoryBean> findInventory(InventoryQueryBean queryBean) throws ProductException {
         List<InventoryBean> inventoryBeans = new ArrayList<>() ;
         for (InventoryBean sku : queryBean.getSkus()) {
             QueryInventory inventory = new QueryInventory();
@@ -106,12 +107,11 @@ public class ProductServiceImpl implements ProductService {
             inventoryBean.setRemainNum(sku.getRemainNum());
             inventoryBeans.add(inventoryBean);
         }
-//        inventoryBeans = queryBean.getSkus();
         return inventoryBeans;
     }
 
     @Override
-    public List<FreightFareBean> findCarriage(CarriageQueryBean queryBean) {
+    public List<FreightFareBean> findCarriage(CarriageQueryBean queryBean) throws ProductException {
         List<FreightFareBean> freightFareBeans = new ArrayList<>();
         List<CarriageParam> params = queryBean.getCarriages();
         for (CarriageParam param : params) {
@@ -133,7 +133,7 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public AoyiProdIndex find(String id) {
+    public AoyiProdIndex find(String id) throws ProductException {
         AoyiProdIndex aoyiProdIndex = mapper.selectBySkuId(id);
         if (aoyiProdIndex.getImageExtend() != null) {
             aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
@@ -148,7 +148,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<AoyiProdIndex> findAll() {
+    public List<AoyiProdIndex> findAll() throws ProductException {
         HashMap map = new HashMap();
         map.put("pageNo",0);
         map.put("pageSize",1000);
@@ -180,7 +180,7 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public ProductInfoBean findAndPromotion(String skuId) {
+    public ProductInfoBean findAndPromotion(String skuId) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
         AoyiProdIndex aoyiProdIndex = mapper.selectBySkuId(skuId);
         String imageUrl = aoyiProdIndex.getImagesUrl();

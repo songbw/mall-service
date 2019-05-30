@@ -1,13 +1,14 @@
 package com.fengchao.aoyi.client.controller;
 
-import com.fengchao.aoyi.client.bean.*;
+import com.fengchao.aoyi.client.bean.OperaResult;
+import com.fengchao.aoyi.client.bean.QueryCarriage;
+import com.fengchao.aoyi.client.bean.QueryCityPrice;
+import com.fengchao.aoyi.client.bean.QueryInventory;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import javax.ws.rs.QueryParam;
 
 
 @RestController

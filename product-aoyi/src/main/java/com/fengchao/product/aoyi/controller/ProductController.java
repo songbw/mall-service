@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,19 +16,19 @@ public class ProductController {
     private ProductService service;
 
     @PostMapping("/all")
-    private OperaResult findList(@RequestBody ProductQueryBean queryBean, OperaResult result) {
+    private OperaResult findList(@RequestBody ProductQueryBean queryBean, OperaResult result) throws ProductException {
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }
 
     @GetMapping
-    private OperaResult find(String id, OperaResult result) {
+    private OperaResult find(String id, OperaResult result) throws ProductException {
         result.getData().put("result", service.findAndPromotion(id)) ;
         return result;
     }
 
     @PostMapping("/price")
-    private OperaResult price(@RequestBody PriceQueryBean queryBean, OperaResult result) {
+    private OperaResult price(@RequestBody PriceQueryBean queryBean, OperaResult result) throws ProductException {
         return service.findPrice(queryBean);
     }
 
@@ -38,7 +39,7 @@ public class ProductController {
      * @return
      */
     @PostMapping("/inventory")
-    private OperaResult inventory(@RequestBody InventoryQueryBean queryBean, OperaResult result) {
+    private OperaResult inventory(@RequestBody InventoryQueryBean queryBean, OperaResult result) throws ProductException {
         result.getData().put("result", service.findInventory(queryBean)) ;
         return result;
     }
@@ -50,13 +51,13 @@ public class ProductController {
      * @return
      */
     @PostMapping("/carriage")
-    private OperaResult shipCarriage(@RequestBody CarriageQueryBean queryBean, OperaResult result) {
+    private OperaResult shipCarriage(@RequestBody CarriageQueryBean queryBean, OperaResult result) throws ProductException {
         result.getData().put("result", service.findCarriage(queryBean)) ;
         return result;
     }
 
     @GetMapping("/es")
-    private OperaResult findAll(OperaResult result) {
+    private OperaResult findAll(OperaResult result) throws ProductException {
         result.getData().put("result", service.findAll()) ;
         return result;
     }
