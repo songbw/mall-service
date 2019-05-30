@@ -30,13 +30,3 @@ spring:
         max-interval: 2000
         initial-interval: 2000
         request-read-timeout: 10000
-    gateway:
-      routes:
-        - id: product-aoyi
-          uri: lb://PRODUCT-AOYI
-          predicates:
-            - Path=/prod/**
-      discovery:
-        locator:
-          enabled: true
-          lowerCaseServiceId: true

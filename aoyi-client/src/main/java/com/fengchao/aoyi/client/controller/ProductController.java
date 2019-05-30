@@ -1,13 +1,13 @@
 package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.*;
+import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.ws.rs.QueryParam;
 
 
 @RestController
@@ -19,7 +19,7 @@ public class ProductController {
 
 
     @PostMapping("/price")
-    private OperaResult price(@RequestBody QueryCityPrice queryBean, OperaResult result) {
+    private OperaResult price(@RequestBody QueryCityPrice queryBean, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.findPrice(queryBean)) ;
         return result;
     }
@@ -31,7 +31,7 @@ public class ProductController {
      * @return
      */
     @PostMapping("/inventory")
-    private OperaResult inventory(@RequestBody QueryInventory queryBean, OperaResult result) {
+    private OperaResult inventory(@RequestBody QueryInventory queryBean, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.findInventory(queryBean)) ;
         return result;
     }
@@ -43,8 +43,38 @@ public class ProductController {
      * @return
      */
     @PostMapping("/carriage")
-    private OperaResult shipCarriage(@RequestBody QueryCarriage queryBean, OperaResult result) {
+    private OperaResult shipCarriage(@RequestBody QueryCarriage queryBean, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.findCarriage(queryBean)) ;
+        return result;
+    }
+
+    @GetMapping("/category")
+    private OperaResult category(OperaResult result) throws AoyiClientException {
+        result.getData().put("result", service.category()) ;
+        return result;
+    }
+
+    @GetMapping("/skus")
+    private OperaResult prodSkus(@QueryParam("categoryId") Integer categoryId, OperaResult result) throws AoyiClientException {
+        result.getData().put("result", service.getProdSkuPool(categoryId)) ;
+        return result;
+    }
+
+    @GetMapping("/image")
+    private OperaResult image(@QueryParam("skuId") String skuId, OperaResult result) throws AoyiClientException {
+        result.getData().put("result", service.getProdImage(skuId)) ;
+        return result;
+    }
+
+    @GetMapping("/detail")
+    private OperaResult detail(@QueryParam("skuId") String skuId, OperaResult result) throws AoyiClientException {
+        result.getData().put("result", service.getProdDetail(skuId)) ;
+        return result;
+    }
+
+    @GetMapping("/status")
+    private OperaResult status(@QueryParam("skuId") String skuId, OperaResult result) throws AoyiClientException {
+        result.getData().put("result", service.getSaleStatus(skuId)) ;
         return result;
     }
 

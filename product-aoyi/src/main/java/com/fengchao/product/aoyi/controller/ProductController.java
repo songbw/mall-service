@@ -55,4 +55,10 @@ public class ProductController {
         return result;
     }
 
+    @GetMapping("/es")
+    private OperaResult findAll(OperaResult result) {
+        result.getData().put("result", service.findAll()) ;
+        return result;
+    }
+
 }

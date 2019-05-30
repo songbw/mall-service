@@ -12,6 +12,9 @@
     <modules>
         <module>product-aoyi</module>
         <module>aoyi-client</module>
+        <module>schedule-mall</module>
+        <module>gateway-mall</module>
+        <module>elasticsearch-mall</module>
     </modules>
 
 

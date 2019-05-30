@@ -147,6 +147,37 @@ public class ProductServiceImpl implements ProductService {
         return aoyiProdIndex;
     }
 
+    @Override
+    public List<AoyiProdIndex> findAll() {
+        HashMap map = new HashMap();
+        map.put("pageNo",0);
+        map.put("pageSize",1000);
+        List<AoyiProdIndex> prodIndices = new ArrayList<>();
+        mapper.selectAll(map).forEach(aoyiProdIndex -> {
+            String imageUrl = aoyiProdIndex.getImagesUrl();
+            if (imageUrl != null && (!"".equals(imageUrl))) {
+                String image = "";
+                if (imageUrl.indexOf("/") == 0) {
+                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                } else {
+                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                }
+                aoyiProdIndex.setImage(image);
+            }
+            if (aoyiProdIndex.getImageExtend() != null) {
+                aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
+            }
+            if (aoyiProdIndex.getImagesUrlExtend() != null) {
+                aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
+            }
+            if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
+                aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
+            }
+            prodIndices.add(aoyiProdIndex);
+        });
+        return prodIndices;
+    }
+
     @DataSource(DataSourceNames.TWO)
     @Override
     public ProductInfoBean findAndPromotion(String skuId) {

@@ -1,5 +1,9 @@
 package com.fengchao.aoyi.client.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fengchao.aoyi.client.bean.OperaResult;
+import com.fengchao.aoyi.client.exception.AoyiClientException;
+import com.fengchao.aoyi.client.service.impl.ProductServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,12 +13,14 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 public class HttpClient {
+
     private static final String AOYI_BASE_URL = "https://i.aoyi365.com/rest" ;
 
 //    private static final String AOYI_BASE_URL= "http://aoyitest.aoyi365.com/rest" ;
@@ -102,7 +108,7 @@ public class HttpClient {
         }
     }
 
-    public static <T> T post(Object body, Class<T> obj, String info, String path, String method){
+    public static <T> T post(Object body, Class<T> obj, String info, String path, String method) throws AoyiClientException{
         client = createClient();
         String app_id = APPID;
         String app_sercet = APPSERCET;
@@ -110,7 +116,31 @@ public class HttpClient {
         String temp = app_id + app_sercet + method + timestamp + info;
         String sign = MD5Utils.MD5(temp).toUpperCase();
         WebTarget target = client.target(AOYI_BASE_URL).path(path).queryParam("method", method).queryParam("app_id", APPID).queryParam("app_secret", APPSERCET).queryParam("timestamp", timestamp).queryParam("sign", sign);
-        T bean = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(body,MediaType.APPLICATION_JSON_TYPE),obj);
+        T bean = null;
+        try {
+            target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(body,MediaType.APPLICATION_JSON_TYPE),obj);
+        } catch (Exception e) {
+            logger.error("Aoyi Client error : ", e);
+            throw new AoyiClientException();
+        }
         return bean;
+    }
+
+    public static <T> T get(String params, Class<T> obj, String path, String method){
+        client = createClient();
+        String app_id = APPID;
+        String app_sercet = APPSERCET;
+        long timestamp = System.currentTimeMillis();
+        String temp = app_id + app_sercet + method + timestamp;
+        String sign = MD5Utils.MD5(temp).toUpperCase();
+        WebTarget target = client.target(AOYI_BASE_URL).path(path).queryParam("method", method).queryParam("app_id", APPID).queryParam("app_secret", APPSERCET).queryParam("timestamp", timestamp).queryParam("sign", sign);
+        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
+        T bean = response.readEntity(obj);
+        return bean;
+    }
+
+    public static void main(String args[]) {
+        JSONObject bean = null;
+        System.out.println(bean.getString("CODE"));
     }
 }

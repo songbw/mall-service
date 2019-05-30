@@ -292,4 +292,11 @@
     </if>
     limit #{pageNo},#{pageSize}
   </select>
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="Map">
+    select
+    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url
+    from aoyi_prod_index p LEFT JOIN aoyi_base_category c ON p.category = c.category_id
+    where state = 1
+    limit #{pageNo},#{pageSize}
+  </select>
 </mapper>

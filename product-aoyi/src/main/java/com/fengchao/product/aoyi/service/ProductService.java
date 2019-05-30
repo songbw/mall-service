@@ -20,6 +20,8 @@ public interface ProductService {
 
     AoyiProdIndex find(String id) ;
 
+    List<AoyiProdIndex> findAll() ;
+
     ProductInfoBean findAndPromotion(String skuId);
 
 }
