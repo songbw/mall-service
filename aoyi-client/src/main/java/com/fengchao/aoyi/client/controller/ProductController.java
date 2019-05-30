@@ -55,25 +55,25 @@ public class ProductController {
     }
 
     @GetMapping("/skus")
-    private OperaResult prodSkus(@QueryParam("categoryId") Integer categoryId, OperaResult result) throws AoyiClientException {
+    private OperaResult prodSkus(Integer categoryId, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.getProdSkuPool(categoryId)) ;
         return result;
     }
 
     @GetMapping("/image")
-    private OperaResult image(@QueryParam("skuId") String skuId, OperaResult result) throws AoyiClientException {
+    private OperaResult image(String skuId, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.getProdImage(skuId)) ;
         return result;
     }
 
     @GetMapping("/detail")
-    private OperaResult detail(@QueryParam("skuId") String skuId, OperaResult result) throws AoyiClientException {
+    private OperaResult detail(String skuId, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.getProdDetail(skuId)) ;
         return result;
     }
 
     @GetMapping("/status")
-    private OperaResult status(@QueryParam("skuId") String skuId, OperaResult result) throws AoyiClientException {
+    private OperaResult status(String skuId, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.getSaleStatus(skuId)) ;
         return result;
     }

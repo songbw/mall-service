@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.QueryParam;
-
 @RestController
 @RequestMapping(value = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class OrderController {
@@ -19,7 +17,7 @@ public class OrderController {
     private OrderService service;
 
     @GetMapping("/conform")
-    private OperaResult conform(@QueryParam("orderId") String orderId, OperaResult result) throws AoyiClientException {
+    private OperaResult conform(String orderId, OperaResult result) throws AoyiClientException {
         result.getData().put("result", service.confirmOrder(orderId)) ;
         return result;
     }
