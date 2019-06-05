@@ -174,4 +174,53 @@
     from aoyi_base_category
     where parent_id = #{parentId} and is_show = 0
   </select>
+  <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(category_id)
+    from aoyi_base_category
+    where 1 = 1
+    <if test="parentId !=null">
+      and parent_id = #{parentId}
+    </if>
+    <if test="categoryClass !=null and categoryClass !=''">
+      and category_class = #{categoryClass}
+    </if>
+    <if test="categoryName !=null and categoryName !=''">
+      <bind name="pattern" value="'%' + categoryName + '%'" />
+      and category_name LIKE #{pattern}
+    </if>
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where 1=1
+    <if test="parentId !=null">
+      and parent_id = #{parentId}
+    </if>
+    <if test="categoryClass !=null and categoryClass !=''">
+      and category_class = #{categoryClass}
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectNameList" resultMap="BaseResultMap" parameterType="Map" >
+    <bind name="pattern" value="'%' + categoryName + '%'" />
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM  aoyi_base_category
+    WHERE category_name LIKE #{pattern}
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectListById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where category_id = #{categoryId}
+  </select>
+  <select id="selectAdminListByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where parent_id = #{parentId}
+  </select>
 </mapper>

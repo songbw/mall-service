@@ -27,6 +27,8 @@ public class AoyiBaseCategory {
 
     private List<AoyiBaseCategory> subs;
 
+    private Integer subTotal;
+
     public Integer getCategoryId() {
         return categoryId;
     }
@@ -121,5 +123,13 @@ public class AoyiBaseCategory {
 
     public void setSubs(List<AoyiBaseCategory> subs) {
         this.subs = subs;
+    }
+
+    public Integer getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(Integer subTotal) {
+        this.subTotal = subTotal;
     }
 }

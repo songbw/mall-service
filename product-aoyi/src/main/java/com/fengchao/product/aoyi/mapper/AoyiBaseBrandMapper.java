@@ -2,6 +2,9 @@ package com.fengchao.product.aoyi.mapper;
 
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
 
+import java.util.HashMap;
+import java.util.List;
+
 public interface AoyiBaseBrandMapper {
     int deleteByPrimaryKey(Integer brandId);
 
@@ -16,4 +19,10 @@ public interface AoyiBaseBrandMapper {
     int updateByPrimaryKeyWithBLOBs(AoyiBaseBrand record);
 
     int updateByPrimaryKey(AoyiBaseBrand record);
+
+    int selectLimitCount(HashMap map);
+
+    List<AoyiBaseBrand> selectLimit(HashMap map);
+
+    List<AoyiBaseBrand>  selectNameList(HashMap map);
 }

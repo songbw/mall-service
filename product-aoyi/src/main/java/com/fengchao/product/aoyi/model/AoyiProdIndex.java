@@ -1,5 +1,7 @@
 package com.fengchao.product.aoyi.model;
 
+import java.util.Date;
+
 public class AoyiProdIndex {
     private Integer id;
 
@@ -36,6 +38,16 @@ public class AoyiProdIndex {
     private String imagesUrlExtend;
 
     private String introductionUrlExtend;
+
+    private Integer merchantId ;
+
+    private Integer inventory ;
+
+    private String sku ;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 
     public Integer getId() {
         return id;
@@ -179,5 +191,45 @@ public class AoyiProdIndex {
 
     public void setIntroductionUrlExtend(String introductionUrlExtend) {
         this.introductionUrlExtend = introductionUrlExtend;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public Integer getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Integer inventory) {
+        this.inventory = inventory;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

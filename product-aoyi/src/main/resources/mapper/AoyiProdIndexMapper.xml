@@ -17,6 +17,11 @@
     <result column="sprice" property="sprice" jdbcType="VARCHAR" />
     <result column="images_url" property="imagesUrl" jdbcType="VARCHAR" />
     <result column="introduction_url" property="introductionUrl" jdbcType="VARCHAR" />
+    <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
+    <result column="inventory" property="inventory" jdbcType="INTEGER" />
+    <result column="sku" property="sku" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" extends="BaseResultMap" >
     <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
@@ -24,7 +29,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
-    sprice, images_url, introduction_url
+    sprice, images_url, introduction_url,merchant_id, inventory, sku, created_at, updated_at
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams
@@ -40,7 +45,7 @@
   <select id="selectBySkuId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
     select
     p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku
     from aoyi_prod_index p
     left join prod_extend e on p.skuId = e.skuId
     where p.skuId = #{skuId}
@@ -280,7 +285,7 @@
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku
     from aoyi_prod_index p
     left join prod_extend e on p.skuId = e.skuId
     where state = 1
@@ -294,9 +299,72 @@
   </select>
   <select id="selectAll" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url
+    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id merchantId, p.inventory, p.sku
     from aoyi_prod_index p LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     where state = 1
     limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectSearchCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from aoyi_prod_index
+    where 1 = 1
+    <if test="name !=null and name !=''">
+      <bind name="pattern1" value="'%' + name + '%'"/>
+      and name LIKE #{pattern1}
+    </if>
+    <if test="categoryID !=null and categoryID !=''">
+      <bind name="pattern2" value="categoryID + '%'"/>
+      and category LIKE #{pattern2}
+    </if>
+    <if test="skuid !=null and skuid !=''">
+      <bind name="pattern3" value="'%' + skuid + '%'"/>
+      and skuId LIKE #{pattern3}
+    </if>
+    <if test="brand !=null and brand !=''">
+      <bind name="pattern4" value="'%' + brand + '%'"/>
+      and aoyi_prod_index.brand LIKE #{pattern4}
+    </if>
+    <if test="state != null and state !=''">
+      and state = #{state}
+    </if>
+  </select>
+  <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku, p.created_at createdAt, p.updated_at updatedAt
+    from aoyi_prod_index p
+    LEFT JOIN aoyi_base_category c ON p.category = c.category_id
+    left join prod_extend e on p.skuId = e.skuId
+    where 1 = 1 and p.images_url != "" and p.introduction_url != "" and p.state = 1
+    <if test="name !=null and name !=''">
+      <bind name="pattern1" value="'%' + name + '%'"/>
+      and p.name LIKE #{pattern1}
+    </if>
+    <if test="categoryID !=null and categoryID !=''">
+      <bind name="pattern2" value="categoryID + '%'"/>
+      and p.category LIKE #{pattern2}
+    </if>
+    <if test="skuid !=null and skuid !=''">
+      <bind name="pattern3" value="'%' + skuid + '%'"/>
+      and p.skuId LIKE #{pattern3}
+    </if>
+    <if test="brand !=null and brand !=''">
+      <bind name="pattern4" value="'%' + brand + '%'"/>
+      and p.brand LIKE #{pattern4}
+    </if>
+    <if test="state !=null and state !=''">
+      and state = #{state}
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectProdAll" resultMap="BaseResultMap">
+    select
+    p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend,      e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku, p.created_at createdAt, p.updated_at updatedAt
+    from aoyi_prod_index p
+    LEFT JOIN aoyi_base_category c ON p.category = c.category_id
+    left join prod_extend e on p.skuId = e.skuId
+    where 1 = 1 and p.images_url != "" and p.introduction_url != "" and p.state = 1
   </select>
 </mapper>

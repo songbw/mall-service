@@ -28,4 +28,10 @@ public interface AoyiProdIndexMapper {
     List<AoyiProdIndex> selectLimit(HashMap map) ;
 
     List<AoyiProdIndex> selectAll(HashMap map) ;
+
+    List<AoyiProdIndex> selectSearchLimit(HashMap map) ;
+
+    int selectSearchCount(HashMap map) ;
+
+    List<AoyiProdIndex> selectProdAll();
 }
