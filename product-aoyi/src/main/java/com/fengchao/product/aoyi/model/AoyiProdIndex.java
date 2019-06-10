@@ -43,6 +43,8 @@ public class AoyiProdIndex {
 
     private Integer inventory ;
 
+    private Integer brandId ;
+
     private String sku ;
 
     private Date createdAt;
@@ -207,6 +209,14 @@ public class AoyiProdIndex {
 
     public void setInventory(Integer inventory) {
         this.inventory = inventory;
+    }
+
+    public Integer getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Integer brandId) {
+        this.brandId = brandId;
     }
 
     public String getSku() {

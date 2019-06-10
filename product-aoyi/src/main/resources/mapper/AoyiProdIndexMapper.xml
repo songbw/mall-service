@@ -19,6 +19,7 @@
     <result column="introduction_url" property="introductionUrl" jdbcType="VARCHAR" />
     <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
     <result column="inventory" property="inventory" jdbcType="INTEGER" />
+    <result column="brand_id" property="brandId" jdbcType="INTEGER" />
     <result column="sku" property="sku" jdbcType="VARCHAR" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
@@ -29,7 +30,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
-    sprice, images_url, introduction_url,merchant_id, inventory, sku, created_at, updated_at
+    sprice, images_url, introduction_url,merchant_id, inventory,brand_id, sku, created_at, updated_at
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams
@@ -45,7 +46,7 @@
   <select id="selectBySkuId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
     select
     p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId,p.sku
     from aoyi_prod_index p
     left join prod_extend e on p.skuId = e.skuId
     where p.skuId = #{skuId}
@@ -54,26 +55,23 @@
     delete from aoyi_prod_index
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" >
-    insert into aoyi_prod_index (id, skuId, brand, 
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
+    insert into aoyi_prod_index (skuId, brand,
       category, image, model, 
       name, weight, upc, 
       saleUnit, state, price, 
       sprice, images_url, introduction_url, 
-      introduction, prodParams)
-    values (#{id,jdbcType=INTEGER}, #{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, 
+      introduction, prodParams, merchant_id, inventory, brand_id, sku, created_at, updated_at)
+    values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR},
       #{category,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, 
       #{name,jdbcType=VARCHAR}, #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, 
       #{saleunit,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, 
       #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, 
-      #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR})
+      #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR}, #{merchantId}, #{inventory}, #{brandId}, #{sku}, #{createdAt}, #{updatedAt})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" >
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndex"  keyProperty="id" useGeneratedKeys="true">
     insert into aoyi_prod_index
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
       <if test="skuid != null" >
         skuId,
       </if>
@@ -122,11 +120,26 @@
       <if test="prodparams != null" >
         prodParams,
       </if>
+      <if test="merchantId != null" >
+        merchant_id,
+      </if>
+      <if test="inventory != null" >
+        inventory,
+      </if>
+      <if test="brandId != null" >
+        brand_id,
+      </if>
+      <if test="sku != null" >
+        sku,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
-      </if>
       <if test="skuid != null" >
         #{skuid,jdbcType=VARCHAR},
       </if>
@@ -175,9 +188,27 @@
       <if test="prodparams != null" >
         #{prodparams,jdbcType=LONGVARCHAR},
       </if>
+      <if test="merchantId != null" >
+        #{merchantId},
+      </if>
+      <if test="inventory != null" >
+        #{inventory},
+      </if>
+      <if test="brandId != null" >
+        #{brandId},
+      </if>
+      <if test="sku != null" >
+        #{sku},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt},
+      </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndex"  keyProperty="id" useGeneratedKeys="true">
     update aoyi_prod_index
     <set >
       <if test="skuid != null" >
@@ -228,10 +259,28 @@
       <if test="prodparams != null" >
         prodParams = #{prodparams,jdbcType=LONGVARCHAR},
       </if>
+      <if test="merchantId != null" >
+        merchant_id = #{merchantId},
+      </if>
+      <if test="inventory != null" >
+        inventory = #{inventory},
+      </if>
+      <if test="brandId != null" >
+        brand_id = #{brandId},
+      </if>
+      <if test="sku != null" >
+        sku = #{sku},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" >
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
     update aoyi_prod_index
     set skuId = #{skuid,jdbcType=VARCHAR},
       brand = #{brand,jdbcType=VARCHAR},
@@ -285,7 +334,7 @@
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku
     from aoyi_prod_index p
     left join prod_extend e on p.skuId = e.skuId
     where state = 1
@@ -299,7 +348,7 @@
   </select>
   <select id="selectAll" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id merchantId, p.inventory, p.sku
+    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku
     from aoyi_prod_index p LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     where state = 1
     limit #{pageNo},#{pageSize}
@@ -328,11 +377,14 @@
     <if test="state != null and state !=''">
       and state = #{state}
     </if>
+    <if test="merchantId != null and merchantId !=''">
+      and merchant_id = #{merchantId}
+    </if>
   </select>
   <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku, p.created_at createdAt, p.updated_at updatedAt
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku, p.created_at createdAt, p.updated_at updatedAt
     from aoyi_prod_index p
     LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     left join prod_extend e on p.skuId = e.skuId
@@ -356,12 +408,15 @@
     <if test="state !=null and state !=''">
       and state = #{state}
     </if>
+    <if test="merchantId != null and merchantId !=''">
+      and merchant_id = #{merchantId}
+    </if>
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectProdAll" resultMap="BaseResultMap">
     select
     p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend,      e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.sku, p.created_at createdAt, p.updated_at updatedAt
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend,      e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku, p.created_at createdAt, p.updated_at updatedAt
     from aoyi_prod_index p
     LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     left join prod_extend e on p.skuId = e.skuId

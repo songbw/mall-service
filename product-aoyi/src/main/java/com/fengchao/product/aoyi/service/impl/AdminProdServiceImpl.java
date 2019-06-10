@@ -3,9 +3,12 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.bean.SerachBean;
+import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.mapper.ProdExtendMapper;
+import com.fengchao.product.aoyi.mapper.SkuCodeMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.RedisUtil;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class AdminProdServiceImpl implements AdminProdService {
@@ -23,9 +27,11 @@ public class AdminProdServiceImpl implements AdminProdService {
     private AoyiProdIndexMapper prodMapper;
     @Autowired
     private ProdExtendMapper prodExtendMapper;
+    @Autowired
+    private SkuCodeMapper skuCodeMapper;
 
     @Override
-    public PageBean findProdList(Integer offset, Integer limit, String state) {
+    public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
@@ -33,6 +39,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
         map.put("state",state);
+        map.put("merchantId",merchantId);
         List<AoyiProdIndex> prods = new ArrayList<>();
         total = prodMapper.selectSearchCount(map);
         if (total > 0) {
@@ -67,6 +74,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("skuid",bean.getSkuid());
         map.put("state",bean.getState());
         map.put("brand",bean.getBrand());
+        map.put("merchantId",bean.getMerchantId());
         List<AoyiProdIndex> prods = new ArrayList<>();
         total = prodMapper.selectSearchCount(map);
         if (total > 0) {
@@ -119,5 +127,37 @@ public class AdminProdServiceImpl implements AdminProdService {
             RedisUtil.putRedis(aoyiProdIndex.getSkuid(), jsonObject , RedisUtil.webexpire);
         });
         return num;
+    }
+
+    @Override
+    public int add(AoyiProdIndex bean) throws ProductException {
+        if (bean.getMerchantId() > 0) {
+            // 获取商户信息
+            SkuCode skuCode = skuCodeMapper.selectByMerchantId(bean.getMerchantId()) ;
+            if (skuCode == null) {
+                // 去多商户系统中获取
+            }
+            String merchantCode = skuCode.getMerchantCode();
+            int skuValue = skuCode.getSkuValue() ;
+            AtomicInteger atomicInteger= new AtomicInteger(skuValue);
+            String sku = merchantCode + String.format("%06d", atomicInteger.getAndIncrement()) ;
+            bean.setSku(sku);
+            // 获取sku值
+            prodMapper.insertSelective(bean) ;
+            skuCodeMapper.updateSkuValueByPrimaryKey(skuCode) ;
+        } else {
+            throw new ProductException(200001, "merchantId 为null或等于0");
+        }
+        return bean.getId();
+    }
+
+    @Override
+    public int update(AoyiProdIndex bean) throws ProductException {
+        if (bean.getId() > 0) {
+            prodMapper.updateByPrimaryKeySelective(bean);
+        } else {
+            throw new ProductException(200002, "id为null或等于0");
+        }
+        return bean.getId();
     }
 }

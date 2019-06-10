@@ -11,13 +11,13 @@ public interface AoyiProdIndexMapper {
 
     int insert(AoyiProdIndexWithBLOBs record);
 
-    int insertSelective(AoyiProdIndexWithBLOBs record);
+    int insertSelective(AoyiProdIndex record);
 
     AoyiProdIndexWithBLOBs selectByPrimaryKey(Integer id);
 
     AoyiProdIndexWithBLOBs selectBySkuId(String skuId);
 
-    int updateByPrimaryKeySelective(AoyiProdIndexWithBLOBs record);
+    int updateByPrimaryKeySelective(AoyiProdIndex record);
 
     int updateByPrimaryKeyWithBLOBs(AoyiProdIndexWithBLOBs record);
 
