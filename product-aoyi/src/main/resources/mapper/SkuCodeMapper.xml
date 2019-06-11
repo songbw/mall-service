@@ -10,7 +10,7 @@
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, merchant_id, merchant_code, sku_value, created_at, updated_at
+    id, merchant_id merchantId, merchant_code merchantCode, sku_value skuValue, created_at createdAt, updated_at updatedAt
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -105,7 +105,7 @@
   </update>
   <update id="updateSkuValueByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.SkuCode"  keyProperty="id" useGeneratedKeys="true">
     update sku_code
-    sku_value = #{skuValue,jdbcType=INTEGER},
+    set sku_value = #{skuValue,jdbcType=INTEGER},
     updated_at = #{updatedAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>

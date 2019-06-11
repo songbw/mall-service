@@ -82,7 +82,7 @@
     </set>
     where skuId = #{skuid,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.mall.product.aoyi.ProdExtend" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.ProdExtend" >
     update prod_extend
     set skuId = #{skuid,jdbcType=VARCHAR},
       image = #{image,jdbcType=VARCHAR},

@@ -48,6 +48,12 @@ public class AdminProdController {
         return result;
     }
 
+    @DeleteMapping
+    public OperaResult delete(@RequestHeader("merchant") Integer merchantId, Integer id,  OperaResult result) throws ProductException {
+        prodService.delete(merchantId, id);
+        return result;
+    }
+
 
     @GetMapping("prodToRedis")
     public OperaResult getProdListToRedis(OperaResult result) {

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -140,10 +141,11 @@ public class AdminProdServiceImpl implements AdminProdService {
             String merchantCode = skuCode.getMerchantCode();
             int skuValue = skuCode.getSkuValue() ;
             AtomicInteger atomicInteger= new AtomicInteger(skuValue);
-            String sku = merchantCode + String.format("%06d", atomicInteger.getAndIncrement()) ;
+            String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet()) ;
             bean.setSku(sku);
-            // 获取sku值
+            bean.setCreatedAt(new Date());
             prodMapper.insertSelective(bean) ;
+            skuCode.setSkuValue(atomicInteger.get());
             skuCodeMapper.updateSkuValueByPrimaryKey(skuCode) ;
         } else {
             throw new ProductException(200001, "merchantId 为null或等于0");
@@ -159,5 +161,14 @@ public class AdminProdServiceImpl implements AdminProdService {
             throw new ProductException(200002, "id为null或等于0");
         }
         return bean.getId();
+    }
+
+    @Override
+    public void delete(Integer merchantId, Integer id) throws ProductException {
+        if (id > 0) {
+            prodMapper.deleteByPrimaryKey(id);
+        } else {
+            throw new ProductException(200002, "id为null或等于0");
+        }
     }
 }

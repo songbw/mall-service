@@ -15,4 +15,6 @@ public interface AdminProdService {
     int add(AoyiProdIndex bean) throws ProductException;
 
     int update(AoyiProdIndex bean) throws ProductException;
+
+    void delete(Integer merchantId, Integer id) throws ProductException;
 }

@@ -15,13 +15,13 @@ public class ProdExtendController {
     private ProdExtendService service;
 
     @PostMapping("update")
-    public OperaResult updateProdExtend(@RequestBody ProdExtend bean, OperaResult result) {
+    public OperaResult updateProdExtend(@RequestBody ProdExtend bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         result.getData().put("result", service.updateProdExtend(bean));
         return result;
     }
 
     @DeleteMapping("delete")
-    public OperaResult deleteProdExtend(String skuid, OperaResult result) {
+    public OperaResult deleteProdExtend(@RequestHeader("merchant") Integer merchantId, String skuid, OperaResult result) {
         result.getData().put("result", service.deleteProdExtend(skuid));
         return result;
     }

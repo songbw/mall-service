@@ -114,12 +114,6 @@
       <if test="introductionUrl != null" >
         introduction_url,
       </if>
-      <if test="introduction != null" >
-        introduction,
-      </if>
-      <if test="prodparams != null" >
-        prodParams,
-      </if>
       <if test="merchantId != null" >
         merchant_id,
       </if>
@@ -181,12 +175,6 @@
       </if>
       <if test="introductionUrl != null" >
         #{introductionUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="introduction != null" >
-        #{introduction,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="prodparams != null" >
-        #{prodparams,jdbcType=LONGVARCHAR},
       </if>
       <if test="merchantId != null" >
         #{merchantId},
@@ -252,12 +240,6 @@
       </if>
       <if test="introductionUrl != null" >
         introduction_url = #{introductionUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="introduction != null" >
-        introduction = #{introduction,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="prodparams != null" >
-        prodParams = #{prodparams,jdbcType=LONGVARCHAR},
       </if>
       <if test="merchantId != null" >
         merchant_id = #{merchantId},
