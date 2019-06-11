@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,6 +38,19 @@ public class AdminBrandServiceImpl implements AdminBrandService {
     @Override
     public Integer updateBrandbyId(AoyiBaseBrand bean) {
         return brandMapper.updateByPrimaryKeySelective(bean);
+    }
+
+    @Override
+    public Integer create(AoyiBaseBrand bean) {
+        Date date = new Date();
+        bean.setAddTime(date.toString());
+        brandMapper.insertSelective(bean);
+        return bean.getBrandId();
+    }
+
+    @Override
+    public void delete(Integer id) {
+        brandMapper.deleteByPrimaryKey(id);
     }
 
     @Override

@@ -50,6 +50,12 @@ public class AdminCategoryController {
         return result ;
     }
 
+    @DeleteMapping
+    private OperaResult delete(Integer id, OperaResult result) {
+        service.delete(id);
+        return result ;
+    }
+
     @GetMapping("/category")
     private OperaResult findCategoryList(Integer id, boolean includeSub, OperaResult result) {
         List<AoyiBaseCategory> categorys = service.selectCategoryList(id, includeSub);

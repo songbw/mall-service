@@ -12,6 +12,8 @@ public interface AdminCategoryService {
 
     void insertSelective(CategoryBean bean);
 
+    void delete(Integer id);
+
     void updateByPrimaryKeySelective(CategoryBean bean);
 
     PageBean selectNameList(Integer offset, Integer limit, String categoryName);

@@ -29,6 +29,18 @@ public class AdminBrandController {
         return result;
     }
 
+    @PostMapping
+    public OperaResult create(@RequestBody AoyiBaseBrand bean, OperaResult result){
+        result.getData().put("result",brandService.updateBrandbyId(bean));
+        return result;
+    }
+
+    @DeleteMapping
+    public OperaResult delete(Integer id, OperaResult result){
+        brandService.delete(id);
+        return result;
+    }
+
     @GetMapping("search")
     public OperaResult search(Integer offset, Integer limit, String query, OperaResult result){
         PageBean  category = brandService.selectNameList(offset,limit,query);

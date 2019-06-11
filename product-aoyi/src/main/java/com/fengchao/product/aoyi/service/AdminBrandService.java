@@ -9,5 +9,9 @@ public interface AdminBrandService {
 
     Integer updateBrandbyId(AoyiBaseBrand bean);
 
+    Integer create(AoyiBaseBrand bean);
+
+    void delete(Integer id);
+
     PageBean selectNameList(Integer offset, Integer limit, String query);
 }

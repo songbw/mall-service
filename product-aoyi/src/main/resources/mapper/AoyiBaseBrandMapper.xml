@@ -36,21 +36,18 @@
     where brand_id = #{brandId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand" >
-    insert into aoyi_base_brand (brand_id, brand_name, brand_cname, 
+    insert into aoyi_base_brand (brand_name, brand_cname,
       brand_ename, brand_first_char, brand_logo, 
       site_url, sort_order, is_show, 
       add_time, brand_desc)
-    values (#{brandId,jdbcType=INTEGER}, #{brandName,jdbcType=VARCHAR}, #{brandCname,jdbcType=VARCHAR}, 
+    values (#{brandName,jdbcType=VARCHAR}, #{brandCname,jdbcType=VARCHAR},
       #{brandEname,jdbcType=VARCHAR}, #{brandFirstChar,jdbcType=CHAR}, #{brandLogo,jdbcType=VARCHAR}, 
       #{siteUrl,jdbcType=VARCHAR}, #{sortOrder,jdbcType=TINYINT}, #{isShow,jdbcType=BIT}, 
       #{addTime,jdbcType=VARCHAR}, #{brandDesc,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand" >
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand"  keyProperty="id" useGeneratedKeys="true">
     insert into aoyi_base_brand
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="brandId != null" >
-        brand_id,
-      </if>
       <if test="brandName != null" >
         brand_name,
       </if>
@@ -83,9 +80,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="brandId != null" >
-        #{brandId,jdbcType=INTEGER},
-      </if>
       <if test="brandName != null" >
         #{brandName,jdbcType=VARCHAR},
       </if>

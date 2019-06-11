@@ -136,6 +136,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
+    public void delete(Integer id) {
+        mapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
     public void updateByPrimaryKeySelective(CategoryBean bean) {
         AoyiBaseCategory category = new AoyiBaseCategory();
 
