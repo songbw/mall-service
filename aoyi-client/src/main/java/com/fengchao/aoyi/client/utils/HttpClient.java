@@ -118,7 +118,7 @@ public class HttpClient {
         WebTarget target = client.target(AOYI_BASE_URL).path(path).queryParam("method", method).queryParam("app_id", APPID).queryParam("app_secret", APPSERCET).queryParam("timestamp", timestamp).queryParam("sign", sign);
         T bean = null;
         try {
-            target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(body,MediaType.APPLICATION_JSON_TYPE),obj);
+            bean = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(body,MediaType.APPLICATION_JSON_TYPE),obj);
         } catch (Exception e) {
             logger.error("Aoyi Client error : ", e);
             throw new AoyiClientException();
