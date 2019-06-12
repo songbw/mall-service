@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.order.mapper.ShoppingCartMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.ShoppingCart" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="mac_address" property="macAddress" jdbcType="VARCHAR" />
+    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, open_id, mac_address, sku_id, count, status, created_at, updated_at, is_del
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shopping_cart
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByOpenIdAndSkuId" resultType="com.fengchao.order.model.ShoppingCart">
+    select
+    <include refid="Base_Column_List" />
+    from shopping_cart
+    where sku_id = #{skuId} and open_id = #{openId} and is_del = 0 and status = 0
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from shopping_cart
+    where open_id = #{openId} and is_del = 0 and status = 0
+    order by updated_at desc
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from shopping_cart
+    where open_id = #{openId} and is_del = 0 and status = 0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shopping_cart
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByOpenIdAndSkuId">
+    DELETE FROM  shopping_cart WHERE open_id = #{openId} and sku_id = #{skuId}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
+    insert into shopping_cart (open_id, mac_address,
+      sku_id, count,
+      created_at, updated_at
+      )
+    values (#{openId,jdbcType=VARCHAR}, #{macAddress,jdbcType=VARCHAR},
+      #{skuId,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER},
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
+    insert into shopping_cart
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="macAddress != null" >
+        mac_address,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="count != null" >
+        count,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="macAddress != null" >
+        #{macAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
+    update shopping_cart
+    <set >
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="macAddress != null" >
+        mac_address = #{macAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        count = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
+    update shopping_cart
+    set open_id = #{openId,jdbcType=VARCHAR},
+      mac_address = #{macAddress,jdbcType=VARCHAR},
+      sku_id = #{skuId,jdbcType=VARCHAR},
+      count = #{count,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateNumById"   keyProperty="id" useGeneratedKeys="true">
+    update shopping_cart
+    set count = #{count},updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id}
+  </update>
+  <update id="updateIsDelById"  keyProperty="id" useGeneratedKeys="true">
+    update shopping_cart
+    set is_del = 1
+    where id = #{id}
+  </update>
+  <update id="updateStatusById"  keyProperty="id" useGeneratedKeys="true">
+    update shopping_cart
+    set status = 1
+    where id = #{id}
+  </update>
+</mapper>

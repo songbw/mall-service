@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.order.mapper.OrderMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.Order" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
+    <result column="aoyi_id" property="aoyiId" jdbcType="VARCHAR" />
+    <result column="company_cust_no" property="companyCustNo" jdbcType="VARCHAR" />
+    <result column="merchant_no" property="merchantNo" jdbcType="VARCHAR" />
+    <result column="receiver_name" property="receiverName" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="province_id" property="provinceId" jdbcType="VARCHAR" />
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+    <result column="city_id" property="cityId" jdbcType="VARCHAR" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="county_id" property="countyId" jdbcType="VARCHAR" />
+    <result column="county_name" property="countyName" jdbcType="VARCHAR" />
+    <result column="town_id" property="townId" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="zip" property="zip" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="invoice_state" property="invoiceState" jdbcType="VARCHAR" />
+    <result column="invoice_type" property="invoiceType" jdbcType="VARCHAR" />
+    <result column="invoice_title" property="invoiceTitle" jdbcType="VARCHAR" />
+    <result column="invoice_content" property="invoiceContent" jdbcType="VARCHAR" />
+    <result column="payment" property="payment" jdbcType="VARCHAR" />
+    <result column="serv_Fee" property="servFee" jdbcType="REAL" />
+    <result column="amount" property="amount" jdbcType="REAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
+    <result column="payment_no" property="paymentNo" jdbcType="VARCHAR" />
+    <result column="payment_at" property="paymentAt" jdbcType="VARCHAR" />
+    <result column="payment_amount" property="paymentAmount" jdbcType="INTEGER" />
+    <result column="payee" property="payee" jdbcType="VARCHAR" />
+    <result column="refund_fee" property="refundFee" jdbcType="INTEGER" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="payment_total_fee" property="paymentTotalFee" jdbcType="INTEGER" />
+    <result column="payer" property="payer" jdbcType="VARCHAR" />
+    <result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+    <result column="pay_order_category" property="payOrderCategory" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, open_id, trade_no, aoyi_id, company_cust_no,merchant_no, receiver_name, telephone, mobile,
+    email, province_id, province_name, city_id, city_name, county_id, county_name, town_id, address, zip, remark, invoice_state,
+    invoice_type, invoice_title, invoice_content, payment, serv_Fee, amount, status, 
+    type,out_trade_no, payment_no, payment_at, payment_amount, payee, refund_fee, pay_type, payment_total_fee, payer, pay_status, pay_order_category, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from orders
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">
+  select
+  count(id)
+  from orders
+  where open_id = #{openId} and status > -1
+  <if test="status != null and status != -1">
+    and status = #{status}
+  </if>
+</select>
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
+    select count(orders.id)
+    from order_detail
+    RIGHT JOIN orders on order_detail.order_id = orders.id
+    LEFT JOIN aoyi_prod_index on order_detail.sku_id = aoyi_prod_index.skuId
+    where 1 = 1
+    <if test="openId != null and openId !=''">
+      and  open_id = #{openId}
+    </if>
+    <if test="detailId != null and detailId !=''">
+      and  order_detail.id = #{detailId}
+    </if>
+    <if test="id != null and id !=''">
+      and orders.id = #{id}
+    </if>
+    <if test="mobile != null and mobile !=''">
+      and mobile = #{mobile}
+    </if>
+    <if test="status != null and status !=''">
+      and orders.status = #{status}
+    </if>
+    <if test="tradeNo !=null and tradeNo !=''">
+      <bind name="pattern" value="'%' + tradeNo + '%'"/>
+      and RIGHT(`trade_no`,length(`trade_no`)-8) LIKE #{pattern}
+    </if>
+    <if test="payDateStart != null" >
+        <![CDATA[ and payment_at >= #{payDateStart,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="payDateEnd != null" >
+        <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
+    </if>
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from orders
+    where open_id = #{openId} and status > -1
+    <if test="status != null and status != -1">
+      and status = #{status}
+    </if>
+    order by updated_at desc
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectByTradeNo" resultMap="BaseResultMap" parameterType="String">
+    select
+    <include refid="Base_Column_List" />
+    from orders
+    where trade_no like #{tradeNo}
+  </select>
+
+  <select id="selectByOutTradeNo" resultMap="BaseResultMap" parameterType="String">
+    select
+    <include refid="Base_Column_List" />
+    from orders
+    where out_trade_no = #{outTradeNo}
+  </select>
+
+  <select id="selectByOutTradeNoAndPaymentNo" resultMap="BaseResultMap" parameterType="com.fengchao.order.model.Order">
+    select
+    <include refid="Base_Column_List" />
+    from orders
+    where out_trade_no = #{outTradeNo} and payment_no = #{paymentNo}
+  </select>
+
+  <select id="selectOrderLimit" resultType="com.fengchao.order.bean.OrderDetailBean" parameterType="Map">
+    select orders.id id, open_id openId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, receiver_name receiverName, telephone,
+    mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, remark, invoice_state invoiceState,
+    invoice_type invoiceType, invoice_title invoiceTitle, payment_no paymentNo, payment_at paymentAt, invoice_content invoiceContent, payment,
+    serv_Fee servFee, amount, type,sub_order_id subOrderId, sku_id skuId, num,unit_price unitPrice, image, name, model, orders.status,
+    order_detail.created_at createdAt, order_detail.updated_at updatedAt, order_detail.logistics_id logisticsId, order_detail.logistics_content logisticsContent
+    from order_detail
+    RIGHT JOIN orders on order_detail.order_id = orders.id
+    where 1 = 1
+    <if test="openId != null and openId !=''">
+      and  open_id = #{openId}
+    </if>
+    <if test="subOrderId != null and subOrderId !=''">
+      and  sub_order_id = #{subOrderId}
+    </if>
+    <if test="id != null and id !=''">
+      and orders.id = #{id}
+    </if>
+    <if test="mobile != null and mobile !=''">
+      and mobile = #{mobile}
+    </if>
+    <if test="tradeNo !=null and tradeNo !=''">
+      <bind name="pattern" value="'%' + tradeNo + '%'"/>
+      and RIGHT(`trade_no`,length(`trade_no`)-8) LIKE #{pattern}
+    </if>
+    <if test="status != null and status !=''">
+      and orders.status = #{status}
+    </if>
+    <if test="payDateStart != null" >
+      <![CDATA[ and payment_at >= #{payDateStart,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="payDateEnd != null" >
+      <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
+    </if>
+    order by order_detail.updated_at desc
+    limit #{pageNo},#{pageSize}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from orders
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.order.model.Order" keyProperty="id" useGeneratedKeys="true">
+    insert into orders (open_id, trade_no,aoyi_id, company_cust_no, merchant_no, receiver_name,telephone, mobile, email, province_id, province_name, city_id, city_name, county_id, county_name, town_id, address, zip, remark, invoice_state, invoice_type, invoice_title, invoice_content, payment, serv_Fee, amount, status, type, created_at, updated_at)
+    values (#{openId,jdbcType=VARCHAR}, #{tradeNo,jdbcType=VARCHAR},
+      #{aoyiId,jdbcType=VARCHAR}, #{companyCustNo,jdbcType=VARCHAR}, #{merchantNo,jdbcType=VARCHAR}, #{receiverName,jdbcType=VARCHAR},
+      #{telephone,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{provinceId,jdbcType=VARCHAR}, #{provinceName,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, #{cityName,jdbcType=VARCHAR}, #{countyId,jdbcType=VARCHAR}, #{countyName,jdbcType=VARCHAR},
+      #{townId,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{zip,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{invoiceState,jdbcType=VARCHAR}, #{invoiceType,jdbcType=VARCHAR}, 
+      #{invoiceTitle,jdbcType=VARCHAR}, #{invoiceContent,jdbcType=VARCHAR}, #{payment,jdbcType=VARCHAR}, 
+      #{servFee,jdbcType=REAL}, #{amount,jdbcType=REAL}, #{status,jdbcType=INTEGER}, 
+      #{type,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.order.model.Order" keyProperty="id" useGeneratedKeys="true">
+    insert into orders
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="tradeNo != null" >
+        trade_no,
+      </if>
+      <if test="aoyiId != null" >
+        aoyi_id,
+      </if>
+      <if test="companyCustNo != null" >
+        company_cust_no,
+      </if>
+      <if test="receiverName != null" >
+        receiver_name,
+      </if>
+      <if test="telephone != null" >
+        telephone,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="provinceId != null" >
+        province_id,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="countyId != null" >
+        county_id,
+      </if>
+      <if test="townId != null" >
+        town_id,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="zip != null" >
+        zip,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="invoiceState != null" >
+        invoice_state,
+      </if>
+      <if test="invoiceType != null" >
+        invoice_type,
+      </if>
+      <if test="invoiceTitle != null" >
+        invoice_title,
+      </if>
+      <if test="invoiceContent != null" >
+        invoice_content,
+      </if>
+      <if test="payment != null" >
+        payment,
+      </if>
+      <if test="servFee != null" >
+        serv_Fee,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo != null" >
+        #{tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="aoyiId != null" >
+        #{aoyiId,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCustNo != null" >
+        #{companyCustNo,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null" >
+        #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="countyId != null" >
+        #{countyId,jdbcType=VARCHAR},
+      </if>
+      <if test="townId != null" >
+        #{townId,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zip != null" >
+        #{zip,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceState != null" >
+        #{invoiceState,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceType != null" >
+        #{invoiceType,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceTitle != null" >
+        #{invoiceTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceContent != null" >
+        #{invoiceContent,jdbcType=VARCHAR},
+      </if>
+      <if test="payment != null" >
+        #{payment,jdbcType=VARCHAR},
+      </if>
+      <if test="servFee != null" >
+        #{servFee,jdbcType=REAL},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=REAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.Order" >
+    update orders
+    <set >
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo != null" >
+        trade_no = #{tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="aoyiId != null" >
+        aoyi_id = #{aoyiId,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCustNo != null" >
+        company_cust_no = #{companyCustNo,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null" >
+        receiver_name = #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        telephone = #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="countyId != null" >
+        county_id = #{countyId,jdbcType=VARCHAR},
+      </if>
+      <if test="townId != null" >
+        town_id = #{townId,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zip != null" >
+        zip = #{zip,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceState != null" >
+        invoice_state = #{invoiceState,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceType != null" >
+        invoice_type = #{invoiceType,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceTitle != null" >
+        invoice_title = #{invoiceTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceContent != null" >
+        invoice_content = #{invoiceContent,jdbcType=VARCHAR},
+      </if>
+      <if test="payment != null" >
+        payment = #{payment,jdbcType=VARCHAR},
+      </if>
+      <if test="servFee != null" >
+        serv_Fee = #{servFee,jdbcType=REAL},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=REAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.Order" >
+    update orders
+    set open_id = #{openId,jdbcType=VARCHAR},
+      trade_no = #{tradeNo,jdbcType=VARCHAR},
+      aoyi_id = #{aoyiId,jdbcType=VARCHAR},
+      company_cust_no = #{companyCustNo,jdbcType=VARCHAR},
+      receiver_name = #{receiverName,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      province_id = #{provinceId,jdbcType=VARCHAR},
+      city_id = #{cityId,jdbcType=VARCHAR},
+      county_id = #{countyId,jdbcType=VARCHAR},
+      town_id = #{townId,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zip = #{zip,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      invoice_state = #{invoiceState,jdbcType=VARCHAR},
+      invoice_type = #{invoiceType,jdbcType=VARCHAR},
+      invoice_title = #{invoiceTitle,jdbcType=VARCHAR},
+      invoice_content = #{invoiceContent,jdbcType=VARCHAR},
+      payment = #{payment,jdbcType=VARCHAR},
+      serv_Fee = #{servFee,jdbcType=REAL},
+      amount = #{amount,jdbcType=REAL},
+      status = #{status,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateStatusById" keyProperty="id" useGeneratedKeys="true">
+    update orders
+    set status = #{status},updated_at = #{updatedAt}
+    where id = #{id}
+  </update>
+
+  <update id="updatePaymentNo" keyProperty="id" useGeneratedKeys="true">
+    update orders
+    set out_trade_no = #{outTradeNo},payment_no = #{paymentNo},updated_at = #{updatedAt}
+    where id = #{id}
+  </update>
+  <update id="updatePaymentByOutTradeNoAndPaymentNo" keyProperty="id" useGeneratedKeys="true">
+    update orders
+    set payment_amount = #{paymentAmount},
+    payment_at = #{paymentAt},
+    status = #{status},
+    payee = #{payee},
+    refund_fee = #{refundFee},
+    pay_type = #{payType},
+    payment_total_fee = #{paymentTotalFee},
+    payer = #{payer},
+    pay_status = #{payStatus},
+    pay_order_category = #{payOrderCategory}
+    where id = #{id}
+  </update>
+</mapper>
