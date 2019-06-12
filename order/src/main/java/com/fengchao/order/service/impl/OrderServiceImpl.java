@@ -1,5 +1,6 @@
 package com.fengchao.order.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.order.bean.*;
@@ -412,8 +413,10 @@ public class OrderServiceImpl implements OrderService {
         OperaResult result = productService.find(skuId);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
-            AoyiProdIndex object = (AoyiProdIndex) data.get("result");
-            return object;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
+            return aoyiProdIndex;
         }
         return null;
     }
@@ -422,8 +425,10 @@ public class OrderServiceImpl implements OrderService {
         OperaResult result = aoyiClientService.order(bean);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
-            List<SubOrderT> object = (List<SubOrderT>) data.get("result");
-            return object;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<SubOrderT> subOrderTS = JSONObject.parseArray(jsonString, SubOrderT.class);
+            return subOrderTS;
         }
         return null;
     }

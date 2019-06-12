@@ -24,7 +24,7 @@ public class DataSourceAspect implements Ordered {
     /**
      * 切点: 所有配置 DataSource 注解的方法
      */
-    @Pointcut("@annotation(com.fengchao.product.aoyi.db.annotation.DataSource)")
+    @Pointcut("@annotation(com.fengchao.order.db.annotation.DataSource)")
     public void dataSourcePointCut() {}
 
     @Around("dataSourcePointCut()")

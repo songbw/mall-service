@@ -106,4 +106,5 @@ public class OrderController {
         result.getData().put("result", service.getLogist(merchantNo, orderId)) ;
         return result;
     }
+
 }
