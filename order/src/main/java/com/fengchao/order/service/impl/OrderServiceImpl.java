@@ -123,6 +123,17 @@ public class OrderServiceImpl implements OrderService {
         Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
         if (receiver != null) {
             receiver = handleBean(receiver);
+            orderBean.setReceiverName(receiver.getReceiverName());
+            orderBean.setTelephone(receiver.getTelephone());
+            orderBean.setMobile(receiver.getMobile());
+            orderBean.setEmail(receiver.getEmail());
+            orderBean.setProvinceId(receiver.getProvinceId());
+            orderBean.setCityId(receiver.getCityId());
+            orderBean.setCountyId(receiver.getCountyId());
+            orderBean.setTownId(receiver.getTownId());
+            orderBean.setAddress(receiver.getAddress());
+            orderBean.setZip(receiver.getZip());
+
             bean.setReceiverName(receiver.getReceiverName());
             bean.setTelephone(receiver.getTelephone());
             bean.setMobile(receiver.getMobile());
@@ -137,7 +148,9 @@ public class OrderServiceImpl implements OrderService {
             bean.setCityName(receiver.getCityName());
             bean.setCountyName(receiver.getCountyName());
         }
-        bean.setRemark(orderBean.getRemark());
+        orderBean.setInvoiceState("1");
+        orderBean.setInvoiceType("4");
+
         bean.setInvoiceState("1");
         bean.setInvoiceType("4");
         bean.setInvoiceTitle(orderBean.getInvoiceTitleName());

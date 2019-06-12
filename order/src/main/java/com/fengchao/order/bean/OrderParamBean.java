@@ -17,4 +17,19 @@ public class OrderParamBean implements Serializable {
     private String invoiceType; //电子普票
     private String invoiceTitleName;//企业名称
     private String invoiceEnterpriseNumber;//企业纳税号
+
+    private String tradeNo;
+    private String receiverName;
+    private String telephone;
+    private String mobile;
+    private String email;
+    private String provinceId;
+    private String cityId;
+    private String countyId;
+    private String townId;
+    private String address;
+    private String zip;
+    private String invoiceState;
+    private String invoiceTitle;
+    private String invoiceContent;
 }
