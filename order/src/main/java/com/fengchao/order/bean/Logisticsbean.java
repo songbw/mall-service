@@ -13,4 +13,5 @@ public class Logisticsbean {
     private String logisticsContent;
     private Integer orderId;
     private String subOrderId;
+    private Integer merchantId;
 }

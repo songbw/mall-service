@@ -90,6 +90,8 @@ public class Order {
 
     private String merchantNo;
 
+    private Integer merchantId;
+
     private List<OrderDetail> skus;
 
     public Integer getId() {
@@ -442,5 +444,13 @@ public class Order {
 
     public void setPayOrderCategory(int payOrderCategory) {
         this.payOrderCategory = payOrderCategory;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
     }
 }

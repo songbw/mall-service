@@ -64,39 +64,44 @@ public class OrderController {
     }
 
     @PostMapping("/searchOrder")
-    private OperaResult searchOrderList(@RequestBody OrderBean orderBean , OperaResult result) {
+    private OperaResult searchOrderList(@RequestBody OrderBean orderBean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        orderBean.setMerchantId(merchantId);
         result.getData().put("result", service.searchOrderList(orderBean)) ;
         return result;
     }
 
     @PostMapping("/updateRemark")
-    private OperaResult updateRemark(@RequestBody Order bean  , OperaResult result) {
+    private OperaResult updateRemark(@RequestBody Order bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        bean.setMerchantId(merchantId);
         result.getData().put("result", service.updateRemark(bean)) ;
         return result;
     }
 
     @PostMapping("/updateAddress")
-    private OperaResult updateOrderAddress(@RequestBody Order bean , OperaResult result) {
+    private OperaResult updateOrderAddress(@RequestBody Order bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        bean.setMerchantId(merchantId);
         result.getData().put("result", service.updateOrderAddress(bean)) ;
         return result;
     }
 
     @PostMapping("/searchDetail")
-    private OperaResult searchDetail(@RequestBody OrderQueryBean queryBean, OperaResult result) {
+    private OperaResult searchDetail(@RequestBody OrderQueryBean queryBean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        queryBean.setMerchantId(merchantId);
         result.getData().put("result", service.searchDetail(queryBean)) ;
         return result;
     }
 
     @PostMapping("/uploadLogistics")
-    private OperaResult uploadLogistics(@RequestBody Logisticsbean bean, OperaResult result) {
+    private OperaResult uploadLogistics(@RequestBody Logisticsbean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         System.out.println(bean.getLogisticsList());
+        bean.setMerchantId(merchantId);
         result.getData().put("result", service.uploadLogistics(bean)) ;
 
         return result;
     }
 
     @GetMapping("/queryLogisticsInfo")
-    private OperaResult queryLogisticsInfo(String logisticsId, OperaResult result) {
+    private OperaResult queryLogisticsInfo(@RequestHeader("merchant") Integer merchantId, String logisticsId, OperaResult result) {
         result.getData().put("result", Kuaidi100.synQueryData(logisticsId, "")) ;
         return result;
     }
