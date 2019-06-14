@@ -16,6 +16,7 @@
         <module>gateway-mall</module>
         <module>elasticsearch-mall</module>
         <module>order</module>
+        <module>base-mall</module>
     </modules>
 
 
