@@ -21,4 +21,6 @@ public interface AdminCategoryService {
     List<AoyiBaseCategory>  selectCategoryList(Integer id, boolean includeSub);
 
     PageBean selectSubLevelList(Integer offset, Integer limit, Integer parentId);
+
+    List<CategoryBean> selectByCategoryIdList(List<String> categories);
 }

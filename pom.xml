@@ -18,6 +18,7 @@
         <module>order</module>
         <module>base-mall</module>
         <module>aggregation</module>
+        <module>equity</module>
     </modules>
 
 

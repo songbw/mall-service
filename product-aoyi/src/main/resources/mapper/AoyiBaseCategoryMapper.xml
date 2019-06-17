@@ -19,7 +19,7 @@
     sort_order, is_show, is_nav, is_top_style, idate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from aoyi_base_category
     where category_id = #{categoryId,jdbcType=INTEGER}
@@ -222,5 +222,12 @@
     <include refid="Base_Column_List" />
     from aoyi_base_category
     where parent_id = #{parentId}
+  </select>
+  <select id="selectByCategoryIdList" resultType="com.fengchao.product.aoyi.bean.CategoryBean" parameterType="java.util.List" >
+    select category_id categoryId, category_name categoryName
+    from aoyi_base_category where category_id in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
   </select>
 </mapper>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.equity.mapper.GroupsBuyerMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.GroupsBuyer" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="closing_time" property="closingTime" jdbcType="TIMESTAMP" />
+    <result column="groupingStatus" property="groupingstatus" jdbcType="INTEGER" />
+    <result column="leaderOpenId" property="leaderopenid" jdbcType="VARCHAR" />
+    <result column="leaderOrderId" property="leaderorderid" jdbcType="VARCHAR" />
+    <result column="memberOpenIds" property="memberopenids" jdbcType="VARCHAR" />
+    <result column="memberOrderIds" property="memberorderids" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, group_id, created_time, closing_time, groupingStatus, leaderOpenId, leaderOrderId, 
+    memberOpenIds, memberOrderIds
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from groups_buyer
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from groups_buyer
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.equity.model.GroupsBuyer" >
+    insert into groups_buyer (id, group_id, created_time, 
+      closing_time, groupingStatus, leaderOpenId, 
+      leaderOrderId, memberOpenIds, memberOrderIds
+      )
+    values (#{id,jdbcType=INTEGER}, #{groupId,jdbcType=INTEGER}, #{createdTime,jdbcType=TIMESTAMP}, 
+      #{closingTime,jdbcType=TIMESTAMP}, #{groupingstatus,jdbcType=INTEGER}, #{leaderopenid,jdbcType=VARCHAR}, 
+      #{leaderorderid,jdbcType=VARCHAR}, #{memberopenids,jdbcType=VARCHAR}, #{memberorderids,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.equity.model.GroupsBuyer" >
+    insert into groups_buyer
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="closingTime != null" >
+        closing_time,
+      </if>
+      <if test="groupingstatus != null" >
+        groupingStatus,
+      </if>
+      <if test="leaderopenid != null" >
+        leaderOpenId,
+      </if>
+      <if test="leaderorderid != null" >
+        leaderOrderId,
+      </if>
+      <if test="memberopenids != null" >
+        memberOpenIds,
+      </if>
+      <if test="memberorderids != null" >
+        memberOrderIds,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="closingTime != null" >
+        #{closingTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupingstatus != null" >
+        #{groupingstatus,jdbcType=INTEGER},
+      </if>
+      <if test="leaderopenid != null" >
+        #{leaderopenid,jdbcType=VARCHAR},
+      </if>
+      <if test="leaderorderid != null" >
+        #{leaderorderid,jdbcType=VARCHAR},
+      </if>
+      <if test="memberopenids != null" >
+        #{memberopenids,jdbcType=VARCHAR},
+      </if>
+      <if test="memberorderids != null" >
+        #{memberorderids,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.GroupsBuyer" >
+    update groups_buyer
+    <set >
+      <if test="groupId != null" >
+        group_id = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="closingTime != null" >
+        closing_time = #{closingTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupingstatus != null" >
+        groupingStatus = #{groupingstatus,jdbcType=INTEGER},
+      </if>
+      <if test="leaderopenid != null" >
+        leaderOpenId = #{leaderopenid,jdbcType=VARCHAR},
+      </if>
+      <if test="leaderorderid != null" >
+        leaderOrderId = #{leaderorderid,jdbcType=VARCHAR},
+      </if>
+      <if test="memberopenids != null" >
+        memberOpenIds = #{memberopenids,jdbcType=VARCHAR},
+      </if>
+      <if test="memberorderids != null" >
+        memberOrderIds = #{memberorderids,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.GroupsBuyer" >
+    update groups_buyer
+    set group_id = #{groupId,jdbcType=INTEGER},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      closing_time = #{closingTime,jdbcType=TIMESTAMP},
+      groupingStatus = #{groupingstatus,jdbcType=INTEGER},
+      leaderOpenId = #{leaderopenid,jdbcType=VARCHAR},
+      leaderOrderId = #{leaderorderid,jdbcType=VARCHAR},
+      memberOpenIds = #{memberopenids,jdbcType=VARCHAR},
+      memberOrderIds = #{memberorderids,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
