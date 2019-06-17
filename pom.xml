@@ -17,6 +17,7 @@
         <module>elasticsearch-mall</module>
         <module>order</module>
         <module>base-mall</module>
+        <module>aggregation</module>
     </modules>
 
 

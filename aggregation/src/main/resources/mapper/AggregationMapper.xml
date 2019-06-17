@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.aggregation.mapper.AggregationMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.aggregation.model.Aggregation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="effective_date" property="effectiveDate" jdbcType="TIMESTAMP" />
+    <result column="background_color" property="backgroundColor" jdbcType="VARCHAR" />
+    <result column="home_page" property="homePage" jdbcType="BIT" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, effective_date, background_color,home_page, group_id, status, merchant_id, content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aggregation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="findHomePage" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aggregation
+    where status = 1 and home_page = true
+  </select>
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from aggregation
+    WHERE 1=1
+    <if test="name != null" >
+      <bind name="pattern" value="'%' + name + '%'" />
+      and name LIKE #{pattern}
+    </if>
+    <if test="status != null" >
+      and status = #{status,jdbcType=INTEGER}
+    </if>
+    <if test="homePage != null" >
+      and home_page =  #{homePage,jdbcType=BIT}
+    </if>
+    <if test="groupId != null" >
+      and group_id = #{groupId,jdbcType=INTEGER}
+    </if>
+    <if test="merchantId != null" >
+      and merchant_id = #{merchantId,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    id, name, effective_date, background_color, group_id, home_page, status, merchant_id
+    from aggregation
+    WHERE 1=1
+    <if test="name != null" >
+      <bind name="pattern" value="'%' + name + '%'" />
+      and name LIKE #{pattern}
+    </if>
+    <if test="status != null" >
+      and status = #{status,jdbcType=INTEGER}
+    </if>
+    <if test="homePage != null" >
+      and home_page =  #{homePage,jdbcType=BIT}
+    </if>
+    <if test="groupId != null" >
+      and group_id = #{groupId,jdbcType=INTEGER}
+    </if>
+    <if test="merchantId != null" >
+      and merchant_id = #{merchantId,jdbcType=INTEGER}
+    </if>
+    <if test="order == 'asc'" >
+      order by id asc
+    </if>
+    <if test="order == 'desc'" >
+      order by id desc
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectByGroupId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aggregation
+    where group_id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from aggregation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.aggregation.model.Aggregation" >
+    insert into aggregation (id, name, effective_date,
+      background_color,home_page, group_id, status, merchant_id, content
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{effectiveDate,jdbcType=TIMESTAMP},
+      #{backgroundColor,jdbcType=VARCHAR}, #{homePage,jdbcType=BIT}, #{groupId,jdbcType=INTEGER},
+       #{status,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.aggregation.model.Aggregation" >
+    insert into aggregation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="effectiveDate != null" >
+        effective_date,
+      </if>
+      <if test="backgroundColor != null" >
+        background_color,
+      </if>
+      <if test="homePage != null" >
+        home_page,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="merchantId != null" >
+        merchant_id,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveDate != null" >
+        #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="backgroundColor != null" >
+        #{backgroundColor,jdbcType=VARCHAR},
+      </if>
+      <if test="homePage != null" >
+        #{homePage,jdbcType=BIT},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="merchantId != null" >
+        #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.aggregation.model.Aggregation" >
+    update aggregation
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveDate != null" >
+        effective_date = #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="backgroundColor != null" >
+        background_color = #{backgroundColor,jdbcType=VARCHAR},
+      </if>
+      <if test="homePage != null" >
+        home_page = #{homePage,jdbcType=BIT},
+      </if>
+      <if test="groupId != null" >
+        group_id = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="merchantId != null" >
+        merchant_id = #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.aggregation.model.Aggregation" >
+    update aggregation
+    set name = #{name,jdbcType=VARCHAR},
+      effective_date = #{effectiveDate,jdbcType=TIMESTAMP},
+      background_color = #{backgroundColor,jdbcType=VARCHAR},
+      home_page = #{homePage,jdbcType=BIT},
+      group_id = #{groupId,jdbcType=INTEGER}
+      status = #{status,jdbcType=INTEGER},
+      merchant_id = #{merchantId,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateContent">
+    UPDATE aggregation
+    SET content = #{content,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateStatus">
+    UPDATE aggregation
+    SET status = 2
+    where status = 1 and home_page = true
+  </update>
+</mapper>
