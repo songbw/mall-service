@@ -23,7 +23,7 @@ public class HttpClient {
     // 发起支付接口地址
     public static final String PAY_ORDER = "/wuxi-pay-web/sdk/fengchao/payOrderByOrderNo" ;
     // 回调通知地址
-    public static final String NOTIFY_URL = "http://119.3.111.161:8080/zhcs/back" ;
+    public static final String NOTIFY_URL = "http://api.weesharing.com/v2/ssoes/payment/pingan/back" ;
 
 //    private static final String PAY_REFUND = "http://citycard-stg.pingan.com.cn/nanning-gateway/appfront/purse/refund/payRefund" ;
 

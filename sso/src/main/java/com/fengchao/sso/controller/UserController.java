@@ -104,5 +104,15 @@ public class UserController {
         result.setMsg(string);
         return result;
     }
+
+    @GetMapping("/pingan")
+    public OperaResult findPingAnUser(String userToken, OperaResult result) {
+        if(StringUtil.isEmpty(userToken)){
+            result.setCode(100000);
+            result.setMsg("userToken不能为空");
+            return result;
+        }
+        return service.findPingAnUser(userToken);
+    }
 }
 

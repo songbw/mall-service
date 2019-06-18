@@ -193,5 +193,15 @@ public class LoginController {
         loginService.updatePassword(loginBean) ;
         return  result;
     }
+
+    @GetMapping("/pingan/token")
+    public OperaResult pinganToken(String initCode, OperaResult result) {
+        if(StringUtil.isEmpty(initCode)){
+            result.setCode(100000);
+            result.setMsg("initCode不正确");
+            return result;
+        }
+        return loginService.findPingAnToken(initCode) ;
+    }
 }
 
