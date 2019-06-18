@@ -409,6 +409,34 @@ public class OrderServiceImpl implements OrderService {
         return jsonArray;
     }
 
+    @Override
+    public List<Order> findTradeNo(String tradeNo) {
+        return mapper.selectByTradeNo(tradeNo);
+    }
+
+    @Override
+    public List<Order> findOutTradeNo(String outTradeNo) {
+        return mapper.selectByOutTradeNo(outTradeNo);
+    }
+
+    @Override
+    public List<Order> findByOutTradeNoAndPaymentNo(String outTradeNo, String paymentNo) {
+        Order order = new Order();
+        order.setOutTradeNo(outTradeNo);
+        order.setPaymentNo(paymentNo);
+        return mapper.selectByOutTradeNoAndPaymentNo(order);
+    }
+
+    @Override
+    public Integer updatePaymentNo(Order order) {
+        return mapper.updatePaymentNo(order);
+    }
+
+    @Override
+    public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
+        return mapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+    }
+
     private AoyiProdIndex findProduct(String skuId) {
         OperaResult result = productService.find(skuId);
         if (result.getCode() == 200) {

@@ -1,6 +1,8 @@
 package com.fengchao.sso.service.impl;
 
 import com.fengchao.sso.bean.UserBean;
+import com.fengchao.sso.feign.PinganClientService;
+import com.fengchao.sso.util.OperaResult;
 import com.github.pagehelper.PageHelper;
 import com.fengchao.sso.mapper.UserMapper;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
@@ -23,6 +25,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private LoginCustomMapper loginCustomMapper;
+
+    @Autowired
+    private PinganClientService pinganClientService;
 
     public User selectById(String id) {
         return mapper.selectByPrimaryKey(id);
@@ -79,6 +84,11 @@ public class UserServiceImpl implements IUserService {
         user.setId(bean.getId());
         user.setStatus(bean.getStatus());
         return mapper.updateByPrimaryKey(user);
+    }
+
+    @Override
+    public OperaResult findPingAnUser(String userToken) {
+        return pinganClientService.findUser(userToken);
     }
 
 }

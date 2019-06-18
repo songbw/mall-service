@@ -2,6 +2,7 @@ package com.fengchao.sso.service.impl;
 
 import com.fengchao.sso.bean.LoginBean;
 import com.fengchao.sso.bean.ThirdLoginBean;
+import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.mapper.LoginMapper;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
 import com.fengchao.sso.mapper.TokenMapper;
@@ -10,6 +11,7 @@ import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.Token;
 import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.ILoginService;
+import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ public class LoginServiceImpl implements ILoginService {
 
     @Autowired
     private TokenMapper tokenMapper;
+
+    @Autowired
+    private PinganClientService pinganClientService;
 
 
     @Override
@@ -93,6 +98,11 @@ public class LoginServiceImpl implements ILoginService {
         }
         RedisUtil.putRedis("User:" + token, loginBean.getOpenId(), RedisUtil.appexpire);
         return tokenBean;
+    }
+
+    @Override
+    public OperaResult findPingAnToken(String initCode) {
+        return pinganClientService.findToken(initCode);
     }
 
 }

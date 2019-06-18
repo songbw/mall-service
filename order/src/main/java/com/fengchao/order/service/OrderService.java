@@ -37,4 +37,14 @@ public interface OrderService {
     Integer uploadLogistics(Logisticsbean bean);
 
     JSONArray getLogist(String merchantNo, String orderId) ;
+
+    List<Order> findTradeNo(String tradeNo) ;
+
+    List<Order> findOutTradeNo(String outTradeNo) ;
+
+    List<Order> findByOutTradeNoAndPaymentNo(String outTradeNo, String paymentNo) ;
+
+    Integer updatePaymentNo(Order order) ;
+
+    Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
 }

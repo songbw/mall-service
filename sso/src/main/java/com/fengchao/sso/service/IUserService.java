@@ -3,6 +3,7 @@ package com.fengchao.sso.service;
 import com.fengchao.sso.bean.UserBean;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.User;
+import com.fengchao.sso.util.OperaResult;
 
 import java.util.List;
 import java.util.Map;
@@ -25,4 +26,6 @@ public interface IUserService {
     Login selectuserById(UserBean userBean);
 
     int updateByPrimaryKey(UserBean userBean);
+
+    OperaResult findPingAnUser(String userToken) ;
 }
