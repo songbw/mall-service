@@ -121,6 +121,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
+    public List<CategoryBean> selectByCategoryIdList(List<String> categories) {
+        return mapper.selectByCategoryIdList(categories);
+    }
+
+    @Override
     public void insertSelective(CategoryBean bean) {
 
         AoyiBaseCategory category = new AoyiBaseCategory();

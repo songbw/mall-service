@@ -20,6 +20,7 @@
         <module>aggregation</module>
         <module>pingan-client</module>
         <module>sso</module>
+        <module>equity</module>
     </modules>
 
 

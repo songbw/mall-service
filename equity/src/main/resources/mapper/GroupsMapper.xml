@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.equity.mapper.GroupsMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.Groups" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="skuid" property="skuid" jdbcType="VARCHAR" />
+    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="effective_start_date" property="effectiveStartDate" jdbcType="TIMESTAMP" />
+    <result column="effective_end_date" property="effectiveEndDate" jdbcType="TIMESTAMP" />
+    <result column="group_buying_price" property="groupBuyingPrice" jdbcType="DECIMAL" />
+    <result column="group_buying_quantity" property="groupBuyingQuantity" jdbcType="VARCHAR" />
+    <result column="group_member_quantity" property="groupMemberQuantity" jdbcType="INTEGER" />
+    <result column="limited_per_member" property="limitedPerMember" jdbcType="INTEGER" />
+    <result column="payment_expiration" property="paymentExpiration" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="campaign_status" property="campaignStatus" jdbcType="INTEGER" />
+    <result column="group_total" property="groupTotal" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, skuid, image_url, created_time, effective_start_date, effective_end_date, 
+    group_buying_price, group_buying_quantity, group_member_quantity, limited_per_member, 
+    payment_expiration, description, campaign_status, group_total
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from groups
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from groups where 1=1
+    <if test="name != null" >
+      and name = #{name,jdbcType=INTEGER}
+    </if>
+    <if test="campaignStatus != null" >
+      and campaign_status = #{campaignStatus,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from groups where 1=1
+    <if test="name != null" >
+      and name = #{name,jdbcType=INTEGER}
+    </if>
+    <if test="campaignStatus != null" >
+      and campaign_status = #{campaignStatus,jdbcType=INTEGER}
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from groups
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.equity.model.Groups" >
+    insert into groups (id, name, skuid, 
+      image_url, created_time, effective_start_date, 
+      effective_end_date, group_buying_price, group_buying_quantity, 
+      group_member_quantity, limited_per_member, 
+      payment_expiration, description, campaign_status, 
+      group_total)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{skuid,jdbcType=VARCHAR}, 
+      #{imageUrl,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, #{effectiveStartDate,jdbcType=TIMESTAMP}, 
+      #{effectiveEndDate,jdbcType=TIMESTAMP}, #{groupBuyingPrice,jdbcType=DECIMAL}, #{groupBuyingQuantity,jdbcType=VARCHAR}, 
+      #{groupMemberQuantity,jdbcType=INTEGER}, #{limitedPerMember,jdbcType=INTEGER}, 
+      #{paymentExpiration,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{campaignStatus,jdbcType=INTEGER}, 
+      #{groupTotal,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.equity.model.Groups" >
+    insert into groups
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="skuid != null" >
+        skuid,
+      </if>
+      <if test="imageUrl != null" >
+        image_url,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="effectiveStartDate != null" >
+        effective_start_date,
+      </if>
+      <if test="effectiveEndDate != null" >
+        effective_end_date,
+      </if>
+      <if test="groupBuyingPrice != null" >
+        group_buying_price,
+      </if>
+      <if test="groupBuyingQuantity != null" >
+        group_buying_quantity,
+      </if>
+      <if test="groupMemberQuantity != null" >
+        group_member_quantity,
+      </if>
+      <if test="limitedPerMember != null" >
+        limited_per_member,
+      </if>
+      <if test="paymentExpiration != null" >
+        payment_expiration,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="campaignStatus != null" >
+        campaign_status,
+      </if>
+      <if test="groupTotal != null" >
+        group_total,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="skuid != null" >
+        #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null" >
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectiveStartDate != null" >
+        #{effectiveStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectiveEndDate != null" >
+        #{effectiveEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupBuyingPrice != null" >
+        #{groupBuyingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="groupBuyingQuantity != null" >
+        #{groupBuyingQuantity,jdbcType=VARCHAR},
+      </if>
+      <if test="groupMemberQuantity != null" >
+        #{groupMemberQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="limitedPerMember != null" >
+        #{limitedPerMember,jdbcType=INTEGER},
+      </if>
+      <if test="paymentExpiration != null" >
+        #{paymentExpiration,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="campaignStatus != null" >
+        #{campaignStatus,jdbcType=INTEGER},
+      </if>
+      <if test="groupTotal != null" >
+        #{groupTotal,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.Groups" >
+    update groups
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="skuid != null" >
+        skuid = #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null" >
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectiveStartDate != null" >
+        effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectiveEndDate != null" >
+        effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupBuyingPrice != null" >
+        group_buying_price = #{groupBuyingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="groupBuyingQuantity != null" >
+        group_buying_quantity = #{groupBuyingQuantity,jdbcType=VARCHAR},
+      </if>
+      <if test="groupMemberQuantity != null" >
+        group_member_quantity = #{groupMemberQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="limitedPerMember != null" >
+        limited_per_member = #{limitedPerMember,jdbcType=INTEGER},
+      </if>
+      <if test="paymentExpiration != null" >
+        payment_expiration = #{paymentExpiration,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="campaignStatus != null" >
+        campaign_status = #{campaignStatus,jdbcType=INTEGER},
+      </if>
+      <if test="groupTotal != null" >
+        group_total = #{groupTotal,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.Groups" >
+    update groups
+    set name = #{name,jdbcType=VARCHAR},
+      skuid = #{skuid,jdbcType=VARCHAR},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+      effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
+      group_buying_price = #{groupBuyingPrice,jdbcType=DECIMAL},
+      group_buying_quantity = #{groupBuyingQuantity,jdbcType=VARCHAR},
+      group_member_quantity = #{groupMemberQuantity,jdbcType=INTEGER},
+      limited_per_member = #{limitedPerMember,jdbcType=INTEGER},
+      payment_expiration = #{paymentExpiration,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      campaign_status = #{campaignStatus,jdbcType=INTEGER},
+      group_total = #{groupTotal,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

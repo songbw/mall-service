@@ -62,4 +62,11 @@ public class AdminCategoryController {
         result.getData().put("result", categorys) ;
         return result ;
     }
+
+    @PostMapping("/categoryList")
+    private OperaResult selectByCategoryIdList(@RequestBody List<String> categories, OperaResult result) {
+        List<CategoryBean> categoryBeans = service.selectByCategoryIdList(categories);
+        result.getData().put("result", categoryBeans) ;
+        return result ;
+    }
 }
