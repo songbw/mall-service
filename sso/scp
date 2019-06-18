@@ -1,1 +1,1 @@
-scp -P22140 target\sso-0.0.1-SNAPSHOT.jar smartadmin@119.3.3.226:/tmp
+scp -P22208 sso\target\sso-0.0.1-SNAPSHOT.jar smartadmin@119.3.111.161:/tmp
