@@ -1,10 +1,14 @@
 package com.fengchao.product.aoyi.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
+import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.service.ProductService;
@@ -25,8 +29,8 @@ public class ProductServiceImpl implements ProductService {
     private AoyiProdIndexMapper mapper;
     @Autowired
     private AoyiClientService aoyiClientService;
-//    @Autowired
-//    private PromotionMapper promotionMapper;
+    @Autowired
+    private EquityService equityService;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -203,9 +207,101 @@ public class ProductServiceImpl implements ProductService {
             aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
         }
         BeanUtils.copyProperties(aoyiProdIndex, infoBean);
-        List<PromotionInfoBean> promotionInfoBeans = null;
-//                promotionMapper.selectPromotionInfoBySku(aoyiProdIndex.getSkuid());
+        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getSkuid());
         infoBean.setPromotion(promotionInfoBeans);
+
+        List<CouponBean> couponBeans =  new ArrayList<>();
+//        couponMapper.selectCouponBySku(aoyiProdIndex).forEach(coupon -> {
+//            couponBeans.add(couponToBean(coupon));
+//        });
+        infoBean.setCoupon(couponBeans);
+
         return infoBean;
+    }
+
+    private CouponBean couponToBean(Coupon coupon){
+        CouponBean couponBean = new CouponBean();
+        couponBean.setId(coupon.getId());
+        couponBean.setName(coupon.getName());
+        couponBean.setSupplierMerchantId(coupon.getSupplierMerchantId());
+        couponBean.setSupplierMerchantName(coupon.getSupplierMerchantName());
+        couponBean.setReleaseTotal(coupon.getReleaseTotal());
+        couponBean.setReleaseNum(coupon.getReleaseNum());
+        couponBean.setReleaseStartDate(coupon.getReleaseStartDate());
+        couponBean.setReleaseEndDate(coupon.getReleaseEndDate());
+        couponBean.setStatus(coupon.getStatus());
+        couponBean.setEffectiveStartDate(coupon.getEffectiveStartDate());
+        couponBean.setEffectiveEndDate(coupon.getEffectiveEndDate());
+        couponBean.setDescription(coupon.getDescription());
+        couponBean.setUserCollectNum(coupon.getUserCollectNum());
+        if(coupon.getExcludeDates()!= null && !"".equals(coupon.getExcludeDates())) {
+            couponBean.setExcludeDates(JSONArray.parseArray(coupon.getExcludeDates()));
+        }
+        couponBean.setUrl(coupon.getUrl());
+        couponBean.setCreateDate(coupon.getCreateDate());
+        couponBean.setCategory(coupon.getCategory());
+        if(coupon.getTags() != null && !"".equals(coupon.getTags())){
+            String[] tagsStr = coupon.getTags().split(", ");
+            int[] tagsNum = new int[tagsStr.length];
+            for (int i = 0; i < tagsStr.length; i++) {
+                tagsNum[i] = Integer.parseInt(tagsStr[i]);
+            }
+            couponBean.setTags(tagsNum);
+        }
+        couponBean.setImageUrl(coupon.getImageUrl());
+        Rules rules = new Rules();
+        Scenario scenario = new Scenario();
+        rules.setScenario(scenario);
+        Collect collect = new Collect();
+        rules.setCollect(collect);
+        Customer customer = new Customer();
+        rules.setCustomer(customer);
+        couponBean.setRules(rules);
+        if(couponBean.getRules() != null){
+            couponBean.getRules().setCode(coupon.getCode());
+            couponBean.getRules().setRulesDescription(coupon.getRulesDescription());
+            couponBean.getRules().setPerLimited(coupon.getPerLimited());
+            if(coupon.getScopes() != null){
+                couponBean.getRules().setScopes(coupon.getScopes().split(","));
+            }
+            couponBean.getRules().getScenario().setType(coupon.getScenarioType());
+            if(coupon.getCouponSkus() != null){
+                couponBean.getRules().getScenario().setCouponSkus(coupon.getCouponSkus().split(","));
+            }
+            if(coupon.getExcludeSkus() != null){
+                couponBean.getRules().getScenario().setExcludeSkus(coupon.getExcludeSkus().split(","));
+            }
+            if(coupon.getCategories() != null){
+                couponBean.getRules().getScenario().setCategories(coupon.getCategories().split(","));
+            }
+            if(coupon.getBrands() != null){
+                couponBean.getRules().getScenario().setBrands(coupon.getBrands().split(","));
+            }
+            couponBean.getRules().getCollect().setType(coupon.getCollectType());
+            if(coupon.getPoints() != null){
+                couponBean.getRules().getCollect().setPoints(coupon.getPoints());
+            }
+            couponBean.getRules().getCustomer().setType(coupon.getCustomerType());
+            if(coupon.getUsers() != null){
+                couponBean.getRules().getCustomer().setUsers(coupon.getUsers().split(","));
+            }
+            if(coupon.getCouponRules()!= null && !"".equals(coupon.getCouponRules())) {
+                couponBean.getRules().setCouponRules(JSONArray.parseObject(coupon.getCouponRules()));
+            }
+        }
+
+        return couponBean;
+    }
+
+    private List<PromotionInfoBean> findPromotionBySku(String skuId) {
+        OperaResult result = equityService.findPromotionBySkuId(skuId);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionInfoBean> subOrderTS = JSONObject.parseArray(jsonString, PromotionInfoBean.class);
+            return subOrderTS;
+        }
+        return null;
     }
 }

@@ -47,4 +47,6 @@ public class ProductInfoBean {
     private String introductionUrlExtend;
 
     private List<PromotionInfoBean> promotion = new ArrayList<>();
+
+    private List<CouponBean> coupon = new ArrayList<>();
 }
