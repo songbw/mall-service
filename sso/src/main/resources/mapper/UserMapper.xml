@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.sso.mapper.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.sso.model.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="CHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+    <result column="portrait" property="portrait" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="login_id" property="login_id" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="head_img" property="headImg" jdbcType="VARCHAR" />
+    <result column="birth" property="birth" jdbcType="DATE" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, sex, age, idcard, login_id, portrait, open_id openId, nickname, head_img headImg, birth, telephone, created_at createdAt, updated_at updatedAt
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from s_user
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByOpenId" resultType="com.fengchao.sso.model.User">
+    select
+    <include refid="Base_Column_List" />
+    from s_user
+    where open_id = #{openId}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from s_user
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.sso.model.User" keyProperty="id" useGeneratedKeys="true">
+    insert into s_user (name, sex, age,
+      idcard, portrait)
+    values (#{name,jdbcType=VARCHAR}, #{sex,jdbcType=CHAR}, #{age,jdbcType=INTEGER},
+      #{idcard,jdbcType=VARCHAR}, #{portrait,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.sso.model.User" keyProperty="id" useGeneratedKeys="true">
+    insert into s_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="idcard != null" >
+        idcard,
+      </if>
+      <if test="portrait != null" >
+        portrait,
+      </if>
+      <if test="login_id != null" >
+        login_id,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="headImg != null" >
+        head_img,
+      </if>
+      <if test="birth != null" >
+        birth,
+      </if>
+      <if test="telephone != null" >
+        telephone,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=CHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="idcard != null" >
+        #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="portrait != null" >
+        #{portrait,jdbcType=VARCHAR},
+      </if>
+      <if test="login_id != null" >
+        #{login_id,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null" >
+        #{openId},
+      </if>
+      <if test="nickname != null" >
+        #{nickname},
+      </if>
+      <if test="headImg != null" >
+        #{headImg},
+      </if>
+      <if test="birth != null" >
+        #{birth},
+      </if>
+      <if test="telephone != null" >
+        #{telephone},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.sso.model.User" keyProperty="id" useGeneratedKeys="true">
+    update s_user
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=CHAR},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="idcard != null" >
+        idcard = #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="portrait != null" >
+        portrait = #{portrait,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        nickname = #{nickname},
+      </if>
+      <if test="headImg != null" >
+        head_img = #{headImg},
+      </if>
+      <if test="birth != null" >
+        birth = #{birth},
+      </if>
+      <if test="telephone != null" >
+        telephone = #{telephone},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.sso.model.User" keyProperty="id" useGeneratedKeys="true">
+    update s_user
+    set name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=CHAR},
+      age = #{age,jdbcType=INTEGER},
+      idcard = #{idcard,jdbcType=VARCHAR},
+      portrait = #{portrait,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByUsername" parameterType="com.fengchao.sso.bean.UserBean" keyProperty="id" useGeneratedKeys="true">
+    update s_user
+    set name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=CHAR},
+      age = #{age,jdbcType=INTEGER},
+      idcard = #{idcard,jdbcType=VARCHAR},
+      portrait = #{portrait,jdbcType=VARCHAR}
+    where login_id = (select id FROM s_login where username = #{username,jdbcType=VARCHAR})
+  </update>
+
+</mapper>

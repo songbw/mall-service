@@ -18,6 +18,8 @@
         <module>order</module>
         <module>base-mall</module>
         <module>aggregation</module>
+        <module>pingan-client</module>
+        <module>sso</module>
     </modules>
 
 

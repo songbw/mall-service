@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.sso.mapper.TokenMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.sso.model.Token" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="token" property="token" jdbcType="VARCHAR" />
+    <result column="expire_date" property="expireDate" jdbcType="INTEGER" />
+    <result column="third_token" property="thirdToken" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, open_id, token, expire_date, third_token, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from token
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByOpenId" resultType="com.fengchao.sso.model.Token">
+    select
+    <include refid="Base_Column_List" />
+    from token
+    where open_id = #{openId}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from token
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.sso.model.Token" keyProperty="id" useGeneratedKeys="true">
+    insert into token (open_id, token,
+      expire_date, third_token, created_at, 
+      updated_at)
+    values (#{openId,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR},
+      #{expireDate,jdbcType=INTEGER}, #{thirdToken,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.sso.model.Token" keyProperty="id" useGeneratedKeys="true">
+    insert into token
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="token != null" >
+        token,
+      </if>
+      <if test="expireDate != null" >
+        expire_date,
+      </if>
+      <if test="thirdToken != null" >
+        third_token,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null" >
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="expireDate != null" >
+        #{expireDate,jdbcType=INTEGER},
+      </if>
+      <if test="thirdToken != null" >
+        #{thirdToken,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.sso.model.Token" keyProperty="id" useGeneratedKeys="true">
+    update token
+    <set >
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null" >
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="expireDate != null" >
+        expire_date = #{expireDate,jdbcType=INTEGER},
+      </if>
+      <if test="thirdToken != null" >
+        third_token = #{thirdToken,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.sso.model.Token" keyProperty="id" useGeneratedKeys="true">
+    update token
+    set open_id = #{openId,jdbcType=VARCHAR},
+      token = #{token,jdbcType=VARCHAR},
+      expire_date = #{expireDate,jdbcType=INTEGER},
+      third_token = #{thirdToken,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
