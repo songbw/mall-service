@@ -21,7 +21,8 @@ import java.security.cert.X509Certificate;
 
 public class HttpClient {
 
-    private static final String AOYI_BASE_URL = "https://i.aoyi365.com/rest" ;
+//    private static final String AOYI_BASE_URL = "https://i.aoyi365.com/rest" ;
+    private static final String AOYI_BASE_URL = "https://openapi.aoyi365.com/api/rest" ;
 
 //    private static final String AOYI_BASE_URL= "http://aoyitest.aoyi365.com/rest" ;
 

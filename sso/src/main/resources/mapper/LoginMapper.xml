@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.sso.mapper.LoginMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.sso.model.Login" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="logintime" property="logintime" jdbcType="TIMESTAMP" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="locked" property="locked" jdbcType="INTEGER" />
+    <result column="loginnum" property="loginnum" jdbcType="INTEGER" />
+    <result column="creatdate" property="creatdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, username, password, logintime, ip, locked, loginnum, creatdate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from s_login
+    where username = #{username}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from s_login
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.sso.model.Login" >
+    insert into s_login (id, username, password, 
+      logintime, ip, locked, 
+      loginnum, creatdate)
+    values (#{id}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{logintime,jdbcType=TIMESTAMP}, #{ip,jdbcType=VARCHAR}, #{locked,jdbcType=INTEGER}, 
+      #{loginnum,jdbcType=INTEGER}, #{creatdate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.sso.model.Login" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into s_login
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="logintime != null" >
+        logintime,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="locked != null" >
+        locked,
+      </if>
+      <if test="loginnum != null" >
+        loginnum,
+      </if>
+      <if test="creatdate != null" >
+        creatdate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="logintime != null" >
+        #{logintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="locked != null" >
+        #{locked,jdbcType=INTEGER},
+      </if>
+      <if test="loginnum != null" >
+        #{loginnum,jdbcType=INTEGER},
+      </if>
+      <if test="creatdate != null" >
+        #{creatdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.sso.model.Login" >
+    update s_login
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="logintime != null" >
+        logintime = #{logintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="locked != null" >
+        locked = #{locked,jdbcType=INTEGER},
+      </if>
+      <if test="loginnum != null" >
+        loginnum = #{loginnum,jdbcType=INTEGER},
+      </if>
+      <if test="creatdate != null" >
+        creatdate = #{creatdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.sso.model.Login" >
+    update s_login
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      logintime = #{logintime,jdbcType=TIMESTAMP},
+      ip = #{ip,jdbcType=VARCHAR},
+      locked = #{locked,jdbcType=INTEGER},
+      loginnum = #{loginnum,jdbcType=INTEGER},
+      creatdate = #{creatdate,jdbcType=TIMESTAMP}
+    where id = #{id}
+  </update>
+  <update id="updatePassword">
+    update s_login
+    set password = #{password,jdbcType=VARCHAR}
+    where username = #{username}
+  </update>
+</mapper>

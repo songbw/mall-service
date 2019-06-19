@@ -112,4 +112,34 @@ public class OrderController {
         return result;
     }
 
+    @GetMapping("/tradeNo")
+    private OperaResult findOrderListByTradeNo(String tradeNo, OperaResult result) {
+        result.getData().put("result", service.findTradeNo(tradeNo)) ;
+        return result;
+    }
+
+    @GetMapping("/outTradeNo")
+    private OperaResult findOrderListByOutTradeNo(String outTradeNo, OperaResult result) {
+        result.getData().put("result", service.findOutTradeNo(outTradeNo)) ;
+        return result;
+    }
+
+    @GetMapping("/outTradeNo/payment")
+    private OperaResult findByOutTradeNoAndPaymentNo(String outTradeNo, String paymentNo, OperaResult result) {
+        result.getData().put("result", service.findByOutTradeNoAndPaymentNo(outTradeNo, paymentNo)) ;
+        return result;
+    }
+
+    @PutMapping("/payment")
+    private OperaResult payment(@RequestBody Order order, OperaResult result) {
+        result.getData().put("result", service.updatePaymentNo(order)) ;
+        return result;
+    }
+
+    @PutMapping("/outTradeNo/payment")
+    private OperaResult paymentByOutTradeNoAndPaymentNo(@RequestBody Order order, OperaResult result) {
+        result.getData().put("result", service.updatePaymentByOutTradeNoAndPaymentNo(order)) ;
+        return result;
+    }
+
 }
