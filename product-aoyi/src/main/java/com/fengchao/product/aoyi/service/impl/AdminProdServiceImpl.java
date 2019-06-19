@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.feign.AquityService;
+import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.mapper.ProdExtendMapper;
 import com.fengchao.product.aoyi.mapper.SkuCodeMapper;
@@ -33,7 +33,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private SkuCodeMapper skuCodeMapper;
     @Autowired
-    private AquityService aquityService;
+    private EquityService equityService;
 
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
@@ -205,7 +205,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                     aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
                 }
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
-                OperaResult operaResult = aquityService.find(aoyiProdIndex.getSkuid());
+                OperaResult operaResult = equityService.findPromotionBySkuId(aoyiProdIndex.getSkuid());
                 Object object = operaResult.getData().get("result");
                 String objectString = JSON.toJSONString(object);
                 List<PromotionInfoBean> promotionList = JSONObject.parseArray(objectString, PromotionInfoBean.class);

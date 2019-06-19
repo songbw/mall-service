@@ -1,14 +1,14 @@
 package com.fengchao.product.aoyi.feign.hystric;
 
 import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.feign.AquityService;
+import com.fengchao.product.aoyi.feign.EquityService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AquityServiceH implements AquityService{
+public class EquityServiceH implements EquityService {
 
     @Override
-    public OperaResult find(String skuId) {
+    public OperaResult findPromotionBySkuId(String skuId) {
         OperaResult result = new OperaResult();
         result.setCode(404);
         result.setMsg("获取促销活动信息失败 " + skuId);
