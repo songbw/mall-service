@@ -223,8 +223,8 @@
     from aoyi_base_category
     where parent_id = #{parentId}
   </select>
-  <select id="selectByCategoryIdList" resultType="com.fengchao.product.aoyi.bean.CategoryBean" parameterType="java.util.List" >
-    select category_id categoryId, category_name categoryName
+  <select id="selectByCategoryIdList" resultType="com.fengchao.product.aoyi.bean.CategoryQueryBean" parameterType="java.util.List" >
+    select category_id id, category_name name
     from aoyi_base_category where category_id in
     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
       #{item}

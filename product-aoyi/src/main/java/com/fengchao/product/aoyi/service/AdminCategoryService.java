@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.service;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
+import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 
@@ -22,5 +23,5 @@ public interface AdminCategoryService {
 
     PageBean selectSubLevelList(Integer offset, Integer limit, Integer parentId);
 
-    List<CategoryBean> selectByCategoryIdList(List<String> categories);
+    List<CategoryQueryBean> selectByCategoryIdList(List<String> categories);
 }

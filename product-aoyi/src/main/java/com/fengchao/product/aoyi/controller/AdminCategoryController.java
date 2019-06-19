@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
+import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
@@ -65,7 +66,7 @@ public class AdminCategoryController {
 
     @PostMapping("/categoryList")
     private OperaResult selectByCategoryIdList(@RequestBody List<String> categories, OperaResult result) {
-        List<CategoryBean> categoryBeans = service.selectByCategoryIdList(categories);
+        List<CategoryQueryBean> categoryBeans = service.selectByCategoryIdList(categories);
         result.getData().put("result", categoryBeans) ;
         return result ;
     }
