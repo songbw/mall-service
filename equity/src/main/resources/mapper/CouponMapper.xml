@@ -152,7 +152,7 @@
   <select id="selectTags" resultType="java.lang.String" >
     select distinct tags from coupon where tags != ""
   </select>
-  <select id="selectCouponBySku" resultMap="BaseResultMap" >
+  <select id="selectCouponBySku" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.PageBean">
     select
     <include refid="Base_Column_List" />
     from coupon

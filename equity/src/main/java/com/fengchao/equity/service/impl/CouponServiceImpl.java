@@ -165,6 +165,15 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    public List<CouponBean> selectCouponBySku(AoyiProdBean bean) {
+        List<CouponBean> couponBeans =  new ArrayList<>();
+        mapper.selectCouponBySku(bean).forEach(coupon -> {
+            couponBeans.add(couponToBean(coupon));
+        });
+        return couponBeans;
+    }
+
+    @Override
     public PageBean serachCoupon(CouponSearchBean bean) {
         PageBean pageBean = new PageBean();
         int total = 0;

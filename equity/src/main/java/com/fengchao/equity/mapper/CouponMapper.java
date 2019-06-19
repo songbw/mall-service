@@ -1,5 +1,6 @@
 package com.fengchao.equity.mapper;
 
+import com.fengchao.equity.bean.AoyiProdBean;
 import com.fengchao.equity.bean.CouponResultBean;
 //import com.fengchao.equity.model.AoyiProdIndex;
 import com.fengchao.equity.model.Coupon;
@@ -34,5 +35,5 @@ public interface CouponMapper {
 
     List<String> selectTags();
 
-//    List<Coupon> selectCouponBySku(AoyiProdIndex aoyiProdIndex);
+    List<Coupon> selectCouponBySku(AoyiProdBean aoyiProdBean);
 }
