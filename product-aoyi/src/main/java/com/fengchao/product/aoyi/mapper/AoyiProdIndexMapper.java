@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.mapper;
 
+import com.fengchao.product.aoyi.bean.QueryProdBean;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 
@@ -34,4 +35,8 @@ public interface AoyiProdIndexMapper {
     int selectSearchCount(HashMap map) ;
 
     List<AoyiProdIndex> selectProdAll();
+
+    int selectSkuByCouponIdCount(QueryProdBean bean);
+
+    List<AoyiProdIndex> selectSkuByCouponIdLimit(QueryProdBean bean);
 }

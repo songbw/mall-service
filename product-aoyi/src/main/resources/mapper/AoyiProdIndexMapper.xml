@@ -404,4 +404,67 @@
     left join prod_extend e on p.skuId = e.skuId
     where 1 = 1 and p.images_url != "" and p.introduction_url != "" and p.state = 1
   </select>
+  <select id="selectSkuByCouponIdCount" resultType="java.lang.Integer" parameterType="com.fengchao.product.aoyi.bean.QueryProdBean">
+    select
+    count(id)
+    from aoyi_prod_index
+    where state = 1
+    <if test="couponSkus !=null and couponSkus.size > 0">
+      and skuId in
+      <foreach collection="couponSkus" index="index" item="item1" open="(" separator="," close=")">
+        #{item1}
+      </foreach>
+    </if>
+    <if test="excludeSkus !=null and excludeSkus.size > 0">
+      and skuId not in
+      <foreach collection="excludeSkus" index="index" item="item2" open="(" separator="," close=")">
+        #{item2}
+      </foreach>
+    </if>
+    <if test="categories !=null and categories.size > 0">
+      and category in
+      <foreach collection="categories" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+    <if test="brands !=null and brands.size > 0">
+      and brand in
+      <foreach collection="brands" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+  </select>
+  <select id="selectSkuByCouponIdLimit" resultMap="BaseResultMap" parameterType="com.fengchao.product.aoyi.bean.QueryProdBean">
+    select
+    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend
+    from aoyi_prod_index p
+    left join prod_extend e on p.skuId = e.skuId
+    where state = 1
+    <if test="couponSkus !=null">
+      and p.skuId in
+      <foreach collection="couponSkus" index="index" item="item1" open="(" separator="," close=")">
+        #{item1}
+      </foreach>
+    </if>
+    <if test="excludeSkus !=null">
+      and p.skuId not in
+      <foreach collection="excludeSkus" index="index" item="item2" open="(" separator="," close=")">
+        #{item2}
+      </foreach>
+    </if>
+    <if test="categories !=null">
+      and p.category in
+      <foreach collection="categories" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+    <if test="brands !=null">
+      and brand in
+      <foreach collection="brands" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
 </mapper>
