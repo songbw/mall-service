@@ -1,13 +1,8 @@
 package com.fengchao.product.aoyi.feign;
 
 import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.bean.QueryCarriage;
-import com.fengchao.product.aoyi.bean.QueryCityPrice;
-import com.fengchao.product.aoyi.bean.QueryInventory;
-import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
 import com.fengchao.product.aoyi.feign.hystric.EquityServiceH;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;

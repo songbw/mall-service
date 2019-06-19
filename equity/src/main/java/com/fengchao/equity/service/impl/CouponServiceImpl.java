@@ -5,13 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
-import com.fengchao.equity.feign.ProductService;
+import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.*;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponService;
-import com.fengchao.equity.utils.CosUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     private CouponTagsMapper tagsMapper;
     @Autowired
-    private ProductService productService;
+    private ProdService productService;
 
     @Override
     public int createCoupon(CouponBean bean) {
@@ -114,7 +113,7 @@ public class CouponServiceImpl implements CouponService {
         List<String> tags = mapper.selectTags();
         List<CouponTags> tagList = tagsMapper.selectTags(tags);
         List<String> categories = mapper.selectActiveCategories();
-        System.out.println(categories);
+
         OperaResult result = productService.findCategoryList(categories);
         Object object = result.getData().get("result");
         String objectString = JSON.toJSONString(object);
@@ -150,8 +149,7 @@ public class CouponServiceImpl implements CouponService {
         Object object = operaResult.getData().get("result");
         String objectString = JSON.toJSONString(object);
         PageBean pageBean = JSONObject.parseObject(objectString, PageBean.class);
-
-        couponBean.setCouponSkus(null);
+        couponBean.setCouponSkus(pageBean);
         return couponBean;
     }
 

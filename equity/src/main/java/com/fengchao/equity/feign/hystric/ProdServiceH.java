@@ -2,13 +2,13 @@ package com.fengchao.equity.feign.hystric;
 
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.QueryProdBean;
-import com.fengchao.equity.feign.ProductService;
+import com.fengchao.equity.feign.ProdService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class ProductServiceH implements ProductService {
+public class ProdServiceH implements ProdService {
     @Override
     public OperaResult findCategoryList( List<String> categories) {
         OperaResult result = new OperaResult();
