@@ -171,12 +171,18 @@ public class OrderServiceImpl implements OrderService {
             throw new Exception(e.getMessage());
         }
         OrderCouponBean coupon = orderBean.getCoupon();
-        List<OrderCouponMerchantBean> orderCouponMerchants = coupon.getMerchants();
+        List<OrderCouponMerchantBean> orderCouponMerchants = null;
+        if (coupon != null) {
+            orderCouponMerchants = coupon.getMerchants();
+        }
+
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
-            for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
-                if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
-                    bean.setCouponId(coupon.getId());
+            if (orderCouponMerchants !=null && orderCouponMerchants.size() > 0) {
+                for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
+                    if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
+                        bean.setCouponId(coupon.getId());
+                    }
                 }
             }
             for (SubOrderT subOrder : subOrders) {
