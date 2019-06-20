@@ -5,13 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
-import com.fengchao.equity.feign.ProductService;
+import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.*;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponService;
-import com.fengchao.equity.utils.CosUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +27,7 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     private CouponTagsMapper tagsMapper;
     @Autowired
-    private ProductService productService;
-//    @Autowired
-//    private AoyiBaseCategoryMapper categoryMapper;
-//    @Autowired
-//    private AoyiProdIndexMapper prodIndexMapper;
+    private ProdService productService;
 
     @Override
     public int createCoupon(CouponBean bean) {
@@ -131,53 +126,29 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public CouponBean selectSkuByCouponId(CouponUseInfoBean bean) {
+        QueryProdBean queryProdBean = new QueryProdBean();
         Coupon coupon = mapper.selectByPrimaryKey(bean.getId());
         if(coupon == null){
             return null;
         }
         CouponBean couponBean = couponToBean(coupon);
-        PageBean pageBean = new PageBean();
-        int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
-        HashMap map = new HashMap();
-        map.put("pageNo", pageNo);
-        map.put("pageSize",bean.getLimit());
+        queryProdBean.setOffset(bean.getOffset());
+        queryProdBean.setPageNo(pageNo);
+        queryProdBean.setPageSize(bean.getLimit());
         if(coupon.getScenarioType() == 1){
-            map.put("couponSkus",Arrays.asList(coupon.getCouponSkus().split(",")));
+            queryProdBean.setCouponSkus(Arrays.asList(coupon.getCouponSkus().split(",")));
         }else if(coupon.getScenarioType() == 2){
-            map.put("excludeSkus",coupon.getExcludeSkus());
+            queryProdBean.setExcludeSkus(coupon.getExcludeSkus());
         }else if(coupon.getScenarioType() == 3){
-            map.put("excludeSkus",coupon.getExcludeSkus());
-            map.put("categories",coupon.getCategories());
+            queryProdBean.setExcludeSkus(coupon.getExcludeSkus());
+            queryProdBean.setCategories(coupon.getCategories());
 //            map.put("brands",coupon.getBrands());
         }
-//        List<AoyiProdIndex> prodIndices = new ArrayList<>();
-//        total = prodIndexMapper.selectSkuByCouponIdCount(map);
-//        if (total > 0) {
-//           prodIndexMapper.selectSkuByCouponIdLimit(map).forEach(aoyiProdIndex -> {
-//               String imageUrl = aoyiProdIndex.getImagesUrl();
-//               if (imageUrl != null && (!"".equals(imageUrl))) {
-//                   String image = "";
-//                   if (imageUrl.indexOf("/") == 0) {
-//                       image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-//                   } else {
-//                       image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-//                   }
-//                   aoyiProdIndex.setImage(image);
-//               }
-//               if (aoyiProdIndex.getImageExtend() != null) {
-//                   aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
-//               }
-//               if (aoyiProdIndex.getImagesUrlExtend() != null) {
-//                   aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
-//               }
-//               if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
-//                   aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
-//               }
-//               prodIndices.add(aoyiProdIndex);
-//            });
-//        }
-//        pageBean = PageBean.build(pageBean, prodIndices, total, bean.getOffset(), bean.getLimit());
+        OperaResult operaResult = productService.findProdList(queryProdBean);
+        Object object = operaResult.getData().get("result");
+        String objectString = JSON.toJSONString(object);
+        PageBean pageBean = JSONObject.parseObject(objectString, PageBean.class);
         couponBean.setCouponSkus(pageBean);
         return couponBean;
     }
@@ -191,6 +162,15 @@ public class CouponServiceImpl implements CouponService {
         useInfoMapper.updateStatusByUserCode(bean.getUserCouponCode());
         Coupon coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         return coupon;
+    }
+
+    @Override
+    public List<CouponBean> selectCouponBySku(AoyiProdBean bean) {
+        List<CouponBean> couponBeans =  new ArrayList<>();
+        mapper.selectCouponBySku(bean).forEach(coupon -> {
+            couponBeans.add(couponToBean(coupon));
+        });
+        return couponBeans;
     }
 
     @Override

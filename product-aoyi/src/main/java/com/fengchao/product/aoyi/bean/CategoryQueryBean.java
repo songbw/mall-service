@@ -1,9 +1,9 @@
-package com.fengchao.equity.bean;
+package com.fengchao.product.aoyi.bean;
 
 import lombok.Data;
 
 @Data
-public class Category {
+public class CategoryQueryBean {
     private Integer id;
     private String name;
 }

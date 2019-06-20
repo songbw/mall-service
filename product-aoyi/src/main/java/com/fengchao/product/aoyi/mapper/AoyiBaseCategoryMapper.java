@@ -1,6 +1,6 @@
 package com.fengchao.product.aoyi.mapper;
 
-import com.fengchao.product.aoyi.bean.CategoryBean;
+import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 
 import java.util.HashMap;
@@ -33,5 +33,5 @@ public interface AoyiBaseCategoryMapper {
 
     List<AoyiBaseCategory> selectAdminListByParentId(Integer parentId);
 
-    List<CategoryBean> selectByCategoryIdList(List<String> list);
+    List<CategoryQueryBean> selectByCategoryIdList(List<String> list);
 }

@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
+import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryMapper;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
@@ -121,7 +122,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public List<CategoryBean> selectByCategoryIdList(List<String> categories) {
+    public List<CategoryQueryBean> selectByCategoryIdList(List<String> categories) {
         return mapper.selectByCategoryIdList(categories);
     }
 

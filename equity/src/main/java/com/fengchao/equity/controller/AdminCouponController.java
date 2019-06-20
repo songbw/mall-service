@@ -1,16 +1,14 @@
 package com.fengchao.equity.controller;
 
-import com.fengchao.equity.bean.PageBean;
-import com.fengchao.equity.bean.CouponBean;
-import com.fengchao.equity.bean.CouponSearchBean;
-import com.fengchao.equity.bean.CouponUseInfoBean;
+import com.fengchao.equity.bean.*;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
-import com.fengchao.equity.bean.OperaResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/adminCoupon", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -123,4 +121,11 @@ public class AdminCouponController {
         return result;
     }
 
+
+    @PostMapping("findBySku")
+    public OperaResult selectCouponBySku(@RequestBody AoyiProdBean bean, OperaResult result){
+        List<CouponBean> couponBeans = couponService.selectCouponBySku(bean);
+        result.getData().put("result",couponBeans);
+        return result;
+    }
 }

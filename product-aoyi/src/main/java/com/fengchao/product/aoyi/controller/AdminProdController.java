@@ -1,7 +1,10 @@
 package com.fengchao.product.aoyi.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PageBean;
+import com.fengchao.product.aoyi.bean.QueryProdBean;
 import com.fengchao.product.aoyi.bean.SerachBean;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
@@ -9,6 +12,9 @@ import com.fengchao.product.aoyi.service.AdminProdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/adminProd", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -59,6 +65,13 @@ public class AdminProdController {
     public OperaResult getProdListToRedis(OperaResult result) {
         int prodList = prodService.getProdListToRedis();
         result.getData().put("result", prodList);
+        return result;
+    }
+
+    @PostMapping("prodAll")
+    public OperaResult findProdAll(@RequestBody QueryProdBean bean, OperaResult result) {
+        PageBean pageBean = prodService.findProdAll(bean);
+        result.getData().put("result", pageBean);
         return result;
     }
 }
