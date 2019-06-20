@@ -26,6 +26,8 @@ public class OrderDetail {
 
     private Integer status;
 
+    private Integer promotionId;
+
     private Date createdAt;
 
     private Date updatedAt;
@@ -92,6 +94,14 @@ public class OrderDetail {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getPromotionId() {
+        return promotionId;
+    }
+
+    public void setPromotionId(Integer promotionId) {
+        this.promotionId = promotionId;
     }
 
     public Date getCreatedAt() {

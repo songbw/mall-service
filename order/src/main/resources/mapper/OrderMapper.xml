@@ -8,6 +8,8 @@
     <result column="aoyi_id" property="aoyiId" jdbcType="VARCHAR" />
     <result column="company_cust_no" property="companyCustNo" jdbcType="VARCHAR" />
     <result column="merchant_no" property="merchantNo" jdbcType="VARCHAR" />
+    <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
+    <result column="coupon_id" property="couponId" jdbcType="INTEGER" />
     <result column="receiver_name" property="receiverName" jdbcType="VARCHAR" />
     <result column="telephone" property="telephone" jdbcType="VARCHAR" />
     <result column="mobile" property="mobile" jdbcType="VARCHAR" />
@@ -29,6 +31,7 @@
     <result column="payment" property="payment" jdbcType="VARCHAR" />
     <result column="serv_Fee" property="servFee" jdbcType="REAL" />
     <result column="amount" property="amount" jdbcType="REAL" />
+    <result column="sale_amount" property="saleAmount" jdbcType="REAL" />
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
@@ -49,7 +52,7 @@
     id, open_id, trade_no, aoyi_id, company_cust_no,merchant_no, receiver_name, telephone, mobile,
     email, province_id, province_name, city_id, city_name, county_id, county_name, town_id, address, zip, remark, invoice_state,
     invoice_type, invoice_title, invoice_content, payment, serv_Fee, amount, status, 
-    type,out_trade_no, payment_no, payment_at, payment_amount, payee, refund_fee, pay_type, payment_total_fee, payer, pay_status, pay_order_category, created_at, updated_at
+    type,out_trade_no, payment_no, payment_at, payment_amount, payee, refund_fee, pay_type, payment_total_fee, payer, pay_status, pay_order_category, created_at, updated_at, coupon_id couponId, sale_amount saleAmount
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 

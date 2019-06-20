@@ -170,8 +170,15 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+        OrderCouponBean coupon = orderBean.getCoupon();
+        List<OrderCouponMerchantBean> orderCouponMerchants = coupon.getMerchants();
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+            for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
+                if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
+                    bean.setCouponId(coupon.getId());
+                }
+            }
             for (SubOrderT subOrder : subOrders) {
                 if (subOrder.getOrderNo().contains(orderMerchantBean.getTradeNo())) {
                     subOrder.setMerchantNo(orderMerchantBean.getMerchantNo());
@@ -204,7 +211,9 @@ public class OrderServiceImpl implements OrderService {
                         orderDetail.setSkuId(sku.getSkuId());
                         orderDetail.setSubOrderId(sku.getSubOrderNo());
                         orderDetail.setUnitPrice(new BigDecimal(sku.getUnitPrice()));
+                        orderDetail.setSalePrice(new BigDecimal(sku.getSalePrice()));
                         orderDetail.setNum(Integer.parseInt(sku.getNum()));
+                        orderDetail.setPromotionId(sku.getPromotionId());
                         orderDetailMapper.insert(orderDetail) ;
                         // 删除购物车
                         ShoppingCart shoppingCart = new ShoppingCart();

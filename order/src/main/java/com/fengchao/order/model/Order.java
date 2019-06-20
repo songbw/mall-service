@@ -58,6 +58,8 @@ public class Order {
 
     private Float amount;
 
+    private Float saleAmount;
+
     private Integer status;
 
     private Integer type;
@@ -91,6 +93,7 @@ public class Order {
     private String merchantNo;
 
     private Integer merchantId;
+    private Integer couponId;
 
     private List<OrderDetail> skus;
 
@@ -452,5 +455,21 @@ public class Order {
 
     public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public Float getSaleAmount() {
+        return saleAmount;
+    }
+
+    public void setSaleAmount(Float saleAmount) {
+        this.saleAmount = saleAmount;
+    }
+
+    public Integer getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Integer couponId) {
+        this.couponId = couponId;
     }
 }

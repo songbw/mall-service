@@ -19,8 +19,7 @@ public class OrderParamBean implements Serializable {
     private String invoiceTitleName;//企业名称
     private String invoiceEnterpriseNumber;//企业纳税号
 
-    private List<OrderPromotionBean> promotions = new ArrayList<>();  // 订单活动列表
-    private List<OrderCouponBean> coupons = new ArrayList<>();
+    private OrderCouponBean coupon ;      //订单优惠券
 
     private String tradeNo;
     private String receiverName;
