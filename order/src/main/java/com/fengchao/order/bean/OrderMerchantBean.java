@@ -19,6 +19,7 @@ public class OrderMerchantBean implements Serializable {
     private String payment;
     private Float servFee;
     private Float amount;
+    private Float saleAmount;
     private Integer status;
     private Integer type;
     private String merchantNo;

@@ -3,6 +3,7 @@ package com.fengchao.order.bean;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,6 +18,9 @@ public class OrderParamBean implements Serializable {
     private String invoiceType; //电子普票
     private String invoiceTitleName;//企业名称
     private String invoiceEnterpriseNumber;//企业纳税号
+
+    private List<OrderPromotionBean> promotions = new ArrayList<>();  // 订单活动列表
+    private List<OrderCouponBean> coupons = new ArrayList<>();
 
     private String tradeNo;
     private String receiverName;

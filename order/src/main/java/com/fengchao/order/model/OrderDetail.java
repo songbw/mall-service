@@ -16,6 +16,8 @@ public class OrderDetail {
 
     private BigDecimal unitPrice;
 
+    private BigDecimal salePrice;
+
     private String image;
 
     private String name;
@@ -74,6 +76,14 @@ public class OrderDetail {
 
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(BigDecimal salePrice) {
+        this.salePrice = salePrice;
     }
 
     public Integer getStatus() {

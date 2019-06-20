@@ -13,6 +13,8 @@ import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
+    private static Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
     private AoyiProdIndexMapper mapper;
@@ -217,6 +221,7 @@ public class ProductServiceImpl implements ProductService {
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndex bean) {
         OperaResult result = equityService.selectCouponBySku(bean);
+        logger.info(JSON.toJSONString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");

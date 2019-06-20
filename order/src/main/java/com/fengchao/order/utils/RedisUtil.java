@@ -2,6 +2,9 @@ package com.fengchao.order.utils;
 
 
 //import org.apache.log4j.Logger;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fengchao.order.bean.OrderParamBean;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -192,6 +195,17 @@ public class RedisUtil {
 		}finally{
 			returnResource(pool, jedis);
 		}
+	}
+
+	public static void main(String args[]) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String msg = "";
+		try {
+			msg = objectMapper.writeValueAsString(new OrderParamBean());
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		System.out.println(msg);
 	}
 
 }
