@@ -114,4 +114,10 @@ public class CouponController {
         }
         return result;
     }
+
+    @GetMapping("findById")
+    public OperaResult findById(CouponUseInfoBean bean, OperaResult result){
+        result.getData().put("result", useInfoService.findById(bean));
+        return result;
+    }
 }

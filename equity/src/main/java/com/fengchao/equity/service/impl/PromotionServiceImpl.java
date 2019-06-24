@@ -123,7 +123,7 @@ public class PromotionServiceImpl implements PromotionService {
     public Promotion findPromotionToUser(Integer id, Boolean detail) {
 
         Promotion promotion = mapper.selectByPrimaryKey(id);
-        if(detail == true){
+        if(detail != null && detail == true){
             promotion.setPromotionSkus(promotionSkuMapper.selectByPrimarySku(promotion.getId()));
         }
         return promotion;

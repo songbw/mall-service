@@ -1,6 +1,7 @@
 package com.fengchao.equity.service.impl;
 
 import com.fengchao.equity.bean.PageBean;
+import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.mapper.CouponTagsMapper;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.service.CouponTagsService;
@@ -19,12 +20,12 @@ public class CouponTagsServiceImpl implements CouponTagsService {
 
 
     @Override
-    public int createTags(CouponTags bean) {
+    public int createTags(CouponTags bean) throws EquityException {
         return mapper.insertSelective(bean);
     }
 
     @Override
-    public PageBean findTags(Integer offset, Integer limit) {
+    public PageBean findTags(Integer offset, Integer limit) throws EquityException {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
@@ -41,12 +42,12 @@ public class CouponTagsServiceImpl implements CouponTagsService {
     }
 
     @Override
-    public int updateTags(CouponTags bean) {
+    public int updateTags(CouponTags bean) throws EquityException {
         return mapper.updateByPrimaryKeySelective(bean);
     }
 
     @Override
-    public int deleteTags(Integer id) {
+    public int deleteTags(Integer id) throws EquityException {
         return mapper.deleteByPrimaryKey(id);
     }
 }

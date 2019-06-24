@@ -1,6 +1,7 @@
 package com.fengchao.aggregation.service.impl;
 
 import com.fengchao.aggregation.bean.PageBean;
+import com.fengchao.aggregation.exception.AggregationException;
 import com.fengchao.aggregation.mapper.AggregationGroupMapper;
 import com.fengchao.aggregation.mapper.AggregationMapper;
 import com.fengchao.aggregation.model.Aggregation;
@@ -27,7 +28,7 @@ public class AggregationGroupServiceImpl implements AggregationGroupService {
     }
 
     @Override
-    public PageBean findGroup(Integer offset, Integer limit) {
+    public PageBean findGroup(Integer offset, Integer limit) throws AggregationException {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
@@ -44,12 +45,12 @@ public class AggregationGroupServiceImpl implements AggregationGroupService {
     }
 
     @Override
-    public int updateGroup(AggregationGroup bean) {
+    public int updateGroup(AggregationGroup bean) throws AggregationException  {
         return mapper.updateByPrimaryKeySelective(bean);
     }
 
     @Override
-    public int deleteGroup(Integer id) {
+    public int deleteGroup(Integer id) throws AggregationException {
         int num = 0;
         List<Aggregation> aggregations = aggregationMapper.selectByGroupId(id);
         if(aggregations.isEmpty()){

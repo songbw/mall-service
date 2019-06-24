@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.aggregation.bean.AggregationBean;
 import com.fengchao.aggregation.bean.PageBean;
+import com.fengchao.aggregation.exception.AggregationException;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.service.AggregationService;
@@ -25,7 +26,7 @@ public class AggregationServiceImpl implements AggregationService {
 
 
     @Override
-    public PageBean findAggregation(Integer offset, Integer limit, String order) {
+    public PageBean findAggregation(Integer offset, Integer limit, String order) throws AggregationException {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
@@ -43,7 +44,7 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public int createAggregation(Aggregation bean) {
+    public int createAggregation(Aggregation bean) throws AggregationException {
         if(bean.getStatus() != null && bean.getStatus() == 1 && bean.getHomePage()){
             mapper.updateStatus();
         }
@@ -51,7 +52,7 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public Aggregation findAggregationById(Integer id) {
+    public Aggregation findAggregationById(Integer id) throws AggregationException {
         Aggregation aggregation = mapper.selectByPrimaryKey(id);
         JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
         if(AggregationArray == null || AggregationArray.size() < 1 ){
@@ -97,7 +98,7 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public int updateAggregation(Aggregation bean) {
+    public int updateAggregation(Aggregation bean) throws AggregationException{
         Aggregation aggregation = mapper.selectByPrimaryKey(bean.getId());
         if(((bean.getHomePage() != null && !bean.getHomePage()) || (bean.getStatus() != null && bean.getStatus() != 1))
                 && aggregation.getHomePage() && aggregation.getStatus() == 1){
@@ -111,7 +112,7 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public int updateContent(Aggregation bean) {
+    public int updateContent(Aggregation bean) throws AggregationException{
         AggregationSku aggregationSku = new AggregationSku();
         JSONArray AggregationArray = JSONObject.parseArray(bean.getContent());
         for (int i = 0; i < AggregationArray.size(); i++) {
@@ -141,12 +142,12 @@ public class AggregationServiceImpl implements AggregationService {
         }
 
     @Override
-    public int deleteAggregation(Integer id) {
+    public int deleteAggregation(Integer id) throws AggregationException{
         return mapper.deleteByPrimaryKey(id);
     }
 
     @Override
-    public PageBean serachAggregation(AggregationBean bean) {
+    public PageBean serachAggregation(AggregationBean bean) throws AggregationException{
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
@@ -171,7 +172,7 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public Aggregation findHomePage(){
+    public Aggregation findHomePage() throws AggregationException {
         Aggregation homePage = mapper.findHomePage();
         JSONArray AggregationArray = JSONObject.parseArray(homePage.getContent());
         if(AggregationArray == null || AggregationArray.size() < 1 ){
