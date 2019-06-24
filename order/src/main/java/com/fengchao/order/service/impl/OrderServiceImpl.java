@@ -132,9 +132,11 @@ public class OrderServiceImpl implements OrderService {
                     // 添加主订单
                     mapper.insert(bean);
                     // 核销优惠券
-                    boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
-                    if (!couponConsume) {
-                        logger.info("订单" + bean.getId() + "优惠券核销失败");
+                    if (coupon != null) {
+                        boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
+                        if (!couponConsume) {
+                            logger.info("订单" + bean.getId() + "优惠券核销失败");
+                        }
                     }
                     subOrder.getAoyiSkus().forEach(sku -> {
                         AoyiProdIndex prodIndexWithBLOBs = findProduct(sku.getSkuId());
