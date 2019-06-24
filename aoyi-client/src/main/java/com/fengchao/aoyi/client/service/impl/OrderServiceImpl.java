@@ -24,6 +24,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<SubOrderT> addOrder(OrderParamBean orderBean) throws AoyiClientException {
+        ObjectMapper objectMapper1 = new ObjectMapper();
+        String msg = "";
+        try {
+            msg = objectMapper1.writeValueAsString(orderBean);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        logger.info(msg);
         OrderRequestT orderRequest = new OrderRequestT();
         orderRequest.setTradeNo(orderBean.getTradeNo());
         orderRequest.setCompanyCustNo(orderBean.getCompanyCustNo());
@@ -39,8 +47,8 @@ public class OrderServiceImpl implements OrderService {
         orderRequest.setZip(orderBean.getZip());
         orderRequest.setInvoiceState(orderBean.getInvoiceState());
         orderRequest.setInvoiceType(orderBean.getInvoiceType());
-        orderRequest.setInvoiceTitle(orderBean.getInvoiceTitle());
-        orderRequest.setInvoiceContent(orderBean.getInvoiceContent());
+        orderRequest.setInvoiceTitle(orderBean.getInvoiceTitleName());
+        orderRequest.setInvoiceContent(orderBean.getInvoiceTitleName());
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             SubOrderT subOrder = new SubOrderT();

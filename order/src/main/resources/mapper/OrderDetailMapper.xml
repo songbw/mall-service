@@ -5,12 +5,14 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="order_id" property="orderId" jdbcType="INTEGER" />
     <result column="sub_order_id" property="subOrderId" jdbcType="INTEGER" />
+    <result column="promotion_id" property="promotionId" jdbcType="INTEGER" />
     <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
     <result column="num" property="num" jdbcType="INTEGER" />
     <result column="model" property="model" jdbcType="VARCHAR" />
     <result column="image" property="image" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="unit_price" property="unitPrice" jdbcType="DECIMAL" />
+    <result column="sale_price" property="salePrice" jdbcType="DECIMAL" />
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
@@ -19,7 +21,7 @@
     <result column="comcode" property="comCode" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, order_id, sub_order_id, sku_id, num, unit_price, image, name, model, status, created_at,
+    id, order_id, sub_order_id, sku_id, promotion_id, num, unit_price, sale_price, image, name, model, status, created_at,
     updated_at, logistics_id, logistics_content
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -57,17 +59,17 @@
   </delete>
   <insert id="insert" parameterType="com.fengchao.order.model.OrderDetail" >
     insert into order_detail (order_id, sub_order_id, sku_id,
-      num, unit_price, image, name, model, status,
-      created_at, updated_at)
+      num, unit_price, sale_price, image, name, model, status,
+      created_at, updated_at, promotion_id)
     values (#{orderId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR},
-      #{num,jdbcType=INTEGER}, #{unitPrice,jdbcType=DECIMAL}, #{image,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+      #{num,jdbcType=INTEGER}, #{unitPrice,jdbcType=DECIMAL}, #{salePrice,jdbcType=DECIMAL}, #{image,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{promotionId})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.order.model.OrderDetail" >
     insert into order_detail
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="promotionId != null" >
+        promotion_id,
       </if>
       <if test="orderId != null" >
         order_id,
@@ -80,6 +82,9 @@
       </if>
       <if test="unitPrice != null" >
         unit_price,
+      </if>
+      <if test="salePrice != null" >
+        sale_price,
       </if>
       <if test="status != null" >
         status,
@@ -98,8 +103,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="promotionId != null" >
+        #{promotionId,jdbcType=INTEGER},
       </if>
       <if test="orderId != null" >
         #{orderId,jdbcType=INTEGER},
@@ -112,6 +117,9 @@
       </if>
       <if test="unitPrice != null" >
         #{unitPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="salePrice != null" >
+        #{salePrice,jdbcType=DECIMAL},
       </if>
       <if test="status != null" >
         #{status,jdbcType=INTEGER},

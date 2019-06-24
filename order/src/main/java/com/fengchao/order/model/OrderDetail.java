@@ -16,6 +16,8 @@ public class OrderDetail {
 
     private BigDecimal unitPrice;
 
+    private BigDecimal salePrice;
+
     private String image;
 
     private String name;
@@ -23,6 +25,8 @@ public class OrderDetail {
     private String model;
 
     private Integer status;
+
+    private Integer promotionId;
 
     private Date createdAt;
 
@@ -76,12 +80,28 @@ public class OrderDetail {
         this.unitPrice = unitPrice;
     }
 
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(BigDecimal salePrice) {
+        this.salePrice = salePrice;
+    }
+
     public Integer getStatus() {
         return status;
     }
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getPromotionId() {
+        return promotionId;
+    }
+
+    public void setPromotionId(Integer promotionId) {
+        this.promotionId = promotionId;
     }
 
     public Date getCreatedAt() {
