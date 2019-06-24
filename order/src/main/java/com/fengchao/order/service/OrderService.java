@@ -14,7 +14,7 @@ public interface OrderService {
 
 //    List<SubOrder> add(OrderParamBean bean) ;
 
-    List<SubOrderT> add2(OrderParamBean bean)  throws Exception ;
+    List<SubOrderT> add2(OrderParamBean bean);
 
     Integer cancel(Integer id);
 

@@ -93,7 +93,10 @@ public class Order {
     private String merchantNo;
 
     private Integer merchantId;
+
     private Integer couponId;
+
+    private String couponCode;
 
     private List<OrderDetail> skus;
 
@@ -471,5 +474,13 @@ public class Order {
 
     public void setCouponId(Integer couponId) {
         this.couponId = couponId;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
     }
 }

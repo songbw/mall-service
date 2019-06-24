@@ -27,7 +27,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
-        OperaResult result = pinganClientService.payment(paymentBean);
+        OperaResult result = new OperaResult();
         PaymentResult result1 = getPayment(paymentBean);
         if ("200".equals(result1.getReturnCode())) {
             result.getData().put("result", result1.getData());

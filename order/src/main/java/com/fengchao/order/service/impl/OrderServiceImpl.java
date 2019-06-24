@@ -3,14 +3,19 @@ package com.fengchao.order.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.AoyiClientService;
+import com.fengchao.order.feign.EquityService;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.CosUtil;
 import com.fengchao.order.utils.Kuaidi100;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +24,8 @@ import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     private OrderMapper mapper;
@@ -44,83 +51,16 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private AoyiBaseFulladdressMapper addressMapper;
 
-//    @Override
-//    public List<SubOrder> add(OrderParamBean orderBean) {
-//        Order bean = new Order();
-//        bean.setOpenId(orderBean.getOpenId());
-//        bean.setCompanyCustNo(orderBean.getCompanyCustNo());
-//        Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
-//        if (receiver != null) {
-//            receiver = handleBean(receiver);
-//            bean.setReceiverName(receiver.getReceiverName());
-//            bean.setTelephone(receiver.getTelephone());
-//            bean.setMobile(receiver.getMobile());
-//            bean.setEmail(receiver.getEmail());
-//            bean.setProvinceId(receiver.getProvinceId());
-//            bean.setCityId(receiver.getCityId());
-//            bean.setCountyId(receiver.getCountyId());
-//            bean.setTownId(receiver.getTownId());
-//            bean.setAddress(receiver.getAddress());
-//            bean.setZip(receiver.getZip());
-//            bean.setProvinceName(receiver.getProvinceName());
-//            bean.setCityName(receiver.getCityName());
-//            bean.setCountyName(receiver.getCountyName());
-//        }
-//        bean.setRemark(orderBean.getRemark());
-//        bean.setInvoiceState("1");
-//        bean.setInvoiceType("4");
-//        bean.setInvoiceTitle(orderBean.getInvoiceTitleName());
-//        bean.setTaxNo(orderBean.getInvoiceEnterpriseNumber());
-//        bean.setPayment(orderBean.getPayment());
-//        bean.setStatus(0);
-//        bean.setType(1);
-//        Date date = new Date() ;
-//        bean.setCreatedAt(date);
-//        bean.setUpdatedAt(date);
-//        List<SubOrder> subOrders =  AoyiClient.addOrder(orderBean, bean, date.getTime() + "");
-//        List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
-//        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
-//            for (SubOrder subOrder : subOrders) {
-//                if (subOrder.getOrderId().contains(orderMerchantBean.getTradeNo())) {
-//                    subOrder.setMerchantNo(orderMerchantBean.getMerchantNo());
-//                    bean.setMerchantNo(orderMerchantBean.getMerchantNo());
-//                    bean.setTradeNo(subOrder.getOrderId());
-//                    bean.setServFee(orderMerchantBean.getServFee());
-//                    bean.setAmount(orderMerchantBean.getAmount());
-//                    bean.setSkus(orderMerchantBean.getSkus());
-//                    mapper.insert(bean);
-//                    subOrder.getSkus().forEach(sku -> {
-//                        AoyiProdIndexWithBLOBs prodIndexWithBLOBs = prodIndexMapper.selectBySkuId(sku.getSkuId());
-//                        OrderDetail orderDetail = new OrderDetail();
-//                        orderDetail.setCreatedAt(date);
-//                        orderDetail.setUpdatedAt(date);
-//                        orderDetail.setOrderId(bean.getId());
-//                        orderDetail.setImage(prodIndexWithBLOBs.getImage());
-//                        orderDetail.setModel(prodIndexWithBLOBs.getModel());
-//                        orderDetail.setName(prodIndexWithBLOBs.getName());
-//                        orderDetail.setStatus(0);
-//                        orderDetail.setSkuId(sku.getSkuId());
-//                        orderDetail.setSubOrderId(sku.getSubOrderId());
-//                        orderDetail.setUnitPrice(new BigDecimal(sku.getUnitPrice()));
-//                        orderDetail.setNum(Integer.parseInt(sku.getNum()));
-//                        orderDetailMapper.insert(orderDetail) ;
-//                        // 删除购物车
-//                        ShoppingCart shoppingCart = new ShoppingCart();
-//                        shoppingCart.setOpenId(bean.getOpenId());
-//                        shoppingCart.setSkuId(sku.getSkuId());
-//                        shoppingCartMapper.deleteByOpenIdAndSkuId(shoppingCart);
-//                    });
-//                }
-//            }
-//        }
-//        return subOrders;
-//    }
+    @Autowired
+    private EquityService equityService;
+
 
     @Override
-    public List<SubOrderT> add2(OrderParamBean orderBean) throws Exception {
+    public List<SubOrderT> add2(OrderParamBean orderBean){
         Order bean = new Order();
         bean.setOpenId(orderBean.getOpenId());
         bean.setCompanyCustNo(orderBean.getCompanyCustNo());
+        orderBean.setTradeNo(new Date().getTime() + "");
         Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
         if (receiver != null) {
             receiver = handleBean(receiver);
@@ -164,52 +104,50 @@ public class OrderServiceImpl implements OrderService {
         bean.setCreatedAt(date);
         bean.setUpdatedAt(date);
         List<SubOrderT> subOrders = null;
-        try {
-//            subOrders = Aoyi2Client.addOrder(orderBean, bean, date.getTime() + "");
-            subOrders = createOrder(orderBean) ;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        subOrders = createOrder(orderBean) ;
         OrderCouponBean coupon = orderBean.getCoupon();
         List<OrderCouponMerchantBean> orderCouponMerchants = null;
         if (coupon != null) {
             orderCouponMerchants = coupon.getMerchants();
         }
-
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
-            if (orderCouponMerchants !=null && orderCouponMerchants.size() > 0) {
-                for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
-                    if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
-                        bean.setCouponId(coupon.getId());
-                    }
-                }
-            }
             for (SubOrderT subOrder : subOrders) {
                 if (subOrder.getOrderNo().contains(orderMerchantBean.getTradeNo())) {
+                    if (orderCouponMerchants != null && orderCouponMerchants.size() > 0) {
+                        for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
+                            if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
+                                bean.setCouponId(coupon.getId());
+                                bean.setCouponCode(coupon.getCode());
+                            }
+                        }
+                    }
                     subOrder.setMerchantNo(orderMerchantBean.getMerchantNo());
                     bean.setMerchantNo(orderMerchantBean.getMerchantNo());
                     bean.setTradeNo(subOrder.getOrderNo());
                     bean.setServFee(orderMerchantBean.getServFee());
                     bean.setAmount(orderMerchantBean.getAmount());
+                    bean.setSaleAmount(orderMerchantBean.getSaleAmount());
                     bean.setSkus(orderMerchantBean.getSkus());
+                    // 添加主订单
                     mapper.insert(bean);
+                    // 核销优惠券
+                    boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
+                    if (!couponConsume) {
+                        logger.info("订单" + bean.getId() + "优惠券核销失败");
+                    }
                     subOrder.getAoyiSkus().forEach(sku -> {
                         AoyiProdIndex prodIndexWithBLOBs = findProduct(sku.getSkuId());
                         OrderDetail orderDetail = new OrderDetail();
+                        orderMerchantBean.getSkus().forEach(orderSku -> {
+                            if (sku.getSkuId().equals(orderSku.getSkuId())) {
+                                orderDetail.setPromotionId(orderSku.getPromotionId());
+                                orderDetail.setSalePrice(orderSku.getSalePrice());
+                            }
+                        });
                         orderDetail.setCreatedAt(date);
                         orderDetail.setUpdatedAt(date);
                         orderDetail.setOrderId(bean.getId());
-                        String imageUrls = prodIndexWithBLOBs.getImagesUrl();
-                        if (imageUrls != null && (!"".equals(imageUrls))) {
-                            String image = "";
-                            if (imageUrls.indexOf("/") == 0) {
-                                image = CosUtil.iWalletUrlT + imageUrls.split(":")[0];
-                            } else {
-                                image = CosUtil.baseAoyiProdUrl + imageUrls.split(":")[0];
-                            }
-                            prodIndexWithBLOBs.setImage(image);
-                        }
                         orderDetail.setImage(prodIndexWithBLOBs.getImage());
                         orderDetail.setModel(prodIndexWithBLOBs.getModel());
                         orderDetail.setName(prodIndexWithBLOBs.getName());
@@ -217,9 +155,9 @@ public class OrderServiceImpl implements OrderService {
                         orderDetail.setSkuId(sku.getSkuId());
                         orderDetail.setSubOrderId(sku.getSubOrderNo());
                         orderDetail.setUnitPrice(new BigDecimal(sku.getUnitPrice()));
-                        orderDetail.setSalePrice(new BigDecimal(sku.getSalePrice()));
                         orderDetail.setNum(Integer.parseInt(sku.getNum()));
-                        orderDetail.setPromotionId(sku.getPromotionId());
+
+                        // 添加子订单
                         orderDetailMapper.insert(orderDetail) ;
                         // 删除购物车
                         ShoppingCart shoppingCart = new ShoppingCart();
@@ -465,6 +403,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private List<SubOrderT> createOrder(OrderParamBean bean) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = "";
+        try {
+            msg = objectMapper.writeValueAsString(bean);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        logger.info(msg);
         OperaResult result = aoyiClientService.order(bean);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
@@ -474,5 +420,16 @@ public class OrderServiceImpl implements OrderService {
             return subOrderTS;
         }
         return null;
+    }
+
+    private boolean consume(int id, String code) {
+        CouponUseInfoBean bean = new CouponUseInfoBean();
+        bean.setUserCouponCode(code);
+        bean.setId(id);
+        OperaResult result = equityService.consume(bean);
+        if (result.getCode() == 200) {
+            return true;
+        }
+        return false;
     }
 }

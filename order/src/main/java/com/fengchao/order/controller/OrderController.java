@@ -29,13 +29,8 @@ public class OrderController {
     @PostMapping
     private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result) {
         List<SubOrderT> subOrderTS = null;
-        try {
-            subOrderTS = service.add2(bean);
-            result.getData().put("result", subOrderTS) ;
-        } catch (Exception e) {
-            result.setCode(500);
-            result.setMsg(e.getMessage());
-        }
+        subOrderTS = service.add2(bean);
+        result.getData().put("result", subOrderTS) ;
         return result;
     }
 
