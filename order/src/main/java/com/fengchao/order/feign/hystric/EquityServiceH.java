@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.CouponUseInfoBean;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.EquityService;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EquityServiceH implements EquityService {
     @Override
     public OperaResult consume(CouponUseInfoBean bean) {
