@@ -76,6 +76,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
+        map.put("id", bean.getId());
         map.put("name", bean.getQuery());
         map.put("pageNo", pageNo);
         map.put("pageSize",bean.getLimit());

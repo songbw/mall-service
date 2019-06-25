@@ -340,6 +340,9 @@
     count(id)
     from aoyi_prod_index
     where 1 = 1
+    <if test="id != null and id !=''">
+        and id = #{id}
+    </if>
     <if test="name !=null and name !=''">
       <bind name="pattern1" value="'%' + name + '%'"/>
       and name LIKE #{pattern1}
@@ -358,7 +361,7 @@
     </if>
     <if test="state != null and state !=''">
       and state = #{state}
-    </if>
+  </if>
     <if test="merchantId != null and merchantId !=''">
       and merchant_id = #{merchantId}
     </if>
@@ -371,6 +374,9 @@
     LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     left join prod_extend e on p.skuId = e.skuId
     where 1 = 1
+    <if test="id != null and id !=''">
+      and p.id = #{id}
+    </if>
     <if test="name !=null and name !=''">
       <bind name="pattern1" value="'%' + name + '%'"/>
       and p.name LIKE #{pattern1}
