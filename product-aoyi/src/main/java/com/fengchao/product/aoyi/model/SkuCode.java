@@ -7,6 +7,8 @@ public class SkuCode {
 
     private Integer merchantId;
 
+    private String merchantName;
+
     private String merchantCode;
 
     private Integer skuValue;
@@ -29,6 +31,14 @@ public class SkuCode {
 
     public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public String getMerchantName() {
+        return merchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
     }
 
     public String getMerchantCode() {

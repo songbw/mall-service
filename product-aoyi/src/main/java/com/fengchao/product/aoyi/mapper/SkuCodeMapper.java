@@ -18,4 +18,6 @@ public interface SkuCodeMapper {
     int updateSkuValueByPrimaryKey(SkuCode record);
 
     SkuCode selectByMerchantId(Integer merchantId) ;
+
+    SkuCode selectLast() ;
 }

@@ -6,6 +6,7 @@
     <result column="order_id" property="orderId" jdbcType="INTEGER" />
     <result column="sub_order_id" property="subOrderId" jdbcType="INTEGER" />
     <result column="promotion_id" property="promotionId" jdbcType="INTEGER" />
+    <result column="promotion_discount" property="promotionDiscount" jdbcType="DECIMAL" />
     <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
     <result column="num" property="num" jdbcType="INTEGER" />
     <result column="model" property="model" jdbcType="VARCHAR" />
@@ -21,7 +22,7 @@
     <result column="comcode" property="comCode" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, order_id, sub_order_id, sku_id, promotion_id, num, unit_price, sale_price, image, name, model, status, created_at,
+    id, order_id, sub_order_id, sku_id, promotion_id, promotion_discount, num, unit_price, sale_price, image, name, model, status, created_at,
     updated_at, logistics_id, logistics_content
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -60,16 +61,19 @@
   <insert id="insert" parameterType="com.fengchao.order.model.OrderDetail" >
     insert into order_detail (order_id, sub_order_id, sku_id,
       num, unit_price, sale_price, image, name, model, status,
-      created_at, updated_at, promotion_id)
+      created_at, updated_at, promotion_id, promotion_discount)
     values (#{orderId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR},
       #{num,jdbcType=INTEGER}, #{unitPrice,jdbcType=DECIMAL}, #{salePrice,jdbcType=DECIMAL}, #{image,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{promotionId})
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{promotionId}, #{promotionDiscount})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.order.model.OrderDetail" >
     insert into order_detail
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="promotionId != null" >
         promotion_id,
+      </if>
+      <if test="promotionDiscount != null" >
+        promotion_discount,
       </if>
       <if test="orderId != null" >
         order_id,
@@ -105,6 +109,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="promotionId != null" >
         #{promotionId,jdbcType=INTEGER},
+      </if>
+      <if test="promotionDiscount != null" >
+        #{promotionDiscount},
       </if>
       <if test="orderId != null" >
         #{orderId,jdbcType=INTEGER},
