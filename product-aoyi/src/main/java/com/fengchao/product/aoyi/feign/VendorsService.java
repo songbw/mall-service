@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(value = "vendors", fallback = VendorsServiceH.class)
 public interface VendorsService {
 
-    @RequestMapping(value = "/v1/vendors/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/vendors/{id}", method = RequestMethod.GET)
     OperaResult vendorInfo(@PathVariable("id") int id);
 
 }
