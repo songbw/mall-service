@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.EquityService;
+import com.fengchao.product.aoyi.feign.VendorsService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.mapper.ProdExtendMapper;
 import com.fengchao.product.aoyi.mapper.SkuCodeMapper;
@@ -13,18 +14,19 @@ import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.RedisUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class AdminProdServiceImpl implements AdminProdService {
+
+    private static Logger logger = LoggerFactory.getLogger(AdminProdServiceImpl.class);
 
     @Autowired
     private AoyiProdIndexMapper prodMapper;
@@ -34,6 +36,8 @@ public class AdminProdServiceImpl implements AdminProdService {
     private SkuCodeMapper skuCodeMapper;
     @Autowired
     private EquityService equityService;
+    @Autowired
+    private VendorsService vendorsService;
 
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
@@ -140,7 +144,25 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 获取商户信息
             SkuCode skuCode = skuCodeMapper.selectByMerchantId(bean.getMerchantId()) ;
             if (skuCode == null) {
-                // 去多商户系统中获取
+                // 查询商户信息
+                VendorsProfileBean profileBean = findVendorInfo(bean.getMerchantId()) ;
+                if (profileBean != null) {
+                    // 获取最新code
+                    SkuCode lastCode = skuCodeMapper.selectLast();
+                    logger.info(bean.getMerchantId() + "");
+                    int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
+                    // 添加商户信息
+                    skuCode = new SkuCode();
+                    skuCode.setMerchantId(bean.getMerchantId());
+                    skuCode.setMerchantName(profileBean.getCompany().getName());
+                    skuCode.setMerchantCode(code + "");
+                    skuCode.setSkuValue(0);
+                    skuCode.setCreatedAt(new Date());
+                    skuCode.setUpdatedAt(new Date());
+                    skuCodeMapper.insertSelective(skuCode) ;
+                } else {
+                    throw new ProductException(200001, "商户信息为null");
+                }
             }
             String merchantCode = skuCode.getMerchantCode();
             int skuValue = skuCode.getSkuValue() ;
@@ -215,5 +237,17 @@ public class AdminProdServiceImpl implements AdminProdService {
         }
         pageBean = PageBean.build(pageBean, infoBeans, total, bean.getOffset(), bean.getPageSize());
         return pageBean;
+    }
+
+    private VendorsProfileBean findVendorInfo(int id) {
+        OperaResult result = vendorsService.vendorInfo(id) ;
+        logger.info("vendor info : " + JSON.toJSONString(result));
+        if (result.getCode() == 200) {
+            Object object = result.getData() ;
+            String jsonString = JSON.toJSONString(object);
+            VendorsProfileBean profileBean = JSONObject.parseObject(jsonString, VendorsProfileBean.class);
+            return profileBean;
+        }
+        return null;
     }
 }

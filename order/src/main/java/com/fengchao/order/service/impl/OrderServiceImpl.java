@@ -119,6 +119,7 @@ public class OrderServiceImpl implements OrderService {
                             if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
                                 bean.setCouponId(coupon.getId());
                                 bean.setCouponCode(coupon.getCode());
+                                bean.setCouponDiscount(coupon.getDiscount());
                             }
                         }
                     }
@@ -145,6 +146,7 @@ public class OrderServiceImpl implements OrderService {
                             if (sku.getSkuId().equals(orderSku.getSkuId())) {
                                 orderDetail.setPromotionId(orderSku.getPromotionId());
                                 orderDetail.setSalePrice(orderSku.getSalePrice());
+                                orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
                             }
                         });
                         orderDetail.setCreatedAt(date);

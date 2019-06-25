@@ -5,12 +5,13 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
     <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+    <result column="merchant_name" property="merchantName" jdbcType="VARCHAR" />
     <result column="sku_value" property="skuValue" jdbcType="INTEGER" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, merchant_id merchantId, merchant_code merchantCode, sku_value skuValue, created_at createdAt, updated_at updatedAt
+    id, merchant_id, merchant_code, merchant_name, sku_value, created_at, updated_at
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -18,21 +19,27 @@
     from sku_code
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByMerchantId" resultType="com.fengchao.product.aoyi.model.SkuCode">
+  <select id="selectByMerchantId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from sku_code
     where merchant_id = #{merchantId,jdbcType=INTEGER}
+  </select>
+  <select id="selectLast" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sku_code
+    order by id DESC limit 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sku_code
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.product.aoyi.model.SkuCode"  keyProperty="id" useGeneratedKeys="true">
-    insert into sku_code (merchant_id, merchant_code,
+    insert into sku_code (merchant_id, merchant_code,merchant_name,
       sku_value, created_at, updated_at
       )
-    values (#{merchantId,jdbcType=INTEGER}, #{merchantCode,jdbcType=VARCHAR},
+    values (#{merchantId,jdbcType=INTEGER}, #{merchantCode,jdbcType=VARCHAR}, #{merchantName,jdbcType=VARCHAR},
       #{skuValue,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -44,6 +51,9 @@
       </if>
       <if test="merchantCode != null" >
         merchant_code,
+      </if>
+      <if test="merchantName != null" >
+        merchant_name,
       </if>
       <if test="skuValue != null" >
         sku_value,
@@ -61,6 +71,9 @@
       </if>
       <if test="merchantCode != null" >
         #{merchantCode,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantName != null" >
+        #{merchantName,jdbcType=VARCHAR},
       </if>
       <if test="skuValue != null" >
         #{skuValue,jdbcType=INTEGER},
@@ -82,6 +95,9 @@
       <if test="merchantCode != null" >
         merchant_code = #{merchantCode,jdbcType=VARCHAR},
       </if>
+      <if test="merchantName != null" >
+        merchant_name = #{merchantName,jdbcType=VARCHAR},
+      </if>
       <if test="skuValue != null" >
         sku_value = #{skuValue,jdbcType=INTEGER},
       </if>
@@ -98,6 +114,7 @@
     update sku_code
     set merchant_id = #{merchantId,jdbcType=INTEGER},
       merchant_code = #{merchantCode,jdbcType=VARCHAR},
+      merchant_name = #{merchantName,jdbcType=VARCHAR},
       sku_value = #{skuValue,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP}

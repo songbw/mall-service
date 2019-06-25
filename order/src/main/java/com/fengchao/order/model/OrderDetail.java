@@ -28,6 +28,8 @@ public class OrderDetail {
 
     private Integer promotionId;
 
+    private BigDecimal promotionDiscount;
+
     private Date createdAt;
 
     private Date updatedAt;
@@ -182,5 +184,13 @@ public class OrderDetail {
 
     public void setComCode(String comCode) {
         this.comCode = comCode;
+    }
+
+    public BigDecimal getPromotionDiscount() {
+        return promotionDiscount;
+    }
+
+    public void setPromotionDiscount(BigDecimal promotionDiscount) {
+        this.promotionDiscount = promotionDiscount;
     }
 }

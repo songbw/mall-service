@@ -1,5 +1,6 @@
 package com.fengchao.order.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -97,6 +98,8 @@ public class Order {
     private Integer couponId;
 
     private String couponCode;
+
+    private Float couponDiscount;
 
     private List<OrderDetail> skus;
 
@@ -482,5 +485,13 @@ public class Order {
 
     public void setCouponCode(String couponCode) {
         this.couponCode = couponCode;
+    }
+
+    public Float getCouponDiscount() {
+        return couponDiscount;
+    }
+
+    public void setCouponDiscount(Float couponDiscount) {
+        this.couponDiscount = couponDiscount;
     }
 }
