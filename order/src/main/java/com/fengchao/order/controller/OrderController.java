@@ -4,10 +4,15 @@ import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.Kuaidi100;
+import com.github.ltsopensource.core.commons.utils.DateUtils;
+import com.github.ltsopensource.core.domain.Job;
+import com.github.ltsopensource.jobclient.JobClient;
+import com.github.ltsopensource.jobclient.domain.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,6 +24,9 @@ public class OrderController {
 
     @Autowired
     private OrderService service;
+
+    @Autowired
+    private JobClient jobClient;
 
     @PostMapping("/all")
     private OperaResult findList(@RequestBody OrderQueryBean queryBean, OperaResult result) {
@@ -134,6 +142,21 @@ public class OrderController {
     @PutMapping("/outTradeNo/payment")
     private OperaResult paymentByOutTradeNoAndPaymentNo(@RequestBody Order order, OperaResult result) {
         result.getData().put("result", service.updatePaymentByOutTradeNoAndPaymentNo(order)) ;
+        return result;
+    }
+
+    @GetMapping("/test")
+    private OperaResult test(OperaResult result) {
+        Job job = new Job();
+        job.setTaskId("s_trigger_time_666");
+        job.setParam("shopId", "1122222221");
+        job.setTaskTrackerNodeGroup("test_trade_TaskTracker");
+        job.setNeedFeedback(true);
+        job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
+        job.setTriggerTime(DateUtils.addHour(new Date(), 1).getTime());   // 1 小时之后执行
+        Response response = jobClient.submitJob(job);
+        System.out.println(response);
+        result.getData().put("result", "success") ;
         return result;
     }
 
