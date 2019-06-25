@@ -256,6 +256,16 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         return mapper.deleteByPrimaryKey(bean);
     }
 
+    @Override
+    public CouponUseInfo findById(CouponUseInfoBean bean) {
+        CouponUseInfo couponUseInfo = mapper.selectByPrimaryKey(bean);
+        if(couponUseInfo != null){
+            CouponBean couponBean = couponToBean(couponMapper.selectByPrimaryKey(couponUseInfo.getCouponId()));
+            couponUseInfo.setCouponInfo(couponBean);
+        }
+        return couponUseInfo;
+    }
+
     private CouponBean couponToBean(Coupon coupon){
 
         CouponBean couponBean = new CouponBean();

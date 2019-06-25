@@ -14,7 +14,7 @@ public interface CouponUseInfoMapper {
 
     int insertSelective(CouponUseInfo record);
 
-    CouponUseInfo selectByPrimaryKey(Integer id);
+    CouponUseInfo selectByPrimaryKey(CouponUseInfoBean bean);
 
     int updateByPrimaryKeySelective(CouponUseInfo record);
 

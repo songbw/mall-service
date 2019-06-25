@@ -17,11 +17,17 @@
     id, coupon_id, user_coupon_code, user_open_id, code, collected_time, consumed_time,
     order_id, status,delete_flag
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.CouponUseInfoBean" >
     select 
     <include refid="Base_Column_List" />
     from coupon_use_info
-    where delete_flag = 0 and id = #{id,jdbcType=INTEGER}
+    where delete_flag = 0
+    <if test="id != null" >
+      and id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="userCouponCode != null" >
+      and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    </if>
   </select>
   <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
     select
