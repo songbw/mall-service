@@ -13,7 +13,9 @@ import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.CosUtil;
+import com.fengchao.order.utils.JobClientUtils;
 import com.fengchao.order.utils.Kuaidi100;
+import com.github.ltsopensource.jobclient.JobClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private EquityService equityService;
+
+    @Autowired
+    private JobClient jobClient;
 
 
     @Override
@@ -169,6 +174,8 @@ public class OrderServiceImpl implements OrderService {
                         shoppingCart.setSkuId(sku.getSkuId());
                         shoppingCartMapper.deleteByOpenIdAndSkuId(shoppingCart);
                     });
+                    // 30分钟后取消订单
+                    JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
                 }
             }
         }

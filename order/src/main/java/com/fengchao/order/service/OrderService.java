@@ -2,7 +2,6 @@ package com.fengchao.order.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.fengchao.order.bean.*;
-import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.model.Order;
 
 import java.util.List;
@@ -47,4 +46,5 @@ public interface OrderService {
     Integer updatePaymentNo(Order order) ;
 
     Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
+
 }

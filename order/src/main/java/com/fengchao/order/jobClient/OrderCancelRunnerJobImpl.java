@@ -1,20 +1,20 @@
 package com.fengchao.order.jobClient;
 
+import com.fengchao.order.model.Order;
+import com.fengchao.order.service.OrderService;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
-import com.github.ltsopensource.spring.boot.annotation.JobRunner4TaskTracker;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.logger.BizLogger;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 
-/**
- * @author Robert HG (254963746@qq.com) on 4/9/16.
- */
-@JobRunner4TaskTracker
-public class JobRunnerImpl implements JobRunner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerImpl.class);
+
+public class OrderCancelRunnerJobImpl implements JobRunner {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderCancelRunnerJobImpl.class);
+
 
     @Override
     public Result run(JobContext jobContext) throws Throwable {
@@ -22,10 +22,16 @@ public class JobRunnerImpl implements JobRunner {
             BizLogger bizLogger = jobContext.getBizLogger();
 
             // TODO 业务逻辑
-            LOGGER.info("我要执行spring boot：" + jobContext);
-            // 会发送到 LTS (JobTracker上)
-            bizLogger.info("测试，业务日志宋冰威");
-
+            LOGGER.info("我要执行订单取消操作：" + jobContext);
+            String id = jobContext.getJob().getParam("orderId") ;
+            OrderService orderService = BeanContext.getApplicationContext().getBean(OrderService.class);
+            int orderId = Integer.parseInt(id) ;
+            Order order = orderService.findById(orderId) ;
+            if (order != null && order.getStatus() == 0) {
+                orderService.cancel(orderId) ;
+                // 会发送到 LTS (JobTracker上)
+                bizLogger.info("订单取消成功");
+            }
         } catch (Exception e) {
             LOGGER.info("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());

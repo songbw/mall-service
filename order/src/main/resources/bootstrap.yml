@@ -13,9 +13,14 @@ eureka:
       defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
 
 spring:
+  profiles:
+    active: dev
   application:
     name: order
   cloud:
+    service-registry:
+      auto-registration:
+        enabled: false
     config:
       discovery:
         enabled: true
