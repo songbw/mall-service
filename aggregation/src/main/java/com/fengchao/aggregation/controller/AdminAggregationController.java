@@ -22,7 +22,8 @@ public class AdminAggregationController {
     private AggregationGroupService groupService;
 
     @PostMapping("create")
-    public OperaResult createAggregation(@RequestBody Aggregation bean, OperaResult result){
+    public OperaResult createAggregation(@RequestBody Aggregation bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        bean.setMerchantId(merchantId);
         aggregationService.createAggregation(bean);
         result.getData().put("aggregationId",bean.getId());
         return result;
@@ -42,7 +43,8 @@ public class AdminAggregationController {
     }
 
     @PostMapping("update")
-    public OperaResult updateAggregation(@RequestBody Aggregation bean, OperaResult result){
+    public OperaResult updateAggregation(@RequestBody Aggregation bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        bean.setMerchantId(merchantId);
         int i = aggregationService.updateAggregation(bean);
         if(i == 0){
             result.getData().put("result", "请保留唯一上架主页");
@@ -66,7 +68,8 @@ public class AdminAggregationController {
     }
 
     @PostMapping("search")
-    public OperaResult serachAggregation(@RequestBody AggregationBean bean, OperaResult result){
+    public OperaResult serachAggregation(@RequestBody AggregationBean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        bean.setMerchantId(merchantId);
         PageBean pageBean = aggregationService.serachAggregation(bean);
         result.getData().put("result",pageBean);
         return result;
