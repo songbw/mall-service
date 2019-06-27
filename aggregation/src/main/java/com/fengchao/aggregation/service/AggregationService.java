@@ -5,7 +5,7 @@ import com.fengchao.aggregation.bean.PageBean;
 import com.fengchao.aggregation.model.Aggregation;
 
 public interface AggregationService {
-    PageBean findAggregation(Integer offset, Integer limit, String order);
+    PageBean findAggregation(Integer offset, Integer limit, String order, Integer merchantId);
 
     int createAggregation(Aggregation bean);
 

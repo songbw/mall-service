@@ -26,7 +26,7 @@ public class AggregationServiceImpl implements AggregationService {
 
 
     @Override
-    public PageBean findAggregation(Integer offset, Integer limit, String order) throws AggregationException {
+    public PageBean findAggregation(Integer offset, Integer limit, String order, Integer merchantId) throws AggregationException {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
@@ -34,6 +34,7 @@ public class AggregationServiceImpl implements AggregationService {
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
         map.put("order",order);
+        map.put("merchantId",merchantId);
         List<Aggregation> brands = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {

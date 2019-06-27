@@ -30,13 +30,13 @@ public class AdminAggregationController {
     }
 
     @GetMapping("find")
-    public OperaResult findAggregation(Integer offset,Integer limit, String order, OperaResult result){
-        result.getData().put("result", aggregationService.findAggregation(offset, limit, order));
+    public OperaResult findAggregation(Integer offset,Integer limit, String order, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        result.getData().put("result", aggregationService.findAggregation(offset, limit, order, merchantId));
         return result;
     }
 
     @GetMapping("findById")
-    public OperaResult findAggregationById(Integer id, OperaResult result){
+    public OperaResult findAggregationById(Integer id, @RequestHeader("merchant") Integer merchantId, OperaResult result){
         Aggregation aggregation = aggregationService.findAggregationById(id);
         result.getData().put("result", aggregation);
         return result;
@@ -53,7 +53,7 @@ public class AdminAggregationController {
     }
 
     @PostMapping("updateContent")
-    public OperaResult updateContent(@RequestBody JSONObject object, OperaResult result){
+    public OperaResult updateContent(@RequestBody JSONObject object, @RequestHeader("merchant") Integer merchantId, OperaResult result){
         Aggregation aggregation = new Aggregation();
         aggregation.setId(Integer.parseInt(object.getString("id")));
         aggregation.setContent(object.getString("content"));
@@ -62,7 +62,7 @@ public class AdminAggregationController {
     }
 
     @DeleteMapping("delete")
-    public OperaResult deleteAggregation(Integer id,OperaResult result){
+    public OperaResult deleteAggregation(Integer id, @RequestHeader("merchant") Integer merchantId, OperaResult result){
         result.getData().put("result",aggregationService.deleteAggregation(id));
         return result;
     }
@@ -76,26 +76,28 @@ public class AdminAggregationController {
     }
 
     @PostMapping("createGroup")
-    public OperaResult createGroup(@RequestBody AggregationGroup bean, OperaResult result){
+    public OperaResult createGroup(@RequestBody AggregationGroup bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        bean.setMerchantId(merchantId);
         groupService.createGroup(bean);
         result.getData().put("id",bean.getId());
         return result;
     }
 
     @GetMapping("findGroup")
-    public OperaResult findGroup(Integer offset,Integer limit, OperaResult result){
-        result.getData().put("result", groupService.findGroup(offset, limit));
+    public OperaResult findGroup(Integer offset,Integer limit, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        result.getData().put("result", groupService.findGroup(offset, limit, merchantId));
         return result;
     }
 
     @PutMapping("updateGroup")
-    public OperaResult updateGroup(@RequestBody AggregationGroup bean, OperaResult result){
+    public OperaResult updateGroup(@RequestBody AggregationGroup bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        bean.setMerchantId(merchantId);
         result.getData().put("result",groupService.updateGroup(bean));
         return result;
     }
 
     @DeleteMapping("deleteGroup")
-    public OperaResult deleteGroup(Integer id,OperaResult result){
+    public OperaResult deleteGroup(Integer id, @RequestHeader("merchant") Integer merchantId, OperaResult result){
         int i = groupService.deleteGroup(id);
         if(i == 0){
             result.setMsg("聚合组中包含的聚合页数据未清空");

@@ -28,13 +28,14 @@ public class AggregationGroupServiceImpl implements AggregationGroupService {
     }
 
     @Override
-    public PageBean findGroup(Integer offset, Integer limit) throws AggregationException {
+    public PageBean findGroup(Integer offset, Integer limit, Integer merchantId) throws AggregationException {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
+        map.put("merchantId",merchantId);
         List<AggregationGroup> groups = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {

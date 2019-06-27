@@ -5,6 +5,8 @@ public class AggregationGroup {
 
     private String name;
 
+    private Integer merchantId;
+
     public Integer getId() {
         return id;
     }
@@ -19,5 +21,13 @@ public class AggregationGroup {
 
     public void setName(String name) {
         this.name = name == null ? null : name.trim();
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
     }
 }
