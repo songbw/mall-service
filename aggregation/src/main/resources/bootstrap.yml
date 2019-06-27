@@ -13,6 +13,8 @@ eureka:
       defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
 
 spring:
+  profiles:
+    active: dev
   application:
     name: aggregation
   cloud:
