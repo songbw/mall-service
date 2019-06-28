@@ -79,16 +79,19 @@
     <if test="openId != null and openId !=''">
       and  open_id = #{openId}
     </if>
+    <if test="subOrderId != null and subOrderId !=''">
+       and  sub_order_id = #{subOrderId}
+    </if>
     <if test="detailId != null and detailId !=''">
       and  order_detail.id = #{detailId}
     </if>
-    <if test="id != null and id !=''">
+    <if test="id != null">
       and orders.id = #{id}
     </if>
     <if test="mobile != null and mobile !=''">
       and mobile = #{mobile}
     </if>
-    <if test="status != null and status !=''">
+    <if test="status != null">
       and orders.status = #{status}
     </if>
     <if test="merchantId != null and merchantId !=''">
@@ -152,7 +155,7 @@
     <if test="subOrderId != null and subOrderId !=''">
       and  sub_order_id = #{subOrderId}
     </if>
-    <if test="id != null and id !=''">
+    <if test="id != null">
       and orders.id = #{id}
     </if>
     <if test="mobile != null and mobile !=''">
@@ -162,7 +165,7 @@
       <bind name="pattern" value="'%' + tradeNo + '%'"/>
       and RIGHT(`trade_no`,length(`trade_no`)-8) LIKE #{pattern}
     </if>
-    <if test="status != null and status !=''">
+    <if test="status != null">
       and orders.status = #{status}
     </if>
     <if test="merchantId != null and merchantId !=''">
