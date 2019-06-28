@@ -255,6 +255,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("mobile", orderBean.getMobile()) ;
         map.put("tradeNo",orderBean.getTradeNo());
         map.put("status",orderBean.getStatus());
+        map.put("merchantId",orderBean.getMerchantId());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
             map.put("payDateStart", orderBean.getPayDateStart()) ;
         }

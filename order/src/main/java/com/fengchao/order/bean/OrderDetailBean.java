@@ -14,6 +14,8 @@ public class OrderDetailBean {
     private String tradeNo;
     private String aoyiId;
     private String companyCustNo;
+    private Integer merchantId;
+    private String merchantNo;
     private String receiverName;
     private String telephone;
     private String mobile;

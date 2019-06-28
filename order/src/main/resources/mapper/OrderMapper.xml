@@ -75,7 +75,6 @@
     select count(orders.id)
     from order_detail
     RIGHT JOIN orders on order_detail.order_id = orders.id
-    LEFT JOIN aoyi_prod_index on order_detail.sku_id = aoyi_prod_index.skuId
     where 1 = 1
     <if test="openId != null and openId !=''">
       and  open_id = #{openId}
@@ -91,6 +90,9 @@
     </if>
     <if test="status != null and status !=''">
       and orders.status = #{status}
+    </if>
+    <if test="merchantId != null and merchantId !=''">
+      and orders.merchant_id = #{merchantId}
     </if>
     <if test="tradeNo !=null and tradeNo !=''">
       <bind name="pattern" value="'%' + tradeNo + '%'"/>
@@ -136,7 +138,7 @@
   </select>
 
   <select id="selectOrderLimit" resultType="com.fengchao.order.bean.OrderDetailBean" parameterType="Map">
-    select orders.id id, open_id openId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, receiver_name receiverName, telephone,
+    select orders.id id, open_id openId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, merchant_id merchantId, merchant_no merchantNo,receiver_name receiverName, telephone,
     mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, remark, invoice_state invoiceState,
     invoice_type invoiceType, invoice_title invoiceTitle, payment_no paymentNo, payment_at paymentAt, invoice_content invoiceContent, payment,
     serv_Fee servFee, amount, type,sub_order_id subOrderId, sku_id skuId, num,unit_price unitPrice, image, name, model, orders.status,
@@ -162,6 +164,9 @@
     </if>
     <if test="status != null and status !=''">
       and orders.status = #{status}
+    </if>
+    <if test="merchantId != null and merchantId !=''">
+      and orders.merchant_id = #{merchantId}
     </if>
     <if test="payDateStart != null" >
       <![CDATA[ and payment_at >= #{payDateStart,jdbcType=TIMESTAMP}]]>
