@@ -99,7 +99,7 @@
     </if>
     <if test="tradeNo !=null and tradeNo !=''">
       <bind name="pattern" value="'%' + tradeNo + '%'"/>
-      and RIGHT(`trade_no`,length(`trade_no`)-8) LIKE #{pattern}
+      and trade_no LIKE #{pattern}
     </if>
     <if test="payDateStart != null" >
         <![CDATA[ and payment_at >= #{payDateStart,jdbcType=TIMESTAMP}]]>
@@ -164,7 +164,7 @@
     </if>
     <if test="tradeNo !=null and tradeNo !=''">
       <bind name="pattern" value="'%' + tradeNo + '%'"/>
-      and RIGHT(`trade_no`,length(`trade_no`)-8) LIKE #{pattern}
+      and trade_no LIKE #{pattern}
     </if>
     <if test="status != null">
       and orders.status = #{status}
