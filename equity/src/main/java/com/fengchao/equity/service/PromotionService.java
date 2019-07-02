@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface PromotionService {
 
+    int effective(int promotionId);
+
     int createPromotion(Promotion bean);
 
     PageBean findPromotion(Integer offset, Integer limit);
@@ -32,4 +34,6 @@ public interface PromotionService {
     List<PromotionInfoBean> findPromotionInfoBySkuId(String skuId);
 
     List<PromotionInfoBean> findPromotionBySkuId(String skuId);
+
+    int end(int promotionId);
 }

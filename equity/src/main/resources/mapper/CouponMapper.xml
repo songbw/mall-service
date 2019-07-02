@@ -544,4 +544,10 @@
       coupon_rules = #{couponRules,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <update id="couponEffective" parameterType="java.lang.Integer" >
+    update coupon set status = 3 where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="couponEnd" parameterType="java.lang.Integer" >
+    update coupon set status = 4 where id = #{id,jdbcType=INTEGER}
+  </update>
 </mapper>
