@@ -69,4 +69,5 @@ public class OrderDetailBean {
     private Float couponDiscount;
     private Integer promotionId;
     private BigDecimal promotionDiscount;
+    private Float saleAmount;
 }

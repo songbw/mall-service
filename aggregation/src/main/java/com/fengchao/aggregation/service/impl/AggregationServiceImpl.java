@@ -79,7 +79,7 @@ public class AggregationServiceImpl implements AggregationService {
                 JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < lists.size(); j++) {
                     JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
-                    for (int l = 0; l < lists.size(); l++){
+                    for (int l = 0; l < skus.size(); l++){
                         JSONObject jsonObject = skus.getJSONObject(l);
                         String skuid = jsonObject.getString("skuid");
                         String value = RedisUtil.getValue(skuid);
@@ -200,7 +200,7 @@ public class AggregationServiceImpl implements AggregationService {
                     JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < lists.size(); j++) {
                         JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
-                        for (int l = 0; l < lists.size(); l++){
+                        for (int l = 0; l < skus.size(); l++){
                             JSONObject jsonObject = skus.getJSONObject(l);
                             String skuid = jsonObject.getString("skuid");
                             String value = RedisUtil.getValue(skuid);
@@ -217,5 +217,10 @@ public class AggregationServiceImpl implements AggregationService {
             }
         homePage.setContent(AggregationArray.toString());
         return homePage;
+    }
+
+    @Override
+    public Aggregation findAdminAggregationById(Integer id) {
+        return mapper.selectByPrimaryKey(id);
     }
 }
