@@ -28,4 +28,8 @@ public interface CouponService {
     Coupon consumeCoupon(CouponUseInfoBean bean);
 
     List<CouponBean> selectCouponBySku(AoyiProdBean bean);
+
+    int effective(int couponId);
+
+    int end(int couponId);
 }

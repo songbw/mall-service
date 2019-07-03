@@ -11,6 +11,8 @@ import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponService;
+import com.fengchao.equity.utils.JobClientUtils;
+import com.github.ltsopensource.jobclient.JobClient;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ public class CouponServiceImpl implements CouponService {
     private CouponTagsMapper tagsMapper;
     @Autowired
     private ProdService productService;
+    @Autowired
+    private JobClient jobClient;
 
     @Override
     public int createCoupon(CouponBean bean) {
@@ -36,7 +40,11 @@ public class CouponServiceImpl implements CouponService {
         if(coupon.getCode() == null || "".equals(coupon.getCode())){
             coupon.setCode(uuid);
         }
-        mapper.insertSelective(coupon);
+        int num = mapper.insertSelective(coupon);
+        if(num == 1){
+            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), bean.getEffectiveStartDate());
+            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), bean.getEffectiveEndDate());
+        }
         return coupon.getId();
     }
 
@@ -171,6 +179,16 @@ public class CouponServiceImpl implements CouponService {
             couponBeans.add(couponToBean(coupon));
         });
         return couponBeans;
+    }
+
+    @Override
+    public int effective(int couponId) {
+        return mapper.couponEffective(couponId);
+    }
+
+    @Override
+    public int end(int couponId) {
+        return mapper.couponEnd(couponId);
     }
 
     @Override

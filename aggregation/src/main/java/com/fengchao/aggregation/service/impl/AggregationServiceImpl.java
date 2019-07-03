@@ -34,7 +34,9 @@ public class AggregationServiceImpl implements AggregationService {
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
         map.put("order",order);
-        map.put("merchantId",merchantId);
+        if(merchantId != 0){
+            map.put("merchantId",merchantId);
+        }
         List<Aggregation> brands = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
@@ -79,7 +81,7 @@ public class AggregationServiceImpl implements AggregationService {
                 JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < lists.size(); j++) {
                     JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
-                    for (int l = 0; l < lists.size(); l++){
+                    for (int l = 0; l < skus.size(); l++){
                         JSONObject jsonObject = skus.getJSONObject(l);
                         String skuid = jsonObject.getString("skuid");
                         String value = RedisUtil.getValue(skuid);
@@ -162,7 +164,9 @@ public class AggregationServiceImpl implements AggregationService {
         }
         map.put("groupId",bean.getGroupId());
         map.put("order",bean.getOrder());
-        map.put("merchantId",bean.getMerchantId());
+        if(bean.getMerchantId() != 0){
+            map.put("merchantId",bean.getMerchantId());
+        }
         List<Aggregation> brands = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
@@ -200,7 +204,7 @@ public class AggregationServiceImpl implements AggregationService {
                     JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < lists.size(); j++) {
                         JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
-                        for (int l = 0; l < lists.size(); l++){
+                        for (int l = 0; l < skus.size(); l++){
                             JSONObject jsonObject = skus.getJSONObject(l);
                             String skuid = jsonObject.getString("skuid");
                             String value = RedisUtil.getValue(skuid);
@@ -217,5 +221,10 @@ public class AggregationServiceImpl implements AggregationService {
             }
         homePage.setContent(AggregationArray.toString());
         return homePage;
+    }
+
+    @Override
+    public Aggregation findAdminAggregationById(Integer id) {
+        return mapper.selectByPrimaryKey(id);
     }
 }

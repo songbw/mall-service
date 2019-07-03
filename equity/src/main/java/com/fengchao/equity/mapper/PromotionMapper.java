@@ -26,4 +26,8 @@ public interface PromotionMapper {
     List<Promotion>  selectAll();
 
     List<PromotionInfoBean> selectPromotionInfoBySku(String skuId);
+
+    int promotionEnd(int promotionId);
+
+    int promotionEffective(int promotionId);
 }

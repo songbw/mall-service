@@ -37,7 +37,7 @@ public class AdminAggregationController {
 
     @GetMapping("findById")
     public OperaResult findAggregationById(Integer id, @RequestHeader("merchant") Integer merchantId, OperaResult result){
-        Aggregation aggregation = aggregationService.findAggregationById(id);
+        Aggregation aggregation = aggregationService.findAdminAggregationById(id);
         result.getData().put("result", aggregation);
         return result;
     }

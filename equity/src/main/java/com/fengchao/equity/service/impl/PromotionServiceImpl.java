@@ -8,6 +8,8 @@ import com.fengchao.equity.mapper.PromotionSkuMapper;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionSku;
 import com.fengchao.equity.service.PromotionService;
+import com.fengchao.equity.utils.JobClientUtils;
+import com.github.ltsopensource.jobclient.JobClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +25,24 @@ public class PromotionServiceImpl implements PromotionService {
     private PromotionMapper mapper;
     @Autowired
     private PromotionSkuMapper promotionSkuMapper;
+    @Autowired
+    private JobClient jobClient;
+
+    @Override
+    public int effective(int promotionId) {
+        return mapper.promotionEffective(promotionId);
+    }
 
     @Override
     public int createPromotion(Promotion bean) {
         Date date = new Date();
         bean.setCreatedDate(date);
-        return mapper.insertSelective(bean);
+        int num = mapper.insertSelective(bean);
+        if(num == 1){
+            JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), bean.getStartDate());
+            JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), bean.getEndDate());
+        }
+        return num;
     }
 
     @Override
@@ -137,5 +151,10 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public List<PromotionInfoBean> findPromotionBySkuId(String skuId) {
         return mapper.selectPromotionInfoBySku(skuId);
+    }
+
+    @Override
+    public int end(int promotionId) {
+        return mapper.promotionEnd(promotionId);
     }
 }

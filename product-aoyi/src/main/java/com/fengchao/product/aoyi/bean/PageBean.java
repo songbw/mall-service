@@ -14,7 +14,6 @@ public class PageBean {
     private int pages = 0;
     private int pageNo = 0;
     private int pageSize = 0;
-    private Object object = null;
 
     public static Integer getPages(Integer total, Integer pageSize) {
         Integer a = total % pageSize == 0 ? total / pageSize : total / pageSize + 1;
@@ -28,15 +27,6 @@ public class PageBean {
 
     public static <T> PageBean build(PageBean p, List<T> list, int total, int pageNo, int pageSize) {
         p.setList(list);
-        p.setTotal(total);
-        p.setPages(PageBean.getPages(total, pageSize));
-        p.setPageNo(pageNo);
-        p.setPageSize(pageSize);
-        return p;
-    }
-
-    public static <T> PageBean build(PageBean p, Object object, int total, int pageNo, int pageSize) {
-        p.setObject(object);
         p.setTotal(total);
         p.setPages(PageBean.getPages(total, pageSize));
         p.setPageNo(pageNo);

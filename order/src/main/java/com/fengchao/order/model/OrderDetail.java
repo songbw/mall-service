@@ -34,8 +34,6 @@ public class OrderDetail {
 
     private Date updatedAt;
 
-    private AoyiProdIndex AoyiProdIndex;
-
     private String logisticsId;
 
     private String logisticsContent;
@@ -120,14 +118,6 @@ public class OrderDetail {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public AoyiProdIndex getAoyiProdIndex() {
-        return AoyiProdIndex;
-    }
-
-    public void setAoyiProdIndex(AoyiProdIndex aoyiProdIndex) {
-        AoyiProdIndex = aoyiProdIndex;
     }
 
     public String getSubOrderId() {

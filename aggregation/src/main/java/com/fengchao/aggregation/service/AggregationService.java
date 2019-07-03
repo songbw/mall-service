@@ -20,4 +20,6 @@ public interface AggregationService {
     PageBean serachAggregation(AggregationBean bean);
 
     Aggregation findHomePage();
+
+    Aggregation findAdminAggregationById(Integer id);
 }
