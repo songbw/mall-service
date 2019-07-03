@@ -297,7 +297,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PageBean searchDetail(OrderQueryBean queryBean) {
+    public Order searchDetail(OrderQueryBean queryBean) {
         PageBean pageBean = new PageBean();
         int total = 0;
         int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
@@ -309,13 +309,10 @@ public class OrderServiceImpl implements OrderService {
         total = orderDetailMapper.selectCount(map);
         if (total > 0) {
             List<OrderDetail> orderDetails = orderDetailMapper.selectLimit(map);
-                orderDetails.forEach(orderDetail -> {
-                    orderDetail.setAoyiProdIndex(findProduct(orderDetail.getSkuId()));
-                });
-            order.setSkus(orderDetails);
+            pageBean = PageBean.build(pageBean, orderDetails, total, queryBean.getPageNo(), queryBean.getPageSize());
+            order.setSkusPage(pageBean);
         }
-        pageBean = PageBean.build(pageBean, order, total, queryBean.getPageNo(), queryBean.getPageSize());
-        return pageBean;
+        return order;
     }
 
     private Receiver handleBean(Receiver receiver) {

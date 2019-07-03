@@ -21,8 +21,11 @@ public class OrderDetailBean {
     private String mobile;
     private String email;
     private String provinceId;
+    private String provinceName;
     private String cityId;
+    private String cityName;
     private String countyId;
+    private String countyName;
     private String townId;
     private String address;
     private String zip;

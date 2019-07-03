@@ -1,5 +1,7 @@
 package com.fengchao.order.model;
 
+import com.fengchao.order.bean.PageBean;
+
 import java.util.Date;
 import java.util.List;
 
@@ -101,6 +103,8 @@ public class Order {
     private Float couponDiscount;
 
     private List<OrderDetail> skus;
+
+    private PageBean skusPage;
 
     public Integer getId() {
         return id;
@@ -492,5 +496,13 @@ public class Order {
 
     public void setCouponDiscount(Float couponDiscount) {
         this.couponDiscount = couponDiscount;
+    }
+
+    public PageBean getSkusPage() {
+        return skusPage;
+    }
+
+    public void setSkusPage(PageBean skusPage) {
+        this.skusPage = skusPage;
     }
 }

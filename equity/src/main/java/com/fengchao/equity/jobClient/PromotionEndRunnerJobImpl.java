@@ -1,6 +1,5 @@
 package com.fengchao.equity.jobClient;
 
-import com.fengchao.equity.bean.CouponBean;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.service.PromotionService;
 import com.github.ltsopensource.core.domain.Action;

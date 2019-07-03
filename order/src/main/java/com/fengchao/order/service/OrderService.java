@@ -31,7 +31,7 @@ public interface OrderService {
 
     Integer updateOrderAddress(Order bean);
 
-    PageBean searchDetail(OrderQueryBean queryBean) ;
+    Order searchDetail(OrderQueryBean queryBean) ;
 
     Integer uploadLogistics(Logisticsbean bean);
 

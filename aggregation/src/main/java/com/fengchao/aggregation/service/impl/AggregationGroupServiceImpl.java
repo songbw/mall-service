@@ -35,7 +35,9 @@ public class AggregationGroupServiceImpl implements AggregationGroupService {
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
-        map.put("merchantId",merchantId);
+        if(merchantId != 0){
+            map.put("merchantId",merchantId);
+        }
         List<AggregationGroup> groups = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {

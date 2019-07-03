@@ -142,8 +142,8 @@
 
   <select id="selectOrderLimit" resultType="com.fengchao.order.bean.OrderDetailBean" parameterType="Map">
     select 	orders.id id, open_id openId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, merchant_id merchantId, merchant_no merchantNo,receiver_name receiverName, telephone,
-    mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, remark, invoice_state invoiceState,
-    invoice_type invoiceType, invoice_title invoiceTitle, payment_no paymentNo, payment_at paymentAt, invoice_content invoiceContent, payment,
+    mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, remark, invoice_state invoiceState,province_name provinceName, city_name cityName,
+    invoice_type invoiceType, invoice_title invoiceTitle, payment_no paymentNo, payment_at paymentAt, invoice_content invoiceContent, payment,county_name countyName,
     serv_Fee servFee, amount, type, orders.status, out_trade_no outTradeNo, payment_amount paymentAmount, payee, refund_fee refundFee, pay_type payType, payment_total_fee paymentTotalFee, payer,
     pay_status payStatus, pay_order_category payOrderCategory, coupon_id couponId, coupon_code couponCode, coupon_discount couponDiscount, sale_amount saleAmount,
     sub_order_id subOrderId, sku_id skuId, num,unit_price unitPrice, image, name, model, promotion_id promotionId, promotion_discount promotionDiscount,

@@ -34,7 +34,9 @@ public class AggregationServiceImpl implements AggregationService {
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
         map.put("order",order);
-        map.put("merchantId",merchantId);
+        if(merchantId != 0){
+            map.put("merchantId",merchantId);
+        }
         List<Aggregation> brands = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
@@ -162,7 +164,9 @@ public class AggregationServiceImpl implements AggregationService {
         }
         map.put("groupId",bean.getGroupId());
         map.put("order",bean.getOrder());
-        map.put("merchantId",bean.getMerchantId());
+        if(bean.getMerchantId() != 0){
+            map.put("merchantId",bean.getMerchantId());
+        }
         List<Aggregation> brands = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
