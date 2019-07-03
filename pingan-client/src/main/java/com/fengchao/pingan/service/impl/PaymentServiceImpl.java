@@ -25,6 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResult paymentOrder(PaymentBean paymentBean) throws PinganClientException {
+        logger.info("ping url is "+ HttpClient.PINGAN_PATH + HttpClient.PAYMENT_ORDER);
         WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_PATH + HttpClient.PAYMENT_ORDER);
         ZfResquest resquest = new ZfResquest();
         PaymentParam param = new PaymentParam();

@@ -109,8 +109,8 @@ public class OrderController {
     }
 
     @GetMapping("/tradeNo")
-    private OperaResult findOrderListByTradeNo(String tradeNo, OperaResult result) {
-        result.getData().put("result", service.findTradeNo(tradeNo)) ;
+    private OperaResult findOrderListByTradeNo(String appId, String merchantNo, String tradeNo, OperaResult result) {
+        result.getData().put("result", service.findTradeNo(appId, merchantNo, tradeNo)) ;
         return result;
     }
 

@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderServiceH implements OrderService {
     @Override
-    public OperaResult findOrderListByTradeNo(String tradeNo) {
+    public OperaResult findOrderListByTradeNo(String appId, String merchantNo, String tradeNo) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
         try {
-            msg = objectMapper.writeValueAsString(tradeNo);
+            msg = objectMapper.writeValueAsString(appId + merchantNo + tradeNo);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

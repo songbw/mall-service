@@ -37,7 +37,7 @@ public interface OrderService {
 
     JSONArray getLogist(String merchantNo, String orderId) ;
 
-    List<Order> findTradeNo(String tradeNo) ;
+    List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) ;
 
     List<Order> findOutTradeNo(String outTradeNo) ;
 

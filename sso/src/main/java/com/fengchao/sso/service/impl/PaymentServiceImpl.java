@@ -31,7 +31,7 @@ public class PaymentServiceImpl implements IPaymentService {
         PaymentResult result1 = getPayment(paymentBean);
         if ("200".equals(result1.getReturnCode())) {
             result.getData().put("result", result1.getData());
-            List<Order> orderList = findTradeNo(paymentBean.getAppId() + "%" + paymentBean.getMerchantNo() + "%" + paymentBean.getOpenId()+paymentBean.getOrderNos());
+            List<Order> orderList = findTradeNo(paymentBean.getAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
             orderList.forEach(order -> {
                 order.setPaymentNo(result1.getData().getOrderNo());
                 order.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
@@ -89,8 +89,8 @@ public class PaymentServiceImpl implements IPaymentService {
         return null;
     }
 
-    private List<Order> findTradeNo(String tradeNo) {
-        OperaResult result = orderService.findOrderListByTradeNo(tradeNo);
+    private List<Order> findTradeNo(String appId, String merchantNo, String tradeNo) {
+        OperaResult result = orderService.findOrderListByTradeNo(appId, merchantNo, tradeNo);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OrderService {
 
     @RequestMapping(value = "/order/tradeNo", method = RequestMethod.GET)
-    OperaResult findOrderListByTradeNo(@RequestParam("tradeNo") String tradeNo);
+    OperaResult findOrderListByTradeNo(@RequestParam("appId") String appId, @RequestParam("merchantNo") String merchantNo, @RequestParam("tradeNo") String tradeNo);
 
     @RequestMapping(value = "/order/outTradeNo", method = RequestMethod.GET)
     OperaResult findOrderListByOutTradeNo(@RequestParam("outTradeNo") String outTradeNo);

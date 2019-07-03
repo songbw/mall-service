@@ -375,8 +375,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findTradeNo(String tradeNo) {
-        return mapper.selectByTradeNo(tradeNo);
+    public List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) {
+        return mapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
     }
 
     @Override
