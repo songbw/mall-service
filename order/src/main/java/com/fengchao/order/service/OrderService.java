@@ -47,4 +47,5 @@ public interface OrderService {
 
     Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
 
+    String queryLogisticsInfo(String logisticsId);
 }

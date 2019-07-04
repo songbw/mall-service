@@ -98,7 +98,7 @@ public class OrderController {
 
     @GetMapping("/queryLogisticsInfo")
     private OperaResult queryLogisticsInfo(@RequestHeader("merchant") Integer merchantId, String logisticsId, OperaResult result) {
-        result.getData().put("result", Kuaidi100.synQueryData(logisticsId, "")) ;
+        result.getData().put("result", service.queryLogisticsInfo(logisticsId)) ;
         return result;
     }
 
