@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.statistics.mapper.PeriodOverviewMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.statistics.model.PeriodOverview" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="late_at_night" property="lateAtNight" jdbcType="INTEGER" />
+    <result column="early_morning" property="earlyMorning" jdbcType="INTEGER" />
+    <result column="morning" property="morning" jdbcType="INTEGER" />
+    <result column="noon" property="noon" jdbcType="INTEGER" />
+    <result column="afternoon" property="afternoon" jdbcType="INTEGER" />
+    <result column="night" property="night" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, late_at_night, early_morning, morning, noon, afternoon, night
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from period_overview
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from period_overview
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.statistics.model.PeriodOverview" >
+    insert into period_overview (id, late_at_night, early_morning, 
+      morning, noon, afternoon, 
+      night)
+    values (#{id,jdbcType=BIGINT}, #{lateAtNight,jdbcType=INTEGER}, #{earlyMorning,jdbcType=INTEGER}, 
+      #{morning,jdbcType=INTEGER}, #{noon,jdbcType=INTEGER}, #{afternoon,jdbcType=INTEGER}, 
+      #{night,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.statistics.model.PeriodOverview" >
+    insert into period_overview
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="lateAtNight != null" >
+        late_at_night,
+      </if>
+      <if test="earlyMorning != null" >
+        early_morning,
+      </if>
+      <if test="morning != null" >
+        morning,
+      </if>
+      <if test="noon != null" >
+        noon,
+      </if>
+      <if test="afternoon != null" >
+        afternoon,
+      </if>
+      <if test="night != null" >
+        night,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="lateAtNight != null" >
+        #{lateAtNight,jdbcType=INTEGER},
+      </if>
+      <if test="earlyMorning != null" >
+        #{earlyMorning,jdbcType=INTEGER},
+      </if>
+      <if test="morning != null" >
+        #{morning,jdbcType=INTEGER},
+      </if>
+      <if test="noon != null" >
+        #{noon,jdbcType=INTEGER},
+      </if>
+      <if test="afternoon != null" >
+        #{afternoon,jdbcType=INTEGER},
+      </if>
+      <if test="night != null" >
+        #{night,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.statistics.model.PeriodOverview" >
+    update period_overview
+    <set >
+      <if test="lateAtNight != null" >
+        late_at_night = #{lateAtNight,jdbcType=INTEGER},
+      </if>
+      <if test="earlyMorning != null" >
+        early_morning = #{earlyMorning,jdbcType=INTEGER},
+      </if>
+      <if test="morning != null" >
+        morning = #{morning,jdbcType=INTEGER},
+      </if>
+      <if test="noon != null" >
+        noon = #{noon,jdbcType=INTEGER},
+      </if>
+      <if test="afternoon != null" >
+        afternoon = #{afternoon,jdbcType=INTEGER},
+      </if>
+      <if test="night != null" >
+        night = #{night,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.statistics.model.PeriodOverview" >
+    update period_overview
+    set late_at_night = #{lateAtNight,jdbcType=INTEGER},
+      early_morning = #{earlyMorning,jdbcType=INTEGER},
+      morning = #{morning,jdbcType=INTEGER},
+      noon = #{noon,jdbcType=INTEGER},
+      afternoon = #{afternoon,jdbcType=INTEGER},
+      night = #{night,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

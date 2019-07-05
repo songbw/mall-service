@@ -181,6 +181,15 @@
     order by order_detail.updated_at desc
     limit #{pageNo},#{pageSize}
   </select>
+  <select id="selectDayPaymentCount" resultType="java.lang.Integer" parameterType="Map">
+    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at <= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  </select>
+  <select id="selectDayCount" resultType="java.lang.Integer">
+    SELECT count(id) FROM orders WHERE <![CDATA[created_at <= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  </select>
+  <select id="selectDayPeopleCount" resultType="java.lang.Integer" parameterType="Map">
+    SELECT count(DISTINCT(open_id)) FROM orders WHERE <![CDATA[created_at <= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from orders

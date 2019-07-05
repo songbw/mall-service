@@ -2,6 +2,7 @@ package com.fengchao.order.mapper;
 
 import com.fengchao.order.model.RefundOrder;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface RefundOrderMapper {
@@ -20,4 +21,6 @@ public interface RefundOrderMapper {
     int updateByPrimaryKey(RefundOrder record);
 
     int updateStatusById(RefundOrder record);
+
+    int selectDayCount(HashMap map) ;
 }

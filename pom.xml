@@ -21,6 +21,7 @@
         <module>pingan-client</module>
         <module>sso</module>
         <module>equity</module>
+        <module>statistics</module>
     </modules>
 
 
