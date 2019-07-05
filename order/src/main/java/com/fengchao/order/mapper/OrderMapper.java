@@ -38,4 +38,10 @@ public interface OrderMapper {
     List<Order> selectByOutTradeNoAndPaymentNo(Order order) ;
 
     int updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
+
+    int selectDayPaymentCount(HashMap map) ;
+
+    int selectDayCount(HashMap map);
+
+    int selectDayPeopleCount(HashMap map) ;
 }

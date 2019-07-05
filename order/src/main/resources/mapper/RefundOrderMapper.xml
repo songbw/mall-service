@@ -218,6 +218,9 @@
       <![CDATA[ and status < #{status} ]]>
     </if>
   </select>
+  <select id="selectDayCount" resultType="java.lang.Integer" parameterType="Map">
+    SELECT count(id) FROM refund_order WHERE <![CDATA[created_at <= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  </select>
     <update id="updateStatusById"  keyProperty="id" useGeneratedKeys="true">
       update refund_order
       updated_at = #{updatedAt},

@@ -138,4 +138,10 @@ public class OrderController {
         return result;
     }
 
+    @GetMapping("/statistics")
+    private OperaResult statistics(String start, String end, OperaResult result) {
+        result.getData().put("result", service.findDayStatisticsBean(start, end)) ;
+        return result;
+    }
+
 }

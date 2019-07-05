@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.statistics.mapper.CategoryOverviewMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.statistics.model.CategoryOverview" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="order_payment_amount" property="orderPaymentAmount" jdbcType="BIGINT" />
+    <result column="statistics_date" property="statisticsDate" jdbcType="DATE" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, code, name, order_payment_amount, statistics_date, created_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from category_overview
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from category_overview
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.statistics.model.CategoryOverview" >
+    insert into category_overview (id, code, name, 
+      order_payment_amount, statistics_date, created_at
+      )
+    values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{orderPaymentAmount,jdbcType=BIGINT}, #{statisticsDate,jdbcType=DATE}, #{createdAt,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.statistics.model.CategoryOverview" >
+    insert into category_overview
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="code != null" >
+        code,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="orderPaymentAmount != null" >
+        order_payment_amount,
+      </if>
+      <if test="statisticsDate != null" >
+        statistics_date,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="orderPaymentAmount != null" >
+        #{orderPaymentAmount,jdbcType=BIGINT},
+      </if>
+      <if test="statisticsDate != null" >
+        #{statisticsDate,jdbcType=DATE},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.statistics.model.CategoryOverview" >
+    update category_overview
+    <set >
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="orderPaymentAmount != null" >
+        order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+      </if>
+      <if test="statisticsDate != null" >
+        statistics_date = #{statisticsDate,jdbcType=DATE},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.statistics.model.CategoryOverview" >
+    update category_overview
+    set code = #{code,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+      statistics_date = #{statisticsDate,jdbcType=DATE},
+      created_at = #{createdAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

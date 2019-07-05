@@ -59,6 +59,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private JobClient jobClient;
 
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
+
 
     @Override
     public List<SubOrderT> add2(OrderParamBean orderBean){
@@ -397,6 +400,23 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
         return mapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+    }
+
+    @Override
+    public DayStatisticsBean findDayStatisticsBean(String dayStart, String dayEnd) {
+        HashMap map = new HashMap();
+        map.put("dayStart", dayStart);
+        map.put("dayEnd", dayEnd);
+        int dayPaymentCount = mapper.selectDayPaymentCount(map);
+        int dayCount = mapper.selectDayCount(map);
+        int dayPeopleCount = mapper.selectDayPeopleCount(map);
+        int dayRefundOrderCount = refundOrderMapper.selectDayCount(map);
+        DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
+        dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
+        dayStatisticsBean.setOrderCount(dayCount);
+        dayStatisticsBean.setOrderPeopleNum(dayPeopleCount);
+        dayStatisticsBean.setOrderBackNum(dayRefundOrderCount);
+        return dayStatisticsBean;
     }
 
     private AoyiProdIndex findProduct(String skuId) {
