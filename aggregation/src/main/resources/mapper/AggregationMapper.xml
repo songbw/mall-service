@@ -10,10 +10,11 @@
     <result column="group_id" property="groupId" jdbcType="INTEGER" />
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
+    <result column="header" property="header" jdbcType="VARCHAR" />
     <result column="content" property="content" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, effective_date, background_color,home_page, group_id, status, merchant_id, content
+    id, name, effective_date, background_color,home_page, group_id, status, merchant_id, header, content
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
@@ -90,11 +91,11 @@
   </delete>
   <insert id="insert" parameterType="com.fengchao.aggregation.model.Aggregation" >
     insert into aggregation (id, name, effective_date,
-      background_color,home_page, group_id, status, merchant_id, content
+      background_color,home_page, group_id, status, merchant_id, header, content
       )
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{effectiveDate,jdbcType=TIMESTAMP},
       #{backgroundColor,jdbcType=VARCHAR}, #{homePage,jdbcType=BIT}, #{groupId,jdbcType=INTEGER},
-       #{status,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}
+       #{status,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{header,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.aggregation.model.Aggregation" >
@@ -123,6 +124,9 @@
       </if>
       <if test="merchantId != null" >
         merchant_id,
+      </if>
+      <if test="header != null" >
+        header,
       </if>
       <if test="content != null" >
         content,
@@ -156,6 +160,9 @@
       <if test="content != null" >
         #{content,jdbcType=VARCHAR},
       </if>
+      <if test="header != null" >
+        #{header,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.aggregation.model.Aggregation" >
@@ -185,6 +192,9 @@
       <if test="content != null" >
         content = #{content,jdbcType=VARCHAR},
       </if>
+      <if test="header != null" >
+        header = #{header,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -197,6 +207,7 @@
       group_id = #{groupId,jdbcType=INTEGER}
       status = #{status,jdbcType=INTEGER},
       merchant_id = #{merchantId,jdbcType=INTEGER},
+      header = #{header,jdbcType=VARCHAR},
       content = #{content,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
