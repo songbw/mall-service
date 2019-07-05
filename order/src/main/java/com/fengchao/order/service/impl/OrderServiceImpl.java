@@ -418,6 +418,14 @@ public class OrderServiceImpl implements OrderService {
         dayStatisticsBean.setOrderBackNum(dayRefundOrderCount);
         return dayStatisticsBean;
     }
+    public String queryLogisticsInfo(String logisticsId) {
+        String comcode = orderDetailMapper.selectComCode(logisticsId);
+        if(comcode == null || comcode.equals("")){
+            ArrayList<String> strings = Kuaidi100.queryAutoComNumByKuadi100(logisticsId);
+            comcode = strings.get(0);
+        }
+        return Kuaidi100.synQueryData(logisticsId, comcode);
+    }
 
     private AoyiProdIndex findProduct(String skuId) {
         OperaResult result = productService.find(skuId);

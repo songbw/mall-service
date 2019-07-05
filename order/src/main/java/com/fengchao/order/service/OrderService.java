@@ -49,4 +49,5 @@ public interface OrderService {
 
     DayStatisticsBean findDayStatisticsBean(String dayStart, String dayEnd) ;
 
+    String queryLogisticsInfo(String logisticsId);
 }

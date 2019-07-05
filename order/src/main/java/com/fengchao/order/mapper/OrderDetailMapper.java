@@ -29,4 +29,6 @@ public interface OrderDetailMapper {
     int updateBySubOrderId(OrderDetail record);
 
     List<OrderDetail> selectBySubOrderId(String orderId);
+
+    String selectComCode(String logisticsId);
 }
