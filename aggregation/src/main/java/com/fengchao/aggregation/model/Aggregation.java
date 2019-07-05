@@ -21,6 +21,8 @@ public class Aggregation {
 
     private Integer merchantId;
 
+    private String header;
+
     public Integer getId() {
         return id;
     }
@@ -91,5 +93,13 @@ public class Aggregation {
 
     public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 }
