@@ -30,7 +30,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
-    sprice, images_url, introduction_url,merchant_id, inventory,brand_id, sku, created_at, updated_at
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, sku, created_at, updated_at
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams
@@ -316,7 +316,7 @@
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.sku
     from aoyi_prod_index p
     left join prod_extend e on p.skuId = e.skuId
     where state = 1
@@ -330,7 +330,7 @@
   </select>
   <select id="selectAll" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku
+    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id, p.inventory, p.brand_id, p.sku
     from aoyi_prod_index p LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     where state = 1
     limit #{pageNo},#{pageSize}
@@ -369,7 +369,7 @@
   <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku, p.created_at createdAt, p.updated_at updatedAt
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.sku, p.created_at createdAt, p.updated_at updatedAt
     from aoyi_prod_index p
     LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     left join prod_extend e on p.skuId = e.skuId
@@ -404,7 +404,7 @@
   <select id="selectProdAll" resultMap="BaseResultMap">
     select
     p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend,      e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku, p.created_at createdAt, p.updated_at updatedAt
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend,      e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.sku, p.created_at createdAt, p.updated_at updatedAt
     from aoyi_prod_index p
     LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     left join prod_extend e on p.skuId = e.skuId
