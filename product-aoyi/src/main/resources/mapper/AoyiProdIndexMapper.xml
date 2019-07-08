@@ -361,17 +361,16 @@
     </if>
     <if test="state != null and state !=''">
       and state = #{state}
-  </if>
+    </if>
     <if test="merchantId != null and merchantId !=''">
       and merchant_id = #{merchantId}
     </if>
   </select>
   <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.sku, p.created_at createdAt, p.updated_at updatedAt
+    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,p.created_at,p.updated_at,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id merchantId, p.inventory, p.brand_id brandId, p.sku
     from aoyi_prod_index p
-    LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     left join prod_extend e on p.skuId = e.skuId
     where 1 = 1
     <if test="id != null and id !=''">
@@ -398,6 +397,12 @@
     </if>
     <if test="merchantId != null and merchantId !=''">
       and merchant_id = #{merchantId}
+    </if>
+    <if test="order == 'asc'" >
+        order by p.created_at asc
+    </if>
+    <if test="order == 'desc'" >
+        order by p.created_at desc
     </if>
     limit #{pageNo},#{pageSize}
   </select>

@@ -73,6 +73,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public PageBean selectNameList(SerachBean bean) {
         PageBean pageBean = new PageBean();
+        List<AoyiProdIndex> prods = new ArrayList<>();
         int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
@@ -84,8 +85,14 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("skuid",bean.getSkuid());
         map.put("state",bean.getState());
         map.put("brand",bean.getBrand());
-        map.put("merchantId",bean.getMerchantId());
-        List<AoyiProdIndex> prods = new ArrayList<>();
+        map.put("order",bean.getOrder());
+        if(bean.getMerchantHeader() == 0){
+            map.put("merchantId",bean.getMerchantId());
+        }else if(bean.getMerchantHeader() == bean.getMerchantId()){
+            map.put("merchantId",bean.getMerchantId());
+        }else{
+            return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
+        }
         total = prodMapper.selectSearchCount(map);
         if (total > 0) {
             prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {

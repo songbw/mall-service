@@ -26,8 +26,8 @@ public class AdminProdController {
     }
 
     @PostMapping("search")
-    public OperaResult searchProd(@RequestBody SerachBean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
-        bean.setMerchantId(merchantId);
+    public OperaResult searchProd(@RequestBody SerachBean bean, @RequestHeader("merchant") Integer merchantHeader, OperaResult result) {
+        bean.setMerchantHeader(merchantHeader);
         PageBean pageBean = prodService.selectNameList(bean);
         result.getData().put("result", pageBean);
         return result;

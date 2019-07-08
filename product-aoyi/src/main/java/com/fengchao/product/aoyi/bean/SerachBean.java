@@ -11,6 +11,8 @@ public class SerachBean {
     private String skuid;
     private String state;
     private String brand;
+    private Integer merchantHeader;
     private Integer merchantId;
     private Integer id;
+    private String order;
 }
