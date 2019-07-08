@@ -84,7 +84,10 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("skuid",bean.getSkuid());
         map.put("state",bean.getState());
         map.put("brand",bean.getBrand());
-        map.put("merchantId",bean.getMerchantId());
+        map.put("order",bean.getOrder());
+        if(bean.getMerchantId() != 0){
+            map.put("merchantId",bean.getMerchantId());
+        }
         List<AoyiProdIndex> prods = new ArrayList<>();
         total = prodMapper.selectSearchCount(map);
         if (total > 0) {
