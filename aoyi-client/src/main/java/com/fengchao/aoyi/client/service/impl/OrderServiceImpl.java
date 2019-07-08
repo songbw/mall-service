@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             SubOrderT subOrder = new SubOrderT();
-            subOrder.setOrderNo(orderMerchantBean.getTradeNo() + RandomUtil.randomString(orderBean.getTradeNo(), 8));
+            subOrder.setOrderNo(orderMerchantBean.getTradeNo());
             subOrder.setServfee(orderMerchantBean.getServFee() + "");
             subOrder.setAmount(orderMerchantBean.getAmount() + "");
             subOrder.setMerchantNo(orderMerchantBean.getMerchantNo());
@@ -64,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
                 skus.setSkuId(sku.getSkuId());
                 skus.setNum(sku.getNum() + "");
                 skus.setUnitPrice(sku.getUnitPrice() + "");
-                skus.setSubOrderNo(subOrder.getOrderNo() + String.format("%03d", i.getAndIncrement()));
+                skus.setSubOrderNo(sku.getSubOrderId());
                 subOrder.getAoyiSkus().add(skus);
             });
             orderRequest.getAoyiOrderEntries().add(subOrder);

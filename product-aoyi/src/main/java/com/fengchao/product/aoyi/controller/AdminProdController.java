@@ -35,7 +35,7 @@ public class AdminProdController {
 
     @PostMapping
     public OperaResult create(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
-        bean.setMerchantId(merchantId);
+//        bean.setMerchantId(merchantId);
         int id = prodService.add(bean);
         result.getData().put("result", id);
         return result;

@@ -23,5 +23,6 @@ public class OrderMerchantBean implements Serializable {
     private Integer status;
     private Integer type;
     private String merchantNo;
+    private Integer merchantId;
     private List<OrderDetail> skus;
 }

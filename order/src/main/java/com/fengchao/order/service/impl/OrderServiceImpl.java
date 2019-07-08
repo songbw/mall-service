@@ -15,6 +15,7 @@ import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.CosUtil;
 import com.fengchao.order.utils.JobClientUtils;
 import com.fengchao.order.utils.Kuaidi100;
+import com.fengchao.order.utils.RandomUtil;
 import com.github.ltsopensource.jobclient.JobClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -64,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<SubOrderT> add2(OrderParamBean orderBean){
+    public List<OrderMerchantBean> add2(OrderParamBean orderBean){
         Order bean = new Order();
         bean.setOpenId(orderBean.getOpenId());
         bean.setCompanyCustNo(orderBean.getCompanyCustNo());
@@ -102,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
 
         bean.setInvoiceState("1");
         bean.setInvoiceType("4");
+
         bean.setInvoiceTitle(orderBean.getInvoiceTitleName());
         bean.setTaxNo(orderBean.getInvoiceEnterpriseNumber());
         bean.setInvoiceContent(orderBean.getInvoiceTitleName());
@@ -111,78 +114,79 @@ public class OrderServiceImpl implements OrderService {
         Date date = new Date() ;
         bean.setCreatedAt(date);
         bean.setUpdatedAt(date);
-        List<SubOrderT> subOrders = null;
-        subOrders = createOrder(orderBean) ;
+
+        // 优惠券
         OrderCouponBean coupon = orderBean.getCoupon();
         List<OrderCouponMerchantBean> orderCouponMerchants = null;
         if (coupon != null) {
             orderCouponMerchants = coupon.getMerchants();
         }
+        // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
-            for (SubOrderT subOrder : subOrders) {
-                if (subOrder.getOrderNo().contains(orderMerchantBean.getTradeNo())) {
-                    if (orderCouponMerchants != null && orderCouponMerchants.size() > 0) {
-                        for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
-                            if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
-                                bean.setCouponId(coupon.getId());
-                                bean.setCouponCode(coupon.getCode());
-                                bean.setCouponDiscount(coupon.getDiscount());
-                            }
-                        }
+            bean.setTradeNo(orderMerchantBean.getTradeNo() + RandomUtil.randomString(orderBean.getTradeNo(), 8));
+            orderMerchantBean.setTradeNo(bean.getTradeNo());
+            bean.setMerchantNo(orderMerchantBean.getMerchantNo());
+            bean.setMerchantId(orderMerchantBean.getMerchantId());
+            bean.setServFee(orderMerchantBean.getServFee());
+            bean.setAmount(orderMerchantBean.getAmount());
+            bean.setSaleAmount(orderMerchantBean.getSaleAmount());
+            bean.setSkus(orderMerchantBean.getSkus());
+            if (orderCouponMerchants != null && orderCouponMerchants.size() > 0) {
+                for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
+                    if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
+                        bean.setCouponId(coupon.getId());
+                        bean.setCouponCode(coupon.getCode());
+                        bean.setCouponDiscount(coupon.getDiscount());
                     }
-                    subOrder.setMerchantNo(orderMerchantBean.getMerchantNo());
-                    bean.setMerchantNo(orderMerchantBean.getMerchantNo());
-                    bean.setTradeNo(subOrder.getOrderNo());
-                    bean.setServFee(orderMerchantBean.getServFee());
-                    bean.setAmount(orderMerchantBean.getAmount());
-                    bean.setSaleAmount(orderMerchantBean.getSaleAmount());
-                    bean.setSkus(orderMerchantBean.getSkus());
-                    // 添加主订单
-                    mapper.insert(bean);
-                    // 核销优惠券
-                    if (coupon != null) {
-                        boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
-                        if (!couponConsume) {
-                            logger.info("订单" + bean.getId() + "优惠券核销失败");
-                        }
-                    }
-                    subOrder.getAoyiSkus().forEach(sku -> {
-                        AoyiProdIndex prodIndexWithBLOBs = findProduct(sku.getSkuId());
-                        OrderDetail orderDetail = new OrderDetail();
-                        orderMerchantBean.getSkus().forEach(orderSku -> {
-                            if (sku.getSkuId().equals(orderSku.getSkuId())) {
-                                orderDetail.setPromotionId(orderSku.getPromotionId());
-                                orderDetail.setSalePrice(orderSku.getSalePrice());
-                                orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
-                            }
-                        });
-                        orderDetail.setCreatedAt(date);
-                        orderDetail.setUpdatedAt(date);
-                        orderDetail.setOrderId(bean.getId());
-                        orderDetail.setImage(prodIndexWithBLOBs.getImage());
-                        orderDetail.setModel(prodIndexWithBLOBs.getModel());
-                        orderDetail.setName(prodIndexWithBLOBs.getName());
-                        orderDetail.setStatus(0);
-                        orderDetail.setSkuId(sku.getSkuId());
-                        orderDetail.setSubOrderId(sku.getSubOrderNo());
-                        orderDetail.setUnitPrice(new BigDecimal(sku.getUnitPrice()));
-                        orderDetail.setNum(Integer.parseInt(sku.getNum()));
-
-                        // 添加子订单
-                        orderDetailMapper.insert(orderDetail) ;
-                        // 删除购物车
-                        ShoppingCart shoppingCart = new ShoppingCart();
-                        shoppingCart.setOpenId(bean.getOpenId());
-                        shoppingCart.setSkuId(sku.getSkuId());
-                        shoppingCartMapper.deleteByOpenIdAndSkuId(shoppingCart);
-                    });
-                    // 30分钟后取消订单
-                    JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
                 }
             }
+            // 添加主订单
+            mapper.insert(bean);
+            // 核销优惠券
+            if (coupon != null) {
+                boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
+                if (!couponConsume) {
+                    logger.info("订单" + bean.getId() + "优惠券核销失败");
+                }
+            }
+            AtomicInteger i= new AtomicInteger(1);
+            orderMerchantBean.getSkus().forEach(orderSku -> {
+                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getSkuId());
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setPromotionId(orderSku.getPromotionId());
+                orderDetail.setSalePrice(orderSku.getSalePrice());
+                orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
+                orderDetail.setCreatedAt(date);
+                orderDetail.setUpdatedAt(date);
+                orderDetail.setOrderId(bean.getId());
+                orderDetail.setImage(prodIndexWithBLOBs.getImage());
+                orderDetail.setModel(prodIndexWithBLOBs.getModel());
+                orderDetail.setName(prodIndexWithBLOBs.getName());
+                orderDetail.setStatus(0);
+                orderDetail.setSkuId(orderSku.getSkuId());
+                orderDetail.setSku(orderSku.getSku());
+                orderDetail.setMerchantId(orderSku.getMerchantId());
+                orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
+                orderDetail.setUnitPrice(orderSku.getUnitPrice());
+                orderDetail.setNum(orderSku.getNum());
+
+                // 添加子订单
+                orderDetailMapper.insert(orderDetail) ;
+                // 删除购物车
+                ShoppingCart shoppingCart = new ShoppingCart();
+                shoppingCart.setOpenId(bean.getOpenId());
+                shoppingCart.setSkuId(orderSku.getSkuId());
+                shoppingCartMapper.deleteByOpenIdAndSkuId(shoppingCart);
+            });
+            // 30分钟后取消订单
+            JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
         }
-        return subOrders;
+        // 传数据给奥义
+        orderBean.setMerchants(orderMerchantBeans);
+        orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != 2));
+        createOrder(orderBean) ;
+        return orderMerchantBeans;
     }
 
     @Override

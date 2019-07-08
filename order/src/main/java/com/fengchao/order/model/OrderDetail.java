@@ -40,6 +40,10 @@ public class OrderDetail {
 
     private String comCode;
 
+    private String sku;
+
+    private Integer merchantId;
+
     public Integer getId() {
         return id;
     }
@@ -182,5 +186,21 @@ public class OrderDetail {
 
     public void setPromotionDiscount(BigDecimal promotionDiscount) {
         this.promotionDiscount = promotionDiscount;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
     }
 }
