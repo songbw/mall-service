@@ -1,1 +1,2 @@
 scp -P2218 gateway-mall\target\gateway-mall-0.0.1-SNAPSHOT.jar smartadmin@119.3.9.55:/tmp
+scp gateway-mall\target\gateway-mall-0.0.1-SNAPSHOT.jar smartadmin@192.168.200.37:/tmp
