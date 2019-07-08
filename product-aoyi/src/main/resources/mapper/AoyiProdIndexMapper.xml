@@ -398,6 +398,12 @@
     <if test="merchantId != null and merchantId !=''">
       and merchant_id = #{merchantId}
     </if>
+    <if test="order == 'asc'" >
+        order by p.created_at asc
+    </if>
+    <if test="order == 'desc'" >
+        order by p.created_at desc
+    </if>
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectProdAll" resultMap="BaseResultMap">
