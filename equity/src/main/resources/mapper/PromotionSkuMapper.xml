@@ -4,17 +4,17 @@
   <resultMap id="BaseResultMap" type="com.fengchao.equity.model.PromotionSku">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="promotion_id" jdbcType="INTEGER" property="promotionId" />
-    <result column="skuId" jdbcType="VARCHAR" property="skuid" />
+    <result column="sku" jdbcType="VARCHAR" property="skuid" />
     <result column="discount" jdbcType="VARCHAR" property="discount" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, promotion_id, skuId, discount
+    id, promotion_id, sku, discount
   </sql>
   <select id="selectByPrimarySku" resultType="com.fengchao.equity.model.PromotionSku" parameterType="java.lang.Integer" >
     select
-    promotion_sku.id, promotion_id promotionId, promotion_sku.skuId, discount, name, price, state, sprice,
+    promotion_sku.id, promotion_id promotionId, promotion_sku.sku, discount, name, price, state, sprice,
     model, brand, image
-    from promotion_sku LEFT JOIN aoyi_prod_index on promotion_sku.skuId = aoyi_prod_index.skuId
+    from promotion_sku LEFT JOIN aoyi_prod_index on promotion_sku.sku = aoyi_prod_index.sku
     where promotion_id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
@@ -23,10 +23,10 @@
   </delete>
   <delete id="deleteBypromotionId" parameterType="com.fengchao.equity.model.PromotionSku" >
     delete from promotion_sku
-    where skuId = #{skuid,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
+    where sku = #{skuid,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.PromotionSku" >
-    insert into promotion_sku (id, promotion_id, skuId,
+    insert into promotion_sku (id, promotion_id, sku,
       discount)
     values (#{id,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, #{skuid,jdbcType=VARCHAR},
       #{discount,jdbcType=VARCHAR})
@@ -41,7 +41,7 @@
         promotion_id,
       </if>
       <if test="skuid != null" >
-        skuId,
+        sku,
       </if>
       <if test="discount != null" >
         discount,
@@ -69,19 +69,19 @@
         promotion_id = #{promotionId,jdbcType=INTEGER},
       </if>
       <if test="skuid != null" >
-        skuId = #{skuid,jdbcType=VARCHAR},
+        sku = #{skuid,jdbcType=VARCHAR},
       </if>
       <if test="discount != null" >
         discount = #{discount,jdbcType=VARCHAR},
       </if>
     </set>
-    where skuId = #{skuid,jdbcType=VARCHAR}
+    where sku = #{skuid,jdbcType=VARCHAR}
     and promotion_id = #{promotionId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionSku" >
     update promotion_sku
     set promotion_id = #{promotionId,jdbcType=INTEGER},
-      skuId = #{skuid,jdbcType=VARCHAR},
+      sku = #{skuid,jdbcType=VARCHAR},
       discount = #{discount,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>

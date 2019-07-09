@@ -142,7 +142,7 @@ public class ProductServiceImpl implements ProductService {
     @DataSource(DataSourceNames.TWO)
     @Override
     public AoyiProdIndex find(String id) throws ProductException {
-        AoyiProdIndex aoyiProdIndex = mapper.selectBySkuId(id);
+        AoyiProdIndex aoyiProdIndex = mapper.selectBySku(id);
         if (aoyiProdIndex.getImageExtend() != null) {
             aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
         }
@@ -190,7 +190,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductInfoBean findAndPromotion(String skuId) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
-        AoyiProdIndex aoyiProdIndex = mapper.selectBySkuId(skuId);
+        AoyiProdIndex aoyiProdIndex = mapper.selectBySku(skuId);
         String imageUrl = aoyiProdIndex.getImagesUrl();
         if (imageUrl != null && (!"".equals(imageUrl))) {
             String image = "";

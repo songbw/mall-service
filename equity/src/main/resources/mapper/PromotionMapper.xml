@@ -66,10 +66,10 @@
     p.start_date startDate,
     p.end_date endDate,
     p.created_date createdDate,
-    ps.skuId,
+    ps.sku,
     ps.discount
     FROM promotion_sku ps LEFT JOIN promotion p ON ps.promotion_id=p.id
-    WHERE ps.skuId=#{skuId} and p.status <![CDATA[ < ]]> 3
+    WHERE ps.sku=#{sku} and p.status <![CDATA[ < ]]> 3
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from promotion

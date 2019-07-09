@@ -5,7 +5,7 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="open_id" property="openId" jdbcType="VARCHAR" />
     <result column="mac_address" property="macAddress" jdbcType="VARCHAR" />
-    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+    <result column="sku" property="sku" jdbcType="VARCHAR" />
     <result column="count" property="count" jdbcType="INTEGER" />
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
@@ -13,7 +13,7 @@
     <result column="is_del" property="isDel" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, open_id, mac_address, sku_id, count, status, created_at, updated_at, is_del
+    id, open_id, mac_address, sku, count, status, created_at, updated_at, is_del
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -21,11 +21,11 @@
     from shopping_cart
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByOpenIdAndSkuId" resultType="com.fengchao.order.model.ShoppingCart">
+  <select id="selectByOpenIdAndSku" resultType="com.fengchao.order.model.ShoppingCart">
     select
     <include refid="Base_Column_List" />
     from shopping_cart
-    where sku_id = #{skuId} and open_id = #{openId} and is_del = 0 and status = 0
+    where sku = #{sku} and open_id = #{openId} and is_del = 0 and status = 0
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -45,16 +45,16 @@
     delete from shopping_cart
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByOpenIdAndSkuId">
-    DELETE FROM  shopping_cart WHERE open_id = #{openId} and sku_id = #{skuId}
+  <delete id="deleteByOpenIdAndSku">
+    DELETE FROM  shopping_cart WHERE open_id = #{openId} and sku = #{sku}
   </delete>
   <insert id="insert" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
     insert into shopping_cart (open_id, mac_address,
-      sku_id, count,
+      sku, count,
       created_at, updated_at
       )
     values (#{openId,jdbcType=VARCHAR}, #{macAddress,jdbcType=VARCHAR},
-      #{skuId,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER},
+      #{sku,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER},
       #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -70,8 +70,8 @@
       <if test="macAddress != null" >
         mac_address,
       </if>
-      <if test="skuId != null" >
-        sku_id,
+      <if test="sku != null" >
+        sku,
       </if>
       <if test="count != null" >
         count,
@@ -99,8 +99,8 @@
       <if test="macAddress != null" >
         #{macAddress,jdbcType=VARCHAR},
       </if>
-      <if test="skuId != null" >
-        #{skuId,jdbcType=VARCHAR},
+      <if test="sku != null" >
+        #{sku,jdbcType=VARCHAR},
       </if>
       <if test="count != null" >
         #{count,jdbcType=INTEGER},
@@ -128,8 +128,8 @@
       <if test="macAddress != null" >
         mac_address = #{macAddress,jdbcType=VARCHAR},
       </if>
-      <if test="skuId != null" >
-        sku_id = #{skuId,jdbcType=VARCHAR},
+      <if test="sku != null" >
+        sku = #{sku,jdbcType=VARCHAR},
       </if>
       <if test="count != null" >
         count = #{count,jdbcType=INTEGER},
@@ -153,7 +153,7 @@
     update shopping_cart
     set open_id = #{openId,jdbcType=VARCHAR},
       mac_address = #{macAddress,jdbcType=VARCHAR},
-      sku_id = #{skuId,jdbcType=VARCHAR},
+      sku = #{sku,jdbcType=VARCHAR},
       count = #{count,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},

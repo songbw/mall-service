@@ -21,7 +21,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public Integer add(ShoppingCart bean) {
-        ShoppingCart temp = mapper.selectByOpenIdAndSkuId(bean) ;
+        ShoppingCart temp = mapper.selectByOpenIdAndSku(bean) ;
         Date date = new Date() ;
         if (temp == null) {
             bean.setCreatedAt(date);

@@ -18,6 +18,8 @@ public interface AoyiProdIndexMapper {
 
     AoyiProdIndex selectBySkuId(String skuId);
 
+    AoyiProdIndex selectBySku(String sku);
+
     int updateByPrimaryKeySelective(AoyiProdIndex record);
 
     int updateByPrimaryKeyWithBLOBs(AoyiProdIndexWithBLOBs record);

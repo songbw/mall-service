@@ -8,7 +8,7 @@ import java.util.List;
 public interface ShoppingCartMapper {
     int deleteByPrimaryKey(Integer id);
 
-    int deleteByOpenIdAndSkuId(ShoppingCart record) ;
+    int deleteByOpenIdAndSku(ShoppingCart record) ;
 
     int insert(ShoppingCart record);
 
@@ -26,7 +26,7 @@ public interface ShoppingCartMapper {
 
     int updateStatusById(Integer id) ;
 
-    ShoppingCart selectByOpenIdAndSkuId(ShoppingCart record);
+    ShoppingCart selectByOpenIdAndSku(ShoppingCart record);
 
     List<ShoppingCart> selectLimit(HashMap map) ;
 

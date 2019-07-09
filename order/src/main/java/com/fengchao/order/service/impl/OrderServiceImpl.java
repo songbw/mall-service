@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -176,8 +175,8 @@ public class OrderServiceImpl implements OrderService {
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.setOpenId(bean.getOpenId());
-                shoppingCart.setSkuId(orderSku.getSkuId());
-                shoppingCartMapper.deleteByOpenIdAndSkuId(shoppingCart);
+                shoppingCart.setSku(orderSku.getSkuId());
+                shoppingCartMapper.deleteByOpenIdAndSku(shoppingCart);
             });
             // 30分钟后取消订单
             JobClientUtils.orderCancelTrigger(jobClient, bean.getId());

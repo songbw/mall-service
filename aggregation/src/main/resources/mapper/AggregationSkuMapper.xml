@@ -5,7 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="aggregation_id" jdbcType="INTEGER" property="aggregationId" />
     <result column="promotion_id" jdbcType="INTEGER" property="promotionId" />
-    <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+    <result column="sku_id" jdbcType="VARCHAR" property="sku" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="level" jdbcType="INTEGER" property="level" />
     <result column="sku_index" jdbcType="INTEGER" property="skuIndex" />
@@ -33,7 +33,7 @@
     insert into aggregation_sku (id, aggregation_id, promotion_id, 
       sku_id, type, level, sku_index)
     values (#{id,jdbcType=INTEGER}, #{aggregationId,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, 
-      #{skuId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}), #{skuIndex,jdbcType=INTEGER})
+      #{sku,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}), #{skuIndex,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.aggregation.model.AggregationSku">
     insert into aggregation_sku
@@ -47,7 +47,7 @@
       <if test="promotionId != null">
         promotion_id,
       </if>
-      <if test="skuId != null">
+      <if test="sku != null">
         sku_id,
       </if>
       <if test="type != null">
@@ -70,8 +70,8 @@
       <if test="promotionId != null">
         #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null">
-        #{skuId,jdbcType=VARCHAR},
+      <if test="sku != null">
+        #{sku,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
@@ -93,8 +93,8 @@
       <if test="promotionId != null">
         promotion_id = #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null">
-        sku_id = #{skuId,jdbcType=VARCHAR},
+      <if test="sku != null">
+        sku_id = #{sku,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
@@ -112,7 +112,7 @@
     update aggregation_sku
     set aggregation_id = #{aggregationId,jdbcType=INTEGER},
       promotion_id = #{promotionId,jdbcType=INTEGER},
-      sku_id = #{skuId,jdbcType=VARCHAR},
+      sku_id = #{sku,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
       level = #{level,jdbcType=INTEGER},
       sku_index = #{skuIndex,jdbcType=INTEGER},

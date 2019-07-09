@@ -3,7 +3,7 @@
 <mapper namespace="com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper" >
   <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiProdIndex" >
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="skuId" property="skuid" jdbcType="VARCHAR" />
+    <result column="sku" property="skuid" jdbcType="VARCHAR" />
     <result column="brand" property="brand" jdbcType="VARCHAR" />
     <result column="category" property="category" jdbcType="VARCHAR" />
     <result column="image" property="image" jdbcType="VARCHAR" />
@@ -29,7 +29,7 @@
     <result column="prodParams" property="prodparams" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
+    id, sku, brand, category, image, model, name, weight, upc, saleUnit, state, price,
     sprice, images_url, introduction_url, merchant_id, inventory,brand_id, sku, created_at, updated_at
   </sql>
   <sql id="Blob_Column_List" >
@@ -45,18 +45,26 @@
   </select>
   <select id="selectBySkuId" resultMap="BaseResultMap" parameterType="java.lang.String">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.id, p.sku, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
     p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id,p.sku
     from aoyi_prod_index p
-    left join prod_extend e on p.skuId = e.skuId
-    where p.skuId = #{skuId}
+    left join prod_extend e on p.sku = e.sku
+    where p.sku = #{sku}
+  </select>
+  <select id="selectBySku" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    p.id, p.sku, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id,p.sku
+    from aoyi_prod_index p
+    left join prod_extend e on p.sku = e.sku
+    where p.sku = #{sku}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from aoyi_prod_index
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
-    insert into aoyi_prod_index (skuId, brand,
+    insert into aoyi_prod_index (sku, brand,
       category, image, model, 
       name, weight, upc, 
       saleUnit, state, price, 
@@ -73,7 +81,7 @@
     insert into aoyi_prod_index
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="skuid != null" >
-        skuId,
+        sku,
       </if>
       <if test="brand != null" >
         brand,
@@ -200,7 +208,7 @@
     update aoyi_prod_index
     <set >
       <if test="skuid != null" >
-        skuId = #{skuid,jdbcType=VARCHAR},
+        sku = #{skuid,jdbcType=VARCHAR},
       </if>
       <if test="brand != null" >
         brand = #{brand,jdbcType=VARCHAR},
@@ -264,7 +272,7 @@
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
     update aoyi_prod_index
-    set skuId = #{skuid,jdbcType=VARCHAR},
+    set sku = #{skuid,jdbcType=VARCHAR},
       brand = #{brand,jdbcType=VARCHAR},
       category = #{category,jdbcType=VARCHAR},
       image = #{image,jdbcType=VARCHAR},
@@ -284,7 +292,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndex" >
     update aoyi_prod_index
-    set skuId = #{skuid,jdbcType=VARCHAR},
+    set sku = #{skuid,jdbcType=VARCHAR},
       brand = #{brand,jdbcType=VARCHAR},
       category = #{category,jdbcType=VARCHAR},
       image = #{image,jdbcType=VARCHAR},
@@ -315,10 +323,10 @@
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.id, p.sku, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
     p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.sku
     from aoyi_prod_index p
-    left join prod_extend e on p.skuId = e.skuId
+    left join prod_extend e on p.sku = e.sku
     where state = 1
     <if test="category !=null and category !=''">
       and p.category = #{category}
@@ -330,7 +338,7 @@
   </select>
   <select id="selectAll" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id, p.inventory, p.brand_id, p.sku
+    p.sku, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id, p.inventory, p.brand_id, p.sku
     from aoyi_prod_index p LEFT JOIN aoyi_base_category c ON p.category = c.category_id
     where state = 1
     limit #{pageNo},#{pageSize}
@@ -353,7 +361,7 @@
     </if>
     <if test="skuid !=null and skuid !=''">
       <bind name="pattern3" value="'%' + skuid + '%'"/>
-      and skuId LIKE #{pattern3}
+      and sku LIKE #{pattern3}
     </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
@@ -368,10 +376,10 @@
   </select>
   <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,p.created_at,p.updated_at,
+    p.id, p.sku, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,p.created_at,p.updated_at,
     p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.sku
     from aoyi_prod_index p
-    left join prod_extend e on p.skuId = e.skuId
+    left join prod_extend e on p.sku = e.sku
     where 1 = 1
     <if test="id != null and id !=''">
       and p.id = #{id}
@@ -386,7 +394,7 @@
     </if>
     <if test="skuid !=null and skuid !=''">
       <bind name="pattern3" value="'%' + skuid + '%'"/>
-      and p.skuId LIKE #{pattern3}
+      and p.sku LIKE #{pattern3}
     </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
@@ -408,11 +416,11 @@
   </select>
   <select id="selectProdAll" resultMap="BaseResultMap">
     select
-    p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
+    p.id, p.sku, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
     p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend,      e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.sku, p.created_at createdAt, p.updated_at updatedAt
     from aoyi_prod_index p
     LEFT JOIN aoyi_base_category c ON p.category = c.category_id
-    left join prod_extend e on p.skuId = e.skuId
+    left join prod_extend e on p.sku = e.sku
     where p.state = 1
   </select>
   <select id="selectSkuByCouponIdCount" resultType="java.lang.Integer" parameterType="com.fengchao.product.aoyi.bean.QueryProdBean">
@@ -421,13 +429,13 @@
     from aoyi_prod_index
     where state = 1
     <if test="couponSkus !=null and couponSkus.size > 0">
-      and skuId in
+      and sku in
       <foreach collection="couponSkus" index="index" item="item1" open="(" separator="," close=")">
         #{item1}
       </foreach>
     </if>
     <if test="excludeSkus !=null and excludeSkus.size > 0">
-      and skuId not in
+      and sku not in
       <foreach collection="excludeSkus" index="index" item="item2" open="(" separator="," close=")">
         #{item2}
       </foreach>
@@ -447,19 +455,19 @@
   </select>
   <select id="selectSkuByCouponIdLimit" resultMap="BaseResultMap" parameterType="com.fengchao.product.aoyi.bean.QueryProdBean">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.id, p.sku, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
     p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend
     from aoyi_prod_index p
-    left join prod_extend e on p.skuId = e.skuId
+    left join prod_extend e on p.sku = e.sku
     where state = 1
     <if test="couponSkus !=null">
-      and p.skuId in
+      and p.sku in
       <foreach collection="couponSkus" index="index" item="item1" open="(" separator="," close=")">
         #{item1}
       </foreach>
     </if>
     <if test="excludeSkus !=null">
-      and p.skuId not in
+      and p.sku not in
       <foreach collection="excludeSkus" index="index" item="item2" open="(" separator="," close=")">
         #{item2}
       </foreach>
