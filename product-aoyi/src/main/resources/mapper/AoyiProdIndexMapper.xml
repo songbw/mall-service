@@ -43,7 +43,7 @@
     from aoyi_prod_index
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectBySkuId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
+  <select id="selectBySkuId" resultMap="BaseResultMap" parameterType="java.lang.String">
     select
     p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
     p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id,p.sku
