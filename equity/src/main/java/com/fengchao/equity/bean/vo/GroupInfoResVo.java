@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Setter
 @Getter
-public class GroupInfoReqVo extends PageVo {
+public class GroupInfoResVo extends PageVo {
 
     /**
      *
@@ -77,5 +77,13 @@ public class GroupInfoReqVo extends PageVo {
      */
     private Long operator;
 
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
 }

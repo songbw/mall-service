@@ -2,7 +2,10 @@ package com.fengchao.equity.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.GroupsBean;
+import com.fengchao.equity.bean.OperaResponse;
+import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
+import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.service.AdminGroupService;
 import com.fengchao.equity.bean.OperaResult;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +32,29 @@ public class AdminGroupController {
      * 分页查询活动列表
      *
      * @param groupInfoReqVo
-     * @param result
+     * @param operaResponse
      * @return
      */
     @GetMapping("list/campaigns")
-    public OperaResult queryGroupList(GroupInfoReqVo groupInfoReqVo, OperaResult result) {
-        log.info("分页查询活动列表 入参：", JSON.toJSONString(groupInfoReqVo));
+    public OperaResponse queryGroupList(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
+        log.info("分页查询活动列表 入参：{}", JSON.toJSONString(groupInfoReqVo));
 
+        try {
+            PageableData<GroupInfoResVo> groupInfoResVoPageableData =
+                    adminGroupService.queryGroupListPageable(groupInfoReqVo);
 
-        // result.getData().put("result", adminGroupService.findGroups(bean));
-        return result;
+            operaResponse.setData(groupInfoResVoPageableData);
+        } catch (Exception e) {
+            log.error("分页查询活动列表 异常:{}", e.getMessage(), e);
+
+            operaResponse.setData(null);
+            operaResponse.setCode(500);
+            operaResponse.setMsg("分页查询活动列表 异常");
+        }
+
+        log.info("分页查询活动列表 返回：{}", JSON.toJSONString(operaResponse));
+
+        return operaResponse;
     }
 
     @Deprecated
