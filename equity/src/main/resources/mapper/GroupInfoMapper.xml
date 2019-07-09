@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.equity.mapper.GroupInfoMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.GroupInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+    <result column="effective_start_date" jdbcType="TIMESTAMP" property="effectiveStartDate" />
+    <result column="effective_end_date" jdbcType="TIMESTAMP" property="effectiveEndDate" />
+    <result column="group_buying_price" jdbcType="INTEGER" property="groupBuyingPrice" />
+    <result column="group_buying_quantity" jdbcType="INTEGER" property="groupBuyingQuantity" />
+    <result column="group_member_quantity" jdbcType="INTEGER" property="groupMemberQuantity" />
+    <result column="limited_per_member" jdbcType="INTEGER" property="limitedPerMember" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="group_status" jdbcType="SMALLINT" property="groupStatus" />
+    <result column="istatus" jdbcType="SMALLINT" property="istatus" />
+    <result column="operator" jdbcType="BIGINT" property="operator" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, name, sku_id, effective_start_date, effective_end_date, group_buying_price, group_buying_quantity, 
+    group_member_quantity, limited_per_member, description, group_status, istatus, operator, 
+    create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.equity.model.GroupInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from group_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from group_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from group_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.equity.model.GroupInfoExample">
+    delete from group_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.equity.model.GroupInfo">
+    insert into group_info (id, name, sku_id, 
+      effective_start_date, effective_end_date, 
+      group_buying_price, group_buying_quantity, 
+      group_member_quantity, limited_per_member, 
+      description, group_status, istatus, 
+      operator, create_time, update_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, 
+      #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP}, 
+      #{groupBuyingPrice,jdbcType=INTEGER}, #{groupBuyingQuantity,jdbcType=INTEGER}, 
+      #{groupMemberQuantity,jdbcType=INTEGER}, #{limitedPerMember,jdbcType=INTEGER}, 
+      #{description,jdbcType=VARCHAR}, #{groupStatus,jdbcType=SMALLINT}, #{istatus,jdbcType=SMALLINT}, 
+      #{operator,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.equity.model.GroupInfo">
+    insert into group_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="skuId != null">
+        sku_id,
+      </if>
+      <if test="effectiveStartDate != null">
+        effective_start_date,
+      </if>
+      <if test="effectiveEndDate != null">
+        effective_end_date,
+      </if>
+      <if test="groupBuyingPrice != null">
+        group_buying_price,
+      </if>
+      <if test="groupBuyingQuantity != null">
+        group_buying_quantity,
+      </if>
+      <if test="groupMemberQuantity != null">
+        group_member_quantity,
+      </if>
+      <if test="limitedPerMember != null">
+        limited_per_member,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="groupStatus != null">
+        group_status,
+      </if>
+      <if test="istatus != null">
+        istatus,
+      </if>
+      <if test="operator != null">
+        operator,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null">
+        #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveStartDate != null">
+        #{effectiveStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectiveEndDate != null">
+        #{effectiveEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupBuyingPrice != null">
+        #{groupBuyingPrice,jdbcType=INTEGER},
+      </if>
+      <if test="groupBuyingQuantity != null">
+        #{groupBuyingQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="groupMemberQuantity != null">
+        #{groupMemberQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="limitedPerMember != null">
+        #{limitedPerMember,jdbcType=INTEGER},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="groupStatus != null">
+        #{groupStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="istatus != null">
+        #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.equity.model.GroupInfoExample" resultType="java.lang.Long">
+    select count(*) from group_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update group_info
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.skuId != null">
+        sku_id = #{record.skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.effectiveStartDate != null">
+        effective_start_date = #{record.effectiveStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.effectiveEndDate != null">
+        effective_end_date = #{record.effectiveEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.groupBuyingPrice != null">
+        group_buying_price = #{record.groupBuyingPrice,jdbcType=INTEGER},
+      </if>
+      <if test="record.groupBuyingQuantity != null">
+        group_buying_quantity = #{record.groupBuyingQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.groupMemberQuantity != null">
+        group_member_quantity = #{record.groupMemberQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.limitedPerMember != null">
+        limited_per_member = #{record.limitedPerMember,jdbcType=INTEGER},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.groupStatus != null">
+        group_status = #{record.groupStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.istatus != null">
+        istatus = #{record.istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.operator != null">
+        operator = #{record.operator,jdbcType=BIGINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update group_info
+    set id = #{record.id,jdbcType=BIGINT},
+      name = #{record.name,jdbcType=VARCHAR},
+      sku_id = #{record.skuId,jdbcType=VARCHAR},
+      effective_start_date = #{record.effectiveStartDate,jdbcType=TIMESTAMP},
+      effective_end_date = #{record.effectiveEndDate,jdbcType=TIMESTAMP},
+      group_buying_price = #{record.groupBuyingPrice,jdbcType=INTEGER},
+      group_buying_quantity = #{record.groupBuyingQuantity,jdbcType=INTEGER},
+      group_member_quantity = #{record.groupMemberQuantity,jdbcType=INTEGER},
+      limited_per_member = #{record.limitedPerMember,jdbcType=INTEGER},
+      description = #{record.description,jdbcType=VARCHAR},
+      group_status = #{record.groupStatus,jdbcType=SMALLINT},
+      istatus = #{record.istatus,jdbcType=SMALLINT},
+      operator = #{record.operator,jdbcType=BIGINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.GroupInfo">
+    update group_info
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null">
+        sku_id = #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveStartDate != null">
+        effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectiveEndDate != null">
+        effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupBuyingPrice != null">
+        group_buying_price = #{groupBuyingPrice,jdbcType=INTEGER},
+      </if>
+      <if test="groupBuyingQuantity != null">
+        group_buying_quantity = #{groupBuyingQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="groupMemberQuantity != null">
+        group_member_quantity = #{groupMemberQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="limitedPerMember != null">
+        limited_per_member = #{limitedPerMember,jdbcType=INTEGER},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="groupStatus != null">
+        group_status = #{groupStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="istatus != null">
+        istatus = #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="operator != null">
+        operator = #{operator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.GroupInfo">
+    update group_info
+    set name = #{name,jdbcType=VARCHAR},
+      sku_id = #{skuId,jdbcType=VARCHAR},
+      effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+      effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
+      group_buying_price = #{groupBuyingPrice,jdbcType=INTEGER},
+      group_buying_quantity = #{groupBuyingQuantity,jdbcType=INTEGER},
+      group_member_quantity = #{groupMemberQuantity,jdbcType=INTEGER},
+      limited_per_member = #{limitedPerMember,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      group_status = #{groupStatus,jdbcType=SMALLINT},
+      istatus = #{istatus,jdbcType=SMALLINT},
+      operator = #{operator,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
