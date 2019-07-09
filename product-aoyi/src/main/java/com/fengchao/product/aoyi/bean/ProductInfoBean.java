@@ -49,4 +49,12 @@ public class ProductInfoBean {
     private List<PromotionInfoBean> promotion = new ArrayList<>();
 
     private List<CouponBean> coupon = new ArrayList<>();
+
+    private Integer merchantId ;
+
+    private Integer inventory ;
+
+    private Integer brandId ;
+
+    private String sku ;
 }
