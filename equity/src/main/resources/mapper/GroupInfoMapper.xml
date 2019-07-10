@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.fengchao.equity.model.GroupInfo">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+    <result column="mpu_id" jdbcType="VARCHAR" property="mpuId" />
     <result column="effective_start_date" jdbcType="TIMESTAMP" property="effectiveStartDate" />
     <result column="effective_end_date" jdbcType="TIMESTAMP" property="effectiveEndDate" />
     <result column="group_buying_price" jdbcType="INTEGER" property="groupBuyingPrice" />
@@ -77,7 +77,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, sku_id, effective_start_date, effective_end_date, group_buying_price, group_buying_quantity, 
+    id, name, mpu_id, effective_start_date, effective_end_date, group_buying_price, group_buying_quantity, 
     group_member_quantity, limited_per_member, description, group_status, istatus, operator, 
     create_time, update_time
   </sql>
@@ -112,14 +112,14 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.GroupInfo">
-    insert into group_info (id, name, sku_id, 
+    insert into group_info (id, name, mpu_id, 
       effective_start_date, effective_end_date, 
       group_buying_price, group_buying_quantity, 
       group_member_quantity, limited_per_member, 
       description, group_status, istatus, 
       operator, create_time, update_time
       )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{mpuId,jdbcType=VARCHAR}, 
       #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP}, 
       #{groupBuyingPrice,jdbcType=INTEGER}, #{groupBuyingQuantity,jdbcType=INTEGER}, 
       #{groupMemberQuantity,jdbcType=INTEGER}, #{limitedPerMember,jdbcType=INTEGER}, 
@@ -136,8 +136,8 @@
       <if test="name != null">
         name,
       </if>
-      <if test="skuId != null">
-        sku_id,
+      <if test="mpuId != null">
+        mpu_id,
       </if>
       <if test="effectiveStartDate != null">
         effective_start_date,
@@ -183,8 +183,8 @@
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="skuId != null">
-        #{skuId,jdbcType=VARCHAR},
+      <if test="mpuId != null">
+        #{mpuId,jdbcType=VARCHAR},
       </if>
       <if test="effectiveStartDate != null">
         #{effectiveStartDate,jdbcType=TIMESTAMP},
@@ -239,8 +239,8 @@
       <if test="record.name != null">
         name = #{record.name,jdbcType=VARCHAR},
       </if>
-      <if test="record.skuId != null">
-        sku_id = #{record.skuId,jdbcType=VARCHAR},
+      <if test="record.mpuId != null">
+        mpu_id = #{record.mpuId,jdbcType=VARCHAR},
       </if>
       <if test="record.effectiveStartDate != null">
         effective_start_date = #{record.effectiveStartDate,jdbcType=TIMESTAMP},
@@ -287,7 +287,7 @@
     update group_info
     set id = #{record.id,jdbcType=BIGINT},
       name = #{record.name,jdbcType=VARCHAR},
-      sku_id = #{record.skuId,jdbcType=VARCHAR},
+      mpu_id = #{record.mpuId,jdbcType=VARCHAR},
       effective_start_date = #{record.effectiveStartDate,jdbcType=TIMESTAMP},
       effective_end_date = #{record.effectiveEndDate,jdbcType=TIMESTAMP},
       group_buying_price = #{record.groupBuyingPrice,jdbcType=INTEGER},
@@ -310,8 +310,8 @@
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="skuId != null">
-        sku_id = #{skuId,jdbcType=VARCHAR},
+      <if test="mpuId != null">
+        mpu_id = #{mpuId,jdbcType=VARCHAR},
       </if>
       <if test="effectiveStartDate != null">
         effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
@@ -355,7 +355,7 @@
   <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.GroupInfo">
     update group_info
     set name = #{name,jdbcType=VARCHAR},
-      sku_id = #{skuId,jdbcType=VARCHAR},
+      mpu_id = #{mpuId,jdbcType=VARCHAR},
       effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
       effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
       group_buying_price = #{groupBuyingPrice,jdbcType=INTEGER},

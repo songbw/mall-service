@@ -235,73 +235,73 @@ public class GroupInfoExample {
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdIsNull() {
-            addCriterion("sku_id is null");
+        public Criteria andMpuIdIsNull() {
+            addCriterion("mpu_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdIsNotNull() {
-            addCriterion("sku_id is not null");
+        public Criteria andMpuIdIsNotNull() {
+            addCriterion("mpu_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdEqualTo(String value) {
-            addCriterion("sku_id =", value, "skuId");
+        public Criteria andMpuIdEqualTo(String value) {
+            addCriterion("mpu_id =", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdNotEqualTo(String value) {
-            addCriterion("sku_id <>", value, "skuId");
+        public Criteria andMpuIdNotEqualTo(String value) {
+            addCriterion("mpu_id <>", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdGreaterThan(String value) {
-            addCriterion("sku_id >", value, "skuId");
+        public Criteria andMpuIdGreaterThan(String value) {
+            addCriterion("mpu_id >", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdGreaterThanOrEqualTo(String value) {
-            addCriterion("sku_id >=", value, "skuId");
+        public Criteria andMpuIdGreaterThanOrEqualTo(String value) {
+            addCriterion("mpu_id >=", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdLessThan(String value) {
-            addCriterion("sku_id <", value, "skuId");
+        public Criteria andMpuIdLessThan(String value) {
+            addCriterion("mpu_id <", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdLessThanOrEqualTo(String value) {
-            addCriterion("sku_id <=", value, "skuId");
+        public Criteria andMpuIdLessThanOrEqualTo(String value) {
+            addCriterion("mpu_id <=", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdLike(String value) {
-            addCriterion("sku_id like", value, "skuId");
+        public Criteria andMpuIdLike(String value) {
+            addCriterion("mpu_id like", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdNotLike(String value) {
-            addCriterion("sku_id not like", value, "skuId");
+        public Criteria andMpuIdNotLike(String value) {
+            addCriterion("mpu_id not like", value, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdIn(List<String> values) {
-            addCriterion("sku_id in", values, "skuId");
+        public Criteria andMpuIdIn(List<String> values) {
+            addCriterion("mpu_id in", values, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdNotIn(List<String> values) {
-            addCriterion("sku_id not in", values, "skuId");
+        public Criteria andMpuIdNotIn(List<String> values) {
+            addCriterion("mpu_id not in", values, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdBetween(String value1, String value2) {
-            addCriterion("sku_id between", value1, value2, "skuId");
+        public Criteria andMpuIdBetween(String value1, String value2) {
+            addCriterion("mpu_id between", value1, value2, "mpuId");
             return (Criteria) this;
         }
 
-        public Criteria andSkuIdNotBetween(String value1, String value2) {
-            addCriterion("sku_id not between", value1, value2, "skuId");
+        public Criteria andMpuIdNotBetween(String value1, String value2) {
+            addCriterion("mpu_id not between", value1, value2, "mpuId");
             return (Criteria) this;
         }
 

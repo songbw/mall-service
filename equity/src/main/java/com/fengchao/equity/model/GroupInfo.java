@@ -7,7 +7,7 @@ public class GroupInfo {
 
     private String name;
 
-    private String skuId;
+    private String mpuId;
 
     private Date effectiveStartDate;
 
@@ -49,12 +49,12 @@ public class GroupInfo {
         this.name = name == null ? null : name.trim();
     }
 
-    public String getSkuId() {
-        return skuId;
+    public String getMpuId() {
+        return mpuId;
     }
 
-    public void setSkuId(String skuId) {
-        this.skuId = skuId == null ? null : skuId.trim();
+    public void setMpuId(String mpuId) {
+        this.mpuId = mpuId == null ? null : mpuId.trim();
     }
 
     public Date getEffectiveStartDate() {

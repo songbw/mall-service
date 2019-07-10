@@ -154,7 +154,7 @@ public class AdminGroupServiceImpl implements AdminGroupService {
 
         groupInfo.setId(groupInfoReqVo.getId());
         groupInfo.setName(groupInfoReqVo.getName());
-        groupInfo.setSkuId(groupInfoReqVo.getSkuId());
+        groupInfo.setMpuId(groupInfoReqVo.getMpuId());
         groupInfo.setEffectiveStartDate(groupInfoReqVo.getEffectiveStartDate());
         groupInfo.setEffectiveEndDate(groupInfoReqVo.getEffectiveEndDate());
         groupInfo.setGroupBuyingPrice(groupInfoReqVo.getGroupBuyingPrice());
@@ -179,7 +179,7 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         GroupInfoResVo groupInfoResVo = new GroupInfoResVo();
         groupInfoResVo.setId(groupInfo.getId());
         groupInfoResVo.setName(groupInfo.getName());
-        groupInfoResVo.setSkuId(groupInfo.getSkuId());
+        groupInfoResVo.setMpuId(groupInfo.getMpuId());
         groupInfoResVo.setEffectiveStartDate(groupInfo.getEffectiveStartDate());
         groupInfoResVo.setEffectiveEndDate(groupInfo.getEffectiveEndDate());
         groupInfoResVo.setGroupBuyingPrice(groupInfo.getGroupBuyingPrice());

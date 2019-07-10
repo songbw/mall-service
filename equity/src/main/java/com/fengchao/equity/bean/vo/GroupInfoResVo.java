@@ -23,7 +23,7 @@ public class GroupInfoResVo extends PageVo {
     /**
      *
      */
-    private String skuId;
+    private String mpuId;
 
     /**
      * 活动生效时间
