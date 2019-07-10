@@ -163,11 +163,15 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public Coupon consumeCoupon(CouponUseInfoBean bean) {
+        CouponUseInfo useInfo = new CouponUseInfo();
         CouponUseInfo couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
         }
-        useInfoMapper.updateStatusByUserCode(bean.getUserCouponCode());
+        useInfo.setConsumedTime(new Date());
+        useInfo.setUserCouponCode(bean.getUserCouponCode());
+        useInfo.setStatus(3);
+        useInfoMapper.updateByPrimaryKeySelective(useInfo);
         Coupon coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         return coupon;
     }
