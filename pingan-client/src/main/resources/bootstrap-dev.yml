@@ -1,5 +1,0 @@
-spring:
-  cloud:
-    service-registry:
-      auto-registration:
-        enabled: true

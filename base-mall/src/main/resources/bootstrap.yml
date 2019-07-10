@@ -13,6 +13,8 @@ eureka:
       defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
 
 spring:
+  profiles:
+    active: dev
   application:
     name: base
   cloud:
@@ -20,7 +22,7 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
-      profile: dev
+      profile: ${spring.profiles.active}
       retry:
         max-attempts: 3
         max-interval: 2000
