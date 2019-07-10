@@ -8,8 +8,8 @@
     <result column="sub_order_id" property="subOrderId" jdbcType="INTEGER" />
     <result column="promotion_id" property="promotionId" jdbcType="INTEGER" />
     <result column="promotion_discount" property="promotionDiscount" jdbcType="DECIMAL" />
-    <result column="sku_id" property="sku" jdbcType="VARCHAR" />
-    <result column="sku" property="sku" jdbcType="VARCHAR" />
+    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+    <result column="mpu" property="mpu" jdbcType="VARCHAR" />
     <result column="num" property="num" jdbcType="INTEGER" />
     <result column="model" property="model" jdbcType="VARCHAR" />
     <result column="image" property="image" jdbcType="VARCHAR" />
@@ -24,7 +24,7 @@
     <result column="comcode" property="comCode" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, order_id, merchant_id, sub_order_id, sku_id, sku, promotion_id, promotion_discount, num, unit_price, sale_price, image, name, model, status, created_at,
+    id, order_id, merchant_id, sub_order_id, sku_id, mpu, promotion_id, promotion_discount, num, unit_price, sale_price, image, name, model, status, created_at,
     updated_at, logistics_id, logistics_content
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -67,10 +67,10 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.order.model.OrderDetail" >
-    insert into order_detail (order_id, merchant_id, sub_order_id, sku_id, sku,
+    insert into order_detail (order_id, merchant_id, sub_order_id, sku_id, mpu,
       num, unit_price, sale_price, image, name, model, status,
       created_at, updated_at, promotion_id, promotion_discount)
-    values (#{orderId,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR},
+    values (#{orderId,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{mpu,jdbcType=VARCHAR},
       #{num,jdbcType=INTEGER}, #{unitPrice,jdbcType=DECIMAL}, #{salePrice,jdbcType=DECIMAL}, #{image,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
       #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{promotionId}, #{promotionDiscount})
   </insert>
@@ -89,11 +89,11 @@
       <if test="orderId != null" >
         order_id,
       </if>
-      <if test="sku != null" >
+      <if test="skuId != null" >
         sku_id,
       </if>
-      <if test="sku != null" >
-        sku,
+      <if test="mpu != null" >
+        mpu,
       </if>
       <if test="num != null" >
         num,
@@ -130,11 +130,11 @@
       <if test="orderId != null" >
         #{orderId,jdbcType=INTEGER},
       </if>
-      <if test="sku != null" >
-        #{sku,jdbcType=VARCHAR},
+      <if test="skuId != null" >
+        #{skuId,jdbcType=VARCHAR},
       </if>
-      <if test="sku != null" >
-        #{sku,jdbcType=VARCHAR},
+      <if test="mpu != null" >
+        #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="num != null" >
         #{num,jdbcType=INTEGER},
@@ -168,11 +168,11 @@
       <if test="orderId != null" >
         order_id = #{orderId,jdbcType=INTEGER},
       </if>
-      <if test="sku != null" >
-        sku_id = #{sku,jdbcType=VARCHAR},
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=VARCHAR},
       </if>
-      <if test="sku != null" >
-        sku = #{sku,jdbcType=VARCHAR},
+      <if test="mpu != null" >
+        mpu = #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="num != null" >
         num = #{num,jdbcType=INTEGER},
@@ -195,8 +195,8 @@
   <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.OrderDetail" >
     update order_detail
     set order_id = #{orderId,jdbcType=INTEGER},
-      sku_id = #{sku,jdbcType=VARCHAR},
-      sku = #{sku,jdbcType=VARCHAR},
+      sku_id = #{skuId,jdbcType=VARCHAR},
+      mpu = #{mpu,jdbcType=VARCHAR},
       num = #{num,jdbcType=INTEGER},
       unit_price = #{unitPrice,jdbcType=DECIMAL},
       status = #{status,jdbcType=INTEGER},

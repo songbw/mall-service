@@ -6,7 +6,7 @@
     <result column="order_id" jdbcType="VARCHAR" property="orderId" />
     <result column="sub_order_id" jdbcType="VARCHAR" property="subOrderId" />
     <result column="return_order_no" jdbcType="VARCHAR" property="returnOrderNo" />
-    <result column="sku" jdbcType="VARCHAR" property="sku" />
+    <result column="mpu" jdbcType="VARCHAR" property="mpu" />
     <result column="number" jdbcType="INTEGER" property="number" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="reason" jdbcType="VARCHAR" property="reason" />
@@ -19,7 +19,7 @@
     <result column="refund_fee_at" jdbcType="TIMESTAMP" property="refundFeeAt" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, order_id, sub_order_id, return_order_no, sku, number, type, reason, description,
+    id, order_id, sub_order_id, return_order_no, mpu, number, type, reason, description,
     contact_name, contact_tel, status, created_at, updated_at, refund_fee_at
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -34,13 +34,13 @@
   </delete>
   <insert id="insert" parameterType="com.fengchao.order.model.RefundOrder" keyProperty="id" useGeneratedKeys="true">
     insert into refund_order (id, order_id, sub_order_id, 
-      return_order_no, sku, number,
+      return_order_no, mpu, number,
       type, reason, description, 
       contact_name, contact_tel, status, 
       created_at, updated_at, refund_fee_at
       )
     values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=VARCHAR}, #{subOrderId,jdbcType=VARCHAR}, 
-      #{returnOrderNo,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER},
+      #{returnOrderNo,jdbcType=VARCHAR}, #{mpu,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER},
       #{type,jdbcType=INTEGER}, #{reason,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{contactName,jdbcType=VARCHAR}, #{contactTel,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
       #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{refundFeeAt,jdbcType=TIMESTAMP}
@@ -61,8 +61,8 @@
       <if test="returnOrderNo != null">
         return_order_no,
       </if>
-      <if test="sku != null">
-        sku,
+      <if test="mpu != null">
+        mpu,
       </if>
       <if test="number != null">
         number,
@@ -109,7 +109,7 @@
         #{returnOrderNo,jdbcType=VARCHAR},
       </if>
       <if test="skuid != null">
-        #{sku,jdbcType=VARCHAR},
+        #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="number != null">
         #{number,jdbcType=INTEGER},
@@ -155,8 +155,8 @@
       <if test="returnOrderNo != null">
         return_order_no = #{returnOrderNo,jdbcType=VARCHAR},
       </if>
-      <if test="sku != null">
-        sku = #{sku,jdbcType=VARCHAR},
+      <if test="mpu != null">
+        mpu = #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="number != null">
         number = #{number,jdbcType=INTEGER},
@@ -196,7 +196,7 @@
     set order_id = #{orderId,jdbcType=VARCHAR},
       sub_order_id = #{subOrderId,jdbcType=VARCHAR},
       return_order_no = #{returnOrderNo,jdbcType=VARCHAR},
-      sku = #{sku,jdbcType=VARCHAR},
+      mpu = #{mpu,jdbcType=VARCHAR},
       number = #{number,jdbcType=INTEGER},
       type = #{type,jdbcType=INTEGER},
       reason = #{reason,jdbcType=VARCHAR},

@@ -56,5 +56,5 @@ public class ProductInfoBean {
 
     private Integer brandId ;
 
-    private String sku ;
+    private String mpu;
 }

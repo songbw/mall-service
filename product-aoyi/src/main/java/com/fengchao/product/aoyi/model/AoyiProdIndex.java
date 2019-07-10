@@ -45,7 +45,7 @@ public class AoyiProdIndex {
 
     private Integer brandId ;
 
-    private String sku ;
+    private String mpu;
 
     private Date createdAt;
 
@@ -219,12 +219,12 @@ public class AoyiProdIndex {
         this.brandId = brandId;
     }
 
-    public String getSku() {
-        return sku;
+    public String getMpu() {
+        return mpu;
     }
 
-    public void setSku(String sku) {
-        this.sku = sku;
+    public void setMpu(String mpu) {
+        this.mpu = mpu;
     }
 
     public Date getCreatedAt() {

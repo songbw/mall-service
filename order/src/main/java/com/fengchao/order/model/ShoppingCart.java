@@ -9,7 +9,7 @@ public class ShoppingCart {
 
     private String macAddress;
 
-    private String sku;
+    private String mpu;
 
     private Integer count;
 
@@ -45,12 +45,12 @@ public class ShoppingCart {
         this.macAddress = macAddress == null ? null : macAddress.trim();
     }
 
-    public String getSku() {
-        return sku;
+    public String getMpu() {
+        return mpu;
     }
 
-    public void setSku(String sku) {
-        this.sku = sku == null ? null : sku.trim();
+    public void setMpu(String mpu) {
+        this.mpu = mpu == null ? null : mpu.trim();
     }
 
     public Integer getCount() {

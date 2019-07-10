@@ -47,7 +47,7 @@
       <if test="promotionId != null">
         promotion_id,
       </if>
-      <if test="sku != null">
+      <if test="mpu != null">
         sku_id,
       </if>
       <if test="type != null">

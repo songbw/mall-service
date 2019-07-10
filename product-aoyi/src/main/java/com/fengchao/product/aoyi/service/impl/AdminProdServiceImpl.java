@@ -176,7 +176,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             int skuValue = skuCode.getSkuValue() ;
             AtomicInteger atomicInteger= new AtomicInteger(skuValue);
             String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet()) ;
-            bean.setSku(sku);
+            bean.setMpu(sku);
             bean.setCreatedAt(new Date());
             prodMapper.insertSelective(bean) ;
             skuCode.setSkuValue(atomicInteger.get());

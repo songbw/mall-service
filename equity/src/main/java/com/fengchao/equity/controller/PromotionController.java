@@ -27,7 +27,7 @@ public class PromotionController {
         return result;
     }
 
-    @GetMapping("sku")
+    @GetMapping("mpu")
     public OperaResult findPromotionBySkuId(@RequestParam("skuId")String skuId, OperaResult result){
         result.getData().put("result", service.findPromotionBySkuId(skuId));
         return result;

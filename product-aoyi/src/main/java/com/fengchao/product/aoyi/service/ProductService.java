@@ -23,6 +23,6 @@ public interface ProductService {
 
     List<AoyiProdIndex> findAll() throws ProductException ;
 
-    ProductInfoBean findAndPromotion(String skuId) throws ProductException;
+    ProductInfoBean findAndPromotion(String mpu) throws ProductException;
 
 }

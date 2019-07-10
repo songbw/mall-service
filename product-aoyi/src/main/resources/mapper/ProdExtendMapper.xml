@@ -3,26 +3,26 @@
 <mapper namespace="com.fengchao.product.aoyi.mapper.ProdExtendMapper" >
   <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.ProdExtend" >
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="sku" property="skuid" jdbcType="VARCHAR" />
+    <result column="mpu" property="skuid" jdbcType="VARCHAR" />
     <result column="image" property="image" jdbcType="VARCHAR" />
     <result column="images_url" property="imagesUrl" jdbcType="VARCHAR" />
     <result column="introduction_url" property="introductionUrl" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, sku, image, images_url, introduction_url
+    id, mpu, image, images_url, introduction_url
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
     from prod_extend
-    where sku = #{skuid,jdbcType=VARCHAR}
+    where mpu = #{skuid,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from prod_extend
-    where sku = #{skuid,jdbcType=VARCHAR}
+    where mpu = #{skuid,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.fengchao.product.aoyi.model.ProdExtend" >
-    insert into prod_extend (id, sku, image,
+    insert into prod_extend (id, mpu, image,
       images_url, introduction_url)
     values (#{id,jdbcType=INTEGER}, #{skuid,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, 
       #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR})
@@ -34,7 +34,7 @@
         id,
       </if>
       <if test="skuid != null" >
-        sku,
+        mpu,
       </if>
       <if test="image != null" >
         image,
@@ -68,7 +68,7 @@
     update prod_extend
     <set >
       <if test="skuid != null" >
-        sku = #{skuid,jdbcType=VARCHAR},
+        mpu = #{skuid,jdbcType=VARCHAR},
       </if>
       <if test="image != null" >
         image = #{image,jdbcType=VARCHAR},
@@ -80,11 +80,11 @@
         introduction_url = #{introductionUrl,jdbcType=VARCHAR},
       </if>
     </set>
-    where sku = #{skuid,jdbcType=VARCHAR}
+    where mpu = #{skuid,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.ProdExtend" >
     update prod_extend
-    set sku = #{skuid,jdbcType=VARCHAR},
+    set mpu = #{skuid,jdbcType=VARCHAR},
       image = #{image,jdbcType=VARCHAR},
       images_url = #{imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{introductionUrl,jdbcType=VARCHAR}

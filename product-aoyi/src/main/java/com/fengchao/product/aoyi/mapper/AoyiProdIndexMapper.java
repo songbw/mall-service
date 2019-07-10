@@ -18,7 +18,7 @@ public interface AoyiProdIndexMapper {
 
     AoyiProdIndex selectBySkuId(String skuId);
 
-    AoyiProdIndex selectBySku(String sku);
+    AoyiProdIndex selectByMpu(String sku);
 
     int updateByPrimaryKeySelective(AoyiProdIndex record);
 

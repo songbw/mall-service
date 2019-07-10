@@ -164,7 +164,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setName(prodIndexWithBLOBs.getName());
                 orderDetail.setStatus(0);
                 orderDetail.setSkuId(orderSku.getSkuId());
-                orderDetail.setSku(orderSku.getSku());
+                orderDetail.setMpu(orderSku.getMpu());
                 orderDetail.setMerchantId(orderSku.getMerchantId());
                 orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
                 orderDetail.setUnitPrice(orderSku.getUnitPrice());
@@ -175,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.setOpenId(bean.getOpenId());
-                shoppingCart.setSku(orderSku.getSkuId());
+                shoppingCart.setMpu(orderSku.getSkuId());
                 shoppingCartMapper.deleteByOpenIdAndSku(shoppingCart);
             });
             // 30分钟后取消订单

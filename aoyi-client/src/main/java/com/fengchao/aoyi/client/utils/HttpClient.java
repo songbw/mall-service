@@ -38,7 +38,7 @@ public class HttpClient {
     //获取全部商品类目id
     public static final String AOYI_CATEGORY_GETVALIDCATEGORY = "aoyi.category.get";
     public static final String AOYI_CATEGORY_GETVALIDCATEGORY_URL = "/category/aoyiApiCategory/getCategory";
-    //根据类目id 获取 商品 sku
+    //根据类目id 获取 商品 mpu
     public static final String AOYI_PRODPOOL_GETPRODUCTINFO  = "aoyi.prodpool.query";
     public static final String AOYI_PRODPOOL_GETPRODUCTINFO_RUL  = "/prodpool/aoyiApiProdPool/getProductInfo";
     //根据商品id 获取 商品详情

@@ -22,8 +22,8 @@ public class ProductController {
     }
 
     @GetMapping
-    private OperaResult find(String id, OperaResult result) throws ProductException {
-        result.getData().put("result", service.findAndPromotion(id)) ;
+    private OperaResult find(String mpu, OperaResult result) throws ProductException {
+        result.getData().put("result", service.findAndPromotion(mpu)) ;
         return result;
     }
 

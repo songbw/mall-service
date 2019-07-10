@@ -60,7 +60,7 @@ public class SkuCodeServiceImpl implements SkuCodeService {
             throw new ProductException(200013, "ID不能为空");
         }
         if (bean.getSkuValue() == null || bean.getSkuValue() <= 0) {
-            throw new ProductException(200014, "sku value不能为空");
+            throw new ProductException(200014, "mpu value不能为空");
         }
         bean.setUpdatedAt(new Date());
         bean.setSkuValue(bean.getSkuValue() + 1);

@@ -40,7 +40,7 @@ public class OrderDetail {
 
     private String comCode;
 
-    private String sku;
+    private String mpu;
 
     private Integer merchantId;
 
@@ -188,12 +188,12 @@ public class OrderDetail {
         this.promotionDiscount = promotionDiscount;
     }
 
-    public String getSku() {
-        return sku;
+    public String getMpu() {
+        return mpu;
     }
 
-    public void setSku(String sku) {
-        this.sku = sku;
+    public void setMpu(String mpu) {
+        this.mpu = mpu;
     }
 
     public Integer getMerchantId() {

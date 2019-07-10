@@ -1,7 +1,6 @@
 package com.fengchao.product.aoyi.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
@@ -142,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
     @DataSource(DataSourceNames.TWO)
     @Override
     public AoyiProdIndex find(String id) throws ProductException {
-        AoyiProdIndex aoyiProdIndex = mapper.selectBySku(id);
+        AoyiProdIndex aoyiProdIndex = mapper.selectByMpu(id);
         if (aoyiProdIndex.getImageExtend() != null) {
             aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
         }
@@ -188,9 +187,9 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public ProductInfoBean findAndPromotion(String skuId) throws ProductException {
+    public ProductInfoBean findAndPromotion(String mpu) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
-        AoyiProdIndex aoyiProdIndex = mapper.selectBySku(skuId);
+        AoyiProdIndex aoyiProdIndex = mapper.selectByMpu(mpu);
         String imageUrl = aoyiProdIndex.getImagesUrl();
         if (imageUrl != null && (!"".equals(imageUrl))) {
             String image = "";
