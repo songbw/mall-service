@@ -11,10 +11,10 @@ import java.util.List;
 @Data
 public class PageBean {
     private Object list = null;
-    private int total = 0;
-    private int pages = 0;
-    private int pageNo = 0;
-    private int pageSize = 0;
+    private Integer total = 0;
+    private Integer pages = 0;
+    private Integer pageNo = 0;
+    private Integer pageSize = 0;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Object object = null;
 

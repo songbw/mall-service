@@ -1,28 +1,31 @@
 package com.fengchao.equity.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fengchao.equity.bean.PageBean;
+import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.GroupsBean;
+import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.AdminGroupDao;
-import com.fengchao.equity.mapper.GroupInfoMapper;
 import com.fengchao.equity.mapper.GroupsMapper;
 import com.fengchao.equity.model.GroupInfo;
 import com.fengchao.equity.model.Groups;
 import com.fengchao.equity.service.AdminGroupService;
 import com.fengchao.equity.utils.ConvertUtil;
-import com.github.pagehelper.Page;
+import com.fengchao.equity.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Convert;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
+@Slf4j
 public class AdminGroupServiceImpl implements AdminGroupService {
 
     private GroupsMapper groupsMapper;
@@ -81,14 +84,17 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         PageableData<GroupInfoResVo> pageableData = new PageableData<>();
 
         // 1.查询逻辑
-        // GroupInfoReqVo 转 GroupInfo
+        // 组装查询参数(GroupInfoReqVo 转 GroupInfo)
         GroupInfo queryGroupInfo = convertToGroupInfo(groupInfoReqVo);
 
         // 转PageBean
         PageBean pageBean = ConvertUtil.convertToPageBean(groupInfoReqVo);
 
+        log.info("分页查询活动列表 组装查询参数 GroupInfo:{}, PageBean:{}",
+                JSONUtil.toJsonString(queryGroupInfo), JSONUtil.toJsonString(pageBean));
+
         // 执行查询
-        PageInfo<GroupInfo> pageInfo = adminGroupDao.queryGroupInfoListPageable(queryGroupInfo, pageBean);
+        PageInfo<GroupInfo> pageInfo = adminGroupDao.selectGroupInfoListPageable(queryGroupInfo, pageBean);
 
         // 2.处理结果
         PageVo pageVo = ConvertUtil.convertToPageVo(pageInfo);
@@ -105,6 +111,8 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         //
         pageableData.setList(groupInfoResVoList);
         pageableData.setPageInfo(pageVo);
+
+        log.info("分页查询活动列表 得到PageableData为:{}", JSONUtil.toJsonString(pageableData));
 
         return pageableData;
     }
@@ -154,8 +162,8 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         groupInfo.setGroupMemberQuantity(groupInfoReqVo.getGroupMemberQuantity());
         groupInfo.setLimitedPerMember(groupInfoReqVo.getLimitedPerMember());
         groupInfo.setDescription(groupInfoReqVo.getDescription());
-        groupInfo.setGroupStatus(groupInfoReqVo.getGroupStatus().shortValue());
-        groupInfo.setIstatus(groupInfoReqVo.getIstatus().shortValue());
+        groupInfo.setGroupStatus(groupInfoReqVo.getGroupStatus() == null ? null : groupInfoReqVo.getGroupStatus().shortValue());
+        groupInfo.setIstatus(groupInfoReqVo.getIstatus() == null ? null : groupInfoReqVo.getIstatus().shortValue());
         groupInfo.setOperator(groupInfoReqVo.getOperator());
 
         return groupInfo;
@@ -179,8 +187,8 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         groupInfoResVo.setGroupMemberQuantity(groupInfo.getGroupMemberQuantity());
         groupInfoResVo.setLimitedPerMember(groupInfo.getLimitedPerMember());
         groupInfoResVo.setDescription(groupInfo.getDescription());
-        groupInfoResVo.setGroupStatus(groupInfo.getGroupStatus().intValue());
-        groupInfoResVo.setIstatus(groupInfo.getIstatus().intValue());
+        groupInfoResVo.setGroupStatus(groupInfo.getGroupStatus() == null ? null : groupInfo.getGroupStatus().intValue());
+        groupInfoResVo.setIstatus(groupInfo.getIstatus() == null ? null : groupInfo.getIstatus().intValue());
         groupInfoResVo.setOperator(groupInfo.getOperator());
         groupInfoResVo.setCreateTime(groupInfo.getCreateTime());
         groupInfoResVo.setUpdateTime(groupInfo.getUpdateTime());

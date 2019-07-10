@@ -8,6 +8,7 @@ import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.service.AdminGroupService;
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -37,7 +38,7 @@ public class AdminGroupController {
      */
     @GetMapping("list/campaigns")
     public OperaResponse queryGroupList(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
-        log.info("分页查询活动列表 入参：{}", JSON.toJSONString(groupInfoReqVo));
+        log.info("分页查询活动列表 入参：{}", JSONUtil.toJsonString(groupInfoReqVo));
 
         try {
             PageableData<GroupInfoResVo> groupInfoResVoPageableData =
@@ -52,7 +53,7 @@ public class AdminGroupController {
             operaResponse.setMsg("分页查询活动列表 异常");
         }
 
-        log.info("分页查询活动列表 返回：{}", JSON.toJSONString(operaResponse));
+        log.info("分页查询活动列表 返回：{}", JSONUtil.toJsonString(operaResponse));
 
         return operaResponse;
     }

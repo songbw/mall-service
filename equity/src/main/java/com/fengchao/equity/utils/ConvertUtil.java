@@ -14,7 +14,7 @@ public class ConvertUtil {
      */
     public static PageBean convertToPageBean(PageVo pageVo) {
         PageBean pageBean = new PageBean();
-        pageBean.setTotal(pageVo.getTotalCount().intValue());
+        pageBean.setTotal(pageVo.getTotalCount() == null ? null : pageVo.getTotalCount().intValue());
         pageBean.setPages(pageVo.getTotalPage());
         pageBean.setPageNo(pageVo.getPageNo());
         pageBean.setPageSize(pageVo.getPageSize());

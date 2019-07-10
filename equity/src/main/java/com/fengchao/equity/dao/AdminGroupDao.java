@@ -5,6 +5,7 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.mapper.GroupInfoMapper;
 import com.fengchao.equity.model.GroupInfo;
 import com.fengchao.equity.model.GroupInfoExample;
+import com.fengchao.equity.utils.JSONUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -33,7 +34,7 @@ public class AdminGroupDao {
      * @param pageBean
      * @return
      */
-    public PageInfo<GroupInfo> queryGroupInfoListPageable(GroupInfo groupInfo, PageBean pageBean) {
+    public PageInfo<GroupInfo> selectGroupInfoListPageable(GroupInfo groupInfo, PageBean pageBean) {
         // 设置查询条件
         GroupInfoExample groupInfoExample = new GroupInfoExample();
         GroupInfoExample.Criteria criteria = groupInfoExample.createCriteria();
@@ -52,7 +53,7 @@ public class AdminGroupDao {
         // 执行查询
         List<GroupInfo> groupInfoList = groupInfoMapper.selectByExample(groupInfoExample);
 
-        log.info("AdminGroupDao#queryGroupInfoListPageable 数据库返回:{}", JSON.toJSONString(groupInfoList));
+        log.info("分页查询活动列表 AdminGroupDao#queryGroupInfoListPageable 数据库返回:{}", JSONUtil.toJsonString(groupInfoList));
 
         // 返回值
         PageInfo<GroupInfo> pageInfo = new PageInfo(groupInfoList);
