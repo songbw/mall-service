@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Setter
 @Getter
-public class GroupInfoResVo extends PageVo {
+public class GroupInfoResVo {
 
     /**
      *

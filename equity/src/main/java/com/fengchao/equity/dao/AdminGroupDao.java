@@ -2,6 +2,7 @@ package com.fengchao.equity.dao;
 
 import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.PageBean;
+import com.fengchao.equity.constants.IStatusEnum;
 import com.fengchao.equity.mapper.GroupInfoMapper;
 import com.fengchao.equity.model.GroupInfo;
 import com.fengchao.equity.model.GroupInfoExample;
@@ -37,7 +38,11 @@ public class AdminGroupDao {
     public PageInfo<GroupInfo> selectGroupInfoListPageable(GroupInfo groupInfo, PageBean pageBean) {
         // 设置查询条件
         GroupInfoExample groupInfoExample = new GroupInfoExample();
+
+        groupInfoExample.setOrderByClause("id desc");
         GroupInfoExample.Criteria criteria = groupInfoExample.createCriteria();
+
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
 
         if (StringUtils.isNotBlank(groupInfo.getName())) {
             criteria.andNameLike(groupInfo.getName());
@@ -46,7 +51,6 @@ public class AdminGroupDao {
         if (groupInfo.getGroupStatus() != null && groupInfo.getGroupStatus() > 0) {
             criteria.andGroupStatusEqualTo(groupInfo.getGroupStatus());
         }
-
 
         // 分页信息
         PageHelper.startPage(pageBean.getPageNo(), pageBean.getPageSize());
