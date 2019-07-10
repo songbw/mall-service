@@ -1,18 +1,20 @@
 package com.fengchao.equity.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.GroupsBean;
 import com.fengchao.equity.bean.OperaResponse;
+import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.service.AdminGroupService;
-import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/adminGroupBuying", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -23,10 +25,36 @@ public class AdminGroupController {
     private AdminGroupService adminGroupService;
 
     @PostMapping("campaigns")
+    @Deprecated
     public OperaResult createGroups(@RequestBody GroupsBean bean, OperaResult result){
         adminGroupService.createGroups(bean);
         result.getData().put("groupId",bean.getId());
         return result;
+    }
+
+    /**
+     * 创建活动信息
+     *
+     * @param groupInfoReqVo
+     * @param operaResponse
+     * @return
+     */
+    @PostMapping("create/campaigns")
+    public OperaResponse createGroupInfo(@RequestBody GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse){
+        log.info("创建活动信息 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
+
+        try {
+            Long id = adminGroupService.createGroupInfo(groupInfoReqVo);
+
+            Map<String, Long> result = new HashMap<>();
+            result.put("id", id);
+            operaResponse.setData(result);
+        } catch (Exception e) {
+            log.error("创建活动信息 异常:{}", e.getMessage(), e);
+        }
+
+        log.info("创建活动信息 返回:{}", JSONUtil.toJsonString(operaResponse));
+        return operaResponse;
     }
 
     /**

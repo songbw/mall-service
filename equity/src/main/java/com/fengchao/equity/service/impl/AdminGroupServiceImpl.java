@@ -7,6 +7,7 @@ import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.bean.vo.PageVo;
+import com.fengchao.equity.constants.GroupInfoStatusEnum;
 import com.fengchao.equity.dao.AdminGroupDao;
 import com.fengchao.equity.mapper.GroupsMapper;
 import com.fengchao.equity.model.GroupInfo;
@@ -115,6 +116,29 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         log.info("分页查询活动列表 得到PageableData为:{}", JSONUtil.toJsonString(pageableData));
 
         return pageableData;
+    }
+
+    @Override
+    public Long createGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception {
+        // 1. 校验数据
+        // 1.1 活动开始时间需要晚于当前时间30分钟
+
+
+        // 2. 提交任务, 该任务监控活动的开始和结束时间, 当达到开始或结束时间后,翻转活动状态
+
+
+
+        // 3. 插入数据库
+        // 转数据库实体GroupInfo
+        GroupInfo groupInfo = convertToGroupInfo(groupInfoReqVo);
+        groupInfo.setGroupStatus(GroupInfoStatusEnum.UNSTART.getValue().shortValue()); // 活动状态（1：未开始，2：进行中，3：已结束）
+
+        log.info("创建活动信息 转GroupInfo:{}", JSONUtil.toJsonString(groupInfoReqVo));
+        // 执行插入
+        Long id = adminGroupDao.insertGroupInfo(groupInfo);
+
+        log.info("创建活动信息 插入数据库 返回id:{}", id);
+        return id;
     }
 
     @Override

@@ -11,12 +11,16 @@ import com.fengchao.equity.bean.vo.GroupInfoResVo;
  */
 public interface AdminGroupService {
 
+    @Deprecated
     int createGroups(GroupsBean bean);
 
+    @Deprecated
     PageBean findGroups(GroupsBean bean);
 
+    @Deprecated
     int updateGroups(GroupsBean bean);
 
+    @Deprecated
     int deleteGroups(Integer id);
 
 
@@ -28,6 +32,15 @@ public interface AdminGroupService {
      * @throws Exception
      */
     PageableData<GroupInfoResVo> queryGroupListPageable(GroupInfoReqVo groupInfoReqVo) throws Exception;
+
+    /**
+     * 创建活动信息
+     *
+     * @param groupInfoReqVo
+     * @return
+     * @throws Exception
+     */
+    Long createGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception;
 
 
 }

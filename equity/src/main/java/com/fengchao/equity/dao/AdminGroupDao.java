@@ -64,4 +64,17 @@ public class AdminGroupDao {
 
         return pageInfo;
     }
+
+    /**
+     * 插入活动信息
+     *
+     * @param groupInfo
+     * @return
+     */
+    public Long insertGroupInfo(GroupInfo groupInfo) {
+        // 插入
+        groupInfoMapper.insertSelective(groupInfo);
+
+        return groupInfo.getId();
+    }
 }
