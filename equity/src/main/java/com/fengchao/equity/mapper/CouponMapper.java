@@ -35,7 +35,7 @@ public interface CouponMapper {
 
     List<String> selectTags();
 
-    List<Coupon> selectCouponBySku(AoyiProdBean aoyiProdBean);
+    List<Coupon> selectCouponByMpu(AoyiProdBean aoyiProdBean);
 
     int couponEffective(int couponId);
 

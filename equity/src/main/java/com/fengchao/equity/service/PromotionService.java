@@ -31,9 +31,9 @@ public interface PromotionService {
 
     Promotion findPromotionToUser(Integer id, Boolean detail);
 
-    List<PromotionInfoBean> findPromotionInfoBySkuId(String skuId);
+    List<PromotionInfoBean> findPromotionInfoByMpu(String mpu);
 
-    List<PromotionInfoBean> findPromotionBySkuId(String skuId);
+    List<PromotionInfoBean> findPromotionByMpu(String mpu);
 
     int end(int promotionId);
 }

@@ -28,8 +28,8 @@ public class PromotionController {
     }
 
     @GetMapping("mpu")
-    public OperaResult findPromotionBySkuId(@RequestParam("skuId")String skuId, OperaResult result){
-        result.getData().put("result", service.findPromotionBySkuId(skuId));
+    public OperaResult findPromotionByMpu(@RequestParam("skuId")String Mpu, OperaResult result){
+        result.getData().put("result", service.findPromotionByMpu(Mpu));
         return result;
     }
 }

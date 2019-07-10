@@ -24,7 +24,7 @@ public class Promotion {
 
     private Date createdDate;
 
-    private List<PromotionSku> promotionSkus;
+    private List<PromotionMpu> promotionSkus;
 
     public Integer getId() {
         return id;
@@ -90,11 +90,11 @@ public class Promotion {
         this.createdDate = createdDate;
     }
 
-    public List<PromotionSku> getPromotionSkus() {
+    public List<PromotionMpu> getPromotionSkus() {
         return promotionSkus;
     }
 
-    public void setPromotionSkus(List<PromotionSku> promotionSkus) {
+    public void setPromotionSkus(List<PromotionMpu> promotionSkus) {
         this.promotionSkus = promotionSkus;
     }
 }

@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fengchao.aggregation.mapper.AggregationSkuMapper">
-  <resultMap id="BaseResultMap" type="com.fengchao.aggregation.model.AggregationSku">
+<mapper namespace="com.fengchao.aggregation.mapper.AggregationMpuMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.aggregation.model.AggregationMpu">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="aggregation_id" jdbcType="INTEGER" property="aggregationId" />
     <result column="promotion_id" jdbcType="INTEGER" property="promotionId" />
-    <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+    <result column="mpu" jdbcType="VARCHAR" property="mpu" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="level" jdbcType="INTEGER" property="level" />
     <result column="sku_index" jdbcType="INTEGER" property="skuIndex" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, aggregation_id, promotion_id, sku_id, type, level, sku_index
+    id, aggregation_id, promotion_id, mpu, type, level, sku_index
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from aggregation_sku
+    from aggregation_mpu
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectBySkuId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByMpu" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from aggregation_sku
-    where sku_id = #{skuid,jdbcType=INTEGER}
+    from aggregation_mpu
+    where mpu = #{mpu,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from aggregation_sku
+    delete from aggregation_mpu
     where aggregation_id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.aggregation.model.AggregationSku">
-    insert into aggregation_sku (id, aggregation_id, promotion_id, 
-      sku_id, type, level, sku_index)
+  <insert id="insert" parameterType="com.fengchao.aggregation.model.AggregationMpu">
+    insert into aggregation_mpu (id, aggregation_id, promotion_id,
+      mpu, type, level, sku_index)
     values (#{id,jdbcType=INTEGER}, #{aggregationId,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, 
-      #{skuId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}), #{skuIndex,jdbcType=INTEGER})
+      #{mpu,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}), #{skuIndex,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.aggregation.model.AggregationSku">
-    insert into aggregation_sku
+  <insert id="insertSelective" parameterType="com.fengchao.aggregation.model.AggregationMpu">
+    insert into aggregation_mpu
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -48,7 +48,7 @@
         promotion_id,
       </if>
       <if test="mpu != null">
-        sku_id,
+        mpu,
       </if>
       <if test="type != null">
         type,
@@ -70,8 +70,8 @@
       <if test="promotionId != null">
         #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null">
-        #{skuId,jdbcType=VARCHAR},
+      <if test="mpu != null">
+        #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
@@ -84,8 +84,8 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.aggregation.model.AggregationSku">
-    update aggregation_sku
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.aggregation.model.AggregationMpu">
+    update aggregation_mpu
     <set>
       <if test="aggregationId != null">
         aggregation_id = #{aggregationId,jdbcType=INTEGER},
@@ -93,8 +93,8 @@
       <if test="promotionId != null">
         promotion_id = #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null">
-        sku_id = #{skuId,jdbcType=VARCHAR},
+      <if test="mpu != null">
+        mpu = #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
@@ -108,11 +108,11 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.aggregation.model.AggregationSku">
-    update aggregation_sku
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.aggregation.model.AggregationMpu">
+    update aggregation_mpu
     set aggregation_id = #{aggregationId,jdbcType=INTEGER},
       promotion_id = #{promotionId,jdbcType=INTEGER},
-      sku_id = #{skuId,jdbcType=VARCHAR},
+      mpu = #{mpu,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
       level = #{level,jdbcType=INTEGER},
       sku_index = #{skuIndex,jdbcType=INTEGER},

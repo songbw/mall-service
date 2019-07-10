@@ -1,11 +1,11 @@
 package com.fengchao.equity.model;
 
-public class PromotionSku {
+public class PromotionMpu {
     private Integer id;
 
     private Integer promotionId;
 
-    private String skuid;
+    private String mpu;
 
     private String discount;
 
@@ -39,12 +39,12 @@ public class PromotionSku {
         this.promotionId = promotionId;
     }
 
-    public String getSkuid() {
-        return skuid;
+    public String getMpu() {
+        return mpu;
     }
 
-    public void setSkuid(String skuid) {
-        this.skuid = skuid == null ? null : skuid.trim();
+    public void setMpu(String mpu) {
+        this.mpu = mpu;
     }
 
     public String getDiscount() {

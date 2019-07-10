@@ -1,13 +1,13 @@
 package com.fengchao.aggregation.model;
 
-public class AggregationSku {
+public class AggregationMpu {
     private Integer id;
 
     private Integer aggregationId;
 
     private Integer promotionId;
 
-    private String skuId;
+    private String mpu;
 
     private Integer type;
 
@@ -39,12 +39,12 @@ public class AggregationSku {
         this.promotionId = promotionId;
     }
 
-    public String getSkuId() {
-        return skuId;
+    public String getMpu() {
+        return mpu;
     }
 
-    public void setSkuId(String skuId) {
-        this.skuId = skuId == null ? null : skuId.trim();
+    public void setMpu(String mpu) {
+        this.mpu = mpu;
     }
 
     public Integer getType() {

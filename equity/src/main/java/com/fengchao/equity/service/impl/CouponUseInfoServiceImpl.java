@@ -318,11 +318,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 couponBean.getRules().setScopes(coupon.getScopes().split(","));
             }
             couponBean.getRules().getScenario().setType(coupon.getScenarioType());
-            if(coupon.getCouponSkus() != null){
-                couponBean.getRules().getScenario().setCouponSkus(coupon.getCouponSkus().split(","));
+            if(coupon.getCouponMpus() != null){
+                couponBean.getRules().getScenario().setCouponMpus(coupon.getCouponMpus().split(","));
             }
-            if(coupon.getExcludeSkus() != null){
-                couponBean.getRules().getScenario().setExcludeSkus(coupon.getExcludeSkus().split(","));
+            if(coupon.getExcludeMpus() != null){
+                couponBean.getRules().getScenario().setExcludeMpus(coupon.getExcludeMpus().split(","));
             }
             if(coupon.getCategories() != null){
                 couponBean.getRules().getScenario().setCategories(coupon.getCategories().split(","));

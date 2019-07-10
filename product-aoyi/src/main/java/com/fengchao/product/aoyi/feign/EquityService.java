@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "equity", fallback = EquityServiceH.class)
 public interface EquityService {
 
-    @RequestMapping(value = "/promotion/sku", method = RequestMethod.GET)
+    @RequestMapping(value = "/promotion/mpu", method = RequestMethod.GET)
     OperaResult findPromotionBySkuId(@RequestParam("skuId") String skuId);
 
-    @RequestMapping(value = "/adminCoupon/findBySku", method = RequestMethod.POST)
+    @RequestMapping(value = "/adminCoupon/findByMpu", method = RequestMethod.POST)
     OperaResult selectCouponBySku(@RequestBody AoyiProdIndex bean);
 }

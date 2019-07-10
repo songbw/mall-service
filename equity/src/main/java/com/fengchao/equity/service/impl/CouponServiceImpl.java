@@ -145,11 +145,11 @@ public class CouponServiceImpl implements CouponService {
         queryProdBean.setPageNo(pageNo);
         queryProdBean.setPageSize(bean.getLimit());
         if(coupon.getScenarioType() == 1){
-            queryProdBean.setCouponSkus(Arrays.asList(coupon.getCouponSkus().split(",")));
+            queryProdBean.setCouponSkus(Arrays.asList(coupon.getCouponMpus().split(",")));
         }else if(coupon.getScenarioType() == 2){
-            queryProdBean.setExcludeSkus(coupon.getExcludeSkus());
+            queryProdBean.setExcludeSkus(coupon.getExcludeMpus());
         }else if(coupon.getScenarioType() == 3){
-            queryProdBean.setExcludeSkus(coupon.getExcludeSkus());
+            queryProdBean.setExcludeSkus(coupon.getExcludeMpus());
             queryProdBean.setCategories(coupon.getCategories());
 //            map.put("brands",coupon.getBrands());
         }
@@ -173,9 +173,9 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public List<CouponBean> selectCouponBySku(AoyiProdBean bean) {
+    public List<CouponBean> selectCouponByMpu(AoyiProdBean bean) {
         List<CouponBean> couponBeans =  new ArrayList<>();
-        mapper.selectCouponBySku(bean).forEach(coupon -> {
+        mapper.selectCouponByMpu(bean).forEach(coupon -> {
             couponBeans.add(couponToBean(coupon));
         });
         return couponBeans;
@@ -255,8 +255,8 @@ public class CouponServiceImpl implements CouponService {
             coupon.setScopes(StringUtils.join(bean.getRules().getScopes(),","));
             if(bean.getRules().getScenario() != null){
                 coupon.setScenarioType(bean.getRules().getScenario().getType());
-                coupon.setCouponSkus(StringUtils.join(bean.getRules().getScenario().getCouponSkus(),","));
-                coupon.setExcludeSkus(StringUtils.join(bean.getRules().getScenario().getExcludeSkus(),","));
+                coupon.setCouponMpus(StringUtils.join(bean.getRules().getScenario().getCouponMpus(),","));
+                coupon.setExcludeMpus(StringUtils.join(bean.getRules().getScenario().getExcludeMpus(),","));
                 coupon.setCategories(StringUtils.join(bean.getRules().getScenario().getCategories(),","));
                 coupon.setBrands(StringUtils.join(bean.getRules().getScenario().getBrands(),","));
             }
@@ -324,11 +324,11 @@ public class CouponServiceImpl implements CouponService {
                 couponBean.getRules().setScopes(coupon.getScopes().split(","));
             }
             couponBean.getRules().getScenario().setType(coupon.getScenarioType());
-            if(coupon.getCouponSkus() != null){
-                couponBean.getRules().getScenario().setCouponSkus(coupon.getCouponSkus().split(","));
+            if(coupon.getCouponMpus() != null){
+                couponBean.getRules().getScenario().setCouponMpus(coupon.getCouponMpus().split(","));
             }
-            if(coupon.getExcludeSkus() != null){
-                couponBean.getRules().getScenario().setExcludeSkus(coupon.getExcludeSkus().split(","));
+            if(coupon.getExcludeMpus() != null){
+                couponBean.getRules().getScenario().setExcludeMpus(coupon.getExcludeMpus().split(","));
             }
             if(coupon.getCategories() != null){
                 couponBean.getRules().getScenario().setCategories(coupon.getCategories().split(","));

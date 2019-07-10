@@ -22,7 +22,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Autowired
     private AggregationMapper mapper;
     @Autowired
-    private AggregationSkuMapper skuMapper;
+    private AggregationMpuMapper mpuMapper;
 
 
     @Override
@@ -116,10 +116,10 @@ public class AggregationServiceImpl implements AggregationService {
 
     @Override
     public int updateContent(Aggregation bean) throws AggregationException{
-        AggregationSku aggregationSku = new AggregationSku();
+        AggregationMpu aggregationSku = new AggregationMpu();
         JSONArray AggregationArray = JSONObject.parseArray(bean.getContent());
         for (int i = 0; i < AggregationArray.size(); i++) {
-            skuMapper.deleteByPrimaryKey(bean.getId());
+            mpuMapper.deleteByPrimaryKey(bean.getId());
             int type = AggregationArray.getJSONObject(i).getInteger("type");
             if (type == 3) {
                 JSONObject titleObject = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONObject("settings").getJSONObject("title");
@@ -131,9 +131,9 @@ public class AggregationServiceImpl implements AggregationService {
                     JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < jsonArray.size(); j++) {
                         String skuid = jsonArray.getJSONObject(j).getString("skuid");
-                        aggregationSku.setSkuId(skuid);
+                        aggregationSku.setMpu(skuid);
                         aggregationSku.setSkuIndex(j);
-                        skuMapper.insertSelective(aggregationSku);
+                        mpuMapper.insertSelective(aggregationSku);
                     }
                 }
             }
@@ -184,14 +184,14 @@ public class AggregationServiceImpl implements AggregationService {
             return homePage;
         }
         for (int i = 0; i < AggregationArray.size(); i++) {
-            skuMapper.deleteByPrimaryKey(homePage.getId());
+            mpuMapper.deleteByPrimaryKey(homePage.getId());
             int type = AggregationArray.getJSONObject(i).getInteger("type");
             if (type == 3) {
                     JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < jsonArray.size(); j++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(j);
-                        String skuid = jsonArray.getJSONObject(j).getString("skuid");
-                        String value = RedisUtil.getValue(skuid);
+                        String mpu = jsonArray.getJSONObject(j).getString("mpu");
+                        String value = RedisUtil.getValue(mpu);
 //                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                         JSONObject product = JSONObject.parseObject(value);
                         if(product != null){
@@ -203,11 +203,11 @@ public class AggregationServiceImpl implements AggregationService {
             if (type == 4) {
                     JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < lists.size(); j++) {
-                        JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
-                        for (int l = 0; l < skus.size(); l++){
-                            JSONObject jsonObject = skus.getJSONObject(l);
-                            String skuid = jsonObject.getString("skuid");
-                            String value = RedisUtil.getValue(skuid);
+                        JSONArray mpus = lists.getJSONObject(j).getJSONArray("mpus");
+                        for (int l = 0; l < mpus.size(); l++){
+                            JSONObject jsonObject = mpus.getJSONObject(l);
+                            String mpu = jsonObject.getString("mpu");
+                            String value = RedisUtil.getValue(mpu);
 //                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                             JSONObject product = JSONObject.parseObject(value);
                             if(product != null){

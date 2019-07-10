@@ -4,9 +4,9 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.mapper.PromotionMapper;
-import com.fengchao.equity.mapper.PromotionSkuMapper;
+import com.fengchao.equity.mapper.PromotionMpuMapper;
 import com.fengchao.equity.model.Promotion;
-import com.fengchao.equity.model.PromotionSku;
+import com.fengchao.equity.model.PromotionMpu;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
@@ -24,7 +24,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Autowired
     private PromotionMapper mapper;
     @Autowired
-    private PromotionSkuMapper promotionSkuMapper;
+    private PromotionMpuMapper promotionMpuMapper;
     @Autowired
     private JobClient jobClient;
 
@@ -90,23 +90,23 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public int deletePromotion(Integer id) {
         mapper.deleteByPrimaryKey(id);
-        return promotionSkuMapper.deleteByPrimaryKey(id);
+        return promotionMpuMapper.deleteByPrimaryKey(id);
     }
 
     @Override
     public Promotion findPromotionById(Integer id) {
         Promotion promotion = mapper.selectByPrimaryKey(id);
-        promotion.setPromotionSkus(promotionSkuMapper.selectByPrimarySku(promotion.getId()));
+        promotion.setPromotionSkus(promotionMpuMapper.selectByPrimarySku(promotion.getId()));
         return promotion;
     }
 
     @Override
     public int createContent(Promotion bean) {
         final int[] num = {0};
-        List<PromotionSku> promotionSkus = bean.getPromotionSkus();
+        List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
             promotionSku.setPromotionId(bean.getId());
-            num[0] = promotionSkuMapper.insertSelective(promotionSku);
+            num[0] = promotionMpuMapper.insertSelective(promotionSku);
         });
         return num[0];
     }
@@ -114,10 +114,10 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public int updateContent(Promotion bean) {
         final int[] num = {0};
-        List<PromotionSku> promotionSkus = bean.getPromotionSkus();
+        List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
             promotionSku.setPromotionId(bean.getId());
-            num[0] = promotionSkuMapper.updateByPrimaryKeySelective(promotionSku);
+            num[0] = promotionMpuMapper.updateByPrimaryKeySelective(promotionSku);
         });
         return num[0];
     }
@@ -125,10 +125,10 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public int deleteContent(Promotion bean) {
         final int[] num = {0};
-        List<PromotionSku> promotionSkus = bean.getPromotionSkus();
+        List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
             promotionSku.setPromotionId(bean.getId());
-            num[0] = promotionSkuMapper.deleteBypromotionId(promotionSku);
+            num[0] = promotionMpuMapper.deleteBypromotionId(promotionSku);
         });
         return num[0];
     }
@@ -138,19 +138,19 @@ public class PromotionServiceImpl implements PromotionService {
 
         Promotion promotion = mapper.selectByPrimaryKey(id);
         if(detail != null && detail == true){
-            promotion.setPromotionSkus(promotionSkuMapper.selectByPrimarySku(promotion.getId()));
+            promotion.setPromotionSkus(promotionMpuMapper.selectByPrimarySku(promotion.getId()));
         }
         return promotion;
     }
 
     @Override
-    public List<PromotionInfoBean> findPromotionInfoBySkuId(String skuId) {
-        return mapper.selectPromotionInfoBySku(skuId);
+    public List<PromotionInfoBean> findPromotionInfoByMpu(String mpu) {
+        return mapper.selectPromotionInfoByMpu(mpu);
     }
 
     @Override
-    public List<PromotionInfoBean> findPromotionBySkuId(String skuId) {
-        return mapper.selectPromotionInfoBySku(skuId);
+    public List<PromotionInfoBean> findPromotionByMpu(String mpu) {
+        return mapper.selectPromotionInfoByMpu(mpu);
     }
 
     @Override

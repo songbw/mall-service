@@ -49,9 +49,9 @@ public class Coupon {
 
     private Integer scenarioType;
 
-    private String couponSkus;
+    private String couponMpus;
 
-    private String excludeSkus;
+    private String excludeMpus;
 
     private String categories;
 
@@ -255,20 +255,20 @@ public class Coupon {
         this.scenarioType = scenarioType;
     }
 
-    public String getCouponSkus() {
-        return couponSkus;
+    public String getCouponMpus() {
+        return couponMpus;
     }
 
-    public void setCouponSkus(String couponSkus) {
-        this.couponSkus = couponSkus == null ? null : couponSkus.trim();
+    public void setCouponMpus(String couponMpus) {
+        this.couponMpus = couponMpus;
     }
 
-    public String getExcludeSkus() {
-        return excludeSkus;
+    public String getExcludeMpus() {
+        return excludeMpus;
     }
 
-    public void setExcludeSkus(String excludeSkus) {
-        this.excludeSkus = excludeSkus == null ? null : excludeSkus.trim();
+    public void setExcludeMpus(String excludeMpus) {
+        this.excludeMpus = excludeMpus;
     }
 
     public String getCategories() {

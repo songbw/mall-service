@@ -25,8 +25,8 @@
     <result column="per_limited" property="perLimited" jdbcType="INTEGER" />
     <result column="scopes" property="scopes" jdbcType="VARCHAR" />
     <result column="scenario_type" property="scenarioType" jdbcType="INTEGER" />
-    <result column="coupon_skus" property="couponSkus" jdbcType="VARCHAR" />
-    <result column="exclude_skus" property="excludeSkus" jdbcType="VARCHAR" />
+    <result column="coupon_mpus" property="couponMpus" jdbcType="VARCHAR" />
+    <result column="exclude_mpus" property="excludeMpus" jdbcType="VARCHAR" />
     <result column="categories" property="categories" jdbcType="VARCHAR" />
     <result column="brands" property="brands" jdbcType="VARCHAR" />
     <result column="collect_type" property="collectType" jdbcType="INTEGER" />
@@ -40,7 +40,7 @@
     id, name, supplier_merchant_id, supplier_merchant_name, release_total, release_num, 
     release_start_date, release_end_date, status, effective_start_date, effective_end_date, 
     exclude_dates, description, url, create_date, category, tags, image_url, code, rules_description, 
-    per_limited, scopes, scenario_type, coupon_skus, exclude_skus, categories, brands, 
+    per_limited, scopes, scenario_type, coupon_mpus, exclude_mpus, categories, brands,
     collect_type, points, customer_type, users, coupon_type, coupon_rules
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -152,21 +152,21 @@
   <select id="selectTags" resultType="java.lang.String" >
     select distinct tags from coupon where tags != ""
   </select>
-  <select id="selectCouponBySku" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.PageBean">
+  <select id="selectCouponByMpu" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.PageBean">
     select
     <include refid="Base_Column_List" />
     from coupon
     where 1=1
     <if test="skuid != null and skuid != ''" >
-      and find_in_set(#{skuid,jdbcType=VARCHAR}, coupon_skus) and scenario_type = 1
+      and find_in_set(#{skuid,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
     </if>
     <if test="skuid != null and skuid != ''" >
-      or locate(#{skuid,jdbcType=VARCHAR},exclude_skus) = 0 and scenario_type = 2
+      or locate(#{skuid,jdbcType=VARCHAR},exclude_mpus) = 0 and scenario_type = 2
     </if>
     <if test="category != null and category != ''" >
       or find_in_set(#{category,jdbcType=VARCHAR}, category)
       <if test="skuid != null and skuid != ''" >
-        and locate(#{skuid,jdbcType=VARCHAR},exclude_skus) = 0
+        and locate(#{skuid,jdbcType=VARCHAR},exclude_mpus) = 0
       </if>
       and scenario_type = 3
     </if>
@@ -184,7 +184,7 @@
       create_date, category, tags, 
       image_url, code, rules_description, 
       per_limited, scopes, scenario_type, 
-      coupon_skus, exclude_skus, categories, 
+      coupon_mpus, exclude_mpus, categories,
       brands, collect_type, points, 
       customer_type, users, coupon_type, 
       coupon_rules)
@@ -196,7 +196,7 @@
       #{createDate,jdbcType=TIMESTAMP}, #{category,jdbcType=VARCHAR}, #{tags,jdbcType=VARCHAR}, 
       #{imageUrl,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{rulesDescription,jdbcType=VARCHAR}, 
       #{perLimited,jdbcType=INTEGER}, #{scopes,jdbcType=VARCHAR}, #{scenarioType,jdbcType=INTEGER}, 
-      #{couponSkus,jdbcType=VARCHAR}, #{excludeSkus,jdbcType=VARCHAR}, #{categories,jdbcType=VARCHAR}, 
+      #{couponMpus,jdbcType=VARCHAR}, #{excludeMpus,jdbcType=VARCHAR}, #{categories,jdbcType=VARCHAR},
       #{brands,jdbcType=VARCHAR}, #{collectType,jdbcType=INTEGER}, #{points,jdbcType=INTEGER}, 
       #{customerType,jdbcType=INTEGER}, #{users,jdbcType=VARCHAR}, #{couponType,jdbcType=INTEGER}, 
       #{couponRules,jdbcType=VARCHAR})
@@ -273,11 +273,11 @@
       <if test="scenarioType != null" >
         scenario_type,
       </if>
-      <if test="couponSkus != null" >
-        coupon_skus,
+      <if test="couponMpus != null" >
+        coupon_mpus,
       </if>
-      <if test="excludeSkus != null" >
-        exclude_skus,
+      <if test="excludeMpus != null" >
+        exclude_mpus,
       </if>
       <if test="categories != null" >
         categories,
@@ -374,11 +374,11 @@
       <if test="scenarioType != null" >
         #{scenarioType,jdbcType=INTEGER},
       </if>
-      <if test="couponSkus != null" >
-        #{couponSkus,jdbcType=VARCHAR},
+      <if test="couponMpus != null" >
+        #{couponMpus,jdbcType=VARCHAR},
       </if>
-      <if test="excludeSkus != null" >
-        #{excludeSkus,jdbcType=VARCHAR},
+      <if test="excludeMpus != null" >
+        #{excludeMpus,jdbcType=VARCHAR},
       </if>
       <if test="categories != null" >
         #{categories,jdbcType=VARCHAR},
@@ -475,11 +475,11 @@
       <if test="scenarioType != null" >
         scenario_type = #{scenarioType,jdbcType=INTEGER},
       </if>
-      <if test="couponSkus != null" >
-        coupon_skus = #{couponSkus,jdbcType=VARCHAR},
+      <if test="couponMpus != null" >
+        coupon_mpus = #{couponMpus,jdbcType=VARCHAR},
       </if>
-      <if test="excludeSkus != null" >
-        exclude_skus = #{excludeSkus,jdbcType=VARCHAR},
+      <if test="excludeMpus != null" >
+        exclude_mpus = #{excludeMpus,jdbcType=VARCHAR},
       </if>
       <if test="categories != null" >
         categories = #{categories,jdbcType=VARCHAR},
@@ -532,8 +532,8 @@
       per_limited = #{perLimited,jdbcType=INTEGER},
       scopes = #{scopes,jdbcType=VARCHAR},
       scenario_type = #{scenarioType,jdbcType=INTEGER},
-      coupon_skus = #{couponSkus,jdbcType=VARCHAR},
-      exclude_skus = #{excludeSkus,jdbcType=VARCHAR},
+      coupon_mpus = #{couponMpus,jdbcType=VARCHAR},
+      exclude_mpus = #{excludeMpus,jdbcType=VARCHAR},
       categories = #{categories,jdbcType=VARCHAR},
       brands = #{brands,jdbcType=VARCHAR},
       collect_type = #{collectType,jdbcType=INTEGER},
