@@ -157,6 +157,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         category.setCategoryIcon(bean.getCategoryIcon());
         category.setSortOrder(bean.getSortOrder());
         category.setParentId(bean.getParentId());
+        category.setIsShow(bean.getIsShow());
 
         mapper.updateByPrimaryKeySelective(category);
     }

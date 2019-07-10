@@ -11,4 +11,5 @@ public class CategoryBean {
     private String categoryIcon;
     private String categoryDesc;
     private Integer sortOrder;
+    private Boolean isShow;
 }
