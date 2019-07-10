@@ -6,9 +6,9 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.feign.VendorsService;
-import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
-import com.fengchao.product.aoyi.mapper.ProdExtendMapper;
-import com.fengchao.product.aoyi.mapper.SkuCodeMapper;
+import com.fengchao.product.aoyi.mapper.*;
+import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.AdminProdService;
@@ -38,6 +38,10 @@ public class AdminProdServiceImpl implements AdminProdService {
     private EquityService equityService;
     @Autowired
     private VendorsService vendorsService;
+    @Autowired
+    private AoyiBaseCategoryMapper categoryMapper;
+    @Autowired
+    private AoyiBaseBrandMapper brandMapper;
 
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
@@ -178,6 +182,18 @@ public class AdminProdServiceImpl implements AdminProdService {
             String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet()) ;
             bean.setMpu(sku);
             bean.setCreatedAt(new Date());
+            if (bean.getBrandId() != null && bean.getBrandId() > 0) {
+                AoyiBaseBrand baseBrand = brandMapper.selectByPrimaryKey(bean.getBrandId()) ;
+                if (baseBrand == null) {
+                    bean.setBrandId(0);
+                }
+            }
+            if (bean.getCategory() != null && !"".equals(bean.getCategory())) {
+                AoyiBaseCategory  category = categoryMapper.selectByPrimaryKey(Integer.parseInt(bean.getCategory())) ;
+                if (category == null) {
+                    bean.setCategory("");
+                }
+            }
             prodMapper.insertSelective(bean) ;
             skuCode.setSkuValue(atomicInteger.get());
             skuCodeMapper.updateSkuValueByPrimaryKey(skuCode) ;
