@@ -96,7 +96,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public Promotion findPromotionById(Integer id) {
         Promotion promotion = mapper.selectByPrimaryKey(id);
-        promotion.setPromotionSkus(promotionMpuMapper.selectByPrimarySku(promotion.getId()));
+        promotion.setPromotionSkus(promotionMpuMapper.selectByPrimaryMpu(promotion.getId()));
         return promotion;
     }
 
@@ -138,7 +138,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         Promotion promotion = mapper.selectByPrimaryKey(id);
         if(detail != null && detail == true){
-            promotion.setPromotionSkus(promotionMpuMapper.selectByPrimarySku(promotion.getId()));
+            promotion.setPromotionSkus(promotionMpuMapper.selectByPrimaryMpu(promotion.getId()));
         }
         return promotion;
     }

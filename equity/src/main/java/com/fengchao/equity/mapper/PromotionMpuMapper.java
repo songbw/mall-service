@@ -17,5 +17,5 @@ public interface PromotionMpuMapper {
 
     int deleteBypromotionId(PromotionMpu record);
 
-    List<PromotionMpu> selectByPrimarySku(Integer id);
+    List<PromotionMpu> selectByPrimaryMpu(Integer id);
 }
