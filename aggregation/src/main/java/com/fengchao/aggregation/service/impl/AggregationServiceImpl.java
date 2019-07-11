@@ -190,7 +190,7 @@ public class AggregationServiceImpl implements AggregationService {
                     JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < jsonArray.size(); j++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(j);
-                        String mpu = jsonArray.getJSONObject(j).getString("mpu");
+                        String mpu = jsonArray.getJSONObject(j).getString("skuid");
                         String value = RedisUtil.getValue(mpu);
 //                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                         JSONObject product = JSONObject.parseObject(value);
@@ -203,10 +203,10 @@ public class AggregationServiceImpl implements AggregationService {
             if (type == 4) {
                     JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < lists.size(); j++) {
-                        JSONArray mpus = lists.getJSONObject(j).getJSONArray("mpus");
+                        JSONArray mpus = lists.getJSONObject(j).getJSONArray("skus");
                         for (int l = 0; l < mpus.size(); l++){
                             JSONObject jsonObject = mpus.getJSONObject(l);
-                            String mpu = jsonObject.getString("mpu");
+                            String mpu = jsonObject.getString("skuid");
                             String value = RedisUtil.getValue(mpu);
 //                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                             JSONObject product = JSONObject.parseObject(value);
