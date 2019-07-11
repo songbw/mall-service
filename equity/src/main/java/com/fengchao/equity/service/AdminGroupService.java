@@ -51,4 +51,23 @@ public interface AdminGroupService {
      */
     Integer publishGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception;
 
+    /**
+     * 更新groupInfo
+     * 只有在‘新建’状态下的记录才可以更新
+     *
+     * @param groupInfoReqVo
+     * @return
+     * @throws Exception
+     */
+    Integer updateGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception;
+
+    /**
+     * 根据id删除
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    Integer deleteGroupInfoById(Long id) throws Exception;
+
 }

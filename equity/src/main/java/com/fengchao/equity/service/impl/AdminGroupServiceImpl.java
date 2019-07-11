@@ -8,6 +8,7 @@ import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.constants.GroupInfoStatusEnum;
+import com.fengchao.equity.constants.IStatusEnum;
 import com.fengchao.equity.constants.LTSConstants;
 import com.fengchao.equity.dao.AdminGroupDao;
 import com.fengchao.equity.jobClient.LTSJobClient;
@@ -197,6 +198,36 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     }
 
     @Override
+    public Integer updateGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception {
+        Long groupInfoId = groupInfoReqVo.getId();
+
+        // 根据id从数据库获取groupInfo
+        GroupInfo groupInfo = adminGroupDao.selectGroupInfoById(groupInfoId);
+
+        // 判断 groupInfo 状态，只有在'1:新建'状态下，才允许修改
+        int groupStatus = groupInfo.getGroupStatus();
+        if (groupStatus == GroupInfoStatusEnum.CREATED.getValue()) { // 允许修改
+            GroupInfo groupInfoForUpate = convertToGroupInfo(groupInfoReqVo);
+
+            int count = adminGroupDao.updateGroupInfoById(groupInfoForUpate);
+
+            return count;
+        } else {
+            log.warn("更新拼购活动信息 由于该活动状态不合法，不能更新 GroupInfo:{}", JSONUtil.toJsonString(groupInfo));
+
+            throw new Exception("由于该活动状态不合法，不能更新");
+        }
+    }
+
+
+    @Override
+    public Integer deleteGroupInfoById(Long id) throws Exception {
+        int count = adminGroupDao.updateGroupIstatusById(id, IStatusEnum.INVALID);
+        return count;
+    }
+
+    //=============================================================
+    @Override
     public int updateGroups(GroupsBean bean) {
         Groups groups = new Groups();
         groups.setId(bean.getId());
@@ -221,6 +252,8 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         return groupsMapper.deleteByPrimaryKey(id);
     }
 
+
+    //======================================= private =======================================
 
     /**
      * GroupInfoReqVo 转 GroupInfo

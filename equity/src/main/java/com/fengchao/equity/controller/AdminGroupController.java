@@ -7,7 +7,6 @@ import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.service.AdminGroupService;
-import com.fengchao.equity.utils.DateUtil;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +79,10 @@ public class AdminGroupController {
             int count = adminGroupService.publishGroupInfo(groupInfoReqVo);
 
             // 2.处理返回
-            if (count > 1) {
+            if (count > 0) {
                 operaResponse.setData(true);
             } else {
+                log.error("发布拼购活动 count:{}", count);
                 throw new Exception("发布拼购活动 更新状态失败");
             }
         } catch (Exception e) {
@@ -105,7 +105,7 @@ public class AdminGroupController {
      * @return
      */
     @GetMapping("list/campaigns")
-    public OperaResponse queryGroupList(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
+    public OperaResponse queryGroupInfoList(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
         log.info("分页查询活动列表 入参：{}", JSONUtil.toJsonString(groupInfoReqVo));
 
         try {
@@ -125,6 +125,64 @@ public class AdminGroupController {
 
         return operaResponse;
     }
+
+    @PostMapping("update/campaigns")
+    public OperaResponse updateGroupInfo(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
+        log.info("更新拼购活动信息 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
+
+        try {
+            // 执行更新
+            int count = adminGroupService.updateGroupInfo(groupInfoReqVo);
+
+            if (count > 0) {
+                operaResponse.setData(true);
+            } else {
+                log.error("更新拼购活动信息失败 count:{}", count);
+                throw new Exception("更新拼购活动信息失败");
+            }
+        } catch (Exception e) {
+            log.error("更新拼购活动信息 异常:{}", e.getMessage(), e);
+
+            operaResponse.setData(null);
+            operaResponse.setCode(500);
+            operaResponse.setMsg(e.getMessage());
+        }
+
+        log.info("更新拼购活动信息 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        return operaResponse;
+    }
+
+
+    @PostMapping("delete/campaigns")
+    public OperaResponse deleteGroupInfo(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
+        log.info("删除拼购活动信息 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
+
+        try {
+            // 执行更新
+            int count = adminGroupService.deleteGroupInfoById(groupInfoReqVo.getId());
+
+            if (count > 0) {
+                operaResponse.setData(true);
+            } else {
+                log.error("删除拼购活动信息失败 count:{}", count);
+                throw new Exception("删除拼购活动信息失败");
+            }
+        } catch (Exception e) {
+            log.error("删除拼购活动信息 异常:{}", e.getMessage(), e);
+
+            operaResponse.setData(null);
+            operaResponse.setCode(500);
+            operaResponse.setMsg(e.getMessage());
+        }
+
+        log.info("删除拼购活动信息 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        return operaResponse;
+    }
+
+    //=========================================
+
 
     @Deprecated
     @GetMapping("campaigns")

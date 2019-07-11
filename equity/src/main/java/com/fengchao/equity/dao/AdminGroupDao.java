@@ -121,4 +121,21 @@ public class AdminGroupDao {
 
         return count;
     }
+
+    /**
+     * 更新istatus
+     *
+     * @param id
+     * @param iStatusEnum
+     * @return
+     */
+    public int updateGroupIstatusById(Long id, IStatusEnum iStatusEnum) {
+        GroupInfo groupInfo = new GroupInfo();
+        groupInfo.setId(id);
+        groupInfo.setIstatus(iStatusEnum.getValue().shortValue());
+
+        int count = groupInfoMapper.updateByPrimaryKeySelective(groupInfo);
+
+        return count;
+    }
 }
