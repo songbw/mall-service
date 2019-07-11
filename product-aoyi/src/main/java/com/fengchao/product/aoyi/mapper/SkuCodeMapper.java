@@ -2,6 +2,8 @@ package com.fengchao.product.aoyi.mapper;
 
 import com.fengchao.product.aoyi.model.SkuCode;
 
+import java.util.List;
+
 public interface SkuCodeMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -20,4 +22,6 @@ public interface SkuCodeMapper {
     SkuCode selectByMerchantId(Integer merchantId) ;
 
     SkuCode selectLast() ;
+
+    List<SkuCode> selectList() ;
 }

@@ -1,5 +1,6 @@
 package com.fengchao.order.mapper;
 
+import com.fengchao.order.bean.MerchantPaymentBean;
 import com.fengchao.order.bean.OrderDetailBean;
 import com.fengchao.order.model.Order;
 
@@ -44,4 +45,6 @@ public interface OrderMapper {
     int selectDayCount(HashMap map);
 
     int selectDayPeopleCount(HashMap map) ;
+
+    List<MerchantPaymentBean> selectDayMerchantPaymentCount(HashMap map) ;
 }

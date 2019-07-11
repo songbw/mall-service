@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping(value = "/skuCode", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/merchantCode", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class SkuCodeController {
 
     @Autowired
@@ -21,6 +21,12 @@ public class SkuCodeController {
     private OperaResult find(Integer id, OperaResult result) {
         SkuCode skuCode = service.find(id);
         result.getData().put("result", skuCode) ;
+        return result;
+    }
+
+    @GetMapping("all")
+    private OperaResult findAll(OperaResult result) {
+        result.getData().put("result", service.findAll()) ;
         return result;
     }
 
