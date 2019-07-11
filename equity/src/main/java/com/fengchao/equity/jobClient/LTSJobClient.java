@@ -1,5 +1,6 @@
 package com.fengchao.equity.jobClient;
 
+import com.fengchao.equity.constants.LTSConstants;
 import com.fengchao.equity.utils.JSONUtil;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
@@ -14,24 +15,28 @@ public class LTSJobClient {
 
     private JobClient jobClient;
 
-    /**
-     * lts 针对equity的nodeName
-     */
-    private static final String LTS_NODE_NAME = "equity_trade_TaskTracker";
-
-
     @Autowired
     public LTSJobClient(JobClient jobClient) {
         this.jobClient = jobClient;
     }
 
-    public Boolean submitTriggerJob(String taskId, String taskType, Long triggerTime, String params) throws Exception {
+    /**
+     * 创建任务
+     *
+     * @param taskId
+     * @param taskType
+     * @param triggerTime
+     * @param taskParams
+     * @return
+     * @throws Exception
+     */
+    public Boolean submitTriggerJob(String taskId, String taskType, Long triggerTime, String taskParams) throws Exception {
         try {
             Job job = new Job();
             job.setTaskId(taskId); // "promotion_effective_trigger_" + id
             job.setParam("type", taskType);
-            job.setParam("params", params);
-            job.setTaskTrackerNodeGroup(LTS_NODE_NAME);
+            job.setParam("params", taskParams);
+            job.setTaskTrackerNodeGroup(LTSConstants.LTS_EQUITY_NODE_NAME);
             job.setNeedFeedback(true);
             job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
             job.setTriggerTime(triggerTime);   //

@@ -7,12 +7,14 @@ import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.service.AdminGroupService;
+import com.fengchao.equity.utils.DateUtil;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,13 +46,38 @@ public class AdminGroupController {
         log.info("创建活动信息 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
 
         try {
+            // 1. 校验数据
+            String effectiveStartDate = DateUtil.dateTimeFormat(groupInfoReqVo.getEffectiveStartDate(),
+                    DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            String effectiveEndDate = DateUtil.dateTimeFormat(groupInfoReqVo.getEffectiveEndDate(),
+                    DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            String nowDate = DateUtil.nowDateTime(DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            // 1.1 活动开始时间需要晚于当前时间30分钟
+            int diffMinutes = DateUtil.diffMinutes(nowDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                    effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            if (diffMinutes < 30) {
+                throw new Exception("活动开始时间需要晚于当前时间30分钟");
+            }
+
+            // 1.2 活动持续时间需要大于等于12小时
+            int diffHours = DateUtil.diffHours(effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                    effectiveEndDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            if (diffHours < 12) {
+                throw new Exception("活动持续时间需要大于等于12小时");
+            }
+
+            // 创建group
             Long id = adminGroupService.createGroupInfo(groupInfoReqVo);
 
+            // 处理返回
             Map<String, Long> result = new HashMap<>();
             result.put("id", id);
             operaResponse.setData(result);
         } catch (Exception e) {
             log.error("创建活动信息 异常:{}", e.getMessage(), e);
+
+            operaResponse.setCode(500);
+            operaResponse.setMsg(e.getMessage());
         }
 
         log.info("创建活动信息 返回:{}", JSONUtil.toJsonString(operaResponse));

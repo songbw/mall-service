@@ -8,7 +8,9 @@ import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.constants.GroupInfoStatusEnum;
+import com.fengchao.equity.constants.LTSConstants;
 import com.fengchao.equity.dao.AdminGroupDao;
+import com.fengchao.equity.jobClient.LTSJobClient;
 import com.fengchao.equity.mapper.GroupsMapper;
 import com.fengchao.equity.model.GroupInfo;
 import com.fengchao.equity.model.Groups;
@@ -20,10 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -33,11 +32,15 @@ public class AdminGroupServiceImpl implements AdminGroupService {
 
     private AdminGroupDao adminGroupDao;
 
+    private LTSJobClient ltsJobClient;
+
     @Autowired
     public AdminGroupServiceImpl(GroupsMapper groupsMapper,
-                                 AdminGroupDao adminGroupDao) {
+                                 AdminGroupDao adminGroupDao,
+                                 LTSJobClient ltsJobClient) {
         this.groupsMapper = groupsMapper;
         this.adminGroupDao = adminGroupDao;
+        this.ltsJobClient = ltsJobClient;
     }
 
     @Override
@@ -120,15 +123,7 @@ public class AdminGroupServiceImpl implements AdminGroupService {
 
     @Override
     public Long createGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception {
-        // 1. 校验数据
-        // 1.1 活动开始时间需要晚于当前时间30分钟
-
-
-        // 2. 提交任务, 该任务监控活动的开始和结束时间, 当达到开始或结束时间后,翻转活动状态
-
-
-
-        // 3. 插入数据库
+        // 1. 插入数据库
         // 转数据库实体GroupInfo
         GroupInfo groupInfo = convertToGroupInfo(groupInfoReqVo);
         groupInfo.setGroupStatus(GroupInfoStatusEnum.UNSTART.getValue().shortValue()); // 活动状态（1：未开始，2：进行中，3：已结束）
@@ -136,8 +131,27 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         log.info("创建活动信息 转GroupInfo:{}", JSONUtil.toJsonString(groupInfoReqVo));
         // 执行插入
         Long id = adminGroupDao.insertGroupInfo(groupInfo);
-
         log.info("创建活动信息 插入数据库 返回id:{}", id);
+
+        // 2. 提交任务, 该任务监控活动的开始和结束时间, 当达到开始或结束时间后,翻转活动状态
+        // 2.1 提交拼团开始触发任务
+        boolean stratTaskResult = ltsJobClient.submitTriggerJob(LTSConstants.GROUP_START_TRIGGER_PREFIX + id,
+                LTSConstants.GROUP_TYPE_START_TASK, groupInfoReqVo.getEffectiveStartDate().getTime(), id + "");
+
+        if (!stratTaskResult) { // TODO : 这里数据库应该回滚，或者告警; 先抛出异常吧，前端当作groupinfo创建失败处理
+            log.error("创建 开始触发 拼购任务执行失败！！ startTaskId:{}", LTSConstants.GROUP_START_TRIGGER_PREFIX + id);
+            throw new Exception("创建 开始触发 拼购任务执行失败");
+        }
+
+        // 2.2 提交拼团结束触发任务
+        boolean endTaskResult = ltsJobClient.submitTriggerJob(LTSConstants.GROUP_END_TRIGGER_PREFIX + id,
+                LTSConstants.GROUP_TYPE_END_TASK, groupInfoReqVo.getEffectiveEndDate().getTime(), id + "");
+
+        if (!endTaskResult) { // TODO : 这里数据库应该回滚，或者告警; 先抛出异常吧，前端当作groupinfo创建失败处理
+            log.error("创建 结束触发 拼购任务执行失败！！ endTaskId:{}", LTSConstants.GROUP_END_TRIGGER_PREFIX + id);
+            throw new Exception("创建 结束触发 拼购任务执行失败");
+        }
+
         return id;
     }
 
