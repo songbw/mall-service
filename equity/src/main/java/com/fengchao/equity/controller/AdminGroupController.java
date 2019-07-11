@@ -42,45 +42,58 @@ public class AdminGroupController {
      */
     @PostMapping("create/campaigns")
     public OperaResponse createGroupInfo(@RequestBody GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse){
-        log.info("创建活动信息 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
+        log.info("创建拼购活动信息 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
 
         try {
-            // 1. 校验数据
-            String effectiveStartDate = DateUtil.dateTimeFormat(groupInfoReqVo.getEffectiveStartDate(),
-                    DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            String effectiveEndDate = DateUtil.dateTimeFormat(groupInfoReqVo.getEffectiveEndDate(),
-                    DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            String nowDate = DateUtil.nowDateTime(DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            // 1.1 活动开始时间需要晚于当前时间30分钟
-            Long diffMinutes = DateUtil.diffMinutes(nowDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
-                    effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            if (diffMinutes < 30) {
-                throw new Exception("活动开始时间需要晚于当前时间30分钟");
-            }
-
-            // 1.2 活动持续时间需要大于等于12小时
-            Long diffHours = DateUtil.diffHours(effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
-                    effectiveEndDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            if (diffHours < 12) {
-                throw new Exception("活动持续时间需要大于等于12小时");
-            }
-
-            // 2.创建group
+            // 1.创建group
             Long id = adminGroupService.createGroupInfo(groupInfoReqVo);
 
-            // 3.处理返回
+            // 2.处理返回
             Map<String, Long> result = new HashMap<>();
             result.put("id", id);
             operaResponse.setData(result);
         } catch (Exception e) {
-            log.error("创建活动信息 异常:{}", e.getMessage(), e);
+            log.error("创建拼购活动信息 异常:{}", e.getMessage(), e);
 
             operaResponse.setCode(500);
             operaResponse.setMsg(e.getMessage());
             operaResponse.setData(null);
         }
 
-        log.info("创建活动信息 返回:{}", JSONUtil.toJsonString(operaResponse));
+        log.info("创建拼购活动信息 返回:{}", JSONUtil.toJsonString(operaResponse));
+        return operaResponse;
+    }
+
+    /**
+     * 发布拼购活动
+     *
+     * @param groupInfoReqVo
+     * @param operaResponse
+     * @return
+     */
+    @PostMapping("publish/campaigns")
+    public OperaResponse publishGroupInfo(@RequestBody GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse){
+        log.info("发布拼购活动 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
+
+        try {
+            // 1.发布group
+            int count = adminGroupService.publishGroupInfo(groupInfoReqVo);
+
+            // 2.处理返回
+            if (count > 1) {
+                operaResponse.setData(true);
+            } else {
+                throw new Exception("发布拼购活动 更新状态失败");
+            }
+        } catch (Exception e) {
+            log.error("发布拼购活动 异常:{}", e.getMessage(), e);
+
+            operaResponse.setCode(500);
+            operaResponse.setMsg(e.getMessage());
+            operaResponse.setData(null);
+        }
+
+        log.info("发布拼购活动 返回:{}", JSONUtil.toJsonString(operaResponse));
         return operaResponse;
     }
 

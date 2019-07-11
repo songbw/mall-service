@@ -16,6 +16,7 @@ import com.fengchao.equity.model.GroupInfo;
 import com.fengchao.equity.model.Groups;
 import com.fengchao.equity.service.AdminGroupService;
 import com.fengchao.equity.utils.ConvertUtil;
+import com.fengchao.equity.utils.DateUtil;
 import com.fengchao.equity.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -71,9 +72,9 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
-        map.put("pageSize",bean.getLimit());
-        map.put("name",bean.getName());
-        map.put("campaignStatus",bean.getCampaignStatus());
+        map.put("pageSize", bean.getLimit());
+        map.put("name", bean.getName());
+        map.put("campaignStatus", bean.getCampaignStatus());
         List<Groups> groups = new ArrayList<>();
         total = groupsMapper.selectCount(map);
         if (total > 0) {
@@ -127,33 +128,72 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         // 1. 插入数据库
         // 转数据库实体GroupInfo
         GroupInfo groupInfo = convertToGroupInfo(groupInfoReqVo);
-        groupInfo.setGroupStatus(GroupInfoStatusEnum.UNSTART.getValue().shortValue()); // 活动状态（1：未开始，2：进行中，3：已结束）
+        groupInfo.setGroupStatus(GroupInfoStatusEnum.CREATED.getValue().shortValue()); // 1:新建 2：未开始(提交/发布) 3：进行中，4：已结束
 
-        log.info("创建活动信息 转GroupInfo:{}", JSONUtil.toJsonString(groupInfoReqVo));
+        log.info("创建拼购活动信息 转GroupInfo:{}", JSONUtil.toJsonString(groupInfoReqVo));
         // 执行插入
         Long id = adminGroupDao.insertGroupInfo(groupInfo);
-        log.info("创建活动信息 插入数据库 返回id:{}", id);
+        log.info("创建拼购活动信息 插入数据库 返回id:{}", id);
 
-        // 2. 提交任务, 该任务监控活动的开始和结束时间, 当达到开始或结束时间后,翻转活动状态
-        // 2.1 提交拼团开始触发任务
-        boolean stratTaskResult = ltsJobClient.submitTriggerJob(LTSConstants.GROUP_START_TRIGGER_PREFIX + id,
-                LTSConstants.GROUP_TYPE_START_TASK, groupInfoReqVo.getEffectiveStartDate().getTime(), id + "");
+        return id;
+    }
 
-        if (!stratTaskResult) { // TODO : 这里数据库应该回滚，或者告警; 先抛出异常吧，前端当作groupinfo创建失败处理
-            log.error("创建 开始触发 拼购任务执行失败！！ startTaskId:{}", LTSConstants.GROUP_START_TRIGGER_PREFIX + id);
+    @Override
+    public Integer publishGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception {
+        // 1.根据id获取活动信息
+        Long groupInfoId = groupInfoReqVo.getId();
+        GroupInfo groupInfo = adminGroupDao.selectGroupInfoById(groupInfoId);
+
+        // 2. 校验数据
+        String effectiveStartDate = DateUtil.dateTimeFormat(groupInfo.getEffectiveStartDate(),
+                DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 活动开始时间
+        String effectiveEndDate = DateUtil.dateTimeFormat(groupInfo.getEffectiveEndDate(),
+                DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 活动结束时间
+        String nowDate = DateUtil.nowDateTime(DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 当前时间
+        int price = groupInfo.getGroupBuyingPrice(); // 单位：分
+
+        // 2.1 发布活动，需要提前在活动开始时间点的10分钟前发布
+        Long diffMinutes = DateUtil.diffMinutes(nowDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        if (diffMinutes < 10) {
+            throw new Exception("需要提前在活动开始时间点的10分钟前发布");
+        }
+
+        // 2.2 活动持续时间需要大于等于12小时
+        Long diffHours = DateUtil.diffHours(effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                effectiveEndDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        if (diffHours < 12) {
+            throw new Exception("活动持续时间需要大于等于12小时");
+        }
+
+        // 2.3 活动价格校验
+        if (price <= 0) {
+            throw new Exception("活动价格不合法");
+        }
+
+        // 3. 提交任务, 该任务监控活动的开始和结束时间, 当达到开始或结束时间后,翻转活动状态
+        // 3.1 提交拼团开始触发任务
+        boolean stratTaskResult = ltsJobClient.submitTriggerJob(LTSConstants.GROUP_START_TRIGGER_PREFIX + groupInfoId,
+                LTSConstants.GROUP_TYPE_START_TASK, groupInfoReqVo.getEffectiveStartDate().getTime(), groupInfoId + "");
+
+        if (!stratTaskResult) { // TODO :
+            log.error("创建 开始触发 拼购任务执行失败！！ startTaskId:{}", LTSConstants.GROUP_START_TRIGGER_PREFIX + groupInfoId);
             throw new Exception("创建 开始触发 拼购任务执行失败");
         }
 
-        // 2.2 提交拼团结束触发任务
-        boolean endTaskResult = ltsJobClient.submitTriggerJob(LTSConstants.GROUP_END_TRIGGER_PREFIX + id,
-                LTSConstants.GROUP_TYPE_END_TASK, groupInfoReqVo.getEffectiveEndDate().getTime(), id + "");
+        // 3.2 提交拼团结束触发任务
+        boolean endTaskResult = ltsJobClient.submitTriggerJob(LTSConstants.GROUP_END_TRIGGER_PREFIX + groupInfoId,
+                LTSConstants.GROUP_TYPE_END_TASK, groupInfoReqVo.getEffectiveEndDate().getTime(), groupInfoId + "");
 
-        if (!endTaskResult) { // TODO : 这里数据库应该回滚，或者告警; 先抛出异常吧，前端当作groupinfo创建失败处理
-            log.error("创建 结束触发 拼购任务执行失败！！ endTaskId:{}", LTSConstants.GROUP_END_TRIGGER_PREFIX + id);
+        if (!endTaskResult) { // TODO : 这里如果失败，其实需要立即取消该任务，这里不处理的话会有问题，起码应该报警
+            log.error("创建 结束触发 拼购任务执行失败！！ endTaskId:{}", LTSConstants.GROUP_END_TRIGGER_PREFIX + groupInfoId);
             throw new Exception("创建 结束触发 拼购任务执行失败");
         }
 
-        return id;
+        // 4. 修改活动状态
+        int count = adminGroupDao.updateGroupInfoStatusById(groupInfoId, GroupInfoStatusEnum.UNSTART);
+
+        return count;
     }
 
     @Override
@@ -196,7 +236,15 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         groupInfo.setMpuId(groupInfoReqVo.getMpuId());
         groupInfo.setEffectiveStartDate(groupInfoReqVo.getEffectiveStartDate());
         groupInfo.setEffectiveEndDate(groupInfoReqVo.getEffectiveEndDate());
-        groupInfo.setGroupBuyingPrice(groupInfoReqVo.getGroupBuyingPrice().multiply(new BigDecimal(100)).intValue()); // 乘100 转成分
+
+        // 处理价格 乘100 转成分
+        Integer fen = null;
+        if (groupInfoReqVo.getGroupBuyingPrice() != null) {
+            fen = groupInfoReqVo.getGroupBuyingPrice().multiply(new BigDecimal(100)).intValue();
+        }
+        groupInfo.setGroupBuyingPrice(fen); //
+
+
         groupInfo.setGroupBuyingQuantity(groupInfoReqVo.getGroupBuyingQuantity());
         groupInfo.setGroupMemberQuantity(groupInfoReqVo.getGroupMemberQuantity());
         groupInfo.setLimitedPerMember(groupInfoReqVo.getLimitedPerMember());
@@ -223,8 +271,11 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         groupInfoResVo.setEffectiveEndDate(groupInfo.getEffectiveEndDate());
 
         // 将分转化成元
-        BigDecimal fenPrice = new BigDecimal(groupInfo.getGroupBuyingPrice());
-        BigDecimal yuanPrice = fenPrice.divide(new BigDecimal(100));
+        BigDecimal yuanPrice = new BigDecimal(0);
+        if (groupInfo.getGroupBuyingPrice() != null) { //
+            BigDecimal fenPrice = new BigDecimal(groupInfo.getGroupBuyingPrice());
+            yuanPrice = fenPrice.divide(new BigDecimal(100));
+        }
         groupInfoResVo.setGroupBuyingPrice(yuanPrice);
 
         groupInfoResVo.setGroupBuyingQuantity(groupInfo.getGroupBuyingQuantity());

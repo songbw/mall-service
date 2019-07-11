@@ -42,5 +42,13 @@ public interface AdminGroupService {
      */
     Long createGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception;
 
+    /**
+     * 发布拼购活动
+     *
+     * @param groupInfoReqVo
+     * @return
+     * @throws Exception
+     */
+    Integer publishGroupInfo(GroupInfoReqVo groupInfoReqVo) throws Exception;
 
 }

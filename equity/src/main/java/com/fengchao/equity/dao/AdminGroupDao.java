@@ -2,6 +2,7 @@ package com.fengchao.equity.dao;
 
 import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.PageBean;
+import com.fengchao.equity.constants.GroupInfoStatusEnum;
 import com.fengchao.equity.constants.IStatusEnum;
 import com.fengchao.equity.mapper.GroupInfoMapper;
 import com.fengchao.equity.model.GroupInfo;
@@ -66,6 +67,20 @@ public class AdminGroupDao {
     }
 
     /**
+     * 根据id获取GroupInfo
+     *
+     * @param id
+     * @return
+     */
+    public GroupInfo selectGroupInfoById(Long id) {
+        GroupInfo groupInfo = groupInfoMapper.selectByPrimaryKey(id);
+
+        log.info("根据id查询GroupInfo 数据库返回:{}", JSONUtil.toJsonString(groupInfo));
+
+        return groupInfo;
+    }
+
+    /**
      * 插入活动信息
      *
      * @param groupInfo
@@ -76,5 +91,34 @@ public class AdminGroupDao {
         int count = groupInfoMapper.insertSelective(groupInfo);
 
         return groupInfo.getId();
+    }
+
+    /**
+     * 根据id更新 groupInfo
+     *
+     * @param groupInfo
+     * @return
+     */
+    public int updateGroupInfoById(GroupInfo groupInfo) {
+        int count = groupInfoMapper.updateByPrimaryKeySelective(groupInfo);
+
+        return count;
+    }
+
+    /**
+     * 根据groupInfoId更新状态groupInfoStatusEnum
+     *
+     * @param id
+     * @param groupInfoStatusEnum
+     * @return
+     */
+    public int updateGroupInfoStatusById(Long id, GroupInfoStatusEnum groupInfoStatusEnum) {
+        GroupInfo groupInfo = new GroupInfo();
+        groupInfo.setId(id);
+        groupInfo.setGroupStatus(groupInfoStatusEnum.getValue().shortValue());
+
+        int count = groupInfoMapper.updateByPrimaryKeySelective(groupInfo);
+
+        return count;
     }
 }

@@ -5,7 +5,7 @@ package com.fengchao.equity.constants;
  */
 public enum  GroupInfoStatusEnum {
 
-    UNSTART(1), ONGOING(2), FINISH(3);
+    CREATED(1), UNSTART(2), ONGOING(3), FINISH(4);
 
     private Integer value;
 
