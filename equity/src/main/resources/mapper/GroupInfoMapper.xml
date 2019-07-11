@@ -112,6 +112,9 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.GroupInfo">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into group_info (id, name, mpu_id, 
       effective_start_date, effective_end_date, 
       group_buying_price, group_buying_quantity, 
@@ -128,11 +131,12 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.equity.model.GroupInfo">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into group_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
+      id,
       <if test="name != null">
         name,
       </if>
@@ -177,9 +181,7 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
+      #{id,jdbcType=BIGINT},
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>

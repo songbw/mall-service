@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -195,7 +196,7 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         groupInfo.setMpuId(groupInfoReqVo.getMpuId());
         groupInfo.setEffectiveStartDate(groupInfoReqVo.getEffectiveStartDate());
         groupInfo.setEffectiveEndDate(groupInfoReqVo.getEffectiveEndDate());
-        groupInfo.setGroupBuyingPrice(groupInfoReqVo.getGroupBuyingPrice());
+        groupInfo.setGroupBuyingPrice(groupInfoReqVo.getGroupBuyingPrice().multiply(new BigDecimal(100)).intValue()); // 乘100 转成分
         groupInfo.setGroupBuyingQuantity(groupInfoReqVo.getGroupBuyingQuantity());
         groupInfo.setGroupMemberQuantity(groupInfoReqVo.getGroupMemberQuantity());
         groupInfo.setLimitedPerMember(groupInfoReqVo.getLimitedPerMember());
@@ -220,7 +221,12 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         groupInfoResVo.setMpuId(groupInfo.getMpuId());
         groupInfoResVo.setEffectiveStartDate(groupInfo.getEffectiveStartDate());
         groupInfoResVo.setEffectiveEndDate(groupInfo.getEffectiveEndDate());
-        groupInfoResVo.setGroupBuyingPrice(groupInfo.getGroupBuyingPrice());
+
+        // 将分转化成元
+        BigDecimal fenPrice = new BigDecimal(groupInfo.getGroupBuyingPrice());
+        BigDecimal yuanPrice = fenPrice.divide(new BigDecimal(100));
+        groupInfoResVo.setGroupBuyingPrice(yuanPrice);
+
         groupInfoResVo.setGroupBuyingQuantity(groupInfo.getGroupBuyingQuantity());
         groupInfoResVo.setGroupMemberQuantity(groupInfo.getGroupMemberQuantity());
         groupInfoResVo.setLimitedPerMember(groupInfo.getLimitedPerMember());

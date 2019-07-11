@@ -73,7 +73,7 @@ public class AdminGroupDao {
      */
     public Long insertGroupInfo(GroupInfo groupInfo) {
         // 插入
-        groupInfoMapper.insertSelective(groupInfo);
+        int count = groupInfoMapper.insertSelective(groupInfo);
 
         return groupInfo.getId();
     }

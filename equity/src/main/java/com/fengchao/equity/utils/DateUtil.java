@@ -2,10 +2,7 @@ package com.fengchao.equity.utils;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -163,12 +160,15 @@ public class DateUtil {
      * @param endDateTimeFormat
      * @return
      */
-    public static int diffMinutes(String startDateTime, String startDateTimeFormat,
+    public static Long diffMinutes(String startDateTime, String startDateTimeFormat,
                                String endDateTime, String endDateTimeFormat) {
         LocalDateTime start = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern(startDateTimeFormat));
         LocalDateTime end = LocalDateTime.parse(endDateTime, DateTimeFormatter.ofPattern(endDateTimeFormat));
 
-        return end.getMinute() - start.getMinute();
+        Duration duration = Duration.between(start, end);
+        Long diff = duration.toMinutes();
+
+        return diff;
     }
 
     /**
@@ -180,12 +180,15 @@ public class DateUtil {
      * @param endDateTimeFormat
      * @return
      */
-    public static int diffHours(String startDateTime, String startDateTimeFormat,
+    public static Long diffHours(String startDateTime, String startDateTimeFormat,
                                  String endDateTime, String endDateTimeFormat) {
         LocalDateTime start = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern(startDateTimeFormat));
         LocalDateTime end = LocalDateTime.parse(endDateTime, DateTimeFormatter.ofPattern(endDateTimeFormat));
 
-        return end.getHour() - start.getHour();
+        Duration duration = Duration.between(start, end);
+        Long diff = duration.toHours();
+
+        return diff;
     }
 
 

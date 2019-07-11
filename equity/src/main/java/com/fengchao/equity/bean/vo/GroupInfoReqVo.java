@@ -3,11 +3,14 @@ package com.fengchao.equity.bean.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Setter
 @Getter
+@Slf4j
 public class GroupInfoReqVo extends PageVo {
 
     /**
@@ -38,9 +41,9 @@ public class GroupInfoReqVo extends PageVo {
     private Date effectiveEndDate;
 
     /**
-     * 活动价格
+     * 活动价格 单位：元
      */
-    private Integer groupBuyingPrice;
+    private BigDecimal groupBuyingPrice;
 
     /**
      * 活动商品总数量(库存量)
@@ -76,6 +79,5 @@ public class GroupInfoReqVo extends PageVo {
      * 操作人id
      */
     private Long operator;
-
 
 }

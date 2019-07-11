@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Setter
@@ -40,7 +41,7 @@ public class GroupInfoResVo {
     /**
      * 活动价格
      */
-    private Integer groupBuyingPrice;
+    private BigDecimal groupBuyingPrice;
 
     /**
      * 活动商品总数量(库存量)

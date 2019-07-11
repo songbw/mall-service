@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="server_name" value="equity" />
-    <property name="log_dir" value="../logs/" />
-    <property name="maxFileSize" value="100MB" />
-    <property name="maxHistory" value="180" />
+    <property name="server_name" value="equity"/>
+    <property name="log_dir" value="../logs/"/>
+    <property name="maxFileSize" value="100MB"/>
+    <property name="maxHistory" value="180"/>
 
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | %msg%n</pattern>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) |
+                %msg%n
+            </pattern>
         </encoder>
     </appender>
 
@@ -29,7 +31,9 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | %msg%n</pattern>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) |
+                %msg%n
+            </pattern>
         </encoder>
 
         <!-- 只打印info日志 -->
@@ -42,7 +46,7 @@
         -->
 
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>DEBUG</level>
         </filter>
     </appender>
 
@@ -60,7 +64,9 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | %msg%n</pattern>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) |
+                %msg%n
+            </pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <!-- 只打印错误日志 -->
@@ -70,11 +76,33 @@
         </filter>
     </appender>
 
+    <!--<appender name="MyBatis" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+    <!--<file>${LOG_HOME}/logs/mybatis-sql.log</file>-->
+    <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+    <!--<FileNamePattern>${LOG_HOME}/logs/mybatis-sql.log.%d{yyyy-MM-dd}</FileNamePattern>-->
+    <!--<maxHistory>30</maxHistory>-->
+    <!--</rollingPolicy>-->
+    <!--<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+    <!--<pattern>%thread|%d{yyyy-MM-dd HH:mm:ss.SSS}|%level|%logger{36}|%m%n</pattern>-->
+    <!--</encoder>-->
+    <!--</appender>-->
+
     <!--mybatis sql日志 日志的级别需要是DEBUG-->
-    <!--日志打印的包的范围，及分类日志文件存储 -->
-    <!--
-    <logger name="com.chelizi.cloud.*.dao" level="DEBUG" additivity="false"></logger>
-    -->
+    <!--日志打印的包的范围，及分类日志文件存储
+    <springProfile name="test,prod">
+        <logger name="com.fengchao.equity.dao.*" level="DEBUG" additivity="false">
+            <appender-ref ref="INFO" />
+            <appender-ref ref="ERROR" />
+        </logger>
+    </springProfile>
+
+    <springProfile name="dev">
+        <logger name="com.fengchao.equity.dao.*" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="INFO" />
+            <appender-ref ref="ERROR" />
+        </logger>
+    </springProfile>-->
 
     <!--控制台和日志文件输出级别
     <root level="INFO" additivity = "false">
@@ -83,19 +111,25 @@
         <appender-ref ref="ERROR" />
     </root>-->
 
+
+
+
+
+
     <springProfile name="test,prod">
-        <root level="INFO" additivity = "false">
-            <appender-ref ref="INFO" />
-            <appender-ref ref="ERROR" />
+        <root level="INFO" additivity="false">
+            <appender-ref ref="INFO"/>
+            <appender-ref ref="ERROR"/>
         </root>
     </springProfile>
 
     <springProfile name="dev">
-        <root level="INFO" additivity = "false">
-            <appender-ref ref="CONSOLE" />
-            <appender-ref ref="INFO" />
-            <appender-ref ref="ERROR" />
+        <root level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="INFO"/>
+            <appender-ref ref="ERROR"/>
         </root>
     </springProfile>
+
 
 </configuration>

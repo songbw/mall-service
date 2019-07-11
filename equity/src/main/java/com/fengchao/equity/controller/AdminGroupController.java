@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,23 +52,23 @@ public class AdminGroupController {
                     DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             String nowDate = DateUtil.nowDateTime(DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             // 1.1 活动开始时间需要晚于当前时间30分钟
-            int diffMinutes = DateUtil.diffMinutes(nowDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+            Long diffMinutes = DateUtil.diffMinutes(nowDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
                     effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             if (diffMinutes < 30) {
                 throw new Exception("活动开始时间需要晚于当前时间30分钟");
             }
 
             // 1.2 活动持续时间需要大于等于12小时
-            int diffHours = DateUtil.diffHours(effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+            Long diffHours = DateUtil.diffHours(effectiveStartDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
                     effectiveEndDate, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             if (diffHours < 12) {
                 throw new Exception("活动持续时间需要大于等于12小时");
             }
 
-            // 创建group
+            // 2.创建group
             Long id = adminGroupService.createGroupInfo(groupInfoReqVo);
 
-            // 处理返回
+            // 3.处理返回
             Map<String, Long> result = new HashMap<>();
             result.put("id", id);
             operaResponse.setData(result);
@@ -78,6 +77,7 @@ public class AdminGroupController {
 
             operaResponse.setCode(500);
             operaResponse.setMsg(e.getMessage());
+            operaResponse.setData(null);
         }
 
         log.info("创建活动信息 返回:{}", JSONUtil.toJsonString(operaResponse));
