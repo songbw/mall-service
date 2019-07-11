@@ -46,5 +46,7 @@ public interface OrderMapper {
 
     int selectDayPeopleCount(HashMap map) ;
 
+    int selectDayPromotionPaymentCount(HashMap map) ;
+
     List<MerchantPaymentBean> selectDayMerchantPaymentCount(HashMap map) ;
 }
