@@ -87,6 +87,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("pageSize",bean.getLimit());
         map.put("categoryID",bean.getCategoryID());
         map.put("skuid",bean.getSkuid());
+        map.put("mpu",bean.getMpu());
         map.put("state",bean.getState());
         map.put("brand",bean.getBrand());
         map.put("order",bean.getOrder());

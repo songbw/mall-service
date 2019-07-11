@@ -15,4 +15,5 @@ public class SerachBean {
     private Integer merchantId;
     private Integer id;
     private String order;
+    private String mpu;
 }

@@ -360,8 +360,10 @@
       and category LIKE #{pattern2}
     </if>
     <if test="skuid !=null and skuid !=''">
-      <bind name="pattern3" value="'%' + skuid + '%'"/>
-      and mpu LIKE #{pattern3}
+      and p.skuid = #{skuid}
+    </if>
+    <if test="mpu !=null and mpu !=''">
+      and p.mpu = #{mpu}
     </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
@@ -393,8 +395,10 @@
       and p.category LIKE #{pattern2}
     </if>
     <if test="skuid !=null and skuid !=''">
-      <bind name="pattern3" value="'%' + skuid + '%'"/>
-      and p.mpu LIKE #{pattern3}
+      and p.skuid = #{skuid}
+    </if>
+    <if test="mpu !=null and mpu !=''">
+      and p.mpu = #{mpu}
     </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
