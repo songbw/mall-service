@@ -27,6 +27,8 @@
     <result column="scenario_type" property="scenarioType" jdbcType="INTEGER" />
     <result column="coupon_mpus" property="couponMpus" jdbcType="VARCHAR" />
     <result column="exclude_mpus" property="excludeMpus" jdbcType="VARCHAR" />
+    <result column="coupon_skus" property="couponSkus" jdbcType="VARCHAR" />
+    <result column="exclude_skus" property="excludeSkus" jdbcType="VARCHAR" />
     <result column="categories" property="categories" jdbcType="VARCHAR" />
     <result column="brands" property="brands" jdbcType="VARCHAR" />
     <result column="collect_type" property="collectType" jdbcType="INTEGER" />
@@ -109,6 +111,7 @@
     <if test="scenarioType != null" >
       and scenario_type = #{scenarioType,jdbcType=INTEGER}
     </if>
+    order by create_date desc
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectActiveCouponLimit" resultMap="BaseResultMap" parameterType="Map">

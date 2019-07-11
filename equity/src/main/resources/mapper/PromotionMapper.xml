@@ -54,6 +54,7 @@
     <if test="status != null" >
       and status = #{status,jdbcType=INTEGER}
     </if>
+    order by created_date desc
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectPromotionInfoByMpu" resultType="com.fengchao.equity.bean.PromotionInfoBean">
