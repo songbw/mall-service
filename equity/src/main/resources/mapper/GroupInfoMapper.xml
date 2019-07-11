@@ -111,32 +111,23 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.fengchao.equity.model.GroupInfo">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into group_info (id, name, mpu_id, 
-      effective_start_date, effective_end_date, 
-      group_buying_price, group_buying_quantity, 
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.GroupInfo" useGeneratedKeys="true">
+    insert into group_info (name, mpu_id, effective_start_date, 
+      effective_end_date, group_buying_price, group_buying_quantity, 
       group_member_quantity, limited_per_member, 
       description, group_status, istatus, 
       operator, create_time, update_time
       )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{mpuId,jdbcType=VARCHAR}, 
-      #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP}, 
-      #{groupBuyingPrice,jdbcType=INTEGER}, #{groupBuyingQuantity,jdbcType=INTEGER}, 
+    values (#{name,jdbcType=VARCHAR}, #{mpuId,jdbcType=VARCHAR}, #{effectiveStartDate,jdbcType=TIMESTAMP}, 
+      #{effectiveEndDate,jdbcType=TIMESTAMP}, #{groupBuyingPrice,jdbcType=INTEGER}, #{groupBuyingQuantity,jdbcType=INTEGER}, 
       #{groupMemberQuantity,jdbcType=INTEGER}, #{limitedPerMember,jdbcType=INTEGER}, 
       #{description,jdbcType=VARCHAR}, #{groupStatus,jdbcType=SMALLINT}, #{istatus,jdbcType=SMALLINT}, 
       #{operator,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.equity.model.GroupInfo">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.GroupInfo" useGeneratedKeys="true">
     insert into group_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      id,
       <if test="name != null">
         name,
       </if>
@@ -181,7 +172,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      #{id,jdbcType=BIGINT},
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>

@@ -40,7 +40,9 @@ public class LTSJobClient {
             job.setNeedFeedback(true);
             job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
             job.setTriggerTime(triggerTime);   //
+            // job.setSubmitNodeGroup();
 
+            log.info("提交lts任务 job:{}", JSONUtil.toJsonString(job));
             Response response = jobClient.submitJob(job);
             log.info("提交lts任务返回:{}", JSONUtil.toJsonString(response));
 
