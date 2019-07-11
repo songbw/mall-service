@@ -182,6 +182,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet()) ;
             bean.setMpu(sku);
             bean.setCreatedAt(new Date());
+            bean.setState("-1");
             if (bean.getBrandId() != null && bean.getBrandId() > 0) {
                 AoyiBaseBrand baseBrand = brandMapper.selectByPrimaryKey(bean.getBrandId()) ;
                 if (baseBrand == null) {
