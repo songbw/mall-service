@@ -182,13 +182,19 @@
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectDayPaymentCount" resultType="java.lang.Integer" parameterType="Map">
-    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at <= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
   </select>
   <select id="selectDayCount" resultType="java.lang.Integer">
-    SELECT count(id) FROM orders WHERE <![CDATA[created_at <= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+    SELECT count(id) FROM orders WHERE <![CDATA[created_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
   </select>
   <select id="selectDayPeopleCount" resultType="java.lang.Integer" parameterType="Map">
-    SELECT count(DISTINCT(open_id)) FROM orders WHERE <![CDATA[created_at <= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+    SELECT count(DISTINCT(open_id)) FROM orders WHERE <![CDATA[created_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  </select>
+  <select id="selectDayMerchantPaymentCount" resultType="com.fengchao.order.bean.MerchantPaymentBean" parameterType="Map">
+    SELECT SUM(sale_amount) saleAmount, merchant_id merchantId FROM orders WHERE pay_status = 5 and <![CDATA[payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]> and merchant_id is not NULL GROUP BY merchant_id;
+  </select>
+  <select id="selectDayPromotionPaymentCount" resultType="java.lang.Integer">
+    SELECT SUM(o.sale_amount), od.promotion_id FROM orders o LEFT JOIN order_detail od ON o.id = od.order_id WHERE o.pay_status = 5 and <![CDATA[o.payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and o.payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]> and od.promotion_id is NOT NULL GROUP BY od.promotion_id;
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

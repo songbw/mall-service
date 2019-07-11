@@ -31,7 +31,12 @@
     from sku_code
     order by id DESC limit 1
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <select id="selectList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sku_code
+  </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sku_code
     where id = #{id,jdbcType=INTEGER}
   </delete>

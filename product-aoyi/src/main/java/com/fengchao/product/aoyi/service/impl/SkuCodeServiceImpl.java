@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class SkuCodeServiceImpl implements SkuCodeService {
@@ -52,6 +53,11 @@ public class SkuCodeServiceImpl implements SkuCodeService {
             throw new ProductException(200013, "ID不能为空");
         }
         return mapper.selectByPrimaryKey(id) ;
+    }
+
+    @Override
+    public List<SkuCode> findAll() throws ProductException {
+        return mapper.selectList();
     }
 
     @Override
