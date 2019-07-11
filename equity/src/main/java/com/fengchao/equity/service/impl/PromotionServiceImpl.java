@@ -89,8 +89,11 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public int deletePromotion(Integer id) {
-        mapper.deleteByPrimaryKey(id);
-        return promotionMpuMapper.deleteByPrimaryKey(id);
+        int num = mapper.deleteByPrimaryKey(id);
+        if(num == 1){
+            promotionMpuMapper.deleteByPrimaryKey(id);
+        }
+        return num;
     }
 
     @Override

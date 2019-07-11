@@ -23,7 +23,7 @@
   </delete>
   <delete id="deleteBypromotionId" parameterType="com.fengchao.equity.model.PromotionMpu" >
     delete from promotion_mpu
-    where mpu = #{skuid,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
+    where mpu = #{mpu,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.PromotionMpu" >
     insert into promotion_mpu (id, promotion_id, mpu,
@@ -40,7 +40,7 @@
       <if test="promotionId != null" >
         promotion_id,
       </if>
-      <if test="skuid != null" >
+      <if test="mpu != null" >
         mpu,
       </if>
       <if test="discount != null" >
@@ -54,8 +54,8 @@
       <if test="promotionId != null" >
         #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="skuid != null" >
-        #{skuid,jdbcType=VARCHAR},
+      <if test="mpu != null" >
+        #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="discount != null" >
         #{discount,jdbcType=VARCHAR},
@@ -68,20 +68,20 @@
       <if test="promotionId != null" >
         promotion_id = #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="skuid != null" >
-        mpu = #{skuid,jdbcType=VARCHAR},
+      <if test="mpu != null" >
+        mpu = #{mpu,jdbcType=VARCHAR},
       </if>
       <if test="discount != null" >
         discount = #{discount,jdbcType=VARCHAR},
       </if>
     </set>
-    where mpu = #{skuid,jdbcType=VARCHAR}
+    where mpu = #{mpu,jdbcType=VARCHAR}
     and promotion_id = #{promotionId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionMpu" >
     update promotion_mpu
     set promotion_id = #{promotionId,jdbcType=INTEGER},
-      mpu = #{skuid,jdbcType=VARCHAR},
+      mpu = #{mpu,jdbcType=VARCHAR},
       discount = #{discount,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
