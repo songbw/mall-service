@@ -1,10 +1,15 @@
 package com.fengchao.equity.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
+import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.PromotionMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
+import com.fengchao.equity.model.AoyiProdIndex;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionMpu;
 import com.fengchao.equity.service.PromotionService;
@@ -13,10 +18,7 @@ import com.github.ltsopensource.jobclient.JobClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PromotionServiceImpl implements PromotionService {
@@ -27,6 +29,8 @@ public class PromotionServiceImpl implements PromotionService {
     private PromotionMpuMapper promotionMpuMapper;
     @Autowired
     private JobClient jobClient;
+    @Autowired
+    private ProdService prodService;
 
     @Override
     public int effective(int promotionId) {
@@ -99,7 +103,29 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public Promotion findPromotionById(Integer id) {
         Promotion promotion = mapper.selectByPrimaryKey(id);
+        if(promotion == null){
+            return promotion;
+        }
+        List<PromotionMpu> promotionMpus = null;
         promotion.setPromotionSkus(promotionMpuMapper.selectByPrimaryMpu(promotion.getId()));
+        promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
+        promotionMpus.forEach(promotionMpu ->{
+            OperaResult result = prodService.find(promotionMpu.getMpu());
+            if (result.getCode() == 200) {
+                Map<String, Object> data = result.getData() ;
+                Object object = data.get("result");
+                String jsonString = JSON.toJSONString(object);
+                AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
+                promotionMpu.setImage(aoyiProdIndex.getImage());
+                promotionMpu.setBrand(aoyiProdIndex.getBrand());
+                promotionMpu.setModel(aoyiProdIndex.getModel());
+                promotionMpu.setName(aoyiProdIndex.getName());
+                promotionMpu.setSprice(aoyiProdIndex.getSprice());
+                promotionMpu.setPrice(aoyiProdIndex.getPrice());
+                promotionMpu.setState(aoyiProdIndex.getState());
+            }
+        });
+        promotion.setPromotionSkus(promotionMpus);
         return promotion;
     }
 
@@ -140,8 +166,26 @@ public class PromotionServiceImpl implements PromotionService {
     public Promotion findPromotionToUser(Integer id, Boolean detail) {
 
         Promotion promotion = mapper.selectByPrimaryKey(id);
+        List<PromotionMpu> promotionMpus = null;
         if(detail != null && detail == true){
-            promotion.setPromotionSkus(promotionMpuMapper.selectByPrimaryMpu(promotion.getId()));
+            promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
+            promotionMpus.forEach(promotionMpu ->{
+                OperaResult result = prodService.find(promotionMpu.getMpu());
+                if (result.getCode() == 200) {
+                    Map<String, Object> data = result.getData() ;
+                    Object object = data.get("result");
+                    String jsonString = JSON.toJSONString(object);
+                    AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
+                    promotionMpu.setImage(aoyiProdIndex.getImage());
+                    promotionMpu.setBrand(aoyiProdIndex.getBrand());
+                    promotionMpu.setModel(aoyiProdIndex.getModel());
+                    promotionMpu.setName(aoyiProdIndex.getName());
+                    promotionMpu.setSprice(aoyiProdIndex.getSprice());
+                    promotionMpu.setPrice(aoyiProdIndex.getPrice());
+                    promotionMpu.setState(aoyiProdIndex.getState());
+                }
+            });
+            promotion.setPromotionSkus(promotionMpus);
         }
         return promotion;
     }

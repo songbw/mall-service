@@ -1,5 +1,6 @@
 package com.fengchao.equity.feign.hystric;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.QueryProdBean;
 import com.fengchao.equity.feign.ProdService;
@@ -22,6 +23,15 @@ public class ProdServiceH implements ProdService {
         OperaResult result = new OperaResult();
         result.setCode(404);
         result.setMsg("获取商品信息失败 " + queryProdBean);
+        return result;
+    }
+
+    @Override
+    public OperaResult find(String id) {
+        OperaResult result = new OperaResult();
+        ObjectMapper objectMapper = new ObjectMapper();
+        result.setCode(404);
+        result.setMsg("获取商品信息失败 " + id);
         return result;
     }
 }

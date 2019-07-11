@@ -7,6 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface ProdService {
 
     @RequestMapping(value = "/adminProd/prodAll", method = RequestMethod.POST)
     OperaResult findProdList(@RequestBody QueryProdBean queryProdBean);
+
+    @RequestMapping(value = "/prod", method = RequestMethod.GET)
+    OperaResult find(@RequestParam("mpu") String mpu);
 }

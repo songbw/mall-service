@@ -5,16 +5,16 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="promotion_id" jdbcType="INTEGER" property="promotionId" />
     <result column="mpu" jdbcType="VARCHAR" property="mpu" />
+    <result column="skuId" jdbcType="VARCHAR" property="skuid" />
     <result column="discount" jdbcType="VARCHAR" property="discount" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, promotion_id, mpu, discount
+  <sql id="Base_Column_List">
+    id, promotion_id, mpu, skuId, discount
   </sql>
   <select id="selectByPrimaryMpu" resultType="com.fengchao.equity.model.PromotionMpu" parameterType="java.lang.Integer" >
     select
-    promotion_mpu.id, promotion_id promotionId, promotion_mpu.mpu, discount, name, price, state, sprice,
-    model, brand, image
-    from promotion_mpu LEFT JOIN aoyi_prod_index on promotion_mpu.mpu = aoyi_prod_index.mpu
+    <include refid="Base_Column_List" />
+    from promotion_mpu
     where promotion_id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
@@ -26,10 +26,10 @@
     where mpu = #{mpu,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.PromotionMpu" >
-    insert into promotion_mpu (id, promotion_id, mpu,
+    insert into promotion_mpu (id, promotion_id, mpu, skuId,
       discount)
-    values (#{id,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, #{skuid,jdbcType=VARCHAR},
-      #{discount,jdbcType=VARCHAR})
+    values (#{id,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR},
+      #{skuid,jdbcType=VARCHAR}, #{discount,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.equity.model.PromotionMpu" >
     insert into promotion_mpu
@@ -42,6 +42,9 @@
       </if>
       <if test="mpu != null" >
         mpu,
+      </if>
+      <if test="skuid != null" >
+        skuId,
       </if>
       <if test="discount != null" >
         discount,
@@ -57,6 +60,9 @@
       <if test="mpu != null" >
         #{mpu,jdbcType=VARCHAR},
       </if>
+      <if test="skuid != null" >
+        #{skuid,jdbcType=VARCHAR},
+      </if>
       <if test="discount != null" >
         #{discount,jdbcType=VARCHAR},
       </if>
@@ -71,6 +77,9 @@
       <if test="mpu != null" >
         mpu = #{mpu,jdbcType=VARCHAR},
       </if>
+      <if test="skuid != null" >
+        skuId = #{skuid,jdbcType=VARCHAR},
+      </if>
       <if test="discount != null" >
         discount = #{discount,jdbcType=VARCHAR},
       </if>
@@ -82,6 +91,7 @@
     update promotion_mpu
     set promotion_id = #{promotionId,jdbcType=INTEGER},
       mpu = #{mpu,jdbcType=VARCHAR},
+      skuId = #{skuid,jdbcType=VARCHAR},
       discount = #{discount,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
