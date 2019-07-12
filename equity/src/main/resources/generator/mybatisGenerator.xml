@@ -37,9 +37,9 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="group_team">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
+        <!--<table tableName="group_team">-->
+            <!--<generatedKey column="id" sqlStatement="JDBC" />-->
+        <!--</table>-->
 
         <table tableName="group_member">
             <generatedKey column="id" sqlStatement="JDBC" />

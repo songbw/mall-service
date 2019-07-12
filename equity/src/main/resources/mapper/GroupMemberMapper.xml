@@ -7,7 +7,7 @@
     <result column="group_team_id" jdbcType="BIGINT" property="groupTeamId" />
     <result column="member_open_id" jdbcType="VARCHAR" property="memberOpenId" />
     <result column="is_sponser" jdbcType="SMALLINT" property="isSponser" />
-    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
     <result column="member_status" jdbcType="SMALLINT" property="memberStatus" />
     <result column="istatus" jdbcType="SMALLINT" property="istatus" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -72,7 +72,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, group_info_id, group_team_id, member_open_id, is_sponser, order_id, member_status, 
+    id, group_info_id, group_team_id, member_open_id, is_sponser, order_no, member_status, 
     istatus, create_time, update_time
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.GroupMemberExample" resultMap="BaseResultMap">
@@ -107,11 +107,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.GroupMember" useGeneratedKeys="true">
     insert into group_member (group_info_id, group_team_id, member_open_id, 
-      is_sponser, order_id, member_status, 
+      is_sponser, order_no, member_status, 
       istatus, create_time, update_time
       )
     values (#{groupInfoId,jdbcType=BIGINT}, #{groupTeamId,jdbcType=BIGINT}, #{memberOpenId,jdbcType=VARCHAR}, 
-      #{isSponser,jdbcType=SMALLINT}, #{orderId,jdbcType=BIGINT}, #{memberStatus,jdbcType=SMALLINT}, 
+      #{isSponser,jdbcType=SMALLINT}, #{orderNo,jdbcType=VARCHAR}, #{memberStatus,jdbcType=SMALLINT}, 
       #{istatus,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -130,8 +130,8 @@
       <if test="isSponser != null">
         is_sponser,
       </if>
-      <if test="orderId != null">
-        order_id,
+      <if test="orderNo != null">
+        order_no,
       </if>
       <if test="memberStatus != null">
         member_status,
@@ -159,8 +159,8 @@
       <if test="isSponser != null">
         #{isSponser,jdbcType=SMALLINT},
       </if>
-      <if test="orderId != null">
-        #{orderId,jdbcType=BIGINT},
+      <if test="orderNo != null">
+        #{orderNo,jdbcType=VARCHAR},
       </if>
       <if test="memberStatus != null">
         #{memberStatus,jdbcType=SMALLINT},
@@ -200,8 +200,8 @@
       <if test="record.isSponser != null">
         is_sponser = #{record.isSponser,jdbcType=SMALLINT},
       </if>
-      <if test="record.orderId != null">
-        order_id = #{record.orderId,jdbcType=BIGINT},
+      <if test="record.orderNo != null">
+        order_no = #{record.orderNo,jdbcType=VARCHAR},
       </if>
       <if test="record.memberStatus != null">
         member_status = #{record.memberStatus,jdbcType=SMALLINT},
@@ -227,7 +227,7 @@
       group_team_id = #{record.groupTeamId,jdbcType=BIGINT},
       member_open_id = #{record.memberOpenId,jdbcType=VARCHAR},
       is_sponser = #{record.isSponser,jdbcType=SMALLINT},
-      order_id = #{record.orderId,jdbcType=BIGINT},
+      order_no = #{record.orderNo,jdbcType=VARCHAR},
       member_status = #{record.memberStatus,jdbcType=SMALLINT},
       istatus = #{record.istatus,jdbcType=SMALLINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -251,8 +251,8 @@
       <if test="isSponser != null">
         is_sponser = #{isSponser,jdbcType=SMALLINT},
       </if>
-      <if test="orderId != null">
-        order_id = #{orderId,jdbcType=BIGINT},
+      <if test="orderNo != null">
+        order_no = #{orderNo,jdbcType=VARCHAR},
       </if>
       <if test="memberStatus != null">
         member_status = #{memberStatus,jdbcType=SMALLINT},
@@ -275,7 +275,7 @@
       group_team_id = #{groupTeamId,jdbcType=BIGINT},
       member_open_id = #{memberOpenId,jdbcType=VARCHAR},
       is_sponser = #{isSponser,jdbcType=SMALLINT},
-      order_id = #{orderId,jdbcType=BIGINT},
+      order_no = #{orderNo,jdbcType=VARCHAR},
       member_status = #{memberStatus,jdbcType=SMALLINT},
       istatus = #{istatus,jdbcType=SMALLINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},

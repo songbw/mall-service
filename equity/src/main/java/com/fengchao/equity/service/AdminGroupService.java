@@ -3,6 +3,7 @@ package com.fengchao.equity.service;
 import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
+import com.fengchao.equity.bean.vo.GroupTeamResVo;
 
 /**
  * 活动管理服务
@@ -72,5 +73,5 @@ public interface AdminGroupService {
      * @return
      * @throws Exception
      */
-    PageableData<GroupInfoResVo> queryTeamListPageable(GroupInfoReqVo groupInfoReqVo) throws Exception;
+    PageableData<GroupTeamResVo> queryTeamListPageable(GroupInfoReqVo groupInfoReqVo) throws Exception;
 }

@@ -13,7 +13,7 @@ public class GroupMember {
 
     private Short isSponser;
 
-    private Long orderId;
+    private String orderNo;
 
     private Short memberStatus;
 
@@ -63,12 +63,12 @@ public class GroupMember {
         this.isSponser = isSponser;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public String getOrderNo() {
+        return orderNo;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo == null ? null : orderNo.trim();
     }
 
     public Short getMemberStatus() {

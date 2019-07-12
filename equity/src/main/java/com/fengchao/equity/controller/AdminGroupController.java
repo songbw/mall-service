@@ -6,6 +6,7 @@ import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
+import com.fengchao.equity.bean.vo.GroupTeamResVo;
 import com.fengchao.equity.service.AdminGroupService;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -214,27 +215,30 @@ public class AdminGroupController {
      * 获取某活动下的team详情
      *
      * @param groupInfoReqVo
+     * @param teamStatus
      * @param operaResponse
      * @return
      */
     @GetMapping("campaigns/list/teams")
-    public OperaResponse queryGroupInfo(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
+    public OperaResponse queryGroupInfo(GroupInfoReqVo groupInfoReqVo,
+                                        @RequestParam("teamStatus") Integer teamStatus,
+                                        OperaResponse operaResponse) {
         log.info("获取活动team详情 入参：{}", JSONUtil.toJsonString(groupInfoReqVo));
 
         try {
-            PageableData<GroupInfoResVo> groupInfoResVoPageableData =
-                    adminGroupService.queryGroupListPageable(groupInfoReqVo);
+            PageableData<GroupTeamResVo> groupTeamResVoPageableData =
+                    adminGroupService.queryTeamListPageable(groupInfoReqVo);
 
-            operaResponse.setData(groupInfoResVoPageableData);
+            operaResponse.setData(groupTeamResVoPageableData);
         } catch (Exception e) {
-            log.error("分页查询活动列表 异常:{}", e.getMessage(), e);
+            log.error("获取活动team详情 异常:{}", e.getMessage(), e);
 
             operaResponse.setData(null);
             operaResponse.setCode(500);
-            operaResponse.setMsg("分页查询活动列表 异常");
+            operaResponse.setMsg("获取活动team详情 异常");
         }
 
-        log.info("分页查询活动列表 返回：{}", JSONUtil.toJsonString(operaResponse));
+        log.info("获取活动team详情 返回：{}", JSONUtil.toJsonString(operaResponse));
 
         return operaResponse;
     }

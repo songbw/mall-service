@@ -1,14 +1,13 @@
 package com.fengchao.equity.dao;
 
-import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.constants.GroupInfoStatusEnum;
 import com.fengchao.equity.constants.IStatusEnum;
 import com.fengchao.equity.mapper.GroupInfoMapper;
-import com.fengchao.equity.model.GroupInfo;
-import com.fengchao.equity.model.GroupInfoExample;
+import com.fengchao.equity.mapper.GroupMemberMapper;
+import com.fengchao.equity.mapper.GroupTeamMapper;
+import com.fengchao.equity.model.*;
 import com.fengchao.equity.utils.JSONUtil;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,10 @@ import java.util.List;
 public class AdminGroupDao {
 
     private GroupInfoMapper groupInfoMapper;
+
+    private GroupTeamMapper groupTeamMapper;
+
+    private GroupMemberMapper groupMemberMapper;
 
     @Autowired
     public AdminGroupDao(GroupInfoMapper groupInfoMapper) {
@@ -42,7 +45,6 @@ public class AdminGroupDao {
 
         groupInfoExample.setOrderByClause("id desc");
         GroupInfoExample.Criteria criteria = groupInfoExample.createCriteria();
-
         criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
 
         if (StringUtils.isNotBlank(groupInfo.getName())) {
@@ -64,6 +66,59 @@ public class AdminGroupDao {
         PageInfo<GroupInfo> pageInfo = new PageInfo(groupInfoList);
 
         return pageInfo;
+    }
+
+    /**
+     * 分页查询活动的team信息列表
+     *
+     * @param groupInfoId
+     * @param pageBean
+     * @return
+     */
+    public PageInfo<GroupTeam> selectPageableGroupTeamListByGroupId(Long groupInfoId, PageBean pageBean) {
+        // 设置查询条件
+        GroupTeamExample groupTeamExample = new GroupTeamExample();
+
+        groupTeamExample.setOrderByClause("id desc");
+        GroupTeamExample.Criteria criteria = groupTeamExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
+
+        criteria.andGroupInfoIdEqualTo(groupInfoId);
+
+        // 分页信息
+        PageHelper.startPage(pageBean.getPageNo(), pageBean.getPageSize());
+        // 执行查询
+        List<GroupTeam> groupTeamList = groupTeamMapper.selectByExample(groupTeamExample);
+
+        log.info("分页查询活动的team信息列表 AdminGroupDao#selectPageableGroupTeamListByGroupId groupInfoId:{}, PageBean:{}, 数据库返回:{}",
+                groupInfoId, JSONUtil.toJsonString(pageBean), JSONUtil.toJsonString(groupTeamList));
+
+        // 返回值
+        PageInfo<GroupTeam> pageInfo = new PageInfo(groupTeamList);
+
+        return pageInfo;
+    }
+
+    /**
+     * 根据teamId集合，查询所有的member集合信息
+     *
+     * @param groupTeamIdList
+     * @return
+     */
+    public List<GroupMember> selectGroupMemberByTeamIds(List<Long> groupTeamIdList) {
+        // 组装参数
+        GroupMemberExample groupMemberExample = new GroupMemberExample();
+        GroupMemberExample.Criteria criteria = groupMemberExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.INVALID.getValue().shortValue());
+
+        criteria.andGroupTeamIdIn(groupTeamIdList);
+
+        // 执行查询
+        List<GroupMember> groupMemberList = groupMemberMapper.selectByExample(groupMemberExample);
+
+        log.info("根据teamId集合，查询所有的member集合信息size:{}", groupMemberList.size());
+
+        return groupMemberList;
     }
 
     /**
@@ -138,4 +193,6 @@ public class AdminGroupDao {
 
         return count;
     }
+
+
 }
