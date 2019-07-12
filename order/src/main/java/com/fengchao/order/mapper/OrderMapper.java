@@ -2,6 +2,7 @@ package com.fengchao.order.mapper;
 
 import com.fengchao.order.bean.MerchantPaymentBean;
 import com.fengchao.order.bean.OrderDetailBean;
+import com.fengchao.order.bean.PromotionPaymentBean;
 import com.fengchao.order.model.Order;
 
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public interface OrderMapper {
 
     int selectDayPeopleCount(HashMap map) ;
 
-    int selectDayPromotionPaymentCount(HashMap map) ;
+    List<PromotionPaymentBean> selectDayPromotionPaymentCount(HashMap map) ;
 
     List<MerchantPaymentBean> selectDayMerchantPaymentCount(HashMap map) ;
 }

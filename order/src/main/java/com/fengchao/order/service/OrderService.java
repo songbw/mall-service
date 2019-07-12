@@ -47,7 +47,13 @@ public interface OrderService {
 
     Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
 
-    DayStatisticsBean findDayStatisticsBean(String dayStart, String dayEnd) ;
+    DayStatisticsBean findDayStatisticsCount(String dayStart, String dayEnd) ;
 
     String queryLogisticsInfo(String logisticsId);
+
+    List<PromotionPaymentBean> findDayPromotionPaymentCount(String dayStart, String dayEnd) ;
+
+    List<MerchantPaymentBean> findDayMerchantPaymentCount(String dayStart, String dayEnd) ;
+
+    Integer findDayPaymentCount(String dayStart, String dayEnd) ;
 }

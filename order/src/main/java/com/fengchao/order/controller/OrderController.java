@@ -3,12 +3,9 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.service.OrderService;
-import com.fengchao.order.utils.Kuaidi100;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 订单列表
@@ -138,7 +135,25 @@ public class OrderController {
 
     @GetMapping("/statistics")
     private OperaResult statistics(String start, String end, OperaResult result) {
-        result.getData().put("result", service.findDayStatisticsBean(start, end)) ;
+        result.getData().put("result", service.findDayStatisticsCount(start, end)) ;
+        return result;
+    }
+
+    @GetMapping("/payment/count")
+    private OperaResult paymentCount(String start, String end, OperaResult result) {
+        result.getData().put("result", service.findDayPaymentCount(start, end)) ;
+        return result;
+    }
+
+    @GetMapping("/payment/promotion/count")
+    private OperaResult paymentPromotionCount(String start, String end, OperaResult result) {
+        result.getData().put("result", service.findDayPromotionPaymentCount(start, end)) ;
+        return result;
+    }
+
+    @GetMapping("/payment/merchant/count")
+    private OperaResult paymentMerchantCount(String start, String end, OperaResult result) {
+        result.getData().put("result", service.findDayMerchantPaymentCount(start, end)) ;
         return result;
     }
 

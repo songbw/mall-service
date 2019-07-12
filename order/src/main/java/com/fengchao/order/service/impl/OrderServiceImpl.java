@@ -406,7 +406,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public DayStatisticsBean findDayStatisticsBean(String dayStart, String dayEnd) {
+    public DayStatisticsBean findDayStatisticsCount(String dayStart, String dayEnd) {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
@@ -428,6 +428,30 @@ public class OrderServiceImpl implements OrderService {
             comcode = strings.get(0);
         }
         return Kuaidi100.synQueryData(logisticsId, comcode);
+    }
+
+    @Override
+    public List<PromotionPaymentBean> findDayPromotionPaymentCount(String dayStart, String dayEnd) {
+        HashMap map = new HashMap();
+        map.put("dayStart", dayStart);
+        map.put("dayEnd", dayEnd);
+        return mapper.selectDayPromotionPaymentCount(map);
+    }
+
+    @Override
+    public List<MerchantPaymentBean> findDayMerchantPaymentCount(String dayStart, String dayEnd) {
+        HashMap map = new HashMap();
+        map.put("dayStart", dayStart);
+        map.put("dayEnd", dayEnd);
+        return mapper.selectDayMerchantPaymentCount(map);
+    }
+
+    @Override
+    public Integer findDayPaymentCount(String dayStart, String dayEnd) {
+        HashMap map = new HashMap();
+        map.put("dayStart", dayStart);
+        map.put("dayEnd", dayEnd);
+        return mapper.selectDayPaymentCount(map);
     }
 
     private AoyiProdIndex findProduct(String skuId) {
