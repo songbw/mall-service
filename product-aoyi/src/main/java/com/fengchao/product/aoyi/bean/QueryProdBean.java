@@ -9,8 +9,8 @@ public class QueryProdBean {
     private Integer offset;
     private Integer pageNo;
     private Integer pageSize;
-    private List<String> couponSkus;
-    private String excludeSkus;
+    private List<String> couponMpus;
+    private String excludeMpus;
     private String categories;
     private String brands;
 }

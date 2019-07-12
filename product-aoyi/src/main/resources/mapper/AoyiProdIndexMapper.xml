@@ -432,15 +432,15 @@
     count(id)
     from aoyi_prod_index
     where state = 1
-    <if test="couponSkus !=null and couponSkus.size > 0">
+    <if test="couponMpus !=null and couponMpus.size > 0">
       and mpu in
-      <foreach collection="couponSkus" index="index" item="item1" open="(" separator="," close=")">
+      <foreach collection="couponMpus" index="index" item="item1" open="(" separator="," close=")">
         #{item1}
       </foreach>
     </if>
-    <if test="excludeSkus !=null and excludeSkus.size > 0">
+    <if test="excludeMpus !=null and excludeMpus.size > 0">
       and mpu not in
-      <foreach collection="excludeSkus" index="index" item="item2" open="(" separator="," close=")">
+      <foreach collection="excludeMpus" index="index" item="item2" open="(" separator="," close=")">
         #{item2}
       </foreach>
     </if>
@@ -464,15 +464,15 @@
     from aoyi_prod_index p
     left join prod_extend e on p.mpu = e.mpu
     where state = 1
-    <if test="couponSkus !=null">
+    <if test="couponMpus !=null">
       and p.mpu in
-      <foreach collection="couponSkus" index="index" item="item1" open="(" separator="," close=")">
+      <foreach collection="couponMpus" index="index" item="item1" open="(" separator="," close=")">
         #{item1}
       </foreach>
     </if>
-    <if test="excludeSkus !=null">
+    <if test="excludeMpus !=null">
       and p.mpu not in
-      <foreach collection="excludeSkus" index="index" item="item2" open="(" separator="," close=")">
+      <foreach collection="excludeMpus" index="index" item="item2" open="(" separator="," close=")">
         #{item2}
       </foreach>
     </if>
