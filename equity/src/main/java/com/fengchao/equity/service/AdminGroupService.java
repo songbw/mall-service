@@ -1,7 +1,5 @@
 package com.fengchao.equity.service;
 
-import com.fengchao.equity.bean.PageBean;
-import com.fengchao.equity.bean.GroupsBean;
 import com.fengchao.equity.bean.PageableData;
 import com.fengchao.equity.bean.vo.GroupInfoReqVo;
 import com.fengchao.equity.bean.vo.GroupInfoResVo;
@@ -11,19 +9,6 @@ import com.fengchao.equity.bean.vo.GroupInfoResVo;
  */
 public interface AdminGroupService {
 
-    @Deprecated
-    int createGroups(GroupsBean bean);
-
-    @Deprecated
-    PageBean findGroups(GroupsBean bean);
-
-    @Deprecated
-    int updateGroups(GroupsBean bean);
-
-    @Deprecated
-    int deleteGroups(Integer id);
-
-
     /**
      * 分页获取活动信息列表
      *
@@ -32,6 +17,15 @@ public interface AdminGroupService {
      * @throws Exception
      */
     PageableData<GroupInfoResVo> queryGroupListPageable(GroupInfoReqVo groupInfoReqVo) throws Exception;
+
+    /**
+     * 根据id获取活动详情
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    GroupInfoResVo queryGroupInfoById(Long id) throws Exception;
 
     /**
      * 创建活动信息
@@ -70,4 +64,13 @@ public interface AdminGroupService {
      */
     Integer deleteGroupInfoById(Long id) throws Exception;
 
+
+    /**
+     * 根据groupInfoId分页获取team信息
+     *
+     * @param groupInfoReqVo
+     * @return
+     * @throws Exception
+     */
+    PageableData<GroupInfoResVo> queryTeamListPageable(GroupInfoReqVo groupInfoReqVo) throws Exception;
 }

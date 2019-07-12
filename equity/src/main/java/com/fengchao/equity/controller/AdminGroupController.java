@@ -24,14 +24,6 @@ public class AdminGroupController {
     @Autowired
     private AdminGroupService adminGroupService;
 
-    @PostMapping("campaigns")
-    @Deprecated
-    public OperaResult createGroups(@RequestBody GroupsBean bean, OperaResult result){
-        adminGroupService.createGroups(bean);
-        result.getData().put("groupId",bean.getId());
-        return result;
-    }
-
     /**
      * 创建活动信息
      *
@@ -153,7 +145,13 @@ public class AdminGroupController {
         return operaResponse;
     }
 
-
+    /**
+     * 删除拼购活动
+     *
+     * @param groupInfoReqVo
+     * @param operaResponse
+     * @return
+     */
     @PostMapping("delete/campaigns")
     public OperaResponse deleteGroupInfo(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
         log.info("删除拼购活动信息 入参:{}", JSONUtil.toJsonString(groupInfoReqVo));
@@ -181,30 +179,65 @@ public class AdminGroupController {
         return operaResponse;
     }
 
-    //=========================================
 
+    /**
+     * 根据id获取活动详情
+     *
+     * @param groupId
+     * @param operaResponse
+     * @return
+     */
+    @GetMapping("campaigns/detail")
+    public OperaResponse queryGroupInfo(@RequestParam("groupId") Long groupId, OperaResponse operaResponse) {
+        log.info("根据id获取活动详情 入参:{}", groupId);
 
-    @Deprecated
-    @GetMapping("campaigns")
-    public OperaResult findGroup(GroupsBean bean, OperaResult result){
-        result.getData().put("result", adminGroupService.findGroups(bean));
-        return result;
+        try {
+            // 执行更新
+            GroupInfoResVo groupInfoResVo = adminGroupService.queryGroupInfoById(groupId);
+
+            operaResponse.setData(groupInfoResVo);
+        } catch (Exception e) {
+            log.error("根据id:{}获取活动详情 异常:{}", groupId, e.getMessage(), e);
+
+            operaResponse.setData(null);
+            operaResponse.setCode(500);
+            operaResponse.setMsg(e.getMessage());
+        }
+
+        log.info("根据id:{}获取活动详情 返回:{}", groupId, JSONUtil.toJsonString(operaResponse));
+
+        return operaResponse;
     }
 
 
+    /**
+     * 获取某活动下的team详情
+     *
+     * @param groupInfoReqVo
+     * @param operaResponse
+     * @return
+     */
+    @GetMapping("campaigns/list/teams")
+    public OperaResponse queryGroupInfo(GroupInfoReqVo groupInfoReqVo, OperaResponse operaResponse) {
+        log.info("获取活动team详情 入参：{}", JSONUtil.toJsonString(groupInfoReqVo));
 
+        try {
+            PageableData<GroupInfoResVo> groupInfoResVoPageableData =
+                    adminGroupService.queryGroupListPageable(groupInfoReqVo);
 
+            operaResponse.setData(groupInfoResVoPageableData);
+        } catch (Exception e) {
+            log.error("分页查询活动列表 异常:{}", e.getMessage(), e);
 
-    @PutMapping("campaigns")
-    public OperaResult updateGroups(@RequestBody GroupsBean bean, OperaResult result){
-        result.getData().put("result", adminGroupService.updateGroups(bean));
-        return result;
+            operaResponse.setData(null);
+            operaResponse.setCode(500);
+            operaResponse.setMsg("分页查询活动列表 异常");
+        }
+
+        log.info("分页查询活动列表 返回：{}", JSONUtil.toJsonString(operaResponse));
+
+        return operaResponse;
     }
 
-    @DeleteMapping("campaigns/{id}")
-    public OperaResult deleteGroups(@PathVariable("id")Integer id, OperaResult result){
-        result.getData().put("result", adminGroupService.deleteGroups(id));
-        return result;
-    }
 
 }

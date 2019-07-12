@@ -47,45 +47,6 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     }
 
     @Override
-    public int createGroups(GroupsBean bean) {
-        Groups groups = new Groups();
-        groups.setName(bean.getName());
-        groups.setCampaignStatus(bean.getCampaignStatus());
-        groups.setCreatedTime(new Date());
-        groups.setDescription(bean.getDescription());
-        groups.setGroupTotal(bean.getGroupTotal());
-        groups.setEffectiveEndDate(bean.getEffectiveEndDate());
-        groups.setEffectiveStartDate(bean.getEffectiveStartDate());
-        groups.setGroupBuyingPrice(bean.getGroupBuyingPrice());
-        groups.setGroupBuyingQuantity(bean.getGroupBuyingQuantity());
-        groups.setGroupMemberQuantity(bean.getGroupMemberQuantity());
-        groups.setImageUrl(bean.getImageUrl());
-        groups.setLimitedPerMember(bean.getLimitedPerMember());
-        groups.setPaymentExpiration(bean.getPaymentExpiration());
-        groups.setSkuid(bean.getSkuid());
-        return groupsMapper.insertSelective(groups);
-    }
-
-    @Override
-    public PageBean findGroups(GroupsBean bean) {
-        PageBean pageBean = new PageBean();
-        int total = 0;
-        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
-        HashMap map = new HashMap();
-        map.put("pageNo", pageNo);
-        map.put("pageSize", bean.getLimit());
-        map.put("name", bean.getName());
-        map.put("campaignStatus", bean.getCampaignStatus());
-        List<Groups> groups = new ArrayList<>();
-        total = groupsMapper.selectCount(map);
-        if (total > 0) {
-            groups = groupsMapper.selectLimit(map);
-        }
-        pageBean = PageBean.build(pageBean, groups, total, bean.getOffset(), bean.getLimit());
-        return pageBean;
-    }
-
-    @Override
     public PageableData<GroupInfoResVo> queryGroupListPageable(GroupInfoReqVo groupInfoReqVo) throws Exception {
         // 返回值
         PageableData<GroupInfoResVo> pageableData = new PageableData<>();
@@ -122,6 +83,18 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         log.info("分页查询活动列表 得到PageableData为:{}", JSONUtil.toJsonString(pageableData));
 
         return pageableData;
+    }
+
+    @Override
+    public GroupInfoResVo queryGroupInfoById(Long id) throws Exception {
+        GroupInfo groupInfo = adminGroupDao.selectGroupInfoById(id);
+
+        // 转vo
+        GroupInfoResVo groupInfoResVo = convertToGroupInfoResVo(groupInfo);
+
+        log.info("根据id:{}获取活动详情 转GroupInfoResVo:{}", id, JSONUtil.toJsonString(groupInfoResVo));
+
+        return groupInfoResVo;
     }
 
     @Override
@@ -226,30 +199,10 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         return count;
     }
 
-    //=============================================================
     @Override
-    public int updateGroups(GroupsBean bean) {
-        Groups groups = new Groups();
-        groups.setId(bean.getId());
-        groups.setName(bean.getName());
-        groups.setCampaignStatus(bean.getCampaignStatus());
-        groups.setDescription(bean.getDescription());
-        groups.setGroupTotal(bean.getGroupTotal());
-        groups.setEffectiveEndDate(bean.getEffectiveEndDate());
-        groups.setEffectiveStartDate(bean.getEffectiveStartDate());
-        groups.setGroupBuyingPrice(bean.getGroupBuyingPrice());
-        groups.setGroupBuyingQuantity(bean.getGroupBuyingQuantity());
-        groups.setGroupMemberQuantity(bean.getGroupMemberQuantity());
-        groups.setImageUrl(bean.getImageUrl());
-        groups.setLimitedPerMember(bean.getLimitedPerMember());
-        groups.setPaymentExpiration(bean.getPaymentExpiration());
-        groups.setSkuid(bean.getSkuid());
-        return groupsMapper.updateByPrimaryKeySelective(groups);
-    }
-
-    @Override
-    public int deleteGroups(Integer id) {
-        return groupsMapper.deleteByPrimaryKey(id);
+    public PageableData<GroupInfoResVo> queryTeamListPageable(GroupInfoReqVo groupInfoReqVo) throws Exception {
+        
+        return null;
     }
 
 

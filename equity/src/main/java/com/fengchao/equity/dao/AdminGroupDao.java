@@ -75,7 +75,7 @@ public class AdminGroupDao {
     public GroupInfo selectGroupInfoById(Long id) {
         GroupInfo groupInfo = groupInfoMapper.selectByPrimaryKey(id);
 
-        log.info("根据id查询GroupInfo 数据库返回:{}", JSONUtil.toJsonString(groupInfo));
+        log.info("根据id:{}查询GroupInfo 数据库返回:{}", id, JSONUtil.toJsonString(groupInfo));
 
         return groupInfo;
     }
