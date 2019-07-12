@@ -145,11 +145,11 @@ public class CouponServiceImpl implements CouponService {
         queryProdBean.setPageNo(pageNo);
         queryProdBean.setPageSize(bean.getLimit());
         if(coupon.getScenarioType() == 1){
-            queryProdBean.setCouponSkus(Arrays.asList(coupon.getCouponMpus().split(",")));
+            queryProdBean.setCouponMpus(Arrays.asList(coupon.getCouponMpus().split(",")));
         }else if(coupon.getScenarioType() == 2){
-            queryProdBean.setExcludeSkus(coupon.getExcludeMpus());
+            queryProdBean.setExcludeMpus(coupon.getExcludeMpus());
         }else if(coupon.getScenarioType() == 3){
-            queryProdBean.setExcludeSkus(coupon.getExcludeMpus());
+            queryProdBean.setExcludeMpus(coupon.getExcludeMpus());
             queryProdBean.setCategories(coupon.getCategories());
 //            map.put("brands",coupon.getBrands());
         }
