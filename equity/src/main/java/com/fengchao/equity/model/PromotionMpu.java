@@ -23,6 +23,8 @@ public class PromotionMpu {
 
     private String model;
 
+    private String skuid;
+
     public Integer getId() {
         return id;
     }
@@ -109,5 +111,13 @@ public class PromotionMpu {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public String getSkuid() {
+        return skuid;
+    }
+
+    public void setSkuid(String skuid) {
+        this.skuid = skuid;
     }
 }
