@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.equity.mapper.GroupMemberMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.GroupMember">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="group_info_id" jdbcType="BIGINT" property="groupInfoId" />
+    <result column="group_team_id" jdbcType="BIGINT" property="groupTeamId" />
+    <result column="member_open_id" jdbcType="VARCHAR" property="memberOpenId" />
+    <result column="is_sponser" jdbcType="SMALLINT" property="isSponser" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="member_status" jdbcType="SMALLINT" property="memberStatus" />
+    <result column="istatus" jdbcType="SMALLINT" property="istatus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, group_info_id, group_team_id, member_open_id, is_sponser, order_id, member_status, 
+    istatus, create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.equity.model.GroupMemberExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from group_member
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from group_member
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from group_member
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.equity.model.GroupMemberExample">
+    delete from group_member
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.GroupMember" useGeneratedKeys="true">
+    insert into group_member (group_info_id, group_team_id, member_open_id, 
+      is_sponser, order_id, member_status, 
+      istatus, create_time, update_time
+      )
+    values (#{groupInfoId,jdbcType=BIGINT}, #{groupTeamId,jdbcType=BIGINT}, #{memberOpenId,jdbcType=VARCHAR}, 
+      #{isSponser,jdbcType=SMALLINT}, #{orderId,jdbcType=BIGINT}, #{memberStatus,jdbcType=SMALLINT}, 
+      #{istatus,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.GroupMember" useGeneratedKeys="true">
+    insert into group_member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="groupInfoId != null">
+        group_info_id,
+      </if>
+      <if test="groupTeamId != null">
+        group_team_id,
+      </if>
+      <if test="memberOpenId != null">
+        member_open_id,
+      </if>
+      <if test="isSponser != null">
+        is_sponser,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="memberStatus != null">
+        member_status,
+      </if>
+      <if test="istatus != null">
+        istatus,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="groupInfoId != null">
+        #{groupInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="groupTeamId != null">
+        #{groupTeamId,jdbcType=BIGINT},
+      </if>
+      <if test="memberOpenId != null">
+        #{memberOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="isSponser != null">
+        #{isSponser,jdbcType=SMALLINT},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="memberStatus != null">
+        #{memberStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="istatus != null">
+        #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.equity.model.GroupMemberExample" resultType="java.lang.Long">
+    select count(*) from group_member
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update group_member
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.groupInfoId != null">
+        group_info_id = #{record.groupInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="record.groupTeamId != null">
+        group_team_id = #{record.groupTeamId,jdbcType=BIGINT},
+      </if>
+      <if test="record.memberOpenId != null">
+        member_open_id = #{record.memberOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isSponser != null">
+        is_sponser = #{record.isSponser,jdbcType=SMALLINT},
+      </if>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=BIGINT},
+      </if>
+      <if test="record.memberStatus != null">
+        member_status = #{record.memberStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.istatus != null">
+        istatus = #{record.istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update group_member
+    set id = #{record.id,jdbcType=BIGINT},
+      group_info_id = #{record.groupInfoId,jdbcType=BIGINT},
+      group_team_id = #{record.groupTeamId,jdbcType=BIGINT},
+      member_open_id = #{record.memberOpenId,jdbcType=VARCHAR},
+      is_sponser = #{record.isSponser,jdbcType=SMALLINT},
+      order_id = #{record.orderId,jdbcType=BIGINT},
+      member_status = #{record.memberStatus,jdbcType=SMALLINT},
+      istatus = #{record.istatus,jdbcType=SMALLINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.GroupMember">
+    update group_member
+    <set>
+      <if test="groupInfoId != null">
+        group_info_id = #{groupInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="groupTeamId != null">
+        group_team_id = #{groupTeamId,jdbcType=BIGINT},
+      </if>
+      <if test="memberOpenId != null">
+        member_open_id = #{memberOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="isSponser != null">
+        is_sponser = #{isSponser,jdbcType=SMALLINT},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="memberStatus != null">
+        member_status = #{memberStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="istatus != null">
+        istatus = #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.GroupMember">
+    update group_member
+    set group_info_id = #{groupInfoId,jdbcType=BIGINT},
+      group_team_id = #{groupTeamId,jdbcType=BIGINT},
+      member_open_id = #{memberOpenId,jdbcType=VARCHAR},
+      is_sponser = #{isSponser,jdbcType=SMALLINT},
+      order_id = #{orderId,jdbcType=BIGINT},
+      member_status = #{memberStatus,jdbcType=SMALLINT},
+      istatus = #{istatus,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
