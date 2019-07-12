@@ -27,8 +27,6 @@
     <result column="scenario_type" property="scenarioType" jdbcType="INTEGER" />
     <result column="coupon_mpus" property="couponMpus" jdbcType="VARCHAR" />
     <result column="exclude_mpus" property="excludeMpus" jdbcType="VARCHAR" />
-    <result column="coupon_skus" property="couponSkus" jdbcType="VARCHAR" />
-    <result column="exclude_skus" property="excludeSkus" jdbcType="VARCHAR" />
     <result column="categories" property="categories" jdbcType="VARCHAR" />
     <result column="brands" property="brands" jdbcType="VARCHAR" />
     <result column="collect_type" property="collectType" jdbcType="INTEGER" />
@@ -160,16 +158,16 @@
     <include refid="Base_Column_List" />
     from coupon
     where 1=1
-    <if test="skuid != null and skuid != ''" >
-      and find_in_set(#{skuid,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
+    <if test="mpu != null and mpu != ''" >
+      and find_in_set(#{mpu,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
     </if>
-    <if test="skuid != null and skuid != ''" >
-      or locate(#{skuid,jdbcType=VARCHAR},exclude_mpus) = 0 and scenario_type = 2
+    <if test="mpu != null and mpu != ''" >
+      or locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0 and scenario_type = 2
     </if>
     <if test="category != null and category != ''" >
       or find_in_set(#{category,jdbcType=VARCHAR}, category)
-      <if test="skuid != null and skuid != ''" >
-        and locate(#{skuid,jdbcType=VARCHAR},exclude_mpus) = 0
+      <if test="mpu != null and mpu != ''" >
+        and locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0
       </if>
       and scenario_type = 3
     </if>

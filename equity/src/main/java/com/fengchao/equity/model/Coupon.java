@@ -53,10 +53,6 @@ public class Coupon {
 
     private String excludeMpus;
 
-    private String couponSkus;
-
-    private String excludeSkus;
-
     private String categories;
 
     private String brands;
@@ -347,19 +343,4 @@ public class Coupon {
         this.userCollectNum = userCollectNum;
     }
 
-    public String getCouponSkus() {
-        return couponSkus;
-    }
-
-    public void setCouponSkus(String couponSkus) {
-        this.couponSkus = couponSkus;
-    }
-
-    public String getExcludeSkus() {
-        return excludeSkus;
-    }
-
-    public void setExcludeSkus(String excludeSkus) {
-        this.excludeSkus = excludeSkus;
-    }
 }
