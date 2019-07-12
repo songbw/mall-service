@@ -139,7 +139,8 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         category.setSortOrder(bean.getSortOrder());
         category.setParentId(bean.getParentId());
         category.setIdate(new Date());
-        return mapper.insertSelective(category);
+        mapper.insertSelective(category);
+        return category.getCategoryId();
     }
 
     @Override
