@@ -6,6 +6,7 @@ import lombok.Data;
 public class AoyiProdBean {
     private Integer id;
     private String skuid;
+    private String mpu;
     private String brand;
     private String category;
     private String image;
