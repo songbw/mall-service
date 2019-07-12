@@ -151,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
             }
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
-                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getSkuId());
+                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setPromotionId(orderSku.getPromotionId());
                 orderDetail.setSalePrice(orderSku.getSalePrice());

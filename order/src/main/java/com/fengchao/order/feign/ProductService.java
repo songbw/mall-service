@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ProductService {
 
     @RequestMapping(value = "/prod", method = RequestMethod.GET)
-    OperaResult find(@RequestParam("id") String id);
+    OperaResult find(@RequestParam("mpu") String mpu);
 
 }
