@@ -279,4 +279,9 @@
     set status = 3
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
   </update>
+  <update id="updateStatusByCouponId" parameterType="java.lang.Integer" >
+    update coupon_use_info
+    set status = 3
+    where coupon_id = #{couponId,jdbcType=INTEGER}
+  </update>
 </mapper>
