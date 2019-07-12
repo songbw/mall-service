@@ -34,4 +34,6 @@ public interface AoyiBaseCategoryMapper {
     List<AoyiBaseCategory> selectAdminListByParentId(Integer parentId);
 
     List<CategoryQueryBean> selectByCategoryIdList(List<String> list);
+
+    int selectMaxIdByParentId(Integer parentId) ;
 }

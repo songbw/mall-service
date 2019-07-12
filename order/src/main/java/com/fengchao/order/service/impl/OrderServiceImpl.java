@@ -369,9 +369,11 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> logistics = orderDetailMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
             logistics.forEach(logist -> {
-                String jsonString = Kuaidi100.synQueryData(logist.getLogisticsId(), logist.getComCode()) ;
-                JSONObject jsonObject = JSONObject.parseObject(jsonString);
-                jsonArray.add(jsonObject);
+                if (logist.getLogisticsId() != null && logist.getComCode() != null) {
+                    String jsonString = Kuaidi100.synQueryData(logist.getLogisticsId(), logist.getComCode()) ;
+                    JSONObject jsonObject = JSONObject.parseObject(jsonString);
+                    jsonArray.add(jsonObject);
+                }
             });
         }
         return jsonArray;

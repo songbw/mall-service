@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -127,18 +128,18 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public void insertSelective(CategoryBean bean) {
-
+    public int insertSelective(CategoryBean bean) {
+        int categoryId = mapper.selectMaxIdByParentId(bean.getParentId()) ;
         AoyiBaseCategory category = new AoyiBaseCategory();
-
+        category.setCategoryId(categoryId + 1);
         category.setCategoryName(bean.getCategoryName());
         category.setCategoryClass(bean.getCategoryClass());
         category.setCategoryDesc(bean.getCategoryDesc());
         category.setCategoryIcon(bean.getCategoryIcon());
         category.setSortOrder(bean.getSortOrder());
         category.setParentId(bean.getParentId());
-
-        mapper.insertSelective(category);
+        category.setIdate(new Date());
+        return mapper.insertSelective(category);
     }
 
     @Override

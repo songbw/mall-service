@@ -12,7 +12,7 @@
     <result column="is_show" property="isShow" jdbcType="BIT" />
     <result column="is_nav" property="isNav" jdbcType="BIT" />
     <result column="is_top_style" property="isTopStyle" jdbcType="TINYINT" />
-    <result column="idate" property="idate" jdbcType="VARCHAR" />
+    <result column="idate" property="idate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     category_id, category_name, parent_id, category_class, category_icon, category_desc, 
@@ -36,9 +36,9 @@
     values (#{categoryId,jdbcType=INTEGER}, #{categoryName,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
       #{categoryClass,jdbcType=CHAR}, #{categoryIcon,jdbcType=VARCHAR}, #{categoryDesc,jdbcType=VARCHAR}, 
       #{sortOrder,jdbcType=INTEGER}, #{isShow,jdbcType=BIT}, #{isNav,jdbcType=BIT}, #{isTopStyle,jdbcType=TINYINT}, 
-      #{idate,jdbcType=VARCHAR})
+      #{idate})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory" >
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory"  keyProperty="category_id" useGeneratedKeys="true">
     insert into aoyi_base_category
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="categoryId != null" >
@@ -107,11 +107,11 @@
         #{isTopStyle,jdbcType=TINYINT},
       </if>
       <if test="idate != null" >
-        #{idate,jdbcType=VARCHAR},
+        #{idate},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory"  keyProperty="category_id" useGeneratedKeys="true">
     update aoyi_base_category
     <set >
       <if test="categoryName != null" >
@@ -142,12 +142,12 @@
         is_top_style = #{isTopStyle,jdbcType=TINYINT},
       </if>
       <if test="idate != null" >
-        idate = #{idate,jdbcType=VARCHAR},
+        idate = #{idate},
       </if>
     </set>
     where category_id = #{categoryId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory"  keyProperty="category_id" useGeneratedKeys="true">
     update aoyi_base_category
     set category_name = #{categoryName,jdbcType=VARCHAR},
       parent_id = #{parentId,jdbcType=INTEGER},
@@ -158,7 +158,7 @@
       is_show = #{isShow,jdbcType=BIT},
       is_nav = #{isNav,jdbcType=BIT},
       is_top_style = #{isTopStyle,jdbcType=TINYINT},
-      idate = #{idate,jdbcType=VARCHAR}
+      idate = #{idate}
     where category_id = #{categoryId,jdbcType=INTEGER}
   </update>
 
@@ -229,5 +229,8 @@
     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
+  </select>
+  <select id="selectMaxIdByParentId" resultType="java.lang.Integer">
+    SELECT MAX(category_id) FROM aoyi_base_category WHERE parent_id=#{parentId};
   </select>
 </mapper>

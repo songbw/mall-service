@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.model;
 
+import java.util.Date;
 import java.util.List;
 
 public class AoyiBaseCategory {
@@ -23,7 +24,7 @@ public class AoyiBaseCategory {
 
     private Byte isTopStyle;
 
-    private String idate;
+    private Date idate;
 
     private List<AoyiBaseCategory> subs;
 
@@ -109,12 +110,12 @@ public class AoyiBaseCategory {
         this.isTopStyle = isTopStyle;
     }
 
-    public String getIdate() {
+    public Date getIdate() {
         return idate;
     }
 
-    public void setIdate(String idate) {
-        this.idate = idate == null ? null : idate.trim();
+    public void setIdate(Date idate) {
+        this.idate = idate ;
     }
 
     public List<AoyiBaseCategory> getSubs() {
