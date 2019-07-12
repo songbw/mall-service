@@ -230,7 +230,12 @@
       #{item}
     </foreach>
   </select>
-  <select id="selectMaxIdByParentId" resultType="java.lang.Integer">
-    SELECT MAX(category_id) FROM aoyi_base_category WHERE parent_id=#{parentId};
+  <select id="selectMaxIdByParentId" resultType="int">
+    SELECT  IFNULL(MAX(category_id),0) FROM aoyi_base_category WHERE parent_id=#{parentId};
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
   </select>
 </mapper>

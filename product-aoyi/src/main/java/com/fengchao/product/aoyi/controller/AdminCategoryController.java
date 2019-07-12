@@ -26,6 +26,13 @@ public class AdminCategoryController {
         return result;
     }
 
+    @GetMapping("all")
+    public OperaResult all(OperaResult result){
+        List<AoyiBaseCategory> category = service.selectAll();
+        result.getData().put("result", category) ;
+        return result;
+    }
+
     @GetMapping("/oneLevel")
     private OperaResult findOneLevelList(Integer offset, Integer limit, OperaResult result) {
         Integer categoryClass = 1;

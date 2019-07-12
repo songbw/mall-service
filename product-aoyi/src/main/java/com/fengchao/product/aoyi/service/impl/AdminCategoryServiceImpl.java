@@ -76,6 +76,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categories;
     }
 
+    @Override
+    public List<AoyiBaseCategory> selectAll() {
+        return mapper.selectAll();
+    }
+
     /**
      * @Description: 递归查询
      * @param Category
@@ -131,6 +136,13 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     public int insertSelective(CategoryBean bean) {
         int categoryId = mapper.selectMaxIdByParentId(bean.getParentId()) ;
         AoyiBaseCategory category = new AoyiBaseCategory();
+        if (categoryId == 0) {
+            if ("2".equals(bean.getCategoryClass())) {
+                categoryId = bean.getParentId() * 100;
+            } else if ("3".equals(bean.getCategoryClass())) {
+                categoryId = bean.getParentId() * 10000;
+            }
+        }
         category.setCategoryId(categoryId + 1);
         category.setCategoryName(bean.getCategoryName());
         category.setCategoryClass(bean.getCategoryClass());
