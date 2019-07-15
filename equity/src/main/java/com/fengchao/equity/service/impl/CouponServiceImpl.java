@@ -41,10 +41,6 @@ public class CouponServiceImpl implements CouponService {
             coupon.setCode(uuid);
         }
         int num = mapper.insertSelective(coupon);
-        if(num == 1){
-            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), bean.getEffectiveStartDate());
-            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), bean.getEffectiveEndDate());
-        }
         return coupon.getId();
     }
 
@@ -69,7 +65,18 @@ public class CouponServiceImpl implements CouponService {
     public int updateCoupon(CouponBean bean) {
         Coupon coupon = beanToCoupon(bean);
         coupon.setId(bean.getId());
-        return mapper.updateByPrimaryKeySelective(coupon);
+        if(bean.getStatus() == 2){
+            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), bean.getEffectiveStartDate());
+            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), bean.getEffectiveEndDate());
+        }
+
+        int num = mapper.updateByPrimaryKeySelective(coupon);
+
+        if(bean.getStatus() == 4 && num == 1){
+            useInfoMapper.updateStatusByCouponId(bean.getId());
+        }
+
+        return num;
     }
 
     @Override
@@ -170,7 +177,7 @@ public class CouponServiceImpl implements CouponService {
         }
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setStatus(3);
+        useInfo.setStatus(2);
         useInfoMapper.updateByPrimaryKeySelective(useInfo);
         Coupon coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         return coupon;
@@ -192,7 +199,11 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public int end(int couponId) {
-        return mapper.couponEnd(couponId);
+        int num = mapper.couponEnd(couponId);
+        if(num == 1){
+            useInfoMapper.updateStatusByCouponId(couponId);
+        }
+        return num;
     }
 
     @Override
