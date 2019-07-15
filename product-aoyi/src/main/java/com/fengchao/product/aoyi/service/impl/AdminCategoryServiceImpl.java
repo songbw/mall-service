@@ -133,9 +133,8 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public int insertSelective(CategoryBean bean) {
+    public int insertSelective(AoyiBaseCategory bean) {
         int categoryId = mapper.selectMaxIdByParentId(bean.getParentId()) ;
-        AoyiBaseCategory category = new AoyiBaseCategory();
         if (categoryId == 0) {
             if ("2".equals(bean.getCategoryClass())) {
                 categoryId = bean.getParentId() * 100;
@@ -143,16 +142,10 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
                 categoryId = bean.getParentId() * 10000;
             }
         }
-        category.setCategoryId(categoryId + 1);
-        category.setCategoryName(bean.getCategoryName());
-        category.setCategoryClass(bean.getCategoryClass());
-        category.setCategoryDesc(bean.getCategoryDesc());
-        category.setCategoryIcon(bean.getCategoryIcon());
-        category.setSortOrder(bean.getSortOrder());
-        category.setParentId(bean.getParentId());
-        category.setIdate(new Date());
-        mapper.insertSelective(category);
-        return category.getCategoryId();
+        bean.setCategoryId(categoryId + 1);
+        bean.setIdate(new Date());
+        mapper.insertSelective(bean);
+        return bean.getCategoryId();
     }
 
     @Override
