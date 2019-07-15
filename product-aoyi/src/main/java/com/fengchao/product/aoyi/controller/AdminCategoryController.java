@@ -47,7 +47,7 @@ public class AdminCategoryController {
     }
 
     @PostMapping("/saveCategory")
-    private OperaResult saveCategory(@RequestBody CategoryBean bean, OperaResult result) {
+    private OperaResult saveCategory(@RequestBody AoyiBaseCategory bean, OperaResult result) {
         result.getData().put("categoryId", service.insertSelective(bean));
         return result ;
     }

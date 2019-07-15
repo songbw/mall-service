@@ -11,7 +11,7 @@ public interface AdminCategoryService {
 
     PageBean selectLimit(Integer offset, Integer limit, Integer categoryClass);
 
-    int insertSelective(CategoryBean bean);
+    int insertSelective(AoyiBaseCategory bean);
 
     void delete(Integer id);
 
