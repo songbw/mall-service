@@ -274,10 +274,14 @@
       collected_time = #{collectedTime,jdbcType=TIMESTAMP}
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
   </update>
-  <update id="updateStatusByUserCode" parameterType="java.lang.String" >
+  <update id="updateStatusByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
     update coupon_use_info
-    set status = 3
+    set status = #{status,jdbcType=INTEGER},
+        collected_time = #{collectedTime,jdbcType=TIMESTAMP}
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    <if test="id != null" >
+      and id = #{id,jdbcType=INTEGER},
+    </if>
   </update>
   <update id="updateStatusByCouponId" parameterType="java.lang.Integer" >
     update coupon_use_info

@@ -175,6 +175,7 @@ public class CouponServiceImpl implements CouponService {
         if(couponUseInfo == null){
             return null;
         }
+        useInfo.setId(bean.getId());
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(2);

@@ -26,8 +26,8 @@
   <select id="queryStatisticsData" resultType="hashmap" parameterType="Map">
     select `key`, url, sum(pv) as total_pv , sum(uv) as total_uv , floor(sum(pv*stop_time)/sum(pv)) as avg_stop_time from baidu_statis
     where 1=1
-    <if test="key != null and key !=''">
-      and  `key` = #{key}
+    <if test="urlKey != null and urlKey !=''">
+      and  `key` = #{urlKey}
     </if>
     and <![CDATA[visit_date >= #{dayStart,jdbcType=DATE}]]> <![CDATA[ and visit_date <= #{dayEnd,jdbcType=DATE}]]>
     group by `key` order by avg_stop_time desc
@@ -40,8 +40,8 @@
   <select id="countStatisticsData" resultType="java.lang.Integer">
     select count(distinct(`key`)) from baidu_statis
     where 1=1
-    <if test="key != null and key !=''">
-      and  `key` = #{key}
+    <if test="urlKey != null and urlKey !=''">
+      and  `key` = #{urlKey}
     </if>
     and <![CDATA[visit_date >= #{dayStart,jdbcType=DATE}]]> <![CDATA[ and visit_date <= #{dayEnd,jdbcType=DATE}]]>
   </select>
