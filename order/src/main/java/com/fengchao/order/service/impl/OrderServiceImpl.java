@@ -415,12 +415,11 @@ public class OrderServiceImpl implements OrderService {
         int dayPaymentCount = mapper.selectDayPaymentCount(map);
         int dayCount = mapper.selectDayCount(map);
         int dayPeopleCount = mapper.selectDayPeopleCount(map);
-        int dayRefundOrderCount = refundOrderMapper.selectDayCount(map);
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
         dayStatisticsBean.setOrderCount(dayCount);
         dayStatisticsBean.setOrderPeopleNum(dayPeopleCount);
-        dayStatisticsBean.setOrderBackNum(dayRefundOrderCount);
+//        dayStatisticsBean.setOrderBackNum(dayRefundOrderCount);
         return dayStatisticsBean;
     }
     public String queryLogisticsInfo(String logisticsId) {

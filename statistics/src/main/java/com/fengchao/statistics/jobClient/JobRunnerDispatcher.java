@@ -23,7 +23,7 @@ public class JobRunnerDispatcher implements JobRunner {
 
 
     static {
-        JOB_RUNNER_MAP.put("orderCancel", new OrderCancelRunnerJobImpl());
+        JOB_RUNNER_MAP.put("orderStatistics", new OrderStatisticsRunnerJobImpl());
 //        JOB_RUNNER_MAP.put("bType", new JobRunnerB());
     }
 

@@ -1,5 +1,7 @@
 package com.fengchao.statistics.jobClient;
 
+import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.WorkOrdersService;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
@@ -9,9 +11,9 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 
 
-public class OrderCancelRunnerJobImpl implements JobRunner {
+public class OrderStatisticsRunnerJobImpl implements JobRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrderCancelRunnerJobImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderStatisticsRunnerJobImpl.class);
 
 
     @Override
@@ -22,10 +24,11 @@ public class OrderCancelRunnerJobImpl implements JobRunner {
             // TODO 业务逻辑
             LOGGER.info("我要执行订单取消操作：" + jobContext);
 //            String id = jobContext.getJob().getParam("orderId") ;
-//            OrderService orderService = BeanContext.getApplicationContext().getBean(OrderService.class);
+            OrderService orderService = BeanContext.getApplicationContext().getBean(OrderService.class);
+            WorkOrdersService workOrderService = BeanContext.getApplicationContext().getBean(WorkOrdersService.class);
 //            int orderId = Integer.parseInt(id) ;
 //            Order order = orderService.findById(orderId) ;
-//            if (order != null && order.getStatus() == 0) {
+//            if (order != null && order.getStatus() == 0) {s
 //                orderService.cancel(orderId) ;
 //                // 会发送到 LTS (JobTracker上)
 //                bizLogger.info("订单取消成功");
