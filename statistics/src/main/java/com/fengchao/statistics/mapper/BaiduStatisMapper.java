@@ -1,17 +1,21 @@
 package com.fengchao.statistics.mapper;
 
 import com.fengchao.statistics.model.BaiduStatis;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
+import java.util.List;
+
+@Mapper
+@Repository
 public interface BaiduStatisMapper {
-    int deleteByPrimaryKey(Long id);
 
-    int insert(BaiduStatis record);
+    List<HashMap<String, Object>> queryAllUrls(HashMap map);
+    Integer countAllUrls();
 
-    int insertSelective(BaiduStatis record);
+    HashMap<String, Object> getTotalPVandUv();
 
-    BaiduStatis selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(BaiduStatis record);
-
-    int updateByPrimaryKey(BaiduStatis record);
+    List<HashMap<String, Object>> queryStatisticsData(HashMap map);
+    Integer countStatisticsData(HashMap map);
 }
