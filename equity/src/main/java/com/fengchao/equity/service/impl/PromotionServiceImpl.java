@@ -204,4 +204,9 @@ public class PromotionServiceImpl implements PromotionService {
     public int end(int promotionId) {
         return mapper.promotionEnd(promotionId);
     }
+
+    @Override
+    public Promotion findPromotionName(Integer id) {
+        return mapper.selectPromotionName(id);
+    }
 }

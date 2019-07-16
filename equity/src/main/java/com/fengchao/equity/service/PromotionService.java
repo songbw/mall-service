@@ -36,4 +36,6 @@ public interface PromotionService {
     List<PromotionInfoBean> findPromotionByMpu(String mpu);
 
     int end(int promotionId);
+
+    Promotion findPromotionName(Integer id);
 }
