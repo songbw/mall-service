@@ -2,11 +2,9 @@ package com.fengchao.statistics.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.statistics.bean.DayStatisticsBean;
-import com.fengchao.statistics.bean.MerchantPaymentBean;
-import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.bean.QueryBean;
+import com.fengchao.statistics.bean.*;
 import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.ProductService;
 import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.service.MerchantOverviewService;
@@ -26,6 +24,8 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
     private MerchantOverviewMapper mapper;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public void add(QueryBean queryBean) {
@@ -46,7 +46,13 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
             merchantOverview.setOrderPaymentAmount(merchantPaymentBean.getSaleAmount());
             merchantOverview.setMerchantId(merchantPaymentBean.getMerchantId());
             // 查询商户信息
+            SkuCode skuCode = getMerchantInfo(merchantPaymentBean.getMerchantId()) ;
+            if (skuCode != null) {
+                merchantOverview.setMerchantCode(skuCode.getMerchantCode());
+                merchantOverview.setMerchantName(skuCode.getMerchantName());
+            }
             //存库
+            mapper.insertSelective(merchantOverview) ;
         });
     }
 
@@ -58,6 +64,18 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
             String jsonString = JSON.toJSONString(object);
             List<MerchantPaymentBean> merchantPaymentBeans = JSONObject.parseArray(jsonString, MerchantPaymentBean.class) ;
             return merchantPaymentBeans;
+        }
+        return null;
+    }
+
+    private SkuCode getMerchantInfo(int id) {
+        OperaResult result = productService.findMerchant(id) ;
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            SkuCode skuCode = JSONObject.parseObject(jsonString, SkuCode.class) ;
+            return skuCode;
         }
         return null;
     }
