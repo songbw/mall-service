@@ -1,4 +1,4 @@
-package com.fengchao.order.bean;
+package com.fengchao.statistics.bean;
 
 import lombok.Data;
 

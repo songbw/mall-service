@@ -1,5 +1,7 @@
 package com.fengchao.elasticsearch.domain;
 
+import java.util.Date;
+
 public class AoyiProdIndex {
     private Integer id;
 
@@ -36,6 +38,18 @@ public class AoyiProdIndex {
     private String imagesUrlExtend;
 
     private String introductionUrlExtend;
+
+    private Integer merchantId ;
+
+    private Integer inventory ;
+
+    private Integer brandId ;
+
+    private String mpu;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 
     public Integer getId() {
         return id;
@@ -179,5 +193,53 @@ public class AoyiProdIndex {
 
     public void setIntroductionUrlExtend(String introductionUrlExtend) {
         this.introductionUrlExtend = introductionUrlExtend;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public Integer getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Integer inventory) {
+        this.inventory = inventory;
+    }
+
+    public Integer getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Integer brandId) {
+        this.brandId = brandId;
+    }
+
+    public String getMpu() {
+        return mpu;
+    }
+
+    public void setMpu(String mpu) {
+        this.mpu = mpu;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

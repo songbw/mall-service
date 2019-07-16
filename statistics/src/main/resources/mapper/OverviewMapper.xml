@@ -3,7 +3,7 @@
 <mapper namespace="com.fengchao.statistics.mapper.OverviewMapper" >
   <resultMap id="BaseResultMap" type="com.fengchao.statistics.model.Overview" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="order_payment_amount" property="orderPaymentAmount" jdbcType="BIGINT" />
+    <result column="order_payment_amount" property="orderPaymentAmount" jdbcType="REAL" />
     <result column="order_count" property="orderCount" jdbcType="INTEGER" />
     <result column="order_people_num" property="orderPeopleNum" jdbcType="INTEGER" />
     <result column="order_back_num" property="orderBackNum" jdbcType="INTEGER" />
@@ -28,7 +28,7 @@
     insert into overview (id, order_payment_amount, order_count, 
       order_people_num, order_back_num, statistics_date, 
       created_at)
-    values (#{id,jdbcType=BIGINT}, #{orderPaymentAmount,jdbcType=BIGINT}, #{orderCount,jdbcType=INTEGER}, 
+    values (#{id,jdbcType=BIGINT}, #{orderPaymentAmount,jdbcType=REAL}, #{orderCount,jdbcType=INTEGER},
       #{orderPeopleNum,jdbcType=INTEGER}, #{orderBackNum,jdbcType=INTEGER}, #{statisticsDate,jdbcType=DATE}, 
       #{createdAt,jdbcType=TIMESTAMP})
   </insert>
@@ -62,7 +62,7 @@
         #{id,jdbcType=BIGINT},
       </if>
       <if test="orderPaymentAmount != null" >
-        #{orderPaymentAmount,jdbcType=BIGINT},
+        #{orderPaymentAmount,jdbcType=REAL},
       </if>
       <if test="orderCount != null" >
         #{orderCount,jdbcType=INTEGER},
@@ -85,7 +85,7 @@
     update overview
     <set >
       <if test="orderPaymentAmount != null" >
-        order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+        order_payment_amount = #{orderPaymentAmount,jdbcType=REAL},
       </if>
       <if test="orderCount != null" >
         order_count = #{orderCount,jdbcType=INTEGER},
@@ -107,7 +107,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.statistics.model.Overview" >
     update overview
-    set order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+    set order_payment_amount = #{orderPaymentAmount,jdbcType=REAL},
       order_count = #{orderCount,jdbcType=INTEGER},
       order_people_num = #{orderPeopleNum,jdbcType=INTEGER},
       order_back_num = #{orderBackNum,jdbcType=INTEGER},

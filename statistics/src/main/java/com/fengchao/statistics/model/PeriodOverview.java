@@ -3,17 +3,17 @@ package com.fengchao.statistics.model;
 public class PeriodOverview {
     private Long id;
 
-    private Integer lateAtNight;
+    private float lateAtNight;
 
-    private Integer earlyMorning;
+    private float earlyMorning;
 
-    private Integer morning;
+    private float morning;
 
-    private Integer noon;
+    private float noon;
 
-    private Integer afternoon;
+    private float afternoon;
 
-    private Integer night;
+    private float night;
 
     public Long getId() {
         return id;
@@ -23,51 +23,51 @@ public class PeriodOverview {
         this.id = id;
     }
 
-    public Integer getLateAtNight() {
+    public float getLateAtNight() {
         return lateAtNight;
     }
 
-    public void setLateAtNight(Integer lateAtNight) {
+    public void setLateAtNight(float lateAtNight) {
         this.lateAtNight = lateAtNight;
     }
 
-    public Integer getEarlyMorning() {
+    public float getEarlyMorning() {
         return earlyMorning;
     }
 
-    public void setEarlyMorning(Integer earlyMorning) {
+    public void setEarlyMorning(float earlyMorning) {
         this.earlyMorning = earlyMorning;
     }
 
-    public Integer getMorning() {
+    public float getMorning() {
         return morning;
     }
 
-    public void setMorning(Integer morning) {
+    public void setMorning(float morning) {
         this.morning = morning;
     }
 
-    public Integer getNoon() {
+    public float getNoon() {
         return noon;
     }
 
-    public void setNoon(Integer noon) {
+    public void setNoon(float noon) {
         this.noon = noon;
     }
 
-    public Integer getAfternoon() {
+    public float getAfternoon() {
         return afternoon;
     }
 
-    public void setAfternoon(Integer afternoon) {
+    public void setAfternoon(float afternoon) {
         this.afternoon = afternoon;
     }
 
-    public Integer getNight() {
+    public float getNight() {
         return night;
     }
 
-    public void setNight(Integer night) {
+    public void setNight(float night) {
         this.night = night;
     }
 }

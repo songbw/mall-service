@@ -9,7 +9,7 @@ public class PromotionOverview {
 
     private String promotionName;
 
-    private Long orderPaymentAmount;
+    private float orderPaymentAmount;
 
     private Date statisticsDate;
 
@@ -39,11 +39,11 @@ public class PromotionOverview {
         this.promotionName = promotionName == null ? null : promotionName.trim();
     }
 
-    public Long getOrderPaymentAmount() {
+    public float getOrderPaymentAmount() {
         return orderPaymentAmount;
     }
 
-    public void setOrderPaymentAmount(Long orderPaymentAmount) {
+    public void setOrderPaymentAmount(float orderPaymentAmount) {
         this.orderPaymentAmount = orderPaymentAmount;
     }
 
