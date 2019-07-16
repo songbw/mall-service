@@ -1,14 +1,18 @@
 package com.fengchao.equity.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.mapper.CouponMapper;
+import com.fengchao.equity.mapper.CouponThirdMapper;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
 import com.fengchao.equity.model.Coupon;
+import com.fengchao.equity.model.CouponThird;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponUseInfoService;
+import com.fengchao.equity.utils.Pkcs8Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +29,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
    private CouponUseInfoMapper mapper;
    @Autowired
    private CouponMapper couponMapper;
+   @Autowired
+   private CouponThirdMapper couponThirdMapper;
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
@@ -268,6 +274,61 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             couponUseInfo.setCouponInfo(couponBean);
         }
         return couponUseInfo;
+    }
+
+    @Override
+    public int consumedToushi(ToushiParam bean) throws EquityException {
+//        try {
+//            boolean verify = Pkcs8Util.verify(JSON.toJSONBytes(bean.getData()), null, bean.getSign());
+//            if(!verify){
+//                throw new EquityException(500, "验签失败");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        couponUseInfo.setUserOpenId(bean.getOpen_id());
+        couponUseInfo.setConsumedTime(new Date());
+        couponUseInfo.setUserCouponCode(bean.getCoupon_code());
+        couponUseInfo.setStatus(2);
+
+        return mapper.updateStatusByToushiCode(couponUseInfo);
+    }
+
+    @Override
+    public int obtainCoupon(ToushiParam bean) {
+//        try {
+//            boolean verify = Pkcs8Util.verify(JSON.toJSONBytes(bean.getData()), null, bean.getSign());
+//            if(!verify){
+//                throw new EquityException(500, "验签失败");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        couponUseInfo.setType(1);
+        couponUseInfo.setUserOpenId(bean.getOpen_id());
+        couponUseInfo.setCollectedTime(new Date());
+        couponUseInfo.setUserCouponCode(bean.getCoupon_code());
+        int num = mapper.insertSelective(couponUseInfo);
+        if(num == 0){
+            throw new EquityException(500, "领取优惠券失败");
+        }
+
+        CouponThird couponThird = new CouponThird();
+        couponThird.setMerchantId(bean.getMerchantId());
+        couponThird.setCouponUserId(couponUseInfo.getId());
+        couponThird.setMerchantName(bean.getMerchantName());
+        couponThird.setName(bean.getName());
+        couponThird.setDescription(bean.getDescription());
+        couponThird.setPrice(bean.getPrice());
+        couponThird.setUrl(bean.getUrl());
+        couponThird.setEffectiveEndDate(bean.getEffectiveEndDate());
+        couponThird.setEffectiveStartDate(bean.getEffectiveStartDate());
+
+        return couponThirdMapper.insertSelective(couponThird);
     }
 
     private CouponBean couponToBean(Coupon coupon) {

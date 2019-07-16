@@ -38,9 +38,11 @@ public interface CouponUseInfoMapper {
 
     int updateByUserCode(CouponUseInfo record);
 
-    int updateStatusByUserCode(String userCouponCode);
+    int updateStatusByUserCode(CouponUseInfo record);
 
     List<CouponUseInfo> selectCollect(CouponUseInfoBean couponUseInfoBean);
 
     int updateStatusByCouponId(int couponId);
+
+    int updateStatusByToushiCode(CouponUseInfo couponUseInfo);
 }

@@ -1,11 +1,10 @@
 package com.fengchao.equity.controller;
 
-import com.fengchao.equity.bean.PageBean;
-import com.fengchao.equity.bean.CouponUseInfoBean;
+import com.fengchao.equity.bean.*;
+import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
-import com.fengchao.equity.bean.OperaResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -122,28 +121,16 @@ public class CouponController {
     }
 
     @PostMapping("consumed")//头食对接接口
-    public OperaResult consumed(@RequestBody CouponUseInfoBean bean, OperaResult result){
-        Coupon coupon = couponService.consumeCoupon(bean);
-        if(coupon == null){
-            result.setCode(40012);
-            result.setMsg("销券失败");
-        }else{
-            result.getData().put("id",coupon.getId());
-            result.getData().put("code",coupon.getCode());
-        }
+    public OperaResult consumed(@RequestBody ToushiParam bean, OperaResult result) throws EquityException {
+        int num = useInfoService.consumedToushi(bean);
+        result.getData().put("result",num);
         return result;
     }
 
     @PostMapping("obtain")//头食对接接口
-    public OperaResult obtain(@RequestBody CouponUseInfoBean bean, OperaResult result){
-        Coupon coupon = couponService.consumeCoupon(bean);
-        if(coupon == null){
-            result.setCode(40012);
-            result.setMsg("销券失败");
-        }else{
-            result.getData().put("id",coupon.getId());
-            result.getData().put("code",coupon.getCode());
-        }
+    public OperaResult obtainCoupon(@RequestBody ToushiParam bean, OperaResult result){
+        int num = useInfoService.obtainCoupon(bean);
+        result.getData().put("result",num);
         return result;
     }
 }

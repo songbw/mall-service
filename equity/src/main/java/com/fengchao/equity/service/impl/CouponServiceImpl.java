@@ -183,7 +183,7 @@ public class CouponServiceImpl implements CouponService {
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(2);
-        useInfoMapper.updateByPrimaryKeySelective(useInfo);
+        useInfoMapper.updateStatusByUserCode(useInfo);
         Coupon coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         return coupon;
     }

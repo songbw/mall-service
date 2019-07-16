@@ -1,8 +1,7 @@
 package com.fengchao.equity.service;
 
-import com.fengchao.equity.bean.PageBean;
-import com.fengchao.equity.bean.CouponBean;
-import com.fengchao.equity.bean.CouponUseInfoBean;
+import com.fengchao.equity.bean.*;
+import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.model.CouponUseInfo;
 
 public interface CouponUseInfoService {
@@ -26,4 +25,8 @@ public interface CouponUseInfoService {
     int deleteUserCoupon(CouponUseInfoBean bean);
 
     CouponUseInfo findById(CouponUseInfoBean bean);
+
+    int consumedToushi(ToushiParam bean) throws EquityException;
+
+    int obtainCoupon(ToushiParam bean);
 }
