@@ -2,10 +2,13 @@ package com.fengchao.statistics.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.statistics.bean.*;
+import com.fengchao.statistics.bean.OperaResult;
+import com.fengchao.statistics.bean.Promotion;
+import com.fengchao.statistics.bean.PromotionPaymentBean;
+import com.fengchao.statistics.bean.QueryBean;
+import com.fengchao.statistics.feign.EquityService;
 import com.fengchao.statistics.feign.OrderService;
 import com.fengchao.statistics.mapper.PromotionOverviewMapper;
-import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.model.PromotionOverview;
 import com.fengchao.statistics.service.PromotionOverviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,8 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     private PromotionOverviewMapper mapper;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private EquityService equityService;
 
     @Override
     public void add(QueryBean queryBean) {
@@ -44,11 +49,10 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             promotionOverview.setOrderPaymentAmount(promotionPaymentBean.getSaleAmount());
             promotionOverview.setPromotionId(promotionPaymentBean.getPromotionId());
             // 查询活动信息
-//            SkuCode skuCode = getMerchantInfo(merchantPaymentBean.getMerchantId()) ;
-//            if (skuCode != null) {
-//                merchantOverview.setMerchantCode(skuCode.getMerchantCode());
-//                merchantOverview.setMerchantName(skuCode.getMerchantName());
-//            }
+            Promotion promotion = getPromotionInfo(promotionOverview.getPromotionId()) ;
+            if (promotion != null) {
+                promotionOverview.setPromotionName(promotion.getName());
+            }
             //存库
             mapper.insertSelective(promotionOverview) ;
         });
@@ -62,6 +66,18 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             String jsonString = JSON.toJSONString(object);
             List<PromotionPaymentBean> promotionPaymentBeans = JSONObject.parseArray(jsonString, PromotionPaymentBean.class) ;
             return promotionPaymentBeans;
+        }
+        return null;
+    }
+
+    private Promotion getPromotionInfo(int id) {
+        OperaResult result = equityService.findPromotion(id) ;
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            Promotion promotion = JSONObject.parseObject(jsonString, Promotion.class) ;
+            return promotion;
         }
         return null;
     }
