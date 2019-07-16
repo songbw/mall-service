@@ -30,4 +30,6 @@ public interface PromotionMapper {
     int promotionEnd(int promotionId);
 
     int promotionEffective(int promotionId);
+
+    Promotion selectPromotionName(Integer id);
 }

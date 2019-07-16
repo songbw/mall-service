@@ -32,4 +32,10 @@ public class PromotionController {
         result.getData().put("result", service.findPromotionByMpu(Mpu));
         return result;
     }
+
+    @GetMapping("findById")
+    public OperaResult findPromotionName(Integer id, OperaResult result){
+        result.getData().put("result", service.findPromotionName(id));
+        return result;
+    }
 }

@@ -25,6 +25,12 @@
     <include refid="Base_Column_List" />
     from promotion
   </select>
+  <select id="selectPromotionName" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    id, name
+    from promotion
+    where id= #{id,jdbcType=INTEGER}
+  </select>
   <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
     select
     count(id)
