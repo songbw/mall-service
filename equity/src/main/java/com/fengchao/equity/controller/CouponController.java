@@ -120,4 +120,30 @@ public class CouponController {
         result.getData().put("result", useInfoService.findById(bean));
         return result;
     }
+
+    @PostMapping("consumed")//头食对接接口
+    public OperaResult consumed(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        Coupon coupon = couponService.consumeCoupon(bean);
+        if(coupon == null){
+            result.setCode(40012);
+            result.setMsg("销券失败");
+        }else{
+            result.getData().put("id",coupon.getId());
+            result.getData().put("code",coupon.getCode());
+        }
+        return result;
+    }
+
+    @PostMapping("obtain")//头食对接接口
+    public OperaResult obtain(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        Coupon coupon = couponService.consumeCoupon(bean);
+        if(coupon == null){
+            result.setCode(40012);
+            result.setMsg("销券失败");
+        }else{
+            result.getData().put("id",coupon.getId());
+            result.getData().put("code",coupon.getCode());
+        }
+        return result;
+    }
 }
