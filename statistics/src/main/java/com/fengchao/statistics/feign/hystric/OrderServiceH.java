@@ -1,24 +1,41 @@
 package com.fengchao.statistics.feign.hystric;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.OrderService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderServiceH implements OrderService {
+
     @Override
-    public OperaResult find(String id) {
+    public OperaResult statistics(String start, String end) {
         OperaResult result = new OperaResult();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String msg = "";
-//        try {
-//            msg = objectMapper.writeValueAsString(queryBean);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
         result.setCode(404);
-        result.setMsg("获取订单服务失败 " + id);
+        result.setMsg("获取订单服务失败 " + start + " " + end);
+        return result;
+    }
+
+    @Override
+    public OperaResult paymentCount(String start, String end) {
+        OperaResult result = new OperaResult();
+        result.setCode(404);
+        result.setMsg("获取订单服务失败 " + start + " " + end);
+        return result;
+    }
+
+    @Override
+    public OperaResult paymentPromotionCount(String start, String end) {
+        OperaResult result = new OperaResult();
+        result.setCode(404);
+        result.setMsg("获取订单服务失败 " + start + " " + end);
+        return result;
+    }
+
+    @Override
+    public OperaResult paymentMerchantCount(String start, String end) {
+        OperaResult result = new OperaResult();
+        result.setCode(404);
+        result.setMsg("获取订单服务失败 " + start + " " + end);
         return result;
     }
 }

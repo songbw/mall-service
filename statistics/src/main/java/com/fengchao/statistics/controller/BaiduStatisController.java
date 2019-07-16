@@ -1,7 +1,7 @@
 package com.fengchao.statistics.controller;
 
 import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.bean.QueryUrlBean;
+import com.fengchao.statistics.bean.QueryBean;
 import com.fengchao.statistics.bean.QueryUrlStatisBean;
 import com.fengchao.statistics.exception.StatisticsException;
 import com.fengchao.statistics.service.BaiduStatisService;
@@ -32,7 +32,7 @@ public class BaiduStatisController {
     }
 
     @PostMapping("/query_urls")
-    private OperaResult queryAllUrls(@RequestBody QueryUrlBean queryBean, OperaResult result) {
+    private OperaResult queryAllUrls(@RequestBody QueryBean queryBean, OperaResult result) {
         try{
             result.getData().put("data", service.queryAllUrls(queryBean)) ;
             return result;
