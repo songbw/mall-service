@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.equity.mapper.CouponThirdMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.CouponThird" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="coupon_user_id" property="couponUserId" jdbcType="INTEGER" />
+    <result column="merchant_id" property="merchantId" jdbcType="VARCHAR" />
+    <result column="merchant_name" property="merchantName" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="effective_start_date" property="effectiveStartDate" jdbcType="VARCHAR" />
+    <result column="effective_end_date" property="effectiveEndDate" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.fengchao.equity.model.CouponThird" >
+    insert into coupon_third (id, coupon_user_id, merchant_id, 
+      merchant_name, price, name, 
+      effective_start_date, effective_end_date, description, 
+      url)
+    values (#{id,jdbcType=INTEGER}, #{couponUserId,jdbcType=INTEGER}, #{merchantId,jdbcType=VARCHAR}, 
+      #{merchantName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{effectiveStartDate,jdbcType=VARCHAR}, #{effectiveEndDate,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.equity.model.CouponThird" >
+    insert into coupon_third
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="couponUserId != null" >
+        coupon_user_id,
+      </if>
+      <if test="merchantId != null" >
+        merchant_id,
+      </if>
+      <if test="merchantName != null" >
+        merchant_name,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="effectiveStartDate != null" >
+        effective_start_date,
+      </if>
+      <if test="effectiveEndDate != null" >
+        effective_end_date,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="couponUserId != null" >
+        #{couponUserId,jdbcType=INTEGER},
+      </if>
+      <if test="merchantId != null" >
+        #{merchantId,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantName != null" >
+        #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveStartDate != null" >
+        #{effectiveStartDate,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveEndDate != null" >
+        #{effectiveEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

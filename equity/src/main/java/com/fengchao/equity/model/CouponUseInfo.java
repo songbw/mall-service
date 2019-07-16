@@ -24,6 +24,8 @@ public class CouponUseInfo {
 
     private Integer status;
 
+    private Integer type;
+
     private Integer deleteFlag;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -115,5 +117,13 @@ public class CouponUseInfo {
 
     public void setDeleteFlag(Integer deleteFlag) {
         this.deleteFlag = deleteFlag;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }
