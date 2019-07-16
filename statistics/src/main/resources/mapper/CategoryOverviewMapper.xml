@@ -5,7 +5,7 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="code" property="code" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="order_payment_amount" property="orderPaymentAmount" jdbcType="BIGINT" />
+    <result column="order_payment_amount" property="orderPaymentAmount" jdbcType="REAL" />
     <result column="statistics_date" property="statisticsDate" jdbcType="DATE" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
   </resultMap>
@@ -27,7 +27,7 @@
       order_payment_amount, statistics_date, created_at
       )
     values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{orderPaymentAmount,jdbcType=BIGINT}, #{statisticsDate,jdbcType=DATE}, #{createdAt,jdbcType=TIMESTAMP}
+      #{orderPaymentAmount,jdbcType=REAL}, #{statisticsDate,jdbcType=DATE}, #{createdAt,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.statistics.model.CategoryOverview" >
@@ -63,7 +63,7 @@
         #{name,jdbcType=VARCHAR},
       </if>
       <if test="orderPaymentAmount != null" >
-        #{orderPaymentAmount,jdbcType=BIGINT},
+        #{orderPaymentAmount,jdbcType=REAL},
       </if>
       <if test="statisticsDate != null" >
         #{statisticsDate,jdbcType=DATE},
@@ -83,7 +83,7 @@
         name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="orderPaymentAmount != null" >
-        order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+        order_payment_amount = #{orderPaymentAmount,jdbcType=REAL},
       </if>
       <if test="statisticsDate != null" >
         statistics_date = #{statisticsDate,jdbcType=DATE},
@@ -98,7 +98,7 @@
     update category_overview
     set code = #{code,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
-      order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+      order_payment_amount = #{orderPaymentAmount,jdbcType=REAL},
       statistics_date = #{statisticsDate,jdbcType=DATE},
       created_at = #{createdAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

@@ -6,7 +6,7 @@
     <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
     <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
     <result column="merchant_name" property="merchantName" jdbcType="VARCHAR" />
-    <result column="order_payment_amount" property="orderPaymentAmount" jdbcType="BIGINT" />
+    <result column="order_payment_amount" property="orderPaymentAmount" jdbcType="REAL" />
     <result column="statistics_date" property="statisticsDate" jdbcType="DATE" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
   </resultMap>
@@ -29,7 +29,7 @@
       merchant_name, order_payment_amount, statistics_date, 
       created_at)
     values (#{id,jdbcType=BIGINT}, #{merchantId,jdbcType=INTEGER}, #{merchantCode,jdbcType=VARCHAR}, 
-      #{merchantName,jdbcType=VARCHAR}, #{orderPaymentAmount,jdbcType=BIGINT}, #{statisticsDate,jdbcType=DATE}, 
+      #{merchantName,jdbcType=VARCHAR}, #{orderPaymentAmount,jdbcType=REAL}, #{statisticsDate,jdbcType=DATE},
       #{createdAt,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.statistics.model.MerchantOverview" >
@@ -71,7 +71,7 @@
         #{merchantName,jdbcType=VARCHAR},
       </if>
       <if test="orderPaymentAmount != null" >
-        #{orderPaymentAmount,jdbcType=BIGINT},
+        #{orderPaymentAmount,jdbcType=REAL},
       </if>
       <if test="statisticsDate != null" >
         #{statisticsDate,jdbcType=DATE},
@@ -94,7 +94,7 @@
         merchant_name = #{merchantName,jdbcType=VARCHAR},
       </if>
       <if test="orderPaymentAmount != null" >
-        order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+        order_payment_amount = #{orderPaymentAmount,jdbcType=REAL},
       </if>
       <if test="statisticsDate != null" >
         statistics_date = #{statisticsDate,jdbcType=DATE},
@@ -110,7 +110,7 @@
     set merchant_id = #{merchantId,jdbcType=INTEGER},
       merchant_code = #{merchantCode,jdbcType=VARCHAR},
       merchant_name = #{merchantName,jdbcType=VARCHAR},
-      order_payment_amount = #{orderPaymentAmount,jdbcType=BIGINT},
+      order_payment_amount = #{orderPaymentAmount,jdbcType=REAL},
       statistics_date = #{statisticsDate,jdbcType=DATE},
       created_at = #{createdAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

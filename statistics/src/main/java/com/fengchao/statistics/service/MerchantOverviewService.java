@@ -1,8 +1,8 @@
 package com.fengchao.statistics.service;
 
-import com.fengchao.statistics.model.MerchantOverview;
+import com.fengchao.statistics.bean.QueryBean;
 
 public interface MerchantOverviewService {
 
-    void add(MerchantOverview overview) ;
+    void add(QueryBean queryBean) ;
 }

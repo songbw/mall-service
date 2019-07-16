@@ -5,7 +5,7 @@ import java.util.Date;
 public class Overview {
     private Long id;
 
-    private Long orderPaymentAmount;
+    private float orderPaymentAmount;
 
     private Integer orderCount;
 
@@ -25,11 +25,11 @@ public class Overview {
         this.id = id;
     }
 
-    public Long getOrderPaymentAmount() {
+    public float getOrderPaymentAmount() {
         return orderPaymentAmount;
     }
 
-    public void setOrderPaymentAmount(Long orderPaymentAmount) {
+    public void setOrderPaymentAmount(float orderPaymentAmount) {
         this.orderPaymentAmount = orderPaymentAmount;
     }
 

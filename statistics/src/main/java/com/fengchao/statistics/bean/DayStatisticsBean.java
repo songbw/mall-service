@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class DayStatisticsBean {
-    private Long orderPaymentAmount ;
+    private float orderPaymentAmount ;
     private int orderCount;
     private int orderPeopleNum;
     private int orderBackNum;
