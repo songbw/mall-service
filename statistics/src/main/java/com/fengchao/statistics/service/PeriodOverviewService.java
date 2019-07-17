@@ -1,8 +1,8 @@
 package com.fengchao.statistics.service;
 
-import com.fengchao.statistics.model.PeriodOverview;
+import com.fengchao.statistics.bean.QueryBean;
 
 public interface PeriodOverviewService {
 
-    void add(PeriodOverview overview) ;
+    void add(QueryBean queryBean) ;
 }
