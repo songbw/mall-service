@@ -17,5 +17,5 @@ public interface AdminOrderService {
      * @param orderExportReqVo
      * @return
      */
-    List<Orders> queryExportOrderList(OrderExportReqVo orderExportReqVo);
+    // List<Orders> queryExportOrderList(OrderExportReqVo orderExportReqVo);
 }

@@ -3,6 +3,7 @@ package com.fengchao.order.dao;
 import com.fengchao.order.mapper.OrdersMapper;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.model.OrdersExample;
+import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class AdminOrderDao {
         this.ordersMapper = ordersMapper;
     }
 
-    public List<Orders> queryExportOrders(Orders orders, Date payStartDate, Date payEndDate) {
+    public List<Orders> selectExportOrders(Orders orders, Date payStartDate, Date payEndDate) {
         OrdersExample ordersExample = new OrdersExample();
         ordersExample.setOrderByClause("order by id desc");
 
@@ -46,10 +47,6 @@ public class AdminOrderDao {
             criteria.andStatusEqualTo(orders.getStatus());
         }
 
-        if (orders.getMerchantId() != null) {
-            criteria.andMerchantIdEqualTo(orders.getMerchantId());
-        }
-
         if (payStartDate != null) {
             criteria.andPaymentAtGreaterThanOrEqualTo(payStartDate);
         }
@@ -60,7 +57,7 @@ public class AdminOrderDao {
 
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
-        log.info("导出订单 查询数据库结果List<Orders>:{}", ordersList);
+        log.info("导出订单 查询数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
         return ordersList;
     }

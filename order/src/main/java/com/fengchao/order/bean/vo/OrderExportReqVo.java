@@ -22,6 +22,11 @@ public class OrderExportReqVo {
     private Integer orderStatus;
 
     /**
+     * 商家id
+     */
+    private Integer merchantId;
+
+    /**
      * 查询开始日期（支付开始日期）
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -30,5 +35,6 @@ public class OrderExportReqVo {
     /**
      * 查询结束日期（支付结束日期）
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date payEndDate;
 }
