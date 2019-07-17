@@ -1,6 +1,5 @@
 package com.fengchao.equity.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
@@ -12,7 +11,8 @@ import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponThird;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponUseInfoService;
-import com.fengchao.equity.utils.Pkcs8Util;
+import com.fengchao.equity.utils.DataUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -277,58 +277,143 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     }
 
     @Override
-    public int consumedToushi(ToushiParam bean) throws EquityException {
+    public OperaResult consumedToushi(ToushiResult bean) throws EquityException {
+        OperaResult result = new OperaResult();
 //        try {
 //            boolean verify = Pkcs8Util.verify(JSON.toJSONBytes(bean.getData()), null, bean.getSign());
 //            if(!verify){
-//                throw new EquityException(500, "验签失败");
+//                throw new EquityException(700, "验签失败");
 //            }
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
+        if(StringUtils.isBlank(bean.getData().getOpen_id())){
+            result.setCode(700011);
+            result.setMsg("open_id用户ID为空");
+            return result;
+        }
+        if(StringUtils.isBlank(bean.getData().getCoupon_code())){
+            result.setCode(700012);
+            result.setMsg("code唯一券码为空");
+            return result;
+        }
 
         CouponUseInfo couponUseInfo = new CouponUseInfo();
-        couponUseInfo.setUserOpenId(bean.getOpen_id());
+        couponUseInfo.setUserOpenId(bean.getData().getOpen_id());
         couponUseInfo.setConsumedTime(new Date());
-        couponUseInfo.setUserCouponCode(bean.getCoupon_code());
+        couponUseInfo.setUserCouponCode(bean.getData().getCoupon_code());
         couponUseInfo.setStatus(2);
-
-        return mapper.updateStatusByToushiCode(couponUseInfo);
+        int num = mapper.updateStatusByToushiCode(couponUseInfo);
+        if(num==0){
+            result.setCode(700022);
+            result.setMsg("核销优惠券失败");
+            return result;
+        }
+        result.getData().put("result",num);
+        return result;
     }
 
     @Override
-    public int obtainCoupon(ToushiParam bean) {
+    public OperaResult obtainCoupon(ToushiResult bean) throws EquityException{
+        OperaResult result = new OperaResult();
 //        try {
 //            boolean verify = Pkcs8Util.verify(JSON.toJSONBytes(bean.getData()), null, bean.getSign());
 //            if(!verify){
-//                throw new EquityException(500, "验签失败");
+//                throw new EquityException(700, "验签失败");
 //            }
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-
+        if(StringUtils.isEmpty(bean.getData().getOpen_id())){
+            result.setCode(700011);
+            result.setMsg( "open_id用户ID为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getCoupon().getCode())){
+            result.setCode(700012);
+            result.setMsg( "code唯一券码为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getMerchantId())){
+            result.setCode(700013);
+            result.setMsg( "merchantId商户ID为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getMerchantName())){
+            result.setCode(700014);
+            result.setMsg( "商户名称为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getCoupon().getName())){
+            result.setCode(700015);
+            result.setMsg( "券名称为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getCoupon().getPrice())){
+            result.setCode(700016);
+            result.setMsg( "券价格为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getCoupon().getDescription())){
+            result.setCode(700017);
+            result.setMsg( "券描述为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getCoupon().getEffectiveStartDate())){
+            result.setCode(700018);
+            result.setMsg( "有效期开始时间为空");
+            return result;
+        }
+        if(!DataUtils.isValidDate(bean.getData().getCoupon().getEffectiveStartDate())){
+            result.setCode(700024);
+            result.setMsg( "有效期开始时间格式有误");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getCoupon().getEffectiveEndDate())){
+            result.setCode(700019);
+            result.setMsg( "有效期结束时间为空");
+            return result;
+        }
+        if(!DataUtils.isValidDate(bean.getData().getCoupon().getEffectiveEndDate())){
+            result.setCode(700010);
+            result.setMsg( "有效期结束时间格式有误");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getData().getCoupon().getUrl())){
+            result.setCode(700021);
+            result.setMsg( "url为空");
+            return result;
+        }
         CouponUseInfo couponUseInfo = new CouponUseInfo();
         couponUseInfo.setType(1);
-        couponUseInfo.setUserOpenId(bean.getOpen_id());
+        couponUseInfo.setUserOpenId(bean.getData().getOpen_id());
         couponUseInfo.setCollectedTime(new Date());
-        couponUseInfo.setUserCouponCode(bean.getCoupon_code());
+        couponUseInfo.setUserCouponCode(bean.getData().getCoupon().getCode());
         int num = mapper.insertSelective(couponUseInfo);
         if(num == 0){
-            throw new EquityException(500, "领取优惠券失败");
+            result.setCode(700023);
+            result.setMsg("领取优惠券失败");
+            return result;
         }
 
         CouponThird couponThird = new CouponThird();
-        couponThird.setMerchantId(bean.getMerchantId());
+        couponThird.setMerchantId(bean.getData().getMerchantId());
         couponThird.setCouponUserId(couponUseInfo.getId());
-        couponThird.setMerchantName(bean.getMerchantName());
-        couponThird.setName(bean.getName());
-        couponThird.setDescription(bean.getDescription());
-        couponThird.setPrice(bean.getPrice());
-        couponThird.setUrl(bean.getUrl());
-        couponThird.setEffectiveEndDate(bean.getEffectiveEndDate());
-        couponThird.setEffectiveStartDate(bean.getEffectiveStartDate());
-
-        return couponThirdMapper.insertSelective(couponThird);
+        couponThird.setMerchantName(bean.getData().getMerchantName());
+        couponThird.setName(bean.getData().getCoupon().getName());
+        couponThird.setDescription(bean.getData().getCoupon().getDescription());
+        couponThird.setPrice(bean.getData().getCoupon().getPrice());
+        couponThird.setUrl(bean.getData().getCoupon().getUrl());
+        couponThird.setEffectiveEndDate(bean.getData().getCoupon().getEffectiveEndDate());
+        couponThird.setEffectiveStartDate(bean.getData().getCoupon().getEffectiveStartDate());
+        int number = couponThirdMapper.insertSelective(couponThird);
+        if(number==0){
+            result.setCode(700023);
+            result.setMsg("领取优惠券失败");
+            return result;
+        }
+        result.getData().put("result",number);
+        return result;
     }
 
     private CouponBean couponToBean(Coupon coupon) {

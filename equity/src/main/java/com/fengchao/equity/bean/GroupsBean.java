@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class GroupsBean {
+public class GroupsBean extends QueryBean{
     private Integer id;
     private String name;
     private String skuid;
@@ -24,6 +24,4 @@ public class GroupsBean {
     private String description;
     private Integer campaignStatus;
     private Integer groupTotal;
-    private Integer offset;
-    private Integer limit;
 }

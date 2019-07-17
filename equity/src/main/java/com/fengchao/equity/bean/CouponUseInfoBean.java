@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CouponUseInfoBean {
+public class CouponUseInfoBean  extends QueryBean{
 
     private String userOpenId;
     private String code;
@@ -25,7 +25,5 @@ public class CouponUseInfoBean {
     private String tagName;
     private String supplierMerchantId;
     private String couponCode;
-    private Integer offset;
-    private Integer limit;
 
 }
