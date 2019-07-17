@@ -1,15 +1,16 @@
 package com.fengchao.equity.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.exception.EquityException;
+import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.CouponMapper;
 import com.fengchao.equity.mapper.CouponThirdMapper;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
-import com.fengchao.equity.model.Coupon;
-import com.fengchao.equity.model.CouponThird;
-import com.fengchao.equity.model.CouponUseInfo;
+import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.DataUtils;
 import org.apache.commons.lang.StringUtils;
@@ -17,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CouponUseInfoServiceImpl implements CouponUseInfoService {
@@ -31,6 +29,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
    private CouponMapper couponMapper;
    @Autowired
    private CouponThirdMapper couponThirdMapper;
+   @Autowired
+   private SSOService ssoService;
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
@@ -413,6 +413,31 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return result;
         }
         result.getData().put("result",number);
+        return result;
+    }
+
+    @Override
+    public OperaResult userVerified(ToushiResult bean) {
+        OperaResult result = new OperaResult();
+        if(StringUtils.isEmpty(bean.getData().getOpen_id())){
+            result.setCode(700011);
+            result.setMsg( "open_id用户ID为空");
+            return result;
+        }
+        OperaResult userResult = ssoService.findUser(bean.getData().getOpen_id());
+        if (userResult.getCode() == 200) {
+            Map<String, Object> data = userResult.getData() ;
+            Object object = data.get("user");
+            String jsonString = JSON.toJSONString(object);
+            User user = JSONObject.parseObject(jsonString, User.class) ;
+            if(user == null){
+                result.setCode(700025);
+                result.setMsg( "open_id:"+ bean.getData().getOpen_id() + "用户不存在");
+                return result;
+            }else{
+                return result;
+            }
+        }
         return result;
     }
 

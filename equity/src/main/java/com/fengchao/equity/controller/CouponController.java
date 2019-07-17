@@ -130,4 +130,9 @@ public class CouponController {
     public OperaResult obtainCoupon(@RequestBody ToushiResult bean) throws EquityException{
         return useInfoService.obtainCoupon(bean);
     }
+
+    @PostMapping("user_verified")//头食对接接口
+    public OperaResult userVerified(@RequestBody ToushiResult bean) throws EquityException{
+        return useInfoService.userVerified(bean);
+    }
 }
