@@ -65,7 +65,7 @@ public class CouponServiceImpl implements CouponService {
     public int updateCoupon(CouponBean bean) {
         Coupon coupon = beanToCoupon(bean);
         coupon.setId(bean.getId());
-        if(bean.getStatus() == 2){
+        if(bean.getStatus() != null && bean.getStatus() == 2){
             Coupon couponById = mapper.selectByPrimaryKey(bean.getId());
             if(couponById == null){
                 return 0;
@@ -76,7 +76,7 @@ public class CouponServiceImpl implements CouponService {
 
         int num = mapper.updateByPrimaryKeySelective(coupon);
 
-        if(bean.getStatus() == 4 && num == 1){
+        if(bean.getStatus() != null && bean.getStatus() == 4 && num == 1){
             useInfoMapper.updateStatusByCouponId(bean.getId());
         }
 
