@@ -9,6 +9,8 @@ public class CouponResultBean {
 
     private Integer id;
     private String name;
+    private String supplierMerchantId;
+    private String supplierMerchantName;
     private Integer releaseTotal;
     private Integer releaseNum;
     private Date releaseStartDate;
