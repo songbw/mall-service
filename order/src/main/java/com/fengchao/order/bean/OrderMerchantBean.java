@@ -1,6 +1,6 @@
 package com.fengchao.order.bean;
 
-import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.model.OrderDetailX;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -24,5 +24,5 @@ public class OrderMerchantBean implements Serializable {
     private Integer type;
     private String merchantNo;
     private Integer merchantId;
-    private List<OrderDetail> skus;
+    private List<OrderDetailX> skus;
 }

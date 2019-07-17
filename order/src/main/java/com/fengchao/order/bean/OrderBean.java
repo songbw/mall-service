@@ -1,6 +1,6 @@
 package com.fengchao.order.bean;
 
-import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.model.OrderDetailX;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,7 +22,7 @@ public class OrderBean implements Serializable {
     private Float amount;
     private Integer status;
     private Integer type;
-    private List<OrderDetail> skus;
+    private List<OrderDetailX> skus;
     private Integer pageIndex;
     private Integer pageSize;
     private String telephone;
