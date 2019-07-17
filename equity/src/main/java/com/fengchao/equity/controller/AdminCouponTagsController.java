@@ -1,5 +1,6 @@
 package com.fengchao.equity.controller;
 
+import com.fengchao.equity.bean.QueryBean;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.service.CouponTagsService;
 import com.fengchao.equity.bean.OperaResult;
@@ -21,8 +22,8 @@ public class AdminCouponTagsController {
     }
 
     @GetMapping("tags")
-    public OperaResult findTags(Integer offset,Integer limit, OperaResult result){
-        result.getData().put("result", couponTagsService.findTags(offset, limit));
+    public OperaResult findTags(QueryBean bean, OperaResult result){
+        result.getData().put("result", couponTagsService.findTags(bean.getOffset(), bean.getLimit()));
         return result;
     }
 

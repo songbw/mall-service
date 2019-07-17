@@ -36,6 +36,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public int createCoupon(CouponBean bean) {
         Coupon coupon = beanToCoupon(bean);
+        coupon.setCreateDate(new Date());
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
         if(coupon.getCode() == null || "".equals(coupon.getCode())){
             coupon.setCode(uuid);
@@ -259,7 +260,6 @@ public class CouponServiceImpl implements CouponService {
             coupon.setExcludeDates(json.toJSONString());
         }
         coupon.setUrl(bean.getUrl());
-        coupon.setCreateDate(new Date());
         coupon.setCategory(bean.getCategory());
         if(bean.getTags() != null){
             String tagStr = Arrays.toString(bean.getTags());
