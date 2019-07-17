@@ -14,12 +14,21 @@ public class OrderExportReqVo {
 
     private String subOrderId;
 
+    /**
+     * 收货人电话
+     */
     private String phoneNo;
 
     private Integer orderStatus;
 
+    /**
+     * 查询开始日期（支付开始日期）
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date payStartDate;
 
+    /**
+     * 查询结束日期（支付结束日期）
+     */
     private Date payEndDate;
 }
