@@ -2,6 +2,9 @@ package com.fengchao.statistics.mapper;
 
 import com.fengchao.statistics.model.PromotionOverview;
 
+import java.util.HashMap;
+import java.util.List;
+
 public interface PromotionOverviewMapper {
     int deleteByPrimaryKey(Long id);
 
@@ -14,4 +17,6 @@ public interface PromotionOverviewMapper {
     int updateByPrimaryKeySelective(PromotionOverview record);
 
     int updateByPrimaryKey(PromotionOverview record);
+
+    List<PromotionOverview> selectByDate(HashMap map) ;
 }

@@ -182,7 +182,7 @@
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectDayPaymentCount" resultType="java.lang.Integer" parameterType="Map">
-    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at > #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
   </select>
   <select id="selectDayCount" resultType="java.lang.Integer">
     SELECT count(id) FROM orders WHERE <![CDATA[created_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>

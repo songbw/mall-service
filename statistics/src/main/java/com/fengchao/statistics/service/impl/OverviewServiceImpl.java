@@ -50,6 +50,11 @@ public class OverviewServiceImpl implements OverviewService {
         }
     }
 
+    @Override
+    public Overview findSum() {
+        return mapper.selectSum();
+    }
+
     private DayStatisticsBean getStatistics(QueryBean queryBean) {
         OperaResult result = orderService.statistics(queryBean.getStartTime(), queryBean.getEndTime());
         if (result.getCode() == 200) {

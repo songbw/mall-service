@@ -18,7 +18,13 @@
     from promotion_overview
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+  <select id="selectByDate" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from promotion_overview
+    where <![CDATA[statistics_date >= #{start,jdbcType=TIMESTAMP}]]> <![CDATA[ and statistics_date <= #{end,jdbcType=TIMESTAMP}]]>
+  </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from promotion_overview
     where id = #{id,jdbcType=BIGINT}
   </delete>

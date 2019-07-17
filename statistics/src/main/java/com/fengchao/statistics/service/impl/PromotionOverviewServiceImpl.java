@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,14 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             //存库
             mapper.insertSelective(promotionOverview) ;
         });
+    }
+
+    @Override
+    public List<PromotionOverview> findByDate(QueryBean queryBean) {
+        HashMap map = new HashMap() ;
+        map.put("start", queryBean.getStartTime());
+        map.put("end", queryBean.getEndTime()) ;
+        return mapper.selectByDate(map);
     }
 
     private List<PromotionPaymentBean> getPromotionCount(QueryBean queryBean) {

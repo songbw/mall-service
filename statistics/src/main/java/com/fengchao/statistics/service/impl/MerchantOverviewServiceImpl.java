@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +55,14 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
             //存库
             mapper.insertSelective(merchantOverview) ;
         });
+    }
+
+    @Override
+    public MerchantOverview findsum(QueryBean queryBean) {
+        HashMap map = new HashMap() ;
+        map.put("start", queryBean.getStartTime());
+        map.put("end", queryBean.getEndTime()) ;
+        return mapper.selectSum(map);
     }
 
     private List<MerchantPaymentBean> getMerchantCount(QueryBean queryBean) {
