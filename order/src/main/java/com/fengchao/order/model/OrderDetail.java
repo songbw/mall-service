@@ -44,6 +44,8 @@ public class OrderDetail {
 
     private String comcode;
 
+    private Integer skuCouponDiscount;
+
     public Integer getId() {
         return id;
     }
@@ -202,5 +204,13 @@ public class OrderDetail {
 
     public void setComcode(String comcode) {
         this.comcode = comcode == null ? null : comcode.trim();
+    }
+
+    public Integer getSkuCouponDiscount() {
+        return skuCouponDiscount;
+    }
+
+    public void setSkuCouponDiscount(Integer skuCouponDiscount) {
+        this.skuCouponDiscount = skuCouponDiscount;
     }
 }

@@ -1395,6 +1395,66 @@ public class OrderDetailExample {
             addCriterion("comcode not between", value1, value2, "comcode");
             return (Criteria) this;
         }
+
+        public Criteria andSkuCouponDiscountIsNull() {
+            addCriterion("sku_coupon_discount is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountIsNotNull() {
+            addCriterion("sku_coupon_discount is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountEqualTo(Integer value) {
+            addCriterion("sku_coupon_discount =", value, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountNotEqualTo(Integer value) {
+            addCriterion("sku_coupon_discount <>", value, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountGreaterThan(Integer value) {
+            addCriterion("sku_coupon_discount >", value, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("sku_coupon_discount >=", value, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountLessThan(Integer value) {
+            addCriterion("sku_coupon_discount <", value, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountLessThanOrEqualTo(Integer value) {
+            addCriterion("sku_coupon_discount <=", value, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountIn(List<Integer> values) {
+            addCriterion("sku_coupon_discount in", values, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountNotIn(List<Integer> values) {
+            addCriterion("sku_coupon_discount not in", values, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountBetween(Integer value1, Integer value2) {
+            addCriterion("sku_coupon_discount between", value1, value2, "skuCouponDiscount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuCouponDiscountNotBetween(Integer value1, Integer value2) {
+            addCriterion("sku_coupon_discount not between", value1, value2, "skuCouponDiscount");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

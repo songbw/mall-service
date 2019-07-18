@@ -99,17 +99,25 @@ public class ExportOrdersVo {
     private Integer purchasePrice;
 
     /**
-     * 商品单价-去除 活动 的价格
+     * sku单价 单位：分
+     * 计算：商品单价-去除 活动 的价格
      */
     private Integer unitPrice;
 
     /**
-     * 券支付金额
+     * sku 的总价
+     * 计算：unitPrice * quantity(购买数量)
+     */
+    private Integer totalRealPrice;
+
+    /**
+     * 券支付金额 单位分
      */
     private Integer couponPrice;
 
     /**
-     * 实际支付的价格
+     * 实际支付的价格 单位分
+     * 计算：totalRealPrice - couponPrice
      */
     private Integer payPrice;
 

@@ -1,8 +1,8 @@
 package com.fengchao.order.dao;
 
+import com.fengchao.order.mapper.OrderDetailMapper;
 import com.fengchao.order.mapper.OrdersMapper;
-import com.fengchao.order.model.Orders;
-import com.fengchao.order.model.OrdersExample;
+import com.fengchao.order.model.*;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -24,11 +24,23 @@ public class AdminOrderDao {
 
     private OrdersMapper ordersMapper;
 
+    private OrderDetailMapper orderDetailMapper;
+
     @Autowired
-    public AdminOrderDao(OrdersMapper ordersMapper) {
+    public AdminOrderDao(OrdersMapper ordersMapper,
+                         OrderDetailMapper orderDetailMapper) {
         this.ordersMapper = ordersMapper;
+        this.orderDetailMapper = orderDetailMapper;
     }
 
+    /**
+     * 查询需要导出的订单主表信息
+     *
+     * @param orders
+     * @param payStartDate
+     * @param payEndDate
+     * @return
+     */
     public List<Orders> selectExportOrders(Orders orders, Date payStartDate, Date payEndDate) {
         OrdersExample ordersExample = new OrdersExample();
         ordersExample.setOrderByClause("order by id desc");
@@ -57,9 +69,34 @@ public class AdminOrderDao {
 
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
-        log.info("导出订单 查询数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
-
         return ordersList;
+    }
+
+    /**
+     * 查询需要导出的订单子表信息
+     *
+     * @param ordersIdList
+     * @param subOrderId 查询条件：子订单号
+     * @param merchantId 查询条件：商家id
+     * @return
+     */
+    public List<OrderDetail> selectExportOrderDetail(List<Integer> ordersIdList, String subOrderId, Integer merchantId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andOrderIdIn(ordersIdList);
+
+        if (StringUtils.isNotBlank(subOrderId)) {
+            criteria.andSubOrderIdEqualTo(subOrderId);
+        }
+
+        if (merchantId != null && merchantId > 0) {
+            criteria.andMerchantIdEqualTo(merchantId);
+        }
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
     }
 
 }

@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper mapper;
 
     @Autowired
-    private OrderDetailXMapper orderDetailMapper;
+    private OrderDetailXMapper orderDetailXMapper;
 
     @Autowired
     private ReceiverMapper receiverMapper;
@@ -171,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setNum(orderSku.getNum());
 
                 // 添加子订单
-                orderDetailMapper.insert(orderDetailX) ;
+                orderDetailXMapper.insert(orderDetailX) ;
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.setOpenId(bean.getOpenId());
@@ -201,7 +201,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findById(Integer id) {
         Order order = mapper.selectByPrimaryKey(id) ;
-        List<OrderDetailX> orderDetailXES = orderDetailMapper.selectByOrderId(id) ;
+        List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
         order.setSkus(orderDetailXES);
         return order;
     }
@@ -233,7 +233,7 @@ public class OrderServiceImpl implements OrderService {
         if (total > 0) {
             orders = mapper.selectLimit(map);
             orders.forEach(order -> {
-                order.setSkus(orderDetailMapper.selectByOrderId(order.getId()));
+                order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
             });
         }
         pageBean = PageBean.build(pageBean, orders, total, queryBean.getPageNo(), queryBean.getPageSize());
@@ -312,9 +312,9 @@ public class OrderServiceImpl implements OrderService {
         map.put("pageSize", queryBean.getPageSize());
         map.put("orderId", queryBean.getOrderId());
         Order order = mapper.selectByPrimaryKey(queryBean.getOrderId());
-        total = orderDetailMapper.selectCount(map);
+        total = orderDetailXMapper.selectCount(map);
         if (total > 0) {
-            List<OrderDetailX> orderDetailXES = orderDetailMapper.selectLimit(map);
+            List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectLimit(map);
             pageBean = PageBean.build(pageBean, orderDetailXES, total, queryBean.getPageNo(), queryBean.getPageSize());
             order.setSkusPage(pageBean);
         }
@@ -357,7 +357,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setSubOrderId(Logistics.getSubOrderId());
                 orderDetailX.setLogisticsContent(Logistics.getLogisticsContent());
                 orderDetailX.setLogisticsId(Logistics.getLogisticsId());
-                orderDetailMapper.updateByOrderId(orderDetailX);
+                orderDetailXMapper.updateByOrderId(orderDetailX);
             });
         }
         return i;
@@ -366,7 +366,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public JSONArray getLogist(String merchantNo, String orderId) {
         JSONArray jsonArray = new JSONArray();
-        List<OrderDetailX> logistics = orderDetailMapper.selectBySubOrderId(orderId + "%");
+        List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
             logistics.forEach(logist -> {
                 if (logist.getLogisticsId() != null && logist.getComCode() != null) {
@@ -423,7 +423,7 @@ public class OrderServiceImpl implements OrderService {
         return dayStatisticsBean;
     }
     public String queryLogisticsInfo(String logisticsId) {
-        String comcode = orderDetailMapper.selectComCode(logisticsId);
+        String comcode = orderDetailXMapper.selectComCode(logisticsId);
         if(comcode == null || comcode.equals("")){
             ArrayList<String> strings = Kuaidi100.queryAutoComNumByKuadi100(logisticsId);
             comcode = strings.get(0);

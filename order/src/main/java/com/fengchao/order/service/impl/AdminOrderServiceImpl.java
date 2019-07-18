@@ -1,16 +1,22 @@
 package com.fengchao.order.service.impl;
 
+import com.fengchao.order.bean.bo.OrderDetailBo;
+import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.dao.AdminOrderDao;
+import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author tom
@@ -36,21 +42,111 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     public List<ExportOrdersVo> exportOrders(OrderExportReqVo orderExportReqVo) throws Exception {
         // 1. 根据条件获取订单orders集合
         // 查询条件转数据库实体
-        Orders queryOrders = convertToOrdersForExport(orderExportReqVo);
-        log.info("导出订单 根据条件获取订单orders集合 查询数据库条件:{}", JSONUtil.toJsonString(queryOrders));
+        Orders queryConditions = convertToOrdersForExport(orderExportReqVo);
+        log.info("导出订单 根据条件获取订单orders集合 查询数据库条件:{}", JSONUtil.toJsonString(queryConditions));
         // 执行查询
-        List<Orders> ordersList = adminOrderDao.selectExportOrders(queryOrders,
+        List<Orders> ordersList = adminOrderDao.selectExportOrders(queryConditions,
                 orderExportReqVo.getPayStartDate(), orderExportReqVo.getPayEndDate());
+        log.info("导出订单 查询数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
-        // 2. 根据上一步，查询子订单
+        if (CollectionUtils.isEmpty(ordersList)) {
+            return Collections.emptyList();
+        }
+
+        // 2. 根据上一步，查询子订单(注意条件：子订单号、商家id)
+        // 获取注定但id列表
+        List<Integer> ordersIdList = ordersList.stream().map(ol -> ol.getId()).collect(Collectors.toList());
+
+        List<OrderDetail> orderDetailList =
+                adminOrderDao.selectExportOrderDetail(ordersIdList, orderExportReqVo.getSubOrderId(), orderExportReqVo.getMerchantId());
+        log.info("导出订单 查询数据库结果List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
+
+        // 2.1 将获取到的子订单转成map key：主订单id  value：List<OrderDtailBo>
+        Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
+        // x. 获取组装结果的其他相关数据 - 获取导出需要的promotion信息列表 - 获取promotion id集合
+        Set<Integer> promotionIdSet = new HashSet<>();
+        for (OrderDetail orderDetail : orderDetailList) {
+            // 转bo
+            OrderDetailBo orderDetailBo = convertToOrderDetailBo(orderDetail);
+            // 放入map
+            if (orderDetailBoMap.get(orderDetail.getOrderId()) == null) {
+                orderDetailBoMap.put(orderDetail.getOrderId(), new ArrayList<>());
+            }
+            orderDetailBoMap.get(orderDetail.getOrderId()).add(orderDetailBo);
+
+            // x. 获取组装结果的其他相关数据 - 获取导出需要的promotion信息列表 - 获取promotion id集合
+            promotionIdSet.add(orderDetailBo.getPromotionId());
+        }
+
+        // 3. 将获取的主订单列表转bo, 并加入子订单信息
+        List<OrdersBo> ordersBoList = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            OrdersBo ordersBo = convertToOrderBo(orders);
+
+            // 设置子订单
+            List<OrderDetailBo> orderDetailBoList = orderDetailBoMap.get(orders.getId());
+            ordersBo.setOrderDetailBoList(orderDetailBoList);
+
+            ordersBoList.add(ordersBo); //
+        }
+
+        // 4.获取组装结果的其他相关数据
+        // 4. 获取导出需要的promotion信息列表
 
 
-        return null;
+
+        // x. ordersBoList 组装 List<ExportOrdersVo>
+        List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
+        for (OrdersBo ordersBo : ordersBoList) { // 遍历
+            List<OrderDetailBo> orderDetailBoList = ordersBo.getOrderDetailBoList();
+            for (OrderDetailBo orderDetailBo : orderDetailBoList) { // 遍历
+                ExportOrdersVo exportOrdersVo = new ExportOrdersVo();
+
+                exportOrdersVo.setOpenId(ordersBo.getOpenId()); // 用户id
+                exportOrdersVo.setTradeNo(ordersBo.getTradeNo()); // 主订单编号
+                exportOrdersVo.setSubOrderId(orderDetailBo.getSubOrderId()); // 子订单编号
+                exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
+                exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
+//                exportOrdersVo.setCategory(); // 品类
+//                exportOrdersVo.setBrand(); // 品牌
+                exportOrdersVo.setSku(orderDetailBo.getSkuId());
+                exportOrdersVo.setMpu(orderDetailBo.getMpu());
+//                exportOrdersVo.setCommodityName(); // 商品名称
+//                exportOrdersVo.setQuantity(orderDetailBo.getNum()); // 购买数量
+//                exportOrdersVo.setPromotion(); // 活动
+                exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
+//                exportOrdersVo.setCouponCode(); // 券码
+//                exportOrdersVo.setCouponId(); // 券码id
+//                exportOrdersVo.setCouponSupplier(); // 券来源（券商户）
+//                exportOrdersVo.setPurchasePrice(); // 进货价格 单位分
+                exportOrdersVo.setTotalRealPrice(
+                        orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()
+                        * orderDetailBo.getNum()); // sku 的总价
+                exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
+                exportOrdersVo.setCouponPrice(orderDetailBo.getSkuCouponDiscount()); // 券支付金额
+                exportOrdersVo.setPayPrice(exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // 实际支付的价格
+                // exportOrdersVo.setShareBenefitPercent(); // 平台分润比
+                exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
+                exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省
+                exportOrdersVo.setCityName(ordersBo.getCityName()); // 市
+                exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
+            }
+
+
+
+        }
+
+        return exportOrdersVoList;
     }
 
 
     //=============================== private =============================
 
+    /**
+     *
+     * @param orderExportReqVo
+     * @return
+     */
     private Orders convertToOrdersForExport(OrderExportReqVo orderExportReqVo) {
         Orders orders = new Orders();
 
@@ -60,5 +156,97 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orders.setStatus(orderExportReqVo.getOrderStatus());
 
         return orders;
+    }
+
+    /**
+     *
+     * @param orderDetail
+     * @return
+     */
+    private OrderDetailBo convertToOrderDetailBo(OrderDetail orderDetail) {
+        OrderDetailBo orderDetailBo = new OrderDetailBo();
+
+        orderDetailBo.setId(orderDetail.getId());
+        orderDetailBo.setMerchantId(orderDetail.getMerchantId());
+        orderDetailBo.setOrderId(orderDetail.getOrderId());
+        orderDetailBo.setSubOrderId(orderDetail.getSubOrderId());
+        orderDetailBo.setMpu(orderDetail.getMpu());
+        orderDetailBo.setSkuId(orderDetail.getSkuId());
+        orderDetailBo.setNum(orderDetail.getNum());
+        orderDetailBo.setPromotionId(orderDetail.getPromotionId());
+        orderDetailBo.setPromotionDiscount(orderDetail.getPromotionDiscount());
+        orderDetailBo.setSalePrice(orderDetail.getSalePrice());
+        orderDetailBo.setUnitPrice(orderDetail.getUnitPrice());
+        orderDetailBo.setImage(orderDetail.getImage());
+        orderDetailBo.setModel(orderDetail.getModel());
+        orderDetailBo.setName(orderDetail.getName());
+        orderDetailBo.setStatus(orderDetail.getStatus());
+        orderDetailBo.setCreatedAt(orderDetail.getCreatedAt());
+        orderDetailBo.setUpdatedAt(orderDetail.getUpdatedAt());
+        orderDetailBo.setLogisticsId(orderDetail.getLogisticsId());
+        orderDetailBo.setLogisticsContent(orderDetail.getLogisticsContent());
+        orderDetailBo.setComcode(orderDetail.getComcode());
+        orderDetailBo.setSkuCouponDiscount(orderDetail.getSkuCouponDiscount());
+
+        return orderDetailBo;
+    }
+
+    /**
+     *
+     * @param orders
+     * @return
+     */
+    private OrdersBo convertToOrderBo(Orders orders) {
+        OrdersBo orderBo = new OrdersBo();
+
+        orderBo.setId(orders.getId());
+        orderBo.setOpenId(orders.getOpenId());
+        orderBo.setTradeNo(orders.getTradeNo());
+        orderBo.setAoyiId(orders.getAoyiId());
+        orderBo.setMerchantId(orders.getMerchantId());
+        orderBo.setMerchantNo(orders.getMerchantNo());
+        orderBo.setCouponCode(orders.getCouponCode());
+        orderBo.setCouponDiscount(orders.getCouponDiscount());
+        orderBo.setCouponId(orders.getCouponId());
+        orderBo.setCompanyCustNo(orders.getCompanyCustNo());
+        orderBo.setReceiverName(orders.getReceiverName());
+        orderBo.setTelephone(orders.getTelephone());
+        orderBo.setMobile(orders.getMobile());
+        orderBo.setEmail(orders.getEmail());
+        orderBo.setProvinceName(orders.getProvinceName());
+        orderBo.setProvinceId(orders.getProvinceId());
+        orderBo.setCityName(orders.getCityName());
+        orderBo.setCityId(orders.getCityId());
+        orderBo.setCountyName(orders.getCountyName());
+        orderBo.setCountyId(orders.getCountyId());
+        orderBo.setTownId(orders.getTownId());
+        orderBo.setAddress(orders.getAddress());
+        orderBo.setZip(orders.getZip());
+        orderBo.setRemark(orders.getRemark());
+        orderBo.setInvoiceState(orders.getInvoiceState());
+        orderBo.setInvoiceType(orders.getInvoiceType());
+        orderBo.setInvoiceTitle(orders.getInvoiceTitle());
+        orderBo.setInvoiceContent(orders.getInvoiceContent());
+        orderBo.setPayment(orders.getPayment());
+        orderBo.setServFee(orders.getServFee());
+        orderBo.setSaleAmount(orders.getSaleAmount());
+        orderBo.setAmount(orders.getAmount());
+        orderBo.setStatus(orders.getStatus());
+        orderBo.setType(orders.getType());
+        orderBo.setOutTradeNo(orders.getOutTradeNo());
+        orderBo.setPaymentNo(orders.getPaymentNo());
+        orderBo.setPaymentAt(orders.getPaymentAt());
+        orderBo.setPaymentAmount(orders.getPaymentAmount());
+        orderBo.setPayee(orders.getPayee());
+        orderBo.setPayType(orders.getPayType());
+        orderBo.setPaymentTotalFee(orders.getPaymentTotalFee());
+        orderBo.setPayer(orders.getPayer());
+        orderBo.setPayStatus(orders.getPayStatus());
+        orderBo.setPayOrderCategory(orders.getPayOrderCategory());
+        orderBo.setRefundFee(orders.getRefundFee());
+        orderBo.setCreatedAt(orders.getCreatedAt());
+        orderBo.setUpdatedAt(orders.getUpdatedAt());
+
+        return orderBo;
     }
 }
