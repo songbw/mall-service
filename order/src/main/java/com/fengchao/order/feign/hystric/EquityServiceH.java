@@ -7,6 +7,8 @@ import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.EquityService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class EquityServiceH implements EquityService {
     @Override
@@ -21,6 +23,21 @@ public class EquityServiceH implements EquityService {
         }
         result.setCode(404);
         result.setMsg("权益优惠券服务失败 " + msg);
+        return result;
+    }
+
+    @Override
+    public OperaResult findPromotionListByIdList(List<Integer> idList) {
+        return createFallback();
+    }
+
+    //===================================== private ============================
+
+    private OperaResult createFallback() {
+        OperaResult result = new OperaResult();
+        result.setCode(500);
+        result.setMsg("equity rpc 查询失败降级");
+
         return result;
     }
 }
