@@ -220,7 +220,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<Promotion> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception {
+    public List<PromotionBean> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception {
         if (CollectionUtils.isEmpty(promotionIdList)) {
             return Collections.emptyList();
         }
@@ -229,6 +229,33 @@ public class PromotionServiceImpl implements PromotionService {
         List<Promotion> promotionList = promotionDao.selectPromotionListByIdList(promotionIdList);
         log.info("查询活动列表 根据id集合查询 获取到数据库返回:{}", JSONUtil.toJsonString(promotionList));
 
-        return promotionList;
+
+        // 转dto
+        List<PromotionBean> promotionBeanList = new ArrayList<>();
+        for (Promotion promotion : promotionList) {
+            PromotionBean promotionBean = convertToPromotionBean(promotion);
+            promotionBeanList.add(promotionBean);
+        }
+
+        log.info("查询活动列表 根据id集合查询 转dto:{}", JSONUtil.toJsonString(promotionBeanList));
+
+        return promotionBeanList;
+    }
+
+    // ====================================== private ==========================
+
+    private PromotionBean convertToPromotionBean(Promotion promotion) {
+        PromotionBean promotionBean = new PromotionBean();
+
+        promotionBean.setId(promotion.getId());
+        promotionBean.setName(promotion.getName());
+        promotionBean.setTag(promotion.getTag());
+        promotionBean.setPromotionType(promotion.getPromotionType());
+        promotionBean.setStatus(promotion.getStatus());
+        promotionBean.setStartDate(promotion.getStartDate());
+        promotionBean.setEndDate(promotion.getEndDate());
+        promotionBean.setCreatedDate(promotion.getCreatedDate());
+
+        return promotionBean;
     }
 }

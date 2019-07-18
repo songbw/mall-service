@@ -1,5 +1,6 @@
 package com.fengchao.equity.controller;
 
+import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.bean.OperaResult;
@@ -43,7 +44,7 @@ public class PromotionController {
 
         try {
             // 查询
-            List<Promotion> promotionList = service.findPromotionListByIdList(idList);
+            List<PromotionBean> promotionList = service.findPromotionListByIdList(idList);
 
             result.getData().put("result", promotionList);
         } catch (Exception e) {

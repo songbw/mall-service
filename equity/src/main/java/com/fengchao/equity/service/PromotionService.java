@@ -46,5 +46,5 @@ public interface PromotionService {
      * @param promotionIdList
      * @return
      */
-    List<Promotion> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception;
+    List<PromotionBean> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception;
 }
