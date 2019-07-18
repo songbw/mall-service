@@ -124,7 +124,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 exportOrdersVo.setSku(orderDetailBo.getSkuId());
                 exportOrdersVo.setMpu(orderDetailBo.getMpu());
 //                exportOrdersVo.setCommodityName(); // 商品名称
-//                exportOrdersVo.setQuantity(orderDetailBo.getNum()); // 购买数量
+                exportOrdersVo.setQuantity(orderDetailBo.getNum()); // 购买数量
                 exportOrdersVo.setPromotion(
                         promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
                                 "" : promotionBeanMap.get(orderDetailBo.getPromotionId()).getName()); // 活动
