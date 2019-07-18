@@ -1,10 +1,6 @@
 package com.fengchao.statistics.jobClient;
 
-import com.fengchao.statistics.bean.Promotion;
 import com.fengchao.statistics.bean.QueryBean;
-import com.fengchao.statistics.feign.OrderService;
-import com.fengchao.statistics.feign.WorkOrdersService;
-import com.fengchao.statistics.model.PeriodOverview;
 import com.fengchao.statistics.service.MerchantOverviewService;
 import com.fengchao.statistics.service.OverviewService;
 import com.fengchao.statistics.service.PeriodOverviewService;
