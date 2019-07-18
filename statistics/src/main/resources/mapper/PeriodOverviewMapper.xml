@@ -19,6 +19,12 @@
     from period_overview
     where id = #{id,jdbcType=BIGINT}
   </select>
+  <select id="selectByDate" resultType="com.fengchao.statistics.model.PeriodOverview">
+    select
+    <include refid="Base_Column_List" />
+    from promotion_overview
+    where <![CDATA[statistics_date >= #{start,jdbcType=TIMESTAMP}]]> <![CDATA[ and statistics_date <= #{end,jdbcType=TIMESTAMP}]]>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from period_overview
     where id = #{id,jdbcType=BIGINT}
