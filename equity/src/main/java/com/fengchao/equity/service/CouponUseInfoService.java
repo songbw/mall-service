@@ -29,4 +29,6 @@ public interface CouponUseInfoService {
     OperaResult consumedToushi(ToushiResult bean) throws EquityException;
 
     OperaResult obtainCoupon(ToushiResult bean) throws EquityException;
+
+    OperaResult userVerified(ToushiResult bean);
 }
