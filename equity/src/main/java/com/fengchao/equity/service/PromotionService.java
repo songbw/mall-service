@@ -3,7 +3,7 @@ package com.fengchao.equity.service;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
-import com.fengchao.equity.model.Promotion;
+import com.fengchao.equity.model.PromotionX;
 
 import java.util.List;
 
@@ -11,25 +11,25 @@ public interface PromotionService {
 
     int effective(int promotionId);
 
-    int createPromotion(Promotion bean);
+    int createPromotion(PromotionX bean);
 
     PageBean findPromotion(Integer offset, Integer limit);
 
-    int updatePromotion(Promotion bean);
+    int updatePromotion(PromotionX bean);
 
     PageBean searchPromotion(PromotionBean bean);
 
     int deletePromotion(Integer id);
 
-    Promotion findPromotionById(Integer id);
+    PromotionX findPromotionById(Integer id);
 
-    int createContent(Promotion bean);
+    int createContent(PromotionX bean);
 
-    int updateContent(Promotion bean);
+    int updateContent(PromotionX bean);
 
-    int deleteContent(Promotion bean);
+    int deleteContent(PromotionX bean);
 
-    Promotion findPromotionToUser(Integer id, Boolean detail);
+    PromotionX findPromotionToUser(Integer id, Boolean detail);
 
     List<PromotionInfoBean> findPromotionInfoByMpu(String mpu);
 
@@ -37,5 +37,5 @@ public interface PromotionService {
 
     int end(int promotionId);
 
-    Promotion findPromotionName(Integer id);
+    PromotionX findPromotionName(Integer id);
 }

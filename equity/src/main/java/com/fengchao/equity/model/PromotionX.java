@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import java.util.List;
 
-public class Promotion {
+public class PromotionX {
     private Integer id;
 
     private String name;

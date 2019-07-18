@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.equity.mapper.PromotionMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.Promotion" >
+<mapper namespace="com.fengchao.equity.mapper.PromotionXMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.PromotionX" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="tag" property="tag" jdbcType="VARCHAR" />
@@ -82,7 +82,7 @@
     delete from promotion
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.equity.model.Promotion" >
+  <insert id="insert" parameterType="com.fengchao.equity.model.PromotionX" >
     insert into promotion (id, name, tag,
       promotion_type, status, start_date,
       end_date, created_date)
@@ -90,7 +90,7 @@
       #{promotionType,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP},
       #{endDate,jdbcType=TIMESTAMP}, #{createdDate,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.equity.model.Promotion" keyProperty="id"  useGeneratedKeys="true" >
+  <insert id="insertSelective" parameterType="com.fengchao.equity.model.PromotionX" keyProperty="id" useGeneratedKeys="true" >
     insert into promotion
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -145,7 +145,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.Promotion" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.PromotionX" >
     update promotion
     <set >
       <if test="name != null" >
@@ -172,7 +172,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.Promotion" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionX" >
     update promotion
     set name = #{name,jdbcType=VARCHAR},
       tag = #{tag,jdbcType=VARCHAR},

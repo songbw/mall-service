@@ -7,10 +7,10 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.feign.ProdService;
-import com.fengchao.equity.mapper.PromotionMapper;
+import com.fengchao.equity.mapper.PromotionXMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
 import com.fengchao.equity.model.AoyiProdIndex;
-import com.fengchao.equity.model.Promotion;
+import com.fengchao.equity.model.PromotionX;
 import com.fengchao.equity.model.PromotionMpu;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.utils.JobClientUtils;
@@ -24,7 +24,7 @@ import java.util.*;
 public class PromotionServiceImpl implements PromotionService {
 
     @Autowired
-    private PromotionMapper mapper;
+    private PromotionXMapper mapper;
     @Autowired
     private PromotionMpuMapper promotionMpuMapper;
     @Autowired
@@ -38,7 +38,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int createPromotion(Promotion bean) {
+    public int createPromotion(PromotionX bean) {
         Date date = new Date();
         bean.setCreatedDate(date);
         int num = mapper.insertSelective(bean);
@@ -57,7 +57,7 @@ public class PromotionServiceImpl implements PromotionService {
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize", limit);
-        List<Promotion> promotions = new ArrayList<>();
+        List<PromotionX> promotions = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
             promotions = mapper.selectLimit(map);
@@ -67,7 +67,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int updatePromotion(Promotion bean) {
+    public int updatePromotion(PromotionX bean) {
         return mapper.updateByPrimaryKeySelective(bean);
     }
 
@@ -82,7 +82,7 @@ public class PromotionServiceImpl implements PromotionService {
         map.put("name",bean.getName());
         map.put("promotionType",bean.getPromotionType());
         map.put("status",bean.getStatus());
-        List<Promotion> promotions = new ArrayList<>();
+        List<PromotionX> promotions = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
             promotions = mapper.selectLimit(map);
@@ -101,8 +101,8 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion findPromotionById(Integer id) {
-        Promotion promotion = mapper.selectByPrimaryKey(id);
+    public PromotionX findPromotionById(Integer id) {
+        PromotionX promotion = mapper.selectByPrimaryKey(id);
         if(promotion == null){
             return promotion;
         }
@@ -130,7 +130,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int createContent(Promotion bean) {
+    public int createContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
@@ -141,7 +141,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int updateContent(Promotion bean) {
+    public int updateContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
@@ -152,7 +152,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int deleteContent(Promotion bean) {
+    public int deleteContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
@@ -163,9 +163,9 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion findPromotionToUser(Integer id, Boolean detail) {
+    public PromotionX findPromotionToUser(Integer id, Boolean detail) {
 
-        Promotion promotion = mapper.selectByPrimaryKey(id);
+        PromotionX promotion = mapper.selectByPrimaryKey(id);
         List<PromotionMpu> promotionMpus = null;
         if(detail != null && detail == true){
             promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
@@ -206,7 +206,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion findPromotionName(Integer id) {
+    public PromotionX findPromotionName(Integer id) {
         return mapper.selectPromotionName(id);
     }
 }
