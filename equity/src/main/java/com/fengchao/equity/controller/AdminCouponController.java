@@ -1,7 +1,7 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.*;
-import com.fengchao.equity.model.Coupon;
+import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +110,7 @@ public class AdminCouponController {
 
     @PostMapping("consume")
     public OperaResult consumeCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
-        Coupon coupon = couponService.consumeCoupon(bean);
+        CouponX coupon = couponService.consumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
             result.setMsg("销券失败");

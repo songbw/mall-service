@@ -1,43 +1,30 @@
 package com.fengchao.equity.mapper;
 
-import com.fengchao.equity.bean.AoyiProdBean;
-import com.fengchao.equity.bean.CouponResultBean;
-//import com.fengchao.equity.model.AoyiProdIndex;
 import com.fengchao.equity.model.Coupon;
-
-import java.util.HashMap;
+import com.fengchao.equity.model.CouponExample;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 public interface CouponMapper {
+    long countByExample(CouponExample example);
+
+    int deleteByExample(CouponExample example);
+
     int deleteByPrimaryKey(Integer id);
 
     int insert(Coupon record);
 
     int insertSelective(Coupon record);
 
+    List<Coupon> selectByExample(CouponExample example);
+
     Coupon selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") Coupon record, @Param("example") CouponExample example);
+
+    int updateByExample(@Param("record") Coupon record, @Param("example") CouponExample example);
 
     int updateByPrimaryKeySelective(Coupon record);
 
     int updateByPrimaryKey(Coupon record);
-
-    int selectCount(HashMap map);
-
-    List<CouponResultBean> selectLimit(HashMap map);
-
-    List<Coupon> selectActiveCouponLimit(HashMap map);
-
-    int selectActiveCouponCount(HashMap map);
-
-    Coupon selectByCodeKey(String code);
-
-    List<String> selectActiveCategories();
-
-    List<String> selectTags();
-
-    List<Coupon> selectCouponByMpu(AoyiProdBean aoyiProdBean);
-
-    int couponEffective(int couponId);
-
-    int couponEnd(int couponId);
 }

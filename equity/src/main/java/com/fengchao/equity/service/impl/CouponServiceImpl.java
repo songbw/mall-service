@@ -7,7 +7,7 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.*;
-import com.fengchao.equity.model.Coupon;
+import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponService;
@@ -23,7 +23,7 @@ import java.util.*;
 public class CouponServiceImpl implements CouponService {
 
     @Autowired
-    private CouponMapper mapper;
+    private CouponXMapper mapper;
     @Autowired
     private CouponUseInfoMapper useInfoMapper;
     @Autowired
@@ -35,7 +35,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public int createCoupon(CouponBean bean) {
-        Coupon coupon = beanToCoupon(bean);
+        CouponX coupon = beanToCoupon(bean);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
         if(coupon.getCode() == null || "".equals(coupon.getCode())){
             coupon.setCode(uuid);
@@ -63,10 +63,10 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public int updateCoupon(CouponBean bean) {
-        Coupon coupon = beanToCoupon(bean);
+        CouponX coupon = beanToCoupon(bean);
         coupon.setId(bean.getId());
         if(bean.getStatus() != null && bean.getStatus() == 2){
-            Coupon couponById = mapper.selectByPrimaryKey(bean.getId());
+            CouponX couponById = mapper.selectByPrimaryKey(bean.getId());
             if(couponById == null){
                 return 0;
             }
@@ -90,7 +90,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public CouponBean findByCouponId(Integer id) {
-        Coupon coupon = mapper.selectByPrimaryKey(id);
+        CouponX coupon = mapper.selectByPrimaryKey(id);
         CouponBean couponBean = couponToBean(coupon);
         return couponBean;
     }
@@ -114,7 +114,7 @@ public class CouponServiceImpl implements CouponService {
         List<CouponBean> couponBeans = new ArrayList<>();
         total = mapper.selectActiveCouponCount(map);
         if (total > 0) {
-            List<Coupon> coupons = mapper.selectActiveCouponLimit(map);
+            List<CouponX> coupons = mapper.selectActiveCouponLimit(map);
             coupons.forEach(coupon -> {
                 map.put("couponId",coupon.getId());
                 int num = useInfoMapper.selectCollectCount(map);
@@ -146,7 +146,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponBean selectSkuByCouponId(CouponUseInfoBean bean) {
         QueryProdBean queryProdBean = new QueryProdBean();
-        Coupon coupon = mapper.selectByPrimaryKey(bean.getId());
+        CouponX coupon = mapper.selectByPrimaryKey(bean.getId());
         if(coupon == null){
             return null;
         }
@@ -173,7 +173,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public Coupon consumeCoupon(CouponUseInfoBean bean) {
+    public CouponX consumeCoupon(CouponUseInfoBean bean) {
         CouponUseInfo useInfo = new CouponUseInfo();
         CouponUseInfo couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
@@ -184,7 +184,7 @@ public class CouponServiceImpl implements CouponService {
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(2);
         useInfoMapper.updateStatusByUserCode(useInfo);
-        Coupon coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+        CouponX coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         return coupon;
     }
 
@@ -235,9 +235,9 @@ public class CouponServiceImpl implements CouponService {
         return pageBean;
     }
 
-    private Coupon beanToCoupon(CouponBean bean){
+    private CouponX beanToCoupon(CouponBean bean){
 
-        Coupon coupon = new Coupon();
+        CouponX coupon = new CouponX();
 
         coupon.setName(bean.getName());
         coupon.setSupplierMerchantId(bean.getSupplierMerchantId());
@@ -296,7 +296,7 @@ public class CouponServiceImpl implements CouponService {
         return coupon;
     }
 
-    private CouponBean couponToBean(Coupon coupon){
+    private CouponBean couponToBean(CouponX coupon){
 
         CouponBean couponBean = new CouponBean();
 

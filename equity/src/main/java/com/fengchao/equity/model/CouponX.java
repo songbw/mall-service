@@ -2,7 +2,7 @@ package com.fengchao.equity.model;
 
 import java.util.Date;
 
-public class Coupon {
+public class CouponX {
     private Integer id;
 
     private String name;
@@ -51,11 +51,7 @@ public class Coupon {
 
     private String couponMpus;
 
-    private String couponSkus;
-
     private String excludeMpus;
-
-    private String excludeSkus;
 
     private String categories;
 
@@ -72,6 +68,8 @@ public class Coupon {
     private Integer couponType;
 
     private String couponRules;
+
+    private int userCollectNum;
 
     public Integer getId() {
         return id;
@@ -262,15 +260,7 @@ public class Coupon {
     }
 
     public void setCouponMpus(String couponMpus) {
-        this.couponMpus = couponMpus == null ? null : couponMpus.trim();
-    }
-
-    public String getCouponSkus() {
-        return couponSkus;
-    }
-
-    public void setCouponSkus(String couponSkus) {
-        this.couponSkus = couponSkus == null ? null : couponSkus.trim();
+        this.couponMpus = couponMpus;
     }
 
     public String getExcludeMpus() {
@@ -278,15 +268,7 @@ public class Coupon {
     }
 
     public void setExcludeMpus(String excludeMpus) {
-        this.excludeMpus = excludeMpus == null ? null : excludeMpus.trim();
-    }
-
-    public String getExcludeSkus() {
-        return excludeSkus;
-    }
-
-    public void setExcludeSkus(String excludeSkus) {
-        this.excludeSkus = excludeSkus == null ? null : excludeSkus.trim();
+        this.excludeMpus = excludeMpus;
     }
 
     public String getCategories() {
@@ -352,4 +334,13 @@ public class Coupon {
     public void setCouponRules(String couponRules) {
         this.couponRules = couponRules == null ? null : couponRules.trim();
     }
+
+    public int getUserCollectNum() {
+        return userCollectNum;
+    }
+
+    public void setUserCollectNum(int userCollectNum) {
+        this.userCollectNum = userCollectNum;
+    }
+
 }

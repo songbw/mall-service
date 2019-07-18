@@ -1,515 +1,644 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.equity.mapper.CouponMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.Coupon" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="supplier_merchant_id" property="supplierMerchantId" jdbcType="VARCHAR" />
-    <result column="supplier_merchant_name" property="supplierMerchantName" jdbcType="VARCHAR" />
-    <result column="release_total" property="releaseTotal" jdbcType="INTEGER" />
-    <result column="release_num" property="releaseNum" jdbcType="INTEGER" />
-    <result column="release_start_date" property="releaseStartDate" jdbcType="TIMESTAMP" />
-    <result column="release_end_date" property="releaseEndDate" jdbcType="TIMESTAMP" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="effective_start_date" property="effectiveStartDate" jdbcType="TIMESTAMP" />
-    <result column="effective_end_date" property="effectiveEndDate" jdbcType="TIMESTAMP" />
-    <result column="exclude_dates" property="excludeDates" jdbcType="VARCHAR" />
-    <result column="description" property="description" jdbcType="VARCHAR" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
-    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="category" property="category" jdbcType="VARCHAR" />
-    <result column="tags" property="tags" jdbcType="VARCHAR" />
-    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
-    <result column="code" property="code" jdbcType="VARCHAR" />
-    <result column="rules_description" property="rulesDescription" jdbcType="VARCHAR" />
-    <result column="per_limited" property="perLimited" jdbcType="INTEGER" />
-    <result column="scopes" property="scopes" jdbcType="VARCHAR" />
-    <result column="scenario_type" property="scenarioType" jdbcType="INTEGER" />
-    <result column="coupon_mpus" property="couponMpus" jdbcType="VARCHAR" />
-    <result column="exclude_mpus" property="excludeMpus" jdbcType="VARCHAR" />
-    <result column="categories" property="categories" jdbcType="VARCHAR" />
-    <result column="brands" property="brands" jdbcType="VARCHAR" />
-    <result column="collect_type" property="collectType" jdbcType="INTEGER" />
-    <result column="points" property="points" jdbcType="INTEGER" />
-    <result column="customer_type" property="customerType" jdbcType="INTEGER" />
-    <result column="users" property="users" jdbcType="VARCHAR" />
-    <result column="coupon_type" property="couponType" jdbcType="INTEGER" />
-    <result column="coupon_rules" property="couponRules" jdbcType="VARCHAR" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.equity.mapper.CouponMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.Coupon">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="supplier_merchant_id" jdbcType="VARCHAR" property="supplierMerchantId" />
+    <result column="supplier_merchant_name" jdbcType="VARCHAR" property="supplierMerchantName" />
+    <result column="release_total" jdbcType="INTEGER" property="releaseTotal" />
+    <result column="release_num" jdbcType="INTEGER" property="releaseNum" />
+    <result column="release_start_date" jdbcType="TIMESTAMP" property="releaseStartDate" />
+    <result column="release_end_date" jdbcType="TIMESTAMP" property="releaseEndDate" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="effective_start_date" jdbcType="TIMESTAMP" property="effectiveStartDate" />
+    <result column="effective_end_date" jdbcType="TIMESTAMP" property="effectiveEndDate" />
+    <result column="exclude_dates" jdbcType="VARCHAR" property="excludeDates" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="tags" jdbcType="VARCHAR" property="tags" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="rules_description" jdbcType="VARCHAR" property="rulesDescription" />
+    <result column="per_limited" jdbcType="INTEGER" property="perLimited" />
+    <result column="scopes" jdbcType="VARCHAR" property="scopes" />
+    <result column="scenario_type" jdbcType="INTEGER" property="scenarioType" />
+    <result column="coupon_mpus" jdbcType="VARCHAR" property="couponMpus" />
+    <result column="coupon_skus" jdbcType="VARCHAR" property="couponSkus" />
+    <result column="exclude_mpus" jdbcType="VARCHAR" property="excludeMpus" />
+    <result column="exclude_skus" jdbcType="VARCHAR" property="excludeSkus" />
+    <result column="categories" jdbcType="VARCHAR" property="categories" />
+    <result column="brands" jdbcType="VARCHAR" property="brands" />
+    <result column="collect_type" jdbcType="INTEGER" property="collectType" />
+    <result column="points" jdbcType="INTEGER" property="points" />
+    <result column="customer_type" jdbcType="INTEGER" property="customerType" />
+    <result column="users" jdbcType="VARCHAR" property="users" />
+    <result column="coupon_type" jdbcType="INTEGER" property="couponType" />
+    <result column="coupon_rules" jdbcType="VARCHAR" property="couponRules" />
   </resultMap>
-  <sql id="Base_Column_List" >
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
     id, name, supplier_merchant_id, supplier_merchant_name, release_total, release_num, 
     release_start_date, release_end_date, status, effective_start_date, effective_end_date, 
     exclude_dates, description, url, create_date, category, tags, image_url, code, rules_description, 
-    per_limited, scopes, scenario_type, coupon_mpus, exclude_mpus, categories, brands,
-    collect_type, points, customer_type, users, coupon_type, coupon_rules
+    per_limited, scopes, scenario_type, coupon_mpus, coupon_skus, exclude_mpus, exclude_skus, 
+    categories, brands, collect_type, points, customer_type, users, coupon_type, coupon_rules
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <select id="selectByExample" parameterType="com.fengchao.equity.model.CouponExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from coupon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from coupon
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByCodeKey" parameterType="com.fengchao.equity.model.Coupon" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from coupon
-    where code = #{code,jdbcType=VARCHAR}
-  </select>
-  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
-    select
-    count(id)
-    from coupon where 1=1
-    <if test="status != null" >
-      and status = #{status,jdbcType=INTEGER}
-    </if>
-    <if test="releaseTotal != null" >
-      and release_total = #{releaseTotal,jdbcType=INTEGER}
-    </if>
-    <if test="name != null" >
-      <bind name="patternName" value="'%' + name + '%'" />
-      and name LIKE #{patternName}
-    </if>
-    <if test="releaseStartDate != null" >
-      <![CDATA[ and release_start_date >= #{releaseStartDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="releaseEndDate != null" >
-      <![CDATA[ and release_end_date <= #{releaseEndDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="couponType != null" >
-      and coupon_type = #{couponType,jdbcType=INTEGER}
-    </if>
-    <if test="scenarioType != null" >
-      and scenario_type = #{scenarioType,jdbcType=INTEGER}
-    </if>
-  </select>
-  <select id="selectLimit" resultType="com.fengchao.equity.bean.CouponResultBean" parameterType="Map">
-    select
-    id, name,  supplier_merchant_id supplierMerchantId, supplier_merchant_name supplierMerchantName, release_total releaseTotal, release_num releaseNum, release_start_date releaseStartDate,
-    release_end_date releaseEndDate, status
-    from coupon where 1=1
-    <if test="status != null" >
-      and status = #{status,jdbcType=INTEGER}
-    </if>
-    <if test="releaseTotal != null" >
-      and release_total = #{releaseTotal,jdbcType=INTEGER}
-    </if>
-    <if test="name != null" >
-      <bind name="patternName" value="'%' + name + '%'" />
-      and name LIKE #{patternName}
-    </if>
-    <if test="releaseStartDate != null" >
-      <![CDATA[ and release_start_date >= #{releaseStartDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="releaseEndDate != null" >
-      <![CDATA[ and release_end_date <= #{releaseEndDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="couponType != null" >
-      and coupon_type = #{couponType,jdbcType=INTEGER}
-    </if>
-    <if test="scenarioType != null" >
-      and scenario_type = #{scenarioType,jdbcType=INTEGER}
-    </if>
-    order by create_date desc
-    limit #{pageNo},#{pageSize}
-  </select>
-  <select id="selectActiveCouponLimit" resultMap="BaseResultMap" parameterType="Map">
-    select
-    <include refid="Base_Column_List" />
-    from coupon
-    left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
-    where status = 3
-    <if test="categoryName != null" >
-      <bind name="patternName" value="'%' + categoryName + '%'" />
-      and aoyi_base_category.category_name LIKE #{patternName}
-    </if>
-    <if test="categoryId != null" >
-      and category = #{categoryId,jdbcType=INTEGER}
-    </if>
-    <if test="tagId != null" >
-      and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
-    </if>
-    limit #{pageNo},#{pageSize}
-  </select>
-  <select id="selectActiveCouponCount" resultType="java.lang.Integer" parameterType="Map">
-    select
-    count(id)
-    from coupon
-    left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
-    where status = 3
-    <if test="categoryName != null" >
-      <bind name="patternName" value="'%' + categoryName + '%'" />
-      and aoyi_base_category.category_name LIKE #{patternName}
-    </if>
-    <if test="categoryId != null" >
-      and category = #{categoryId,jdbcType=INTEGER}
-    </if>
-    <if test="tagId != null" >
-      and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
-    </if>
-  </select>
-  <select id="selectActiveCategories" resultType="java.lang.String" >
-    select distinct category from coupon
-  </select>
-  <select id="selectTags" resultType="java.lang.String" >
-    select distinct tags from coupon where tags != ""
-  </select>
-  <select id="selectCouponByMpu" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.PageBean">
-    select
-    <include refid="Base_Column_List" />
-    from coupon
-    where 1=1
-    <if test="mpu != null and mpu != ''" >
-      and find_in_set(#{mpu,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
-    </if>
-    <if test="mpu != null and mpu != ''" >
-      or locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0 and scenario_type = 2
-    </if>
-    <if test="category != null and category != ''" >
-      or find_in_set(#{category,jdbcType=VARCHAR}, category)
-      <if test="mpu != null and mpu != ''" >
-        and locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0
-      </if>
-      and scenario_type = 3
-    </if>
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from coupon
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.equity.model.Coupon" >
-    insert into coupon (id, name, supplier_merchant_id, 
-      supplier_merchant_name, release_total, release_num, 
-      release_start_date, release_end_date, status, 
-      effective_start_date, effective_end_date, 
-      exclude_dates, description, url, 
-      create_date, category, tags, 
-      image_url, code, rules_description, 
-      per_limited, scopes, scenario_type, 
-      coupon_mpus, exclude_mpus, categories,
+  <delete id="deleteByExample" parameterType="com.fengchao.equity.model.CouponExample">
+    delete from coupon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Coupon" useGeneratedKeys="true">
+    insert into coupon (name, supplier_merchant_id, supplier_merchant_name, 
+      release_total, release_num, release_start_date, 
+      release_end_date, status, effective_start_date, 
+      effective_end_date, exclude_dates, description, 
+      url, create_date, category, 
+      tags, image_url, code, 
+      rules_description, per_limited, scopes, 
+      scenario_type, coupon_mpus, coupon_skus, 
+      exclude_mpus, exclude_skus, categories, 
       brands, collect_type, points, 
       customer_type, users, coupon_type, 
       coupon_rules)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{supplierMerchantId,jdbcType=VARCHAR}, 
-      #{supplierMerchantName,jdbcType=VARCHAR}, #{releaseTotal,jdbcType=INTEGER}, #{releaseNum,jdbcType=INTEGER}, 
-      #{releaseStartDate,jdbcType=TIMESTAMP}, #{releaseEndDate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
-      #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP}, 
-      #{excludeDates,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{category,jdbcType=VARCHAR}, #{tags,jdbcType=VARCHAR}, 
-      #{imageUrl,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{rulesDescription,jdbcType=VARCHAR}, 
-      #{perLimited,jdbcType=INTEGER}, #{scopes,jdbcType=VARCHAR}, #{scenarioType,jdbcType=INTEGER}, 
-      #{couponMpus,jdbcType=VARCHAR}, #{excludeMpus,jdbcType=VARCHAR}, #{categories,jdbcType=VARCHAR},
+    values (#{name,jdbcType=VARCHAR}, #{supplierMerchantId,jdbcType=VARCHAR}, #{supplierMerchantName,jdbcType=VARCHAR}, 
+      #{releaseTotal,jdbcType=INTEGER}, #{releaseNum,jdbcType=INTEGER}, #{releaseStartDate,jdbcType=TIMESTAMP}, 
+      #{releaseEndDate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{effectiveStartDate,jdbcType=TIMESTAMP}, 
+      #{effectiveEndDate,jdbcType=TIMESTAMP}, #{excludeDates,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{category,jdbcType=VARCHAR}, 
+      #{tags,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, 
+      #{rulesDescription,jdbcType=VARCHAR}, #{perLimited,jdbcType=INTEGER}, #{scopes,jdbcType=VARCHAR}, 
+      #{scenarioType,jdbcType=INTEGER}, #{couponMpus,jdbcType=VARCHAR}, #{couponSkus,jdbcType=VARCHAR}, 
+      #{excludeMpus,jdbcType=VARCHAR}, #{excludeSkus,jdbcType=VARCHAR}, #{categories,jdbcType=VARCHAR}, 
       #{brands,jdbcType=VARCHAR}, #{collectType,jdbcType=INTEGER}, #{points,jdbcType=INTEGER}, 
       #{customerType,jdbcType=INTEGER}, #{users,jdbcType=VARCHAR}, #{couponType,jdbcType=INTEGER}, 
       #{couponRules,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective"  keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.equity.model.Coupon" >
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Coupon" useGeneratedKeys="true">
     insert into coupon
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="name != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
         name,
       </if>
-      <if test="supplierMerchantId != null" >
+      <if test="supplierMerchantId != null">
         supplier_merchant_id,
       </if>
-      <if test="supplierMerchantName != null" >
+      <if test="supplierMerchantName != null">
         supplier_merchant_name,
       </if>
-      <if test="releaseTotal != null" >
+      <if test="releaseTotal != null">
         release_total,
       </if>
-      <if test="releaseNum != null" >
+      <if test="releaseNum != null">
         release_num,
       </if>
-      <if test="releaseStartDate != null" >
+      <if test="releaseStartDate != null">
         release_start_date,
       </if>
-      <if test="releaseEndDate != null" >
+      <if test="releaseEndDate != null">
         release_end_date,
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status,
       </if>
-      <if test="effectiveStartDate != null" >
+      <if test="effectiveStartDate != null">
         effective_start_date,
       </if>
-      <if test="effectiveEndDate != null" >
+      <if test="effectiveEndDate != null">
         effective_end_date,
       </if>
-      <if test="excludeDates != null" >
+      <if test="excludeDates != null">
         exclude_dates,
       </if>
-      <if test="description != null" >
+      <if test="description != null">
         description,
       </if>
-      <if test="url != null" >
+      <if test="url != null">
         url,
       </if>
-      <if test="createDate != null" >
+      <if test="createDate != null">
         create_date,
       </if>
-      <if test="category != null" >
+      <if test="category != null">
         category,
       </if>
-      <if test="tags != null" >
+      <if test="tags != null">
         tags,
       </if>
-      <if test="imageUrl != null" >
+      <if test="imageUrl != null">
         image_url,
       </if>
-      <if test="code != null" >
+      <if test="code != null">
         code,
       </if>
-      <if test="rulesDescription != null" >
+      <if test="rulesDescription != null">
         rules_description,
       </if>
-      <if test="perLimited != null" >
+      <if test="perLimited != null">
         per_limited,
       </if>
-      <if test="scopes != null" >
+      <if test="scopes != null">
         scopes,
       </if>
-      <if test="scenarioType != null" >
+      <if test="scenarioType != null">
         scenario_type,
       </if>
-      <if test="couponMpus != null" >
+      <if test="couponMpus != null">
         coupon_mpus,
       </if>
-      <if test="excludeMpus != null" >
+      <if test="couponSkus != null">
+        coupon_skus,
+      </if>
+      <if test="excludeMpus != null">
         exclude_mpus,
       </if>
-      <if test="categories != null" >
+      <if test="excludeSkus != null">
+        exclude_skus,
+      </if>
+      <if test="categories != null">
         categories,
       </if>
-      <if test="brands != null" >
+      <if test="brands != null">
         brands,
       </if>
-      <if test="collectType != null" >
+      <if test="collectType != null">
         collect_type,
       </if>
-      <if test="points != null" >
+      <if test="points != null">
         points,
       </if>
-      <if test="customerType != null" >
+      <if test="customerType != null">
         customer_type,
       </if>
-      <if test="users != null" >
+      <if test="users != null">
         users,
       </if>
-      <if test="couponType != null" >
+      <if test="couponType != null">
         coupon_type,
       </if>
-      <if test="couponRules != null" >
+      <if test="couponRules != null">
         coupon_rules,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="name != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="supplierMerchantId != null" >
+      <if test="supplierMerchantId != null">
         #{supplierMerchantId,jdbcType=VARCHAR},
       </if>
-      <if test="supplierMerchantName != null" >
+      <if test="supplierMerchantName != null">
         #{supplierMerchantName,jdbcType=VARCHAR},
       </if>
-      <if test="releaseTotal != null" >
+      <if test="releaseTotal != null">
         #{releaseTotal,jdbcType=INTEGER},
       </if>
-      <if test="releaseNum != null" >
+      <if test="releaseNum != null">
         #{releaseNum,jdbcType=INTEGER},
       </if>
-      <if test="releaseStartDate != null" >
+      <if test="releaseStartDate != null">
         #{releaseStartDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="releaseEndDate != null" >
+      <if test="releaseEndDate != null">
         #{releaseEndDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
-      <if test="effectiveStartDate != null" >
+      <if test="effectiveStartDate != null">
         #{effectiveStartDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="effectiveEndDate != null" >
+      <if test="effectiveEndDate != null">
         #{effectiveEndDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="excludeDates != null" >
+      <if test="excludeDates != null">
         #{excludeDates,jdbcType=VARCHAR},
       </if>
-      <if test="description != null" >
+      <if test="description != null">
         #{description,jdbcType=VARCHAR},
       </if>
-      <if test="url != null" >
+      <if test="url != null">
         #{url,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
+      <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="category != null" >
+      <if test="category != null">
         #{category,jdbcType=VARCHAR},
       </if>
-      <if test="tags != null" >
+      <if test="tags != null">
         #{tags,jdbcType=VARCHAR},
       </if>
-      <if test="imageUrl != null" >
+      <if test="imageUrl != null">
         #{imageUrl,jdbcType=VARCHAR},
       </if>
-      <if test="code != null" >
+      <if test="code != null">
         #{code,jdbcType=VARCHAR},
       </if>
-      <if test="rulesDescription != null" >
+      <if test="rulesDescription != null">
         #{rulesDescription,jdbcType=VARCHAR},
       </if>
-      <if test="perLimited != null" >
+      <if test="perLimited != null">
         #{perLimited,jdbcType=INTEGER},
       </if>
-      <if test="scopes != null" >
+      <if test="scopes != null">
         #{scopes,jdbcType=VARCHAR},
       </if>
-      <if test="scenarioType != null" >
+      <if test="scenarioType != null">
         #{scenarioType,jdbcType=INTEGER},
       </if>
-      <if test="couponMpus != null" >
+      <if test="couponMpus != null">
         #{couponMpus,jdbcType=VARCHAR},
       </if>
-      <if test="excludeMpus != null" >
+      <if test="couponSkus != null">
+        #{couponSkus,jdbcType=VARCHAR},
+      </if>
+      <if test="excludeMpus != null">
         #{excludeMpus,jdbcType=VARCHAR},
       </if>
-      <if test="categories != null" >
+      <if test="excludeSkus != null">
+        #{excludeSkus,jdbcType=VARCHAR},
+      </if>
+      <if test="categories != null">
         #{categories,jdbcType=VARCHAR},
       </if>
-      <if test="brands != null" >
+      <if test="brands != null">
         #{brands,jdbcType=VARCHAR},
       </if>
-      <if test="collectType != null" >
+      <if test="collectType != null">
         #{collectType,jdbcType=INTEGER},
       </if>
-      <if test="points != null" >
+      <if test="points != null">
         #{points,jdbcType=INTEGER},
       </if>
-      <if test="customerType != null" >
+      <if test="customerType != null">
         #{customerType,jdbcType=INTEGER},
       </if>
-      <if test="users != null" >
+      <if test="users != null">
         #{users,jdbcType=VARCHAR},
       </if>
-      <if test="couponType != null" >
+      <if test="couponType != null">
         #{couponType,jdbcType=INTEGER},
       </if>
-      <if test="couponRules != null" >
+      <if test="couponRules != null">
         #{couponRules,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.Coupon" >
+  <select id="countByExample" parameterType="com.fengchao.equity.model.CouponExample" resultType="java.lang.Long">
+    select count(*) from coupon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
     update coupon
-    <set >
-      <if test="name != null" >
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.supplierMerchantId != null">
+        supplier_merchant_id = #{record.supplierMerchantId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.supplierMerchantName != null">
+        supplier_merchant_name = #{record.supplierMerchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.releaseTotal != null">
+        release_total = #{record.releaseTotal,jdbcType=INTEGER},
+      </if>
+      <if test="record.releaseNum != null">
+        release_num = #{record.releaseNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.releaseStartDate != null">
+        release_start_date = #{record.releaseStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.releaseEndDate != null">
+        release_end_date = #{record.releaseEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.effectiveStartDate != null">
+        effective_start_date = #{record.effectiveStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.effectiveEndDate != null">
+        effective_end_date = #{record.effectiveEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.excludeDates != null">
+        exclude_dates = #{record.excludeDates,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.url != null">
+        url = #{record.url,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tags != null">
+        tags = #{record.tags,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imageUrl != null">
+        image_url = #{record.imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rulesDescription != null">
+        rules_description = #{record.rulesDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="record.perLimited != null">
+        per_limited = #{record.perLimited,jdbcType=INTEGER},
+      </if>
+      <if test="record.scopes != null">
+        scopes = #{record.scopes,jdbcType=VARCHAR},
+      </if>
+      <if test="record.scenarioType != null">
+        scenario_type = #{record.scenarioType,jdbcType=INTEGER},
+      </if>
+      <if test="record.couponMpus != null">
+        coupon_mpus = #{record.couponMpus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.couponSkus != null">
+        coupon_skus = #{record.couponSkus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.excludeMpus != null">
+        exclude_mpus = #{record.excludeMpus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.excludeSkus != null">
+        exclude_skus = #{record.excludeSkus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.categories != null">
+        categories = #{record.categories,jdbcType=VARCHAR},
+      </if>
+      <if test="record.brands != null">
+        brands = #{record.brands,jdbcType=VARCHAR},
+      </if>
+      <if test="record.collectType != null">
+        collect_type = #{record.collectType,jdbcType=INTEGER},
+      </if>
+      <if test="record.points != null">
+        points = #{record.points,jdbcType=INTEGER},
+      </if>
+      <if test="record.customerType != null">
+        customer_type = #{record.customerType,jdbcType=INTEGER},
+      </if>
+      <if test="record.users != null">
+        users = #{record.users,jdbcType=VARCHAR},
+      </if>
+      <if test="record.couponType != null">
+        coupon_type = #{record.couponType,jdbcType=INTEGER},
+      </if>
+      <if test="record.couponRules != null">
+        coupon_rules = #{record.couponRules,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update coupon
+    set id = #{record.id,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      supplier_merchant_id = #{record.supplierMerchantId,jdbcType=VARCHAR},
+      supplier_merchant_name = #{record.supplierMerchantName,jdbcType=VARCHAR},
+      release_total = #{record.releaseTotal,jdbcType=INTEGER},
+      release_num = #{record.releaseNum,jdbcType=INTEGER},
+      release_start_date = #{record.releaseStartDate,jdbcType=TIMESTAMP},
+      release_end_date = #{record.releaseEndDate,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=INTEGER},
+      effective_start_date = #{record.effectiveStartDate,jdbcType=TIMESTAMP},
+      effective_end_date = #{record.effectiveEndDate,jdbcType=TIMESTAMP},
+      exclude_dates = #{record.excludeDates,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      url = #{record.url,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      category = #{record.category,jdbcType=VARCHAR},
+      tags = #{record.tags,jdbcType=VARCHAR},
+      image_url = #{record.imageUrl,jdbcType=VARCHAR},
+      code = #{record.code,jdbcType=VARCHAR},
+      rules_description = #{record.rulesDescription,jdbcType=VARCHAR},
+      per_limited = #{record.perLimited,jdbcType=INTEGER},
+      scopes = #{record.scopes,jdbcType=VARCHAR},
+      scenario_type = #{record.scenarioType,jdbcType=INTEGER},
+      coupon_mpus = #{record.couponMpus,jdbcType=VARCHAR},
+      coupon_skus = #{record.couponSkus,jdbcType=VARCHAR},
+      exclude_mpus = #{record.excludeMpus,jdbcType=VARCHAR},
+      exclude_skus = #{record.excludeSkus,jdbcType=VARCHAR},
+      categories = #{record.categories,jdbcType=VARCHAR},
+      brands = #{record.brands,jdbcType=VARCHAR},
+      collect_type = #{record.collectType,jdbcType=INTEGER},
+      points = #{record.points,jdbcType=INTEGER},
+      customer_type = #{record.customerType,jdbcType=INTEGER},
+      users = #{record.users,jdbcType=VARCHAR},
+      coupon_type = #{record.couponType,jdbcType=INTEGER},
+      coupon_rules = #{record.couponRules,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.Coupon">
+    update coupon
+    <set>
+      <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="supplierMerchantId != null" >
+      <if test="supplierMerchantId != null">
         supplier_merchant_id = #{supplierMerchantId,jdbcType=VARCHAR},
       </if>
-      <if test="supplierMerchantName != null" >
+      <if test="supplierMerchantName != null">
         supplier_merchant_name = #{supplierMerchantName,jdbcType=VARCHAR},
       </if>
-      <if test="releaseTotal != null" >
+      <if test="releaseTotal != null">
         release_total = #{releaseTotal,jdbcType=INTEGER},
       </if>
-      <if test="releaseNum != null" >
+      <if test="releaseNum != null">
         release_num = #{releaseNum,jdbcType=INTEGER},
       </if>
-      <if test="releaseStartDate != null" >
+      <if test="releaseStartDate != null">
         release_start_date = #{releaseStartDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="releaseEndDate != null" >
+      <if test="releaseEndDate != null">
         release_end_date = #{releaseEndDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
-      <if test="effectiveStartDate != null" >
+      <if test="effectiveStartDate != null">
         effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="effectiveEndDate != null" >
+      <if test="effectiveEndDate != null">
         effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="excludeDates != null" >
+      <if test="excludeDates != null">
         exclude_dates = #{excludeDates,jdbcType=VARCHAR},
       </if>
-      <if test="description != null" >
+      <if test="description != null">
         description = #{description,jdbcType=VARCHAR},
       </if>
-      <if test="url != null" >
+      <if test="url != null">
         url = #{url,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
+      <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="category != null" >
+      <if test="category != null">
         category = #{category,jdbcType=VARCHAR},
       </if>
-      <if test="tags != null" >
+      <if test="tags != null">
         tags = #{tags,jdbcType=VARCHAR},
       </if>
-      <if test="imageUrl != null" >
+      <if test="imageUrl != null">
         image_url = #{imageUrl,jdbcType=VARCHAR},
       </if>
-      <if test="code != null" >
+      <if test="code != null">
         code = #{code,jdbcType=VARCHAR},
       </if>
-      <if test="rulesDescription != null" >
+      <if test="rulesDescription != null">
         rules_description = #{rulesDescription,jdbcType=VARCHAR},
       </if>
-      <if test="perLimited != null" >
+      <if test="perLimited != null">
         per_limited = #{perLimited,jdbcType=INTEGER},
       </if>
-      <if test="scopes != null" >
+      <if test="scopes != null">
         scopes = #{scopes,jdbcType=VARCHAR},
       </if>
-      <if test="scenarioType != null" >
+      <if test="scenarioType != null">
         scenario_type = #{scenarioType,jdbcType=INTEGER},
       </if>
-      <if test="couponMpus != null" >
+      <if test="couponMpus != null">
         coupon_mpus = #{couponMpus,jdbcType=VARCHAR},
       </if>
-      <if test="excludeMpus != null" >
+      <if test="couponSkus != null">
+        coupon_skus = #{couponSkus,jdbcType=VARCHAR},
+      </if>
+      <if test="excludeMpus != null">
         exclude_mpus = #{excludeMpus,jdbcType=VARCHAR},
       </if>
-      <if test="categories != null" >
+      <if test="excludeSkus != null">
+        exclude_skus = #{excludeSkus,jdbcType=VARCHAR},
+      </if>
+      <if test="categories != null">
         categories = #{categories,jdbcType=VARCHAR},
       </if>
-      <if test="brands != null" >
+      <if test="brands != null">
         brands = #{brands,jdbcType=VARCHAR},
       </if>
-      <if test="collectType != null" >
+      <if test="collectType != null">
         collect_type = #{collectType,jdbcType=INTEGER},
       </if>
-      <if test="points != null" >
+      <if test="points != null">
         points = #{points,jdbcType=INTEGER},
       </if>
-      <if test="customerType != null" >
+      <if test="customerType != null">
         customer_type = #{customerType,jdbcType=INTEGER},
       </if>
-      <if test="users != null" >
+      <if test="users != null">
         users = #{users,jdbcType=VARCHAR},
       </if>
-      <if test="couponType != null" >
+      <if test="couponType != null">
         coupon_type = #{couponType,jdbcType=INTEGER},
       </if>
-      <if test="couponRules != null" >
+      <if test="couponRules != null">
         coupon_rules = #{couponRules,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.Coupon" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.Coupon">
     update coupon
     set name = #{name,jdbcType=VARCHAR},
       supplier_merchant_id = #{supplierMerchantId,jdbcType=VARCHAR},
@@ -534,7 +663,9 @@
       scopes = #{scopes,jdbcType=VARCHAR},
       scenario_type = #{scenarioType,jdbcType=INTEGER},
       coupon_mpus = #{couponMpus,jdbcType=VARCHAR},
+      coupon_skus = #{couponSkus,jdbcType=VARCHAR},
       exclude_mpus = #{excludeMpus,jdbcType=VARCHAR},
+      exclude_skus = #{excludeSkus,jdbcType=VARCHAR},
       categories = #{categories,jdbcType=VARCHAR},
       brands = #{brands,jdbcType=VARCHAR},
       collect_type = #{collectType,jdbcType=INTEGER},
@@ -544,11 +675,5 @@
       coupon_type = #{couponType,jdbcType=INTEGER},
       coupon_rules = #{couponRules,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="couponEffective" parameterType="java.lang.Integer" >
-    update coupon set status = 3 where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="couponEnd" parameterType="java.lang.Integer" >
-    update coupon set status = 4 where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
