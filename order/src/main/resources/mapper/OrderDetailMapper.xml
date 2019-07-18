@@ -22,10 +22,11 @@
     <result column="logistics_id" property="logisticsId" jdbcType="VARCHAR" />
     <result column="logistics_content" property="logisticsContent" jdbcType="VARCHAR" />
     <result column="comcode" property="comCode" jdbcType="VARCHAR" />
+    <result column="sku_coupon_discount" property="skuCouponDiscount" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, order_id, merchant_id, sub_order_id, sku_id, mpu, promotion_id, promotion_discount, num, unit_price, sale_price, image, name, model, status, created_at,
-    updated_at, logistics_id, logistics_content
+    updated_at, logistics_id, logistics_content, sku_coupon_discount
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -69,10 +70,10 @@
   <insert id="insert" parameterType="com.fengchao.order.model.OrderDetail" >
     insert into order_detail (order_id, merchant_id, sub_order_id, sku_id, mpu,
       num, unit_price, sale_price, image, name, model, status,
-      created_at, updated_at, promotion_id, promotion_discount)
+      created_at, updated_at, promotion_id, promotion_discount, sku_coupon_discount)
     values (#{orderId,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{mpu,jdbcType=VARCHAR},
       #{num,jdbcType=INTEGER}, #{unitPrice,jdbcType=DECIMAL}, #{salePrice,jdbcType=DECIMAL}, #{image,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{promotionId}, #{promotionDiscount})
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{promotionId}, #{promotionDiscount}, #{skuCouponDiscount})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.order.model.OrderDetail" >
     insert into order_detail

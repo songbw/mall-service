@@ -44,6 +44,8 @@ public class OrderDetail {
 
     private Integer merchantId;
 
+    private Integer skuCouponDiscount ;
+
     public Integer getId() {
         return id;
     }
@@ -202,5 +204,13 @@ public class OrderDetail {
 
     public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public Integer getSkuCouponDiscount() {
+        return skuCouponDiscount;
+    }
+
+    public void setSkuCouponDiscount(Integer skuCouponDiscount) {
+        this.skuCouponDiscount = skuCouponDiscount;
     }
 }

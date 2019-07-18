@@ -169,6 +169,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
                 orderDetail.setUnitPrice(orderSku.getUnitPrice());
                 orderDetail.setNum(orderSku.getNum());
+                orderDetail.setSkuCouponDiscount(orderSku.getSkuCouponDiscount());
 
                 // 添加子订单
                 orderDetailMapper.insert(orderDetail) ;
