@@ -3,6 +3,7 @@ package com.fengchao.equity.service;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
+import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionX;
 
 import java.util.List;
@@ -38,4 +39,12 @@ public interface PromotionService {
     int end(int promotionId);
 
     PromotionX findPromotionName(Integer id);
+
+    /**
+     * 根据活动id集合， 查询活动列表
+     *
+     * @param promotionIdList
+     * @return
+     */
+    List<Promotion> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception;
 }
