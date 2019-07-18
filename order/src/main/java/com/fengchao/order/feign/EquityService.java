@@ -7,6 +7,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @FeignClient(value = "equity", fallback = EquityServiceH.class)
 public interface EquityService {
@@ -14,4 +17,6 @@ public interface EquityService {
     @RequestMapping(value = "/coupon/consume", method = RequestMethod.POST)
     OperaResult consume(@RequestBody CouponUseInfoBean bean);
 
+    @RequestMapping(value = "/promotion/findByIdList", method = RequestMethod.GET)
+    OperaResult findPromotionListByIdList(@RequestParam("idList") List<Integer> idList);
 }

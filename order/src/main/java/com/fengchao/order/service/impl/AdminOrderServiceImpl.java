@@ -1,12 +1,16 @@
 package com.fengchao.order.service.impl;
 
+import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.dao.AdminOrderDao;
+import com.fengchao.order.extmodel.PromotionBean;
+import com.fengchao.order.feign.EquityService;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
+import com.fengchao.order.rpc.EquityRpcService;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +32,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     private AdminOrderDao adminOrderDao;
 
+    private EquityRpcService equityRpcService;
+
     @Autowired
-    public AdminOrderServiceImpl(AdminOrderDao adminOrderDao) {
+    public AdminOrderServiceImpl(AdminOrderDao adminOrderDao,
+                                 EquityRpcService equityRpcService) {
         this.adminOrderDao = adminOrderDao;
+        this.equityRpcService = equityRpcService;
     }
 
     /**
@@ -91,9 +99,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
 
         // 4.获取组装结果的其他相关数据
-        // 4. 获取导出需要的promotion信息列表
-
-
+        // 4.1 获取导出需要的promotion信息列表
+        List<PromotionBean> promotionBeanList =
+                equityRpcService.queryPromotionByIdList(new ArrayList<>(promotionIdSet));
+        log.info("导出订单 根据id获取活动List<PromotionBean>:{}", JSONUtil.toJsonString(promotionBeanList));
+        // 转map key:promotionId, value:PromotionBean
+        Map<Integer, PromotionBean> promotionBeanMap =
+                promotionBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
@@ -113,10 +125,12 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 exportOrdersVo.setMpu(orderDetailBo.getMpu());
 //                exportOrdersVo.setCommodityName(); // 商品名称
 //                exportOrdersVo.setQuantity(orderDetailBo.getNum()); // 购买数量
-//                exportOrdersVo.setPromotion(); // 活动
+                exportOrdersVo.setPromotion(
+                        promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
+                                "" : promotionBeanMap.get(orderDetailBo.getPromotionId()).getName()); // 活动
                 exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
 //                exportOrdersVo.setCouponCode(); // 券码
-//                exportOrdersVo.setCouponId(); // 券码id
+                exportOrdersVo.setCouponId(ordersBo.getCouponId().longValue()); // 券码id
 //                exportOrdersVo.setCouponSupplier(); // 券来源（券商户）
 //                exportOrdersVo.setPurchasePrice(); // 进货价格 单位分
                 exportOrdersVo.setTotalRealPrice(
