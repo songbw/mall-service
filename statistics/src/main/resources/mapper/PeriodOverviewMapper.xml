@@ -9,9 +9,11 @@
     <result column="noon" property="noon" jdbcType="REAL" />
     <result column="afternoon" property="afternoon" jdbcType="REAL" />
     <result column="night" property="night" jdbcType="REAL" />
+    <result column="statistics_date" property="statisticsDate" jdbcType="DATE" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, late_at_night, early_morning, morning, noon, afternoon, night
+    id, late_at_night, early_morning, morning, noon, afternoon, night, statistics_date, created_at
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -19,10 +21,10 @@
     from period_overview
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByDate" resultType="com.fengchao.statistics.model.PeriodOverview">
+  <select id="selectByDate" resultMap="BaseResultMap"  parameterType="Map">
     select
     <include refid="Base_Column_List" />
-    from promotion_overview
+    from period_overview
     where <![CDATA[statistics_date >= #{start,jdbcType=TIMESTAMP}]]> <![CDATA[ and statistics_date <= #{end,jdbcType=TIMESTAMP}]]>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
@@ -32,10 +34,10 @@
   <insert id="insert" parameterType="com.fengchao.statistics.model.PeriodOverview" >
     insert into period_overview (id, late_at_night, early_morning, 
       morning, noon, afternoon, 
-      night)
+      night, statistics_date, created_at)
     values (#{id,jdbcType=BIGINT}, #{lateAtNight,jdbcType=REAL}, #{earlyMorning,jdbcType=REAL},
       #{morning,jdbcType=REAL}, #{noon,jdbcType=REAL}, #{afternoon,jdbcType=REAL},
-      #{night,jdbcType=REAL})
+      #{night,jdbcType=REAL}, #{statisticsDate,jdbcType=DATE}, #{createdAt,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.statistics.model.PeriodOverview" >
     insert into period_overview
@@ -61,6 +63,12 @@
       <if test="night != null" >
         night,
       </if>
+      <if test="statisticsDate != null" >
+        statistics_date,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -83,6 +91,12 @@
       </if>
       <if test="night != null" >
         #{night,jdbcType=REAL},
+      </if>
+      <if test="statisticsDate != null" >
+        #{statisticsDate,jdbcType=DATE},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -107,6 +121,12 @@
       <if test="night != null" >
         night = #{night,jdbcType=REAL},
       </if>
+      <if test="statisticsDate != null" >
+        statistics_date = #{statisticsDate,jdbcType=DATE},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -117,7 +137,9 @@
       morning = #{morning,jdbcType=REAL},
       noon = #{noon,jdbcType=REAL},
       afternoon = #{afternoon,jdbcType=REAL},
-      night = #{night,jdbcType=REAL}
+      night = #{night,jdbcType=REAL},
+      statistics_date = #{statisticsDate,jdbcType=DATE},
+      created_at = #{createdAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
