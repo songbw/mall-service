@@ -17,6 +17,21 @@ public interface EquityService {
     @RequestMapping(value = "/coupon/consume", method = RequestMethod.POST)
     OperaResult consume(@RequestBody CouponUseInfoBean bean);
 
+    /**
+     * 根据id集合获取Promotion列表
+     *
+     * @param idList
+     * @return
+     */
     @RequestMapping(value = "/promotion/findByIdList", method = RequestMethod.GET)
     OperaResult findPromotionListByIdList(@RequestParam("idList") List<Integer> idList);
+
+    /**
+     * 根据id集合获取Coupon列表
+     *
+     * @param idList
+     * @return
+     */
+    @RequestMapping(value = "/coupon/findByIdList", method = RequestMethod.GET)
+    OperaResult findCouponListByIdList(@RequestParam("idList") List<Integer> idList);
 }

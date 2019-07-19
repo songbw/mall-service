@@ -1,4 +1,4 @@
-package com.fengchao.order.extmodel;
+package com.fengchao.order.rpc.extmodel;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -28,12 +28,17 @@ public class EquityServiceH implements EquityService {
 
     @Override
     public OperaResult findPromotionListByIdList(List<Integer> idList) {
-        return createFallback();
+        return defaultFallback();
+    }
+
+    @Override
+    public OperaResult findCouponListByIdList(List<Integer> idList) {
+        return defaultFallback();
     }
 
     //===================================== private ============================
 
-    private OperaResult createFallback() {
+    private OperaResult defaultFallback() {
         OperaResult result = new OperaResult();
         result.setCode(500);
         result.setMsg("equity rpc 查询失败降级");

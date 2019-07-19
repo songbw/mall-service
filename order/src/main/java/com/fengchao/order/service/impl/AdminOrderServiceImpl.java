@@ -1,13 +1,12 @@
 package com.fengchao.order.service.impl;
 
-import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.dao.AdminOrderDao;
-import com.fengchao.order.extmodel.PromotionBean;
-import com.fengchao.order.feign.EquityService;
+import com.fengchao.order.rpc.extmodel.CouponBean;
+import com.fengchao.order.rpc.extmodel.PromotionBean;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.EquityRpcService;
@@ -62,8 +61,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
 
         // 2. 根据上一步，查询子订单(注意条件：子订单号、商家id)
-        // 获取注定但id列表
-        List<Integer> ordersIdList = ordersList.stream().map(ol -> ol.getId()).collect(Collectors.toList());
+        // 获取主订单id列表
+        List<Integer> ordersIdList = new ArrayList<>();
+        // x. 获取coupon的id集合
+        Set<Integer> couponIdSet = new HashSet<>();
+        for (Orders orders : ordersList) {
+            ordersIdList.add(orders.getId());
+            couponIdSet.add(orders.getCouponId());
+        }
 
         List<OrderDetail> orderDetailList =
                 adminOrderDao.selectExportOrderDetail(ordersIdList, orderExportReqVo.getSubOrderId(), orderExportReqVo.getMerchantId());
@@ -107,6 +112,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Map<Integer, PromotionBean> promotionBeanMap =
                 promotionBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
 
+        // 4.2 获取导出需要的coupon信息列表
+        List<CouponBean> couponBeanList = equityRpcService.queryCouponByIdList(new ArrayList<>(couponIdSet));
+        log.info("导出订单 根据id获取coupon List<CouponBean>:{}", JSONUtil.toJsonString(couponBeanList));
+        // 转map， key couponId, value: CouponBean
+        Map<Integer, CouponBean> couponBeanMap =
+                couponBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
+
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
         for (OrdersBo ordersBo : ordersBoList) { // 遍历
@@ -129,9 +141,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
                                 "" : promotionBeanMap.get(orderDetailBo.getPromotionId()).getName()); // 活动
                 exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
-//                exportOrdersVo.setCouponCode(); // 券码
+                exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
                 exportOrdersVo.setCouponId(ordersBo.getCouponId().longValue()); // 券码id
-//                exportOrdersVo.setCouponSupplier(); // 券来源（券商户）
+                exportOrdersVo.setCouponSupplier(
+                        couponBeanMap.get(ordersBo.getCouponId()) == null ?
+                                "" : couponBeanMap.get(ordersBo.getCouponId()).getSupplierMerchantName()); // 券来源（券商户）
 //                exportOrdersVo.setPurchasePrice(); // 进货价格 单位分
                 exportOrdersVo.setTotalRealPrice(
                         orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()
@@ -139,7 +153,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
                 exportOrdersVo.setCouponPrice(orderDetailBo.getSkuCouponDiscount()); // 券支付金额
                 exportOrdersVo.setPayPrice(exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // 实际支付的价格
-                // exportOrdersVo.setShareBenefitPercent(); // 平台分润比
+                // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
                 exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
                 exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省
                 exportOrdersVo.setCityName(ordersBo.getCityName()); // 市
