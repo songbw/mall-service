@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -145,11 +144,24 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         if (total > 0) {
             couponUseInfos = mapper.selectLimit(map);
             couponUseInfos.forEach(couponUseInfo -> {
-                Coupon coupon = couponMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
-                if(coupon != null){
-                    CouponBean couponBean = couponToBean(coupon);
-                    couponUseInfo.setCouponInfo(couponBean);
+                CouponBean couponBean = new CouponBean();
+                if(couponUseInfo.getType() == 1){
+                    CouponThird couponThird =couponThirdMapper.selectByUserCouponId(couponUseInfo.getId());
+                    couponBean.setName(couponThird.getName());
+                    couponBean.setEffectiveEndDate(DataUtils.dateFormat(couponThird.getEffectiveEndDate()));
+                    couponBean.setEffectiveStartDate(DataUtils.dateFormat(couponThird.getEffectiveStartDate()));
+                    couponBean.setUrl(couponThird.getUrl());
+                    couponBean.setDescription(couponThird.getDescription());
+                    couponBean.setSupplierMerchantId(couponThird.getMerchantId());
+                    couponBean.setSupplierMerchantName(couponThird.getMerchantName());
+                    couponBean.setPrice(couponThird.getPrice());
+                }else if(couponUseInfo.getType() == 0){
+                    Coupon coupon = couponMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+                    if(coupon != null){
+                        couponBean = couponToBean(coupon);
+                    }
                 }
+                couponUseInfo.setCouponInfo(couponBean);
             });
         }
         pageBean = PageBean.build(pageBean, couponUseInfos, total, bean.getOffset(), bean.getLimit());
