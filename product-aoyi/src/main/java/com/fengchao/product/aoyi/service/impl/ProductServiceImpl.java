@@ -156,6 +156,7 @@ public class ProductServiceImpl implements ProductService {
         return aoyiProdIndex;
     }
 
+    @Cacheable(value = "aoyiProdIndex", key = "#aoyiProdIndex.id")
     @Override
     public List<AoyiProdIndex> findAll() throws ProductException {
         HashMap map = new HashMap();
@@ -187,7 +188,7 @@ public class ProductServiceImpl implements ProductService {
         return prodIndices;
     }
 
-    @Cacheable(value = "aoyiProdIndex", key = "#mpu")
+    @Cacheable(value = "productInfoBean", key = "#mpu")
     @DataSource(DataSourceNames.TWO)
     @Override
     public ProductInfoBean findAndPromotion(String mpu) throws ProductException {

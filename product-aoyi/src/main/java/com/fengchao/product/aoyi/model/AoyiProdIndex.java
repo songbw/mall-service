@@ -1,8 +1,9 @@
 package com.fengchao.product.aoyi.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class AoyiProdIndex {
+public class AoyiProdIndex implements Serializable {
     private Integer id;
 
     private String skuid;
