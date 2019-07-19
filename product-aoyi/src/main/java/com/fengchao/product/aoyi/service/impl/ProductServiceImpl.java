@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -138,6 +139,7 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Cacheable(value = "aoyiProdIndex", key = "#id")
     @DataSource(DataSourceNames.TWO)
     @Override
     public AoyiProdIndex find(String id) throws ProductException {
@@ -185,6 +187,7 @@ public class ProductServiceImpl implements ProductService {
         return prodIndices;
     }
 
+    @Cacheable(value = "aoyiProdIndex", key = "#mpu")
     @DataSource(DataSourceNames.TWO)
     @Override
     public ProductInfoBean findAndPromotion(String mpu) throws ProductException {

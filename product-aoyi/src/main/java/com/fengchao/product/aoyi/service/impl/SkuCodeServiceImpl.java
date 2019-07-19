@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.mapper.SkuCodeMapper;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.SkuCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -16,6 +17,7 @@ public class SkuCodeServiceImpl implements SkuCodeService {
     @Autowired
     private SkuCodeMapper mapper;
 
+    @CachePut(value = "skucode", key = "#bean.id")
     @Override
     public Integer add(SkuCode bean) throws ProductException {
         if (bean.getMerchantId() == null || bean.getMerchantId() <= 0) {
@@ -29,6 +31,7 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return bean.getId();
     }
 
+    @CachePut(value = "skucode", key = "#bean.id")
     @Override
     public Integer update(SkuCode bean) throws ProductException {
         if (bean.getId() == null || bean.getId() <= 0) {

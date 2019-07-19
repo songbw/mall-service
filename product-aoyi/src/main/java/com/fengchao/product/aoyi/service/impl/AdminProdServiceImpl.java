@@ -3,6 +3,8 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.db.annotation.DataSource;
+import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.feign.VendorsService;
@@ -13,11 +15,13 @@ import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.CosUtil;
-import com.fengchao.product.aoyi.utils.RedisUtil;
+//import com.fengchao.product.aoyi.utils.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -43,6 +47,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
         PageBean pageBean = new PageBean();
@@ -74,6 +79,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         return pageBean;
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(SerachBean bean) {
         PageBean pageBean = new PageBean();
@@ -118,6 +124,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         return pageBean;
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public int getProdListToRedis(){
         int num = 0;
@@ -146,11 +153,12 @@ public class AdminProdServiceImpl implements AdminProdService {
                 aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
             }
             String jsonObject = JSON.toJSONString(aoyiProdIndex) ;
-            RedisUtil.putRedis(aoyiProdIndex.getSkuid(), jsonObject , RedisUtil.webexpire);
+//            RedisUtil.putRedis(aoyiProdIndex.getSkuid(), jsonObject , RedisUtil.webexpire);
         });
         return num;
     }
 
+    @CachePut(value = "aoyiProdIndex", key = "#bean.mpu")
     @Override
     public int add(AoyiProdIndex bean) throws ProductException {
         if (bean.getMerchantId() > 0) {
@@ -205,6 +213,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         return bean.getId();
     }
 
+    @CachePut(value = "aoyiProdIndex", key = "#bean.mpu")
     @Override
     public int update(AoyiProdIndex bean) throws ProductException {
         if (bean.getId() > 0) {
@@ -215,6 +224,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         return bean.getId();
     }
 
+    @CacheEvict(value = "aoyiProdIndex", key = "#mpu")
     @Override
     public void delete(Integer merchantId, Integer id) throws ProductException {
         if (id > 0) {
@@ -224,6 +234,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         }
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdAll(QueryProdBean bean) {
         PageBean pageBean = new PageBean();

@@ -3,10 +3,15 @@ package com.fengchao.product.aoyi.service.impl;
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.PageBean;
+import com.fengchao.product.aoyi.db.annotation.DataSource;
+import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryMapper;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.service.AdminCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +25,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Autowired
     private AoyiBaseCategoryMapper mapper;
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectLimit(Integer offset, Integer limit, Integer categoryClass) {
         PageBean pageBean = new PageBean();
@@ -43,6 +49,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(Integer offset, Integer limit,String categoryName) {
         PageBean pageBean = new PageBean();
@@ -61,6 +68,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategory> selectCategoryList(Integer id, boolean includeSub) {
         List<AoyiBaseCategory> categories = mapper.selectListById(id) ;
@@ -76,6 +84,8 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categories;
     }
 
+    @Cacheable(value = "category", key = "#category.categoryId")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategory> selectAll() {
         return mapper.selectAll();
@@ -104,6 +114,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectSubLevelList(Integer offset, Integer limit, Integer parentId) {
         PageBean pageBean = new PageBean();
@@ -127,11 +138,13 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<CategoryQueryBean> selectByCategoryIdList(List<String> categories) {
         return mapper.selectByCategoryIdList(categories);
     }
 
+    @CachePut(value = "category", key = "#category.categoryId")
     @Override
     public int insertSelective(AoyiBaseCategory bean) {
         int categoryId = mapper.selectMaxIdByParentId(bean.getParentId()) ;
@@ -148,11 +161,13 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return bean.getCategoryId();
     }
 
+    @CacheEvict(value = "category", key = "#categoryId")
     @Override
     public void delete(Integer id) {
         mapper.deleteByPrimaryKey(id);
     }
 
+    @CachePut(value = "category", key = "#category.categoryId")
     @Override
     public void updateByPrimaryKeySelective(CategoryBean bean) {
         AoyiBaseCategory category = new AoyiBaseCategory();
