@@ -32,4 +32,12 @@ public interface CouponService {
     int effective(int couponId);
 
     int end(int couponId);
+
+    /**
+     * 根据coupon id集合查询 coupon列表
+     *
+     * @param idList
+     * @return
+     */
+    List<CouponBean> queryCouponBeanListIdList(List<Integer> idList) throws Exception;
 }

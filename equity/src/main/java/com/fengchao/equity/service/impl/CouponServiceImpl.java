@@ -5,14 +5,18 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.dao.CouponDao;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.*;
+import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponService;
+import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@Slf4j
 public class CouponServiceImpl implements CouponService {
 
     @Autowired
@@ -32,6 +37,9 @@ public class CouponServiceImpl implements CouponService {
     private ProdService productService;
     @Autowired
     private JobClient jobClient;
+
+    @Autowired
+    private CouponDao couponDao;
 
     @Override
     public int createCoupon(CouponBean bean) {
@@ -368,6 +376,61 @@ public class CouponServiceImpl implements CouponService {
                 couponBean.getRules().setCouponRules(JSONArray.parseObject(coupon.getCouponRules()));
             }
         }
+
+        return couponBean;
+    }
+
+
+    @Override
+    public List<CouponBean> queryCouponBeanListIdList(List<Integer> idList) throws Exception {
+        log.info("根据id集合查询coupon列表 查询参数:{}", JSONUtil.toJsonString(idList));
+        List<Coupon> couponList = couponDao.selectCouponListByIdList(idList);
+        log.info("根据id集合查询coupon列表 数据库返回:{}", JSONUtil.toJsonString(couponList));
+
+        // 转dto
+        List<CouponBean> couponBeanList = new ArrayList<>();
+        for (Coupon coupon : couponList) {
+            CouponBean couponBean = convertToCouponBean(coupon);
+
+            couponBeanList.add(couponBean);
+        }
+
+        log.info("根据id集合查询coupon列表 返回List<CouponBean>:{}", JSONUtil.toJsonString(couponBeanList));
+
+        return couponBeanList;
+    }
+
+    //============================== private =========================
+
+    /**
+     *
+     * @param coupon
+     * @return
+     */
+    private CouponBean convertToCouponBean(Coupon coupon) {
+        CouponBean couponBean = new CouponBean();
+
+        couponBean.setId(coupon.getId());
+        couponBean.setName(coupon.getName());
+        couponBean.setSupplierMerchantId(coupon.getSupplierMerchantId());
+        couponBean.setSupplierMerchantName(coupon.getSupplierMerchantName());
+        couponBean.setReleaseTotal(coupon.getReleaseTotal());
+        couponBean.setReleaseNum(coupon.getReleaseNum());
+        couponBean.setReleaseStartDate(coupon.getReleaseStartDate());
+        couponBean.setReleaseEndDate(coupon.getReleaseEndDate());
+        couponBean.setStatus(coupon.getStatus());
+        couponBean.setEffectiveStartDate(coupon.getEffectiveStartDate());
+        couponBean.setEffectiveEndDate(coupon.getEffectiveEndDate());
+        couponBean.setDescription(coupon.getDescription());
+        // couponBean.setExcludeDates(coupon.getExcludeDates());
+        couponBean.setUrl(coupon.getUrl());
+        couponBean.setCategory(coupon.getCategory());
+        // couponBean.setTags(coupon.getTags());
+        couponBean.setImageUrl(coupon.getImageUrl());
+        couponBean.setCreateDate(coupon.getCreateDate());
+        // couponBean.setUserCollectNum();
+        // couponBean.setRules(coupon.getCouponRules());
+        // couponBean.setCouponUseInfo();
 
         return couponBean;
     }
