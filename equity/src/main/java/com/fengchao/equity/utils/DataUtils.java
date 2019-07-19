@@ -1,6 +1,10 @@
 package com.fengchao.equity.utils;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DataUtils {
 
@@ -16,6 +20,20 @@ public class DataUtils {
             // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
             return false;
         }
+    }
+
+    public static Date dateFormat(String strData) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date data = null;
+        try {
+            if(StringUtils.isEmpty(strData)){
+                return null;
+            }
+            data = format.parse(strData);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 
 }
