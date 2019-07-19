@@ -91,4 +91,9 @@ public class UserServiceImpl implements IUserService {
         return pinganClientService.findUser(userToken);
     }
 
+    @Override
+    public int findUserCount() {
+        return mapper.selectCount();
+    }
+
 }

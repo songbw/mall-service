@@ -1,11 +1,14 @@
 package com.fengchao.product.aoyi.bean;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 
-@Data
-public class PromotionInfoBean {
+@Setter
+@Getter
+public class PromotionInfoBean implements Serializable {
 
     private Integer id;
 

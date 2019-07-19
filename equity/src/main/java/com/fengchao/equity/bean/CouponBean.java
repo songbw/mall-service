@@ -37,6 +37,8 @@ public class CouponBean {
     private Integer userCollectNum;
     private Rules rules;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String price;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private PageBean couponSkus;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<CouponUseInfo>  couponUseInfo;

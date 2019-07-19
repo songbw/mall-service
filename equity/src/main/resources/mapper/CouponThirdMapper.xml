@@ -13,6 +13,16 @@
     <result column="description" property="description" jdbcType="VARCHAR" />
     <result column="url" property="url" jdbcType="VARCHAR" />
   </resultMap>
+  <sql id="Base_Column_List" >
+    id, coupon_user_id, merchant_id, merchant_name, price, name, effective_start_date, effective_end_date,
+    description, url
+  </sql>
+  <select id="selectByUserCouponId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from coupon_third
+    where coupon_user_id = #{couponUserId,jdbcType=INTEGER}
+  </select>
   <insert id="insert" parameterType="com.fengchao.equity.model.CouponThird" >
     insert into coupon_third (id, coupon_user_id, merchant_id, 
       merchant_name, price, name, 

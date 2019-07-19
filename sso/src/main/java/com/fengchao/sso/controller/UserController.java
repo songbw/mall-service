@@ -114,5 +114,11 @@ public class UserController {
         }
         return service.findPingAnUser(userToken);
     }
+
+    @GetMapping("/count")
+    public OperaResult count(OperaResult result) {
+        result.getData().put("count", service.findUserCount());
+        return result;
+    }
 }
 

@@ -169,6 +169,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
                 orderDetail.setUnitPrice(orderSku.getUnitPrice());
                 orderDetail.setNum(orderSku.getNum());
+                orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
                 orderDetail.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100);
 
                 // 添加子订单
@@ -446,6 +447,14 @@ public class OrderServiceImpl implements OrderService {
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
         return mapper.selectDayMerchantPaymentCount(map);
+    }
+
+    @Override
+    public List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) {
+        HashMap map = new HashMap();
+        map.put("dayStart", dayStart);
+        map.put("dayEnd", dayEnd);
+        return mapper.selectDayCategoryPaymentList(map);
     }
 
     @Override
