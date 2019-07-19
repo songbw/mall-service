@@ -3,7 +3,7 @@ package com.fengchao.product.aoyi.service;
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public interface AdminCategoryService {
 
     PageBean selectLimit(Integer offset, Integer limit, Integer categoryClass);
 
-    int insertSelective(AoyiBaseCategory bean);
+    int insertSelective(AoyiBaseCategoryX bean);
 
     void delete(Integer id);
 
@@ -19,9 +19,9 @@ public interface AdminCategoryService {
 
     PageBean selectNameList(Integer offset, Integer limit, String categoryName);
 
-    List<AoyiBaseCategory>  selectCategoryList(Integer id, boolean includeSub);
+    List<AoyiBaseCategoryX>  selectCategoryList(Integer id, boolean includeSub);
 
-    List<AoyiBaseCategory>  selectAll();
+    List<AoyiBaseCategoryX>  selectAll();
 
     PageBean selectSubLevelList(Integer offset, Integer limit, Integer parentId);
 

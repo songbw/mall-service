@@ -3,7 +3,7 @@ package com.fengchao.product.aoyi.model;
 import java.util.Date;
 import java.util.List;
 
-public class AoyiBaseCategory {
+public class AoyiBaseCategoryX {
     private Integer categoryId;
 
     private String categoryName;
@@ -26,7 +26,7 @@ public class AoyiBaseCategory {
 
     private Date idate;
 
-    private List<AoyiBaseCategory> subs;
+    private List<AoyiBaseCategoryX> subs;
 
     private Integer subTotal;
 
@@ -118,11 +118,11 @@ public class AoyiBaseCategory {
         this.idate = idate ;
     }
 
-    public List<AoyiBaseCategory> getSubs() {
+    public List<AoyiBaseCategoryX> getSubs() {
         return subs;
     }
 
-    public void setSubs(List<AoyiBaseCategory> subs) {
+    public void setSubs(List<AoyiBaseCategoryX> subs) {
         this.subs = subs;
     }
 

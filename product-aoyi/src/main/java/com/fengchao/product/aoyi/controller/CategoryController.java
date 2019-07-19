@@ -1,7 +1,7 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 import com.fengchao.product.aoyi.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,21 +26,21 @@ public class CategoryController {
 
     @GetMapping("/ones")
     private OperaResult findOneLevelList(OperaResult result) {
-        List<AoyiBaseCategory> categoryList = service.findOneLevelList();
+        List<AoyiBaseCategoryX> categoryList = service.findOneLevelList();
         result.getData().put("list", categoryList) ;
         return result ;
     }
 
     @GetMapping("/subs")
     private OperaResult findSubList(Integer id, OperaResult result) {
-        List<AoyiBaseCategory> categoryList = service.findTwoLevelListByOneLevelId(id);
+        List<AoyiBaseCategoryX> categoryList = service.findTwoLevelListByOneLevelId(id);
         result.getData().put("list", categoryList) ;
         return result ;
     }
 
     @GetMapping("/allsub")
     private OperaResult findList(Integer id, OperaResult result) {
-        List<AoyiBaseCategory> categoryList = service.findListById(id);
+        List<AoyiBaseCategoryX> categoryList = service.findListById(id);
         result.getData().put("list", categoryList) ;
         return result ;
     }

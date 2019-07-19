@@ -3,8 +3,8 @@ package com.fengchao.product.aoyi.service.impl;
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryMapper;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper;
+import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 import com.fengchao.product.aoyi.service.AdminCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.List;
 public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Autowired
-    private AoyiBaseCategoryMapper mapper;
+    private AoyiBaseCategoryXMapper mapper;
 
     @Override
     public PageBean selectLimit(Integer offset, Integer limit, Integer categoryClass) {
@@ -29,11 +29,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         map.put("categoryClass", categoryClass);
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
-        List<AoyiBaseCategory> categories = new ArrayList<>();
+        List<AoyiBaseCategoryX> categories = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
             categories = mapper.selectLimit(map);
-            for(AoyiBaseCategory categorie : categories) {
+            for(AoyiBaseCategoryX categorie : categories) {
                 HashMap hashMap = new HashMap();
                 hashMap.put("parentId",categorie.getCategoryId());
                 categorie.setSubTotal(mapper.selectLimitCount(hashMap));
@@ -52,7 +52,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         map.put("categoryName", categoryName);
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
-        List<AoyiBaseCategory> categories = new ArrayList<>();
+        List<AoyiBaseCategoryX> categories = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
             categories = mapper.selectNameList(map);
@@ -62,10 +62,10 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public List<AoyiBaseCategory> selectCategoryList(Integer id, boolean includeSub) {
-        List<AoyiBaseCategory> categories = mapper.selectListById(id) ;
+    public List<AoyiBaseCategoryX> selectCategoryList(Integer id, boolean includeSub) {
+        List<AoyiBaseCategoryX> categories = mapper.selectListById(id) ;
         if(null != categories && categories.size() > 0){
-            for (AoyiBaseCategory Category : categories) {
+            for (AoyiBaseCategoryX Category : categories) {
                 HashMap hashMap = new HashMap();
                 hashMap.put("parentId",Category.getCategoryId());
                 Category.setSubTotal(mapper.selectLimitCount(hashMap));
@@ -77,7 +77,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public List<AoyiBaseCategory> selectAll() {
+    public List<AoyiBaseCategoryX> selectAll() {
         return mapper.selectAll();
     }
 
@@ -87,15 +87,15 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
      * @return void    返回类型
      * @throws
      */
-    private void getChildList(AoyiBaseCategory Category) {
+    private void getChildList(AoyiBaseCategoryX Category) {
         try {
-            List<AoyiBaseCategory> list = mapper.selectAdminListByParentId(Category.getCategoryId());
+            List<AoyiBaseCategoryX> list = mapper.selectAdminListByParentId(Category.getCategoryId());
             Category.setSubs(list);
             HashMap hashMap = new HashMap();
             hashMap.put("parentId",Category.getCategoryId());
             Category.setSubTotal(mapper.selectLimitCount(hashMap));
             if(null != list && list.size() > 0){
-                for (AoyiBaseCategory form : list) {
+                for (AoyiBaseCategoryX form : list) {
                     getChildList(form);
                 }
             }
@@ -113,11 +113,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         map.put("parentId", parentId);
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
-        List<AoyiBaseCategory> categories = new ArrayList<>();
+        List<AoyiBaseCategoryX> categories = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
             categories = mapper.selectLimit(map);
-            for(AoyiBaseCategory categorie : categories) {
+            for(AoyiBaseCategoryX categorie : categories) {
                 HashMap hashMap = new HashMap();
                 hashMap.put("parentId",categorie.getCategoryId());
                 categorie.setSubTotal(mapper.selectLimitCount(hashMap));
@@ -133,7 +133,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public int insertSelective(AoyiBaseCategory bean) {
+    public int insertSelective(AoyiBaseCategoryX bean) {
         int categoryId = mapper.selectMaxIdByParentId(bean.getParentId()) ;
         if (categoryId == 0) {
             if ("2".equals(bean.getCategoryClass())) {
@@ -155,7 +155,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public void updateByPrimaryKeySelective(CategoryBean bean) {
-        AoyiBaseCategory category = new AoyiBaseCategory();
+        AoyiBaseCategoryX category = new AoyiBaseCategoryX();
 
         category.setCategoryId(bean.getCategoryId());
         category.setCategoryName(bean.getCategoryName());

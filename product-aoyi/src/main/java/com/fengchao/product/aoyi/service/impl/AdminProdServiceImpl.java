@@ -8,7 +8,7 @@ import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.feign.VendorsService;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.AdminProdService;
@@ -39,7 +39,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private VendorsService vendorsService;
     @Autowired
-    private AoyiBaseCategoryMapper categoryMapper;
+    private AoyiBaseCategoryXMapper categoryMapper;
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
 
@@ -191,7 +191,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                 }
             }
             if (bean.getCategory() != null && !"".equals(bean.getCategory())) {
-                AoyiBaseCategory  category = categoryMapper.selectByPrimaryKey(Integer.parseInt(bean.getCategory())) ;
+                AoyiBaseCategoryX category = categoryMapper.selectByPrimaryKey(Integer.parseInt(bean.getCategory())) ;
                 if (category == null) {
                     bean.setCategory("");
                 }

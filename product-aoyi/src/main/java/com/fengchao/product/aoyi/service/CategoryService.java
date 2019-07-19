@@ -1,6 +1,6 @@
 package com.fengchao.product.aoyi.service;
 
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 
 import java.util.List;
 
@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface CategoryService {
 
-    List<AoyiBaseCategory> findOneLevelList() ;
+    List<AoyiBaseCategoryX> findOneLevelList() ;
 
-    List<AoyiBaseCategory> findTwoLevelListByOneLevelId(int id) ;
+    List<AoyiBaseCategoryX> findTwoLevelListByOneLevelId(int id) ;
 
-    List<AoyiBaseCategory> findListById(int id) ;
+    List<AoyiBaseCategoryX> findListById(int id) ;
 }
