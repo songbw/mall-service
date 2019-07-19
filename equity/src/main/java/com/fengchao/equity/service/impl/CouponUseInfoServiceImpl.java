@@ -3,6 +3,7 @@ package com.fengchao.equity.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.exception.EquityException;
@@ -12,11 +13,14 @@ import com.fengchao.equity.mapper.CouponThirdMapper;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponUseInfoService;
+import com.fengchao.equity.utils.AESUtils;
 import com.fengchao.equity.utils.DataUtils;
+import com.fengchao.equity.utils.Pkcs8Util;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -279,14 +283,20 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public OperaResult consumedToushi(ToushiResult bean) throws EquityException {
         OperaResult result = new OperaResult();
-//        try {
-//            boolean verify = Pkcs8Util.verify(JSON.toJSONBytes(bean.getData()), null, bean.getSign());
-//            if(!verify){
-//                throw new EquityException(700, "验签失败");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("open_id",bean.getData().getOpen_id());
+            map.put("coupon_code",bean.getData().getCoupon_code());
+            String urlMap = Pkcs8Util.formatUrlMap(map, false, false);
+            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
+            if(!verify){
+                result.setCode(700001);
+                result.setMsg( "验签失败");
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if(StringUtils.isBlank(bean.getData().getOpen_id())){
             result.setCode(700011);
             result.setMsg("open_id用户ID为空");
@@ -298,10 +308,19 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return result;
         }
 
+        byte[] openID = null;
+        byte[] couponCode = null;
+        try {
+            openID = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES());
+            couponCode = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon_code()), AESUtils.loadKeyAES());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         CouponUseInfo couponUseInfo = new CouponUseInfo();
-        couponUseInfo.setUserOpenId(bean.getData().getOpen_id());
+        couponUseInfo.setUserOpenId(new String(openID));
         couponUseInfo.setConsumedTime(new Date());
-        couponUseInfo.setUserCouponCode(bean.getData().getCoupon_code());
+        couponUseInfo.setUserCouponCode(new String(couponCode));
         couponUseInfo.setStatus(2);
         int num = mapper.updateStatusByToushiCode(couponUseInfo);
         if(num==0){
@@ -316,14 +335,20 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public OperaResult obtainCoupon(ToushiResult bean) throws EquityException{
         OperaResult result = new OperaResult();
-//        try {
-//            boolean verify = Pkcs8Util.verify(JSON.toJSONBytes(bean.getData()), null, bean.getSign());
-//            if(!verify){
-//                throw new EquityException(700, "验签失败");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            ToushiParam toushiParam = bean.getData();
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> props = objectMapper.convertValue(toushiParam, Map.class);
+            String urlMap = Pkcs8Util.formatUrlMap(props, false, false);
+            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
+            if(!verify){
+                result.setCode(700001);
+                result.setMsg( "验签失败");
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if(StringUtils.isEmpty(bean.getData().getOpen_id())){
             result.setCode(700011);
             result.setMsg( "open_id用户ID为空");
@@ -384,11 +409,21 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             result.setMsg( "url为空");
             return result;
         }
+
+        byte[] openID = null;
+        byte[] couponCode = null;
+        try {
+            openID = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES());
+            couponCode = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon().getCode()), AESUtils.loadKeyAES());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         CouponUseInfo couponUseInfo = new CouponUseInfo();
         couponUseInfo.setType(1);
-        couponUseInfo.setUserOpenId(bean.getData().getOpen_id());
+        couponUseInfo.setUserOpenId(new String(openID));
         couponUseInfo.setCollectedTime(new Date());
-        couponUseInfo.setUserCouponCode(bean.getData().getCoupon().getCode());
+        couponUseInfo.setUserCouponCode(new String(couponCode));
         int num = mapper.insertSelective(couponUseInfo);
         if(num == 0){
             result.setCode(700023);
@@ -417,14 +452,34 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     }
 
     @Override
-    public OperaResult userVerified(ToushiResult bean) {
+    public OperaResult userVerified(ToushiResult bean){
         OperaResult result = new OperaResult();
+        try {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("open_id",bean.getData().getOpen_id());
+            String urlMap = Pkcs8Util.formatUrlMap(map, false, false);
+            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
+            if(!verify){
+                result.setCode(700001);
+                result.setMsg( "验签失败");
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if(StringUtils.isEmpty(bean.getData().getOpen_id())){
             result.setCode(700011);
             result.setMsg( "open_id用户ID为空");
             return result;
         }
-        OperaResult userResult = ssoService.findUser(bean.getData().getOpen_id());
+        byte[] openID = null;
+        try {
+            openID = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        OperaResult userResult = ssoService.findUser(new String(openID));
         if (userResult.getCode() == 200) {
             Map<String, Object> data = userResult.getData() ;
             Object object = data.get("user");
