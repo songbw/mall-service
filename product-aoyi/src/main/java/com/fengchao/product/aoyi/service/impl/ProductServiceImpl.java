@@ -8,7 +8,7 @@ import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.EquityService;
-import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
+import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
     private static Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
-    private AoyiProdIndexMapper mapper;
+    private AoyiProdIndexXMapper mapper;
     @Autowired
     private AoyiClientService aoyiClientService;
     @Autowired

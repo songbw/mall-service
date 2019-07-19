@@ -7,7 +7,7 @@ import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import java.util.HashMap;
 import java.util.List;
 
-public interface AoyiProdIndexMapper {
+public interface AoyiProdIndexXMapper {
     int deleteByPrimaryKey(Integer id);
 
     int insert(AoyiProdIndexWithBLOBs record);

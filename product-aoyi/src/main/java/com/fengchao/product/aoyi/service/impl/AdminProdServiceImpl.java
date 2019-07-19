@@ -29,7 +29,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     private static Logger logger = LoggerFactory.getLogger(AdminProdServiceImpl.class);
 
     @Autowired
-    private AoyiProdIndexMapper prodMapper;
+    private AoyiProdIndexXMapper prodMapper;
     @Autowired
     private ProdExtendMapper prodExtendMapper;
     @Autowired
