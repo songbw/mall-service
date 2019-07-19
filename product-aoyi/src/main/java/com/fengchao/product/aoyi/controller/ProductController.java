@@ -3,13 +3,18 @@ package com.fengchao.product.aoyi.controller;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.service.ProductService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping(value = "/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class ProductController {
 
     @Autowired
@@ -62,4 +67,31 @@ public class ProductController {
         return result;
     }
 
+    /**
+     * 根据mpuid集合查询product列表
+     *
+     * @param mpuIdList
+     * @param result
+     * @return
+     * @throws ProductException
+     */
+    @GetMapping("/findByMpuIdList")
+    private OperaResult findByMpuIdList(List<String> mpuIdList, OperaResult result) throws ProductException {
+        log.info("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        try {
+            // 查询
+            List<ProductInfoBean> productInfoBeanList = service.queryProductListByMpuIdList(mpuIdList);
+
+            result.getData().put("result", productInfoBeanList);
+        } catch (Exception e) {
+            log.error("根据mup集合查询产品信息 异常:{}", e.getMessage(), e);
+
+            result.setCode(500);
+            result.setMsg("根据mup集合查询产品信息 异常");
+        }
+
+        log.info("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
+
+        return result;
+    }
 }

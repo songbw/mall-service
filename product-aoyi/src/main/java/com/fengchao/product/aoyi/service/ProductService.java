@@ -25,4 +25,12 @@ public interface ProductService {
 
     ProductInfoBean findAndPromotion(String mpu) throws ProductException;
 
+    /**
+     * 根据mpuId集合查询product列表
+     *
+     * @param mpuIdList
+     * @return
+     */
+    List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception;
+
 }

@@ -3,15 +3,19 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
+import com.fengchao.product.aoyi.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -24,9 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService {
-
-    private static Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
     private AoyiProdIndexXMapper mapper;
@@ -34,6 +37,9 @@ public class ProductServiceImpl implements ProductService {
     private AoyiClientService aoyiClientService;
     @Autowired
     private EquityService equityService;
+
+    @Autowired
+    private ProductDao productDao;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -218,9 +224,27 @@ public class ProductServiceImpl implements ProductService {
         return infoBean;
     }
 
+    @Override
+    public List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception {
+        // 1. 查询商品信息
+        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+
+        // 2. 查询商品品类信息
+
+
+        // 转dto
+        for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
+            ProductInfoBean productInfoBean = convertToProductInfoBean(aoyiProdIndex);
+        }
+
+        return null;
+    }
+
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
         OperaResult result = equityService.selectCouponBySku(bean);
-        logger.info(JSON.toJSONString(result));
+        log.info(JSON.toJSONString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
@@ -242,4 +266,41 @@ public class ProductServiceImpl implements ProductService {
         }
         return null;
     }
+
+    /**
+     *
+     *
+     * @param aoyiProdIndex
+     * @return
+     */
+    private ProductInfoBean convertToProductInfoBean(AoyiProdIndex aoyiProdIndex) {
+        ProductInfoBean productInfoBean = new ProductInfoBean();
+
+        productInfoBean.setId(productInfoBean.getId());
+        productInfoBean.setSkuid(productInfoBean.getSkuid());
+        productInfoBean.setBrand(productInfoBean.getBrand());
+        productInfoBean.setCategory(productInfoBean.getCategory());
+        productInfoBean.setCategoryName(productInfoBean.getCategoryName());
+        productInfoBean.setImage(productInfoBean.getImage());
+        productInfoBean.setModel(productInfoBean.getModel());
+        productInfoBean.setName(productInfoBean.getName());
+        productInfoBean.setWeight(productInfoBean.getWeight());
+        productInfoBean.setUpc(productInfoBean.getUpc());
+        productInfoBean.setSaleunit(productInfoBean.getSaleunit());
+        productInfoBean.setState(productInfoBean.getState()); // 上下架状态 1：已上架；0：已下架
+        productInfoBean.setPrice(productInfoBean.getPrice()); // 销售价-商城显示的价格
+        productInfoBean.setSprice(productInfoBean.getSprice()); // 原价，进货价格
+        productInfoBean.setImagesUrl(productInfoBean.getImagesUrl());
+        productInfoBean.setIntroductionUrl(productInfoBean.getIntroductionUrl());
+        productInfoBean.setImageExtend(productInfoBean.getImageExtend());
+        productInfoBean.setImagesUrlExtend(productInfoBean.getImagesUrlExtend());
+        productInfoBean.setIntroductionUrlExtend(productInfoBean.getIntroductionUrlExtend());
+        productInfoBean.setMerchantId(productInfoBean.getMerchantId());
+        productInfoBean.setInventory(productInfoBean.getInventory());
+        productInfoBean.setBrandId(productInfoBean.getBrandId());
+        productInfoBean.setMpu(productInfoBean.getMpu());
+
+        return productInfoBean;
+    }
+
 }
