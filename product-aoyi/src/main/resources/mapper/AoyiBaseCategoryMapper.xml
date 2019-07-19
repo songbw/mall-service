@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiBaseCategoryMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiBaseCategory">
+    <id column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="category_name" jdbcType="VARCHAR" property="categoryName" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="category_class" jdbcType="CHAR" property="categoryClass" />
+    <result column="category_icon" jdbcType="VARCHAR" property="categoryIcon" />
+    <result column="category_desc" jdbcType="VARCHAR" property="categoryDesc" />
+    <result column="sort_order" jdbcType="INTEGER" property="sortOrder" />
+    <result column="is_show" jdbcType="BIT" property="isShow" />
+    <result column="is_nav" jdbcType="BIT" property="isNav" />
+    <result column="is_top_style" jdbcType="TINYINT" property="isTopStyle" />
+    <result column="idate" jdbcType="TIMESTAMP" property="idate" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    category_id, category_name, parent_id, category_class, category_icon, category_desc, 
+    sort_order, is_show, is_nav, is_top_style, idate
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from aoyi_base_category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryExample">
+    delete from aoyi_base_category
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory">
+    insert into aoyi_base_category (category_id, category_name, parent_id, 
+      category_class, category_icon, category_desc, 
+      sort_order, is_show, is_nav, is_top_style, 
+      idate)
+    values (#{categoryId,jdbcType=INTEGER}, #{categoryName,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
+      #{categoryClass,jdbcType=CHAR}, #{categoryIcon,jdbcType=VARCHAR}, #{categoryDesc,jdbcType=VARCHAR}, 
+      #{sortOrder,jdbcType=INTEGER}, #{isShow,jdbcType=BIT}, #{isNav,jdbcType=BIT}, #{isTopStyle,jdbcType=TINYINT}, 
+      #{idate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory">
+    insert into aoyi_base_category
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="categoryId != null">
+        category_id,
+      </if>
+      <if test="categoryName != null">
+        category_name,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="categoryClass != null">
+        category_class,
+      </if>
+      <if test="categoryIcon != null">
+        category_icon,
+      </if>
+      <if test="categoryDesc != null">
+        category_desc,
+      </if>
+      <if test="sortOrder != null">
+        sort_order,
+      </if>
+      <if test="isShow != null">
+        is_show,
+      </if>
+      <if test="isNav != null">
+        is_nav,
+      </if>
+      <if test="isTopStyle != null">
+        is_top_style,
+      </if>
+      <if test="idate != null">
+        idate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="categoryId != null">
+        #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryName != null">
+        #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryClass != null">
+        #{categoryClass,jdbcType=CHAR},
+      </if>
+      <if test="categoryIcon != null">
+        #{categoryIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryDesc != null">
+        #{categoryDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null">
+        #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null">
+        #{isShow,jdbcType=BIT},
+      </if>
+      <if test="isNav != null">
+        #{isNav,jdbcType=BIT},
+      </if>
+      <if test="isTopStyle != null">
+        #{isTopStyle,jdbcType=TINYINT},
+      </if>
+      <if test="idate != null">
+        #{idate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryExample" resultType="java.lang.Long">
+    select count(*) from aoyi_base_category
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update aoyi_base_category
+    <set>
+      <if test="record.categoryId != null">
+        category_id = #{record.categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="record.categoryName != null">
+        category_name = #{record.categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentId != null">
+        parent_id = #{record.parentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.categoryClass != null">
+        category_class = #{record.categoryClass,jdbcType=CHAR},
+      </if>
+      <if test="record.categoryIcon != null">
+        category_icon = #{record.categoryIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="record.categoryDesc != null">
+        category_desc = #{record.categoryDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sortOrder != null">
+        sort_order = #{record.sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="record.isShow != null">
+        is_show = #{record.isShow,jdbcType=BIT},
+      </if>
+      <if test="record.isNav != null">
+        is_nav = #{record.isNav,jdbcType=BIT},
+      </if>
+      <if test="record.isTopStyle != null">
+        is_top_style = #{record.isTopStyle,jdbcType=TINYINT},
+      </if>
+      <if test="record.idate != null">
+        idate = #{record.idate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update aoyi_base_category
+    set category_id = #{record.categoryId,jdbcType=INTEGER},
+      category_name = #{record.categoryName,jdbcType=VARCHAR},
+      parent_id = #{record.parentId,jdbcType=INTEGER},
+      category_class = #{record.categoryClass,jdbcType=CHAR},
+      category_icon = #{record.categoryIcon,jdbcType=VARCHAR},
+      category_desc = #{record.categoryDesc,jdbcType=VARCHAR},
+      sort_order = #{record.sortOrder,jdbcType=INTEGER},
+      is_show = #{record.isShow,jdbcType=BIT},
+      is_nav = #{record.isNav,jdbcType=BIT},
+      is_top_style = #{record.isTopStyle,jdbcType=TINYINT},
+      idate = #{record.idate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory">
+    update aoyi_base_category
+    <set>
+      <if test="categoryName != null">
+        category_name = #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryClass != null">
+        category_class = #{categoryClass,jdbcType=CHAR},
+      </if>
+      <if test="categoryIcon != null">
+        category_icon = #{categoryIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryDesc != null">
+        category_desc = #{categoryDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null">
+        sort_order = #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null">
+        is_show = #{isShow,jdbcType=BIT},
+      </if>
+      <if test="isNav != null">
+        is_nav = #{isNav,jdbcType=BIT},
+      </if>
+      <if test="isTopStyle != null">
+        is_top_style = #{isTopStyle,jdbcType=TINYINT},
+      </if>
+      <if test="idate != null">
+        idate = #{idate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategory">
+    update aoyi_base_category
+    set category_name = #{categoryName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      category_class = #{categoryClass,jdbcType=CHAR},
+      category_icon = #{categoryIcon,jdbcType=VARCHAR},
+      category_desc = #{categoryDesc,jdbcType=VARCHAR},
+      sort_order = #{sortOrder,jdbcType=INTEGER},
+      is_show = #{isShow,jdbcType=BIT},
+      is_nav = #{isNav,jdbcType=BIT},
+      is_top_style = #{isTopStyle,jdbcType=TINYINT},
+      idate = #{idate,jdbcType=TIMESTAMP}
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -12,9 +12,11 @@ import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,6 +43,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -232,14 +238,27 @@ public class ProductServiceImpl implements ProductService {
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
 
         // 2. 查询商品品类信息
+        List<Integer> categoryIdList =
+                aoyiProdIndexList.stream().map(p -> Integer.valueOf(p.getCategory())).collect(Collectors.toList());
+        List<CategoryBean> categoryBeanList =  categoryService.queryCategoryListByCategoryIdList(categoryIdList);
 
+        // 转map key：categoryId, value: CategoryBean
+        Map<Integer, CategoryBean> categoryBeanMap =
+                categoryBeanList.stream().collect(Collectors.toMap(p -> p.getCategoryId(), p -> p));
 
         // 转dto
+        List<ProductInfoBean> productInfoBeanList = new ArrayList<>();
         for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
             ProductInfoBean productInfoBean = convertToProductInfoBean(aoyiProdIndex);
+
+            Integer categoryId = Integer.valueOf(productInfoBean.getCategory());
+            productInfoBean.setCategoryName(categoryBeanMap.get(categoryId) == null ?
+                    "" : categoryBeanMap.get(categoryId).getCategoryName());
+
+            productInfoBeanList.add(productInfoBean);
         }
 
-        return null;
+        return productInfoBeanList;
     }
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
