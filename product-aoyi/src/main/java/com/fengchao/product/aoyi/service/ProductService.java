@@ -2,7 +2,7 @@ package com.fengchao.product.aoyi.service;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
 import java.util.List;
 
@@ -19,9 +19,9 @@ public interface ProductService {
 
     List<FreightFareBean> findCarriage(CarriageQueryBean queryBean) throws ProductException ;
 
-    AoyiProdIndex find(String id) throws ProductException ;
+    AoyiProdIndexX find(String id) throws ProductException ;
 
-    List<AoyiProdIndex> findAll() throws ProductException ;
+    List<AoyiProdIndexX> findAll() throws ProductException ;
 
     ProductInfoBean findAndPromotion(String mpu) throws ProductException;
 

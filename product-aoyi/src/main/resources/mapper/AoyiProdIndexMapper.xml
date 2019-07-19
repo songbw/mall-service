@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiProdIndex">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="skuId" jdbcType="VARCHAR" property="skuid" />
+    <result column="brand" jdbcType="VARCHAR" property="brand" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="weight" jdbcType="VARCHAR" property="weight" />
+    <result column="upc" jdbcType="VARCHAR" property="upc" />
+    <result column="saleUnit" jdbcType="VARCHAR" property="saleunit" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="sprice" jdbcType="VARCHAR" property="sprice" />
+    <result column="images_url" jdbcType="VARCHAR" property="imagesUrl" />
+    <result column="introduction_url" jdbcType="VARCHAR" property="introductionUrl" />
+    <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
+    <result column="inventory" jdbcType="INTEGER" property="inventory" />
+    <result column="brand_id" jdbcType="INTEGER" property="brandId" />
+    <result column="mpu" jdbcType="VARCHAR" property="mpu" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
+    <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
+    <result column="prodParams" jdbcType="LONGVARCHAR" property="prodparams" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
+    sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, created_at, 
+    updated_at
+  </sql>
+  <sql id="Blob_Column_List">
+    introduction, prodParams
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from aoyi_prod_index
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from aoyi_prod_index
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from aoyi_prod_index
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from aoyi_prod_index
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexExample">
+    delete from aoyi_prod_index
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
+    insert into aoyi_prod_index (skuId, brand, category, 
+      image, model, name, 
+      weight, upc, saleUnit, 
+      state, price, sprice, 
+      images_url, introduction_url, merchant_id, 
+      inventory, brand_id, mpu, 
+      created_at, updated_at, introduction, 
+      prodParams)
+    values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
+      #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, #{saleunit,jdbcType=VARCHAR}, 
+      #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{sprice,jdbcType=VARCHAR}, 
+      #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, #{merchantId,jdbcType=INTEGER}, 
+      #{inventory,jdbcType=INTEGER}, #{brandId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{introduction,jdbcType=LONGVARCHAR}, 
+      #{prodparams,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
+    insert into aoyi_prod_index
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="skuid != null">
+        skuId,
+      </if>
+      <if test="brand != null">
+        brand,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="model != null">
+        model,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="weight != null">
+        weight,
+      </if>
+      <if test="upc != null">
+        upc,
+      </if>
+      <if test="saleunit != null">
+        saleUnit,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="sprice != null">
+        sprice,
+      </if>
+      <if test="imagesUrl != null">
+        images_url,
+      </if>
+      <if test="introductionUrl != null">
+        introduction_url,
+      </if>
+      <if test="merchantId != null">
+        merchant_id,
+      </if>
+      <if test="inventory != null">
+        inventory,
+      </if>
+      <if test="brandId != null">
+        brand_id,
+      </if>
+      <if test="mpu != null">
+        mpu,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+      <if test="introduction != null">
+        introduction,
+      </if>
+      <if test="prodparams != null">
+        prodParams,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="skuid != null">
+        #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null">
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="upc != null">
+        #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="saleunit != null">
+        #{saleunit,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="sprice != null">
+        #{sprice,jdbcType=VARCHAR},
+      </if>
+      <if test="imagesUrl != null">
+        #{imagesUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="introductionUrl != null">
+        #{introductionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantId != null">
+        #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="inventory != null">
+        #{inventory,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null">
+        #{brandId,jdbcType=INTEGER},
+      </if>
+      <if test="mpu != null">
+        #{mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="introduction != null">
+        #{introduction,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="prodparams != null">
+        #{prodparams,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexExample" resultType="java.lang.Long">
+    select count(*) from aoyi_prod_index
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update aoyi_prod_index
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.skuid != null">
+        skuId = #{record.skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.brand != null">
+        brand = #{record.brand,jdbcType=VARCHAR},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
+      </if>
+      <if test="record.image != null">
+        image = #{record.image,jdbcType=VARCHAR},
+      </if>
+      <if test="record.model != null">
+        model = #{record.model,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.weight != null">
+        weight = #{record.weight,jdbcType=VARCHAR},
+      </if>
+      <if test="record.upc != null">
+        upc = #{record.upc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.saleunit != null">
+        saleUnit = #{record.saleunit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.state != null">
+        state = #{record.state,jdbcType=VARCHAR},
+      </if>
+      <if test="record.price != null">
+        price = #{record.price,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sprice != null">
+        sprice = #{record.sprice,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imagesUrl != null">
+        images_url = #{record.imagesUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.introductionUrl != null">
+        introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.merchantId != null">
+        merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="record.inventory != null">
+        inventory = #{record.inventory,jdbcType=INTEGER},
+      </if>
+      <if test="record.brandId != null">
+        brand_id = #{record.brandId,jdbcType=INTEGER},
+      </if>
+      <if test="record.mpu != null">
+        mpu = #{record.mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdAt != null">
+        created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedAt != null">
+        updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.introduction != null">
+        introduction = #{record.introduction,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.prodparams != null">
+        prodParams = #{record.prodparams,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update aoyi_prod_index
+    set id = #{record.id,jdbcType=INTEGER},
+      skuId = #{record.skuid,jdbcType=VARCHAR},
+      brand = #{record.brand,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      image = #{record.image,jdbcType=VARCHAR},
+      model = #{record.model,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      weight = #{record.weight,jdbcType=VARCHAR},
+      upc = #{record.upc,jdbcType=VARCHAR},
+      saleUnit = #{record.saleunit,jdbcType=VARCHAR},
+      state = #{record.state,jdbcType=VARCHAR},
+      price = #{record.price,jdbcType=VARCHAR},
+      sprice = #{record.sprice,jdbcType=VARCHAR},
+      images_url = #{record.imagesUrl,jdbcType=VARCHAR},
+      introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
+      merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      inventory = #{record.inventory,jdbcType=INTEGER},
+      brand_id = #{record.brandId,jdbcType=INTEGER},
+      mpu = #{record.mpu,jdbcType=VARCHAR},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      introduction = #{record.introduction,jdbcType=LONGVARCHAR},
+      prodParams = #{record.prodparams,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update aoyi_prod_index
+    set id = #{record.id,jdbcType=INTEGER},
+      skuId = #{record.skuid,jdbcType=VARCHAR},
+      brand = #{record.brand,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      image = #{record.image,jdbcType=VARCHAR},
+      model = #{record.model,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      weight = #{record.weight,jdbcType=VARCHAR},
+      upc = #{record.upc,jdbcType=VARCHAR},
+      saleUnit = #{record.saleunit,jdbcType=VARCHAR},
+      state = #{record.state,jdbcType=VARCHAR},
+      price = #{record.price,jdbcType=VARCHAR},
+      sprice = #{record.sprice,jdbcType=VARCHAR},
+      images_url = #{record.imagesUrl,jdbcType=VARCHAR},
+      introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
+      merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      inventory = #{record.inventory,jdbcType=INTEGER},
+      brand_id = #{record.brandId,jdbcType=INTEGER},
+      mpu = #{record.mpu,jdbcType=VARCHAR},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
+    update aoyi_prod_index
+    <set>
+      <if test="skuid != null">
+        skuId = #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null">
+        brand = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        weight = #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="upc != null">
+        upc = #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="saleunit != null">
+        saleUnit = #{saleunit,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="sprice != null">
+        sprice = #{sprice,jdbcType=VARCHAR},
+      </if>
+      <if test="imagesUrl != null">
+        images_url = #{imagesUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="introductionUrl != null">
+        introduction_url = #{introductionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantId != null">
+        merchant_id = #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="inventory != null">
+        inventory = #{inventory,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null">
+        brand_id = #{brandId,jdbcType=INTEGER},
+      </if>
+      <if test="mpu != null">
+        mpu = #{mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="introduction != null">
+        introduction = #{introduction,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="prodparams != null">
+        prodParams = #{prodparams,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
+    update aoyi_prod_index
+    set skuId = #{skuid,jdbcType=VARCHAR},
+      brand = #{brand,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=VARCHAR},
+      upc = #{upc,jdbcType=VARCHAR},
+      saleUnit = #{saleunit,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      sprice = #{sprice,jdbcType=VARCHAR},
+      images_url = #{imagesUrl,jdbcType=VARCHAR},
+      introduction_url = #{introductionUrl,jdbcType=VARCHAR},
+      merchant_id = #{merchantId,jdbcType=INTEGER},
+      inventory = #{inventory,jdbcType=INTEGER},
+      brand_id = #{brandId,jdbcType=INTEGER},
+      mpu = #{mpu,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      introduction = #{introduction,jdbcType=LONGVARCHAR},
+      prodParams = #{prodparams,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndex">
+    update aoyi_prod_index
+    set skuId = #{skuid,jdbcType=VARCHAR},
+      brand = #{brand,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=VARCHAR},
+      upc = #{upc,jdbcType=VARCHAR},
+      saleUnit = #{saleunit,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      sprice = #{sprice,jdbcType=VARCHAR},
+      images_url = #{imagesUrl,jdbcType=VARCHAR},
+      introduction_url = #{introductionUrl,jdbcType=VARCHAR},
+      merchant_id = #{merchantId,jdbcType=INTEGER},
+      inventory = #{inventory,jdbcType=INTEGER},
+      brand_id = #{brandId,jdbcType=INTEGER},
+      mpu = #{mpu,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

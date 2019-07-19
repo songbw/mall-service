@@ -4,9 +4,7 @@ import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.bean.QueryProdBean;
 import com.fengchao.product.aoyi.bean.SerachBean;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-
-import java.util.HashMap;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
 public interface AdminProdService {
     PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId);
@@ -15,9 +13,9 @@ public interface AdminProdService {
 
     int getProdListToRedis();
 
-    int add(AoyiProdIndex bean) throws ProductException;
+    int add(AoyiProdIndexX bean) throws ProductException;
 
-    int update(AoyiProdIndex bean) throws ProductException;
+    int update(AoyiProdIndexX bean) throws ProductException;
 
     void delete(Integer merchantId, Integer id) throws ProductException;
 

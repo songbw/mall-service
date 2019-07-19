@@ -1,8 +1,8 @@
 package com.fengchao.product.aoyi.mapper;
 
 import com.fengchao.product.aoyi.bean.QueryProdBean;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,35 +10,35 @@ import java.util.List;
 public interface AoyiProdIndexXMapper {
     int deleteByPrimaryKey(Integer id);
 
-    int insert(AoyiProdIndexWithBLOBs record);
+    int insert(AoyiProdIndexXWithBLOBs record);
 
-    int insertSelective(AoyiProdIndex record);
+    int insertSelective(AoyiProdIndexX record);
 
-    AoyiProdIndexWithBLOBs selectByPrimaryKey(Integer id);
+    AoyiProdIndexXWithBLOBs selectByPrimaryKey(Integer id);
 
-    AoyiProdIndex selectBySkuId(String skuId);
+    AoyiProdIndexX selectBySkuId(String skuId);
 
-    AoyiProdIndex selectByMpu(String sku);
+    AoyiProdIndexX selectByMpu(String sku);
 
-    int updateByPrimaryKeySelective(AoyiProdIndex record);
+    int updateByPrimaryKeySelective(AoyiProdIndexX record);
 
-    int updateByPrimaryKeyWithBLOBs(AoyiProdIndexWithBLOBs record);
+    int updateByPrimaryKeyWithBLOBs(AoyiProdIndexXWithBLOBs record);
 
-    int updateByPrimaryKey(AoyiProdIndex record);
+    int updateByPrimaryKey(AoyiProdIndexX record);
 
     int selectLimitCount(HashMap map) ;
 
-    List<AoyiProdIndex> selectLimit(HashMap map) ;
+    List<AoyiProdIndexX> selectLimit(HashMap map) ;
 
-    List<AoyiProdIndex> selectAll(HashMap map) ;
+    List<AoyiProdIndexX> selectAll(HashMap map) ;
 
-    List<AoyiProdIndex> selectSearchLimit(HashMap map) ;
+    List<AoyiProdIndexX> selectSearchLimit(HashMap map) ;
 
     int selectSearchCount(HashMap map) ;
 
-    List<AoyiProdIndex> selectProdAll();
+    List<AoyiProdIndexX> selectProdAll();
 
     int selectSkuByCouponIdCount(QueryProdBean bean);
 
-    List<AoyiProdIndex> selectSkuByCouponIdLimit(QueryProdBean bean);
+    List<AoyiProdIndexX> selectSkuByCouponIdLimit(QueryProdBean bean);
 }

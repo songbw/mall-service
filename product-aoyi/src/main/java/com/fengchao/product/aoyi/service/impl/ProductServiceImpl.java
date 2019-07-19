@@ -9,7 +9,7 @@ import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
             map.put("category", queryBean.getCategory());
         if(queryBean.getBrand()!=null&&!queryBean.getBrand().equals(""))
             map.put("brand", queryBean.getBrand());
-        List<AoyiProdIndex> prodIndices = new ArrayList<>();
+        List<AoyiProdIndexX> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
             mapper.selectLimit(map).forEach(aoyiProdIndex -> {
@@ -140,26 +140,26 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public AoyiProdIndex find(String id) throws ProductException {
-        AoyiProdIndex aoyiProdIndex = mapper.selectByMpu(id);
-        if (aoyiProdIndex.getImageExtend() != null) {
-            aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
+    public AoyiProdIndexX find(String id) throws ProductException {
+        AoyiProdIndexX aoyiProdIndexX = mapper.selectByMpu(id);
+        if (aoyiProdIndexX.getImageExtend() != null) {
+            aoyiProdIndexX.setImage(aoyiProdIndexX.getImageExtend());
         }
-        if (aoyiProdIndex.getImagesUrlExtend() != null) {
-            aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
+        if (aoyiProdIndexX.getImagesUrlExtend() != null) {
+            aoyiProdIndexX.setImagesUrl(aoyiProdIndexX.getImagesUrlExtend());
         }
-        if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
-            aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
+        if (aoyiProdIndexX.getIntroductionUrlExtend() != null) {
+            aoyiProdIndexX.setIntroductionUrl(aoyiProdIndexX.getIntroductionUrlExtend());
         }
-        return aoyiProdIndex;
+        return aoyiProdIndexX;
     }
 
     @Override
-    public List<AoyiProdIndex> findAll() throws ProductException {
+    public List<AoyiProdIndexX> findAll() throws ProductException {
         HashMap map = new HashMap();
         map.put("pageNo",0);
         map.put("pageSize",1000);
-        List<AoyiProdIndex> prodIndices = new ArrayList<>();
+        List<AoyiProdIndexX> prodIndices = new ArrayList<>();
         mapper.selectAll(map).forEach(aoyiProdIndex -> {
             String imageUrl = aoyiProdIndex.getImagesUrl();
             if (imageUrl != null && (!"".equals(imageUrl))) {
@@ -189,8 +189,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductInfoBean findAndPromotion(String mpu) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
-        AoyiProdIndex aoyiProdIndex = mapper.selectByMpu(mpu);
-        String imageUrl = aoyiProdIndex.getImagesUrl();
+        AoyiProdIndexX aoyiProdIndexX = mapper.selectByMpu(mpu);
+        String imageUrl = aoyiProdIndexX.getImagesUrl();
         if (imageUrl != null && (!"".equals(imageUrl))) {
             String image = "";
             if (imageUrl.indexOf("/") == 0) {
@@ -198,27 +198,27 @@ public class ProductServiceImpl implements ProductService {
             } else {
                 image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
             }
-            aoyiProdIndex.setImage(image);
+            aoyiProdIndexX.setImage(image);
         }
-        if (aoyiProdIndex.getImageExtend() != null) {
-            aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
+        if (aoyiProdIndexX.getImageExtend() != null) {
+            aoyiProdIndexX.setImage(aoyiProdIndexX.getImageExtend());
         }
-        if (aoyiProdIndex.getImagesUrlExtend() != null) {
-            aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
+        if (aoyiProdIndexX.getImagesUrlExtend() != null) {
+            aoyiProdIndexX.setImagesUrl(aoyiProdIndexX.getImagesUrlExtend());
         }
-        if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
-            aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
+        if (aoyiProdIndexX.getIntroductionUrlExtend() != null) {
+            aoyiProdIndexX.setIntroductionUrl(aoyiProdIndexX.getIntroductionUrlExtend());
         }
-        BeanUtils.copyProperties(aoyiProdIndex, infoBean);
-        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getSkuid());
+        BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
+        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getSkuid());
         infoBean.setPromotion(promotionInfoBeans);
 
-        List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndex) ;
+        List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
         infoBean.setCoupon(couponBeans);
         return infoBean;
     }
 
-    private List<CouponBean> selectCouponBySku(AoyiProdIndex bean) {
+    private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
         OperaResult result = equityService.selectCouponBySku(bean);
         logger.info(JSON.toJSONString(result));
         if (result.getCode() == 200) {

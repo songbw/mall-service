@@ -5,7 +5,7 @@ import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.bean.QueryProdBean;
 import com.fengchao.product.aoyi.bean.SerachBean;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -34,7 +34,7 @@ public class AdminProdController {
     }
 
     @PostMapping
-    public OperaResult create(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
+    public OperaResult create(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
 //        bean.setMerchantId(merchantId);
         int id = prodService.add(bean);
         result.getData().put("result", id);
@@ -42,7 +42,7 @@ public class AdminProdController {
     }
 
     @PutMapping
-    public OperaResult update(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
+    public OperaResult update(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
 //        bean.setMerchantId(merchantId);
         int id = prodService.update(bean);
         result.getData().put("result", id);
