@@ -2,6 +2,7 @@ package com.fengchao.equity.utils;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +35,13 @@ public class DataUtils {
             e.printStackTrace();
         }
         return data;
+    }
+
+    public static String decimalFormat(String price){
+        double priceNum = (double) Integer.parseInt(price)/100;
+        DecimalFormat df = new DecimalFormat("0.00");
+        String format = df.format(priceNum);
+        return format;
     }
 
 }
