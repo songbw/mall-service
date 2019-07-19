@@ -6,6 +6,7 @@ import com.fengchao.statistics.bean.DayStatisticsBean;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.bean.QueryBean;
 import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.SsoService;
 import com.fengchao.statistics.feign.WorkOrdersService;
 import com.fengchao.statistics.mapper.OverviewMapper;
 import com.fengchao.statistics.model.Overview;
@@ -27,6 +28,8 @@ public class OverviewServiceImpl implements OverviewService {
     private OrderService orderService;
     @Autowired
     private WorkOrdersService workOrdersService;
+    @Autowired
+    private SsoService ssoService;
 
     @Override
     public void add(QueryBean queryBean) {
@@ -52,7 +55,20 @@ public class OverviewServiceImpl implements OverviewService {
 
     @Override
     public Overview findSum() {
-        return mapper.selectSum();
+        Overview overview = mapper.selectSum();
+        int userNum = getUserNum() ;
+        overview.setUserNum(userNum);
+        return overview ;
+    }
+
+    private int getUserNum() {
+        OperaResult result = ssoService.count();
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            int object = (int) data.get("count");
+            return object;
+        }
+        return 0;
     }
 
     private DayStatisticsBean getStatistics(QueryBean queryBean) {

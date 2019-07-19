@@ -58,7 +58,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
     }
 
     @Override
-    public MerchantOverview findsum(QueryBean queryBean) {
+    public List<MerchantOverview> findsum(QueryBean queryBean) {
         HashMap map = new HashMap() ;
         map.put("start", queryBean.getStartTime());
         map.put("end", queryBean.getEndTime()) ;
