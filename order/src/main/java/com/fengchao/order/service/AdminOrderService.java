@@ -1,5 +1,6 @@
 package com.fengchao.order.service;
 
+import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.model.Orders;
 
@@ -17,5 +18,5 @@ public interface AdminOrderService {
      * @param orderExportReqVo
      * @return
      */
-    // List<Orders> queryExportOrderList(OrderExportReqVo orderExportReqVo);
+    List<ExportOrdersVo> exportOrders(OrderExportReqVo orderExportReqVo) throws Exception;
 }
