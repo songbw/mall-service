@@ -28,21 +28,13 @@ public class EquityServiceH implements EquityService {
 
     @Override
     public OperaResult findPromotionListByIdList(List<Integer> idList) {
-        return defaultFallback();
+        return HystrixDefaultFallback.defaultFallback();
     }
 
     @Override
     public OperaResult findCouponListByIdList(List<Integer> idList) {
-        return defaultFallback();
+        return HystrixDefaultFallback.defaultFallback();
     }
 
-    //===================================== private ============================
 
-    private OperaResult defaultFallback() {
-        OperaResult result = new OperaResult();
-        result.setCode(500);
-        result.setMsg("equity rpc 查询失败降级");
-
-        return result;
-    }
 }

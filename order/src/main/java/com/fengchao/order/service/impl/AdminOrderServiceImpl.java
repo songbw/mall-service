@@ -5,7 +5,9 @@ import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.dao.AdminOrderDao;
+import com.fengchao.order.rpc.ProductRpcService;
 import com.fengchao.order.rpc.extmodel.CouponBean;
+import com.fengchao.order.rpc.extmodel.ProductInfoBean;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
@@ -33,11 +35,15 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     private EquityRpcService equityRpcService;
 
+    private ProductRpcService productRpcService;
+
     @Autowired
     public AdminOrderServiceImpl(AdminOrderDao adminOrderDao,
-                                 EquityRpcService equityRpcService) {
+                                 EquityRpcService equityRpcService,
+                                 ProductRpcService productRpcService) {
         this.adminOrderDao = adminOrderDao;
         this.equityRpcService = equityRpcService;
+        this.productRpcService = productRpcService;
     }
 
     /**
@@ -63,7 +69,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 2. 根据上一步，查询子订单(注意条件：子订单号、商家id)
         // 获取主订单id列表
         List<Integer> ordersIdList = new ArrayList<>();
-        // x. 获取coupon的id集合
+        // x. 获取组装结果的其他相关数据 - 获取导出需要的coupon信息列表 - 获取coupon的id集合
         Set<Integer> couponIdSet = new HashSet<>();
         for (Orders orders : ordersList) {
             ordersIdList.add(orders.getId());
@@ -78,6 +84,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
         // x. 获取组装结果的其他相关数据 - 获取导出需要的promotion信息列表 - 获取promotion id集合
         Set<Integer> promotionIdSet = new HashSet<>();
+        // x. 获取组装结果的其他相关数据 - 获取导出需要的product信息列表 - 获取mpu id集合
+        Set<String> mpuIdList = new HashSet<>();
         for (OrderDetail orderDetail : orderDetailList) {
             // 转bo
             OrderDetailBo orderDetailBo = convertToOrderDetailBo(orderDetail);
@@ -89,6 +97,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
             // x. 获取组装结果的其他相关数据 - 获取导出需要的promotion信息列表 - 获取promotion id集合
             promotionIdSet.add(orderDetailBo.getPromotionId());
+            // x. 获取组装结果的其他相关数据 - 获取导出需要的product信息列表 - 获取mpu id集合
+            mpuIdList.add(orderDetailBo.getMpu());
         }
 
         // 3. 将获取的主订单列表转bo, 并加入子订单信息
@@ -107,7 +117,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 4.1 获取导出需要的promotion信息列表
         List<PromotionBean> promotionBeanList =
                 equityRpcService.queryPromotionByIdList(new ArrayList<>(promotionIdSet));
-        log.info("导出订单 根据id获取活动List<PromotionBean>:{}", JSONUtil.toJsonString(promotionBeanList));
+        log.info("导出订单 根据id获取活动 List<PromotionBean>:{}", JSONUtil.toJsonString(promotionBeanList));
         // 转map key:promotionId, value:PromotionBean
         Map<Integer, PromotionBean> promotionBeanMap =
                 promotionBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
@@ -118,6 +128,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 转map， key couponId, value: CouponBean
         Map<Integer, CouponBean> couponBeanMap =
                 couponBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
+
+        // 4.3 获取导出需要的product信息列表
+        List<ProductInfoBean> productInfoBeanList =
+                productRpcService.findProductListByMpuIdList(new ArrayList<>(mpuIdList));
+        log.info("导出订单 根据mpu获取product List<ProductInfoBean>:{}", JSONUtil.toJsonString(productInfoBeanList));
+        // 转map， key:mpu  value:ProductInfoBean
+        Map<String, ProductInfoBean> productInfoBeanMap =
+                productInfoBeanList.stream().collect(Collectors.toMap(p -> p.getMpu(), p -> p));
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
@@ -131,11 +149,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 exportOrdersVo.setSubOrderId(orderDetailBo.getSubOrderId()); // 子订单编号
                 exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
                 exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
-//                exportOrdersVo.setCategory(); // 品类
-//                exportOrdersVo.setBrand(); // 品牌
+
+                ProductInfoBean productInfoBean = productInfoBeanMap.get(orderDetailBo.getMpu());
+                exportOrdersVo.setCategory(productInfoBean == null ? "" : productInfoBean.getCategoryName()); // 品类
+                exportOrdersVo.setBrand(productInfoBean == null ? "" : productInfoBean.getBrand()); // 品牌
                 exportOrdersVo.setSku(orderDetailBo.getSkuId());
                 exportOrdersVo.setMpu(orderDetailBo.getMpu());
-//                exportOrdersVo.setCommodityName(); // 商品名称
+                exportOrdersVo.setCommodityName(productInfoBean == null ? "" : productInfoBean.getName()); // 商品名称
                 exportOrdersVo.setQuantity(orderDetailBo.getNum()); // 购买数量
                 exportOrdersVo.setPromotion(
                         promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
@@ -146,7 +166,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 exportOrdersVo.setCouponSupplier(
                         couponBeanMap.get(ordersBo.getCouponId()) == null ?
                                 "" : couponBeanMap.get(ordersBo.getCouponId()).getSupplierMerchantName()); // 券来源（券商户）
-//                exportOrdersVo.setPurchasePrice(); // 进货价格 单位分
+                Integer purchasePrice = null; // 进货价格
+                if (productInfoBean != null) {
+                    String _sprice = productInfoBean.getSprice();
+                    BigDecimal bigDecimal = new BigDecimal("_sprice");
+
+                    purchasePrice = bigDecimal.multiply(new BigDecimal(100)).intValue();
+                }
+                exportOrdersVo.setPurchasePrice(purchasePrice); // 进货价格 单位分
                 exportOrdersVo.setTotalRealPrice(
                         orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()
                         * orderDetailBo.getNum()); // sku 的总价
