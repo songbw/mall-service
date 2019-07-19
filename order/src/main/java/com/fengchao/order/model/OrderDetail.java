@@ -46,6 +46,8 @@ public class OrderDetail {
 
     private Integer skuCouponDiscount ;
 
+    private String category;
+
     public Integer getId() {
         return id;
     }
@@ -212,5 +214,13 @@ public class OrderDetail {
 
     public void setSkuCouponDiscount(Integer skuCouponDiscount) {
         this.skuCouponDiscount = skuCouponDiscount;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

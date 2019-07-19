@@ -157,4 +157,10 @@ public class OrderController {
         return result;
     }
 
+    @GetMapping("/payment/category/list")
+    private OperaResult paymentCategoryList(String start, String end, OperaResult result) {
+        result.getData().put("result", service.findDayCategoryPaymentList(start, end)) ;
+        return result;
+    }
+
 }

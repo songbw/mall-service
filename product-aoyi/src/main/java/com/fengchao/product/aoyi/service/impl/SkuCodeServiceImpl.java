@@ -61,7 +61,6 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return mapper.selectByPrimaryKey(id) ;
     }
 
-    @Cacheable(value = "skucode", key = "#skucode.id")
     @Override
     public List<SkuCode> findAll() throws ProductException {
         return mapper.selectList();

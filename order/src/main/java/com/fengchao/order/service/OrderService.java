@@ -55,5 +55,7 @@ public interface OrderService {
 
     List<MerchantPaymentBean> findDayMerchantPaymentCount(String dayStart, String dayEnd) ;
 
+    List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) ;
+
     Integer findDayPaymentCount(String dayStart, String dayEnd) ;
 }
