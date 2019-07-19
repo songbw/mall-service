@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.SkuCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -42,6 +43,7 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return bean.getId();
     }
 
+    @Cacheable(value = "skucode", key = "#skucode.id")
     @Override
     public SkuCode findByMerchantId(Integer merchantId) throws ProductException {
         if (merchantId == null || merchantId <= 0) {
@@ -50,6 +52,7 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return mapper.selectByMerchantId(merchantId);
     }
 
+    @Cacheable(value = "skucode", key = "#id")
     @Override
     public SkuCode find(Integer id) throws ProductException {
         if (id == null || id <= 0) {
@@ -58,11 +61,13 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return mapper.selectByPrimaryKey(id) ;
     }
 
+    @Cacheable(value = "skucode", key = "#skucode.id")
     @Override
     public List<SkuCode> findAll() throws ProductException {
         return mapper.selectList();
     }
 
+    @CachePut(value = "skucode", key = "#bean.id")
     @Override
     public Integer updateSkuValueAddById(SkuCode bean) throws ProductException {
         if (bean.getId() == null || bean.getId() <= 0) {
