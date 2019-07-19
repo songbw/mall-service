@@ -84,7 +84,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categories;
     }
 
-    @Cacheable(value = "category", key = "#category.categoryId")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategory> selectAll() {
@@ -161,7 +160,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return bean.getCategoryId();
     }
 
-    @CacheEvict(value = "category", key = "#categoryId")
+    @CacheEvict(value = "category", key = "#id")
     @Override
     public void delete(Integer id) {
         mapper.deleteByPrimaryKey(id);
