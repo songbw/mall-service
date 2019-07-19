@@ -449,7 +449,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponThird.setMerchantName(bean.getData().getMerchantName());
         couponThird.setName(bean.getData().getCoupon().getName());
         couponThird.setDescription(bean.getData().getCoupon().getDescription());
-        couponThird.setPrice(bean.getData().getCoupon().getPrice());
+        couponThird.setPrice(DataUtils.decimalFormat(bean.getData().getCoupon().getPrice()));
         couponThird.setUrl(bean.getData().getCoupon().getUrl());
         couponThird.setEffectiveEndDate(bean.getData().getCoupon().getEffectiveEndDate());
         couponThird.setEffectiveStartDate(bean.getData().getCoupon().getEffectiveStartDate());
