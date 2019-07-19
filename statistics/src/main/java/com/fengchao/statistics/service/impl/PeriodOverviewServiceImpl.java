@@ -12,6 +12,8 @@ import com.fengchao.statistics.service.PeriodOverviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -38,6 +40,14 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
         periodOverview.setAfternoon(afternoon);
         periodOverview.setNight(night);
         mapper.insertSelective(periodOverview) ;
+    }
+
+    @Override
+    public List<PeriodOverview> findByDate(QueryBean queryBean) {
+        HashMap map = new HashMap() ;
+        map.put("start", queryBean.getStartTime());
+        map.put("end", queryBean.getEndTime()) ;
+        return mapper.selectByDate(map);
     }
 
     private int getPeriodPaymentCount(String start, String end) {

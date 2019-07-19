@@ -1,5 +1,7 @@
 package com.fengchao.statistics.model;
 
+import java.util.Date;
+
 public class PeriodOverview {
     private Long id;
 
@@ -14,6 +16,10 @@ public class PeriodOverview {
     private float afternoon;
 
     private float night;
+
+    private Date statisticsDate;
+
+    private Date createdAt;
 
     public Long getId() {
         return id;
@@ -69,5 +75,21 @@ public class PeriodOverview {
 
     public void setNight(float night) {
         this.night = night;
+    }
+
+    public Date getStatisticsDate() {
+        return statisticsDate;
+    }
+
+    public void setStatisticsDate(Date statisticsDate) {
+        this.statisticsDate = statisticsDate;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }
