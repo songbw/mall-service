@@ -5,6 +5,7 @@ import com.fengchao.elasticsearch.domain.OperaResult;
 import com.fengchao.elasticsearch.domain.ProductQueryBean;
 import com.fengchao.elasticsearch.service.ProductESService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/es/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ProdESController {
 
+    @Qualifier("productElasticSearchServiceImpl")
     @Autowired
     private ProductESService service ;
 
