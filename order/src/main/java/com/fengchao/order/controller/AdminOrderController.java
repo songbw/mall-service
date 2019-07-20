@@ -33,17 +33,17 @@ public class AdminOrderController {
     /**
      * 按照条件导出订单
      * 参考：https://blog.csdn.net/ethan_10/article/details/80335350
-     *
+     * <p>
      * 导出title：
      * 用户id，主订单编号，子订单编号， 订单支付时间， 订单生成时间，品类， 品牌（通过mpu获取）
      * ，sku， mpu， 商品名称， 购买数量 ， 活动 ， 券码， 券来源（券商户），进货价， 销售价，  券支付金额， 订单支付金额，
      * 平台分润比， 收件人名， 省 ， 市， 区
      *
      * @param orderExportReqVo 导出条件
-     * @param res
+     * @param response
      */
     @GetMapping(value = "/export")
-    public void exportOrder(OrderExportReqVo orderExportReqVo , HttpServletResponse res) {
+    public void exportOrder(OrderExportReqVo orderExportReqVo, HttpServletResponse response) {
         try {
             // 创建HSSFWorkbook对象
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -51,20 +51,20 @@ public class AdminOrderController {
             HSSFSheet sheet = workbook.createSheet("订单结算");
 
             /**
-            // 创建HSSFRow对象
-            HSSFRow row0 = sheet.createRow(0);
+             // 创建HSSFRow对象
+             HSSFRow row0 = sheet.createRow(0);
 
-            //创建HSSFCell对象
-            HSSFCell cell00 = row0.createCell(0);
-            cell00.setCellValue("单元格中的中文1");
+             //创建HSSFCell对象
+             HSSFCell cell00 = row0.createCell(0);
+             cell00.setCellValue("单元格中的中文1");
 
-            HSSFCell cell01 = row0.createCell(1);
-            cell01.setCellValue("单元格中的中文2");
+             HSSFCell cell01 = row0.createCell(1);
+             cell01.setCellValue("单元格中的中文2");
 
-            HSSFRow row1 = sheet.createRow(1);
-            HSSFCell cell10 = row1.createCell(0);
-            cell10.setCellValue("单元格中的中文3");
-            **/
+             HSSFRow row1 = sheet.createRow(1);
+             HSSFCell cell10 = row1.createCell(0);
+             cell10.setCellValue("单元格中的中文3");
+             **/
 
             //输出Excel文件
 //            FileOutputStream output = new FileOutputStream("/home/tom/Temp/workbook.xls");
@@ -174,33 +174,24 @@ public class AdminOrderController {
             }
 
 
-
-
             /////////
-
 
 
             String fileName = "exportorder.xls";
 
-            res.setHeader("content-type", "application/octet-stream");
-            res.setContentType("application/octet-stream");
-            res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setHeader("content-type", "application/octet-stream");
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
             OutputStream outputStream = null;
 
-            try {
-                outputStream = res.getOutputStream();
-                workbook.write(outputStream);
-                outputStream.flush();
-            } catch (Exception e ) {
-                log.error("{}", e.getMessage(), e);
-            } finally {
-
-            }
+            outputStream = response.getOutputStream();
+            workbook.write(outputStream);
+            outputStream.flush();
 
             log.info("export file finish");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("到处订单文件异常:{}", e.getMessage(), e);
         }
     }
 
