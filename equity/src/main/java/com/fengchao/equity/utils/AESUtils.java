@@ -63,12 +63,13 @@ public class AESUtils {
     public static void main(String[] args) {
         try {
 //           加密
-            String s = encryptAES("32344".getBytes());
+            String s = encryptAES("1044391000fd194ab888b1aa81c03c3710".getBytes());
 //            解密
             SecretKey secretKey = loadKeyAES();
             byte[] bytes = base642Byte(s);
             byte[] aes = decryptAES(bytes, secretKey);
-            System.out.println(new String(aes));
+            String s1 = new String(aes);
+            System.out.println(s1);
         } catch (Exception e) {
             e.printStackTrace();
         }

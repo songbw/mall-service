@@ -121,23 +121,24 @@ public class Pkcs8Util {
     }
 
     public static void main(String[] args) {
-//        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
 //        //系统参数
-        String teststr= "coupon_code=DnX1oA1WlZibvDwx0Naea9xXnc9a+j9hkMNOk9RFK6wGYOAkP9wthjtxdKmlmjSB&open_id=nX+Q5HTMAmCwHewE8hf8RIGoy1ZCwF0OvG6+FdYsR90GYOAkP9wthjtxdKmlmjSB";
+        String teststr= "1044391000fd194ab888b1aa81c03c3710";
 //        String couponCode= "4567";
         // 授权用户名(固定值)
-//        map.put("timestamp", "20180801050402");// 请求时间戳,时区为GMT+8(北京时间)
+//        map.put("open_id", "20180801050402");// 请求时间戳,时区为GMT+8(北京时间)
         try {
 //            加密
-//            String encryptAES = AESUtils.encryptAES(teststr.getBytes());
+            String encryptAES = AESUtils.encryptAES(teststr.getBytes());
 //            String couponCodeAES = AESUtils.encryptAES(couponCode.getBytes());
 //            //加密后的内容Base64编码
-//            map.put("open_id", encryptAES);
+            map.put("open_id", encryptAES);
 //            map.put("coupon_code",couponCodeAES);
-//            String urlMap = formatUrlMap(map, false, false);
+            String urlMap = formatUrlMap(map, false, false);
 //
-            String sing = getSign(teststr);
+            String sing = getSign(urlMap);
             System.out.println(sing);
+            verify(urlMap.getBytes(), sing);
 //            boolean verify = verify(urlMap.getBytes(), sing);
 //            System.out.println(verify);
         } catch (Exception e) {
