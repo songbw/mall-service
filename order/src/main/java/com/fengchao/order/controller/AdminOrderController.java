@@ -3,6 +3,7 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.service.AdminOrderService;
+import com.fengchao.order.utils.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -175,9 +176,9 @@ public class AdminOrderController {
 
 
             /////////
+            String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
 
-
-            String fileName = "exportorder.xls";
+            String fileName = "exportorder_" + date + ".xls";
 
             response.setHeader("content-type", "application/octet-stream");
             response.setContentType("application/octet-stream");
