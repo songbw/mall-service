@@ -43,7 +43,7 @@ public class AdminOrderDao {
      */
     public List<Orders> selectExportOrders(Orders orders, Date payStartDate, Date payEndDate) {
         OrdersExample ordersExample = new OrdersExample();
-        ordersExample.setOrderByClause("order by id desc");
+        ordersExample.setOrderByClause("id desc");
 
         OrdersExample.Criteria criteria = ordersExample.createCriteria();
 

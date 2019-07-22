@@ -4,6 +4,7 @@ import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.DateUtil;
+import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -33,6 +34,21 @@ public class AdminOrderController {
     /**
      * 按照条件导出订单
      * 参考：https://blog.csdn.net/ethan_10/article/details/80335350
+     *
+     *              // 创建HSSFRow对象
+     *              HSSFRow row0 = sheet.createRow(0);
+     *
+     *              //创建HSSFCell对象
+     *              HSSFCell cell00 = row0.createCell(0);
+     *              cell00.setCellValue("单元格中的中文1");
+     *
+     *              HSSFCell cell01 = row0.createCell(1);
+     *              cell01.setCellValue("单元格中的中文2");
+     *
+     *              HSSFRow row1 = sheet.createRow(1);
+     *              HSSFCell cell10 = row1.createCell(0);
+     *              cell10.setCellValue("单元格中的中文3");
+     *
      * <p>
      * 导出title：
      * 用户id，主订单编号，子订单编号， 订单支付时间， 订单生成时间，品类， 品牌（通过mpu获取）
@@ -45,31 +61,16 @@ public class AdminOrderController {
     @GetMapping(value = "/export")
     public void exportOrder(OrderExportReqVo orderExportReqVo, HttpServletResponse response) {
         try {
+            log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            // 0.入参检验
+            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
+                throw new Exception("参数不合法, 商户id为空");
+            }
+
             // 创建HSSFWorkbook对象
             HSSFWorkbook workbook = new HSSFWorkbook();
             // 创建HSSFSheet对象
             HSSFSheet sheet = workbook.createSheet("订单结算");
-
-            /**
-             // 创建HSSFRow对象
-             HSSFRow row0 = sheet.createRow(0);
-
-             //创建HSSFCell对象
-             HSSFCell cell00 = row0.createCell(0);
-             cell00.setCellValue("单元格中的中文1");
-
-             HSSFCell cell01 = row0.createCell(1);
-             cell01.setCellValue("单元格中的中文2");
-
-             HSSFRow row1 = sheet.createRow(1);
-             HSSFCell cell10 = row1.createCell(0);
-             cell10.setCellValue("单元格中的中文3");
-             **/
-
-            //输出Excel文件
-//            FileOutputStream output = new FileOutputStream("/home/tom/Temp/workbook.xls");
-//            workbook.write(output);
-//            output.flush();
 
             // 1.根据条件获取订单集合
             List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
