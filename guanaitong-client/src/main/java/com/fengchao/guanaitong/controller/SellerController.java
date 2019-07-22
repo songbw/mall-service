@@ -270,6 +270,7 @@ public class SellerController {
         JSONObject json = new JSONObject();
 
         try {
+            json.put("code",200);
             json.put("data", guanAiTongService.buildXFormBody(map));
             json.put("msg", "");
             if (null == json) {
