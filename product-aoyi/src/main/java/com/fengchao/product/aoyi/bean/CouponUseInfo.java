@@ -2,9 +2,10 @@ package com.fengchao.product.aoyi.bean;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class CouponUseInfo {
+public class CouponUseInfo implements Serializable {
     private Integer id;
 
     private Integer couponId;

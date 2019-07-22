@@ -13,7 +13,7 @@ import java.io.Serializable;
  * Created by song on 2019/5/16.
  */
 @Data
-@Document(indexName = "product", type = "dy2019",shards = 1,replicas = 0)
+@Document(indexName = "product", shards = 1,replicas = 0)
 public class EsProduct implements Serializable {
     @Id
     private Long id;
