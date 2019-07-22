@@ -38,10 +38,14 @@ public class DataUtils {
     }
 
     public static String decimalFormat(String price){
-        double priceNum = (double) Integer.parseInt(price)/100;
+
+        double priceNum = Double.parseDouble(price)/100;
         DecimalFormat df = new DecimalFormat("0.00");
         String format = df.format(priceNum);
         return format;
     }
 
+    public static void main(String[] args) {
+        System.out.println(decimalFormat("0.01"));
+    }
 }

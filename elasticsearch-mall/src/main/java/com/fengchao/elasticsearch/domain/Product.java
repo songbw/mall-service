@@ -1,13 +1,12 @@
 package com.fengchao.elasticsearch.domain;
 
-import io.searchbox.annotations.JestId;
 import lombok.Data;
 
 @Data
 public class Product {
     private Integer id;
 
-    @JestId
+//    @JestId
     private String skuid;
 
     private String brand;

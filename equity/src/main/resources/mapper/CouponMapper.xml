@@ -157,7 +157,7 @@
     select
     <include refid="Base_Column_List" />
     from coupon
-    where 1=1
+    where status in (2,3)
     <if test="mpu != null and mpu != ''" >
       and find_in_set(#{mpu,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
     </if>

@@ -288,7 +288,7 @@
   <update id="updateStatusByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
     update coupon_use_info
     set status = #{status,jdbcType=INTEGER},
-        collected_time = #{collectedTime,jdbcType=TIMESTAMP}
+    consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
     <if test="id != null" >
       and id = #{id,jdbcType=INTEGER}
@@ -302,7 +302,7 @@
   <update id="updateStatusByToushiCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
     update coupon_use_info
     set status = #{status,jdbcType=INTEGER},
-    collected_time = #{collectedTime,jdbcType=TIMESTAMP}
+    consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
     where type = 1 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
     <if test="userOpenId != null" >
       and user_open_id = #{userOpenId,jdbcType=INTEGER}
