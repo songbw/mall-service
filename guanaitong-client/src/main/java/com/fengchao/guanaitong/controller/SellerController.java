@@ -68,7 +68,6 @@ public class SellerController {
             log.info(ex.getMessage());
             System.out.println("==== post got exception");
         }
-
         buildResponse(response, json);
 
     }
@@ -251,6 +250,28 @@ public class SellerController {
 
         try {
             json = guanAiTongService.guanAiTongPost(GuanAiTong.GET_PERSON_ADDRESS_PATH, map);
+            if (null == json) {
+                log.info("GuanAiTong response data is NULL");
+            }
+        } catch (RuntimeException ex) {
+            log.info(ex.getMessage());
+            System.out.println("==== post got exception");
+        }
+
+        buildResponse(response, json);
+    }
+
+    @ResponseStatus(code = HttpStatus.OK)
+    @PostMapping(GuanAiTong.GET_SIGN_PARAM_PATH)
+    public void getSignParam(HttpServletResponse response,
+                                 @RequestBody Map<String, String> map
+    ) {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("data", guanAiTongService.buildXFormBody(map));
+            json.put("msg", "");
             if (null == json) {
                 log.info("GuanAiTong response data is NULL");
             }

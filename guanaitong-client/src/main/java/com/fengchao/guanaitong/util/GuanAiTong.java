@@ -12,6 +12,7 @@ public class GuanAiTong {
     public static final String GET_REFUND_RECORD_PATH = "seller/pay/refundRecord";
     public static final String POST_ORDER_DELIVERY_PATH = "seller/pay/order/delivery";
     public static final String GET_PERSON_ADDRESS_PATH = "seller/address/getPersonAddress";
+    public static final String GET_SIGN_PARAM_PATH = "seller/sign/param";
 
     public static final String AUTH_CODE_KEY = "auth_code";
     public static final String ENTERPRISE_NAME_KEY =  "enterprise_name";
