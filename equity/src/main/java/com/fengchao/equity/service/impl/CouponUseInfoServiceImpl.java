@@ -147,14 +147,16 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 CouponBean couponBean = new CouponBean();
                 if(couponUseInfo.getType() == 1){
                     CouponThird couponThird =couponThirdMapper.selectByUserCouponId(couponUseInfo.getId());
-                    couponBean.setName(couponThird.getName());
-                    couponBean.setEffectiveEndDate(DataUtils.dateFormat(couponThird.getEffectiveEndDate()));
-                    couponBean.setEffectiveStartDate(DataUtils.dateFormat(couponThird.getEffectiveStartDate()));
-                    couponBean.setUrl(couponThird.getUrl());
-                    couponBean.setDescription(couponThird.getDescription());
-                    couponBean.setSupplierMerchantId(couponThird.getMerchantId());
-                    couponBean.setSupplierMerchantName(couponThird.getMerchantName());
-                    couponBean.setPrice(couponThird.getPrice());
+                    if(couponThird != null){
+                        couponBean.setName(couponThird.getName());
+                        couponBean.setEffectiveEndDate(DataUtils.dateFormat(couponThird.getEffectiveEndDate()));
+                        couponBean.setEffectiveStartDate(DataUtils.dateFormat(couponThird.getEffectiveStartDate()));
+                        couponBean.setUrl(couponThird.getUrl());
+                        couponBean.setDescription(couponThird.getDescription());
+                        couponBean.setSupplierMerchantId(couponThird.getMerchantId());
+                        couponBean.setSupplierMerchantName(couponThird.getMerchantName());
+                        couponBean.setPrice(couponThird.getPrice());
+                    }
                 }else if(couponUseInfo.getType() == 0){
                     Coupon coupon = couponMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
                     if(coupon != null){
@@ -295,6 +297,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public OperaResult consumedToushi(ToushiResult bean) throws EquityException {
         OperaResult result = new OperaResult();
+        if(StringUtils.isEmpty(bean.getSign())){
+            result.setCode(700002);
+            result.setMsg( "sign签名数据为空");
+            return result;
+        }
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("open_id",bean.getData().getOpen_id());
@@ -320,19 +327,29 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return result;
         }
 
-        byte[] openID = null;
-        byte[] couponCode = null;
+        String openID = null;
+        String couponCode = null;
         try {
-            openID = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES());
-            couponCode = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon_code()), AESUtils.loadKeyAES());
+            openID = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES()));
+            if(StringUtils.isEmpty(openID)){
+                result.setCode(700003);
+                result.setMsg( "open_is解密失败");
+                return result;
+            }
+            couponCode = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon_code()), AESUtils.loadKeyAES()));
+            if(StringUtils.isEmpty(couponCode)){
+                result.setCode(700004);
+                result.setMsg( "couponCode解密失败");
+                return result;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         CouponUseInfo couponUseInfo = new CouponUseInfo();
-        couponUseInfo.setUserOpenId(new String(openID));
+        couponUseInfo.setUserOpenId(openID);
         couponUseInfo.setConsumedTime(new Date());
-        couponUseInfo.setUserCouponCode(new String(couponCode));
+        couponUseInfo.setUserCouponCode(couponCode);
         couponUseInfo.setStatus(2);
         int num = mapper.updateStatusByToushiCode(couponUseInfo);
         if(num==0){
@@ -347,6 +364,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public OperaResult obtainCoupon(ToushiResult bean) throws EquityException{
         OperaResult result = new OperaResult();
+        if(StringUtils.isEmpty(bean.getSign())){
+            result.setCode(700002);
+            result.setMsg( "sign签名数据为空");
+            return result;
+        }
         try {
             ToushiParam toushiParam = bean.getData();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -422,20 +444,30 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return result;
         }
 
-        byte[] openID = null;
-        byte[] couponCode = null;
+        String openID = null;
+        String couponCode = null;
         try {
-            openID = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES());
-            couponCode = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon().getCode()), AESUtils.loadKeyAES());
+            openID = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES()));
+            if(StringUtils.isEmpty(openID)){
+                result.setCode(700003);
+                result.setMsg( "open_is解密失败");
+                return result;
+            }
+            couponCode = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon().getCode()), AESUtils.loadKeyAES()));
+            if(StringUtils.isEmpty(couponCode)){
+                result.setCode(700004);
+                result.setMsg( "couponCode解密失败");
+                return result;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         CouponUseInfo couponUseInfo = new CouponUseInfo();
         couponUseInfo.setType(1);
-        couponUseInfo.setUserOpenId(new String(openID));
+        couponUseInfo.setUserOpenId(openID);
         couponUseInfo.setCollectedTime(new Date());
-        couponUseInfo.setUserCouponCode(new String(couponCode));
+        couponUseInfo.setUserCouponCode(couponCode);
         int num = mapper.insertSelective(couponUseInfo);
         if(num == 0){
             result.setCode(700023);
@@ -466,6 +498,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public OperaResult userVerified(ToushiResult bean){
         OperaResult result = new OperaResult();
+        if(StringUtils.isEmpty(bean.getSign())){
+            result.setCode(700002);
+            result.setMsg( "sign签名数据为空");
+            return result;
+        }
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("open_id",bean.getData().getOpen_id());
@@ -473,7 +510,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
             if(!verify){
                 result.setCode(700001);
-                result.setMsg( "验签失败");
+                result.setMsg("验签失败");
                 return result;
             }
         } catch (Exception e) {
@@ -484,14 +521,19 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             result.setMsg( "open_id用户ID为空");
             return result;
         }
-        byte[] openID = null;
+        String openID = null;
         try {
-            openID = AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES());
+            openID = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES()));
+            if(StringUtils.isEmpty(openID)){
+                result.setCode(700003);
+                result.setMsg( "open_is解密失败");
+                return result;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        OperaResult userResult = ssoService.findUser(new String(openID));
+        OperaResult userResult = ssoService.findUser(openID);
         if (userResult.getCode() == 200) {
             Map<String, Object> data = userResult.getData() ;
             Object object = data.get("user");
