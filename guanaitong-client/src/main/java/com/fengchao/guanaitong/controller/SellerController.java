@@ -34,6 +34,11 @@ public class SellerController {
         response.setContentType("application/json; charset=utf-8");
         PrintWriter out = null;
 
+        Integer code = json.getInteger("code");
+        if (null != code && 0 == code) {
+            json.put("code", 200);
+        }
+
         try {
             out = response.getWriter();
             out.append(json.toString());
