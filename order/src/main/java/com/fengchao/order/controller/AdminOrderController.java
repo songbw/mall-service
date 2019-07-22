@@ -72,8 +72,8 @@ public class AdminOrderController {
 //            output.flush();
 
             // 1.根据条件获取订单集合
-            List<ExportOrdersVo> exportOrdersVoList = // adminOrderService.exportOrders(orderExportReqVo);
-                    adminOrderService.exportOrdersMock();
+            List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
+                    // adminOrderService.exportOrdersMock();
 
             // 2.开始组装excel
             // 2.1 组装title
