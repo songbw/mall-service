@@ -23,8 +23,6 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     //private final String URL_PREFIX = "https://openapi.guanaitong.com/"; //normal
 
     private final String TOKEN_CREATE_PATH = "token/create";
-    private final String GET_OPEN_ID_PATH = "seller/person/getByAuthCode";
-    private final String GET_DETAIL_PATH = "seller/person/getDetailByOpenId";
 
     private final String GRANT_TYPE_KEY = "grant_type";
     private final String GRANT_TYPE_VALUE = "client_credential";
@@ -166,12 +164,12 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             }
 
             json = JSONObject.parseObject(responseString);
-
+            return json;
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             return null;
         }
-
+/*
         if (null != json) {
             Integer resultCode = json.getInteger("code");
             System.out.println("get code = " + resultCode.toString());
@@ -195,9 +193,10 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         return null;
+        */
     }
 
-
+/*
     @Override
     public void test() {
 
@@ -215,6 +214,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
     }
+*/
 
     @Override
     public String buildXFormBody(Map map) {
@@ -237,7 +237,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xForm = map2string(theMap);
-        System.out.println("buildXForm: " + xForm);
+        //System.out.println("buildXForm: " + xForm);
         return xForm;
 
     }
@@ -247,7 +247,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         String cacheToken = RedisUtil.getValue(TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            System.out.println("get cached token: {" + cacheToken + "} ttl="+RedisUtil.ttl(TOKEN_KEY)+"s");
+            //System.out.println("get cached token: {" + cacheToken + "} ttl="+RedisUtil.ttl(TOKEN_KEY)+"s");
             return cacheToken;
         }
 
@@ -269,7 +269,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             if (HTTP_STATUS_OK != code) {
                 return null;
             }
-            System.out.println("code = " + String.valueOf(code));
+            //System.out.println("code = " + String.valueOf(code));
 
             json = JSONObject.parseObject(responseString);
 
@@ -280,13 +280,13 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         if (null != json) {
             Integer resultCode = json.getInteger("code");
-            System.out.println("get code = " + resultCode.toString());
+            //System.out.println("get code = " + resultCode.toString());
             if (RESPONSE_DATA_OK != resultCode) {
                 String msg = json.getString("message");
                 if (null != msg) {
                     log.info("error: " + msg);
                 }
-                System.out.println("=== get message:"+msg);
+                //System.out.println("=== get message:"+msg);
                 return null;
             }
 
@@ -299,12 +299,42 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
                 RedisUtil.putRedis(TOKEN_KEY,token,expires-5);
                 return token;
             } else {
-                System.out.println("====get data is null");
+                log.info("====get data is null");
             }
         } else {
-            System.out.println("===convert String to json failed");
+            log.info("===convert String to json failed");
         }
 
         return null;
     }
+
+    @Override
+    public JSONObject guanAiTongPost(String path, Map map) {
+        String xForm = buildXFormBody(map);
+        JSONObject json = tryPost(path, xForm);
+
+        if (null == json) {
+            log.info("got data is null");
+            System.out.println("got data is null");
+        }
+
+        return json;
+/*
+        Integer code = json.getInteger("code");
+        if (null == code || 0 != code) {
+            return null;
+        }
+
+        JSONObject data = json.getJSONObject("data");
+        if (null == data) {
+            System.out.println("get data is null");
+        } else {
+            System.out.println("got data====== ");
+            System.out.println(data.toJSONString());
+        }
+
+        return data;
+*/
+    }
+
 }

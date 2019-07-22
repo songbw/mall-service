@@ -1,5 +1,7 @@
 package com.fengchao.guanaitong.service;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.Map;
 
 public interface IGuanAiTongService {
@@ -7,5 +9,5 @@ public interface IGuanAiTongService {
 
     String buildXFormBody(Map map);
 
-    void test();
+    JSONObject guanAiTongPost(String path, Map map);
 }
