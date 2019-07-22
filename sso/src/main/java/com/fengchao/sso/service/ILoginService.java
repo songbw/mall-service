@@ -18,5 +18,5 @@ public interface ILoginService {
 
     Token thirdLogin(ThirdLoginBean loginBean) ;
 
-    OperaResult findPingAnToken(String initCode);
+    OperaResult findThirdPartyToken(String iAppId, String initCode);
 }

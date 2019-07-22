@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,6 +24,9 @@ public class ProductController {
 
     @GetMapping
     private OperaResult find(String mpu, OperaResult result) throws ProductException {
+        if (StringUtils.isEmpty(mpu)) {
+            throw new ProductException(200005, "mpu信息为null");
+        }
         result.getData().put("result", service.findAndPromotion(mpu)) ;
         return result;
     }
