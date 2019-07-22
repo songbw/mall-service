@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(value = "equity", fallback = EquityServiceH.class)
+@FeignClient(value = "equity", url = "${rpc.feign.client.equit.url:}", fallback = EquityServiceH.class)
 public interface EquityService {
 
     @RequestMapping(value = "/coupon/consume", method = RequestMethod.POST)
