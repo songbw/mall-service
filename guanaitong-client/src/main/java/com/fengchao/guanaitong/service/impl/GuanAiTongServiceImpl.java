@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 @Slf4j
 @Service
 public class GuanAiTongServiceImpl implements IGuanAiTongService {
@@ -22,9 +23,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     private final String URL_PREFIX = "https://openapi.guanaitong.cc/";//test
     //private final String URL_PREFIX = "https://openapi.guanaitong.com/"; //normal
 
-    private final String TOKEN_CREATE_PATH = "token/create";
+    private static final String TOKEN_CREATE_PATH = "token/create";
 
-    private final String GRANT_TYPE_KEY = "grant_type";
+    private static final String GRANT_TYPE_KEY = "grant_type";
     private final String GRANT_TYPE_VALUE = "client_credential";
 
     private final String APPID_KEY = "appid";
@@ -33,15 +34,15 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     private final String APPSECRET_KEY = "appsecret";
     private final String APPSECRET_VALUE = "78dde3cc1e3cab6cbbabbc1bf88faa4e";
 
-    private final String VERSION_KEY = "version";
-    private final String VERSION_VALUE = "1.0.0";
+    //private final String VERSION_KEY = "version";
+    //private final String VERSION_VALUE = "1.0.0";
 
     private final String TOKEN_KEY = "access_token";
     private final String TIME_STAMP_KEY = "timestamp";
     private final String SIGN_KEY = "sign";
 
-    private final int HTTP_STATUS_OK = 200;
-    private final int RESPONSE_DATA_OK = 0;
+    private static final int HTTP_STATUS_OK = 200;
+    private static final int RESPONSE_DATA_OK = 0;
 
     private String getTokenSign(String timeStamp){
         StringBuilder sb = new StringBuilder();
@@ -93,7 +94,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     private String getTokenRequestMap(){
         //appid=20110843&grant_type=client_credential&timestamp=1563329819&sign=a472d47c242afbb1d5c305a6abaae6f683705310
 
-        Map<String, String> map = new TreeMap<>();
+        Map<String, Object> map = new TreeMap<>();
         /*
                 new Comparator<String>() {
                     public int compare(String obj1, String obj2) {
@@ -116,7 +117,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
     private Map buildFormSignMap(Map m) {
 
-        Map<String, String> tMap = new TreeMap<>();
+        Map<String, Object> tMap = new TreeMap<>();
         String token = getAccessToken();
         tMap.put(TOKEN_KEY, token);
         tMap.put(APPSECRET_KEY, APPSECRET_VALUE);
@@ -154,6 +155,10 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         try {
             Response response = client.newCall(request).execute();
+
+            if (null == response || null == response.body()) {
+                return null;
+            }
 
             String responseString = response.body().string();
             System.out.println(responseString);
@@ -219,7 +224,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     @Override
     public String buildXFormBody(Map map) {
 
-        Map<String, String> theMap = new HashMap<>();
+        Map<String, Object> theMap = new HashMap<>();
         Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         Long timeStampS = timeStampMs/1000;
         String timeStamp = timeStampS.toString();
@@ -262,6 +267,10 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         try {
             Response response = client.newCall(request).execute();
+
+            if (null == response || null == response.body()) {
+                return null;
+            }
 
             String responseString = response.body().string();
             System.out.println(responseString);

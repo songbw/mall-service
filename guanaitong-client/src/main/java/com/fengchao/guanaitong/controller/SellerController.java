@@ -155,7 +155,7 @@ public class SellerController {
     @ResponseStatus(code = HttpStatus.OK)
     @PostMapping(GuanAiTong.POST_SYNC_REFUND_PATH)
     public void postRefund(HttpServletResponse response,
-                            @RequestBody Map<String, String> map
+                            @RequestBody Map<String, Object> map
                             ) {
 
         JSONObject json = new JSONObject();
@@ -218,7 +218,7 @@ public class SellerController {
     @ResponseStatus(code = HttpStatus.OK)
     @PostMapping(GuanAiTong.POST_ORDER_DELIVERY_PATH)
     public void sendOrderDelivery(HttpServletResponse response,
-                             @RequestBody Map<String, String> map
+                             @RequestBody Map<String, Object> map
     ) {
 
         JSONObject json = new JSONObject();

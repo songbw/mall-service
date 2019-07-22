@@ -31,7 +31,7 @@ public class CommonController {
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("token")
     public ResultObject<TokenData> getToken(HttpServletResponse response
-                         ) throws RuntimeException {
+                         ) {
 
         log.info("===getToken enter");
 
