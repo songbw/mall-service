@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -73,13 +72,64 @@ public class AdminOrderController {
 //            output.flush();
 
             // 1.根据条件获取订单集合
-            List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
+            List<ExportOrdersVo> exportOrdersVoList = // adminOrderService.exportOrders(orderExportReqVo);
+                    adminOrderService.exportOrdersMock();
 
-            //
-            for (int i = 0; i < exportOrdersVoList.size(); i++) {
-                ExportOrdersVo exportOrdersVo = exportOrdersVoList.get(i);
+            // 2.开始组装excel
+            // 2.1 组装title
+            HSSFRow titleRow = sheet.createRow(0);
+            HSSFCell titleCell0 = titleRow.createCell(0);
+            titleCell0.setCellValue("用户id");
+            HSSFCell titleCell1 = titleRow.createCell(1);
+            titleCell1.setCellValue("主订单编号");
+            HSSFCell titleCell2 = titleRow.createCell(2);
+            titleCell2.setCellValue("子订单编号");
+            HSSFCell titleCell3 = titleRow.createCell(3);
+            titleCell3.setCellValue("订单支付时间");
+            HSSFCell titleCell4 = titleRow.createCell(4);
+            titleCell4.setCellValue("订单生成时间");
+            HSSFCell titleCell5 = titleRow.createCell(5);
+            titleCell5.setCellValue("品类");
+            HSSFCell titleCell6 = titleRow.createCell(6);
+            titleCell6.setCellValue("品牌");
+            HSSFCell titleCell7 = titleRow.createCell(7);
+            titleCell7.setCellValue("sku");
+            HSSFCell titleCell8 = titleRow.createCell(8);
+            titleCell8.setCellValue("mpu");
+            HSSFCell titleCell9 = titleRow.createCell(9);
+            titleCell9.setCellValue("商品名称");
+            HSSFCell titleCell10 = titleRow.createCell(10);
+            titleCell10.setCellValue("购买数量 ");
+            HSSFCell titleCell11 = titleRow.createCell(11);
+            titleCell11.setCellValue("活动 ");
+            HSSFCell titleCell12 = titleRow.createCell(12);
+            titleCell12.setCellValue("券码");
+            HSSFCell titleCell13 = titleRow.createCell(13);
+            titleCell13.setCellValue("券来源");
+            HSSFCell titleCell14 = titleRow.createCell(14);
+            titleCell14.setCellValue("进货价");
+            HSSFCell titleCell15 = titleRow.createCell(15);
+            titleCell15.setCellValue("销售价");
+            HSSFCell titleCell16 = titleRow.createCell(16);
+            titleCell16.setCellValue("券支付金额");
+            HSSFCell titleCell17 = titleRow.createCell(17);
+            titleCell17.setCellValue("订单支付金额");
+            HSSFCell titleCell18 = titleRow.createCell(18);
+            titleCell18.setCellValue("平台分润比");
+            HSSFCell titleCell19 = titleRow.createCell(19);
+            titleCell19.setCellValue("收件人名");
+            HSSFCell titleCell20 = titleRow.createCell(20);
+            titleCell20.setCellValue("省");
+            HSSFCell titleCell21 = titleRow.createCell(21);
+            titleCell21.setCellValue("市");
+            HSSFCell titleCell22 = titleRow.createCell(22);
+            titleCell22.setCellValue("区");
 
-                HSSFRow currentRow = sheet.createRow(i);
+            // 2.2 组装业务数据
+            for (int index = 0; index < exportOrdersVoList.size(); index++) {
+                ExportOrdersVo exportOrdersVo = exportOrdersVoList.get(index);
+
+                HSSFRow currentRow = sheet.createRow(index + 1);
 
                 // 用户id
                 HSSFCell cell0 = currentRow.createCell(0);

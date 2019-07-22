@@ -19,4 +19,12 @@ public interface AdminOrderService {
      * @return
      */
     List<ExportOrdersVo> exportOrders(OrderExportReqVo orderExportReqVo) throws Exception;
+
+    /**
+     * 注意这是个mock
+     *
+     * @return
+     * @throws Exception
+     */
+    List<ExportOrdersVo> exportOrdersMock() throws Exception;
 }

@@ -124,7 +124,7 @@ public class ExportOrdersVo {
     /**
      * 平台分润比
      */
-    private BigDecimal shareBenefitPercent;
+    private String shareBenefitPercent;
 
     /**
      * 收件人名

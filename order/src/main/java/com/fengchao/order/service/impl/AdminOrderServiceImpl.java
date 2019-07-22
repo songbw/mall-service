@@ -195,6 +195,46 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         return exportOrdersVoList;
     }
 
+    @Override
+    public List<ExportOrdersVo> exportOrdersMock() {
+        List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            ExportOrdersVo exportOrdersVo = new ExportOrdersVo();
+
+            exportOrdersVo.setOpenId("openid_" + i);
+            exportOrdersVo.setTradeNo("tradeno_" + i);
+            exportOrdersVo.setSubOrderId("suborderid_" + i);
+            exportOrdersVo.setPaymentTime(new Date());
+            exportOrdersVo.setCreateTime(new Date());
+            exportOrdersVo.setCategory("category_" + i);
+            exportOrdersVo.setBrand("brand_" + i);
+            exportOrdersVo.setSku("sku_" + i);
+            exportOrdersVo.setMpu("mpu_" + i);
+            exportOrdersVo.setCommodityName("commodiyname_" + 1);
+            exportOrdersVo.setQuantity(i);
+            exportOrdersVo.setPromotion("promotion_" + i);
+            exportOrdersVo.setPromotionId(Long.valueOf(i));
+            exportOrdersVo.setCouponCode("couponcode_" + i);
+            exportOrdersVo.setCouponId(Long.valueOf(i));
+            exportOrdersVo.setCouponSupplier("couponsupplier_" + i);
+            exportOrdersVo.setPurchasePrice(i);
+            exportOrdersVo.setUnitPrice(i);
+            exportOrdersVo.setTotalRealPrice(i);
+            exportOrdersVo.setCouponPrice(i);
+            exportOrdersVo.setPayPrice(i);
+            exportOrdersVo.setShareBenefitPercent("/");
+            exportOrdersVo.setBuyerName("buyername_" + i);
+            exportOrdersVo.setProvinceName("provincename_" + i);
+            exportOrdersVo.setCityName("cityname_" + i);
+            exportOrdersVo.setCountyName("countyname_" + i);
+
+            exportOrdersVoList.add(exportOrdersVo);
+        }
+
+        return exportOrdersVoList;
+    }
+
 
     //=============================== private =============================
 
