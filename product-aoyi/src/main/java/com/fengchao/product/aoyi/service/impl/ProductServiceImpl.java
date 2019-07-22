@@ -246,7 +246,7 @@ public class ProductServiceImpl implements ProductService {
         Map<Integer, CategoryBean> categoryBeanMap =
                 categoryBeanList.stream().collect(Collectors.toMap(p -> p.getCategoryId(), p -> p));
 
-        // 转dto
+        // 3. 组装结果dto
         List<ProductInfoBean> productInfoBeanList = new ArrayList<>();
         for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
             ProductInfoBean productInfoBean = convertToProductInfoBean(aoyiProdIndex);
@@ -295,29 +295,29 @@ public class ProductServiceImpl implements ProductService {
     private ProductInfoBean convertToProductInfoBean(AoyiProdIndex aoyiProdIndex) {
         ProductInfoBean productInfoBean = new ProductInfoBean();
 
-        productInfoBean.setId(productInfoBean.getId());
-        productInfoBean.setSkuid(productInfoBean.getSkuid());
-        productInfoBean.setBrand(productInfoBean.getBrand());
-        productInfoBean.setCategory(productInfoBean.getCategory());
-        productInfoBean.setCategoryName(productInfoBean.getCategoryName());
-        productInfoBean.setImage(productInfoBean.getImage());
-        productInfoBean.setModel(productInfoBean.getModel());
-        productInfoBean.setName(productInfoBean.getName());
-        productInfoBean.setWeight(productInfoBean.getWeight());
-        productInfoBean.setUpc(productInfoBean.getUpc());
-        productInfoBean.setSaleunit(productInfoBean.getSaleunit());
-        productInfoBean.setState(productInfoBean.getState()); // 上下架状态 1：已上架；0：已下架
-        productInfoBean.setPrice(productInfoBean.getPrice()); // 销售价-商城显示的价格
-        productInfoBean.setSprice(productInfoBean.getSprice()); // 原价，进货价格
-        productInfoBean.setImagesUrl(productInfoBean.getImagesUrl());
-        productInfoBean.setIntroductionUrl(productInfoBean.getIntroductionUrl());
-        productInfoBean.setImageExtend(productInfoBean.getImageExtend());
-        productInfoBean.setImagesUrlExtend(productInfoBean.getImagesUrlExtend());
-        productInfoBean.setIntroductionUrlExtend(productInfoBean.getIntroductionUrlExtend());
-        productInfoBean.setMerchantId(productInfoBean.getMerchantId());
-        productInfoBean.setInventory(productInfoBean.getInventory());
-        productInfoBean.setBrandId(productInfoBean.getBrandId());
-        productInfoBean.setMpu(productInfoBean.getMpu());
+        productInfoBean.setId(aoyiProdIndex.getId());
+        productInfoBean.setSkuid(aoyiProdIndex.getSkuid());
+        productInfoBean.setBrand(aoyiProdIndex.getBrand());
+        productInfoBean.setCategory(aoyiProdIndex.getCategory() == null ? "0" : aoyiProdIndex.getCategory());
+        // productInfoBean.setCategoryName(aoyiProdIndex.getcate());
+        productInfoBean.setImage(aoyiProdIndex.getImage());
+        productInfoBean.setModel(aoyiProdIndex.getModel());
+        productInfoBean.setName(aoyiProdIndex.getName());
+        productInfoBean.setWeight(aoyiProdIndex.getWeight());
+        productInfoBean.setUpc(aoyiProdIndex.getUpc());
+        productInfoBean.setSaleunit(aoyiProdIndex.getSaleunit());
+        productInfoBean.setState(aoyiProdIndex.getState()); // 上下架状态 1：已上架；0：已下架
+        productInfoBean.setPrice(aoyiProdIndex.getPrice()); // 销售价-商城显示的价格
+        productInfoBean.setSprice(aoyiProdIndex.getSprice()); // 原价，进货价格
+        productInfoBean.setImagesUrl(aoyiProdIndex.getImagesUrl());
+        productInfoBean.setIntroductionUrl(aoyiProdIndex.getIntroductionUrl());
+//        productInfoBean.setImageExtend(aoyiProdIndex.getImageExtend());
+//        productInfoBean.setImagesUrlExtend(aoyiProdIndex.getImagesUrlExtend());
+//        productInfoBean.setIntroductionUrlExtend(aoyiProdIndex.getIntroductionUrlExtend());
+        productInfoBean.setMerchantId(aoyiProdIndex.getMerchantId());
+        productInfoBean.setInventory(aoyiProdIndex.getInventory());
+        productInfoBean.setBrandId(aoyiProdIndex.getBrandId());
+        productInfoBean.setMpu(aoyiProdIndex.getMpu());
 
         return productInfoBean;
     }

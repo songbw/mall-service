@@ -39,7 +39,7 @@ public class PromotionController {
     }
 
     @GetMapping("findByIdList")
-    public OperaResult findPromotionListByIdList(List<Integer> idList, OperaResult result){
+    public OperaResult findPromotionListByIdList(@RequestParam("idList") List<Integer> idList, OperaResult result){
         log.info("查询活动列表 根据id集合查询 入参:{}", JSONUtil.toJsonString(idList));
 
         try {

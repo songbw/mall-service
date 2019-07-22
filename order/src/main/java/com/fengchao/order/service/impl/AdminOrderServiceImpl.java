@@ -74,7 +74,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Set<Integer> couponIdSet = new HashSet<>();
         for (Orders orders : ordersList) {
             ordersIdList.add(orders.getId());
-            couponIdSet.add(orders.getCouponId());
+            if (orders.getCouponId() != null) {
+                couponIdSet.add(orders.getCouponId());
+            }
         }
 
         List<OrderDetail> orderDetailList =
@@ -140,57 +142,60 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
-        for (OrdersBo ordersBo : ordersBoList) { // 遍历
-            List<OrderDetailBo> orderDetailBoList = ordersBo.getOrderDetailBoList();
-            for (OrderDetailBo orderDetailBo : orderDetailBoList) { // 遍历
-                ExportOrdersVo exportOrdersVo = new ExportOrdersVo();
+        for (OrdersBo ordersBo : ordersBoList) { // 遍历主订单
+            List<OrderDetailBo> orderDetailBoList = ordersBo.getOrderDetailBoList(); // 获取该订单的子订单
+            if (CollectionUtils.isNotEmpty(orderDetailBoList)) { // 目前不存在子订单的这种情况是不存在的!!!!
+                for (OrderDetailBo orderDetailBo : orderDetailBoList) { // 遍历子订单
+                    ExportOrdersVo exportOrdersVo = new ExportOrdersVo();
 
-                exportOrdersVo.setOpenId(ordersBo.getOpenId()); // 用户id
-                exportOrdersVo.setTradeNo(ordersBo.getTradeNo()); // 主订单编号
-                exportOrdersVo.setSubOrderId(orderDetailBo.getSubOrderId()); // 子订单编号
-                exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
-                exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
+                    exportOrdersVo.setOpenId(ordersBo.getOpenId()); // 用户id
+                    exportOrdersVo.setTradeNo(ordersBo.getTradeNo()); // 主订单编号
+                    exportOrdersVo.setSubOrderId(orderDetailBo.getSubOrderId()); // 子订单编号
+                    exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
+                    exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
 
-                ProductInfoBean productInfoBean = productInfoBeanMap.get(orderDetailBo.getMpu());
-                exportOrdersVo.setCategory(productInfoBean == null ? "" : productInfoBean.getCategoryName()); // 品类
-                exportOrdersVo.setBrand(productInfoBean == null ? "" : productInfoBean.getBrand()); // 品牌
-                exportOrdersVo.setSku(orderDetailBo.getSkuId());
-                exportOrdersVo.setMpu(orderDetailBo.getMpu());
-                exportOrdersVo.setCommodityName(productInfoBean == null ? "" : productInfoBean.getName()); // 商品名称
-                exportOrdersVo.setQuantity(orderDetailBo.getNum()); // 购买数量
-                exportOrdersVo.setPromotion(
-                        promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
-                                "" : promotionBeanMap.get(orderDetailBo.getPromotionId()).getName()); // 活动
-                exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
-                exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
-                exportOrdersVo.setCouponId(ordersBo.getCouponId().longValue()); // 券码id
-                exportOrdersVo.setCouponSupplier(
-                        couponBeanMap.get(ordersBo.getCouponId()) == null ?
-                                "" : couponBeanMap.get(ordersBo.getCouponId()).getSupplierMerchantName()); // 券来源（券商户）
-                Integer purchasePrice = null; // 进货价格
-                if (productInfoBean != null) {
-                    String _sprice = productInfoBean.getSprice();
-                    BigDecimal bigDecimal = new BigDecimal("_sprice");
+                    ProductInfoBean productInfoBean = productInfoBeanMap.get(orderDetailBo.getMpu());
+                    exportOrdersVo.setCategory(productInfoBean == null ? "" : productInfoBean.getCategoryName()); // 品类
+                    exportOrdersVo.setBrand(productInfoBean == null ? "" : productInfoBean.getBrand()); // 品牌
+                    exportOrdersVo.setSku(orderDetailBo.getSkuId());
+                    exportOrdersVo.setMpu(orderDetailBo.getMpu());
+                    exportOrdersVo.setCommodityName(productInfoBean == null ? "" : productInfoBean.getName()); // 商品名称
+                    exportOrdersVo.setQuantity(orderDetailBo.getNum()); // 购买数量
+                    exportOrdersVo.setPromotion(
+                            promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
+                                    "" : promotionBeanMap.get(orderDetailBo.getPromotionId()).getName()); // 活动
+                    exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
+                    exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
+                    exportOrdersVo.setCouponId(ordersBo.getCouponId() == null ? null : ordersBo.getCouponId().longValue()); // 券码id
+                    exportOrdersVo.setCouponSupplier(
+                            couponBeanMap.get(ordersBo.getCouponId()) == null ?
+                                    "" : couponBeanMap.get(ordersBo.getCouponId()).getSupplierMerchantName()); // 券来源（券商户）
+                    Integer purchasePrice = null; // 进货价格
+                    if (productInfoBean != null) {
+                        String _sprice = productInfoBean.getSprice();
+                        if (_sprice != null) {
+                            BigDecimal bigDecimal = new BigDecimal(_sprice);
+                            purchasePrice = bigDecimal.multiply(new BigDecimal(100)).intValue();
+                        }
+                    }
+                    exportOrdersVo.setPurchasePrice(purchasePrice); // 进货价格 单位分
+                    exportOrdersVo.setTotalRealPrice(
+                            orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()
+                                    * orderDetailBo.getNum()); // sku 的总价
+                    exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
+                    exportOrdersVo.setCouponPrice(orderDetailBo.getSkuCouponDiscount()); // 券支付金额
+                    exportOrdersVo.setPayPrice(exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // 实际支付的价格
+                    // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
+                    exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
+                    exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省
+                    exportOrdersVo.setCityName(ordersBo.getCityName()); // 市
+                    exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
 
-                    purchasePrice = bigDecimal.multiply(new BigDecimal(100)).intValue();
-                }
-                exportOrdersVo.setPurchasePrice(purchasePrice); // 进货价格 单位分
-                exportOrdersVo.setTotalRealPrice(
-                        orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()
-                        * orderDetailBo.getNum()); // sku 的总价
-                exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
-                exportOrdersVo.setCouponPrice(orderDetailBo.getSkuCouponDiscount()); // 券支付金额
-                exportOrdersVo.setPayPrice(exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // 实际支付的价格
-                // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
-                exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
-                exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省
-                exportOrdersVo.setCityName(ordersBo.getCityName()); // 市
-                exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
+                    exportOrdersVoList.add(exportOrdersVo);
+                } // 遍历子订单 end
             }
 
-
-
-        }
+        } // 遍历主订单 end
 
         return exportOrdersVoList;
     }

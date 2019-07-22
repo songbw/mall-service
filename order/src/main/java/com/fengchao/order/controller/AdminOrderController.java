@@ -6,6 +6,7 @@ import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -55,6 +56,8 @@ public class AdminOrderController {
      * ，sku， mpu， 商品名称， 购买数量 ， 活动 ， 券码， 券来源（券商户），进货价， 销售价，  券支付金额， 订单支付金额，
      * 平台分润比， 收件人名， 省 ， 市， 区
      *
+     * 测试: http://localhost:8004/adminorder/export?merchantId=12&payStartDate=2019-01-10&payEndDate=2019-09-10
+     *
      * @param orderExportReqVo 导出条件
      * @param response
      */
@@ -66,6 +69,12 @@ public class AdminOrderController {
             if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
                 throw new Exception("参数不合法, 商户id为空");
             }
+            if (orderExportReqVo.getPayStartDate() == null) {
+                throw new Exception("参数不合法, 查询开始时间为空");
+            }
+            if (orderExportReqVo.getPayEndDate() == null) {
+                throw new Exception("参数不合法, 查询结束时间为空");
+            }
 
             // 创建HSSFWorkbook对象
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -75,6 +84,10 @@ public class AdminOrderController {
             // 1.根据条件获取订单集合
             List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
 //                    adminOrderService.exportOrdersMock();
+
+            if (CollectionUtils.isEmpty(exportOrdersVoList)) {
+                throw new Exception("未找出有效的导出数据!");
+            }
 
             // 2.开始组装excel
             // 2.1 组装title
@@ -190,7 +203,7 @@ public class AdminOrderController {
 
                 // 进货价，
                 HSSFCell cell14 = currentRow.createCell(14);
-                cell14.setCellValue(exportOrdersVo.getPurchasePrice());
+                cell14.setCellValue(exportOrdersVo.getPurchasePrice() == null ? "无" : String.valueOf(exportOrdersVo.getPurchasePrice()));
 
                 // 销售价，
                 HSSFCell cell15 = currentRow.createCell(15);

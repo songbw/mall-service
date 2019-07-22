@@ -5,3 +5,5 @@ rpc:
     client:
       equit:
         url: http://localhost:8007
+      product:
+        url: http://localhost:8002

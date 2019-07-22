@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(value = "product-aoyi", fallback = ProductServiceH.class)
+@FeignClient(value = "product-aoyi", url = "${rpc.feign.client.product.url:}", fallback = ProductServiceH.class)
 public interface ProductService {
 
     @RequestMapping(value = "/prod", method = RequestMethod.GET)

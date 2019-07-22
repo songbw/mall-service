@@ -76,7 +76,7 @@ public class ProductController {
      * @throws ProductException
      */
     @GetMapping("/findByMpuIdList")
-    private OperaResult findByMpuIdList(List<String> mpuIdList, OperaResult result) throws ProductException {
+    private OperaResult findByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
         log.info("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
         try {
             // 查询
