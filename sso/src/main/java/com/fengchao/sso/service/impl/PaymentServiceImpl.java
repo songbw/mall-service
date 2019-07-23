@@ -114,8 +114,9 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public String gNotify(GATBackBean backBean) {
         List<Order> orders = findByOutTradeNoAndPaymentNo(backBean.getOuter_trade_no(), backBean.getTrade_no());
+        int amount = Math.round(backBean.getTotal_amount() * 100);
         orders.forEach(order1 -> {
-            order1.setPaymentAmount(backBean.getTotal_amount());
+            order1.setPaymentAmount(amount);
             order1.setPaymentAt(new Date());
             order1.setStatus(1);
             order1.setPayStatus(5);
