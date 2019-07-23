@@ -157,20 +157,24 @@
     select
     <include refid="Base_Column_List" />
     from coupon
-    where status in (2,3)
-    <if test="mpu != null and mpu != ''" >
-      and find_in_set(#{mpu,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
-    </if>
-    <if test="mpu != null and mpu != ''" >
-      or locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0 and scenario_type = 2
-    </if>
-    <if test="category != null and category != ''" >
-      or find_in_set(#{category,jdbcType=VARCHAR}, category)
+    where
+    <trim prefix="(" suffix=")">
+        1=1
       <if test="mpu != null and mpu != ''" >
-        and locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0
+        and find_in_set(#{mpu,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
       </if>
-      and scenario_type = 3
-    </if>
+      <if test="mpu != null and mpu != ''" >
+        or locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0 and scenario_type = 2
+      </if>
+      <if test="category != null and category != ''" >
+        or find_in_set(#{category,jdbcType=VARCHAR}, category)
+        <if test="mpu != null and mpu != ''" >
+          and locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0
+        </if>
+        and scenario_type = 3
+      </if>
+    </trim>
+    and status in (2,3)
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from coupon
