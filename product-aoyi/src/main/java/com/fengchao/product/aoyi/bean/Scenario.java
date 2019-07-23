@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class Scenario {
     private int type;
-    private String[] couponSkus;
-    private String[] excludeSkus;
+    private String[] couponMpus;
+    private String[] excludeMpus;
     private String[] categories;
     private String[] brands;
 }

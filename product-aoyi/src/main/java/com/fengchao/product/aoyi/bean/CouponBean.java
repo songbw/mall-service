@@ -3,16 +3,12 @@ package com.fengchao.product.aoyi.bean;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Setter
-@Getter
-public class CouponBean implements Serializable {
+@Data
+public class CouponBean {
 
     private Integer id;
     private String name;
@@ -38,6 +34,8 @@ public class CouponBean implements Serializable {
     private Date createDate;
     private Integer userCollectNum;
     private Rules rules;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String price;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private PageBean couponSkus;
     @JsonInclude(JsonInclude.Include.NON_NULL)
