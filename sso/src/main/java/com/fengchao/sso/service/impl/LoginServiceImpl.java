@@ -123,7 +123,7 @@ public class LoginServiceImpl implements ILoginService {
                 if (!StringUtils.isEmpty(guanaitongUserBean.getName())) {
                     user.setNickname(guanaitongUserBean.getName());
                 } else {
-                    String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
+                    String nickname = "fc_" + guanaitongUserBean.getOpen_id().substring(user.getOpenId().length() - 8);
                     user.setNickname(nickname);
                 }
                 user.setName(guanaitongUserBean.getName());
@@ -151,13 +151,13 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     private OpenId getGuanaitongOpenId(String authCode) {
-        OpenId openId = new OpenId();
-        openId.setAuth_code(authCode);
-        Result result = guanaitongClientService.findOpenId(openId);
+        AuthCode authCode1 = new AuthCode();
+        authCode1.setAuth_code(authCode);
+        Result result = guanaitongClientService.findOpenId(authCode1);
         if (result.getCode() == 200) {
             Object object = result.getData() ;
             String jsonString = JSON.toJSONString(object);
-            openId = JSONObject.parseObject(jsonString, OpenId.class) ;
+            OpenId openId = JSONObject.parseObject(jsonString, OpenId.class) ;
             return openId;
         }
         return null;
