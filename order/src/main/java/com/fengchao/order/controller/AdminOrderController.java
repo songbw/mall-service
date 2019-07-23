@@ -18,7 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/adminorder")
@@ -62,7 +66,7 @@ public class AdminOrderController {
      * @param response
      */
     @GetMapping(value = "/export")
-    public void exportOrder(OrderExportReqVo orderExportReqVo, HttpServletResponse response) {
+    public void exportOrder(OrderExportReqVo orderExportReqVo, HttpServletResponse response) throws Exception {
         try {
             log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
@@ -113,21 +117,21 @@ public class AdminOrderController {
             HSSFCell titleCell9 = titleRow.createCell(9);
             titleCell9.setCellValue("商品名称");
             HSSFCell titleCell10 = titleRow.createCell(10);
-            titleCell10.setCellValue("购买数量 ");
+            titleCell10.setCellValue("购买数量");
             HSSFCell titleCell11 = titleRow.createCell(11);
-            titleCell11.setCellValue("活动 ");
+            titleCell11.setCellValue("活动");
             HSSFCell titleCell12 = titleRow.createCell(12);
             titleCell12.setCellValue("券码");
             HSSFCell titleCell13 = titleRow.createCell(13);
             titleCell13.setCellValue("券来源");
             HSSFCell titleCell14 = titleRow.createCell(14);
-            titleCell14.setCellValue("进货价");
+            titleCell14.setCellValue("进货价 单位：元");
             HSSFCell titleCell15 = titleRow.createCell(15);
-            titleCell15.setCellValue("销售价");
+            titleCell15.setCellValue("销售价 单位：元");
             HSSFCell titleCell16 = titleRow.createCell(16);
-            titleCell16.setCellValue("券支付金额");
+            titleCell16.setCellValue("券支付金额 单位：元");
             HSSFCell titleCell17 = titleRow.createCell(17);
-            titleCell17.setCellValue("订单支付金额");
+            titleCell17.setCellValue("订单支付金额 单位：元");
             HSSFCell titleCell18 = titleRow.createCell(18);
             titleCell18.setCellValue("平台分润比");
             HSSFCell titleCell19 = titleRow.createCell(19);
@@ -159,11 +163,17 @@ public class AdminOrderController {
 
                 // 订单支付时间，
                 HSSFCell cell3 = currentRow.createCell(3);
-                cell3.setCellValue(exportOrdersVo.getPaymentTime());
+                cell3.setCellValue("");
+                if (exportOrdersVo.getPaymentTime() != null) {
+                    cell3.setCellValue(DateUtil.dateTimeFormat(exportOrdersVo.getPaymentTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                }
 
                 // 订单生成时间，
                 HSSFCell cell4 = currentRow.createCell(4);
-                cell4.setCellValue(exportOrdersVo.getCreateTime());
+                cell4.setCellValue("");
+                if (exportOrdersVo.getCreateTime() != null) {
+                    cell4.setCellValue(DateUtil.dateTimeFormat(exportOrdersVo.getCreateTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                }
 
                 // 品类，
                 HSSFCell cell5 = currentRow.createCell(5);
@@ -201,21 +211,37 @@ public class AdminOrderController {
                 HSSFCell cell13 = currentRow.createCell(13);
                 cell13.setCellValue(exportOrdersVo.getCouponSupplier());
 
-                // 进货价，
+                // 进货价(单位：元)，
                 HSSFCell cell14 = currentRow.createCell(14);
-                cell14.setCellValue(exportOrdersVo.getPurchasePrice() == null ? "无" : String.valueOf(exportOrdersVo.getPurchasePrice()));
+                cell14.setCellValue("无");
+                if (exportOrdersVo.getPurchasePrice() != null) {
+                    String _price = new BigDecimal(exportOrdersVo.getPurchasePrice()).divide(new BigDecimal(100)).toString();
+                    cell14.setCellValue(_price);
+                }
 
-                // 销售价，
+                // 销售价，(单位：元)
                 HSSFCell cell15 = currentRow.createCell(15);
-                cell15.setCellValue(exportOrdersVo.getTotalRealPrice());
+                cell15.setCellValue("无");
+                if (exportOrdersVo.getTotalRealPrice() != null) {
+                    String _price = new BigDecimal(exportOrdersVo.getTotalRealPrice()).divide(new BigDecimal(100)).toString();
+                    cell15.setCellValue(_price);
+                }
 
-                // 券支付金额，
+                // 券支付金额，(单位：元)
                 HSSFCell cell16 = currentRow.createCell(16);
-                cell16.setCellValue(exportOrdersVo.getCouponPrice());
+                cell16.setCellValue("0");
+                if (exportOrdersVo.getCouponPrice() != null) {
+                    String _price = new BigDecimal(exportOrdersVo.getCouponPrice()).divide(new BigDecimal(100)).toString();
+                    cell16.setCellValue(_price);
+                }
 
-                // 订单支付金额，
+                // 订单支付金额，(单位：元)
                 HSSFCell cell17 = currentRow.createCell(17);
-                cell17.setCellValue(exportOrdersVo.getPayPrice());
+                cell17.setCellValue("无");
+                if (exportOrdersVo.getPayPrice() != null) {
+                    String _price = new BigDecimal(exportOrdersVo.getPayPrice()).divide(new BigDecimal(100)).toString();
+                    cell17.setCellValue(_price);
+                }
 
                 // 平台分润比，
                 HSSFCell cell18 = currentRow.createCell(18);
@@ -239,24 +265,56 @@ public class AdminOrderController {
             }
 
 
-            /////////
+            ///////// 文件名
             String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
-
             String fileName = "exportorder_" + date + ".xls";
 
-            response.setHeader("content-type", "application/octet-stream");
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
+            // 输出文件
             OutputStream outputStream = null;
+            try {
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-            outputStream = response.getOutputStream();
-            workbook.write(outputStream);
-            outputStream.flush();
+                outputStream = response.getOutputStream();
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出订单文件 出错了:{}", e.getMessage(), e);
 
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
             log.info("export file finish");
         } catch (Exception e) {
-            log.error("到处订单文件异常:{}", e.getMessage(), e);
+            log.error("导出订单文件异常:{}", e.getMessage(), e);
+
+//            response.setHeader("content-type", "application/json;charset=UTF-8");
+//            response.setContentType("application/json");
+            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "401");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(map.toString());
+            } catch (Exception e1) {
+                log.error("导出订单文件 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
         }
     }
 

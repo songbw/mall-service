@@ -105,7 +105,7 @@ public class ExportOrdersVo {
     private Integer unitPrice;
 
     /**
-     * sku 的总价
+     * sku 的总价 单位：分
      * 计算：unitPrice * quantity(购买数量)
      */
     private Integer totalRealPrice;
