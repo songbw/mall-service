@@ -182,7 +182,7 @@
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectDayPaymentCount" resultType="java.lang.Integer" parameterType="Map">
-    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at > #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
   </select>
   <select id="selectDayCount" resultType="java.lang.Integer">
     SELECT count(id) FROM orders WHERE <![CDATA[created_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
@@ -195,6 +195,11 @@
   </select>
   <select id="selectDayPromotionPaymentCount" resultType="com.fengchao.order.bean.PromotionPaymentBean" parameterType="Map">
     SELECT SUM(o.sale_amount) saleAmount, od.promotion_id promotionId FROM orders o LEFT JOIN order_detail od ON o.id = od.order_id WHERE o.pay_status = 5 and <![CDATA[o.payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and o.payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]> and od.promotion_id is NOT NULL GROUP BY od.promotion_id;
+  </select>
+  <select id="selectDayCategoryPaymentList" resultType="com.fengchao.order.bean.CategoryPaymentBean" parameterType="Map">
+    SELECT o.sale_amount saleAmount, od.category category
+    FROM orders o LEFT JOIN order_detail od ON o.id = od.order_id
+    WHERE o.pay_status = 5 and <![CDATA[o.payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and o.payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]> and od.category is not NULL;
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

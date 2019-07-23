@@ -20,7 +20,11 @@
     from overview
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    <select id="selectSum" resultType="com.fengchao.statistics.model.Overview">
+      select sum(order_payment_amount) orderPaymentAmount, sum(order_count) orderCount, sum(order_people_num) orderPeopleNum, sum(order_back_num) orderBackNum
+      from overview
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from overview
     where id = #{id,jdbcType=BIGINT}
   </delete>

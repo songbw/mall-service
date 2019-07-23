@@ -7,6 +7,7 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,9 @@ public class ProductController {
 
     @GetMapping
     private OperaResult find(String mpu, OperaResult result) throws ProductException {
+        if (StringUtils.isEmpty(mpu)) {
+            throw new ProductException(200005, "mpu信息为null");
+        }
         result.getData().put("result", service.findAndPromotion(mpu)) ;
         return result;
     }

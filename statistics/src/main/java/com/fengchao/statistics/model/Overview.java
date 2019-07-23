@@ -13,6 +13,8 @@ public class Overview {
 
     private Integer orderBackNum;
 
+    private Integer userNum;
+
     private Date statisticsDate;
 
     private Date createdAt;
@@ -71,5 +73,13 @@ public class Overview {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Integer getUserNum() {
+        return userNum;
+    }
+
+    public void setUserNum(Integer userNum) {
+        this.userNum = userNum;
     }
 }

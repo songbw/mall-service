@@ -33,7 +33,10 @@
     from s_user
     where open_id = #{openId}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    <select id="selectCount" resultType="java.lang.Integer">
+      select count(id) from s_user
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from s_user
     where id = #{id,jdbcType=VARCHAR}
   </delete>

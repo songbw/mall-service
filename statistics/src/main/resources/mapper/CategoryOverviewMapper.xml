@@ -18,6 +18,12 @@
     from category_overview
     where id = #{id,jdbcType=BIGINT}
   </select>
+  <select id="selectSum" resultType="com.fengchao.statistics.model.CategoryOverview"  parameterType="Map">
+    select code, name, sum(order_payment_amount) orderPaymentAmount
+    from category_overview
+    where <![CDATA[statistics_date >= #{start,jdbcType=TIMESTAMP}]]> <![CDATA[ and statistics_date <= #{end,jdbcType=TIMESTAMP}]]>
+    group by code
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from category_overview
     where id = #{id,jdbcType=BIGINT}

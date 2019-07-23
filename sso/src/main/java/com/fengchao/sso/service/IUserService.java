@@ -28,4 +28,6 @@ public interface IUserService {
     int updateByPrimaryKey(UserBean userBean);
 
     OperaResult findPingAnUser(String userToken) ;
+
+    int findUserCount() ;
 }

@@ -1,7 +1,9 @@
 package com.fengchao.sso.service.impl;
 
-import com.fengchao.sso.bean.LoginBean;
-import com.fengchao.sso.bean.ThirdLoginBean;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.fengchao.sso.bean.*;
+import com.fengchao.sso.feign.GuanaitongClientService;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.mapper.LoginMapper;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
@@ -13,10 +15,13 @@ import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RedisUtil;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -36,6 +41,8 @@ public class LoginServiceImpl implements ILoginService {
 
     @Autowired
     private PinganClientService pinganClientService;
+    @Autowired
+    private GuanaitongClientService guanaitongClientService ;
 
 
     @Override
@@ -101,8 +108,74 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public OperaResult findPingAnToken(String initCode) {
-        return pinganClientService.findToken(initCode);
+    public OperaResult findThirdPartyToken(String iAppId, String initCode) {
+        OperaResult result = new OperaResult();
+        AccessToken accessToken = new AccessToken() ;
+        if ("10".equals(iAppId)) {
+            // 获取关爱通登录信息
+            OpenId openId = getGuanaitongOpenId(initCode) ;
+            accessToken.setOpenId(openId.getOpen_id());
+            User user = userMapper.selectByOpenId(openId.getOpen_id());
+            if (user == null) {
+                GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id()) ;
+                user = new User();
+                user.setOpenId(openId.getOpen_id());
+                if (!StringUtils.isEmpty(guanaitongUserBean.getName())) {
+                    user.setNickname(guanaitongUserBean.getName());
+                } else {
+                    String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
+                    user.setNickname(nickname);
+                }
+                user.setName(guanaitongUserBean.getName());
+                user.setTelephone(guanaitongUserBean.getMobile());
+                user.setCreatedAt(new Date());
+                userMapper.insertSelective(user);
+            }
+        } else {
+            accessToken = getPingAnToken(initCode) ;
+        }
+        result.getData().put("result", accessToken);
+        return result ;
+    }
+
+    private AccessToken getPingAnToken(String initCode) {
+        OperaResult result = pinganClientService.findToken(initCode);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            AccessToken accessToken = JSONObject.parseObject(jsonString, AccessToken.class) ;
+            return accessToken;
+        }
+        return null;
+    }
+
+    private OpenId getGuanaitongOpenId(String authCode) {
+        OpenId openId = new OpenId();
+        openId.setAuth_code(authCode);
+        OperaResult result = guanaitongClientService.findOpenId(openId);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            openId = JSONObject.parseObject(jsonString, OpenId.class) ;
+            return openId;
+        }
+        return null;
+    }
+
+    private GuanaitongUserBean getGuanaitongUser(String openId) {
+        OpenId openId1 = new OpenId();
+        openId1.setOpen_id(openId);
+        OperaResult result = guanaitongClientService.findUser(openId1);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            GuanaitongUserBean guanaitongUserBean = JSONObject.parseObject(jsonString, GuanaitongUserBean.class) ;
+            return guanaitongUserBean;
+        }
+        return null;
     }
 
 }

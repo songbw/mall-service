@@ -43,13 +43,14 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public int createCoupon(CouponBean bean) {
-        CouponX coupon = beanToCoupon(bean);
+        CouponX couponx = beanToCoupon(bean);
+        couponx.setCreateDate(new Date());
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
-        if(coupon.getCode() == null || "".equals(coupon.getCode())){
-            coupon.setCode(uuid);
+        if(couponx.getCode() == null || "".equals(couponx.getCode())){
+            couponx.setCode(uuid);
         }
-        int num = mapper.insertSelective(coupon);
-        return coupon.getId();
+        int num = mapper.insertSelective(couponx);
+        return couponx.getId();
     }
 
     @Override
@@ -267,7 +268,6 @@ public class CouponServiceImpl implements CouponService {
             coupon.setExcludeDates(json.toJSONString());
         }
         coupon.setUrl(bean.getUrl());
-        coupon.setCreateDate(new Date());
         coupon.setCategory(bean.getCategory());
         if(bean.getTags() != null){
             String tagStr = Arrays.toString(bean.getTags());

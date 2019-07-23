@@ -3,6 +3,7 @@ package com.fengchao.equity.utils;
 
 import org.apache.commons.codec.binary.Base64;
 
+import javax.crypto.SecretKey;
 import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -16,36 +17,28 @@ public class Pkcs8Util {
 
     private static String KEY_FILE="pkcs/pkcs8_private.pem" ;
 
-    private static String pkcs8 = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDOvqcZlQpkZv32" +
-            "6u67sXEnlD86iRCt0AerY3XtkuEockKQIDcaJj6ZUkD8TSjZUhM8ypuPYdRjqWj7" +
-            "Jc4JneZF1V8pmfhmxvkW5ewBaGzgAB08v1ISD8sEmileWFQUlbQw9qIvKJpS9KF3" +
-            "fdr1KJe6QWuP4T376rJDHGceIK8tJqudb5Svhh67gubksxo/vE3hjNwLEHnF1Hgo" +
-            "H4SS4FXYq0T+DbbRaifuY8sTdpqF42rX0oW7l5Kb/Wn2n0Yp297uBo9QKhHQ0oft" +
-            "VpHmubDO48MqGNF1Ywa+MbnNk0aKxQQEDLfdIA1T9qfwywhIQvrPN4lMcArn9lg2" +
-            "y4xYWuG7AgMBAAECggEAfTkPHzidzchwBPGxXfAQ+IcbcQn6Fz0MmCurDxXK2OO0" +
-            "G3XXyjfl7JnckLTvjAnhaw3RARyhNygyVQRF8p84DY46kIkY4q+bydnDg+rLHzYS" +
-            "f2vmetgkAIqbifB4JOuz84A/Jc8zAhH4BtctGxbWJ9NeIgysrXwvMuTuNFpZoD9X" +
-            "BZvTUWRH2OQjoPUpomdXWIq+XWeLcG7JKfv5oTw2J/7pZraZdycaiyHg9ev+4RbG" +
-            "8SbT0HKBNsVPnFyVf8YbzplajcO2d6me/cUyL6/98sdHuwbLx/yS+EUXeaDj5LVm" +
-            "IaQkWwu0Xb2zodj4asFIFrbPW5ZY+w+/hLS/er8xEQKBgQD8i+N7aTCLlQ1WXC5x" +
-            "04dkVJkA36uyzId8LrSmyUEhYd2/Aj8FmkLd8Wv3N5XLsHbXGqv/EDpl3CDvFK5a" +
-            "R3eN6xG1NvRLLaIk1K/Nsa7DIZ7X+32410S1UUjSHjDQIAUVFAM3D83H3bOPCORi" +
-            "theQIOnXehvh7hxcoyLV7Lt8kwKBgQDRkmwPSJgVZzI2ZiOUww7RksTmeVUgSDsQ" +
-            "iszggFdH/aeWNlB2Hea6cN6zc/0aDMRHe/oDmd2D/FTva9lYGWSYsi3zs3C7mBOW" +
-            "WhBvuu7P94r6rxOTDn/cs+vXTlXHtiA1KZZ5xW8DPSxutw0QEw1GN563EzqL9jP4" +
-            "hFcsqa9nOQKBgAW48b2hI412Iig7zH2dymqWlCT17IEPq14//K3uz3//JLQoS99H" +
-            "oI5A4y5l3woPhJHZM96CsqAOPdzM/ipjhiz8D5molh6B+TOWcilaBli7kUrZkv62" +
-            "OgNVxS2lq3t7zkGtA2mi/QmzV1c9X1dxQtVsOYA9bxZOe+wJckegpprrAoGAfjji" +
-            "PJJMhxeQdpMt+vtAgZkUXnvVeYwHhv8SRmUGLKXpud8ctwdrX/97IjpJxtbJoQRa" +
-            "oLCbalMgFNOwJA+nNxCZ/J2m2FXP9k5od+Lu0vMVEcdA0uF4wUTcVuEnaRGYdGyH" +
-            "5O+03Q6LJGO7ymKvLAtz3HAIYyP2SUfr+Up6CoECgYBaR3YdtofqaEZrZIipPyeR" +
-            "uk9fJ8cQ8ShJJIGQH4kbd0WHaktK/ADAr2hwJQCSx18IyHmyOgWfw6B8Hj+/sWuo" +
-            "TNgTy4y3UD2S7W48dku4uw1a78iSMOxJFy9a+xvr5RwzBDaiwtUKIY5Hfo0G7CyJ" +
-            "xz3encY7Ml8qizR4vkINIQ==";
+    private static String pkcs8 = "";
+
+    private static String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJSbwqiRE9PICIlaER+GBLXcZHh0ub3Qm91TFV\n" +
+            "uzhp1gjQcgqJyqyrMUqajMBJpN1KfiDQq9HMDSptpgGCSoDDphtyiMVErUlyMeTP2TfCmnLl9PFi\n" +
+            "7oRh7HZtAwZ2f0UTjh6nBPzba6UcoprGgYc5v0PhRnyoUROgV44reLRLbQIDAQAB";
+
+    private static String privateKey = "MIICeQIBADANBgkqhkiG9w0BAQEFAASCAmMwggJfAgEAAoGBAIlJvCqJET08gIiVoRH4YEtdxkeH\n" +
+            "S5vdCb3VMVW7OGnWCNByConKrKsxSpqMwEmk3Up+INCr0cwNKm2mAYJKgMOmG3KIxUStSXIx5M/Z\n" +
+            "N8KacuX08WLuhGHsdm0DBnZ/RROOHqcE/NtrpRyimsaBhzm/Q+FGfKhRE6BXjit4tEttAgMBAAEC\n" +
+            "gYEAh+HlTixwVa3mgkmnLMQrey0LrYxp95ElrTCwLeyqf4aLHtVhPNTPZnnZH3Mkdz+oj6ybCi6l\n" +
+            "7lMxpWljoPPg0VA2xDYWLiElB1QkZl43DzBWcuuXU4AhPTVaYXjhv4+g3irIWCeYQUCNRwRjt3do\n" +
+            "I+BmrympMUCr4+IDedcyfoECQQDPgpYsHrR91vcsADWzC9h4mMYZLbH6MjeCXHDhF70fh7rtllmm\n" +
+            "yz+cX+KXhDaUXH4h/PzCBzXbMCSMP8626uz9AkEAqV5o9cTpZZsQxKIThzqA6RHgg/GaBNan07zd\n" +
+            "mMB55Dei4zxdsPnbC/eNLwPbHNHXsDXicK1RxntEfKcnSStbMQJBAKWUJ8wQvCjljNkZWcACpbqk\n" +
+            "/P0+TxO7Wju1E4Uo8gnkvi2ymNrUt29Ju373Sq3bl/H68pzIMBs0MRWQHJwsnOkCQQCGogXNWDow\n" +
+            "CpPJuwzK8jaHDy7ps6Q7NGc0aW29f0NlptRUziesBvGZEa+pL+d9gVFzQWI/L4dRv6sxa65O+6gB\n" +
+            "AkEAhp3ytHS6QKN6QoelFkasjFB9LT7qmpfwoNV1CKX3sItNdnzZQT5BcD0WKU3E1FCZvEx9ksQH\n" +
+            "2p85kn+zX3QSIg==";
 
     public static String getSign(String json) throws Exception {
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        byte[] keyBytes = Base64.decodeBase64(pkcs8);
+        byte[] keyBytes = Base64.decodeBase64(privateKey);
         PrivateKey privatekey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
         Signature dsa = Signature.getInstance("SHA1withRSA");      //采用SHA1withRSA加密
         dsa.initSign(privatekey);
@@ -53,7 +46,7 @@ public class Pkcs8Util {
         return new String (Base64.encodeBase64(dsa.sign()));
     }
 
-    public static boolean verify(byte[] data, String publicKey, String sign) throws Exception{
+    public static boolean verify(byte[] data, String sign) throws Exception{
         byte[] keyBytes = Base64.decodeBase64(publicKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -125,6 +118,32 @@ public class Pkcs8Util {
             return null;
         }
         return buff;
+    }
+
+    public static void main(String[] args) {
+        Map<String, Object> map = new HashMap<String, Object>();
+//        //系统参数
+        String teststr= "1044391000fd194ab888b1aa81c03c3710";
+//        String couponCode= "4567";
+        // 授权用户名(固定值)
+//        map.put("open_id", "20180801050402");// 请求时间戳,时区为GMT+8(北京时间)
+        try {
+//            加密
+            String encryptAES = AESUtils.encryptAES(teststr.getBytes());
+//            String couponCodeAES = AESUtils.encryptAES(couponCode.getBytes());
+//            //加密后的内容Base64编码
+            map.put("open_id", encryptAES);
+//            map.put("coupon_code",couponCodeAES);
+            String urlMap = formatUrlMap(map, false, false);
+//
+            String sing = getSign(urlMap);
+            System.out.println(sing);
+            verify(urlMap.getBytes(), sing);
+//            boolean verify = verify(urlMap.getBytes(), sing);
+//            System.out.println(verify);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -2,6 +2,8 @@ package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.dao.CategoryDao;
+import com.fengchao.product.aoyi.db.annotation.DataSource;
+import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
@@ -24,16 +26,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryDao categoryDao;
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findOneLevelList() {
         return mapper.selectOneLevelList();
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findTwoLevelListByOneLevelId(int id) {
         return mapper.selectListByParentId(id) ;
     }
 
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findListById(int id) {
         List<AoyiBaseCategoryX> categories = mapper.selectListByParentId(id) ;

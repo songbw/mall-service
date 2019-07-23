@@ -15,7 +15,7 @@
     <result column="idate" property="idate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    category_id, category_name, parent_id, category_class, category_icon, category_desc, 
+    category_id, category_name, parent_id, category_class, category_icon, category_desc,
     sort_order, is_show, is_nav, is_top_style, idate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -29,16 +29,16 @@
     where category_id = #{categoryId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" >
-    insert into aoyi_base_category (category_id, category_name, parent_id, 
-      category_class, category_icon, category_desc, 
-      sort_order, is_show, is_nav, is_top_style, 
+    insert into aoyi_base_category (category_id, category_name, parent_id,
+      category_class, category_icon, category_desc,
+      sort_order, is_show, is_nav, is_top_style,
       idate)
-    values (#{categoryId,jdbcType=INTEGER}, #{categoryName,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
-      #{categoryClass,jdbcType=CHAR}, #{categoryIcon,jdbcType=VARCHAR}, #{categoryDesc,jdbcType=VARCHAR}, 
-      #{sortOrder,jdbcType=INTEGER}, #{isShow,jdbcType=BIT}, #{isNav,jdbcType=BIT}, #{isTopStyle,jdbcType=TINYINT}, 
+    values (#{categoryId,jdbcType=INTEGER}, #{categoryName,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER},
+      #{categoryClass,jdbcType=CHAR}, #{categoryIcon,jdbcType=VARCHAR}, #{categoryDesc,jdbcType=VARCHAR},
+      #{sortOrder,jdbcType=INTEGER}, #{isShow,jdbcType=BIT}, #{isNav,jdbcType=BIT}, #{isTopStyle,jdbcType=TINYINT},
       #{idate})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" keyProperty="category_id" useGeneratedKeys="true">
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX"  keyProperty="category_id" useGeneratedKeys="true">
     insert into aoyi_base_category
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="categoryId != null" >
@@ -111,7 +111,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" keyProperty="category_id" useGeneratedKeys="true">
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX"  keyProperty="category_id" useGeneratedKeys="true">
     update aoyi_base_category
     <set >
       <if test="categoryName != null" >
@@ -147,7 +147,7 @@
     </set>
     where category_id = #{categoryId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" keyProperty="category_id" useGeneratedKeys="true">
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX"  keyProperty="category_id" useGeneratedKeys="true">
     update aoyi_base_category
     set category_name = #{categoryName,jdbcType=VARCHAR},
       parent_id = #{parentId,jdbcType=INTEGER},

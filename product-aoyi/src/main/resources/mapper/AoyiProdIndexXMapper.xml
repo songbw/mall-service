@@ -36,7 +36,7 @@
     introduction, prodParams
   </sql>
   <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -63,21 +63,21 @@
     delete from aoyi_prod_index
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" keyProperty="id" useGeneratedKeys="true">
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
     insert into aoyi_prod_index (skuId, brand,
-      category, image, model, 
-      name, weight, upc, 
-      saleUnit, state, price, 
-      sprice, images_url, introduction_url, 
+      category, image, model,
+      name, weight, upc,
+      saleUnit, state, price,
+      sprice, images_url, introduction_url,
       introduction, prodParams, merchant_id, inventory, brand_id, mpu, created_at, updated_at)
     values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR},
-      #{category,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR}, #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, 
-      #{saleunit,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, 
-      #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, 
+      #{category,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR},
+      #{saleunit,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR},
+      #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR},
       #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR}, #{merchantId}, #{inventory}, #{brandId}, #{mpu}, #{createdAt}, #{updatedAt})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX" keyProperty="id" useGeneratedKeys="true">
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX"  keyProperty="id" useGeneratedKeys="true">
     insert into aoyi_prod_index
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="skuid != null" >
@@ -204,7 +204,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX" keyProperty="id" useGeneratedKeys="true">
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX"  keyProperty="id" useGeneratedKeys="true">
     update aoyi_prod_index
     <set >
       <if test="skuid != null" >
@@ -270,7 +270,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" keyProperty="id" useGeneratedKeys="true">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
     update aoyi_prod_index
     set skuId = #{skuid,jdbcType=VARCHAR},
       brand = #{brand,jdbcType=VARCHAR},
@@ -349,7 +349,7 @@
     from aoyi_prod_index
     where 1 = 1
     <if test="id != null and id !=''">
-        and id = #{id}
+      and id = #{id}
     </if>
     <if test="name !=null and name !=''">
       <bind name="pattern1" value="'%' + name + '%'"/>
@@ -411,10 +411,10 @@
       and merchant_id = #{merchantId}
     </if>
     <if test="order == 'asc'" >
-        order by p.created_at asc
+      order by p.created_at asc
     </if>
     <if test="order == 'desc'" >
-        order by p.created_at desc
+      order by p.created_at desc
     </if>
     limit #{pageNo},#{pageSize}
   </select>

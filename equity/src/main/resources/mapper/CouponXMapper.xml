@@ -37,14 +37,14 @@
     <result column="coupon_rules" property="couponRules" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, supplier_merchant_id, supplier_merchant_name, release_total, release_num, 
-    release_start_date, release_end_date, status, effective_start_date, effective_end_date, 
-    exclude_dates, description, url, create_date, category, tags, image_url, code, rules_description, 
+    id, name, supplier_merchant_id, supplier_merchant_name, release_total, release_num,
+    release_start_date, release_end_date, status, effective_start_date, effective_end_date,
+    exclude_dates, description, url, create_date, category, tags, image_url, code, rules_description,
     per_limited, scopes, scenario_type, coupon_mpus, exclude_mpus, categories, brands,
     collect_type, points, customer_type, users, coupon_type, coupon_rules
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from coupon
     where id = #{id,jdbcType=INTEGER}
@@ -157,7 +157,7 @@
     select
     <include refid="Base_Column_List" />
     from coupon
-    where 1=1
+    where status in (2,3)
     <if test="mpu != null and mpu != ''" >
       and find_in_set(#{mpu,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
     </if>
@@ -177,29 +177,29 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.CouponX" >
-    insert into coupon (id, name, supplier_merchant_id, 
-      supplier_merchant_name, release_total, release_num, 
-      release_start_date, release_end_date, status, 
-      effective_start_date, effective_end_date, 
-      exclude_dates, description, url, 
-      create_date, category, tags, 
-      image_url, code, rules_description, 
-      per_limited, scopes, scenario_type, 
+    insert into coupon (id, name, supplier_merchant_id,
+      supplier_merchant_name, release_total, release_num,
+      release_start_date, release_end_date, status,
+      effective_start_date, effective_end_date,
+      exclude_dates, description, url,
+      create_date, category, tags,
+      image_url, code, rules_description,
+      per_limited, scopes, scenario_type,
       coupon_mpus, exclude_mpus, categories,
-      brands, collect_type, points, 
-      customer_type, users, coupon_type, 
+      brands, collect_type, points,
+      customer_type, users, coupon_type,
       coupon_rules)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{supplierMerchantId,jdbcType=VARCHAR}, 
-      #{supplierMerchantName,jdbcType=VARCHAR}, #{releaseTotal,jdbcType=INTEGER}, #{releaseNum,jdbcType=INTEGER}, 
-      #{releaseStartDate,jdbcType=TIMESTAMP}, #{releaseEndDate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
-      #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP}, 
-      #{excludeDates,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{category,jdbcType=VARCHAR}, #{tags,jdbcType=VARCHAR}, 
-      #{imageUrl,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{rulesDescription,jdbcType=VARCHAR}, 
-      #{perLimited,jdbcType=INTEGER}, #{scopes,jdbcType=VARCHAR}, #{scenarioType,jdbcType=INTEGER}, 
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{supplierMerchantId,jdbcType=VARCHAR},
+      #{supplierMerchantName,jdbcType=VARCHAR}, #{releaseTotal,jdbcType=INTEGER}, #{releaseNum,jdbcType=INTEGER},
+      #{releaseStartDate,jdbcType=TIMESTAMP}, #{releaseEndDate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
+      #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP},
+      #{excludeDates,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},
+      #{createDate,jdbcType=TIMESTAMP}, #{category,jdbcType=VARCHAR}, #{tags,jdbcType=VARCHAR},
+      #{imageUrl,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{rulesDescription,jdbcType=VARCHAR},
+      #{perLimited,jdbcType=INTEGER}, #{scopes,jdbcType=VARCHAR}, #{scenarioType,jdbcType=INTEGER},
       #{couponMpus,jdbcType=VARCHAR}, #{excludeMpus,jdbcType=VARCHAR}, #{categories,jdbcType=VARCHAR},
-      #{brands,jdbcType=VARCHAR}, #{collectType,jdbcType=INTEGER}, #{points,jdbcType=INTEGER}, 
-      #{customerType,jdbcType=INTEGER}, #{users,jdbcType=VARCHAR}, #{couponType,jdbcType=INTEGER}, 
+      #{brands,jdbcType=VARCHAR}, #{collectType,jdbcType=INTEGER}, #{points,jdbcType=INTEGER},
+      #{customerType,jdbcType=INTEGER}, #{users,jdbcType=VARCHAR}, #{couponType,jdbcType=INTEGER},
       #{couponRules,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective"  keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.equity.model.CouponX" >

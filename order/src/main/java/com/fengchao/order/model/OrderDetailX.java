@@ -44,6 +44,10 @@ public class OrderDetailX {
 
     private Integer merchantId;
 
+    private Integer skuCouponDiscount ;
+
+    private String category;
+
     public Integer getId() {
         return id;
     }
@@ -202,5 +206,21 @@ public class OrderDetailX {
 
     public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public Integer getSkuCouponDiscount() {
+        return skuCouponDiscount;
+    }
+
+    public void setSkuCouponDiscount(Integer skuCouponDiscount) {
+        this.skuCouponDiscount = skuCouponDiscount;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

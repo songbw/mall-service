@@ -247,14 +247,14 @@ public class PromotionServiceImpl implements PromotionService {
     private PromotionBean convertToPromotionBean(Promotion promotion) {
         PromotionBean promotionBean = new PromotionBean();
 
-        promotionBean.setId(promotion.getId());
+        // promotionBean.setId(promotion.getId());
         promotionBean.setName(promotion.getName());
-        promotionBean.setTag(promotion.getTag());
+        // promotionBean.setTag(promotion.getTag());
         promotionBean.setPromotionType(promotion.getPromotionType());
         promotionBean.setStatus(promotion.getStatus());
-        promotionBean.setStartDate(promotion.getStartDate());
-        promotionBean.setEndDate(promotion.getEndDate());
-        promotionBean.setCreatedDate(promotion.getCreatedDate());
+        // promotionBean.setStartDate(promotion.getStartDate());
+        // promotionBean.setEndDate(promotion.getEndDate());
+        // promotionBean.setCreatedDate(promotion.getCreatedDate());
 
         return promotionBean;
     }

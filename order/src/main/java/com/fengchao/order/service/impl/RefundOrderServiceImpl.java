@@ -20,7 +20,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     private RefundOrderMapper mapper;
 
     @Autowired
-    private OrderDetailXMapper orderDetailMapper;
+    private OrderDetailXMapper orderDetailXMapper;
 
     @Override
     public Integer add(RefundOrder bean) {
@@ -33,7 +33,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             // 提示不能重复提交
             return 0;
         } else {
-            List<OrderDetailX> orderDetailXES = orderDetailMapper.selectBySubOrderId(bean.getSubOrderId());
+            List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectBySubOrderId(bean.getSubOrderId());
             if (orderDetailXES != null && orderDetailXES.size() > 0) {
                 Date date = new Date();
                 bean.setCreatedAt(date);

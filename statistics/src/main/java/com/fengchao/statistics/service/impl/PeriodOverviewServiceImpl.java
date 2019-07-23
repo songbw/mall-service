@@ -12,6 +12,11 @@ import com.fengchao.statistics.service.PeriodOverviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -37,7 +42,23 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
         periodOverview.setNoon(noon);
         periodOverview.setAfternoon(afternoon);
         periodOverview.setNight(night);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
+        try {
+            Date date = formatter.parse(queryBean.getStartTime()) ;
+            periodOverview.setStatisticsDate(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        periodOverview.setCreatedAt(new Date());
         mapper.insertSelective(periodOverview) ;
+    }
+
+    @Override
+    public List<PeriodOverview> findByDate(QueryBean queryBean) {
+        HashMap map = new HashMap() ;
+        map.put("start", queryBean.getStartTime());
+        map.put("end", queryBean.getEndTime()) ;
+        return mapper.selectByDate(map);
     }
 
     private int getPeriodPaymentCount(String start, String end) {

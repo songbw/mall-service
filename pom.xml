@@ -22,6 +22,7 @@
         <module>sso</module>
         <module>equity</module>
         <module>statistics</module>
+        <module>guanaitong-client</module>
     </modules>
 
 

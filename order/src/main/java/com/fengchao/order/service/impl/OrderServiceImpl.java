@@ -152,6 +152,7 @@ public class OrderServiceImpl implements OrderService {
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
+
                 OrderDetailX orderDetailX = new OrderDetailX();
                 orderDetailX.setPromotionId(orderSku.getPromotionId());
                 orderDetailX.setSalePrice(orderSku.getSalePrice());
@@ -169,6 +170,8 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
                 orderDetailX.setUnitPrice(orderSku.getUnitPrice());
                 orderDetailX.setNum(orderSku.getNum());
+                orderDetailX.setCategory(prodIndexWithBLOBs.getCategory());
+                orderDetailX.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100);
 
                 // 添加子订单
                 orderDetailXMapper.insert(orderDetailX) ;
@@ -445,6 +448,14 @@ public class OrderServiceImpl implements OrderService {
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
         return mapper.selectDayMerchantPaymentCount(map);
+    }
+
+    @Override
+    public List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) {
+        HashMap map = new HashMap();
+        map.put("dayStart", dayStart);
+        map.put("dayEnd", dayEnd);
+        return mapper.selectDayCategoryPaymentList(map);
     }
 
     @Override

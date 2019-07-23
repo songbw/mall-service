@@ -90,7 +90,7 @@
       #{promotionType,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP},
       #{endDate,jdbcType=TIMESTAMP}, #{createdDate,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.equity.model.PromotionX" keyProperty="id" useGeneratedKeys="true" >
+  <insert id="insertSelective" parameterType="com.fengchao.equity.model.PromotionX" keyProperty="id"  useGeneratedKeys="true" >
     insert into promotion
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
