@@ -71,7 +71,7 @@ public class Order {
 
     private Date paymentAt;
     //实际退款金额
-    private float paymentAmount;
+    private int paymentAmount;
     // 商户号，充值钱包的时候没有
     private String payee ;
     // 退款金额，退款时候有
@@ -391,11 +391,11 @@ public class Order {
         this.paymentAt = paymentAt;
     }
 
-    public float getPaymentAmount() {
+    public int getPaymentAmount() {
         return paymentAmount;
     }
 
-    public void setPaymentAmount(float paymentAmount) {
+    public void setPaymentAmount(int paymentAmount) {
         this.paymentAmount = paymentAmount;
     }
 
