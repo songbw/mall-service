@@ -38,4 +38,9 @@ public class OrderServiceH implements OrderService {
         result.setMsg("获取订单服务失败 " + start + " " + end);
         return result;
     }
+
+    @Override
+    public OperaResult paymentCategoryList(String start, String end) {
+        return null;
+    }
 }
