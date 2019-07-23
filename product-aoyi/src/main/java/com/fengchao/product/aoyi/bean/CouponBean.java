@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class CouponBean {
+public class CouponBean implements Serializable {
 
     private Integer id;
     private String name;
@@ -34,8 +35,6 @@ public class CouponBean {
     private Date createDate;
     private Integer userCollectNum;
     private Rules rules;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String price;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private PageBean couponSkus;
     @JsonInclude(JsonInclude.Include.NON_NULL)
