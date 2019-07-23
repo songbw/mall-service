@@ -10,8 +10,8 @@ import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.feign.VendorsService;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.CosUtil;
@@ -33,7 +33,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     private static Logger logger = LoggerFactory.getLogger(AdminProdServiceImpl.class);
 
     @Autowired
-    private AoyiProdIndexMapper prodMapper;
+    private AoyiProdIndexXMapper prodMapper;
     @Autowired
     private ProdExtendMapper prodExtendMapper;
     @Autowired
@@ -43,7 +43,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private VendorsService vendorsService;
     @Autowired
-    private AoyiBaseCategoryMapper categoryMapper;
+    private AoyiBaseCategoryXMapper categoryMapper;
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
 
@@ -58,7 +58,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("pageSize",limit);
         map.put("state",state);
         map.put("merchantId",merchantId);
-        List<AoyiProdIndex> prods = new ArrayList<>();
+        List<AoyiProdIndexX> prods = new ArrayList<>();
         total = prodMapper.selectSearchCount(map);
         if (total > 0) {
             prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
@@ -83,7 +83,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public PageBean selectNameList(SerachBean bean) {
         PageBean pageBean = new PageBean();
-        List<AoyiProdIndex> prods = new ArrayList<>();
+        List<AoyiProdIndexX> prods = new ArrayList<>();
         int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
@@ -128,7 +128,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public int getProdListToRedis(){
         int num = 0;
-        List<AoyiProdIndex> aoyiProdIndices = prodMapper.selectProdAll();
+        List<AoyiProdIndexX> aoyiProdIndices = prodMapper.selectProdAll();
         if(aoyiProdIndices != null){
             num = 1;
         }
@@ -160,7 +160,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @CachePut(value = "aoyiProdIndex", key = "#bean.mpu")
     @Override
-    public int add(AoyiProdIndex bean) throws ProductException {
+    public int add(AoyiProdIndexX bean) throws ProductException {
         if (bean.getMerchantId() > 0) {
             // 获取商户信息
             SkuCode skuCode = skuCodeMapper.selectByMerchantId(bean.getMerchantId()) ;
@@ -199,7 +199,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                 }
             }
             if (bean.getCategory() != null && !"".equals(bean.getCategory())) {
-                AoyiBaseCategory  category = categoryMapper.selectByPrimaryKey(Integer.parseInt(bean.getCategory())) ;
+                AoyiBaseCategoryX category = categoryMapper.selectByPrimaryKey(Integer.parseInt(bean.getCategory())) ;
                 if (category == null) {
                     bean.setCategory("");
                 }
@@ -215,7 +215,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @CachePut(value = "aoyiProdIndex", key = "#bean.mpu")
     @Override
-    public int update(AoyiProdIndex bean) throws ProductException {
+    public int update(AoyiProdIndexX bean) throws ProductException {
         if (bean.getId() > 0) {
             prodMapper.updateByPrimaryKeySelective(bean);
         } else {

@@ -1,178 +1,244 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.equity.mapper.PromotionMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.Promotion" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="tag" property="tag" jdbcType="VARCHAR" />
-    <result column="promotion_type" property="promotionType" jdbcType="INTEGER" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
-    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
-    <result column="created_date" property="createdDate" jdbcType="TIMESTAMP" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.equity.mapper.PromotionMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.Promotion">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="tag" jdbcType="VARCHAR" property="tag" />
+    <result column="promotion_type" jdbcType="INTEGER" property="promotionType" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
   </resultMap>
-  <sql id="Base_Column_List" >
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
     id, name, tag, promotion_type, status, start_date, end_date, created_date
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionExample" resultMap="BaseResultMap">
     select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from promotion
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
     <include refid="Base_Column_List" />
     from promotion
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from promotion
-  </select>
-  <select id="selectPromotionName" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select
-    id, name
-    from promotion
-    where id= #{id,jdbcType=INTEGER}
-  </select>
-  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
-    select
-    count(id)
-    from promotion where 1=1
-    <if test="name != null" >
-      <bind name="pattern" value="'%' + name + '%'" />
-      and name LIKE #{pattern}
-    </if>
-    <if test="promotionType != null" >
-      and promotion_type = #{promotionType,jdbcType=INTEGER}
-    </if>
-    <if test="status != null" >
-      and status = #{status,jdbcType=INTEGER}
-    </if>
-  </select>
-  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
-    select
-    <include refid="Base_Column_List" />
-    from promotion where 1=1
-    <if test="name != null" >
-      <bind name="pattern" value="'%' + name + '%'" />
-      and name LIKE #{pattern}
-    </if>
-    <if test="promotionType != null" >
-      and promotion_type = #{promotionType,jdbcType=INTEGER}
-    </if>
-    <if test="status != null" >
-      and status = #{status,jdbcType=INTEGER}
-    </if>
-    order by created_date desc
-    limit #{pageNo},#{pageSize}
-  </select>
-  <select id="selectPromotionInfoByMpu" resultType="com.fengchao.equity.bean.PromotionInfoBean">
-    SELECT
-    p.id,
-    p.name,
-    p.tag,
-    p.promotion_type promotionType,
-    p.status,
-    p.start_date startDate,
-    p.end_date endDate,
-    p.created_date createdDate,
-    ps.mpu,
-    ps.discount
-    FROM promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
-    WHERE ps.mpu=#{mpu} and p.status <![CDATA[ < ]]> 3
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from promotion
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.equity.model.Promotion" >
-    insert into promotion (id, name, tag,
-      promotion_type, status, start_date,
-      end_date, created_date)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR},
-      #{promotionType,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP},
-      #{endDate,jdbcType=TIMESTAMP}, #{createdDate,jdbcType=TIMESTAMP})
+  <delete id="deleteByExample" parameterType="com.fengchao.equity.model.PromotionExample">
+    delete from promotion
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Promotion" useGeneratedKeys="true">
+    insert into promotion (name, tag, promotion_type, 
+      status, start_date, end_date, 
+      created_date)
+    values (#{name,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{promotionType,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{createdDate,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.equity.model.Promotion" keyProperty="id"  useGeneratedKeys="true" >
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Promotion" useGeneratedKeys="true">
     insert into promotion
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="name != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
         name,
       </if>
-      <if test="tag != null" >
+      <if test="tag != null">
         tag,
       </if>
-      <if test="promotionType != null" >
+      <if test="promotionType != null">
         promotion_type,
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status,
       </if>
-      <if test="startDate != null" >
+      <if test="startDate != null">
         start_date,
       </if>
-      <if test="endDate != null" >
+      <if test="endDate != null">
         end_date,
       </if>
-      <if test="createdDate != null" >
+      <if test="createdDate != null">
         created_date,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="name != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="tag != null" >
+      <if test="tag != null">
         #{tag,jdbcType=VARCHAR},
       </if>
-      <if test="promotionType != null" >
+      <if test="promotionType != null">
         #{promotionType,jdbcType=INTEGER},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
-      <if test="startDate != null" >
+      <if test="startDate != null">
         #{startDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="endDate != null" >
+      <if test="endDate != null">
         #{endDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="createdDate != null" >
+      <if test="createdDate != null">
         #{createdDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.Promotion" >
+  <select id="countByExample" parameterType="com.fengchao.equity.model.PromotionExample" resultType="java.lang.Long">
+    select count(*) from promotion
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
     update promotion
-    <set >
-      <if test="name != null" >
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tag != null">
+        tag = #{record.tag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.promotionType != null">
+        promotion_type = #{record.promotionType,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.startDate != null">
+        start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endDate != null">
+        end_date = #{record.endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createdDate != null">
+        created_date = #{record.createdDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update promotion
+    set id = #{record.id,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      tag = #{record.tag,jdbcType=VARCHAR},
+      promotion_type = #{record.promotionType,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=INTEGER},
+      start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      end_date = #{record.endDate,jdbcType=TIMESTAMP},
+      created_date = #{record.createdDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.Promotion">
+    update promotion
+    <set>
+      <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="tag != null" >
+      <if test="tag != null">
         tag = #{tag,jdbcType=VARCHAR},
       </if>
-      <if test="promotionType != null" >
+      <if test="promotionType != null">
         promotion_type = #{promotionType,jdbcType=INTEGER},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
-      <if test="startDate != null" >
+      <if test="startDate != null">
         start_date = #{startDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="endDate != null" >
+      <if test="endDate != null">
         end_date = #{endDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="createdDate != null" >
+      <if test="createdDate != null">
         created_date = #{createdDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.Promotion" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.Promotion">
     update promotion
     set name = #{name,jdbcType=VARCHAR},
       tag = #{tag,jdbcType=VARCHAR},
@@ -182,13 +248,5 @@
       end_date = #{endDate,jdbcType=TIMESTAMP},
       created_date = #{createdDate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="promotionEffective" parameterType="java.lang.Integer" >
-    update promotion
-    set status = 2 where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="promotionEnd" parameterType="java.lang.Integer" >
-    update promotion
-    set status = 3 where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

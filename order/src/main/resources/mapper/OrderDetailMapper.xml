@@ -1,230 +1,472 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.order.mapper.OrderDetailMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.order.model.OrderDetail" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="order_id" property="orderId" jdbcType="INTEGER" />
-    <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
-    <result column="sub_order_id" property="subOrderId" jdbcType="INTEGER" />
-    <result column="promotion_id" property="promotionId" jdbcType="INTEGER" />
-    <result column="promotion_discount" property="promotionDiscount" jdbcType="DECIMAL" />
-    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
-    <result column="mpu" property="mpu" jdbcType="VARCHAR" />
-    <result column="num" property="num" jdbcType="INTEGER" />
-    <result column="model" property="model" jdbcType="VARCHAR" />
-    <result column="image" property="image" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="unit_price" property="unitPrice" jdbcType="DECIMAL" />
-    <result column="sale_price" property="salePrice" jdbcType="DECIMAL" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
-    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
-    <result column="logistics_id" property="logisticsId" jdbcType="VARCHAR" />
-    <result column="logistics_content" property="logisticsContent" jdbcType="VARCHAR" />
-    <result column="comcode" property="comCode" jdbcType="VARCHAR" />
-    <result column="sku_coupon_discount" property="skuCouponDiscount" jdbcType="VARCHAR" />
-    <result column="category" property="category" jdbcType="VARCHAR" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.order.mapper.OrderDetailMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.OrderDetail">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="sub_order_id" jdbcType="VARCHAR" property="subOrderId" />
+    <result column="mpu" jdbcType="VARCHAR" property="mpu" />
+    <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="promotion_id" jdbcType="INTEGER" property="promotionId" />
+    <result column="promotion_discount" jdbcType="REAL" property="promotionDiscount" />
+    <result column="sale_price" jdbcType="DECIMAL" property="salePrice" />
+    <result column="unit_price" jdbcType="DECIMAL" property="unitPrice" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="logistics_id" jdbcType="VARCHAR" property="logisticsId" />
+    <result column="logistics_content" jdbcType="VARCHAR" property="logisticsContent" />
+    <result column="comcode" jdbcType="VARCHAR" property="comcode" />
+    <result column="sku_coupon_discount" jdbcType="INTEGER" property="skuCouponDiscount" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, order_id, merchant_id, sub_order_id, sku_id, mpu, promotion_id, promotion_discount, num, unit_price, sale_price, image, name, model, status, created_at,
-    updated_at, logistics_id, logistics_content, sku_coupon_discount, category
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, merchant_id, order_id, sub_order_id, mpu, sku_id, num, promotion_id, promotion_discount, 
+    sale_price, unit_price, image, model, name, status, created_at, updated_at, logistics_id, 
+    logistics_content, comcode, sku_coupon_discount, category
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.order.model.OrderDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from order_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from order_detail
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByOrderId" resultMap="BaseResultMap" resultType="com.fengchao.order.model.OrderDetail">
-    select
-    <include refid="Base_Column_List" />
-    from order_detail
-    where order_id = #{orderId}
-  </select>
-  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
-    select
-    count(id)
-    from order_detail
-    where order_id = #{orderId}
-  </select>
-  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
-  select
-  <include refid="Base_Column_List" />
-  from order_detail
-  where order_id = #{orderId}
-  limit #{pageNo},#{pageSize}
-  </select>
-  <select id="selectBySubOrderId" resultType="com.fengchao.order.model.OrderDetail">
-    SELECT DISTINCT(logistics_id) logisticsId, comcode comCode
-    FROM order_detail WHERE sub_order_id like #{orderId}
-  </select>
-  <select id="selectComCode" resultType="java.lang.String" parameterType="java.lang.String">
-    select
-    comcode
-    from order_detail
-    where logistics_id = #{logisticsId}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from order_detail
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.order.model.OrderDetail" >
-    insert into order_detail (order_id, merchant_id, sub_order_id, sku_id, mpu,
-      num, unit_price, sale_price, image, name, model, status,
-      created_at, updated_at, promotion_id, promotion_discount, sku_coupon_discount, category)
-    values (#{orderId,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{mpu,jdbcType=VARCHAR},
-      #{num,jdbcType=INTEGER}, #{unitPrice,jdbcType=DECIMAL}, #{salePrice,jdbcType=DECIMAL}, #{image,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{promotionId}, #{promotionDiscount}, #{skuCouponDiscount}, #{category})
+  <delete id="deleteByExample" parameterType="com.fengchao.order.model.OrderDetailExample">
+    delete from order_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderDetail" useGeneratedKeys="true">
+    insert into order_detail (merchant_id, order_id, sub_order_id, 
+      mpu, sku_id, num, promotion_id, 
+      promotion_discount, sale_price, unit_price, 
+      image, model, name, 
+      status, created_at, updated_at, 
+      logistics_id, logistics_content, comcode, 
+      sku_coupon_discount, category)
+    values (#{merchantId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, 
+      #{mpu,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{num,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, 
+      #{promotionDiscount,jdbcType=REAL}, #{salePrice,jdbcType=DECIMAL}, #{unitPrice,jdbcType=DECIMAL}, 
+      #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{logisticsId,jdbcType=VARCHAR}, #{logisticsContent,jdbcType=VARCHAR}, #{comcode,jdbcType=VARCHAR}, 
+      #{skuCouponDiscount,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.order.model.OrderDetail" >
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderDetail" useGeneratedKeys="true">
     insert into order_detail
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="promotionId != null" >
-        promotion_id,
-      </if>
-      <if test="promotionDiscount != null" >
-        promotion_discount,
-      </if>
-      <if test="merchantId != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="merchantId != null">
         merchant_id,
       </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         order_id,
       </if>
-      <if test="skuId != null" >
-        sku_id,
+      <if test="subOrderId != null">
+        sub_order_id,
       </if>
-      <if test="mpu != null" >
+      <if test="mpu != null">
         mpu,
       </if>
-      <if test="num != null" >
+      <if test="skuId != null">
+        sku_id,
+      </if>
+      <if test="num != null">
         num,
       </if>
-      <if test="unitPrice != null" >
-        unit_price,
+      <if test="promotionId != null">
+        promotion_id,
       </if>
-      <if test="salePrice != null" >
+      <if test="promotionDiscount != null">
+        promotion_discount,
+      </if>
+      <if test="salePrice != null">
         sale_price,
       </if>
-      <if test="status != null" >
+      <if test="unitPrice != null">
+        unit_price,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="model != null">
+        model,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="status != null">
         status,
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         created_at,
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         updated_at,
       </if>
-      <if test="logisticsId != null" >
+      <if test="logisticsId != null">
         logistics_id,
       </if>
-      <if test="logisticsContent != null" >
+      <if test="logisticsContent != null">
         logistics_content,
       </if>
-      <if test="category != null" >
+      <if test="comcode != null">
+        comcode,
+      </if>
+      <if test="skuCouponDiscount != null">
+        sku_coupon_discount,
+      </if>
+      <if test="category != null">
         category,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="promotionId != null" >
-        #{promotionId,jdbcType=INTEGER},
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="merchantId != null">
+        #{merchantId,jdbcType=INTEGER},
       </if>
-      <if test="promotionDiscount != null" >
-        #{promotionDiscount},
-      </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         #{orderId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null" >
-        #{skuId,jdbcType=VARCHAR},
+      <if test="subOrderId != null">
+        #{subOrderId,jdbcType=VARCHAR},
       </if>
-      <if test="mpu != null" >
+      <if test="mpu != null">
         #{mpu,jdbcType=VARCHAR},
       </if>
-      <if test="num != null" >
+      <if test="skuId != null">
+        #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
         #{num,jdbcType=INTEGER},
       </if>
-      <if test="unitPrice != null" >
-        #{unitPrice,jdbcType=DECIMAL},
+      <if test="promotionId != null">
+        #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="salePrice != null" >
+      <if test="promotionDiscount != null">
+        #{promotionDiscount,jdbcType=REAL},
+      </if>
+      <if test="salePrice != null">
         #{salePrice,jdbcType=DECIMAL},
       </if>
-      <if test="status != null" >
+      <if test="unitPrice != null">
+        #{unitPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         #{updatedAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="logisticsId != null" >
-        #{logisticsId,jdbcType=VARCHAR},,
+      <if test="logisticsId != null">
+        #{logisticsId,jdbcType=VARCHAR},
       </if>
-      <if test="logisticsContent != null" >
-        #{logisticsContent,jdbcType=VARCHAR},,
+      <if test="logisticsContent != null">
+        #{logisticsContent,jdbcType=VARCHAR},
       </if>
-      <if test="category != null" >
-        #{category,jdbcType=VARCHAR},,
+      <if test="comcode != null">
+        #{comcode,jdbcType=VARCHAR},
+      </if>
+      <if test="skuCouponDiscount != null">
+        #{skuCouponDiscount,jdbcType=INTEGER},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.OrderDetail" >
+  <select id="countByExample" parameterType="com.fengchao.order.model.OrderDetailExample" resultType="java.lang.Long">
+    select count(*) from order_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
     update order_detail
-    <set >
-      <if test="orderId != null" >
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.merchantId != null">
+        merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=INTEGER},
+      </if>
+      <if test="record.subOrderId != null">
+        sub_order_id = #{record.subOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mpu != null">
+        mpu = #{record.mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="record.skuId != null">
+        sku_id = #{record.skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.num != null">
+        num = #{record.num,jdbcType=INTEGER},
+      </if>
+      <if test="record.promotionId != null">
+        promotion_id = #{record.promotionId,jdbcType=INTEGER},
+      </if>
+      <if test="record.promotionDiscount != null">
+        promotion_discount = #{record.promotionDiscount,jdbcType=REAL},
+      </if>
+      <if test="record.salePrice != null">
+        sale_price = #{record.salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.unitPrice != null">
+        unit_price = #{record.unitPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.image != null">
+        image = #{record.image,jdbcType=VARCHAR},
+      </if>
+      <if test="record.model != null">
+        model = #{record.model,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdAt != null">
+        created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedAt != null">
+        updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.logisticsId != null">
+        logistics_id = #{record.logisticsId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logisticsContent != null">
+        logistics_content = #{record.logisticsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comcode != null">
+        comcode = #{record.comcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.skuCouponDiscount != null">
+        sku_coupon_discount = #{record.skuCouponDiscount,jdbcType=INTEGER},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update order_detail
+    set id = #{record.id,jdbcType=INTEGER},
+      merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      order_id = #{record.orderId,jdbcType=INTEGER},
+      sub_order_id = #{record.subOrderId,jdbcType=VARCHAR},
+      mpu = #{record.mpu,jdbcType=VARCHAR},
+      sku_id = #{record.skuId,jdbcType=VARCHAR},
+      num = #{record.num,jdbcType=INTEGER},
+      promotion_id = #{record.promotionId,jdbcType=INTEGER},
+      promotion_discount = #{record.promotionDiscount,jdbcType=REAL},
+      sale_price = #{record.salePrice,jdbcType=DECIMAL},
+      unit_price = #{record.unitPrice,jdbcType=DECIMAL},
+      image = #{record.image,jdbcType=VARCHAR},
+      model = #{record.model,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      logistics_id = #{record.logisticsId,jdbcType=VARCHAR},
+      logistics_content = #{record.logisticsContent,jdbcType=VARCHAR},
+      comcode = #{record.comcode,jdbcType=VARCHAR},
+      sku_coupon_discount = #{record.skuCouponDiscount,jdbcType=INTEGER},
+      category = #{record.category,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.OrderDetail">
+    update order_detail
+    <set>
+      <if test="merchantId != null">
+        merchant_id = #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null">
         order_id = #{orderId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null" >
-        sku_id = #{skuId,jdbcType=VARCHAR},
+      <if test="subOrderId != null">
+        sub_order_id = #{subOrderId,jdbcType=VARCHAR},
       </if>
-      <if test="mpu != null" >
+      <if test="mpu != null">
         mpu = #{mpu,jdbcType=VARCHAR},
       </if>
-      <if test="num != null" >
+      <if test="skuId != null">
+        sku_id = #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
         num = #{num,jdbcType=INTEGER},
       </if>
-      <if test="unitPrice != null" >
+      <if test="promotionId != null">
+        promotion_id = #{promotionId,jdbcType=INTEGER},
+      </if>
+      <if test="promotionDiscount != null">
+        promotion_discount = #{promotionDiscount,jdbcType=REAL},
+      </if>
+      <if test="salePrice != null">
+        sale_price = #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="unitPrice != null">
         unit_price = #{unitPrice,jdbcType=DECIMAL},
       </if>
-      <if test="status != null" >
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         created_at = #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="logisticsId != null">
+        logistics_id = #{logisticsId,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsContent != null">
+        logistics_content = #{logisticsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="comcode != null">
+        comcode = #{comcode,jdbcType=VARCHAR},
+      </if>
+      <if test="skuCouponDiscount != null">
+        sku_coupon_discount = #{skuCouponDiscount,jdbcType=INTEGER},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.OrderDetail" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.OrderDetail">
     update order_detail
-    set order_id = #{orderId,jdbcType=INTEGER},
-      sku_id = #{skuId,jdbcType=VARCHAR},
+    set merchant_id = #{merchantId,jdbcType=INTEGER},
+      order_id = #{orderId,jdbcType=INTEGER},
+      sub_order_id = #{subOrderId,jdbcType=VARCHAR},
       mpu = #{mpu,jdbcType=VARCHAR},
+      sku_id = #{skuId,jdbcType=VARCHAR},
       num = #{num,jdbcType=INTEGER},
+      promotion_id = #{promotionId,jdbcType=INTEGER},
+      promotion_discount = #{promotionDiscount,jdbcType=REAL},
+      sale_price = #{salePrice,jdbcType=DECIMAL},
       unit_price = #{unitPrice,jdbcType=DECIMAL},
+      image = #{image,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      logistics_id = #{logisticsId,jdbcType=VARCHAR},
+      logistics_content = #{logisticsContent,jdbcType=VARCHAR},
+      comcode = #{comcode,jdbcType=VARCHAR},
+      sku_coupon_discount = #{skuCouponDiscount,jdbcType=INTEGER},
+      category = #{category,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByOrderId" parameterType="com.fengchao.order.model.OrderDetail" >
-    update order_detail
-    set logistics_id = #{logisticsId,jdbcType=VARCHAR},
-        logistics_content = #{logisticsContent,jdbcType=VARCHAR},
-        comcode = null
-    where sub_order_id = #{subOrderId,jdbcType=VARCHAR}
-    and order_id = #{orderId,jdbcType=INTEGER}
-  </update>
-  <update id="updateBySubOrderId">
-    update order_detail
-    set logistics_id = #{logisticsId,jdbcType=VARCHAR},
-    logistics_content = #{logisticsContent,jdbcType=VARCHAR},
-    comcode = #{comCode}
-    where sub_order_id = #{subOrderId,jdbcType=VARCHAR}
   </update>
 </mapper>

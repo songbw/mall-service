@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.order.mapper.OrdersMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.Orders">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
+    <result column="aoyi_id" jdbcType="VARCHAR" property="aoyiId" />
+    <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
+    <result column="merchant_no" jdbcType="VARCHAR" property="merchantNo" />
+    <result column="coupon_code" jdbcType="VARCHAR" property="couponCode" />
+    <result column="coupon_discount" jdbcType="REAL" property="couponDiscount" />
+    <result column="coupon_id" jdbcType="INTEGER" property="couponId" />
+    <result column="company_cust_no" jdbcType="VARCHAR" property="companyCustNo" />
+    <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+    <result column="province_id" jdbcType="VARCHAR" property="provinceId" />
+    <result column="city_name" jdbcType="VARCHAR" property="cityName" />
+    <result column="city_id" jdbcType="VARCHAR" property="cityId" />
+    <result column="county_name" jdbcType="VARCHAR" property="countyName" />
+    <result column="county_id" jdbcType="VARCHAR" property="countyId" />
+    <result column="town_id" jdbcType="VARCHAR" property="townId" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="zip" jdbcType="VARCHAR" property="zip" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="invoice_state" jdbcType="VARCHAR" property="invoiceState" />
+    <result column="invoice_type" jdbcType="VARCHAR" property="invoiceType" />
+    <result column="invoice_title" jdbcType="VARCHAR" property="invoiceTitle" />
+    <result column="invoice_content" jdbcType="VARCHAR" property="invoiceContent" />
+    <result column="payment" jdbcType="VARCHAR" property="payment" />
+    <result column="serv_Fee" jdbcType="REAL" property="servFee" />
+    <result column="sale_amount" jdbcType="REAL" property="saleAmount" />
+    <result column="amount" jdbcType="REAL" property="amount" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="out_trade_no" jdbcType="VARCHAR" property="outTradeNo" />
+    <result column="payment_no" jdbcType="VARCHAR" property="paymentNo" />
+    <result column="payment_at" jdbcType="TIMESTAMP" property="paymentAt" />
+    <result column="payment_amount" jdbcType="INTEGER" property="paymentAmount" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="pay_type" jdbcType="VARCHAR" property="payType" />
+    <result column="payment_total_fee" jdbcType="INTEGER" property="paymentTotalFee" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="pay_status" jdbcType="INTEGER" property="payStatus" />
+    <result column="pay_order_category" jdbcType="INTEGER" property="payOrderCategory" />
+    <result column="refund_fee" jdbcType="INTEGER" property="refundFee" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, open_id, trade_no, aoyi_id, merchant_id, merchant_no, coupon_code, coupon_discount, 
+    coupon_id, company_cust_no, receiver_name, telephone, mobile, email, province_name, 
+    province_id, city_name, city_id, county_name, county_id, town_id, address, zip, remark, 
+    invoice_state, invoice_type, invoice_title, invoice_content, payment, serv_Fee, sale_amount, 
+    amount, status, type, out_trade_no, payment_no, payment_at, payment_amount, payee, 
+    pay_type, payment_total_fee, payer, pay_status, pay_order_category, refund_fee, created_at, 
+    updated_at
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.order.model.OrdersExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from orders
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from orders
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from orders
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.order.model.OrdersExample">
+    delete from orders
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.Orders" useGeneratedKeys="true">
+    insert into orders (open_id, trade_no, aoyi_id, 
+      merchant_id, merchant_no, coupon_code, 
+      coupon_discount, coupon_id, company_cust_no, 
+      receiver_name, telephone, mobile, 
+      email, province_name, province_id, 
+      city_name, city_id, county_name, 
+      county_id, town_id, address, 
+      zip, remark, invoice_state, 
+      invoice_type, invoice_title, invoice_content, 
+      payment, serv_Fee, sale_amount, 
+      amount, status, type, 
+      out_trade_no, payment_no, payment_at, 
+      payment_amount, payee, pay_type, 
+      payment_total_fee, payer, pay_status, 
+      pay_order_category, refund_fee, created_at, 
+      updated_at)
+    values (#{openId,jdbcType=VARCHAR}, #{tradeNo,jdbcType=VARCHAR}, #{aoyiId,jdbcType=VARCHAR}, 
+      #{merchantId,jdbcType=INTEGER}, #{merchantNo,jdbcType=VARCHAR}, #{couponCode,jdbcType=VARCHAR}, 
+      #{couponDiscount,jdbcType=REAL}, #{couponId,jdbcType=INTEGER}, #{companyCustNo,jdbcType=VARCHAR}, 
+      #{receiverName,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{provinceName,jdbcType=VARCHAR}, #{provinceId,jdbcType=VARCHAR}, 
+      #{cityName,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, #{countyName,jdbcType=VARCHAR}, 
+      #{countyId,jdbcType=VARCHAR}, #{townId,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{zip,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{invoiceState,jdbcType=VARCHAR}, 
+      #{invoiceType,jdbcType=VARCHAR}, #{invoiceTitle,jdbcType=VARCHAR}, #{invoiceContent,jdbcType=VARCHAR}, 
+      #{payment,jdbcType=VARCHAR}, #{servFee,jdbcType=REAL}, #{saleAmount,jdbcType=REAL}, 
+      #{amount,jdbcType=REAL}, #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{outTradeNo,jdbcType=VARCHAR}, #{paymentNo,jdbcType=VARCHAR}, #{paymentAt,jdbcType=TIMESTAMP}, 
+      #{paymentAmount,jdbcType=INTEGER}, #{payee,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR}, 
+      #{paymentTotalFee,jdbcType=INTEGER}, #{payer,jdbcType=VARCHAR}, #{payStatus,jdbcType=INTEGER}, 
+      #{payOrderCategory,jdbcType=INTEGER}, #{refundFee,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.Orders" useGeneratedKeys="true">
+    insert into orders
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="openId != null">
+        open_id,
+      </if>
+      <if test="tradeNo != null">
+        trade_no,
+      </if>
+      <if test="aoyiId != null">
+        aoyi_id,
+      </if>
+      <if test="merchantId != null">
+        merchant_id,
+      </if>
+      <if test="merchantNo != null">
+        merchant_no,
+      </if>
+      <if test="couponCode != null">
+        coupon_code,
+      </if>
+      <if test="couponDiscount != null">
+        coupon_discount,
+      </if>
+      <if test="couponId != null">
+        coupon_id,
+      </if>
+      <if test="companyCustNo != null">
+        company_cust_no,
+      </if>
+      <if test="receiverName != null">
+        receiver_name,
+      </if>
+      <if test="telephone != null">
+        telephone,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="provinceName != null">
+        province_name,
+      </if>
+      <if test="provinceId != null">
+        province_id,
+      </if>
+      <if test="cityName != null">
+        city_name,
+      </if>
+      <if test="cityId != null">
+        city_id,
+      </if>
+      <if test="countyName != null">
+        county_name,
+      </if>
+      <if test="countyId != null">
+        county_id,
+      </if>
+      <if test="townId != null">
+        town_id,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="zip != null">
+        zip,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="invoiceState != null">
+        invoice_state,
+      </if>
+      <if test="invoiceType != null">
+        invoice_type,
+      </if>
+      <if test="invoiceTitle != null">
+        invoice_title,
+      </if>
+      <if test="invoiceContent != null">
+        invoice_content,
+      </if>
+      <if test="payment != null">
+        payment,
+      </if>
+      <if test="servFee != null">
+        serv_Fee,
+      </if>
+      <if test="saleAmount != null">
+        sale_amount,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="outTradeNo != null">
+        out_trade_no,
+      </if>
+      <if test="paymentNo != null">
+        payment_no,
+      </if>
+      <if test="paymentAt != null">
+        payment_at,
+      </if>
+      <if test="paymentAmount != null">
+        payment_amount,
+      </if>
+      <if test="payee != null">
+        payee,
+      </if>
+      <if test="payType != null">
+        pay_type,
+      </if>
+      <if test="paymentTotalFee != null">
+        payment_total_fee,
+      </if>
+      <if test="payer != null">
+        payer,
+      </if>
+      <if test="payStatus != null">
+        pay_status,
+      </if>
+      <if test="payOrderCategory != null">
+        pay_order_category,
+      </if>
+      <if test="refundFee != null">
+        refund_fee,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="openId != null">
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo != null">
+        #{tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="aoyiId != null">
+        #{aoyiId,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantId != null">
+        #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="merchantNo != null">
+        #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="couponCode != null">
+        #{couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="couponDiscount != null">
+        #{couponDiscount,jdbcType=REAL},
+      </if>
+      <if test="couponId != null">
+        #{couponId,jdbcType=INTEGER},
+      </if>
+      <if test="companyCustNo != null">
+        #{companyCustNo,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null">
+        #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null">
+        #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceName != null">
+        #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null">
+        #{provinceId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityName != null">
+        #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null">
+        #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="countyName != null">
+        #{countyName,jdbcType=VARCHAR},
+      </if>
+      <if test="countyId != null">
+        #{countyId,jdbcType=VARCHAR},
+      </if>
+      <if test="townId != null">
+        #{townId,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zip != null">
+        #{zip,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceState != null">
+        #{invoiceState,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceType != null">
+        #{invoiceType,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceTitle != null">
+        #{invoiceTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceContent != null">
+        #{invoiceContent,jdbcType=VARCHAR},
+      </if>
+      <if test="payment != null">
+        #{payment,jdbcType=VARCHAR},
+      </if>
+      <if test="servFee != null">
+        #{servFee,jdbcType=REAL},
+      </if>
+      <if test="saleAmount != null">
+        #{saleAmount,jdbcType=REAL},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=REAL},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="outTradeNo != null">
+        #{outTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentNo != null">
+        #{paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentAt != null">
+        #{paymentAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paymentAmount != null">
+        #{paymentAmount,jdbcType=INTEGER},
+      </if>
+      <if test="payee != null">
+        #{payee,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null">
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentTotalFee != null">
+        #{paymentTotalFee,jdbcType=INTEGER},
+      </if>
+      <if test="payer != null">
+        #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="payStatus != null">
+        #{payStatus,jdbcType=INTEGER},
+      </if>
+      <if test="payOrderCategory != null">
+        #{payOrderCategory,jdbcType=INTEGER},
+      </if>
+      <if test="refundFee != null">
+        #{refundFee,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.order.model.OrdersExample" resultType="java.lang.Long">
+    select count(*) from orders
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update orders
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.openId != null">
+        open_id = #{record.openId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tradeNo != null">
+        trade_no = #{record.tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.aoyiId != null">
+        aoyi_id = #{record.aoyiId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.merchantId != null">
+        merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="record.merchantNo != null">
+        merchant_no = #{record.merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.couponCode != null">
+        coupon_code = #{record.couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.couponDiscount != null">
+        coupon_discount = #{record.couponDiscount,jdbcType=REAL},
+      </if>
+      <if test="record.couponId != null">
+        coupon_id = #{record.couponId,jdbcType=INTEGER},
+      </if>
+      <if test="record.companyCustNo != null">
+        company_cust_no = #{record.companyCustNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receiverName != null">
+        receiver_name = #{record.receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.telephone != null">
+        telephone = #{record.telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobile != null">
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null">
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.provinceName != null">
+        province_name = #{record.provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.provinceId != null">
+        province_id = #{record.provinceId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cityName != null">
+        city_name = #{record.cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cityId != null">
+        city_id = #{record.cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.countyName != null">
+        county_name = #{record.countyName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.countyId != null">
+        county_id = #{record.countyId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.townId != null">
+        town_id = #{record.townId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.address != null">
+        address = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zip != null">
+        zip = #{record.zip,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.invoiceState != null">
+        invoice_state = #{record.invoiceState,jdbcType=VARCHAR},
+      </if>
+      <if test="record.invoiceType != null">
+        invoice_type = #{record.invoiceType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.invoiceTitle != null">
+        invoice_title = #{record.invoiceTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.invoiceContent != null">
+        invoice_content = #{record.invoiceContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payment != null">
+        payment = #{record.payment,jdbcType=VARCHAR},
+      </if>
+      <if test="record.servFee != null">
+        serv_Fee = #{record.servFee,jdbcType=REAL},
+      </if>
+      <if test="record.saleAmount != null">
+        sale_amount = #{record.saleAmount,jdbcType=REAL},
+      </if>
+      <if test="record.amount != null">
+        amount = #{record.amount,jdbcType=REAL},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.outTradeNo != null">
+        out_trade_no = #{record.outTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.paymentNo != null">
+        payment_no = #{record.paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.paymentAt != null">
+        payment_at = #{record.paymentAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.paymentAmount != null">
+        payment_amount = #{record.paymentAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.payee != null">
+        payee = #{record.payee,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payType != null">
+        pay_type = #{record.payType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.paymentTotalFee != null">
+        payment_total_fee = #{record.paymentTotalFee,jdbcType=INTEGER},
+      </if>
+      <if test="record.payer != null">
+        payer = #{record.payer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payStatus != null">
+        pay_status = #{record.payStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.payOrderCategory != null">
+        pay_order_category = #{record.payOrderCategory,jdbcType=INTEGER},
+      </if>
+      <if test="record.refundFee != null">
+        refund_fee = #{record.refundFee,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdAt != null">
+        created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedAt != null">
+        updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update orders
+    set id = #{record.id,jdbcType=INTEGER},
+      open_id = #{record.openId,jdbcType=VARCHAR},
+      trade_no = #{record.tradeNo,jdbcType=VARCHAR},
+      aoyi_id = #{record.aoyiId,jdbcType=VARCHAR},
+      merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      merchant_no = #{record.merchantNo,jdbcType=VARCHAR},
+      coupon_code = #{record.couponCode,jdbcType=VARCHAR},
+      coupon_discount = #{record.couponDiscount,jdbcType=REAL},
+      coupon_id = #{record.couponId,jdbcType=INTEGER},
+      company_cust_no = #{record.companyCustNo,jdbcType=VARCHAR},
+      receiver_name = #{record.receiverName,jdbcType=VARCHAR},
+      telephone = #{record.telephone,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      province_name = #{record.provinceName,jdbcType=VARCHAR},
+      province_id = #{record.provinceId,jdbcType=VARCHAR},
+      city_name = #{record.cityName,jdbcType=VARCHAR},
+      city_id = #{record.cityId,jdbcType=VARCHAR},
+      county_name = #{record.countyName,jdbcType=VARCHAR},
+      county_id = #{record.countyId,jdbcType=VARCHAR},
+      town_id = #{record.townId,jdbcType=VARCHAR},
+      address = #{record.address,jdbcType=VARCHAR},
+      zip = #{record.zip,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      invoice_state = #{record.invoiceState,jdbcType=VARCHAR},
+      invoice_type = #{record.invoiceType,jdbcType=VARCHAR},
+      invoice_title = #{record.invoiceTitle,jdbcType=VARCHAR},
+      invoice_content = #{record.invoiceContent,jdbcType=VARCHAR},
+      payment = #{record.payment,jdbcType=VARCHAR},
+      serv_Fee = #{record.servFee,jdbcType=REAL},
+      sale_amount = #{record.saleAmount,jdbcType=REAL},
+      amount = #{record.amount,jdbcType=REAL},
+      status = #{record.status,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=INTEGER},
+      out_trade_no = #{record.outTradeNo,jdbcType=VARCHAR},
+      payment_no = #{record.paymentNo,jdbcType=VARCHAR},
+      payment_at = #{record.paymentAt,jdbcType=TIMESTAMP},
+      payment_amount = #{record.paymentAmount,jdbcType=INTEGER},
+      payee = #{record.payee,jdbcType=VARCHAR},
+      pay_type = #{record.payType,jdbcType=VARCHAR},
+      payment_total_fee = #{record.paymentTotalFee,jdbcType=INTEGER},
+      payer = #{record.payer,jdbcType=VARCHAR},
+      pay_status = #{record.payStatus,jdbcType=INTEGER},
+      pay_order_category = #{record.payOrderCategory,jdbcType=INTEGER},
+      refund_fee = #{record.refundFee,jdbcType=INTEGER},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.Orders">
+    update orders
+    <set>
+      <if test="openId != null">
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo != null">
+        trade_no = #{tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="aoyiId != null">
+        aoyi_id = #{aoyiId,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantId != null">
+        merchant_id = #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="merchantNo != null">
+        merchant_no = #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="couponCode != null">
+        coupon_code = #{couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="couponDiscount != null">
+        coupon_discount = #{couponDiscount,jdbcType=REAL},
+      </if>
+      <if test="couponId != null">
+        coupon_id = #{couponId,jdbcType=INTEGER},
+      </if>
+      <if test="companyCustNo != null">
+        company_cust_no = #{companyCustNo,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null">
+        receiver_name = #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null">
+        telephone = #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceName != null">
+        province_name = #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null">
+        province_id = #{provinceId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityName != null">
+        city_name = #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="countyName != null">
+        county_name = #{countyName,jdbcType=VARCHAR},
+      </if>
+      <if test="countyId != null">
+        county_id = #{countyId,jdbcType=VARCHAR},
+      </if>
+      <if test="townId != null">
+        town_id = #{townId,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zip != null">
+        zip = #{zip,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceState != null">
+        invoice_state = #{invoiceState,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceType != null">
+        invoice_type = #{invoiceType,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceTitle != null">
+        invoice_title = #{invoiceTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceContent != null">
+        invoice_content = #{invoiceContent,jdbcType=VARCHAR},
+      </if>
+      <if test="payment != null">
+        payment = #{payment,jdbcType=VARCHAR},
+      </if>
+      <if test="servFee != null">
+        serv_Fee = #{servFee,jdbcType=REAL},
+      </if>
+      <if test="saleAmount != null">
+        sale_amount = #{saleAmount,jdbcType=REAL},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=REAL},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="outTradeNo != null">
+        out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentNo != null">
+        payment_no = #{paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentAt != null">
+        payment_at = #{paymentAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paymentAmount != null">
+        payment_amount = #{paymentAmount,jdbcType=INTEGER},
+      </if>
+      <if test="payee != null">
+        payee = #{payee,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null">
+        pay_type = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentTotalFee != null">
+        payment_total_fee = #{paymentTotalFee,jdbcType=INTEGER},
+      </if>
+      <if test="payer != null">
+        payer = #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="payStatus != null">
+        pay_status = #{payStatus,jdbcType=INTEGER},
+      </if>
+      <if test="payOrderCategory != null">
+        pay_order_category = #{payOrderCategory,jdbcType=INTEGER},
+      </if>
+      <if test="refundFee != null">
+        refund_fee = #{refundFee,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.Orders">
+    update orders
+    set open_id = #{openId,jdbcType=VARCHAR},
+      trade_no = #{tradeNo,jdbcType=VARCHAR},
+      aoyi_id = #{aoyiId,jdbcType=VARCHAR},
+      merchant_id = #{merchantId,jdbcType=INTEGER},
+      merchant_no = #{merchantNo,jdbcType=VARCHAR},
+      coupon_code = #{couponCode,jdbcType=VARCHAR},
+      coupon_discount = #{couponDiscount,jdbcType=REAL},
+      coupon_id = #{couponId,jdbcType=INTEGER},
+      company_cust_no = #{companyCustNo,jdbcType=VARCHAR},
+      receiver_name = #{receiverName,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      province_name = #{provinceName,jdbcType=VARCHAR},
+      province_id = #{provinceId,jdbcType=VARCHAR},
+      city_name = #{cityName,jdbcType=VARCHAR},
+      city_id = #{cityId,jdbcType=VARCHAR},
+      county_name = #{countyName,jdbcType=VARCHAR},
+      county_id = #{countyId,jdbcType=VARCHAR},
+      town_id = #{townId,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zip = #{zip,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      invoice_state = #{invoiceState,jdbcType=VARCHAR},
+      invoice_type = #{invoiceType,jdbcType=VARCHAR},
+      invoice_title = #{invoiceTitle,jdbcType=VARCHAR},
+      invoice_content = #{invoiceContent,jdbcType=VARCHAR},
+      payment = #{payment,jdbcType=VARCHAR},
+      serv_Fee = #{servFee,jdbcType=REAL},
+      sale_amount = #{saleAmount,jdbcType=REAL},
+      amount = #{amount,jdbcType=REAL},
+      status = #{status,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+      payment_no = #{paymentNo,jdbcType=VARCHAR},
+      payment_at = #{paymentAt,jdbcType=TIMESTAMP},
+      payment_amount = #{paymentAmount,jdbcType=INTEGER},
+      payee = #{payee,jdbcType=VARCHAR},
+      pay_type = #{payType,jdbcType=VARCHAR},
+      payment_total_fee = #{paymentTotalFee,jdbcType=INTEGER},
+      payer = #{payer,jdbcType=VARCHAR},
+      pay_status = #{payStatus,jdbcType=INTEGER},
+      pay_order_category = #{payOrderCategory,jdbcType=INTEGER},
+      refund_fee = #{refundFee,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

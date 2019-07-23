@@ -4,7 +4,7 @@ import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 import com.fengchao.product.aoyi.service.AdminCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,7 +28,7 @@ public class AdminCategoryController {
 
     @GetMapping("all")
     public OperaResult all(OperaResult result){
-        List<AoyiBaseCategory> category = service.selectAll();
+        List<AoyiBaseCategoryX> category = service.selectAll();
         result.getData().put("result", category) ;
         return result;
     }
@@ -47,7 +47,7 @@ public class AdminCategoryController {
     }
 
     @PostMapping("/saveCategory")
-    private OperaResult saveCategory(@RequestBody AoyiBaseCategory bean, OperaResult result) {
+    private OperaResult saveCategory(@RequestBody AoyiBaseCategoryX bean, OperaResult result) {
         result.getData().put("categoryId", service.insertSelective(bean));
         return result ;
     }
@@ -66,7 +66,7 @@ public class AdminCategoryController {
 
     @GetMapping("/category")
     private OperaResult findCategoryList(Integer id, boolean includeSub, OperaResult result) {
-        List<AoyiBaseCategory> categorys = service.selectCategoryList(id, includeSub);
+        List<AoyiBaseCategoryX> categorys = service.selectCategoryList(id, includeSub);
         result.getData().put("result", categorys) ;
         return result ;
     }

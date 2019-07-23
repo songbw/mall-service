@@ -6,25 +6,31 @@ import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
+import com.fengchao.equity.dao.PromotionDao;
 import com.fengchao.equity.feign.ProdService;
-import com.fengchao.equity.mapper.PromotionMapper;
+import com.fengchao.equity.mapper.PromotionXMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
 import com.fengchao.equity.model.AoyiProdIndex;
 import com.fengchao.equity.model.Promotion;
+import com.fengchao.equity.model.PromotionX;
 import com.fengchao.equity.model.PromotionMpu;
 import com.fengchao.equity.service.PromotionService;
+import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@Slf4j
 public class PromotionServiceImpl implements PromotionService {
 
     @Autowired
-    private PromotionMapper mapper;
+    private PromotionXMapper promotionXMapper;
     @Autowired
     private PromotionMpuMapper promotionMpuMapper;
     @Autowired
@@ -32,16 +38,19 @@ public class PromotionServiceImpl implements PromotionService {
     @Autowired
     private ProdService prodService;
 
+    @Autowired
+    private PromotionDao promotionDao;
+
     @Override
     public int effective(int promotionId) {
-        return mapper.promotionEffective(promotionId);
+        return promotionXMapper.promotionEffective(promotionId);
     }
 
     @Override
-    public int createPromotion(Promotion bean) {
+    public int createPromotion(PromotionX bean) {
         Date date = new Date();
         bean.setCreatedDate(date);
-        int num = mapper.insertSelective(bean);
+        int num = promotionXMapper.insertSelective(bean);
         if(num == 1){
             JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), bean.getStartDate());
             JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), bean.getEndDate());
@@ -57,18 +66,18 @@ public class PromotionServiceImpl implements PromotionService {
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize", limit);
-        List<Promotion> promotions = new ArrayList<>();
-        total = mapper.selectCount(map);
+        List<PromotionX> promotions = new ArrayList<>();
+        total = promotionXMapper.selectCount(map);
         if (total > 0) {
-            promotions = mapper.selectLimit(map);
+            promotions = promotionXMapper.selectLimit(map);
         }
         pageBean = PageBean.build(pageBean, promotions, total, offset, limit);
         return pageBean;
     }
 
     @Override
-    public int updatePromotion(Promotion bean) {
-        return mapper.updateByPrimaryKeySelective(bean);
+    public int updatePromotion(PromotionX bean) {
+        return promotionXMapper.updateByPrimaryKeySelective(bean);
     }
 
     @Override
@@ -82,10 +91,10 @@ public class PromotionServiceImpl implements PromotionService {
         map.put("name",bean.getName());
         map.put("promotionType",bean.getPromotionType());
         map.put("status",bean.getStatus());
-        List<Promotion> promotions = new ArrayList<>();
-        total = mapper.selectCount(map);
+        List<PromotionX> promotions = new ArrayList<>();
+        total = promotionXMapper.selectCount(map);
         if (total > 0) {
-            promotions = mapper.selectLimit(map);
+            promotions = promotionXMapper.selectLimit(map);
         }
         pageBean = PageBean.build(pageBean, promotions, total, bean.getOffset(), bean.getLimit());
         return pageBean;
@@ -93,7 +102,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public int deletePromotion(Integer id) {
-        int num = mapper.deleteByPrimaryKey(id);
+        int num = promotionXMapper.deleteByPrimaryKey(id);
         if(num == 1){
             promotionMpuMapper.deleteByPrimaryKey(id);
         }
@@ -101,8 +110,8 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion findPromotionById(Integer id) {
-        Promotion promotion = mapper.selectByPrimaryKey(id);
+    public PromotionX findPromotionById(Integer id) {
+        PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
         if(promotion == null){
             return promotion;
         }
@@ -130,7 +139,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int createContent(Promotion bean) {
+    public int createContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
@@ -141,7 +150,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int updateContent(Promotion bean) {
+    public int updateContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
@@ -152,7 +161,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public int deleteContent(Promotion bean) {
+    public int deleteContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpu> promotionSkus = bean.getPromotionSkus();
         promotionSkus.forEach(promotionSku ->{
@@ -163,9 +172,9 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion findPromotionToUser(Integer id, Boolean detail) {
+    public PromotionX findPromotionToUser(Integer id, Boolean detail) {
 
-        Promotion promotion = mapper.selectByPrimaryKey(id);
+        PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
         List<PromotionMpu> promotionMpus = null;
         if(detail != null && detail == true){
             promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
@@ -192,21 +201,61 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public List<PromotionInfoBean> findPromotionInfoByMpu(String mpu) {
-        return mapper.selectPromotionInfoByMpu(mpu);
+        return promotionXMapper.selectPromotionInfoByMpu(mpu);
     }
 
     @Override
     public List<PromotionInfoBean> findPromotionByMpu(String mpu) {
-        return mapper.selectPromotionInfoByMpu(mpu);
+        return promotionXMapper.selectPromotionInfoByMpu(mpu);
     }
 
     @Override
     public int end(int promotionId) {
-        return mapper.promotionEnd(promotionId);
+        return promotionXMapper.promotionEnd(promotionId);
     }
 
     @Override
-    public Promotion findPromotionName(Integer id) {
-        return mapper.selectPromotionName(id);
+    public PromotionX findPromotionName(Integer id) {
+        return promotionXMapper.selectPromotionName(id);
+    }
+
+    @Override
+    public List<PromotionBean> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception {
+        if (CollectionUtils.isEmpty(promotionIdList)) {
+            return Collections.emptyList();
+        }
+
+        // 执行查询
+        List<Promotion> promotionList = promotionDao.selectPromotionListByIdList(promotionIdList);
+        log.info("查询活动列表 根据id集合查询 获取到数据库返回:{}", JSONUtil.toJsonString(promotionList));
+
+
+        // 转dto
+        List<PromotionBean> promotionBeanList = new ArrayList<>();
+        for (Promotion promotion : promotionList) {
+            PromotionBean promotionBean = convertToPromotionBean(promotion);
+            promotionBeanList.add(promotionBean);
+        }
+
+        log.info("查询活动列表 根据id集合查询 转dto:{}", JSONUtil.toJsonString(promotionBeanList));
+
+        return promotionBeanList;
+    }
+
+    // ====================================== private ==========================
+
+    private PromotionBean convertToPromotionBean(Promotion promotion) {
+        PromotionBean promotionBean = new PromotionBean();
+
+        // promotionBean.setId(promotion.getId());
+        promotionBean.setName(promotion.getName());
+        // promotionBean.setTag(promotion.getTag());
+        promotionBean.setPromotionType(promotion.getPromotionType());
+        promotionBean.setStatus(promotion.getStatus());
+        // promotionBean.setStartDate(promotion.getStartDate());
+        // promotionBean.setEndDate(promotion.getEndDate());
+        // promotionBean.setCreatedDate(promotion.getCreatedDate());
+
+        return promotionBean;
     }
 }

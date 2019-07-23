@@ -7,6 +7,8 @@ import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.EquityService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class EquityServiceH implements EquityService {
     @Override
@@ -23,4 +25,16 @@ public class EquityServiceH implements EquityService {
         result.setMsg("权益优惠券服务失败 " + msg);
         return result;
     }
+
+    @Override
+    public OperaResult findPromotionListByIdList(List<Integer> idList) {
+        return HystrixDefaultFallback.defaultFallback();
+    }
+
+    @Override
+    public OperaResult findCouponListByIdList(List<Integer> idList) {
+        return HystrixDefaultFallback.defaultFallback();
+    }
+
+
 }

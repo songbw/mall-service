@@ -2,9 +2,9 @@ package com.fengchao.order.service.impl;
 
 import com.fengchao.order.bean.PageBean;
 import com.fengchao.order.bean.RefundOrderQueryBean;
-import com.fengchao.order.mapper.OrderDetailMapper;
+import com.fengchao.order.mapper.OrderDetailXMapper;
 import com.fengchao.order.mapper.RefundOrderMapper;
-import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.model.OrderDetailX;
 import com.fengchao.order.model.RefundOrder;
 import com.fengchao.order.service.RefundOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     private RefundOrderMapper mapper;
 
     @Autowired
-    private OrderDetailMapper orderDetailMapper;
+    private OrderDetailXMapper orderDetailXMapper;
 
     @Override
     public Integer add(RefundOrder bean) {
@@ -33,8 +33,8 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             // 提示不能重复提交
             return 0;
         } else {
-            List<OrderDetail> orderDetails = orderDetailMapper.selectBySubOrderId(bean.getSubOrderId());
-            if (orderDetails != null && orderDetails.size() > 0) {
+            List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectBySubOrderId(bean.getSubOrderId());
+            if (orderDetailXES != null && orderDetailXES.size() > 0) {
                 Date date = new Date();
                 bean.setCreatedAt(date);
                 bean.setReturnOrderNo(date.getTime() + "");

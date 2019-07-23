@@ -1,7 +1,7 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.PromotionBean;
-import com.fengchao.equity.model.Promotion;
+import com.fengchao.equity.model.PromotionX;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.bean.OperaResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ public class AdminPromotionController {
     private PromotionService service;
 
     @PostMapping("create")
-    public OperaResult createPromotion(@RequestBody Promotion bean, OperaResult result){
+    public OperaResult createPromotion(@RequestBody PromotionX bean, OperaResult result){
         service.createPromotion(bean);
         result.getData().put("promotionId", bean.getId());
         return result;
@@ -35,7 +35,7 @@ public class AdminPromotionController {
     }
 
     @PostMapping("update")
-    public OperaResult updatePromotion(@RequestBody Promotion bean, OperaResult result){
+    public OperaResult updatePromotion(@RequestBody PromotionX bean, OperaResult result){
         result.getData().put("result", service.updatePromotion(bean));
         return result;
     }
@@ -53,19 +53,19 @@ public class AdminPromotionController {
     }
 
     @PostMapping("createContent")
-    public OperaResult createContent(@RequestBody Promotion bean, OperaResult result){
+    public OperaResult createContent(@RequestBody PromotionX bean, OperaResult result){
         result.getData().put("result",service.createContent(bean));
         return result;
     }
 
     @PutMapping("updateContent")
-    public OperaResult updateContent(@RequestBody Promotion bean, OperaResult result){
+    public OperaResult updateContent(@RequestBody PromotionX bean, OperaResult result){
         result.getData().put("result",service.updateContent(bean));
         return result;
     }
 
     @DeleteMapping("deleteContent")
-    public OperaResult deleteContent(@RequestBody Promotion bean, OperaResult result){
+    public OperaResult deleteContent(@RequestBody PromotionX bean, OperaResult result){
         result.getData().put("result", service.deleteContent(bean));
         return result;
     }

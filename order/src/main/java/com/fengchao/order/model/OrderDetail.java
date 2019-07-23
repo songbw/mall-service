@@ -6,29 +6,33 @@ import java.util.Date;
 public class OrderDetail {
     private Integer id;
 
+    private Integer merchantId;
+
     private Integer orderId;
 
     private String subOrderId;
+
+    private String mpu;
 
     private String skuId;
 
     private Integer num;
 
-    private BigDecimal unitPrice;
+    private Integer promotionId;
+
+    private Float promotionDiscount;
 
     private BigDecimal salePrice;
 
-    private String image;
+    private BigDecimal unitPrice;
 
-    private String name;
+    private String image;
 
     private String model;
 
+    private String name;
+
     private Integer status;
-
-    private Integer promotionId;
-
-    private BigDecimal promotionDiscount;
 
     private Date createdAt;
 
@@ -38,13 +42,9 @@ public class OrderDetail {
 
     private String logisticsContent;
 
-    private String comCode;
+    private String comcode;
 
-    private String mpu;
-
-    private Integer merchantId;
-
-    private Integer skuCouponDiscount ;
+    private Integer skuCouponDiscount;
 
     private String category;
 
@@ -56,12 +56,36 @@ public class OrderDetail {
         this.id = id;
     }
 
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
+    }
+
     public Integer getOrderId() {
         return orderId;
     }
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
+    }
+
+    public String getSubOrderId() {
+        return subOrderId;
+    }
+
+    public void setSubOrderId(String subOrderId) {
+        this.subOrderId = subOrderId == null ? null : subOrderId.trim();
+    }
+
+    public String getMpu() {
+        return mpu;
+    }
+
+    public void setMpu(String mpu) {
+        this.mpu = mpu == null ? null : mpu.trim();
     }
 
     public String getSkuId() {
@@ -80,12 +104,20 @@ public class OrderDetail {
         this.num = num;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public Integer getPromotionId() {
+        return promotionId;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setPromotionId(Integer promotionId) {
+        this.promotionId = promotionId;
+    }
+
+    public Float getPromotionDiscount() {
+        return promotionDiscount;
+    }
+
+    public void setPromotionDiscount(Float promotionDiscount) {
+        this.promotionDiscount = promotionDiscount;
     }
 
     public BigDecimal getSalePrice() {
@@ -96,20 +128,44 @@ public class OrderDetail {
         this.salePrice = salePrice;
     }
 
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image == null ? null : image.trim();
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model == null ? null : model.trim();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
+    }
+
     public Integer getStatus() {
         return status;
     }
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public Integer getPromotionId() {
-        return promotionId;
-    }
-
-    public void setPromotionId(Integer promotionId) {
-        this.promotionId = promotionId;
     }
 
     public Date getCreatedAt() {
@@ -128,44 +184,12 @@ public class OrderDetail {
         this.updatedAt = updatedAt;
     }
 
-    public String getSubOrderId() {
-        return subOrderId;
-    }
-
-    public void setSubOrderId(String subOrderId) {
-        this.subOrderId = subOrderId;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
     public String getLogisticsId() {
         return logisticsId;
     }
 
     public void setLogisticsId(String logisticsId) {
-        this.logisticsId = logisticsId;
+        this.logisticsId = logisticsId == null ? null : logisticsId.trim();
     }
 
     public String getLogisticsContent() {
@@ -173,39 +197,15 @@ public class OrderDetail {
     }
 
     public void setLogisticsContent(String logisticsContent) {
-        this.logisticsContent = logisticsContent;
+        this.logisticsContent = logisticsContent == null ? null : logisticsContent.trim();
     }
 
-    public String getComCode() {
-        return comCode;
+    public String getComcode() {
+        return comcode;
     }
 
-    public void setComCode(String comCode) {
-        this.comCode = comCode;
-    }
-
-    public BigDecimal getPromotionDiscount() {
-        return promotionDiscount;
-    }
-
-    public void setPromotionDiscount(BigDecimal promotionDiscount) {
-        this.promotionDiscount = promotionDiscount;
-    }
-
-    public String getMpu() {
-        return mpu;
-    }
-
-    public void setMpu(String mpu) {
-        this.mpu = mpu;
-    }
-
-    public Integer getMerchantId() {
-        return merchantId;
-    }
-
-    public void setMerchantId(Integer merchantId) {
-        this.merchantId = merchantId;
+    public void setComcode(String comcode) {
+        this.comcode = comcode == null ? null : comcode.trim();
     }
 
     public Integer getSkuCouponDiscount() {
@@ -221,6 +221,6 @@ public class OrderDetail {
     }
 
     public void setCategory(String category) {
-        this.category = category;
+        this.category = category == null ? null : category.trim();
     }
 }

@@ -2,15 +2,20 @@ package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.exception.EquityException;
-import com.fengchao.equity.model.Coupon;
+import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
+import com.fengchao.equity.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/coupon", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class CouponController {
 
     @Autowired
@@ -103,7 +108,7 @@ public class CouponController {
 
     @PostMapping("consume")
     public OperaResult consume(@RequestBody CouponUseInfoBean bean, OperaResult result){
-        Coupon coupon = couponService.consumeCoupon(bean);
+        CouponX coupon = couponService.consumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
             result.setMsg("销券失败");
@@ -134,5 +139,26 @@ public class CouponController {
     @PostMapping("user_verified")//头食对接接口
     public OperaResult userVerified(@RequestBody ToushiResult bean) throws EquityException{
         return useInfoService.userVerified(bean);
+    }
+
+
+    @GetMapping("findByIdList")
+    public OperaResult findByIdList(@RequestParam("idList") List<Integer> idList, OperaResult result){
+        log.info("根据id集合获取coupon列表 入参:{}", JSONUtil.toJsonString(idList));
+
+        try {
+            List<CouponBean> couponBeanList = couponService.queryCouponBeanListIdList(idList);
+
+            result.getData().put("result", couponBeanList);
+        } catch (Exception e) {
+            log.info("根据id集合获取coupon列表 异常:{}", e.getMessage(), e);
+
+            result.setCode(500);
+            result.setMsg("根据id集合获取coupon列表 异常");
+        }
+
+        log.info("根据id集合获取coupon列表 返回:{}", JSONUtil.toJsonString(result));
+
+        return result;
     }
 }

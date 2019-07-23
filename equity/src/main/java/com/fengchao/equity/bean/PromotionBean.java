@@ -1,12 +1,18 @@
 package com.fengchao.equity.bean;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class PromotionBean extends QueryBean{
+
+@Setter
+@Getter
+public class PromotionBean extends QueryBean {
 
     private String name;
+
     private Integer promotionType;
+
     private Integer status;
+
 }
 

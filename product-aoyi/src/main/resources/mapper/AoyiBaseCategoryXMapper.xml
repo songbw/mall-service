@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" >
+    <id column="category_id" property="categoryId" jdbcType="INTEGER" />
+    <result column="category_name" property="categoryName" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="category_class" property="categoryClass" jdbcType="CHAR" />
+    <result column="category_icon" property="categoryIcon" jdbcType="VARCHAR" />
+    <result column="category_desc" property="categoryDesc" jdbcType="VARCHAR" />
+    <result column="sort_order" property="sortOrder" jdbcType="INTEGER" />
+    <result column="is_show" property="isShow" jdbcType="BIT" />
+    <result column="is_nav" property="isNav" jdbcType="BIT" />
+    <result column="is_top_style" property="isTopStyle" jdbcType="TINYINT" />
+    <result column="idate" property="idate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    category_id, category_name, parent_id, category_class, category_icon, category_desc,
+    sort_order, is_show, is_nav, is_top_style, idate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from aoyi_base_category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" >
+    insert into aoyi_base_category (category_id, category_name, parent_id,
+      category_class, category_icon, category_desc,
+      sort_order, is_show, is_nav, is_top_style,
+      idate)
+    values (#{categoryId,jdbcType=INTEGER}, #{categoryName,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER},
+      #{categoryClass,jdbcType=CHAR}, #{categoryIcon,jdbcType=VARCHAR}, #{categoryDesc,jdbcType=VARCHAR},
+      #{sortOrder,jdbcType=INTEGER}, #{isShow,jdbcType=BIT}, #{isNav,jdbcType=BIT}, #{isTopStyle,jdbcType=TINYINT},
+      #{idate})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX"  keyProperty="category_id" useGeneratedKeys="true">
+    insert into aoyi_base_category
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="categoryName != null" >
+        category_name,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="categoryClass != null" >
+        category_class,
+      </if>
+      <if test="categoryIcon != null" >
+        category_icon,
+      </if>
+      <if test="categoryDesc != null" >
+        category_desc,
+      </if>
+      <if test="sortOrder != null" >
+        sort_order,
+      </if>
+      <if test="isShow != null" >
+        is_show,
+      </if>
+      <if test="isNav != null" >
+        is_nav,
+      </if>
+      <if test="isTopStyle != null" >
+        is_top_style,
+      </if>
+      <if test="idate != null" >
+        idate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryName != null" >
+        #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryClass != null" >
+        #{categoryClass,jdbcType=CHAR},
+      </if>
+      <if test="categoryIcon != null" >
+        #{categoryIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryDesc != null" >
+        #{categoryDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null" >
+        #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null" >
+        #{isShow,jdbcType=BIT},
+      </if>
+      <if test="isNav != null" >
+        #{isNav,jdbcType=BIT},
+      </if>
+      <if test="isTopStyle != null" >
+        #{isTopStyle,jdbcType=TINYINT},
+      </if>
+      <if test="idate != null" >
+        #{idate},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX"  keyProperty="category_id" useGeneratedKeys="true">
+    update aoyi_base_category
+    <set >
+      <if test="categoryName != null" >
+        category_name = #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryClass != null" >
+        category_class = #{categoryClass,jdbcType=CHAR},
+      </if>
+      <if test="categoryIcon != null" >
+        category_icon = #{categoryIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryDesc != null" >
+        category_desc = #{categoryDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null" >
+        sort_order = #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null" >
+        is_show = #{isShow,jdbcType=BIT},
+      </if>
+      <if test="isNav != null" >
+        is_nav = #{isNav,jdbcType=BIT},
+      </if>
+      <if test="isTopStyle != null" >
+        is_top_style = #{isTopStyle,jdbcType=TINYINT},
+      </if>
+      <if test="idate != null" >
+        idate = #{idate},
+      </if>
+    </set>
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX"  keyProperty="category_id" useGeneratedKeys="true">
+    update aoyi_base_category
+    set category_name = #{categoryName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      category_class = #{categoryClass,jdbcType=CHAR},
+      category_icon = #{categoryIcon,jdbcType=VARCHAR},
+      category_desc = #{categoryDesc,jdbcType=VARCHAR},
+      sort_order = #{sortOrder,jdbcType=INTEGER},
+      is_show = #{isShow,jdbcType=BIT},
+      is_nav = #{isNav,jdbcType=BIT},
+      is_top_style = #{isTopStyle,jdbcType=TINYINT},
+      idate = #{idate}
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectOneLevelList" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM  aoyi_base_category
+    WHERE category_class = 1 AND is_show = 0
+  </select>
+  <select id="selectListByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where parent_id = #{parentId} and is_show = 0
+  </select>
+  <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(category_id)
+    from aoyi_base_category
+    where 1 = 1
+    <if test="parentId !=null">
+      and parent_id = #{parentId}
+    </if>
+    <if test="categoryClass !=null and categoryClass !=''">
+      and category_class = #{categoryClass}
+    </if>
+    <if test="categoryName !=null and categoryName !=''">
+      <bind name="pattern" value="'%' + categoryName + '%'" />
+      and category_name LIKE #{pattern}
+    </if>
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where 1=1
+    <if test="parentId !=null">
+      and parent_id = #{parentId}
+    </if>
+    <if test="categoryClass !=null and categoryClass !=''">
+      and category_class = #{categoryClass}
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectNameList" resultMap="BaseResultMap" parameterType="Map" >
+    <bind name="pattern" value="'%' + categoryName + '%'" />
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM  aoyi_base_category
+    WHERE category_name LIKE #{pattern}
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectListById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where category_id = #{categoryId}
+  </select>
+  <select id="selectAdminListByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+    where parent_id = #{parentId}
+  </select>
+  <select id="selectByCategoryIdList" resultType="com.fengchao.product.aoyi.bean.CategoryQueryBean" parameterType="java.util.List" >
+    select category_id id, category_name name
+    from aoyi_base_category where category_id in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectMaxIdByParentId" resultType="int">
+    SELECT  IFNULL(MAX(category_id),0) FROM aoyi_base_category WHERE parent_id=#{parentId};
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_base_category
+  </select>
+</mapper>

@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiProdIndexX" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="skuId" property="skuid" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="VARCHAR" />
+    <result column="upc" property="upc" jdbcType="VARCHAR" />
+    <result column="saleUnit" property="saleunit" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="sprice" property="sprice" jdbcType="VARCHAR" />
+    <result column="images_url" property="imagesUrl" jdbcType="VARCHAR" />
+    <result column="introduction_url" property="introductionUrl" jdbcType="VARCHAR" />
+    <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
+    <result column="inventory" property="inventory" jdbcType="INTEGER" />
+    <result column="brand_id" property="brandId" jdbcType="INTEGER" />
+    <result column="mpu" property="mpu" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" extends="BaseResultMap" >
+    <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
+    <result column="prodParams" property="prodparams" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price,
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at
+  </sql>
+  <sql id="Blob_Column_List" >
+    introduction, prodParams
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from aoyi_prod_index
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySkuId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id,p.mpu
+    from aoyi_prod_index p
+    left join prod_extend e on p.mpu = e.mpu
+    where p.skuId = #{skuid}
+  </select>
+  <select id="selectByMpu" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id,p.mpu
+    from aoyi_prod_index p
+    left join prod_extend e on p.mpu = e.mpu
+    where p.mpu = #{mpu}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from aoyi_prod_index
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
+    insert into aoyi_prod_index (skuId, brand,
+      category, image, model,
+      name, weight, upc,
+      saleUnit, state, price,
+      sprice, images_url, introduction_url,
+      introduction, prodParams, merchant_id, inventory, brand_id, mpu, created_at, updated_at)
+    values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR},
+      #{category,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR},
+      #{saleunit,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR},
+      #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR},
+      #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR}, #{merchantId}, #{inventory}, #{brandId}, #{mpu}, #{createdAt}, #{updatedAt})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX"  keyProperty="id" useGeneratedKeys="true">
+    insert into aoyi_prod_index
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="skuid != null" >
+        skuId,
+      </if>
+      <if test="brand != null" >
+        brand,
+      </if>
+      <if test="category != null" >
+        category,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+      <if test="model != null" >
+        model,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="upc != null" >
+        upc,
+      </if>
+      <if test="saleunit != null" >
+        saleUnit,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="sprice != null" >
+        sprice,
+      </if>
+      <if test="imagesUrl != null" >
+        images_url,
+      </if>
+      <if test="introductionUrl != null" >
+        introduction_url,
+      </if>
+      <if test="merchantId != null" >
+        merchant_id,
+      </if>
+      <if test="inventory != null" >
+        inventory,
+      </if>
+      <if test="brandId != null" >
+        brand_id,
+      </if>
+      <if test="mpu != null" >
+        mpu,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="skuid != null" >
+        #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="upc != null" >
+        #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="saleunit != null" >
+        #{saleunit,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="sprice != null" >
+        #{sprice,jdbcType=VARCHAR},
+      </if>
+      <if test="imagesUrl != null" >
+        #{imagesUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="introductionUrl != null" >
+        #{introductionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantId != null" >
+        #{merchantId},
+      </if>
+      <if test="inventory != null" >
+        #{inventory},
+      </if>
+      <if test="brandId != null" >
+        #{brandId},
+      </if>
+      <if test="mpu != null" >
+        #{mpu},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX"  keyProperty="id" useGeneratedKeys="true">
+    update aoyi_prod_index
+    <set >
+      <if test="skuid != null" >
+        skuId = #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        brand = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="upc != null" >
+        upc = #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="saleunit != null" >
+        saleUnit = #{saleunit,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="sprice != null" >
+        sprice = #{sprice,jdbcType=VARCHAR},
+      </if>
+      <if test="imagesUrl != null" >
+        images_url = #{imagesUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="introductionUrl != null" >
+        introduction_url = #{introductionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantId != null" >
+        merchant_id = #{merchantId},
+      </if>
+      <if test="inventory != null" >
+        inventory = #{inventory},
+      </if>
+      <if test="brandId != null" >
+        brand_id = #{brandId},
+      </if>
+      <if test="mpu != null" >
+        mpu = #{mpu},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs"  keyProperty="id" useGeneratedKeys="true">
+    update aoyi_prod_index
+    set skuId = #{skuid,jdbcType=VARCHAR},
+      brand = #{brand,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=VARCHAR},
+      upc = #{upc,jdbcType=VARCHAR},
+      saleUnit = #{saleunit,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      sprice = #{sprice,jdbcType=VARCHAR},
+      images_url = #{imagesUrl,jdbcType=VARCHAR},
+      introduction_url = #{introductionUrl,jdbcType=VARCHAR},
+      introduction = #{introduction,jdbcType=LONGVARCHAR},
+      prodParams = #{prodparams,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX" >
+    update aoyi_prod_index
+    set skuId = #{skuid,jdbcType=VARCHAR},
+      brand = #{brand,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=VARCHAR},
+      upc = #{upc,jdbcType=VARCHAR},
+      saleUnit = #{saleunit,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      sprice = #{sprice,jdbcType=VARCHAR},
+      images_url = #{imagesUrl,jdbcType=VARCHAR},
+      introduction_url = #{introductionUrl,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from aoyi_prod_index
+    where state = 1
+    <if test="category !=null and category !=''">
+      and category = #{category}
+    </if>
+    <if test="brand !=null and brand !=''">
+      and brand = #{brand}
+    </if>
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
+    from aoyi_prod_index p
+    left join prod_extend e on p.mpu = e.mpu
+    where state = 1
+    <if test="category !=null and category !=''">
+      and p.category = #{category}
+    </if>
+    <if test="brand !=null and brand !=''">
+      and p.brand = #{brand}
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="Map">
+    select
+    p.skuId, p.brand, c.category_name category, p.model, p.name, p.image, p.weight, p.upc, p.saleUnit, p.state, p.price,p.images_url, p.introduction_url, p.merchant_id, p.inventory, p.brand_id, p.mpu
+    from aoyi_prod_index p LEFT JOIN aoyi_base_category c ON p.category = c.category_id
+    where state = 1
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectSearchCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from aoyi_prod_index
+    where 1 = 1
+    <if test="id != null and id !=''">
+      and id = #{id}
+    </if>
+    <if test="name !=null and name !=''">
+      <bind name="pattern1" value="'%' + name + '%'"/>
+      and name LIKE #{pattern1}
+    </if>
+    <if test="categoryID !=null and categoryID !=''">
+      <bind name="pattern2" value="categoryID + '%'"/>
+      and category LIKE #{pattern2}
+    </if>
+    <if test="skuid !=null and skuid !=''">
+      and skuid = #{skuid}
+    </if>
+    <if test="mpu !=null and mpu !=''">
+      and mpu = #{mpu}
+    </if>
+    <if test="brand !=null and brand !=''">
+      <bind name="pattern4" value="'%' + brand + '%'"/>
+      and aoyi_prod_index.brand LIKE #{pattern4}
+    </if>
+    <if test="state != null and state !=''">
+      and state = #{state}
+    </if>
+    <if test="merchantId != null and merchantId !=''">
+      and merchant_id = #{merchantId}
+    </if>
+  </select>
+  <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,p.created_at,p.updated_at,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
+    from aoyi_prod_index p
+    left join prod_extend e on p.mpu = e.mpu
+    where 1 = 1
+    <if test="id != null and id !=''">
+      and p.id = #{id}
+    </if>
+    <if test="name !=null and name !=''">
+      <bind name="pattern1" value="'%' + name + '%'"/>
+      and p.name LIKE #{pattern1}
+    </if>
+    <if test="categoryID !=null and categoryID !=''">
+      <bind name="pattern2" value="categoryID + '%'"/>
+      and p.category LIKE #{pattern2}
+    </if>
+    <if test="skuid !=null and skuid !=''">
+      and p.skuid = #{skuid}
+    </if>
+    <if test="mpu !=null and mpu !=''">
+      and p.mpu = #{mpu}
+    </if>
+    <if test="brand !=null and brand !=''">
+      <bind name="pattern4" value="'%' + brand + '%'"/>
+      and p.brand LIKE #{pattern4}
+    </if>
+    <if test="state !=null and state !=''">
+      and p.state = #{state}
+    </if>
+    <if test="merchantId != null and merchantId !=''">
+      and merchant_id = #{merchantId}
+    </if>
+    <if test="order == 'asc'" >
+      order by p.created_at asc
+    </if>
+    <if test="order == 'desc'" >
+      order by p.created_at desc
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectProdAll" resultMap="BaseResultMap">
+    select
+    p.id, p.skuId, p.brand,p.category category, c.category_name categoryName, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend,      e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu, p.created_at createdAt, p.updated_at updatedAt
+    from aoyi_prod_index p
+    LEFT JOIN aoyi_base_category c ON p.category = c.category_id
+    left join prod_extend e on p.mpu = e.mpu
+    where p.state = 1
+  </select>
+  <select id="selectSkuByCouponIdCount" resultType="java.lang.Integer" parameterType="com.fengchao.product.aoyi.bean.QueryProdBean">
+    select
+    count(id)
+    from aoyi_prod_index
+    where state = 1
+    <if test="couponMpus !=null and couponMpus.size > 0">
+      and mpu in
+      <foreach collection="couponMpus" index="index" item="item1" open="(" separator="," close=")">
+        #{item1}
+      </foreach>
+    </if>
+    <if test="excludeMpus !=null and excludeMpus.size > 0">
+      and mpu not in
+      <foreach collection="excludeMpus" index="index" item="item2" open="(" separator="," close=")">
+        #{item2}
+      </foreach>
+    </if>
+    <if test="categories !=null and categories.size > 0">
+      and category in
+      <foreach collection="categories" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+    <if test="brands !=null and brands.size > 0">
+      and brand in
+      <foreach collection="brands" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+  </select>
+  <select id="selectSkuByCouponIdLimit" resultMap="BaseResultMap" parameterType="com.fengchao.product.aoyi.bean.QueryProdBean">
+    select
+    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
+    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
+    from aoyi_prod_index p
+    left join prod_extend e on p.mpu = e.mpu
+    where state = 1
+    <if test="couponMpus !=null">
+      and p.mpu in
+      <foreach collection="couponMpus" index="index" item="item1" open="(" separator="," close=")">
+        #{item1}
+      </foreach>
+    </if>
+    <if test="excludeMpus !=null">
+      and p.mpu not in
+      <foreach collection="excludeMpus" index="index" item="item2" open="(" separator="," close=")">
+        #{item2}
+      </foreach>
+    </if>
+    <if test="categories !=null">
+      and p.category in
+      <foreach collection="categories" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+    <if test="brands !=null">
+      and brand in
+      <foreach collection="brands" index="index" item="item3" open="(" separator="," close=")">
+        #{item3}
+      </foreach>
+    </if>
+    limit #{pageNo},#{pageSize}
+  </select>
+</mapper>

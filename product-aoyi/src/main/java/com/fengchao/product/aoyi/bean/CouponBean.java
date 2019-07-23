@@ -3,15 +3,12 @@ package com.fengchao.product.aoyi.bean;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Setter
-@Getter
+@Data
 public class CouponBean implements Serializable {
 
     private Integer id;

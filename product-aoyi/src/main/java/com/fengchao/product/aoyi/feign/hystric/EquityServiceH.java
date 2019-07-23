@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.feign.EquityService;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,7 +19,7 @@ public class EquityServiceH implements EquityService {
     }
 
     @Override
-    public OperaResult selectCouponBySku(AoyiProdIndex bean) {
+    public OperaResult selectCouponBySku(AoyiProdIndexX bean) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";

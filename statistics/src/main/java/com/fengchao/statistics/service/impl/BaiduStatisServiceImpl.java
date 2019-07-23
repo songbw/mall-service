@@ -7,6 +7,7 @@ import com.fengchao.statistics.db.annotation.DataSource;
 import com.fengchao.statistics.db.config.DataSourceNames;
 import com.fengchao.statistics.mapper.BaiduStatisMapper;
 import com.fengchao.statistics.service.BaiduStatisService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,12 +49,18 @@ public class BaiduStatisServiceImpl implements BaiduStatisService {
         params.put("dayEnd", queryBean.getEndTime());
         params.put("urlKey", queryBean.getUrlKey());
 
-        List<HashMap<String, Object>> result = mapper.queryStatisticsData(params);
-        Integer total = mapper.countStatisticsData(params);
-        System.out.println("total====>" + total);
-        return PageBean.build(new PageBean(), result, total, queryBean.getPageNo(), queryBean.getPageSize());
+        if(StringUtils.isEmpty(queryBean.getUrlKey())){
+            //查询综合列表
+            params.put("orderKey", StringUtils.defaultIfEmpty(queryBean.getOrderKey(), "avg_stop_time"));
+            params.put("orderType", StringUtils.defaultIfEmpty(queryBean.getOrderType(), "desc"));
+            List<HashMap<String, Object>> result = mapper.queryStatisticsData(params);
+            Integer total = mapper.countStatisticsData(params);
+            return PageBean.build(new PageBean(), result, total, queryBean.getPageNo(), queryBean.getPageSize());
+        }else{
+            //查询详情列表
+            List<HashMap<String, Object>> result = mapper.queryDetailData(params);
+            Integer total = mapper.countDetailData(params);
+            return PageBean.build(new PageBean(), result, total, queryBean.getPageNo(), queryBean.getPageSize());
+        }
     }
-
-
-
 }

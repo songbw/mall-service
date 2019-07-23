@@ -1,10 +1,8 @@
 package com.fengchao.product.aoyi.model;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-public class AoyiBaseCategory implements Serializable {
+public class AoyiBaseCategory {
     private Integer categoryId;
 
     private String categoryName;
@@ -26,10 +24,6 @@ public class AoyiBaseCategory implements Serializable {
     private Byte isTopStyle;
 
     private Date idate;
-
-    private List<AoyiBaseCategory> subs;
-
-    private Integer subTotal;
 
     public Integer getCategoryId() {
         return categoryId;
@@ -116,22 +110,6 @@ public class AoyiBaseCategory implements Serializable {
     }
 
     public void setIdate(Date idate) {
-        this.idate = idate ;
-    }
-
-    public List<AoyiBaseCategory> getSubs() {
-        return subs;
-    }
-
-    public void setSubs(List<AoyiBaseCategory> subs) {
-        this.subs = subs;
-    }
-
-    public Integer getSubTotal() {
-        return subTotal;
-    }
-
-    public void setSubTotal(Integer subTotal) {
-        this.subTotal = subTotal;
+        this.idate = idate;
     }
 }

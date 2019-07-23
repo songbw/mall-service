@@ -1,9 +1,6 @@
 package com.fengchao.equity.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
-import java.util.List;
 
 public class Promotion {
     private Integer id;
@@ -16,15 +13,11 @@ public class Promotion {
 
     private Integer status;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date startDate;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date endDate;
 
     private Date createdDate;
-
-    private List<PromotionMpu> promotionSkus;
 
     public Integer getId() {
         return id;
@@ -88,13 +81,5 @@ public class Promotion {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public List<PromotionMpu> getPromotionSkus() {
-        return promotionSkus;
-    }
-
-    public void setPromotionSkus(List<PromotionMpu> promotionSkus) {
-        this.promotionSkus = promotionSkus;
     }
 }

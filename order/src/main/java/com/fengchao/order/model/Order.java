@@ -102,7 +102,7 @@ public class Order {
 
     private Float couponDiscount;
 
-    private List<OrderDetail> skus;
+    private List<OrderDetailX> skus;
 
     private PageBean skusPage;
 
@@ -322,11 +322,11 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    public List<OrderDetail> getSkus() {
+    public List<OrderDetailX> getSkus() {
         return skus;
     }
 
-    public void setSkus(List<OrderDetail> skus) {
+    public void setSkus(List<OrderDetailX> skus) {
         this.skus = skus;
     }
 

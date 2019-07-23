@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper mapper;
 
     @Autowired
-    private OrderDetailMapper orderDetailMapper;
+    private OrderDetailXMapper orderDetailXMapper;
 
     @Autowired
     private ReceiverMapper receiverMapper;
@@ -152,28 +152,29 @@ public class OrderServiceImpl implements OrderService {
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setPromotionId(orderSku.getPromotionId());
-                orderDetail.setSalePrice(orderSku.getSalePrice());
-                orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
-                orderDetail.setCreatedAt(date);
-                orderDetail.setUpdatedAt(date);
-                orderDetail.setOrderId(bean.getId());
-                orderDetail.setImage(prodIndexWithBLOBs.getImage());
-                orderDetail.setModel(prodIndexWithBLOBs.getModel());
-                orderDetail.setName(prodIndexWithBLOBs.getName());
-                orderDetail.setStatus(0);
-                orderDetail.setSkuId(orderSku.getSkuId());
-                orderDetail.setMpu(orderSku.getMpu());
-                orderDetail.setMerchantId(orderSku.getMerchantId());
-                orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
-                orderDetail.setUnitPrice(orderSku.getUnitPrice());
-                orderDetail.setNum(orderSku.getNum());
-                orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
-                orderDetail.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100);
+
+                OrderDetailX orderDetailX = new OrderDetailX();
+                orderDetailX.setPromotionId(orderSku.getPromotionId());
+                orderDetailX.setSalePrice(orderSku.getSalePrice());
+                orderDetailX.setPromotionDiscount(orderSku.getPromotionDiscount());
+                orderDetailX.setCreatedAt(date);
+                orderDetailX.setUpdatedAt(date);
+                orderDetailX.setOrderId(bean.getId());
+                orderDetailX.setImage(prodIndexWithBLOBs.getImage());
+                orderDetailX.setModel(prodIndexWithBLOBs.getModel());
+                orderDetailX.setName(prodIndexWithBLOBs.getName());
+                orderDetailX.setStatus(0);
+                orderDetailX.setSkuId(orderSku.getSkuId());
+                orderDetailX.setMpu(orderSku.getMpu());
+                orderDetailX.setMerchantId(orderSku.getMerchantId());
+                orderDetailX.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
+                orderDetailX.setUnitPrice(orderSku.getUnitPrice());
+                orderDetailX.setNum(orderSku.getNum());
+                orderDetailX.setCategory(prodIndexWithBLOBs.getCategory());
+                orderDetailX.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100);
 
                 // 添加子订单
-                orderDetailMapper.insert(orderDetail) ;
+                orderDetailXMapper.insert(orderDetailX) ;
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.setOpenId(bean.getOpenId());
@@ -203,8 +204,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findById(Integer id) {
         Order order = mapper.selectByPrimaryKey(id) ;
-        List<OrderDetail> orderDetails = orderDetailMapper.selectByOrderId(id) ;
-        order.setSkus(orderDetails);
+        List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
+        order.setSkus(orderDetailXES);
         return order;
     }
 
@@ -235,7 +236,7 @@ public class OrderServiceImpl implements OrderService {
         if (total > 0) {
             orders = mapper.selectLimit(map);
             orders.forEach(order -> {
-                order.setSkus(orderDetailMapper.selectByOrderId(order.getId()));
+                order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
             });
         }
         pageBean = PageBean.build(pageBean, orders, total, queryBean.getPageNo(), queryBean.getPageSize());
@@ -314,10 +315,10 @@ public class OrderServiceImpl implements OrderService {
         map.put("pageSize", queryBean.getPageSize());
         map.put("orderId", queryBean.getOrderId());
         Order order = mapper.selectByPrimaryKey(queryBean.getOrderId());
-        total = orderDetailMapper.selectCount(map);
+        total = orderDetailXMapper.selectCount(map);
         if (total > 0) {
-            List<OrderDetail> orderDetails = orderDetailMapper.selectLimit(map);
-            pageBean = PageBean.build(pageBean, orderDetails, total, queryBean.getPageNo(), queryBean.getPageSize());
+            List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectLimit(map);
+            pageBean = PageBean.build(pageBean, orderDetailXES, total, queryBean.getPageNo(), queryBean.getPageSize());
             order.setSkusPage(pageBean);
         }
         return order;
@@ -354,12 +355,12 @@ public class OrderServiceImpl implements OrderService {
         if (bean.getTotal() > 0) {
             List<Logisticsbean> logisticsList = bean.getLogisticsList();
             logisticsList.forEach(Logistics -> {
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrderId(Logistics.getOrderId());
-                orderDetail.setSubOrderId(Logistics.getSubOrderId());
-                orderDetail.setLogisticsContent(Logistics.getLogisticsContent());
-                orderDetail.setLogisticsId(Logistics.getLogisticsId());
-                orderDetailMapper.updateByOrderId(orderDetail);
+                OrderDetailX orderDetailX = new OrderDetailX();
+                orderDetailX.setOrderId(Logistics.getOrderId());
+                orderDetailX.setSubOrderId(Logistics.getSubOrderId());
+                orderDetailX.setLogisticsContent(Logistics.getLogisticsContent());
+                orderDetailX.setLogisticsId(Logistics.getLogisticsId());
+                orderDetailXMapper.updateByOrderId(orderDetailX);
             });
         }
         return i;
@@ -368,7 +369,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public JSONArray getLogist(String merchantNo, String orderId) {
         JSONArray jsonArray = new JSONArray();
-        List<OrderDetail> logistics = orderDetailMapper.selectBySubOrderId(orderId + "%");
+        List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
             logistics.forEach(logist -> {
                 if (logist.getLogisticsId() != null && logist.getComCode() != null) {
@@ -425,7 +426,7 @@ public class OrderServiceImpl implements OrderService {
         return dayStatisticsBean;
     }
     public String queryLogisticsInfo(String logisticsId) {
-        String comcode = orderDetailMapper.selectComCode(logisticsId);
+        String comcode = orderDetailXMapper.selectComCode(logisticsId);
         if(comcode == null || comcode.equals("")){
             ArrayList<String> strings = Kuaidi100.queryAutoComNumByKuadi100(logisticsId);
             comcode = strings.get(0);

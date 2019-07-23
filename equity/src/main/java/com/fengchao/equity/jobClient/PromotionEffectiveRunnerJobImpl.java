@@ -1,6 +1,6 @@
 package com.fengchao.equity.jobClient;
 
-import com.fengchao.equity.model.Promotion;
+import com.fengchao.equity.model.PromotionX;
 import com.fengchao.equity.service.PromotionService;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
@@ -26,7 +26,7 @@ public class PromotionEffectiveRunnerJobImpl implements JobRunner {
             String id = jobContext.getJob().getParam("promotionId") ;
             PromotionService promotionService = BeanContext.getApplicationContext().getBean(PromotionService.class);
             int promotionId = Integer.parseInt(id) ;
-            Promotion promotion = promotionService.findPromotionById(promotionId);
+            PromotionX promotion = promotionService.findPromotionById(promotionId);
             if (promotion != null && promotion.getStatus() != 2) {
                 promotionService.effective(promotionId) ;
                 // 会发送到 LTS (JobTracker上)

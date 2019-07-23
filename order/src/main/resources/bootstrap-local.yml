@@ -1,0 +1,9 @@
+spring.cloud.service-registry.auto-registration.enabled: false
+
+rpc:
+  feign:
+    client:
+      equit:
+        url: http://localhost:8007
+      product:
+        url: http://localhost:8002
