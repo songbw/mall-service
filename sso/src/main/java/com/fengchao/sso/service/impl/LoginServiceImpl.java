@@ -153,10 +153,9 @@ public class LoginServiceImpl implements ILoginService {
     private OpenId getGuanaitongOpenId(String authCode) {
         OpenId openId = new OpenId();
         openId.setAuth_code(authCode);
-        OperaResult result = guanaitongClientService.findOpenId(openId);
+        Result result = guanaitongClientService.findOpenId(openId);
         if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
+            Object object = result.getData() ;
             String jsonString = JSON.toJSONString(object);
             openId = JSONObject.parseObject(jsonString, OpenId.class) ;
             return openId;
@@ -167,10 +166,9 @@ public class LoginServiceImpl implements ILoginService {
     private GuanaitongUserBean getGuanaitongUser(String openId) {
         OpenId openId1 = new OpenId();
         openId1.setOpen_id(openId);
-        OperaResult result = guanaitongClientService.findUser(openId1);
+        Result result = guanaitongClientService.findUser(openId1);
         if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
+            Object object = result.getData() ;
             String jsonString = JSON.toJSONString(object);
             GuanaitongUserBean guanaitongUserBean = JSONObject.parseObject(jsonString, GuanaitongUserBean.class) ;
             return guanaitongUserBean;

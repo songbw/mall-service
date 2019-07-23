@@ -38,5 +38,5 @@ public class OperaResult implements Serializable {
 	public void setData(Map<String, Object> data) {
 		this.data = data;
 	}
-	
+
 }

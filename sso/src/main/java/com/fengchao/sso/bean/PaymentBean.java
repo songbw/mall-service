@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class PaymentBean {
     private String openId;
-    private String appId;
+    private String iAppId;   // 凤巢APPID
+    private String tAppId;   // 第三方APPID
     private String merchantNo;
     private String orderNos;
     private String goodsName;

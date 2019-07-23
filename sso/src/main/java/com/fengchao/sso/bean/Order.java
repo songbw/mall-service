@@ -1,5 +1,6 @@
 package com.fengchao.sso.bean;
 
+
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +59,8 @@ public class Order {
 
     private Float amount;
 
+    private Float saleAmount;
+
     private Integer status;
 
     private Integer type;
@@ -68,7 +71,7 @@ public class Order {
 
     private Date paymentAt;
     //实际退款金额
-    private Integer paymentAmount;
+    private float paymentAmount;
     // 商户号，充值钱包的时候没有
     private String payee ;
     // 退款金额，退款时候有
@@ -91,6 +94,12 @@ public class Order {
     private String merchantNo;
 
     private Integer merchantId;
+
+    private Integer couponId;
+
+    private String couponCode;
+
+    private Float couponDiscount;
 
     private List<OrderDetail> skus;
 
@@ -382,11 +391,11 @@ public class Order {
         this.paymentAt = paymentAt;
     }
 
-    public Integer getPaymentAmount() {
+    public float getPaymentAmount() {
         return paymentAmount;
     }
 
-    public void setPaymentAmount(Integer paymentAmount) {
+    public void setPaymentAmount(float paymentAmount) {
         this.paymentAmount = paymentAmount;
     }
 
@@ -452,5 +461,37 @@ public class Order {
 
     public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public Float getSaleAmount() {
+        return saleAmount;
+    }
+
+    public void setSaleAmount(Float saleAmount) {
+        this.saleAmount = saleAmount;
+    }
+
+    public Integer getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Integer couponId) {
+        this.couponId = couponId;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
+    }
+
+    public Float getCouponDiscount() {
+        return couponDiscount;
+    }
+
+    public void setCouponDiscount(Float couponDiscount) {
+        this.couponDiscount = couponDiscount;
     }
 }

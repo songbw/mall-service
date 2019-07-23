@@ -2,12 +2,15 @@ package com.fengchao.sso.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.feign.AoyiClientService;
+import com.fengchao.sso.feign.GuanaitongClientService;
 import com.fengchao.sso.feign.OrderService;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.service.IPaymentService;
 import com.fengchao.sso.util.OperaResult;
+import com.fengchao.sso.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,33 +27,64 @@ public class PaymentServiceImpl implements IPaymentService {
     private OrderService orderService;
     @Autowired
     private AoyiClientService aoyiClientService;
+    @Autowired
+    private GuanaitongClientService guanaitongClientService;
 
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
-        PaymentResult result1 = getPayment(paymentBean);
-        if ("200".equals(result1.getReturnCode())) {
-            result.getData().put("result", result1.getData());
-            List<Order> orderList = findTradeNo(paymentBean.getAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
+        List<Order> orderList = findTradeNo(paymentBean.getIAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
+        if ("10".equals(paymentBean.getIAppId())) {
+            // 关爱通支付
+            GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
+            String outer_trade_no = paymentBean.getTAppId() + new Date().getTime() + RandomUtil.getRandomString(3) ;
+            guanaitongPaymentBean.setOuter_trade_no(outer_trade_no);
+            guanaitongPaymentBean.setBuyer_open_id(paymentBean.getOpenId());
+            guanaitongPaymentBean.setReason("下单");
+            float total_amount = 0.00f;
+            for (Order order: orderList) {
+                total_amount = total_amount + order.getSaleAmount() ;
+            }
+            TradeInfoBean tradeInfoBean = new TradeInfoBean();
+            tradeInfoBean.setThirdTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+            guanaitongPaymentBean.setTrade_info(tradeInfoBean);
+            guanaitongPaymentBean.setReturn_url("https://mall.weesharing.com/pay/cashering");
+            guanaitongPaymentBean.setNotify_url("http://api.weesharing.com/v2/ssoes/payment/back");
+            guanaitongPaymentBean.setTotal_amount(total_amount);
+            ObjectMapper oMapper = new ObjectMapper();
+            Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
+            Result result1 = guanaitongClientService.payment(map) ;
             orderList.forEach(order -> {
-                order.setPaymentNo(result1.getData().getOrderNo());
-                order.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+                order.setPaymentNo(outer_trade_no);
+                order.setOutTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                 order.setUpdatedAt(new Date());
                 updatePaymentNo(order);
             });
-        } else if ("订单号重复".equals(result1.getMsg())) {
-            List<Order> orders = findOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId()+paymentBean.getOrderNos());
-            if (orders.size() > 0) {
-                OrderNo orderNo = new OrderNo();
-                orderNo.setOrderNo(orders.get(0).getPaymentNo());
-                result.getData().put("result", orderNo);
-            } else {
+            result.getData().put("result", result1.getData());
+        } else {
+            PaymentResult result1 = getPayment(paymentBean);
+            if ("200".equals(result1.getReturnCode())) {
+                result.getData().put("result", result1.getData());
+                orderList.forEach(order -> {
+                    order.setPaymentNo(result1.getData().getOrderNo());
+                    order.setOutTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+                    order.setUpdatedAt(new Date());
+                    updatePaymentNo(order);
+                });
+            } else if ("订单号重复".equals(result1.getMsg())) {
+                List<Order> orders = findOutTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+                if (orders.size() > 0) {
+                    OrderNo orderNo = new OrderNo();
+                    orderNo.setOrderNo(orders.get(0).getPaymentNo());
+                    result.getData().put("result", orderNo);
+                } else {
+                    result.setCode(-1);
+                    result.setMsg(result1.getMsg());
+                }
+            }else {
                 result.setCode(-1);
                 result.setMsg(result1.getMsg());
             }
-        }else {
-            result.setCode(-1);
-            result.setMsg(result1.getMsg());
         }
         return result ;
     }
@@ -70,6 +104,21 @@ public class PaymentServiceImpl implements IPaymentService {
             order1.setPayOrderCategory(bean.getOrderCategory());
             order1.setPayType(bean.getPayType());
             order1.setRefundFee(bean.getRefundFee());
+            updatePaymentByOutTradeNoAndPaymentNo(order1);
+            // aoyi确认订单
+            confirmOrder(order1.getTradeNo());
+        });
+        return "success";
+    }
+
+    @Override
+    public String gNotify(GATBackBean backBean) {
+        List<Order> orders = findByOutTradeNoAndPaymentNo(backBean.getOuter_trade_no(), backBean.getTrade_no());
+        orders.forEach(order1 -> {
+            order1.setPaymentAmount(backBean.getTotal_amount());
+            order1.setPaymentAt(new Date());
+            order1.setStatus(1);
+            order1.setPayStatus(5);
             updatePaymentByOutTradeNoAndPaymentNo(order1);
             // aoyi确认订单
             confirmOrder(order1.getTradeNo());

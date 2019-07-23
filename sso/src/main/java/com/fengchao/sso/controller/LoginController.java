@@ -196,7 +196,7 @@ public class LoginController {
 
     @GetMapping("/thirdParty/token")
     public OperaResult thirdPartyToken(String iAppId, String initCode, OperaResult result) {
-        if(StringUtil.isEmpty(initCode)){
+        if (StringUtil.isEmpty(initCode)){
             result.setCode(100000);
             result.setMsg("initCode不正确");
             return result;

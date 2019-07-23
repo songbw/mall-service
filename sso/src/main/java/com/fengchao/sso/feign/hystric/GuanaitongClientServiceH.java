@@ -5,22 +5,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.sso.bean.OpenId;
 import com.fengchao.sso.bean.PaymentBean;
 import com.fengchao.sso.bean.RefundBean;
+import com.fengchao.sso.bean.Result;
 import com.fengchao.sso.feign.GuanaitongClientService;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.util.OperaResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Map;
+
 @Component
 public class GuanaitongClientServiceH implements GuanaitongClientService {
 
     @Override
-    public OperaResult payment(PaymentBean paymentBean) {
-        OperaResult result = new OperaResult();
+    public Result payment(Map<String, String> map) {
+        Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
         try {
-            msg = objectMapper.writeValueAsString(paymentBean);
+            msg = objectMapper.writeValueAsString(map);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -30,8 +33,8 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
     }
 
     @Override
-    public OperaResult back(RefundBean bean) {
-        OperaResult result = new OperaResult();
+    public Result back(RefundBean bean) {
+        Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
         try {
@@ -45,8 +48,8 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
     }
 
     @Override
-    public OperaResult findOpenId(OpenId openId) {
-        OperaResult result = new OperaResult();
+    public Result findOpenId(OpenId openId) {
+        Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
         try {
@@ -60,8 +63,8 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
     }
 
     @Override
-    public OperaResult findUser(OpenId openId) {
-        OperaResult result = new OperaResult();
+    public Result findUser(OpenId openId) {
+        Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
         try {
