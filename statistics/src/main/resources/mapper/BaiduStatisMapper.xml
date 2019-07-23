@@ -24,19 +24,29 @@
   </select>
 
   <select id="queryStatisticsData" resultType="hashmap" parameterType="Map">
-    select `key`, url, sum(pv) as total_pv , sum(uv) as total_uv , floor(sum(pv*stop_time)/sum(pv)) as avg_stop_time from baidu_statis
+    select `key`, url, sum(pv) as total_pv , sum(uv) as total_uv , floor(sum(pv*stop_time)/sum(pv)) as avg_stop_time, '' as visit_date from baidu_statis
     where 1=1
     <if test="urlKey != null and urlKey !=''">
       and  `key` = #{urlKey}
     </if>
     and <![CDATA[visit_date >= #{dayStart,jdbcType=DATE}]]> <![CDATA[ and visit_date <= #{dayEnd,jdbcType=DATE}]]>
-    group by `key` order by avg_stop_time desc
+    group by `key` order by ${orderKey} ${orderType}
+    limit #{pageNo},#{pageSize}
+  </select>
+
+  <select id="queryDetailData" resultType="hashmap" parameterType="Map">
+    select `key`, url, pv as total_pv , uv as total_uv , stop_time as avg_stop_time , visit_date from baidu_statis
+    where 1=1
+    and  `key` = #{urlKey}
+    and <![CDATA[visit_date >= #{dayStart,jdbcType=DATE}]]> <![CDATA[ and visit_date <= #{dayEnd,jdbcType=DATE}]]>
+    order by visit_date asc
     limit #{pageNo},#{pageSize}
   </select>
 
   <select id="countAllUrls" resultType="java.lang.Integer">
       select count(distinct(`key`)) from baidu_statis
   </select>
+
   <select id="countStatisticsData" resultType="java.lang.Integer">
     select count(distinct(`key`)) from baidu_statis
     where 1=1
@@ -45,4 +55,12 @@
     </if>
     and <![CDATA[visit_date >= #{dayStart,jdbcType=DATE}]]> <![CDATA[ and visit_date <= #{dayEnd,jdbcType=DATE}]]>
   </select>
+
+  <select id="countDetailData" resultType="java.lang.Integer">
+    select count(`key`) from baidu_statis
+    where 1=1
+    and  `key` = #{urlKey}
+    and <![CDATA[visit_date >= #{dayStart,jdbcType=DATE}]]> <![CDATA[ and visit_date <= #{dayEnd,jdbcType=DATE}]]>
+  </select>
+
 </mapper>
