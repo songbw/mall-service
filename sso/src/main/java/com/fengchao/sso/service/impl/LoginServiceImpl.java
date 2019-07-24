@@ -93,13 +93,17 @@ public class LoginServiceImpl implements ILoginService {
         } else {
             tokenBean.setCreatedAt(new Date());
             tokenMapper.insertSelective(tokenBean);
-            User user = userMapper.selectByOpenId(loginBean.getOpenId());
+            User tempU = new User();
+            tempU.setOpenId(loginBean.getOpenId());
+            tempU.setiAppId(loginBean.getiAppId());
+            User user = userMapper.selectByOpenId(tempU);
             if (user == null) {
                 user = new User();
                 user.setOpenId(loginBean.getOpenId());
                 String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
                 user.setNickname(nickname);
                 user.setCreatedAt(new Date());
+                user.setiAppId(loginBean.getiAppId());
                 userMapper.insertSelective(user);
             }
         }
@@ -115,7 +119,10 @@ public class LoginServiceImpl implements ILoginService {
             // 获取关爱通登录信息
             OpenId openId = getGuanaitongOpenId(initCode) ;
             accessToken.setOpenId(openId.getOpen_id());
-            User user = userMapper.selectByOpenId(openId.getOpen_id());
+            User temp = new User();
+            temp.setOpenId(openId.getOpen_id());
+            temp.setiAppId(iAppId);
+            User user = userMapper.selectByOpenId(temp);
             if (user == null) {
                 GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id()) ;
                 user = new User();
@@ -129,6 +136,7 @@ public class LoginServiceImpl implements ILoginService {
                 user.setName(guanaitongUserBean.getName());
                 user.setTelephone(guanaitongUserBean.getMobile());
                 user.setCreatedAt(new Date());
+                user.setiAppId(iAppId);
                 userMapper.insertSelective(user);
             }
         } else {

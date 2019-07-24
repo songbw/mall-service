@@ -17,7 +17,7 @@ public interface IUserService {
 
     UserBean selectUserByname(Map<String,Object> map);
 
-    User selectUserByOpenId(String openId);
+    User selectUserByOpenId(String openId, String iAppId);
 
     List<User> selectUser(Integer page, Integer limit);
 

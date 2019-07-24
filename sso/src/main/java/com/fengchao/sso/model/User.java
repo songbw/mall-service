@@ -22,6 +22,7 @@ public class User {
     private String openId;
     private String nickname;
     private String headImg;
+    private String iAppId;
     private java.sql.Date birth;
     private String telephone;
     private Date createdAt;
@@ -113,6 +114,14 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getiAppId() {
+        return iAppId;
+    }
+
+    public void setiAppId(String iAppId) {
+        this.iAppId = iAppId;
     }
 
     public String getHeadImg() {
