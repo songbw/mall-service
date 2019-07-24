@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.dao.CouponDao;
+import com.fengchao.equity.dao.CouponUseInfoDao;
 import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.CouponThirdMapper;
@@ -15,14 +17,17 @@ import com.fengchao.equity.utils.AESUtils;
 import com.fengchao.equity.utils.DataUtils;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.Pkcs8Util;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
    @Autowired
@@ -33,6 +38,12 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
    private CouponThirdMapper couponThirdMapper;
    @Autowired
    private SSOService ssoService;
+
+    @Autowired
+    private CouponUseInfoDao couponUseInfoDao;
+
+    @Autowired
+    private CouponDao couponDao;
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
@@ -624,5 +635,65 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         return couponBean;
+    }
+
+    @Override
+    public List<CouponUseInfoBean> queryByIdList(List<Integer> idList) throws Exception {
+        // 1. 查询CouponUseInfo
+        log.info("通过id集合查询coupon_use_info列表 数据库入参:{}", JSONUtil.toJsonString(idList));
+        List<CouponUseInfo> couponUseInfoList = couponUseInfoDao.selectByIdList(idList);
+        log.info("通过id集合查询coupon_use_info列表 数据库返回:{}", JSONUtil.toJsonString(couponUseInfoList));
+
+        // 2. 查询Coupon表
+        // 根据第一步获取coupon id集合
+        List<Integer> couponIdList = couponUseInfoList.stream().map(c -> c.getCouponId()).collect(Collectors.toList());
+        // 查询
+        List<Coupon> couponList = couponDao.selectCouponListByIdList(couponIdList);
+        log.info("通过id集合查询coupon_use_info列表-查询coupon表 数据库返回:{}", JSONUtil.toJsonString(couponList));
+        // 转map key：couponId, value : Coupon
+        Map<Integer, Coupon> couponMap = couponList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
+
+        // 转dto
+        List<CouponUseInfoBean> couponUseInfoBeanList = new ArrayList<>();
+        for (CouponUseInfo couponUseInfo : couponUseInfoList) {
+            CouponUseInfoBean couponUseInfoBean = convertToCouponUseInfoBean(couponUseInfo);
+            Coupon _coupon = couponMap.get(couponUseInfo.getCouponId());
+            if (_coupon != null) {
+                couponUseInfoBean.setSupplierMerchantId(_coupon.getSupplierMerchantId());
+                couponUseInfoBean.setSupplierMerchantName(_coupon.getSupplierMerchantName());
+            }
+            couponUseInfoBeanList.add(couponUseInfoBean);
+        }
+
+        log.info("通过id集合查询coupon_use_info列表 获取List<CouponUseInfoBean>: {}",
+                JSONUtil.toJsonString(couponUseInfoBeanList));
+
+        return couponUseInfoBeanList;
+    }
+
+    // ========================= private =====================================
+
+    private CouponUseInfoBean convertToCouponUseInfoBean(CouponUseInfo couponUseInfo) {
+        CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
+
+        couponUseInfoBean.setUserOpenId(couponUseInfo.getUserOpenId());
+        couponUseInfoBean.setCode(couponUseInfo.getCode());
+        couponUseInfoBean.setUserCouponCode(couponUseInfo.getUserCouponCode());
+        couponUseInfoBean.setId(couponUseInfo.getId());
+        couponUseInfoBean.setStatus(couponUseInfo.getStatus());
+        // couponUseInfoBean.setCollectedStartDate(couponUseInfo.getCollectedTime());
+        // couponUseInfoBean.setCollectedEndDate(couponUseInfo.getcollected);
+        // couponUseInfoBean.setConsumedStartDate();
+        // couponUseInfoBean.setConsumedEndDate();
+        // couponUseInfoBean.setCouponCollectNum(couponUseInfo.get);
+        couponUseInfoBean.setCouponId(couponUseInfo.getCouponId());
+        // couponUseInfoBean.setCategoryId(couponUseInfo.);
+        // couponUseInfoBean.setCategoryName();
+        // couponUseInfoBean.setTagId();
+        // couponUseInfoBean.setTagName();
+        // couponUseInfoBean.setSupplierMerchantId();
+        // couponUseInfoBean.setCouponCode(couponUseInfo.getCode());
+
+        return couponUseInfoBean;
     }
 }

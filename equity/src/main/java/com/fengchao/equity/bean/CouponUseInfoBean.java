@@ -1,10 +1,12 @@
 package com.fengchao.equity.bean;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 public class CouponUseInfoBean  extends QueryBean{
 
     private String userOpenId;
@@ -25,5 +27,10 @@ public class CouponUseInfoBean  extends QueryBean{
     private String tagName;
     private String supplierMerchantId;
     private String couponCode;
+
+    /**
+     * 券来源
+     */
+    private String supplierMerchantName;
 
 }
