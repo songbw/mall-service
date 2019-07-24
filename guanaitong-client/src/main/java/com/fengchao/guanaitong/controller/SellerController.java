@@ -66,7 +66,7 @@ public class SellerController {
             }
         } catch (RuntimeException ex) {
             log.info(ex.getMessage());
-            System.out.println("==== post got exception");
+            log.info("try post but got exception");
         }
         buildResponse(response, json);
 
