@@ -3,6 +3,6 @@ package com.fengchao.sso.bean;
 import lombok.Data;
 
 @Data
-public class OpenId {
-    private String open_id ;
+public class AuthCode {
+    private String auth_code ;
 }

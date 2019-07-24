@@ -2,10 +2,7 @@ package com.fengchao.sso.feign.hystric;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fengchao.sso.bean.OpenId;
-import com.fengchao.sso.bean.PaymentBean;
-import com.fengchao.sso.bean.RefundBean;
-import com.fengchao.sso.bean.Result;
+import com.fengchao.sso.bean.*;
 import com.fengchao.sso.feign.GuanaitongClientService;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.util.OperaResult;
@@ -48,12 +45,12 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
     }
 
     @Override
-    public Result findOpenId(OpenId openId) {
+    public Result findOpenId(AuthCode authCode) {
         Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
         try {
-            msg = objectMapper.writeValueAsString(openId);
+            msg = objectMapper.writeValueAsString(authCode);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

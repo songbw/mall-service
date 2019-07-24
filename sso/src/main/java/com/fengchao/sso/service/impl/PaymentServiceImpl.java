@@ -2,6 +2,7 @@ package com.fengchao.sso.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.feign.AoyiClientService;
@@ -14,6 +15,9 @@ import com.fengchao.sso.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +37,11 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
-        List<Order> orderList = findTradeNo(paymentBean.getIAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
-        if ("10".equals(paymentBean.getIAppId())) {
+        List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
+        if ("10".equals(paymentBean.getiAppId())) {
             // 关爱通支付
             GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
-            String outer_trade_no = paymentBean.getTAppId() + new Date().getTime() + RandomUtil.getRandomString(3) ;
+            String outer_trade_no = paymentBean.gettAppId() + new Date().getTime() + RandomUtil.getRandomString(3) ;
             guanaitongPaymentBean.setOuter_trade_no(outer_trade_no);
             guanaitongPaymentBean.setBuyer_open_id(paymentBean.getOpenId());
             guanaitongPaymentBean.setReason("下单");
@@ -46,33 +50,44 @@ public class PaymentServiceImpl implements IPaymentService {
                 total_amount = total_amount + order.getSaleAmount() ;
             }
             TradeInfoBean tradeInfoBean = new TradeInfoBean();
-            tradeInfoBean.setThirdTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-            guanaitongPaymentBean.setTrade_info(tradeInfoBean);
-            guanaitongPaymentBean.setReturn_url("https://mall.weesharing.com/pay/cashering");
+            tradeInfoBean.setThirdTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+            String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
+            guanaitongPaymentBean.setTrade_info(tradeInfoString);
+            guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
             guanaitongPaymentBean.setNotify_url("http://api.weesharing.com/v2/ssoes/payment/back");
             guanaitongPaymentBean.setTotal_amount(total_amount);
             ObjectMapper oMapper = new ObjectMapper();
             Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
             Result result1 = guanaitongClientService.payment(map) ;
+            JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
+            String encodeUrl = "" ;
+            try {
+                encodeUrl = URLEncoder.encode(jsonObject.getString("data"), StandardCharsets.UTF_8.toString()) ;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            String guanaitongUrl = "https://openapi.guanaitong.com/seller/pay/excashier?" + encodeUrl ;
             orderList.forEach(order -> {
                 order.setPaymentNo(outer_trade_no);
-                order.setOutTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+                order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                 order.setUpdatedAt(new Date());
                 updatePaymentNo(order);
             });
-            result.getData().put("result", result1.getData());
+            UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
+            urlEncodeBean.setUrlEncode(guanaitongUrl);
+            result.getData().put("result", urlEncodeBean);
         } else {
             PaymentResult result1 = getPayment(paymentBean);
             if ("200".equals(result1.getReturnCode())) {
                 result.getData().put("result", result1.getData());
                 orderList.forEach(order -> {
                     order.setPaymentNo(result1.getData().getOrderNo());
-                    order.setOutTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+                    order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                     order.setUpdatedAt(new Date());
                     updatePaymentNo(order);
                 });
             } else if ("订单号重复".equals(result1.getMsg())) {
-                List<Order> orders = findOutTradeNo(paymentBean.getIAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+                List<Order> orders = findOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                 if (orders.size() > 0) {
                     OrderNo orderNo = new OrderNo();
                     orderNo.setOrderNo(orders.get(0).getPaymentNo());
@@ -128,6 +143,7 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     private PaymentResult getPayment(PaymentBean paymentBean) {
+        paymentBean.setAppId(paymentBean.getiAppId());
         OperaResult result = pinganClientService.payment(paymentBean);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;

@@ -1,5 +1,6 @@
 package com.fengchao.sso.feign;
 
+import com.fengchao.sso.bean.AuthCode;
 import com.fengchao.sso.bean.OpenId;
 import com.fengchao.sso.bean.RefundBean;
 import com.fengchao.sso.bean.Result;
@@ -21,7 +22,7 @@ public interface GuanaitongClientService {
     Result back(@RequestBody RefundBean bean);
 
     @RequestMapping(value = "/seller/person/getByAuthCode", method = RequestMethod.POST)
-    Result findOpenId(@RequestBody OpenId openId);
+    Result findOpenId(@RequestBody AuthCode authCode);
 
     @RequestMapping(value = "/seller/person/getDetailByOpenId", method = RequestMethod.POST)
     Result findUser(@RequestBody OpenId openId);

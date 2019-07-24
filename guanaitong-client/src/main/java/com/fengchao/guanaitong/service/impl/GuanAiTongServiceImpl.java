@@ -138,7 +138,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         Map m = buildFormSignMap(map);
         String xFormString = map2string(m);
 
-        System.out.println("string for sign : " + xFormString);
+        log.info("parameters for sign : " + xFormString);
         byte[] bytes = xFormString.getBytes();
         return DigestUtils.sha1Hex(bytes);
     }
@@ -161,17 +161,18 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             }
 
             String responseString = response.body().string();
-            System.out.println(responseString);
+            log.info(responseString);
             int code = response.code();
             if (HTTP_STATUS_OK != code) {
-                System.out.println("code = " + String.valueOf(code));
+                log.info("error code = " + String.valueOf(code));
                 return null;
             }
 
             json = JSONObject.parseObject(responseString);
             return json;
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            log.info("try post got exception");
+            log.info(ex.getMessage());
             return null;
         }
 /*
@@ -242,7 +243,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xForm = map2string(theMap);
-        //System.out.println("buildXForm: " + xForm);
+        log.info("buildXForm: " + xForm);
         return xForm;
 
     }
@@ -273,7 +274,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             }
 
             String responseString = response.body().string();
-            System.out.println(responseString);
+            log.info(responseString);
             int code = response.code();
             if (HTTP_STATUS_OK != code) {
                 return null;
@@ -319,12 +320,29 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
     @Override
     public JSONObject guanAiTongPost(String path, Map map) {
-        String xForm = buildXFormBody(map);
-        JSONObject json = tryPost(path, xForm);
+        if (null == path || path.isEmpty()) {
+            log.info("path is null");
+            return null;
+        }
 
+        for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
+            Map.Entry<String, Object> item = it.next();
+            if (null == item.getValue()) {
+                it.remove();
+                log.info("find null value in map");
+            }
+        }
+
+        String xForm = buildXFormBody(map);
+        if (null == xForm || xForm.isEmpty()) {
+            log.info("build param failed");
+            return null;
+        }
+
+        JSONObject json = tryPost(path, xForm);
         if (null == json) {
-            log.info("got data is null");
-            System.out.println("got data is null");
+            log.info("response data from remote is null");
+            //System.out.println("got data is null");
         }
 
         return json;
