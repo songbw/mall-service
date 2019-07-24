@@ -23,14 +23,14 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderStatisticsRunnerJobImpl.class);
 
-
+    /**
     @Override
     public Result run(JobContext jobContext) throws Throwable {
         try {
             BizLogger bizLogger = jobContext.getBizLogger();
             Calendar calendar = new GregorianCalendar();
             Date date = new Date() ;
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             String startDate = formatter.format(new Date()) ;
             calendar.setTime(date);
             calendar.add(calendar.DATE,1); //把日期往后增加一天,整数  往后推,负数往前移动
@@ -38,18 +38,58 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             String endDate = formatter.format(date) ;
 
             // TODO 业务逻辑
-            LOGGER.info("我要执行订单统计操作：" + startDate + " 到 " + endDate + jobContext);
+            LOGGER.info("我要执行订单统计操作：" + startDate + " 到 " + endDate + " : " + jobContext);
             OverviewService overviewService = BeanContext.getApplicationContext().getBean(OverviewService.class);
             MerchantOverviewService merchantOverviewService = BeanContext.getApplicationContext().getBean(MerchantOverviewService.class);
             PromotionOverviewService promotionOverviewService = BeanContext.getApplicationContext().getBean(PromotionOverviewService.class);
             PeriodOverviewService periodOverviewService = BeanContext.getApplicationContext().getBean(PeriodOverviewService.class);
+
             QueryBean queryBean = new QueryBean();
             queryBean.setStartTime(startDate);
             queryBean.setEndTime(endDate);
+
             overviewService.add(queryBean);
             merchantOverviewService.add(queryBean);
             promotionOverviewService.add(queryBean);
             periodOverviewService.add(queryBean);
+
+            bizLogger.info(startDate + " 到 " + endDate + "的订单统计成功");
+        } catch (Exception e) {
+            LOGGER.info("订单统计Run job failed!", e);
+            return new Result(Action.EXECUTE_FAILED, e.getMessage());
+        }
+        return new Result(Action.EXECUTE_SUCCESS, "订单统计执行成功了，哈哈");
+    } */
+
+    @Override
+    public Result run(JobContext jobContext) throws Throwable {
+        try {
+            BizLogger bizLogger = jobContext.getBizLogger();
+            Calendar calendar = new GregorianCalendar();
+            Date date = new Date() ;
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String startDate = formatter.format(new Date()) ;
+            calendar.setTime(date);
+            calendar.add(calendar.DATE,1); //把日期往后增加一天,整数  往后推,负数往前移动
+            date=calendar.getTime(); //这个时间就是日期往后推一天的结果
+            String endDate = formatter.format(date) ;
+
+            // TODO 业务逻辑
+            LOGGER.info("我要执行订单统计操作：" + startDate + " 到 " + endDate + " : " + jobContext);
+            OverviewService overviewService = BeanContext.getApplicationContext().getBean(OverviewService.class);
+            MerchantOverviewService merchantOverviewService = BeanContext.getApplicationContext().getBean(MerchantOverviewService.class);
+            PromotionOverviewService promotionOverviewService = BeanContext.getApplicationContext().getBean(PromotionOverviewService.class);
+            PeriodOverviewService periodOverviewService = BeanContext.getApplicationContext().getBean(PeriodOverviewService.class);
+
+            QueryBean queryBean = new QueryBean();
+            queryBean.setStartTime(startDate);
+            queryBean.setEndTime(endDate);
+
+            overviewService.add(queryBean);
+            merchantOverviewService.add(queryBean);
+            promotionOverviewService.add(queryBean);
+            periodOverviewService.add(queryBean);
+
             bizLogger.info(startDate + " 到 " + endDate + "的订单统计成功");
         } catch (Exception e) {
             LOGGER.info("订单统计Run job failed!", e);
