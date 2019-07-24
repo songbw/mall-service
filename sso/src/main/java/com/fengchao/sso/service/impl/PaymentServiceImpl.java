@@ -56,17 +56,12 @@ public class PaymentServiceImpl implements IPaymentService {
             guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
             guanaitongPaymentBean.setNotify_url("http://api.weesharing.com/v2/ssoes/payment/back");
             guanaitongPaymentBean.setTotal_amount(total_amount);
+
             ObjectMapper oMapper = new ObjectMapper();
             Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
             Result result1 = guanaitongClientService.payment(map) ;
             JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
-            String encodeUrl = "" ;
-            try {
-                encodeUrl = URLEncoder.encode(jsonObject.getString("data"), StandardCharsets.UTF_8.toString()) ;
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            String guanaitongUrl = "https://openapi.guanaitong.com/seller/pay/excashier?" + encodeUrl ;
+            String guanaitongUrl = "https://openapi.guanaitong.cc/seller/pay/excashier?" + jsonObject.getString("data") ;
             orderList.forEach(order -> {
                 order.setPaymentNo(outer_trade_no);
                 order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
