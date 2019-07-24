@@ -297,6 +297,7 @@ public class AdminOrderController {
 //            response.setHeader("content-type", "application/json;charset=UTF-8");
 //            response.setContentType("application/json");
             // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setStatus(401);
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json; charset=utf-8");
             PrintWriter writer = null;
@@ -307,7 +308,7 @@ public class AdminOrderController {
                 map.put("msg", e.getMessage());
                 map.put("data", null);
 
-                writer.write(map.toString());
+                writer.write(JSONUtil.toJsonString(map));
             } catch (Exception e1) {
                 log.error("导出订单文件 错误:{}", e.getMessage(), e);
             } finally {
