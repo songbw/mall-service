@@ -32,6 +32,6 @@ public interface EquityService {
      * @param idList
      * @return
      */
-    @RequestMapping(value = "/coupon/findByIdList", method = RequestMethod.GET)
-    OperaResult findCouponListByIdList(@RequestParam("idList") List<Integer> idList);
+    @RequestMapping(value = "/couponUseInfo/findByIdList", method = RequestMethod.GET)
+    OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList);
 }
