@@ -45,7 +45,7 @@ public class UserServiceImpl implements IUserService {
     public int insertSelective(UserBean bean) {
         User user = new User();
         BeanUtils.copyProperties(bean, user);
-        User temp = mapper.selectByOpenId(user.getOpenId());
+        User temp = mapper.selectByOpenId(user);
         if (temp == null) {
             return mapper.insertSelective(user);
         }
@@ -58,8 +58,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User selectUserByOpenId(String openId) {
-        return mapper.selectByOpenId(openId);
+    public User selectUserByOpenId(String openId, String iAppId) {
+        User user = new User();
+        user.setOpenId(openId);
+        user.setiAppId(iAppId);
+        return mapper.selectByOpenId(user);
     }
 
     @Override

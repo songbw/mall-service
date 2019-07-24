@@ -15,11 +15,12 @@
     <result column="head_img" property="headImg" jdbcType="VARCHAR" />
     <result column="birth" property="birth" jdbcType="DATE" />
     <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="i_app_id" property="iAppId" jdbcType="VARCHAR" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, sex, age, idcard, login_id, portrait, open_id openId, nickname, head_img headImg, birth, telephone, created_at createdAt, updated_at updatedAt
+    id, name, sex, age, idcard, login_id, portrait, open_id openId, nickname, head_img headImg, birth, telephone, created_at createdAt, updated_at updatedAt, i_app_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
@@ -27,11 +28,11 @@
     from s_user
     where id = #{id,jdbcType=VARCHAR}
   </select>
-  <select id="selectByOpenId" resultType="com.fengchao.sso.model.User">
+  <select id="selectByOpenId" resultMap="BaseResultMap" parameterType="com.fengchao.sso.model.User">
     select
     <include refid="Base_Column_List" />
     from s_user
-    where open_id = #{openId}
+    where open_id = #{openId} and i_app_id = #{iAppId}
   </select>
     <select id="selectCount" resultType="java.lang.Integer">
       select count(id) from s_user
@@ -42,9 +43,9 @@
   </delete>
   <insert id="insert" parameterType="com.fengchao.sso.model.User" keyProperty="id" useGeneratedKeys="true">
     insert into s_user (name, sex, age,
-      idcard, portrait)
+      idcard, portrait, i_app_id)
     values (#{name,jdbcType=VARCHAR}, #{sex,jdbcType=CHAR}, #{age,jdbcType=INTEGER},
-      #{idcard,jdbcType=VARCHAR}, #{portrait,jdbcType=VARCHAR})
+      #{idcard,jdbcType=VARCHAR}, #{portrait,jdbcType=VARCHAR}, #{iAppId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.sso.model.User" keyProperty="id" useGeneratedKeys="true">
     insert into s_user
@@ -81,6 +82,9 @@
       </if>
       <if test="telephone != null" >
         telephone,
+      </if>
+      <if test="iAppId != null" >
+        i_app_id,
       </if>
       <if test="createdAt != null" >
         created_at,
@@ -122,6 +126,9 @@
       </if>
       <if test="telephone != null" >
         #{telephone},
+      </if>
+      <if test="iAppId != null" >
+        #{iAppId},
       </if>
       <if test="createdAt != null" >
         #{createdAt},
