@@ -415,9 +415,9 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        int dayPaymentCount = mapper.selectDayPaymentCount(map);
-        int dayCount = mapper.selectDayCount(map);
-        int dayPeopleCount = mapper.selectDayPeopleCount(map);
+        int dayPaymentCount = mapper.selectDayPaymentCount(map); // SUM(sale_amount)
+        int dayCount = mapper.selectDayCount(map); // count(id) FROM orders
+        int dayPeopleCount = mapper.selectDayPeopleCount(map); // count(DISTINCT(open_id))
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
         dayStatisticsBean.setOrderCount(dayCount);
