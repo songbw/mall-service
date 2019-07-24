@@ -1,48 +1,30 @@
 package com.fengchao.equity.mapper;
 
-import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.model.CouponUseInfo;
+import com.fengchao.equity.model.CouponUseInfoExample;
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.HashMap;
-import java.util.List;
-
 public interface CouponUseInfoMapper {
-    int deleteByPrimaryKey(CouponUseInfoBean bean);
+    long countByExample(CouponUseInfoExample example);
+
+    int deleteByExample(CouponUseInfoExample example);
+
+    int deleteByPrimaryKey(Integer id);
 
     int insert(CouponUseInfo record);
 
     int insertSelective(CouponUseInfo record);
 
-    CouponUseInfo selectByPrimaryKey(CouponUseInfoBean bean);
+    List<CouponUseInfo> selectByExample(CouponUseInfoExample example);
+
+    CouponUseInfo selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") CouponUseInfo record, @Param("example") CouponUseInfoExample example);
+
+    int updateByExample(@Param("record") CouponUseInfo record, @Param("example") CouponUseInfoExample example);
 
     int updateByPrimaryKeySelective(CouponUseInfo record);
 
     int updateByPrimaryKey(CouponUseInfo record);
-
-    int selectCount(HashMap map);
-
-    List<CouponUseInfo> selectLimit(HashMap map);
-
-    int selectCollectCount(HashMap map);
-
-    int selectCollectCouponNum(CouponUseInfoBean couponUseInfoBean);
-
-    int insertbatchCode(@Param("useInfos") List<CouponUseInfo> useInfos);
-
-    List<CouponUseInfo> selectBybatchCode(CouponUseInfo couponUseInfo);
-
-    int importCode(CouponUseInfoBean bean);
-
-    CouponUseInfo selectByUserCode(String userCouponCode);
-
-    int updateByUserCode(CouponUseInfo record);
-
-    int updateStatusByUserCode(CouponUseInfo record);
-
-    List<CouponUseInfo> selectCollect(CouponUseInfoBean couponUseInfoBean);
-
-    int updateStatusByCouponId(int couponId);
-
-    int updateStatusByToushiCode(CouponUseInfo couponUseInfo);
 }

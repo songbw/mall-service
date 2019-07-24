@@ -7,7 +7,7 @@ import com.fengchao.equity.bean.*;
 import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.CouponThirdMapper;
-import com.fengchao.equity.mapper.CouponUseInfoMapper;
+import com.fengchao.equity.mapper.CouponUseInfoXMapper;
 import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponUseInfoService;
@@ -26,7 +26,7 @@ import java.util.*;
 public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
    @Autowired
-   private CouponUseInfoMapper mapper;
+   private CouponUseInfoXMapper mapper;
    @Autowired
    private CouponXMapper couponXMapper;
    @Autowired
@@ -37,7 +37,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
         CouponX couponNew = new CouponX();
-        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
 
         CouponX coupon = couponXMapper.selectByCodeKey(bean.getCode());
@@ -64,9 +64,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponUseInfo.setCode(bean.getCode());
         int num = 0;
         if(coupon.getCollectType() == 4){
-            List<CouponUseInfo> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
+            List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
             if(couponUseInfos != null){
-                CouponUseInfo useInfo = couponUseInfos.get(0);
+                CouponUseInfoX useInfo = couponUseInfos.get(0);
                 useInfo.setUserOpenId(bean.getUserOpenId());
                 useInfo.setCollectedTime(new Date());
                 num= mapper.updateByPrimaryKeySelective(useInfo);
@@ -110,7 +110,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         map.put("collectedEndDate",bean.getCollectedEndDate());
         map.put("consumedStartDate", bean.getConsumedStartDate());
         map.put("consumedEndDate",bean.getConsumedEndDate());
-        List<CouponUseInfo> coupons = new ArrayList<>();
+        List<CouponUseInfoX> coupons = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
             coupons = mapper.selectLimit(map);
@@ -138,7 +138,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         map.put("status",bean.getStatus());
         map.put("userOpenId",bean.getUserOpenId());
         map.put("deleteFlag",0);
-        List<CouponUseInfo> couponUseInfos = new ArrayList<>();
+        List<CouponUseInfoX> couponUseInfos = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
             couponUseInfos = mapper.selectLimit(map);
@@ -173,7 +173,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public int batchCode(CouponUseInfoBean bean) throws EquityException {
         int num = 0;
-        List<CouponUseInfo> useInfos = new ArrayList<>();
+        List<CouponUseInfoX> useInfos = new ArrayList<>();
         DecimalFormat df=new DecimalFormat("0000");
 
         CouponX coupon = couponXMapper.selectByPrimaryKey(bean.getCouponId());
@@ -196,7 +196,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         for (int i=0; i < coupon.getReleaseTotal(); i++){
-            CouponUseInfo couponUseInfo = new CouponUseInfo();
+            CouponUseInfoX couponUseInfo = new CouponUseInfoX();
             String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + (int)((Math.random()*9+1)*100000) + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserCouponCode(userCouponCode);
@@ -211,7 +211,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public int importCode(CouponUseInfoBean bean) throws EquityException {
         int num = 0;
-        List<CouponUseInfo> useInfos = new ArrayList<>();
+        List<CouponUseInfoX> useInfos = new ArrayList<>();
         DecimalFormat df=new DecimalFormat("0000");
 
         CouponX coupon = couponXMapper.selectByPrimaryKey(bean.getCouponId());
@@ -234,7 +234,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         for (int i=0; i < bean.getUserCouponCodes().size(); i++){
-            CouponUseInfo couponUseInfo = new CouponUseInfo();
+            CouponUseInfoX couponUseInfo = new CouponUseInfoX();
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserCouponCode(bean.getUserCouponCodes().get(i));
             couponUseInfo.setCouponId(bean.getCouponId());
@@ -247,11 +247,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
     @Override
     public CouponUseInfoBean redemption(CouponUseInfoBean bean) throws EquityException {
-        CouponUseInfo useInfo =new CouponUseInfo();
+        CouponUseInfoX useInfo =new CouponUseInfoX();
         useInfo.setUserOpenId(bean.getUserOpenId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setCollectedTime(new Date());
-        CouponUseInfo couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
+        CouponUseInfoX couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             bean.setUserCouponCode("2");
             return bean;
@@ -274,7 +274,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     public CouponBean selectCouponByEquityId(CouponUseInfoBean bean) throws EquityException {
         CouponX coupon = couponXMapper.selectByPrimaryKey(bean.getCouponId());
         CouponBean couponBean = couponToBean(coupon);
-        List<CouponUseInfo> useInfos = mapper.selectCollect(bean);
+        List<CouponUseInfoX> useInfos = mapper.selectCollect(bean);
         couponBean.setCouponUseInfo(useInfos);
         return couponBean;
     }
@@ -285,8 +285,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     }
 
     @Override
-    public CouponUseInfo findById(CouponUseInfoBean bean) throws EquityException {
-        CouponUseInfo couponUseInfo = mapper.selectByPrimaryKey(bean);
+    public CouponUseInfoX findById(CouponUseInfoBean bean) throws EquityException {
+        CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
         if(couponUseInfo != null){
             CouponBean couponBean = couponToBean(couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId()));
             couponUseInfo.setCouponInfo(couponBean);
@@ -346,7 +346,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             e.printStackTrace();
         }
 
-        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         couponUseInfo.setUserOpenId(openID);
         couponUseInfo.setConsumedTime(new Date());
         couponUseInfo.setUserCouponCode(couponCode);
@@ -463,7 +463,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             e.printStackTrace();
         }
 
-        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         couponUseInfo.setType(1);
         couponUseInfo.setUserOpenId(openID);
         couponUseInfo.setCollectedTime(new Date());

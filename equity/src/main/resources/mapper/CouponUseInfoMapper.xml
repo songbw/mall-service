@@ -1,272 +1,289 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.equity.mapper.CouponUseInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.CouponUseInfo" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="coupon_id" property="couponId" jdbcType="INTEGER" />
-    <result column="user_coupon_code" property="userCouponCode" jdbcType="VARCHAR" />
-    <result column="user_open_id" property="userOpenId" jdbcType="VARCHAR" />
-    <result column="code" property="code" jdbcType="VARCHAR" />
-    <result column="collected_time" property="collectedTime" jdbcType="TIMESTAMP" />
-    <result column="consumed_time" property="consumedTime" jdbcType="TIMESTAMP" />
-    <result column="order_id" property="orderId" jdbcType="INTEGER" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="type" property="type" jdbcType="INTEGER" />
-    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.equity.mapper.CouponUseInfoMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.CouponUseInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="coupon_id" jdbcType="INTEGER" property="couponId" />
+    <result column="user_coupon_code" jdbcType="VARCHAR" property="userCouponCode" />
+    <result column="user_open_id" jdbcType="VARCHAR" property="userOpenId" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="collected_time" jdbcType="TIMESTAMP" property="collectedTime" />
+    <result column="consumed_time" jdbcType="TIMESTAMP" property="consumedTime" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, coupon_id, user_coupon_code, user_open_id, code, collected_time, consumed_time,
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, coupon_id, user_coupon_code, user_open_id, code, collected_time, consumed_time, 
     order_id, status, type, delete_flag
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.CouponUseInfoBean" >
+  <select id="selectByExample" parameterType="com.fengchao.equity.model.CouponUseInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from coupon_use_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from coupon_use_info
-    where delete_flag = 0
-    <if test="id != null" >
-      and id = #{id,jdbcType=INTEGER}
-    </if>
-    <if test="userCouponCode != null" >
-      and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
-    </if>
+    where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
-    select
-    count(id)
-    from coupon_use_info
-    WHERE 1=1
-    <if test="id != null" >
-      and coupon_id = #{id,jdbcType=INTEGER}
-    </if>
-    <if test="status != null" >
-      and status = #{status,jdbcType=INTEGER}
-    </if>
-    <if test="userOpenId != null" >
-      and user_open_id = #{userOpenId,jdbcType=VARCHAR}
-    </if>
-    <if test="deleteFlag != null" >
-      and delete_flag = 0
-    </if>
-    <if test="collectedStartDate != null">
-      <![CDATA[ and collected_time >= #{collectedStartDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="collectedEndDate != null" >
-      <![CDATA[ and collected_time <= #{collectedEndDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="consumedStartDate != null" >
-      <![CDATA[ and consumed_time >= #{consumedStartDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="consumedEndDate != null" >
-      <![CDATA[ and consumed_time <= #{consumedEndDate,jdbcType=TIMESTAMP}]]>
-    </if>
-
-  </select>
-  <select id="selectCollectCount" resultType="java.lang.Integer" parameterType="Map">
-  select
-  count(id)
-  from coupon_use_info
-  WHERE delete_flag = 0 and coupon_id = #{couponId,jdbcType=INTEGER} and user_open_id = #{userOpenId,jdbcType=VARCHAR}
-  </select>
-  <select id="selectCollect"  resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.CouponUseInfoBean">
-  select
-    <include refid="Base_Column_List" />
-  from coupon_use_info
-  WHERE delete_flag = 0 and coupon_id = #{couponId,jdbcType=INTEGER} and user_open_id = #{userOpenId,jdbcType=VARCHAR}
-  </select>
-  <select id="selectCollectCouponNum" resultType="java.lang.Integer" parameterType="com.fengchao.equity.bean.CouponUseInfoBean">
-  select
-  count(id)
-  from coupon_use_info
-  WHERE delete_flag = 0 and code = #{code,jdbcType=INTEGER} and user_open_id = #{userOpenId,jdbcType=VARCHAR}
-  </select>
-  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
-    select
-    <include refid="Base_Column_List" />
-    from coupon_use_info
-    WHERE 1=1
-    <if test="id != null" >
-      and coupon_id = #{id,jdbcType=INTEGER}
-    </if>
-    <if test="status != null" >
-      and status = #{status,jdbcType=INTEGER}
-    </if>
-    <if test="userOpenId != null" >
-      and user_open_id = #{userOpenId,jdbcType=VARCHAR}
-    </if>
-    <if test="deleteFlag != null" >
-      and delete_flag = 0
-    </if>
-    <if test="collectedStartDate != null">
-      <![CDATA[ and collected_time >= #{collectedStartDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="collectedEndDate != null" >
-      <![CDATA[ and collected_time <= #{collectedEndDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="consumedStartDate != null" >
-      <![CDATA[ and consumed_time >= #{consumedStartDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    <if test="consumedEndDate != null" >
-      <![CDATA[ and consumed_time <= #{consumedEndDate,jdbcType=TIMESTAMP}]]>
-    </if>
-    limit #{pageNo},#{pageSize}
-  </select>
-  <select id="selectBybatchCode" resultMap="BaseResultMap" parameterType="com.fengchao.equity.model.CouponUseInfo" >
-    select
-    <include refid="Base_Column_List" />
-    from coupon_use_info
-    where delete_flag = 0 and coupon_id = #{couponId,jdbcType=INTEGER}
-    and code = #{code,jdbcType=VARCHAR} and user_open_id is null and collected_time is null
-  </select>
-  <select id="selectByUserCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
-    <include refid="Base_Column_List" />
-    from coupon_use_info
-    where delete_flag = 0 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.fengchao.equity.bean.CouponUseInfoBean"  >
-    update coupon_use_info
-    set delete_flag = 1
-    where 1=1
-    <if test="id != null" >
-      and id = #{id,jdbcType=INTEGER}
-    </if>
-    <if test="userCouponCode != null" >
-      and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from coupon_use_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.equity.model.CouponUseInfoExample">
+    delete from coupon_use_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.fengchao.equity.model.CouponUseInfo" >
-    insert into coupon_use_info (id, coupon_id, user_coupon_code, 
-      user_open_id, code,
-      collected_time, consumed_time, order_id, 
-      status, type)
-    values (#{id,jdbcType=INTEGER}, #{couponId,jdbcType=INTEGER}, #{userCouponCode,jdbcType=VARCHAR}, 
-      #{userOpenId,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR},
-      #{collectedTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP}, #{orderId,jdbcType=INTEGER}, 
-      #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER})
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CouponUseInfo" useGeneratedKeys="true">
+    insert into coupon_use_info (coupon_id, user_coupon_code, user_open_id, 
+      code, collected_time, consumed_time, 
+      order_id, status, type, 
+      delete_flag)
+    values (#{couponId,jdbcType=INTEGER}, #{userCouponCode,jdbcType=VARCHAR}, #{userOpenId,jdbcType=VARCHAR}, 
+      #{code,jdbcType=VARCHAR}, #{collectedTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP}, 
+      #{orderId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{deleteFlag,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective"  keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.equity.model.CouponUseInfo" >
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CouponUseInfo" useGeneratedKeys="true">
     insert into coupon_use_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="couponId != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="couponId != null">
         coupon_id,
       </if>
-      <if test="userCouponCode != null" >
+      <if test="userCouponCode != null">
         user_coupon_code,
       </if>
-      <if test="userOpenId != null" >
+      <if test="userOpenId != null">
         user_open_id,
       </if>
-      <if test="code != null" >
+      <if test="code != null">
         code,
       </if>
-      <if test="collectedTime != null" >
+      <if test="collectedTime != null">
         collected_time,
       </if>
-      <if test="consumedTime != null" >
+      <if test="consumedTime != null">
         consumed_time,
       </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         order_id,
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status,
       </if>
-      <if test="type != null" >
+      <if test="type != null">
         type,
       </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="deleteFlag != null">
+        delete_flag,
       </if>
-      <if test="couponId != null" >
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="couponId != null">
         #{couponId,jdbcType=INTEGER},
       </if>
-      <if test="userCouponCode != null" >
+      <if test="userCouponCode != null">
         #{userCouponCode,jdbcType=VARCHAR},
       </if>
-      <if test="userOpenId != null" >
+      <if test="userOpenId != null">
         #{userOpenId,jdbcType=VARCHAR},
       </if>
-      <if test="code != null" >
+      <if test="code != null">
         #{code,jdbcType=VARCHAR},
       </if>
-      <if test="collectedTime != null" >
+      <if test="collectedTime != null">
         #{collectedTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="consumedTime != null" >
+      <if test="consumedTime != null">
         #{consumedTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         #{orderId,jdbcType=INTEGER},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
-      <if test="type != null" >
+      <if test="type != null">
         #{type,jdbcType=INTEGER},
+      </if>
+      <if test="deleteFlag != null">
+        #{deleteFlag,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
-  <insert id="insertbatchCode" parameterType="java.util.List" >
-    insert into coupon_use_info (coupon_id, user_coupon_code,
-      code) values
-    <foreach collection="useInfos" item="item" index="index" separator=",">
-      (
-      #{item.couponId,jdbcType=INTEGER},
-      #{item.userCouponCode,jdbcType=VARCHAR},
-      #{item.code,jdbcType=VARCHAR}
-      )
-    </foreach>
-  </insert>
-  <insert id="importCode" parameterType="com.fengchao.equity.bean.CouponUseInfoBean" >
-    insert into coupon_use_info (coupon_id, user_coupon_code,
-    code) values
-    <foreach collection="userCouponCodes" item="item" index="index" separator=",">
-      (
-      #{couponId,jdbcType=INTEGER},
-      #{item.userCouponCodes,jdbcType=VARCHAR},
-      #{code,jdbcType=VARCHAR}
-      )
-    </foreach>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.CouponUseInfo" >
+  <select id="countByExample" parameterType="com.fengchao.equity.model.CouponUseInfoExample" resultType="java.lang.Long">
+    select count(*) from coupon_use_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
     update coupon_use_info
-    <set >
-      <if test="couponId != null" >
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.couponId != null">
+        coupon_id = #{record.couponId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userCouponCode != null">
+        user_coupon_code = #{record.userCouponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userOpenId != null">
+        user_open_id = #{record.userOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=VARCHAR},
+      </if>
+      <if test="record.collectedTime != null">
+        collected_time = #{record.collectedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.consumedTime != null">
+        consumed_time = #{record.consumedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.deleteFlag != null">
+        delete_flag = #{record.deleteFlag,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update coupon_use_info
+    set id = #{record.id,jdbcType=INTEGER},
+      coupon_id = #{record.couponId,jdbcType=INTEGER},
+      user_coupon_code = #{record.userCouponCode,jdbcType=VARCHAR},
+      user_open_id = #{record.userOpenId,jdbcType=VARCHAR},
+      code = #{record.code,jdbcType=VARCHAR},
+      collected_time = #{record.collectedTime,jdbcType=TIMESTAMP},
+      consumed_time = #{record.consumedTime,jdbcType=TIMESTAMP},
+      order_id = #{record.orderId,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=INTEGER},
+      delete_flag = #{record.deleteFlag,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.CouponUseInfo">
+    update coupon_use_info
+    <set>
+      <if test="couponId != null">
         coupon_id = #{couponId,jdbcType=INTEGER},
       </if>
-      <if test="userCouponCode != null" >
+      <if test="userCouponCode != null">
         user_coupon_code = #{userCouponCode,jdbcType=VARCHAR},
       </if>
-      <if test="userOpenId != null" >
+      <if test="userOpenId != null">
         user_open_id = #{userOpenId,jdbcType=VARCHAR},
       </if>
-      <if test="code != null" >
+      <if test="code != null">
         code = #{code,jdbcType=VARCHAR},
       </if>
-      <if test="collectedTime != null" >
+      <if test="collectedTime != null">
         collected_time = #{collectedTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="consumedTime != null" >
+      <if test="consumedTime != null">
         consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         order_id = #{orderId,jdbcType=INTEGER},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
-      <if test="type != null" >
-        status = #{type,jdbcType=INTEGER},
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="deleteFlag != null">
+        delete_flag = #{deleteFlag,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.CouponUseInfo" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.CouponUseInfo">
     update coupon_use_info
     set coupon_id = #{couponId,jdbcType=INTEGER},
       user_coupon_code = #{userCouponCode,jdbcType=VARCHAR},
@@ -276,37 +293,8 @@
       consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
       order_id = #{orderId,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
-      type = #{type,jdbcType=INTEGER}
+      type = #{type,jdbcType=INTEGER},
+      delete_flag = #{deleteFlag,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
-    update coupon_use_info
-    set user_open_id = #{userOpenId,jdbcType=VARCHAR},
-      collected_time = #{collectedTime,jdbcType=TIMESTAMP}
-    where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
-  </update>
-  <update id="updateStatusByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
-    update coupon_use_info
-    set status = #{status,jdbcType=INTEGER},
-    consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
-    where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
-    <if test="id != null" >
-      and id = #{id,jdbcType=INTEGER}
-    </if>
-  </update>
-  <update id="updateStatusByCouponId" parameterType="java.lang.Integer" >
-    update coupon_use_info
-    set status = 3
-    where coupon_id = #{couponId,jdbcType=INTEGER}
-  </update>
-  <update id="updateStatusByToushiCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
-    update coupon_use_info
-    set status = #{status,jdbcType=INTEGER},
-    consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
-    where type = 1 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
-    <if test="userOpenId != null" >
-      and user_open_id = #{userOpenId,jdbcType=INTEGER}
-    </if>
-  </update>
-
 </mapper>

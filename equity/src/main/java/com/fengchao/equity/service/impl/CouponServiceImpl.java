@@ -11,7 +11,7 @@ import com.fengchao.equity.mapper.*;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.model.CouponTags;
-import com.fengchao.equity.model.CouponUseInfo;
+import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
@@ -30,7 +30,7 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     private CouponXMapper mapper;
     @Autowired
-    private CouponUseInfoMapper useInfoMapper;
+    private CouponUseInfoXMapper useInfoMapper;
     @Autowired
     private CouponTagsMapper tagsMapper;
     @Autowired
@@ -183,8 +183,8 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public CouponX consumeCoupon(CouponUseInfoBean bean) {
-        CouponUseInfo useInfo = new CouponUseInfo();
-        CouponUseInfo couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
+        CouponUseInfoX useInfo = new CouponUseInfoX();
+        CouponUseInfoX couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
         }
