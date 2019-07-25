@@ -62,7 +62,14 @@ public interface OrderService {
      */
     List<MerchantPaymentBean> findDayMerchantPaymentCount(String dayStart, String dayEnd) ;
 
-    List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) ;
+    /**
+     * 查询已支付的子订单集合
+     *
+     * @param dayStart 开始时间
+     * @param dayEnd 结束时间
+     * @return
+     */
+    List<CategoryPaymentBean> queryPayedOrderDetail(String dayStart, String dayEnd) ;
 
     Integer findDayPaymentCount(String dayStart, String dayEnd) ;
 }

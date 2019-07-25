@@ -177,8 +177,17 @@ public class OrderController {
         return result;
     }
 
+    /**
+     * 按一级品类统计订单支付总额
+     *
+     * @param start
+     * @param end
+     * @param result
+     * @return
+     */
     @GetMapping("/payment/category/list")
     private OperaResult paymentCategoryList(String start, String end, OperaResult result) {
+        log.info("按一级品类统计订单支付总额 入参: startDateTime:{}, endDateTime:{}", start, end);
         result.getData().put("result", service.findDayCategoryPaymentList(start, end)) ;
         return result;
     }

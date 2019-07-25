@@ -5,32 +5,29 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.statistics.bean.*;
 import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.feign.ProductService;
-import com.fengchao.statistics.mapper.CategoryOverviewMapper;
-import com.fengchao.statistics.model.CategoryOverview;
-import com.fengchao.statistics.service.CategoryOverviewService;
+import com.fengchao.statistics.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class CategoryOverviewServiceImpl implements CategoryOverviewService {
+public class CategoryOverviewServiceImpl implements StatisticService {
 
     @Autowired
     private CategoryOverviewMapper mapper;
     @Autowired
-    private OrderServiceClient orderService;
+    private OrderServiceClient orderServiceClient;
     @Autowired
     private ProductService productService;
 
     @Override
-    public void add(QueryBean queryBean) {
-        List<CategoryPaymentBean> categoryPaymentBeans = getCategoryList(queryBean) ;
+    public void doStatistic(String startDateTime, String endDateTime) {
+        List<CategoryPaymentBean> categoryPaymentBeans = getCategoryList(queryBean);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
         Date date = null ;
         try {
@@ -54,16 +51,16 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         });
     }
 
-    @Override
-    public List<CategoryOverview> findsum(QueryBean queryBean) {
-        HashMap map = new HashMap() ;
-        map.put("start", queryBean.getStartTime());
-        map.put("end", queryBean.getEndTime()) ;
-        return mapper.selectSum(map);
-    }
+//    @Override
+//    public List<CategoryOverview> findsum(QueryBean queryBean) {
+//        HashMap map = new HashMap() ;
+//        map.put("start", queryBean.getStartTime());
+//        map.put("end", queryBean.getEndTime()) ;
+//        return mapper.selectSum(map);
+//    }
 
     private List<CategoryPaymentBean> getCategoryList(QueryBean queryBean) {
-        OperaResult result = orderService.paymentCategoryList(queryBean.getStartTime(), queryBean.getEndTime());
+        OperaResult result = orderServiceClient.paymentCategoryList(queryBean.getStartTime(), queryBean.getEndTime());
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
@@ -74,15 +71,15 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         return null;
     }
 
-    private SkuCode getMerchantInfo(int id) {
-        OperaResult result = productService.findMerchant(id) ;
-        if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            SkuCode skuCode = JSONObject.parseObject(jsonString, SkuCode.class) ;
-            return skuCode;
-        }
-        return null;
-    }
+//    private SkuCode getMerchantInfo(int id) {
+//        OperaResult result = productService.findMerchant(id) ;
+//        if (result.getCode() == 200) {
+//            Map<String, Object> data = result.getData() ;
+//            Object object = data.get("result");
+//            String jsonString = JSON.toJSONString(object);
+//            SkuCode skuCode = JSONObject.parseObject(jsonString, SkuCode.class) ;
+//            return skuCode;
+//        }
+//        return null;
+//    }
 }

@@ -9,38 +9,26 @@ public class OrderServiceClientH implements OrderServiceClient {
 
     @Override
     public OperaResult statistics(String start, String end) {
-        OperaResult result = new OperaResult();
-        result.setCode(404);
-        result.setMsg("获取订单服务失败 " + start + " " + end);
-        return result;
+        return HystrixDefaultFallback.defaultFallback();
     }
 
     @Override
     public OperaResult paymentCount(String start, String end) {
-        OperaResult result = new OperaResult();
-        result.setCode(404);
-        result.setMsg("获取订单服务失败 " + start + " " + end);
-        return result;
+        return HystrixDefaultFallback.defaultFallback();
     }
 
     @Override
     public OperaResult paymentPromotionCount(String start, String end) {
-        OperaResult result = new OperaResult();
-        result.setCode(404);
-        result.setMsg("获取订单服务失败 " + start + " " + end);
-        return result;
+        return HystrixDefaultFallback.defaultFallback();
     }
 
     @Override
     public OperaResult paymentMerchantCount(String start, String end) {
-        OperaResult result = new OperaResult();
-        result.setCode(404);
-        result.setMsg("获取订单服务失败 " + start + " " + end);
-        return result;
+        return HystrixDefaultFallback.defaultFallback();
     }
 
     @Override
     public OperaResult paymentCategoryList(String start, String end) {
-        return null;
+        return HystrixDefaultFallback.defaultFallback();
     }
 }

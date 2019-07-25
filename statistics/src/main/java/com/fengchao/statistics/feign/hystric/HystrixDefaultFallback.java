@@ -1,6 +1,6 @@
-package com.fengchao.order.feign.hystric;
+package com.fengchao.statistics.feign.hystric;
 
-import com.fengchao.order.bean.OperaResult;
+import com.fengchao.statistics.bean.OperaResult;
 
 /**
  * @Author tom
