@@ -136,30 +136,80 @@ public class OrderController {
 
     @GetMapping("/statistics")
     private OperaResult statistics(String start, String end, OperaResult result) {
+        if (StringUtils.isEmpty(start)) {
+            result.setCode(4000002);
+            result.setMsg("start 不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(end)) {
+            result.setCode(4000003);
+            result.setMsg("end 不能为空。");
+            return result;
+        }
         result.getData().put("result", service.findDayStatisticsCount(start, end)) ;
         return result;
     }
 
     @GetMapping("/payment/count")
     private OperaResult paymentCount(String start, String end, OperaResult result) {
+        if (StringUtils.isEmpty(start)) {
+            result.setCode(4000002);
+            result.setMsg("start 不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(end)) {
+            result.setCode(4000003);
+            result.setMsg("end 不能为空。");
+            return result;
+        }
         result.getData().put("result", service.findDayPaymentCount(start, end)) ;
         return result;
     }
 
     @GetMapping("/payment/promotion/count")
     private OperaResult paymentPromotionCount(String start, String end, OperaResult result) {
+        if (StringUtils.isEmpty(start)) {
+            result.setCode(4000002);
+            result.setMsg("start 不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(end)) {
+            result.setCode(4000003);
+            result.setMsg("end 不能为空。");
+            return result;
+        }
         result.getData().put("result", service.findDayPromotionPaymentCount(start, end)) ;
         return result;
     }
 
     @GetMapping("/payment/merchant/count")
     private OperaResult paymentMerchantCount(String start, String end, OperaResult result) {
+        if (StringUtils.isEmpty(start)) {
+            result.setCode(4000002);
+            result.setMsg("start 不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(end)) {
+            result.setCode(4000003);
+            result.setMsg("end 不能为空。");
+            return result;
+        }
         result.getData().put("result", service.findDayMerchantPaymentCount(start, end)) ;
         return result;
     }
 
     @GetMapping("/payment/category/list")
     private OperaResult paymentCategoryList(String start, String end, OperaResult result) {
+        if (StringUtils.isEmpty(start)) {
+            result.setCode(4000002);
+            result.setMsg("start 不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(end)) {
+            result.setCode(4000003);
+            result.setMsg("end 不能为空。");
+            return result;
+        }
         result.getData().put("result", service.findDayCategoryPaymentList(start, end)) ;
         return result;
     }
