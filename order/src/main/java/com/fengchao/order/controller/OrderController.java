@@ -178,17 +178,30 @@ public class OrderController {
     }
 
     /**
-     * 按一级品类统计订单支付总额
+     * 按照时间范围查询已支付的子订单列表
      *
      * @param start
      * @param end
      * @param result
      * @return
      */
-    @GetMapping("/payment/category/list")
-    private OperaResult paymentCategoryList(String start, String end, OperaResult result) {
-        log.info("按一级品类统计订单支付总额 入参: startDateTime:{}, endDateTime:{}", start, end);
-        result.getData().put("result", service.findDayCategoryPaymentList(start, end)) ;
+    @GetMapping("/orderdetail/payed/list")
+    private OperaResult queryPayedOrderDetailList(String start, String end, OperaResult result) {
+        log.info("按照时间范围查询已支付的子订单列表 入参: startDateTime:{}, endDateTime:{}", start, end);
+
+        try {
+            List<OrderDetailBean> orderDetailBeanList = service.queryPayedOrderDetail(start, end);
+
+            result.getData().put("result", orderDetailBeanList);
+        } catch (Exception e) {
+            log.error("按照时间范围查询已支付的子订单列表 异常:{}", e.getMessage(), e);
+
+            result.setCode(500);
+            result.setMsg("按照时间范围查询已支付的子订单列表异常");
+        }
+
+        log.info("按照时间范围查询已支付的子订单列表 返回:{}", JSONUtil.toJsonString(result));
+
         return result;
     }
 

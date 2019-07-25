@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.statistics.bean.*;
 import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.feign.ProductService;
+import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,14 @@ public class CategoryOverviewServiceImpl implements StatisticService {
 
     @Autowired
     private CategoryOverviewMapper mapper;
+
     @Autowired
     private OrderServiceClient orderServiceClient;
+
     @Autowired
     private ProductService productService;
+
+    private OrdersRpcService ordersRpcService;
 
     @Override
     public void doStatistic(String startDateTime, String endDateTime) {

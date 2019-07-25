@@ -69,7 +69,7 @@ public interface OrderService {
      * @param dayEnd 结束时间
      * @return
      */
-    List<CategoryPaymentBean> queryPayedOrderDetail(String dayStart, String dayEnd) ;
+    List<OrderDetailBean> queryPayedOrderDetail(String dayStart, String dayEnd) throws Exception;
 
     Integer findDayPaymentCount(String dayStart, String dayEnd) ;
 }

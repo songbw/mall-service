@@ -28,7 +28,7 @@ public class OrderServiceClientH implements OrderServiceClient {
     }
 
     @Override
-    public OperaResult paymentCategoryList(String start, String end) {
+    public OperaResult queryPayedOrderDetailList(String start, String end) {
         return HystrixDefaultFallback.defaultFallback();
     }
 }

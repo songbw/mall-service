@@ -22,8 +22,8 @@ public interface OrderServiceClient {
     @RequestMapping(value = "/order/payment/merchant/count", method = RequestMethod.GET)
     OperaResult paymentMerchantCount(@RequestParam("start") String start, @RequestParam("end") String end);
 
-    @RequestMapping(value = "/order/payment/category/list", method = RequestMethod.GET)
-    OperaResult paymentCategoryList(@RequestParam("start") String start, @RequestParam("end") String end);
+    @RequestMapping(value = "/order/orderdetail/payed/list", method = RequestMethod.GET)
+    OperaResult queryPayedOrderDetailList(@RequestParam("start") String start, @RequestParam("end") String end);
 
 
 }

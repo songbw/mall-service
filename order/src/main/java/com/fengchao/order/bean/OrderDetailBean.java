@@ -1,11 +1,13 @@
 package com.fengchao.order.bean;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 public class OrderDetailBean {
 
     private Integer id;
@@ -73,4 +75,9 @@ public class OrderDetailBean {
     private Integer promotionId;
     private BigDecimal promotionDiscount;
     private Float saleAmount;
+
+    /**
+     * 品类
+     */
+    private String category;
 }

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
+import com.fengchao.order.constants.PaymentStatusEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.feign.AoyiClientService;
 import com.fengchao.order.feign.EquityService;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -453,7 +455,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<CategoryPaymentBean> queryPayedOrderDetail(String startDateTime, String endDateTime) {
+    public List<OrderDetailBean> queryPayedOrderDetail(String startDateTime, String endDateTime) throws Exception {
         // 1. 按照时间范围查询子订单集合
         Date startTime = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         Date endTime = DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
@@ -470,22 +472,27 @@ public class OrderServiceImpl implements OrderService {
 
         // 2.3 过滤
         List<OrderDetail> payedOrderDetailList = new ArrayList<>(); // 已支付的子订单集合
-        for (OrderDetail orderDetail : orderDetailList) {
+        for (OrderDetail orderDetail : orderDetailList) { // 遍历子订单
             Integer orderId = orderDetail.getOrderId();
             Orders orders = ordersMap.get(orderId);
             if (orders != null) {
-                Integer payStatus = orders.getPayStatus(); // 支付状态10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
-                if (payStatus )
-                payedOrderDetailList.add(orderDetail);
+                // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
+                if (orders.getPayStatus() == PaymentStatusEnum.PAY_SUCCESS.getValue()) { // 如果 支付成功
+                    payedOrderDetailList.add(orderDetail);
+                }
             }
         }
 
+        // 3. 转dto
+        List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
+        for (OrderDetail orderDetail : payedOrderDetailList) {
+            OrderDetailBean orderDetailBean = convertToOrderDetailBean(orderDetail);
+            orderDetailBean.setPayStatus(PaymentStatusEnum.PAY_SUCCESS.getValue());
 
+            orderDetailBeanList.add(orderDetailBean);
+        }
 
-        HashMap map = new HashMap();
-        map.put("dayStart", dayStart);
-        map.put("dayEnd", dayEnd);
-        return orderMapper.selectDayCategoryPaymentList(map);
+        return orderDetailBeanList;
     }
 
     @Override
@@ -495,6 +502,8 @@ public class OrderServiceImpl implements OrderService {
         map.put("dayEnd", dayEnd);
         return orderMapper.selectDayPaymentCount(map);
     }
+
+    // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {
         OperaResult result = productService.find(skuId);
@@ -538,4 +547,77 @@ public class OrderServiceImpl implements OrderService {
         }
         return false;
     }
+
+    /**
+     *
+     * @param orderDetail
+     * @return
+     */
+    private OrderDetailBean convertToOrderDetailBean(OrderDetail orderDetail) {
+        OrderDetailBean orderDetailBean = new OrderDetailBean();
+
+        orderDetailBean.setId(orderDetail.getId());
+        // orderDetailBean.setOpenId(orderDetail.get);
+        orderDetailBean.setSubOrderId(orderDetail.getSubOrderId());
+        // orderDetailBean.setTradeNo();
+        // orderDetailBean.setAoyiId();
+        // orderDetailBean.setCompanyCustNo();
+        orderDetailBean.setMerchantId(orderDetail.getMerchantId());
+        // orderDetailBean.setMerchantNo();
+        // orderDetailBean.setReceiverName(orderDetai);
+        // orderDetailBean.setTelephone();
+        // orderDetailBean.setMobile();
+        // orderDetailBean.setEmail();
+        // orderDetailBean.setProvinceId(orderDetail.);
+        // orderDetailBean.setProvinceName();
+        // orderDetailBean.setCityId();
+        // orderDetailBean.setCityName();
+        // orderDetailBean.setCountyId();
+        // orderDetailBean.setCountyName();
+        // orderDetailBean.setTownId();
+        // orderDetailBean.setAddress();
+        // orderDetailBean.setZip();
+        // orderDetailBean.setRemark();
+        // orderDetailBean.setInvoiceState();
+        // orderDetailBean.setInvoiceType();
+        // orderDetailBean.setInvoiceTitle();
+        // orderDetailBean.setInvoiceContent();
+        // orderDetailBean.setPayment();
+        // orderDetailBean.setServFee();
+        // orderDetailBean.setAmount();
+        // orderDetailBean.setStatus();
+        // orderDetailBean.setType();
+        // orderDetailBean.setCreatedAt();
+        // orderDetailBean.setUpdatedAt();
+        // orderDetailBean.setSkuId();
+        // orderDetailBean.setNum();
+        // orderDetailBean.setUnitPrice();
+        // orderDetailBean.setImage();
+        // orderDetailBean.setModel();
+        // orderDetailBean.setName();
+        // orderDetailBean.setPaymentNo();
+        // orderDetailBean.setPaymentAt();
+        // orderDetailBean.setLogisticsId();
+        // orderDetailBean.setLogisticsContent();
+        // orderDetailBean.setOutTradeNo();
+        // orderDetailBean.setPaymentAmount();
+        // orderDetailBean.setPayee(); // 商户号，充值钱包的时候没有
+        // orderDetailBean.setRefundFee(); // 退款金额，退款时候有
+        // orderDetailBean.setPayType(); // 支付方式
+        // orderDetailBean.setPaymentTotalFee(); // 订单总金额
+        // orderDetailBean.setPayer(); // C端个人账号。 表示唯一用户
+        // orderDetailBean.setPayStatus(); // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
+        // orderDetailBean.setPayOrderCategory(); // 1支付，2充值，3退款，4提现
+        // orderDetailBean.setCouponId();
+        // orderDetailBean.setCouponCode();
+        // orderDetailBean.setCouponDiscount();
+        // orderDetailBean.setPromotionId();
+        // orderDetailBean.setPromotionDiscount();
+        // orderDetailBean.setSaleAmount();
+        orderDetailBean.setCategory(orderDetail.getCategory());
+
+        return orderDetailBean;
+    }
+
+
 }
