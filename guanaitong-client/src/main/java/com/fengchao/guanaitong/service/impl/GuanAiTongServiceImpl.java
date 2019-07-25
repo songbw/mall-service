@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -223,7 +226,55 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 */
 
     @Override
+    public String buildUrlXFormBody(Map map) {
+
+        for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
+            Map.Entry<String, Object> item = it.next();
+            if (null == item.getValue()) {
+                it.remove();
+                log.info("find null value in map: " + item.getKey());
+            }
+        }
+
+        Map<String, Object> theMap = new HashMap<>();
+        Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        Long timeStampS = timeStampMs/1000;
+        String timeStamp = timeStampS.toString();
+        map.put(TIME_STAMP_KEY,timeStamp);
+
+        String sign = getFormSign(map);
+        String token = getAccessToken();
+        theMap.put(TOKEN_KEY, token);
+        theMap.put(SIGN_KEY, sign);
+        Set<String> keySet = map.keySet();
+        Iterator<String> iter = keySet.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                String urlValue = URLEncoder.encode(map.get(key).toString(), StandardCharsets.UTF_8.toString());
+                theMap.put(key, urlValue);
+            } catch (UnsupportedEncodingException ex) {
+                log.info("urlEncode error: " + ex.getMessage());
+            }
+        }
+
+        String xForm = map2string(theMap);
+        log.info("buildXForm: " + xForm);
+        return xForm;
+
+    }
+
+
+    @Override
     public String buildXFormBody(Map map) {
+
+        for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
+            Map.Entry<String, Object> item = it.next();
+            if (null == item.getValue()) {
+                it.remove();
+                log.info("find null value in map: " + item.getKey());
+            }
+        }
 
         Map<String, Object> theMap = new HashMap<>();
         Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
@@ -329,7 +380,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             Map.Entry<String, Object> item = it.next();
             if (null == item.getValue()) {
                 it.remove();
-                log.info("find null value in map");
+                log.info("find null value in map" + item.getKey());
             }
         }
 
