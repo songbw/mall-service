@@ -217,6 +217,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public int update(AoyiProdIndexX bean) throws ProductException {
         if (bean.getId() > 0) {
+            bean.setUpdatedAt(new Date());
             prodMapper.updateByPrimaryKeySelective(bean);
         } else {
             throw new ProductException(200002, "id为null或等于0");
