@@ -5,6 +5,7 @@ import com.fengchao.order.model.Order;
 import com.fengchao.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -160,6 +161,17 @@ public class OrderController {
     @GetMapping("/payment/category/list")
     private OperaResult paymentCategoryList(String start, String end, OperaResult result) {
         result.getData().put("result", service.findDayCategoryPaymentList(start, end)) ;
+        return result;
+    }
+
+    @GetMapping("/payment/status")
+    private OperaResult paymentStatus(String outerTradeNo, OperaResult result) {
+        if (StringUtils.isEmpty(outerTradeNo)) {
+            result.setCode(4000001);
+            result.setMsg("outerTradeNo 不能为空。");
+            return result;
+        }
+        result.getData().put("result", service.findPaymentStatus(outerTradeNo)) ;
         return result;
     }
 

@@ -58,4 +58,6 @@ public interface OrderService {
     List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) ;
 
     Integer findDayPaymentCount(String dayStart, String dayEnd) ;
+
+    String findPaymentStatus(String outerTradeNo);
 }
