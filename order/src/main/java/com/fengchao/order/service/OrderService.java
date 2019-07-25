@@ -53,6 +53,13 @@ public interface OrderService {
 
     List<PromotionPaymentBean> findDayPromotionPaymentCount(String dayStart, String dayEnd) ;
 
+    /**
+     * 按商户统计订单支付总额
+     * 
+     * @param dayStart
+     * @param dayEnd
+     * @return
+     */
     List<MerchantPaymentBean> findDayMerchantPaymentCount(String dayStart, String dayEnd) ;
 
     List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) ;

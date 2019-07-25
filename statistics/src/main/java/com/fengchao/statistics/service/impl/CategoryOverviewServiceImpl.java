@@ -3,12 +3,10 @@ package com.fengchao.statistics.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.statistics.bean.*;
-import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.feign.ProductService;
 import com.fengchao.statistics.mapper.CategoryOverviewMapper;
-import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.CategoryOverview;
-import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.service.CategoryOverviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +24,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
     @Autowired
     private CategoryOverviewMapper mapper;
     @Autowired
-    private OrderService orderService;
+    private OrderServiceClient orderService;
     @Autowired
     private ProductService productService;
 

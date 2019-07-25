@@ -3,11 +3,14 @@ package com.fengchao.statistics.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.statistics.bean.*;
-import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.feign.ProductService;
 import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.MerchantOverview;
+import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.service.MerchantOverviewService;
+import com.fengchao.statistics.utils.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,31 +22,34 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
     @Autowired
     private MerchantOverviewMapper mapper;
+
     @Autowired
-    private OrderService orderService;
+    private OrderServiceClient orderServiceClient;
+
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private OrdersRpcService ordersRpcService;
+
     @Override
     public void add(QueryBean queryBean) {
-        List<MerchantPaymentBean> merchantPaymentBeans = getMerchantCount(queryBean) ;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
-        Date date = null ;
-        try {
-            date = formatter.parse(queryBean.getStartTime()) ;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date createDate = new Date() ;
-        Date finalDate = date;
+        // 1. 调用order rpc服务，获取统计数据
+        List<MerchantPaymentBean> merchantPaymentBeans = ordersRpcService.statisticOrdersAmountByMerchant1(queryBean);
+
+        // 2. 处理结果
+        // 获取统计时间
+        Date statisticDate = DateUtil.parseDateTime(queryBean.getStartTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+
         merchantPaymentBeans.forEach(merchantPaymentBean -> {
             MerchantOverview merchantOverview = new MerchantOverview();
-            merchantOverview.setCreatedAt(createDate);
-            merchantOverview.setStatisticsDate(finalDate);
+            merchantOverview.setCreatedAt(new Date());
+            merchantOverview.setStatisticsDate(statisticDate);
             merchantOverview.setOrderPaymentAmount(merchantPaymentBean.getSaleAmount());
             merchantOverview.setMerchantId(merchantPaymentBean.getMerchantId());
             // 查询商户信息
@@ -63,18 +69,6 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
         map.put("start", queryBean.getStartTime());
         map.put("end", queryBean.getEndTime()) ;
         return mapper.selectSum(map);
-    }
-
-    private List<MerchantPaymentBean> getMerchantCount(QueryBean queryBean) {
-        OperaResult result = orderService.paymentMerchantCount(queryBean.getStartTime(), queryBean.getEndTime());
-        if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            List<MerchantPaymentBean> merchantPaymentBeans = JSONObject.parseArray(jsonString, MerchantPaymentBean.class) ;
-            return merchantPaymentBeans;
-        }
-        return null;
     }
 
     private SkuCode getMerchantInfo(int id) {

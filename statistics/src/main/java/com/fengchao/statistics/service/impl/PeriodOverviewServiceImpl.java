@@ -2,10 +2,9 @@ package com.fengchao.statistics.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.statistics.bean.DayStatisticsBean;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.bean.QueryBean;
-import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.mapper.PeriodOverviewMapper;
 import com.fengchao.statistics.model.PeriodOverview;
 import com.fengchao.statistics.service.PeriodOverviewService;
@@ -25,7 +24,7 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
     @Autowired
     private PeriodOverviewMapper mapper;
     @Autowired
-    private OrderService orderService;
+    private OrderServiceClient orderService;
 
     @Override
     public void add(QueryBean queryBean) {

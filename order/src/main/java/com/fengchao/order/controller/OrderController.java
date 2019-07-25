@@ -3,15 +3,20 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.service.OrderService;
+import com.fengchao.order.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 订单列表
  */
 @RestController
 @RequestMapping(value = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class OrderController {
 
     @Autowired
@@ -151,9 +156,24 @@ public class OrderController {
         return result;
     }
 
+    /**
+     * 按商户统计订单支付总额
+     *
+     * @param start
+     * @param end
+     * @param result
+     * @return
+     */
     @GetMapping("/payment/merchant/count")
     private OperaResult paymentMerchantCount(String start, String end, OperaResult result) {
-        result.getData().put("result", service.findDayMerchantPaymentCount(start, end)) ;
+        log.info("按商户统计订单支付总额 入参: startDateTime:{}, endDateTime:{}", start, end);
+
+
+        List<MerchantPaymentBean> merchantPaymentBeanList = service.findDayMerchantPaymentCount(start, end);
+        result.getData().put("result", merchantPaymentBeanList) ;
+
+        log.info("按商户统计订单支付总额 返回:{}", JSONUtil.toJsonString(result));
+
         return result;
     }
 

@@ -1,11 +1,11 @@
 package com.fengchao.statistics.feign.hystric;
 
 import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.OrderServiceClient;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderServiceH implements OrderService {
+public class OrderServiceClientH implements OrderServiceClient {
 
     @Override
     public OperaResult statistics(String start, String end) {

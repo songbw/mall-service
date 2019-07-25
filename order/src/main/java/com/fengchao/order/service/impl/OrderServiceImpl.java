@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
-    private OrderMapper mapper;
+    private OrderMapper orderMapper;
 
     @Autowired
     private OrderDetailXMapper orderDetailXMapper;
@@ -141,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
             // 添加主订单
-            mapper.insert(bean);
+            orderMapper.insert(bean);
             // 核销优惠券
             if (coupon != null) {
                 boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
@@ -197,13 +197,13 @@ public class OrderServiceImpl implements OrderService {
         order.setId(id);
         order.setUpdatedAt(new Date());
         order.setStatus(3);
-        mapper.updateStatusById(order) ;
+        orderMapper.updateStatusById(order) ;
         return id;
     }
 
     @Override
     public Order findById(Integer id) {
-        Order order = mapper.selectByPrimaryKey(id) ;
+        Order order = orderMapper.selectByPrimaryKey(id) ;
         List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
         order.setSkus(orderDetailXES);
         return order;
@@ -215,7 +215,7 @@ public class OrderServiceImpl implements OrderService {
         order.setId(id);
         order.setUpdatedAt(new Date());
         order.setStatus(-1);
-        mapper.updateStatusById(order) ;
+        orderMapper.updateStatusById(order) ;
         return id;
     }
 
@@ -232,9 +232,9 @@ public class OrderServiceImpl implements OrderService {
             map.put("status", queryBean.getStatus()) ;
         }
         List<Order> orders = new ArrayList<>();
-        total = mapper.selectLimitCount(map);
+        total = orderMapper.selectLimitCount(map);
         if (total > 0) {
-            orders = mapper.selectLimit(map);
+            orders = orderMapper.selectLimit(map);
             orders.forEach(order -> {
                 order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
             });
@@ -246,7 +246,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
-        mapper.updateStatusById(bean) ;
+        orderMapper.updateStatusById(bean) ;
         return bean.getId();
     }
 
@@ -272,9 +272,9 @@ public class OrderServiceImpl implements OrderService {
             map.put("payDateEnd", orderBean.getPayDateEnd()) ;
         }
         List<OrderDetailBean> orderBeans = new ArrayList<>();
-        total = mapper.selectCount(map);
+        total = orderMapper.selectCount(map);
         if(total >  0){
-            orderBeans = mapper.selectOrderLimit(map);
+            orderBeans = orderMapper.selectOrderLimit(map);
             orderBeans.forEach(order -> {
                 if(order.getImage() == null || "".equals(order.getImage())){
                     AoyiProdIndex productIndex = findProduct(order.getSkuId());
@@ -297,12 +297,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer updateRemark(Order bean) {
-        return mapper.updateByPrimaryKeySelective(bean);
+        return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
     @Override
     public Integer updateOrderAddress(Order bean) {
-        return mapper.updateByPrimaryKeySelective(bean);
+        return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
     @Override
@@ -314,7 +314,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("pageNo", offset);
         map.put("pageSize", queryBean.getPageSize());
         map.put("orderId", queryBean.getOrderId());
-        Order order = mapper.selectByPrimaryKey(queryBean.getOrderId());
+        Order order = orderMapper.selectByPrimaryKey(queryBean.getOrderId());
         total = orderDetailXMapper.selectCount(map);
         if (total > 0) {
             List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectLimit(map);
@@ -384,12 +384,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) {
-        return mapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
+        return orderMapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
     }
 
     @Override
     public List<Order> findOutTradeNo(String outTradeNo) {
-        return mapper.selectByOutTradeNo(outTradeNo);
+        return orderMapper.selectByOutTradeNo(outTradeNo);
     }
 
     @Override
@@ -397,17 +397,17 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setOutTradeNo(outTradeNo);
         order.setPaymentNo(paymentNo);
-        return mapper.selectByOutTradeNoAndPaymentNo(order);
+        return orderMapper.selectByOutTradeNoAndPaymentNo(order);
     }
 
     @Override
     public Integer updatePaymentNo(Order order) {
-        return mapper.updatePaymentNo(order);
+        return orderMapper.updatePaymentNo(order);
     }
 
     @Override
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
-        return mapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+        return orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
     }
 
     @Override
@@ -415,9 +415,9 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        int dayPaymentCount = mapper.selectDayPaymentCount(map); // SUM(sale_amount)
-        int dayCount = mapper.selectDayCount(map); // count(id) FROM orders
-        int dayPeopleCount = mapper.selectDayPeopleCount(map); // count(DISTINCT(open_id))
+        int dayPaymentCount = orderMapper.selectDayPaymentCount(map); // SUM(sale_amount)
+        int dayCount = orderMapper.selectDayCount(map); // count(id) FROM orders
+        int dayPeopleCount = orderMapper.selectDayPeopleCount(map); // count(DISTINCT(open_id))
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
         dayStatisticsBean.setOrderCount(dayCount);
@@ -439,7 +439,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        return mapper.selectDayPromotionPaymentCount(map);
+        return orderMapper.selectDayPromotionPaymentCount(map);
     }
 
     @Override
@@ -447,7 +447,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        return mapper.selectDayMerchantPaymentCount(map);
+        return orderMapper.selectDayMerchantPaymentCount(map);
     }
 
     @Override
@@ -455,7 +455,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        return mapper.selectDayCategoryPaymentList(map);
+        return orderMapper.selectDayCategoryPaymentList(map);
     }
 
     @Override
@@ -463,7 +463,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        return mapper.selectDayPaymentCount(map);
+        return orderMapper.selectDayPaymentCount(map);
     }
 
     private AoyiProdIndex findProduct(String skuId) {

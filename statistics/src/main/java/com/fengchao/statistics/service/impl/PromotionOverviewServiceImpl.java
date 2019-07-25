@@ -7,7 +7,7 @@ import com.fengchao.statistics.bean.Promotion;
 import com.fengchao.statistics.bean.PromotionPaymentBean;
 import com.fengchao.statistics.bean.QueryBean;
 import com.fengchao.statistics.feign.EquityService;
-import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.mapper.PromotionOverviewMapper;
 import com.fengchao.statistics.model.PromotionOverview;
 import com.fengchao.statistics.service.PromotionOverviewService;
@@ -27,7 +27,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     @Autowired
     private PromotionOverviewMapper mapper;
     @Autowired
-    private OrderService orderService;
+    private OrderServiceClient orderService;
     @Autowired
     private EquityService equityService;
 
