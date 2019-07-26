@@ -225,4 +225,20 @@ public class OrderController {
         return result;
     }
 
+    @GetMapping("/payment/openid/no")
+    private OperaResult findByPaymentNoAndOpenId(String paymentNo, String openId,  OperaResult result) {
+        if (StringUtils.isEmpty(paymentNo)) {
+            result.setCode(4000002);
+            result.setMsg("paymentNo 不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(openId)) {
+            result.setCode(4000002);
+            result.setMsg("openId 不能为空。");
+            return result;
+        }
+        result.getData().put("result", service.findByPaymentNoAndOpenId(paymentNo, openId)) ;
+        return result;
+    }
+
 }

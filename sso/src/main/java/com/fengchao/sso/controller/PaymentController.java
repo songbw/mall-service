@@ -35,7 +35,7 @@ public class PaymentController {
     }
 
     @PostMapping(value = "/back", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    private String gBack(@RequestBody GATBackBean bean) {
+    private String gBack(GATBackBean bean) {
         logger.info("关爱通back params is : " + JSON.toJSONString(bean));
         return service.gNotify(bean) ;
     }

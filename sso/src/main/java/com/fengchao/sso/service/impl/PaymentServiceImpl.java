@@ -123,7 +123,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     public String gNotify(GATBackBean backBean) {
-        List<Order> orders = findByOutTradeNoAndPaymentNo(backBean.getOuter_trade_no(), backBean.getTrade_no());
+        List<Order> orders = findByPaymentNoAndOpenId(backBean.getOuter_trade_no(), "10" + backBean.getBuyer_open_id());
         int amount = Math.round(backBean.getTotal_amount() * 100);
         orders.forEach(order1 -> {
             order1.setPaymentAmount(amount);
@@ -164,6 +164,18 @@ public class PaymentServiceImpl implements IPaymentService {
 
     private List<Order> findByOutTradeNoAndPaymentNo(String outTradeNo, String paymentNo) {
         OperaResult result = orderService.findByOutTradeNoAndPaymentNo(outTradeNo, paymentNo);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<Order> orders = JSONObject.parseArray(jsonString, Order.class) ;
+            return orders;
+        }
+        return null;
+    }
+
+    private List<Order> findByPaymentNoAndOpenId(String paymentNo, String openId) {
+        OperaResult result = orderService.findByPaymentNoAndOpenId(paymentNo, openId);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
