@@ -195,6 +195,7 @@ public class OrderController {
      * @param result
      * @return
      */
+    @Deprecated
     @GetMapping("/payment/merchant/count")
     private OperaResult paymentMerchantCount(String start, String end, OperaResult result) {
         log.info("按商户统计订单支付总额 入参: startDateTime:{}, endDateTime:{}", start, end);

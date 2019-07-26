@@ -596,7 +596,7 @@ public class OrderServiceImpl implements OrderService {
         // orderDetailBean.setAoyiId();
         // orderDetailBean.setCompanyCustNo();
         orderDetailBean.setMerchantId(orderDetail.getMerchantId());
-        // orderDetailBean.setMerchantNo();
+        orderDetailBean.setMerchantNo(orderDetail.getmer);
         // orderDetailBean.setReceiverName(orderDetai);
         // orderDetailBean.setTelephone();
         // orderDetailBean.setMobile();
