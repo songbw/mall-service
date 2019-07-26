@@ -299,7 +299,7 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         for(Field f : couponBean.getClass().getDeclaredFields()){
             f.setAccessible(true);
             try {
-                if(f.getName().equals("imageUrl")){break;}
+                if(f.getName().equals("imageUrl")){continue;}
                 if(f.get(couponBean) == null){
                     result.setCode(700000);
                     result.setMsg(f.getName() + "不能为空");
@@ -342,7 +342,7 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         coupon.setImageUrl(couponBean.getImageUrl());
         coupon.setUrl(couponBean.getUrl());
         coupon.setPerLimited(couponBean.getPerLimited());
-        String rules = "{\"type\":3,\"serviceCoupon \":{\"price\":"+ couponBean.getPrice() +",\"description\":\""+ couponBean.getSupplierMerchantName() +"服务券\"}}";
+        String rules = "{\"type\":3,\"serviceCoupon \":{\"price\":"+ DataUtils.decimalFormat(couponBean.getPrice()) +",\"description\":\""+ couponBean.getSupplierMerchantName() +"服务券\"}}";
         coupon.setCouponRules(rules);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
         if(coupon.getCode() == null || "".equals(coupon.getCode())){

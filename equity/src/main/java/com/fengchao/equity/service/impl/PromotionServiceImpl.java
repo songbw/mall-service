@@ -51,14 +51,6 @@ public class PromotionServiceImpl implements PromotionService {
         Date date = new Date();
         bean.setCreatedDate(date);
         int num = promotionXMapper.insertSelective(bean);
-        if(num == 1){
-            if(bean.getStartDate() != null){
-                JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), bean.getStartDate());
-            }
-            if(bean.getEndDate() != null){
-                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), bean.getEndDate());
-            }
-        }
         return num;
     }
 
@@ -81,7 +73,23 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public int updatePromotion(PromotionX bean) {
-        return promotionXMapper.updateByPrimaryKeySelective(bean);
+        PromotionX promotionX = null;
+
+        if(bean.getStatus() != null && bean.getStatus() == 2){
+            bean.setStatus(3);
+            promotionX = promotionXMapper.selectByPrimaryKey(bean.getId());
+            if(promotionX == null){
+                return 0;
+            }
+        }
+
+        int num = promotionXMapper.updateByPrimaryKeySelective(bean);
+        if(bean.getStatus() != null && bean.getStatus() == 2 && num ==1){
+             JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), promotionX.getStartDate());
+             JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+        }
+
+        return num;
     }
 
     @Override
@@ -106,10 +114,14 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public int deletePromotion(Integer id) {
-        int num = promotionXMapper.deleteByPrimaryKey(id);
-        if(num == 1){
-            promotionMpuMapper.deleteByPrimaryKey(id);
+        PromotionX promotionX = promotionXMapper.selectByPrimaryKey(id);
+
+        if(promotionX.getStatus() != 1){
+            return 2;
         }
+
+        int num = promotionXMapper.deleteByPrimaryKey(id);
+
         return num;
     }
 

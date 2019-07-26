@@ -287,8 +287,14 @@
   </update>
   <update id="updateStatusByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
     update coupon_use_info
-    set status = #{status,jdbcType=INTEGER},
-    consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
+    <set >
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="consumedTime != null" >
+      consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
     <if test="id != null" >
       and id = #{id,jdbcType=INTEGER}
@@ -296,7 +302,7 @@
   </update>
   <update id="updateStatusByCouponId" parameterType="java.lang.Integer" >
     update coupon_use_info
-    set status = 3
+    set status = 4
     where coupon_id = #{couponId,jdbcType=INTEGER}
   </update>
   <update id="updateStatusByToushiCode" parameterType="com.fengchao.equity.model.CouponUseInfo" >
@@ -308,5 +314,4 @@
       and user_open_id = #{userOpenId,jdbcType=INTEGER}
     </if>
   </update>
-
 </mapper>

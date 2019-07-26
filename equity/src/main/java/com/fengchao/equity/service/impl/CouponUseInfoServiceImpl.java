@@ -347,6 +347,32 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         return couponUseInfo;
     }
 
+    @Override
+    public int occupyCoupon(CouponUseInfoBean bean) {
+        CouponUseInfo useInfo = new CouponUseInfo();
+        CouponUseInfo couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
+        if(couponUseInfo != null){
+            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            Date date = new Date();
+            if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().after(date)){
+                return 2;
+            }
+        }
+        useInfo.setId(bean.getId());
+        useInfo.setUserCouponCode(bean.getUserCouponCode());
+        useInfo.setStatus(2);
+        return mapper.updateStatusByUserCode(useInfo);
+    }
+
+    @Override
+    public int releaseCoupon(CouponUseInfoBean bean) {
+        CouponUseInfo useInfo = new CouponUseInfo();
+        useInfo.setId(bean.getId());
+        useInfo.setUserCouponCode(bean.getUserCouponCode());
+        useInfo.setStatus(1);
+        return mapper.updateStatusByUserCode(useInfo);
+    }
+
     private CouponBean couponToBean(CouponX coupon) {
 
         CouponBean couponBean = new CouponBean();

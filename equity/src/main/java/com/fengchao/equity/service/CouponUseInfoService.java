@@ -1,7 +1,6 @@
 package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.*;
-import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.model.CouponUseInfo;
 
 public interface CouponUseInfoService {
@@ -25,4 +24,8 @@ public interface CouponUseInfoService {
     int deleteUserCoupon(CouponUseInfoBean bean);
 
     CouponUseInfo findById(CouponUseInfoBean bean);
+
+    int releaseCoupon(CouponUseInfoBean bean);
+
+    int occupyCoupon(CouponUseInfoBean bean);
 }
