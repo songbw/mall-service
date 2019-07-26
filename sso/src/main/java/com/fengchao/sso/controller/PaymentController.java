@@ -39,4 +39,9 @@ public class PaymentController {
         logger.info("关爱通back params is : " + JSON.toJSONString(bean));
         return service.gNotify(bean) ;
     }
+
+    @PostMapping(value = "/refund", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    private String refund(String subOrderNo) {
+        return service.refund(subOrderNo) ;
+    }
 }

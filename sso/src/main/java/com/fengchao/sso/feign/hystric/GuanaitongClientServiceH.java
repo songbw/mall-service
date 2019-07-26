@@ -73,4 +73,19 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
         result.setMsg("关爱通获取用户服务失败" + msg);
         return result;
     }
+
+    @Override
+    public Result refund(Map<String, String> map) {
+        Result result = new Result();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = "";
+        try {
+            msg = objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        result.setCode(404);
+        result.setMsg("关爱通退款服务失败" + msg);
+        return result;
+    }
 }
