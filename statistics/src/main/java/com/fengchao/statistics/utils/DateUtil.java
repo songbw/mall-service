@@ -58,20 +58,20 @@ public class DateUtil {
     }
 
     /**
-     * 将一个日期加上或减去 daysToAdd 妙数,得出新的日期
+     * 将一个日期加上或减去 daysToAdd 天数, 得出新的日期
      *
-     * @param originDate
+     * @param originDateTime
      * @param originFormat
      * @param daysToAdd
      * @param newFormat
      * @return
      */
-    public static String calcDay(String originDate, String originFormat, long daysToAdd, String newFormat) {
+    public static String calcDay(String originDateTime, String originFormat, long daysToAdd, String newFormat) {
         String formatDate = "";
 
-        if (StringUtils.isNotBlank(originDate)) {
+        if (StringUtils.isNotBlank(originDateTime)) {
             // 将原始的日期转换成localDate
-            LocalDateTime localDateTime = LocalDateTime.parse(originDate, DateTimeFormatter.ofPattern(originFormat));
+            LocalDateTime localDateTime = LocalDateTime.parse(originDateTime, DateTimeFormatter.ofPattern(originFormat));
 
             // 计算天数
             LocalDateTime _localDateTime = localDateTime.plusDays(daysToAdd);
@@ -231,6 +231,14 @@ public class DateUtil {
         Date date = Date.from(instant);
 
         return date;
+    }
+
+    public static void main(String args[]) {
+        String re =
+                DateUtil.calcDay("2019-07-26 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                        -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+
+        System.out.println(re);
     }
 
 }

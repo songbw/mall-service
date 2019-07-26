@@ -1,10 +1,10 @@
-package com.fengchao.product.aoyi.bean;
+package com.fengchao.statistics.rpc.extmodel;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 public class CategoryQueryBean {
     private Integer id;
     private String name;

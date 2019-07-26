@@ -1,10 +1,7 @@
 package com.fengchao.statistics.jobClient;
 
 import com.fengchao.statistics.bean.QueryBean;
-import com.fengchao.statistics.service.MerchantOverviewService;
-import com.fengchao.statistics.service.OverviewService;
-import com.fengchao.statistics.service.PeriodOverviewService;
-import com.fengchao.statistics.service.PromotionOverviewService;
+import com.fengchao.statistics.service.*;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import com.github.ltsopensource.core.domain.Action;
@@ -87,15 +84,20 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             String currentDate = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD);
             // 开始时间
             String startDateTime =
-                    DateUtil.calcDay(currentDate, DateUtil.DATE_YYYY_MM_DD, -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                    DateUtil.calcDay(currentDate + "00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             String endDateTime =
-                    DateUtil.calcSecond(startDateTime, DateUtil.DATE_YYYY_MM_DD, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                    DateUtil.calcSecond(startDateTime + "23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
             // 2. 获取各个统计service
             OverviewService overviewService = BeanContext.getApplicationContext().getBean(OverviewService.class);
-            MerchantOverviewService merchantOverviewService = BeanContext.getApplicationContext().getBean(MerchantOverviewService.class);
-            PromotionOverviewService promotionOverviewService = BeanContext.getApplicationContext().getBean(PromotionOverviewService.class);
-            PeriodOverviewService periodOverviewService = BeanContext.getApplicationContext().getBean(PeriodOverviewService.class);
+            CategoryOverviewService categoryOverviewService =
+                    BeanContext.getApplicationContext().getBean(CategoryOverviewService.class);
+            MerchantOverviewService merchantOverviewService =
+                    BeanContext.getApplicationContext().getBean(MerchantOverviewService.class);
+            PromotionOverviewService promotionOverviewService =
+                    BeanContext.getApplicationContext().getBean(PromotionOverviewService.class);
+            PeriodOverviewService periodOverviewService =
+                    BeanContext.getApplicationContext().getBean(PeriodOverviewService.class);
 
             // 3. 统计
             // 组装条件
@@ -105,9 +107,10 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             log.info("执行订单统计任务 统计查询条件:{}", JSONUtil.toJsonString(queryBean));
 
             // 执行统计
-            overviewService.add(queryBean); //
+            overviewService.add(queryBean); // 总揽统计
+            categoryOverviewService.doDailyStatistic(startDateTime, endDateTime); // 安品类统计
             merchantOverviewService.add(queryBean); // 按商户统计订单支付总额
-            promotionOverviewService.add(queryBean);
+            promotionOverviewService.add(queryBean); //
             periodOverviewService.add(queryBean);
 
             // 4. 记录lts日志

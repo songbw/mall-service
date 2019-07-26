@@ -38,7 +38,8 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
     @Override
     public void add(QueryBean queryBean) {
         // 1. 调用order rpc服务，获取统计数据
-        List<MerchantPaymentBean> merchantPaymentBeans = ordersRpcService.statisticOrdersAmountByMerchant1(queryBean);
+        List<MerchantPaymentBean> merchantPaymentBeans = ordersRpcService
+                .statisticOrdersAmountByMerchant(queryBean.getStartTime(), queryBean.getEndTime());
 
         // 2. 处理结果
         // 获取统计时间

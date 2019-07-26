@@ -1,30 +1,31 @@
 package com.fengchao.statistics.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.fengchao.statistics.bean.*;
+import com.fengchao.statistics.bean.vo.CategoryOverviewResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.CategoryOverviewDao;
-import com.fengchao.statistics.feign.OrderServiceClient;
-import com.fengchao.statistics.feign.ProductServiceClient;
 import com.fengchao.statistics.model.CategoryOverview;
 import com.fengchao.statistics.rpc.OrdersRpcService;
+import com.fengchao.statistics.rpc.ProductRpcService;
+import com.fengchao.statistics.rpc.extmodel.CategoryQueryBean;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
-import com.fengchao.statistics.service.StatisticService;
+import com.fengchao.statistics.service.CategoryOverviewService;
+import com.fengchao.statistics.utils.DateUtil;
+import com.fengchao.statistics.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-public class CategoryOverviewServiceImpl implements StatisticService {
+@Slf4j
+public class CategoryOverviewServiceImpl implements CategoryOverviewService {
 
     @Autowired
-    private OrderServiceClient orderServiceClient;
-
-    @Autowired
-    private ProductServiceClient productService;
+    private ProductRpcService productRpcService;
 
     @Autowired
     private OrdersRpcService ordersRpcService;
@@ -33,7 +34,7 @@ public class CategoryOverviewServiceImpl implements StatisticService {
     private CategoryOverviewDao categoryOverviewDao;
 
     @Override
-    public void doStatistic(String startDateTime, String endDateTime) {
+    public void doDailyStatistic(String startDateTime, String endDateTime) throws Exception {
         // 1. 根据时间范围查询已支付的订单详情
         List<OrderDetailBean> orderDetailBeanList = ordersRpcService.queryPayedOrderDetailList(startDateTime, endDateTime);
 
@@ -56,92 +57,107 @@ public class CategoryOverviewServiceImpl implements StatisticService {
         }
 
         // 3. 获取一级品类名称
+        Set<Integer> firstCategoryIdSet = orderDetailBeanListMap.keySet();
+        List<CategoryQueryBean> categoryQueryBeanList =
+                productRpcService.queryCategorysByCategoryIdList(new ArrayList<>(firstCategoryIdSet));
+        // 转map key: categoryId  value: CategoryQueryBean
+        Map<Integer, CategoryQueryBean> categoryQueryBeanMap =
+                categoryQueryBeanList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
 
+        // 4. 获取统计数据
+        String statisticsDateTime =
+                DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
+        List<CategoryOverview> categoryOverviewList = new ArrayList<>(); // 统计数据集合
+        for (Integer categoryId : firstCategoryIdSet) { // 遍历 orderDetailBeanListMap
+            // 获取订单详情集合
+            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeanListMap.get(categoryId);
+            // 计算总金额
+            BigDecimal totalPrice = new BigDecimal(0);
+            for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
+                BigDecimal _tmpPrice = new BigDecimal(orderDetailBean.getSaleAmount());
+                totalPrice = totalPrice.add(_tmpPrice);
+            }
 
-        // 4. 执行统计
-        List<CategoryOverview> categoryOverviewList = new ArrayList<>();
-
-        // 遍历
-        Set<Integer> keySet = orderDetailBeanListMap.keySet();
-        for (Integer key : keySet) {
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeanListMap.get(key);
 
             CategoryOverview categoryOverview = new CategoryOverview();
-            categoryOverview.setCategoryFcode(String.valueOf(key)); // 一级品类code
-            categoryOverview.setCategoryFname(); //
-            categoryOverview.setOrderAmount();
-            categoryOverview.setStatisticsDate();
-            categoryOverview.setStatisticStartTime();
-            categoryOverview.setStatisticEndTime();
+            categoryOverview.setCategoryFcode(String.valueOf(categoryId)); // 一级品类code
+            categoryOverview.setCategoryFname(categoryQueryBeanMap.get(categoryId) == null ?
+                    "" : categoryQueryBeanMap.get(categoryId).getName()); // 品类名称
+            categoryOverview.setOrderAmount(totalPrice.multiply(new BigDecimal(100)).longValue());
+            categoryOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+            categoryOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+            categoryOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
             categoryOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+
+            //
+            categoryOverviewList.add(categoryOverview);
         }
+        log.info("按照品类统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+                startDateTime, endDateTime, JSONUtil.toJsonString(categoryOverviewList));
 
+        // 5. 插入统计数据
+        // 5.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+        categoryOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
+                DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
 
-
-//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
-//        Date date = null ;
-//        try {
-//            date = formatter.parse(queryBean.getStartTime()) ;
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        Date createDate = new Date() ;
-//        Date finalDate = date;
-//        categoryPaymentBeans.forEach(categoryPaymentBean -> {
-//            CategoryOverview categoryOverview = new CategoryOverview();
-//            categoryOverview.setCreatedAt(createDate);
-//            categoryOverview.setStatisticsDate(finalDate);
-//            // 计算一级类目支付之和
-//            categoryOverview.setOrderPaymentAmount(categoryPaymentBean.getSaleAmount());
-////            // 查询类别信息
-////            SkuCode skuCode = getMerchantInfo(merchantPaymentBean.getMerchantId()) ;
-//
-//            //存库
-//            mapper.insertSelective(categoryOverview) ;
-//        });
-
-        CategoryOverview categoryOverview = new CategoryOverview();
-        categoryOverview.setCategoryFcode(); // 一级品类code
-        categoryOverview.setCategoryFname(); //
-        categoryOverview.setOrderAmount();
-        categoryOverview.setStatisticsDate();
-        categoryOverview.setStatisticStartTime();
-        categoryOverview.setStatisticEndTime();
-        categoryOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
-
-        categoryOverviewDao.insertCategoryOverview(categoryOverview);
-
+        // 5.2 执行插入
+        for (CategoryOverview categoryOverview : categoryOverviewList) {
+            categoryOverviewDao.insertCategoryOverview(categoryOverview);
+        }
     }
 
-//    @Override
-//    public List<CategoryOverview> findsum(QueryBean queryBean) {
-//        HashMap map = new HashMap() ;
-//        map.put("start", queryBean.getStartTime());
-//        map.put("end", queryBean.getEndTime()) ;
-//        return mapper.selectSum(map);
-//    }
+    @Override
+    public List<CategoryOverviewResVo> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
+        // 1. 查询数据库
+        Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
+        Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
+        log.info("根据时间范围获取daily型的统计数据 日期范围: {} - {}", _startDate, _endDate);
+        List<CategoryOverview> categoryOverviewList =
+                categoryOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
+        log.info("根据时间范围获取daily型的统计数据 数据库返回: {}", JSONUtil.toJsonString(categoryOverviewList));
 
-    private List<CategoryPaymentBean> getCategoryList(QueryBean queryBean) {
-        OperaResult result = orderServiceClient.paymentCategoryList(queryBean.getStartTime(), queryBean.getEndTime());
-        if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            List<CategoryPaymentBean> categoryPaymentBeans = JSONObject.parseArray(jsonString, CategoryPaymentBean.class) ;
-            return categoryPaymentBeans;
+        // 2. 将获取到的数据按照一级品类分组
+        Map<String, List<CategoryOverview>> categoryOverviewListMap = new HashMap<>();
+        for (CategoryOverview categoryOverview : categoryOverviewList) {
+            String fCategoryCode = categoryOverview.getCategoryFcode(); // 一级品类code
+
+            List<CategoryOverview> _categoryOverviewList = categoryOverviewListMap.get(fCategoryCode);
+            if (_categoryOverviewList == null) {
+                _categoryOverviewList = new ArrayList<>();
+                categoryOverviewListMap.put(fCategoryCode, _categoryOverviewList);
+            }
+
+            _categoryOverviewList.add(categoryOverview);
         }
+
+        // 3. 组装统计数据 CategoryOverviewResVo
+        List<CategoryOverviewResVo> categoryOverviewResVoList = new ArrayList<>();
+        Set<String> keySet = categoryOverviewListMap.keySet();
+        for (String key : keySet) {
+            List<CategoryOverview> _categoryOverviewList = categoryOverviewListMap.get(key);
+
+            String categoryName = ""; // 一级品类名称
+            Long totalAmount = 0L; // 单位：分
+            for (CategoryOverview categoryOverview : _categoryOverviewList) {
+                totalAmount = totalAmount + categoryOverview.getOrderAmount();
+                categoryName = categoryOverview.getCategoryFname();
+            }
+
+            CategoryOverviewResVo categoryOverviewResVo = new CategoryOverviewResVo();
+            categoryOverviewResVo.setCategoryId(Integer.valueOf(key));
+            categoryOverviewResVo.setCategoryName(categoryName);
+            categoryOverviewResVo.setTotalAmount(new BigDecimal(totalAmount).divide(new BigDecimal(100)).toString());
+
+            categoryOverviewResVoList.add(categoryOverviewResVo);
+        }
+
+        log.info("根据时间范围获取daily型的统计数据 获取统计数据List<CategoryOverviewResVo>:{}",
+                JSONUtil.toJsonString(categoryOverviewResVoList));
+
+
         return null;
     }
 
-//    private SkuCode getMerchantInfo(int id) {
-//        OperaResult result = productService.findMerchant(id) ;
-//        if (result.getCode() == 200) {
-//            Map<String, Object> data = result.getData() ;
-//            Object object = data.get("result");
-//            String jsonString = JSON.toJSONString(object);
-//            SkuCode skuCode = JSONObject.parseObject(jsonString, SkuCode.class) ;
-//            return skuCode;
-//        }
-//        return null;
-//    }
+    // ========================================= private ===================
+
 }
