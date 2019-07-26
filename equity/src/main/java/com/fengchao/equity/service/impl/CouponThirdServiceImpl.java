@@ -7,6 +7,7 @@ import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.CouponThirdMapper;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
+import com.fengchao.equity.mapper.CouponUseInfoXMapper;
 import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponThirdService;
@@ -29,6 +30,8 @@ public class CouponThirdServiceImpl implements CouponThirdService {
 
     @Autowired
     private CouponUseInfoMapper mapper;
+    @Autowired
+    private CouponUseInfoXMapper xMapper;
     @Autowired
     private CouponThirdMapper couponThirdMapper;
     @Autowired
@@ -88,12 +91,12 @@ public class CouponThirdServiceImpl implements CouponThirdService {
             e.printStackTrace();
         }
 
-        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         couponUseInfo.setUserOpenId(openID);
         couponUseInfo.setConsumedTime(new Date());
         couponUseInfo.setUserCouponCode(couponCode);
         couponUseInfo.setStatus(2);
-        int num = mapper.updateStatusByToushiCode(couponUseInfo);
+        int num = xMapper.updateStatusByToushiCode(couponUseInfo);
         if(num==0){
             result.setCode(700022);
             result.setMsg("核销优惠券失败");
