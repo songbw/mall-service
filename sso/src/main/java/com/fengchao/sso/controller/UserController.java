@@ -39,13 +39,13 @@ public class UserController {
     }
 
     @GetMapping
-    public OperaResult findByOpenId(String openId, OperaResult result) {
+    public OperaResult findByOpenId(String openId, String iAppId, OperaResult result) {
         if(StringUtil.isEmpty(openId)){
             result.setCode(100000);
             result.setMsg("openId不能为空");
             return result;
         }
-        User user = service.selectUserByOpenId(openId);
+        User user = service.selectUserByOpenId(openId, iAppId);
         result.getData().put("user",user);
         return result;
     }

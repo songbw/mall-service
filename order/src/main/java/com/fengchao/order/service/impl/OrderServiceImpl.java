@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
+import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.feign.AoyiClientService;
 import com.fengchao.order.feign.EquityService;
 import com.fengchao.order.feign.ProductService;
@@ -62,6 +63,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+
+    @Autowired
+    private AdminOrderDao adminOrderDao;
 
 
     @Override
@@ -464,6 +468,15 @@ public class OrderServiceImpl implements OrderService {
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
         return mapper.selectDayPaymentCount(map);
+    }
+
+    @Override
+    public String findPaymentStatus(String outerTradeNo) {
+        List<Orders> ordersList = adminOrderDao.selectPaymentStatusByPaymentNo(outerTradeNo) ;
+        if (ordersList != null && ordersList.size() > 0) {
+            return "success" ;
+        }
+        return "fail";
     }
 
     private AoyiProdIndex findProduct(String skuId) {

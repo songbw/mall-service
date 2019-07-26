@@ -1,5 +1,6 @@
 package com.fengchao.sso.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.sso.bean.BackRequest;
 import com.fengchao.sso.bean.GATBackBean;
 import com.fengchao.sso.bean.PaymentBean;
@@ -35,6 +36,7 @@ public class PaymentController {
 
     @PostMapping(value = "/back", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     private String gBack(@RequestBody GATBackBean bean) {
+        logger.info("关爱通back params is : " + JSON.toJSONString(bean));
         return service.gNotify(bean) ;
     }
 }

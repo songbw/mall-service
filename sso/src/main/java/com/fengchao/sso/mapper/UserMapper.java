@@ -12,7 +12,7 @@ public interface UserMapper {
 
     User selectByPrimaryKey(String id);
 
-    User selectByOpenId(String openId);
+    User selectByOpenId(User record);
 
     int updateByPrimaryKeySelective(User record);
 

@@ -264,14 +264,14 @@ public class SellerController {
     @ResponseStatus(code = HttpStatus.OK)
     @PostMapping(GuanAiTong.GET_SIGN_PARAM_PATH)
     public void getSignParam(HttpServletResponse response,
-                                 @RequestBody Map<String, String> map
+                                 @RequestBody Map<String, Object> map
     ) {
 
         JSONObject json = new JSONObject();
 
         try {
             json.put("code",200);
-            json.put("data", guanAiTongService.buildXFormBody(map));
+            json.put("data", guanAiTongService.buildUrlXFormBody(map));
             json.put("msg", "");
             if (null == json) {
                 log.info("GuanAiTong response data is NULL");
