@@ -9,5 +9,7 @@ public interface IGuanAiTongService {
 
     String buildXFormBody(Map map);
 
+    String buildUrlXFormBody(Map map);
+
     JSONObject guanAiTongPost(String path, Map map);
 }

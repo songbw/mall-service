@@ -2,11 +2,12 @@ package com.fengchao.order.bean;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class OrderDetailBean {
+public class OrderDetailBean implements Serializable {
 
     private Integer id;
     private String openId;

@@ -6,6 +6,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
+import com.fengchao.order.dao.AdminOrderDao;
+import com.fengchao.order.db.annotation.DataSource;
+import com.fengchao.order.db.config.DataSourceNames;
 import com.fengchao.order.feign.AoyiClientService;
 import com.fengchao.order.feign.EquityService;
 import com.fengchao.order.feign.ProductService;
@@ -20,6 +23,9 @@ import com.github.ltsopensource.jobclient.JobClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -62,6 +68,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+
+    @Autowired
+    private AdminOrderDao adminOrderDao;
 
 
     @Override
@@ -191,6 +200,8 @@ public class OrderServiceImpl implements OrderService {
         return orderMerchantBeans;
     }
 
+
+    @CachePut(value = "orders", key = "#id")
     @Override
     public Integer cancel(Integer id) {
         Order order = new Order();
@@ -201,6 +212,8 @@ public class OrderServiceImpl implements OrderService {
         return id;
     }
 
+    @Cacheable(value = "orders", key = "#id")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public Order findById(Integer id) {
         Order order = mapper.selectByPrimaryKey(id) ;
@@ -209,6 +222,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    @CacheEvict(value = "orders", key = "#id")
     @Override
     public Integer delete(Integer id) {
         Order order = new Order();
@@ -219,6 +233,8 @@ public class OrderServiceImpl implements OrderService {
         return id;
     }
 
+    @Cacheable(value = "orders")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findList(OrderQueryBean queryBean) {
         PageBean pageBean = new PageBean();
@@ -243,6 +259,7 @@ public class OrderServiceImpl implements OrderService {
         return pageBean;
     }
 
+    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
@@ -250,6 +267,8 @@ public class OrderServiceImpl implements OrderService {
         return bean.getId();
     }
 
+    @Cacheable(value = "orders")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean searchOrderList(OrderBean orderBean) {
         PageBean pageBean = new PageBean();
@@ -295,16 +314,20 @@ public class OrderServiceImpl implements OrderService {
         return pageBean;
     }
 
+    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateRemark(Order bean) {
         return mapper.updateByPrimaryKeySelective(bean);
     }
 
+    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateOrderAddress(Order bean) {
         return mapper.updateByPrimaryKeySelective(bean);
     }
 
+    @Cacheable(value = "orders")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public Order searchDetail(OrderQueryBean queryBean) {
         PageBean pageBean = new PageBean();
@@ -348,7 +371,7 @@ public class OrderServiceImpl implements OrderService {
         return receiver;
     }
 
-
+    @CachePut(value = "logistics", key = "#bean.logisticsId")
     @Override
     public Integer uploadLogistics(Logisticsbean bean) {
         final int i = 1;
@@ -464,6 +487,21 @@ public class OrderServiceImpl implements OrderService {
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
         return mapper.selectDayPaymentCount(map);
+    }
+
+    @Override
+    public String findPaymentStatus(String outerTradeNo) {
+        List<Orders> ordersList = adminOrderDao.selectPaymentStatusByPaymentNo(outerTradeNo) ;
+        if (ordersList != null && ordersList.size() > 0) {
+            return "success" ;
+        }
+        return "fail";
+    }
+
+    @Override
+    public List<Orders> findByPaymentNoAndOpenId(String paymentNo, String openId) {
+        List<Orders> ordersList = adminOrderDao.selectByPaymentNoAndOpenId(paymentNo, openId) ;
+        return ordersList;
     }
 
     private AoyiProdIndex findProduct(String skuId) {
