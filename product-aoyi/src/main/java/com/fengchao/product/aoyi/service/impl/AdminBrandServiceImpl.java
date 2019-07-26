@@ -9,6 +9,7 @@ import com.fengchao.product.aoyi.service.AdminBrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class AdminBrandServiceImpl implements AdminBrandService {
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
 
+    @Cacheable(value = "brand")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findBrandList(Integer offset, Integer limit) {
@@ -61,6 +63,7 @@ public class AdminBrandServiceImpl implements AdminBrandService {
         brandMapper.deleteByPrimaryKey(id);
     }
 
+    @Cacheable(value = "brand")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(Integer offset, Integer limit, String query) {

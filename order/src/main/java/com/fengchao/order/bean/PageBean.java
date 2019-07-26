@@ -3,13 +3,14 @@ package com.fengchao.order.bean;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by song on 2018-03-12.
  */
 @Data
-public class PageBean {
+public class PageBean implements Serializable {
     private Object list = null;
     private int total = 0;
     private int pages = 0;

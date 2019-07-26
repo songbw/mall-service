@@ -1,5 +1,7 @@
 package com.fengchao.product.aoyi.service.impl;
 
+import com.fengchao.product.aoyi.db.annotation.DataSource;
+import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.mapper.SkuCodeMapper;
 import com.fengchao.product.aoyi.model.SkuCode;
@@ -43,7 +45,8 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return bean.getId();
     }
 
-    @Cacheable(value = "skucode", key = "#skucode.id")
+    @Cacheable(value = "skucode", key = "#merchantId")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public SkuCode findByMerchantId(Integer merchantId) throws ProductException {
         if (merchantId == null || merchantId <= 0) {
@@ -53,6 +56,7 @@ public class SkuCodeServiceImpl implements SkuCodeService {
     }
 
     @Cacheable(value = "skucode", key = "#id")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public SkuCode find(Integer id) throws ProductException {
         if (id == null || id <= 0) {
@@ -61,6 +65,8 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return mapper.selectByPrimaryKey(id) ;
     }
 
+    @Cacheable(value = "skucode")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<SkuCode> findAll() throws ProductException {
         return mapper.selectList();

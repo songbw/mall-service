@@ -11,6 +11,7 @@ import com.fengchao.product.aoyi.service.AdminCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Autowired
     private AoyiBaseCategoryXMapper mapper;
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectLimit(Integer offset, Integer limit, Integer categoryClass) {
@@ -48,6 +50,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(Integer offset, Integer limit,String categoryName) {
@@ -67,6 +70,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> selectCategoryList(Integer id, boolean includeSub) {
@@ -83,6 +87,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categories;
     }
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> selectAll() {
@@ -112,6 +117,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
     }
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectSubLevelList(Integer offset, Integer limit, Integer parentId) {
@@ -136,6 +142,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<CategoryQueryBean> selectByCategoryIdList(List<String> categories) {

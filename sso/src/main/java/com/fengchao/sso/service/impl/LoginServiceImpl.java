@@ -118,6 +118,11 @@ public class LoginServiceImpl implements ILoginService {
         if ("10".equals(iAppId)) {
             // 获取关爱通登录信息
             OpenId openId = getGuanaitongOpenId(initCode) ;
+            if (openId ==null || openId.getOpen_id() == null || "".equals(openId.getOpen_id())) {
+                result.setCode(9000001);
+                result.setMsg("关爱通获取openId失败。");
+                return  result;
+            }
             accessToken.setOpenId(openId.getOpen_id());
             User temp = new User();
             temp.setOpenId(openId.getOpen_id());
