@@ -306,259 +306,29 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     }
 
     @Override
-    public OperaResult consumedToushi(ToushiResult bean) throws EquityException {
-        OperaResult result = new OperaResult();
-        if(StringUtils.isEmpty(bean.getSign())){
-            result.setCode(700002);
-            result.setMsg( "sign签名数据为空");
-            return result;
-        }
-        try {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("open_id",bean.getData().getOpen_id());
-            map.put("coupon_code",bean.getData().getCoupon_code());
-            String urlMap = Pkcs8Util.formatUrlMap(map, false, false);
-            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
-            if(!verify){
-                result.setCode(700001);
-                result.setMsg( "验签失败");
-                return result;
+    public int occupyCoupon(CouponUseInfoBean bean) {
+        CouponUseInfoX useInfo = new CouponUseInfoX();
+        CouponUseInfoX couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
+        if(couponUseInfo != null){
+            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            Date date = new Date();
+            if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().after(date)){
+                return 2;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        if(StringUtils.isBlank(bean.getData().getOpen_id())){
-            result.setCode(700011);
-            result.setMsg("open_id用户ID为空");
-            return result;
-        }
-        if(StringUtils.isBlank(bean.getData().getCoupon_code())){
-            result.setCode(700012);
-            result.setMsg("code唯一券码为空");
-            return result;
-        }
-
-        String openID = null;
-        String couponCode = null;
-        try {
-            openID = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES()));
-            if(StringUtils.isEmpty(openID)){
-                result.setCode(700003);
-                result.setMsg( "open_is解密失败");
-                return result;
-            }
-            couponCode = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon_code()), AESUtils.loadKeyAES()));
-            if(StringUtils.isEmpty(couponCode)){
-                result.setCode(700004);
-                result.setMsg( "couponCode解密失败");
-                return result;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        CouponUseInfoX couponUseInfo = new CouponUseInfoX();
-        couponUseInfo.setUserOpenId(openID);
-        couponUseInfo.setConsumedTime(new Date());
-        couponUseInfo.setUserCouponCode(couponCode);
-        couponUseInfo.setStatus(2);
-        int num = mapper.updateStatusByToushiCode(couponUseInfo);
-        if(num==0){
-            result.setCode(700022);
-            result.setMsg("核销优惠券失败");
-            return result;
-        }
-        result.getData().put("result",num);
-        return result;
+        useInfo.setId(bean.getId());
+        useInfo.setUserCouponCode(bean.getUserCouponCode());
+        useInfo.setStatus(2);
+        return mapper.updateStatusByUserCode(useInfo);
     }
 
     @Override
-    public OperaResult obtainCoupon(ToushiResult bean) throws EquityException{
-        OperaResult result = new OperaResult();
-        if(StringUtils.isEmpty(bean.getSign())){
-            result.setCode(700002);
-            result.setMsg( "sign签名数据为空");
-            return result;
-        }
-        try {
-            ToushiParam toushiParam = bean.getData();
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> props = objectMapper.convertValue(toushiParam, Map.class);
-            String urlMap = Pkcs8Util.formatUrlMap(props, false, false);
-            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
-            if(!verify){
-                result.setCode(700001);
-                result.setMsg( "验签失败");
-                return result;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if(StringUtils.isEmpty(bean.getData().getOpen_id())){
-            result.setCode(700011);
-            result.setMsg( "open_id用户ID为空");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getCoupon().getCode())){
-            result.setCode(700012);
-            result.setMsg( "code唯一券码为空");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getMerchantId())){
-            result.setCode(700013);
-            result.setMsg( "merchantId商户ID为空");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getMerchantName())){
-            result.setCode(700014);
-            result.setMsg( "商户名称为空");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getCoupon().getName())){
-            result.setCode(700015);
-            result.setMsg( "券名称为空");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getCoupon().getPrice())){
-            result.setCode(700016);
-            result.setMsg( "券价格为空");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getCoupon().getDescription())){
-            result.setCode(700017);
-            result.setMsg( "券描述为空");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getCoupon().getEffectiveStartDate())){
-            result.setCode(700018);
-            result.setMsg( "有效期开始时间为空");
-            return result;
-        }
-        if(!DataUtils.isValidDate(bean.getData().getCoupon().getEffectiveStartDate())){
-            result.setCode(700024);
-            result.setMsg( "有效期开始时间格式有误");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getCoupon().getEffectiveEndDate())){
-            result.setCode(700019);
-            result.setMsg( "有效期结束时间为空");
-            return result;
-        }
-        if(!DataUtils.isValidDate(bean.getData().getCoupon().getEffectiveEndDate())){
-            result.setCode(700010);
-            result.setMsg( "有效期结束时间格式有误");
-            return result;
-        }
-        if(StringUtils.isEmpty(bean.getData().getCoupon().getUrl())){
-            result.setCode(700021);
-            result.setMsg( "url为空");
-            return result;
-        }
-
-        String openID = null;
-        String couponCode = null;
-        try {
-            openID = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES()));
-            if(StringUtils.isEmpty(openID)){
-                result.setCode(700003);
-                result.setMsg( "open_is解密失败");
-                return result;
-            }
-            couponCode = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getCoupon().getCode()), AESUtils.loadKeyAES()));
-            if(StringUtils.isEmpty(couponCode)){
-                result.setCode(700004);
-                result.setMsg( "couponCode解密失败");
-                return result;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        CouponUseInfoX couponUseInfo = new CouponUseInfoX();
-        couponUseInfo.setType(1);
-        couponUseInfo.setUserOpenId(openID);
-        couponUseInfo.setCollectedTime(new Date());
-        couponUseInfo.setUserCouponCode(couponCode);
-        int num = mapper.insertSelective(couponUseInfo);
-        if(num == 0){
-            result.setCode(700023);
-            result.setMsg("领取优惠券失败");
-            return result;
-        }
-
-        CouponThird couponThird = new CouponThird();
-        couponThird.setMerchantId(bean.getData().getMerchantId());
-        couponThird.setCouponUserId(couponUseInfo.getId());
-        couponThird.setMerchantName(bean.getData().getMerchantName());
-        couponThird.setName(bean.getData().getCoupon().getName());
-        couponThird.setDescription(bean.getData().getCoupon().getDescription());
-        couponThird.setPrice(DataUtils.decimalFormat(bean.getData().getCoupon().getPrice()));
-        couponThird.setUrl(bean.getData().getCoupon().getUrl());
-        couponThird.setEffectiveEndDate(bean.getData().getCoupon().getEffectiveEndDate());
-        couponThird.setEffectiveStartDate(bean.getData().getCoupon().getEffectiveStartDate());
-        int number = couponThirdMapper.insertSelective(couponThird);
-        if(number==0){
-            result.setCode(700023);
-            result.setMsg("领取优惠券失败");
-            return result;
-        }
-        result.getData().put("result",number);
-        return result;
-    }
-
-    @Override
-    public OperaResult userVerified(ToushiResult bean){
-        OperaResult result = new OperaResult();
-        if(StringUtils.isEmpty(bean.getSign())){
-            result.setCode(700002);
-            result.setMsg( "sign签名数据为空");
-            return result;
-        }
-        try {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("open_id",bean.getData().getOpen_id());
-            String urlMap = Pkcs8Util.formatUrlMap(map, false, false);
-            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
-            if(!verify){
-                result.setCode(700001);
-                result.setMsg("验签失败");
-                return result;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if(StringUtils.isEmpty(bean.getData().getOpen_id())){
-            result.setCode(700011);
-            result.setMsg( "open_id用户ID为空");
-            return result;
-        }
-        String openID = null;
-        try {
-            openID = new String(AESUtils.decryptAES(AESUtils.base642Byte(bean.getData().getOpen_id()), AESUtils.loadKeyAES()));
-            if(StringUtils.isEmpty(openID)){
-                result.setCode(700003);
-                result.setMsg( "open_is解密失败");
-                return result;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        OperaResult userResult = ssoService.findUser(openID);
-        if (userResult.getCode() == 200) {
-            Map<String, Object> data = userResult.getData() ;
-            Object object = data.get("user");
-            String jsonString = JSONUtil.toJsonString(object);
-            User user = JSONObject.parseObject(jsonString, User.class) ;
-            if(user == null){
-                result.setCode(700025);
-                result.setMsg( "open_id:"+ bean.getData().getOpen_id() + "用户不存在");
-                return result;
-            }else{
-                return result;
-            }
-        }
-        return result;
+    public int releaseCoupon(CouponUseInfoBean bean) {
+        CouponUseInfoX useInfo = new CouponUseInfoX();
+        useInfo.setId(bean.getId());
+        useInfo.setUserCouponCode(bean.getUserCouponCode());
+        useInfo.setStatus(1);
+        return mapper.updateStatusByUserCode(useInfo);
     }
 
     private CouponBean couponToBean(CouponX coupon) {

@@ -1,6 +1,5 @@
 package com.fengchao.equity.controller;
 
-import com.fengchao.equity.bean.CouponBean;
 import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.service.CouponUseInfoService;

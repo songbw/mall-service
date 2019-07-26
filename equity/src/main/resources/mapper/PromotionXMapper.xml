@@ -185,10 +185,10 @@
   </update>
   <update id="promotionEffective" parameterType="java.lang.Integer" >
     update promotion
-    set status = 2 where id = #{id,jdbcType=INTEGER}
+    set status = 4 where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="promotionEnd" parameterType="java.lang.Integer" >
     update promotion
-    set status = 3 where id = #{id,jdbcType=INTEGER}
+    set status = 5 where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

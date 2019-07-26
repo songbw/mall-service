@@ -55,8 +55,16 @@ public class AdminCouponController {
 
     @DeleteMapping("delete")
     public OperaResult deleteCoupon(Integer id, OperaResult result){
-        int pageBean = couponService.deleteCoupon(id);
-        result.getData().put("result",pageBean);
+        int num = couponService.deleteCoupon(id);
+        if(num == 0){
+            result.setCode(700101);
+            result.setMsg("删除失败");
+        }else if(num == 1){
+            result.getData().put("result", num);
+        }else if(num == 2){
+            result.setCode(700102);
+            result.setMsg("优惠券已发布，不能删除");
+        }
         return result;
     }
 

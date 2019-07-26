@@ -1,7 +1,6 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.*;
-import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
@@ -125,7 +124,24 @@ public class CouponController {
         return result;
     }
 
+    @PostMapping("occupy")
+    public OperaResult occupyCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        int num = useInfoService.occupyCoupon(bean);
+        if(num == 2){
+            result.setCode(700001);
+            result.setMsg("优惠券不在有效期，不能使用");
+        }else {
+            result.getData().put("result",num);
+        }
+        return result;
+    }
 
+    @PostMapping("release")
+    public OperaResult releaseCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        int num = useInfoService.releaseCoupon(bean);
+        result.getData().put("result",num);
+        return result;
+    }
 
     /**
      * 根据id集合查询
