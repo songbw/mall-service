@@ -2,11 +2,11 @@ package com.fengchao.statistics.feign.hystric;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.feign.ProductService;
+import com.fengchao.statistics.feign.ProductServiceClient;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductServiceH implements ProductService {
+public class ProductServiceH implements ProductServiceClient {
     @Override
     public OperaResult findMerchant(int id) {
         OperaResult result = new OperaResult();

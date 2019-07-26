@@ -611,10 +611,10 @@ public class OrderServiceImpl implements OrderService {
         // orderDetailBean.setCouponId();
         // orderDetailBean.setCouponCode();
         // orderDetailBean.setCouponDiscount();
-        // orderDetailBean.setPromotionId();
+        orderDetailBean.setPromotionId(orderDetail.getPromotionId());
         // orderDetailBean.setPromotionDiscount();
-        // orderDetailBean.setSaleAmount();
-        orderDetailBean.setCategory(orderDetail.getCategory());
+        orderDetailBean.setSaleAmount(orderDetail.getSalePrice().floatValue()); // 实际支付价格
+        orderDetailBean.setCategory(orderDetail.getCategory()); // 品类
 
         return orderDetailBean;
     }

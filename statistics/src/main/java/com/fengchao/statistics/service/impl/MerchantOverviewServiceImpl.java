@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.statistics.bean.*;
 import com.fengchao.statistics.feign.OrderServiceClient;
-import com.fengchao.statistics.feign.ProductService;
+import com.fengchao.statistics.feign.ProductServiceClient;
 import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.rpc.OrdersRpcService;
@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +30,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
     private OrderServiceClient orderServiceClient;
 
     @Autowired
-    private ProductService productService;
+    private ProductServiceClient productService;
 
     @Autowired
     private OrdersRpcService ordersRpcService;

@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "product-aoyi", fallback = ProductServiceH.class)
-public interface ProductService {
+public interface ProductServiceClient {
 
     @RequestMapping(value = "/merchantCode", method = RequestMethod.GET)
     OperaResult findMerchant(@RequestParam("id") int id);
+
+
 
 }

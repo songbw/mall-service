@@ -6,14 +6,18 @@ import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 import com.fengchao.product.aoyi.service.AdminCategoryService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/adminCategory", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class AdminCategoryController {
 
     @Autowired
@@ -76,5 +80,30 @@ public class AdminCategoryController {
         List<CategoryQueryBean> categoryBeans = service.selectByCategoryIdList(categories);
         result.getData().put("result", categoryBeans) ;
         return result ;
+    }
+
+    /**
+     * 根据id集合查询品类列表
+     *
+     * @param categoryIdList
+     * @return
+     */
+    @GetMapping("/category/listByIds")
+    public OperaResult queryCategorysByCategoryIdList(@RequestParam("categoryIdList") List<Integer> categoryIdList,
+                                                      OperaResult result) {
+        log.info("根据id集合查询品类列表 入参:{}", JSONUtil.toJsonString(categoryIdList));
+
+        List<CategoryQueryBean> categoryQueryBeanList = new ArrayList<>();
+        try {
+            categoryQueryBeanList = service.queryCategorysByCategoryIdList(categoryIdList);
+
+            result.setData(categoryQueryBeanList);
+        } catch (Exception e) {
+
+        }
+
+        log.info("根据id集合查询品类列表 返回:{}", JSONUtil.toJsonString(categoryQueryBeanList));
+
+
     }
 }

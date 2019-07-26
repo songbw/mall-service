@@ -3,7 +3,6 @@ package com.fengchao.statistics.feign.hystric;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.EquityService;
-import com.fengchao.statistics.feign.ProductService;
 import org.springframework.stereotype.Component;
 
 @Component

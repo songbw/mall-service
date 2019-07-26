@@ -26,4 +26,12 @@ public interface AdminCategoryService {
     PageBean selectSubLevelList(Integer offset, Integer limit, Integer parentId);
 
     List<CategoryQueryBean> selectByCategoryIdList(List<String> categories);
+
+    /**
+     * 根据id集合查询品类列表
+     *
+     * @param categoryIdList
+     * @return
+     */
+    List<CategoryQueryBean> queryCategorysByCategoryIdList(List<Integer> categoryIdList) throws Exception;
 }
