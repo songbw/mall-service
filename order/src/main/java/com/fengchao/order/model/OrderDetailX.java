@@ -1,9 +1,10 @@
 package com.fengchao.order.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class OrderDetailX {
+public class OrderDetailX implements Serializable {
     private Integer id;
 
     private Integer orderId;

@@ -70,6 +70,21 @@ public class OrderServiceH implements OrderService {
     }
 
     @Override
+    public OperaResult findByPaymentNoAndOpenId(String paymentNo, String openId) {
+        OperaResult result = new OperaResult();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = "";
+        try {
+            msg = objectMapper.writeValueAsString("openId: " + openId + "paymentNo: " + paymentNo);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        result.setCode(404);
+        result.setMsg("获取订单服务失败" + msg);
+        return result;
+    }
+
+    @Override
     public OperaResult paymentByOutTradeNoAndPaymentNo(Order order) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();

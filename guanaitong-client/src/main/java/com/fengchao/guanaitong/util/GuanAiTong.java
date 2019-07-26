@@ -29,5 +29,12 @@ public class GuanAiTong {
     public static final String JOIN_DATE_KEY = "join_date";
     public static final String OPEN_ID_KEY = "open_id";
     public static final String ENTERPRISE_OPEN_ID_KEY = "enterprise_open_id";
+    public static final String OUTER_TRADE_NO_KEY ="outer_trade_no";
+    public static final String OUTER_REFUND_NO_KEY ="outer_refund_no";
+    public static final String REASON_KEY ="reason";
+    public static final String REFUND_AMOUNT_KEY = "refund_amount";
+    public static final String NOTIFY_URL_KEY = "notify_url";
+    public static final String COST_AMOUNT_KEY = "cost_amount";
+    public static final String DELIVERY_FEE_KEY = "delivery_fee";
 
 }

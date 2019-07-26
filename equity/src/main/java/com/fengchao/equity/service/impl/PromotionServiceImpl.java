@@ -263,7 +263,7 @@ public class PromotionServiceImpl implements PromotionService {
     private PromotionBean convertToPromotionBean(Promotion promotion) {
         PromotionBean promotionBean = new PromotionBean();
 
-        // promotionBean.setId(promotion.getId());
+        promotionBean.setId(promotion.getId());
         promotionBean.setName(promotion.getName());
         // promotionBean.setTag(promotion.getTag());
         promotionBean.setPromotionType(promotion.getPromotionType());

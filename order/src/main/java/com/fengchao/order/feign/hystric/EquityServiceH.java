@@ -32,9 +32,8 @@ public class EquityServiceH implements EquityService {
     }
 
     @Override
-    public OperaResult findCouponListByIdList(List<Integer> idList) {
+    public OperaResult findCouponUseInfoListByIdList(List<Integer> idList) {
         return HystrixDefaultFallback.defaultFallback();
     }
-
 
 }

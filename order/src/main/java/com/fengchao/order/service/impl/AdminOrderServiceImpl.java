@@ -7,6 +7,7 @@ import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.rpc.ProductRpcService;
 import com.fengchao.order.rpc.extmodel.CouponBean;
+import com.fengchao.order.rpc.extmodel.CouponUseInfoBean;
 import com.fengchao.order.rpc.extmodel.ProductInfoBean;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import com.fengchao.order.model.OrderDetail;
@@ -71,11 +72,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 获取主订单id列表
         List<Integer> ordersIdList = new ArrayList<>();
         // x. 获取组装结果的其他相关数据 - 获取导出需要的coupon信息列表 - 获取coupon的id集合
-        Set<Integer> couponIdSet = new HashSet<>();
+        Set<Integer> couponUseInfoIdSet = new HashSet<>();
         for (Orders orders : ordersList) {
             ordersIdList.add(orders.getId());
             if (orders.getCouponId() != null) {
-                couponIdSet.add(orders.getCouponId());
+                couponUseInfoIdSet.add(orders.getCouponId());
             }
         }
 
@@ -126,11 +127,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 promotionBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
 
         // 4.2 获取导出需要的coupon信息列表
-        List<CouponBean> couponBeanList = equityRpcService.queryCouponByIdList(new ArrayList<>(couponIdSet));
-        log.info("导出订单 根据id获取coupon List<CouponBean>:{}", JSONUtil.toJsonString(couponBeanList));
-        // 转map， key couponId, value: CouponBean
-        Map<Integer, CouponBean> couponBeanMap =
-                couponBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
+        List<CouponUseInfoBean> couponUseInfoBeanList = equityRpcService.queryCouponUseInfoByIdList(new ArrayList<>(couponUseInfoIdSet));
+        log.info("导出订单 根据id获取coupon List<CouponBean>:{}", JSONUtil.toJsonString(couponUseInfoBeanList));
+        // 转map， key couponUseInfoId, value: CouponUseInfoBean
+        Map<Integer, CouponUseInfoBean> couponUseInfoBeanMap =
+                couponUseInfoBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
 
         // 4.3 获取导出需要的product信息列表
         List<ProductInfoBean> productInfoBeanList =
@@ -168,8 +169,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
                     exportOrdersVo.setCouponId(ordersBo.getCouponId() == null ? null : ordersBo.getCouponId().longValue()); // 券码id
                     exportOrdersVo.setCouponSupplier(
-                            couponBeanMap.get(ordersBo.getCouponId()) == null ?
-                                    "" : couponBeanMap.get(ordersBo.getCouponId()).getSupplierMerchantName()); // 券来源（券商户）
+                            couponUseInfoBeanMap.get(ordersBo.getCouponId()) == null ?
+                                    "" : couponUseInfoBeanMap.get(ordersBo.getCouponId()).getSupplierMerchantName()); // 券来源（券商户）
                     Integer purchasePrice = null; // 进货价格
                     if (productInfoBean != null) {
                         String _sprice = productInfoBean.getSprice();

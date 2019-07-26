@@ -1,4 +1,4 @@
-package com.fengchao.equity.bean;
+package com.fengchao.order.rpc.extmodel;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class CouponUseInfoBean  extends QueryBean{
+public class CouponUseInfoBean {
 
     private String userOpenId;
     private String code;
@@ -19,7 +19,6 @@ public class CouponUseInfoBean  extends QueryBean{
     private String consumedStartDate;
     private String consumedEndDate;
     private Integer couponCollectNum;
-    private List<String> userCouponCodes;
     private Integer couponId;
     private String categoryId;
     private String categoryName;

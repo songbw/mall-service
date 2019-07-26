@@ -1,8 +1,11 @@
 package com.fengchao.equity.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fengchao.equity.bean.CouponBean;
+
 import java.util.Date;
 
-public class CouponUseInfo {
+public class CouponUseInfoX {
     private Integer id;
 
     private Integer couponId;
@@ -24,6 +27,9 @@ public class CouponUseInfo {
     private Integer type;
 
     private Integer deleteFlag;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private CouponBean couponInfo;
 
     public Integer getId() {
         return id;
@@ -97,12 +103,12 @@ public class CouponUseInfo {
         this.status = status;
     }
 
-    public Integer getType() {
-        return type;
+    public CouponBean getCouponInfo() {
+        return couponInfo;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setCouponInfo(CouponBean couponInfo) {
+        this.couponInfo = couponInfo;
     }
 
     public Integer getDeleteFlag() {
@@ -111,5 +117,13 @@ public class CouponUseInfo {
 
     public void setDeleteFlag(Integer deleteFlag) {
         this.deleteFlag = deleteFlag;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

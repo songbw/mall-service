@@ -1,7 +1,9 @@
 package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.*;
-import com.fengchao.equity.model.CouponUseInfo;
+import com.fengchao.equity.exception.EquityException;
+import com.fengchao.equity.model.CouponUseInfoX;
+import java.util.List;
 
 public interface CouponUseInfoService {
 
@@ -23,9 +25,25 @@ public interface CouponUseInfoService {
 
     int deleteUserCoupon(CouponUseInfoBean bean);
 
-    CouponUseInfo findById(CouponUseInfoBean bean);
-
     int releaseCoupon(CouponUseInfoBean bean);
 
     int occupyCoupon(CouponUseInfoBean bean);
+
+    CouponUseInfoX findById(CouponUseInfoBean bean);
+
+    OperaResult consumedToushi(ToushiResult bean) throws EquityException;
+
+    OperaResult obtainCoupon(ToushiResult bean) throws EquityException;
+
+    OperaResult userVerified(ToushiResult bean);
+
+    /**
+     * 根据id查询coupon_use_info集合
+     *
+     * @param idList
+     * @return
+     * @throws Exception
+     */
+    List<CouponUseInfoBean> queryByIdList(List<Integer> idList) throws Exception;
+
 }
