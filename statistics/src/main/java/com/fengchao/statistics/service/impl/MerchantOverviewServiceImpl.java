@@ -8,6 +8,7 @@ import com.fengchao.statistics.feign.ProductServiceClient;
 import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.rpc.OrdersRpcService;
+import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import com.fengchao.statistics.service.MerchantOverviewService;
 import com.fengchao.statistics.utils.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -36,18 +37,16 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
     private OrdersRpcService ordersRpcService;
 
     @Override
-    public void add(QueryBean queryBean) {
-        // 1. 调用order rpc服务，获取统计数据
-        List<MerchantPaymentBean> merchantPaymentBeans = ordersRpcService
-                .statisticOrdersAmountByMerchant(queryBean.getStartTime(), queryBean.getEndTime());
+    public void doDailyStatistic(String startDateTime, String endDateTime) {
+        // 1. 调用order rpc服务，根据时间范围查询已支付的订单详情
+        List<OrderDetailBean> orderDetailBeanList = ordersRpcService.queryPayedOrderDetailList(startDateTime, endDateTime);
 
-        // 2. 处理结果
+        // 2. 根据商户id维度将订单详情分类
         // 获取统计时间
-        Date statisticDate = DateUtil.parseDateTime(queryBean.getStartTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date statisticDate = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
         merchantPaymentBeans.forEach(merchantPaymentBean -> {
             MerchantOverview merchantOverview = new MerchantOverview();
-            merchantOverview.setCreatedAt(new Date());
             merchantOverview.setStatisticsDate(statisticDate);
             merchantOverview.setOrderPaymentAmount(merchantPaymentBean.getSaleAmount());
             merchantOverview.setMerchantId(merchantPaymentBean.getMerchantId());

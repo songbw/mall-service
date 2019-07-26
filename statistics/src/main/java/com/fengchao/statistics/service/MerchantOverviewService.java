@@ -8,11 +8,12 @@ import java.util.List;
 public interface MerchantOverviewService {
 
     /**
-     * 按商户统计订单支付总额
+     * 按商户维度统计订单支付总额
      *
-     * @param queryBean
+     * @param startDateTime
+     * @param endDateTime
      */
-    void add(QueryBean queryBean) ;
+    void doDailyStatistic(String startDateTime, String endDateTime);
 
-    List<MerchantOverview> findsum(QueryBean queryBean) ;
+    List<MerchantOverview> findsum(QueryBean queryBean);
 }

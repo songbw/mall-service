@@ -11,11 +11,19 @@ public class MerchantOverview {
 
     private String merchantName;
 
-    private float orderPaymentAmount;
-
     private Date statisticsDate;
 
-    private Date createdAt;
+    private Date statisticStartTime;
+
+    private Date statisticEndTime;
+
+    private Long orderAmount;
+
+    private Short istatus;
+
+    private Date createTime;
+
+    private Date updateTime;
 
     public Long getId() {
         return id;
@@ -49,14 +57,6 @@ public class MerchantOverview {
         this.merchantName = merchantName == null ? null : merchantName.trim();
     }
 
-    public float getOrderPaymentAmount() {
-        return orderPaymentAmount;
-    }
-
-    public void setOrderPaymentAmount(float orderPaymentAmount) {
-        this.orderPaymentAmount = orderPaymentAmount;
-    }
-
     public Date getStatisticsDate() {
         return statisticsDate;
     }
@@ -65,11 +65,51 @@ public class MerchantOverview {
         this.statisticsDate = statisticsDate;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getStatisticStartTime() {
+        return statisticStartTime;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setStatisticStartTime(Date statisticStartTime) {
+        this.statisticStartTime = statisticStartTime;
+    }
+
+    public Date getStatisticEndTime() {
+        return statisticEndTime;
+    }
+
+    public void setStatisticEndTime(Date statisticEndTime) {
+        this.statisticEndTime = statisticEndTime;
+    }
+
+    public Long getOrderAmount() {
+        return orderAmount;
+    }
+
+    public void setOrderAmount(Long orderAmount) {
+        this.orderAmount = orderAmount;
+    }
+
+    public Short getIstatus() {
+        return istatus;
+    }
+
+    public void setIstatus(Short istatus) {
+        this.istatus = istatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }
