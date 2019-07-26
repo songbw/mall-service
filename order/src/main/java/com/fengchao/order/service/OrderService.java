@@ -3,6 +3,7 @@ package com.fengchao.order.service;
 import com.alibaba.fastjson.JSONArray;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
+import com.fengchao.order.model.Orders;
 
 import java.util.List;
 
@@ -72,4 +73,8 @@ public interface OrderService {
     List<OrderDetailBean> queryPayedOrderDetail(String dayStart, String dayEnd) throws Exception;
 
     Integer findDayPaymentCount(String dayStart, String dayEnd) ;
+
+    String findPaymentStatus(String outerTradeNo);
+
+    List<Orders> findByPaymentNoAndOpenId(String paymentNo, String openId) ;
 }

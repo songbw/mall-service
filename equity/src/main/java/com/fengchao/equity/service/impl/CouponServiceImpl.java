@@ -75,19 +75,16 @@ public class CouponServiceImpl implements CouponService {
         CouponX coupon = beanToCoupon(bean);
         coupon.setId(bean.getId());
         if(bean.getStatus() != null && bean.getStatus() == 2){
+            coupon.setStatus(3);
             CouponX couponById = mapper.selectByPrimaryKey(bean.getId());
             if(couponById == null){
                 return 0;
             }
-            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getEffectiveStartDate());
-            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getReleaseStartDate());
+            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
         }
 
         int num = mapper.updateByPrimaryKeySelective(coupon);
-
-        if(bean.getStatus() != null && bean.getStatus() == 4 && num == 1){
-            useInfoMapper.updateStatusByCouponId(bean.getId());
-        }
 
         return num;
     }
@@ -214,9 +211,6 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public int end(int couponId) {
         int num = mapper.couponEnd(couponId);
-        if(num == 1){
-            useInfoMapper.updateStatusByCouponId(couponId);
-        }
         return num;
     }
 

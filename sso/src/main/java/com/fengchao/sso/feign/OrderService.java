@@ -24,6 +24,9 @@ public interface OrderService {
     @RequestMapping(value = "/order/outTradeNo/payment", method = RequestMethod.GET)
     OperaResult findByOutTradeNoAndPaymentNo(@RequestParam("outTradeNo") String outTradeNo, @RequestParam("paymentNo") String paymentNo);
 
+    @RequestMapping(value = "/order/payment/openid/no", method = RequestMethod.GET)
+    OperaResult findByPaymentNoAndOpenId(@RequestParam("paymentNo") String paymentNo, @RequestParam("openId") String openId);
+
     @RequestMapping(value = "/order/outTradeNo/payment", method = RequestMethod.PUT)
     OperaResult paymentByOutTradeNoAndPaymentNo(@RequestBody Order order);
 

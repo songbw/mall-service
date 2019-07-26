@@ -48,6 +48,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryService categoryService;
 
+    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
@@ -168,7 +169,7 @@ public class ProductServiceImpl implements ProductService {
         return aoyiProdIndexX;
     }
 
-    @Cacheable(value = "aoyiProdIndex", key = "#aoyiProdIndex.id")
+    @Cacheable(value = "aoyiProdIndex")
     @Override
     public List<AoyiProdIndexX> findAll() throws ProductException {
         HashMap map = new HashMap();
@@ -234,6 +235,8 @@ public class ProductServiceImpl implements ProductService {
         return infoBean;
     }
 
+    @Cacheable(value = "productInfoBean")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception {
         // 1. 查询商品信息

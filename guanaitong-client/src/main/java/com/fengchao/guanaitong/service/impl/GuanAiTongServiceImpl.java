@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -223,7 +226,15 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 */
 
     @Override
-    public String buildXFormBody(Map map) {
+    public String buildUrlXFormBody(Map map) {
+
+        for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
+            Map.Entry<String, Object> item = it.next();
+            if (null == item.getValue()) {
+                it.remove();
+                log.info("find null value in map: " + item.getKey());
+            }
+        }
 
         Map<String, Object> theMap = new HashMap<>();
         Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
@@ -233,6 +244,50 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         String sign = getFormSign(map);
         String token = getAccessToken();
+        theMap.put(TOKEN_KEY, token);
+        theMap.put(SIGN_KEY, sign);
+        Set<String> keySet = map.keySet();
+        Iterator<String> iter = keySet.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                String urlValue = URLEncoder.encode(map.get(key).toString(), StandardCharsets.UTF_8.toString());
+                theMap.put(key, urlValue);
+            } catch (UnsupportedEncodingException ex) {
+                log.info("urlEncode error: " + ex.getMessage());
+            }
+        }
+
+        String xForm = map2string(theMap);
+        log.info("buildXForm: " + xForm);
+        return xForm;
+
+    }
+
+
+    @Override
+    public String buildXFormBody(Map map) {
+
+        for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
+            Map.Entry<String, Object> item = it.next();
+            if (null == item.getValue()) {
+                it.remove();
+                log.info("find null value in map: " + item.getKey());
+            }
+        }
+
+        Map<String, Object> theMap = new HashMap<>();
+        Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        Long timeStampS = timeStampMs/1000;
+        String timeStamp = timeStampS.toString();
+        map.put(TIME_STAMP_KEY,timeStamp);
+
+        String sign = getFormSign(map);
+        String token = getAccessToken();
+        if (null == token) {
+            log.info("failed to get access_token!! ");
+            return null;
+        }
         theMap.put(TOKEN_KEY, token);
         theMap.put(SIGN_KEY, sign);
         Set<String> keySet = map.keySet();
@@ -253,7 +308,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         String cacheToken = RedisUtil.getValue(TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            //System.out.println("get cached token: {" + cacheToken + "} ttl="+RedisUtil.ttl(TOKEN_KEY)+"s");
+            log.info("get cached token: {" + cacheToken + "} ttl="+RedisUtil.ttl(TOKEN_KEY)+"s");
             return cacheToken;
         }
 
@@ -294,7 +349,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             if (RESPONSE_DATA_OK != resultCode) {
                 String msg = json.getString("message");
                 if (null != msg) {
-                    log.info("error: " + msg);
+                    log.warn("error: " + msg);
                 }
                 //System.out.println("=== get message:"+msg);
                 return null;
@@ -303,16 +358,20 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             JSONObject data = json.getJSONObject("data");
             if (null != data) {
                 String token = data.getString("access_token");
+                if (null == token) {
+                    log.warn("failed to get access_token from guanaitong");
+                    return null;
+                }
                 Integer expires = data.getInteger("expires_in");
                 System.out.println("access_token:"+token);
                 System.out.println("expires_in:"+expires.toString());
                 RedisUtil.putRedis(TOKEN_KEY,token,expires-5);
                 return token;
             } else {
-                log.info("====get data is null");
+                log.warn("data in response from guanaitong is null");
             }
         } else {
-            log.info("===convert String to json failed");
+            log.warn("data in response from guanaitong is null");
         }
 
         return null;
@@ -329,7 +388,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             Map.Entry<String, Object> item = it.next();
             if (null == item.getValue()) {
                 it.remove();
-                log.info("find null value in map");
+                log.info("find null value in map" + item.getKey());
             }
         }
 

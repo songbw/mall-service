@@ -22,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -47,6 +48,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
 
+    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
@@ -79,6 +81,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         return pageBean;
     }
 
+    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(SerachBean bean) {
@@ -217,6 +220,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public int update(AoyiProdIndexX bean) throws ProductException {
         if (bean.getId() > 0) {
+            bean.setUpdatedAt(new Date());
             prodMapper.updateByPrimaryKeySelective(bean);
         } else {
             throw new ProductException(200002, "id为null或等于0");
@@ -234,6 +238,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         }
     }
 
+    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdAll(QueryProdBean bean) {

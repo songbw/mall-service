@@ -52,8 +52,12 @@ public class PromotionServiceImpl implements PromotionService {
         bean.setCreatedDate(date);
         int num = promotionXMapper.insertSelective(bean);
         if(num == 1){
-            JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), bean.getStartDate());
-            JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), bean.getEndDate());
+            if(bean.getStartDate() != null){
+                JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), bean.getStartDate());
+            }
+            if(bean.getEndDate() != null){
+                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), bean.getEndDate());
+            }
         }
         return num;
     }

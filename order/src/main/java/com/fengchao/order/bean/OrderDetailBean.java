@@ -3,12 +3,13 @@ package com.fengchao.order.bean;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
 @Setter
-public class OrderDetailBean {
+public class OrderDetailBean implements Serializable {
 
     private Integer id;
     private String openId;

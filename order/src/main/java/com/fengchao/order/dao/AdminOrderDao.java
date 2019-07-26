@@ -128,4 +128,32 @@ public class AdminOrderDao {
         return orderDetailList;
     }
 
+    /**
+     * 根据支付单号查询已支付列表
+     * @param paymentNo
+     * @return
+     */
+    public List<Orders> selectPaymentStatusByPaymentNo(String paymentNo) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andPaymentNoEqualTo(paymentNo) ;
+        criteria.andStatusEqualTo(1) ;
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample) ;
+        return ordersList;
+    }
+
+    /**
+     * 根据支付单号和openId查询订单列表
+     * @param paymentNo
+     * @return
+     */
+    public List<Orders> selectByPaymentNoAndOpenId(String paymentNo, String openId) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andPaymentNoEqualTo(paymentNo) ;
+        criteria.andOpenIdEqualTo(openId) ;
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample) ;
+        return ordersList;
+    }
+
 }

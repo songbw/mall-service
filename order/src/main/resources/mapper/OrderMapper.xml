@@ -201,7 +201,6 @@
     FROM orders o LEFT JOIN order_detail od ON o.id = od.order_id
     WHERE o.pay_status = 5 and <![CDATA[o.payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and o.payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]> and od.category is not NULL;
   </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from orders
     where id = #{id,jdbcType=INTEGER}

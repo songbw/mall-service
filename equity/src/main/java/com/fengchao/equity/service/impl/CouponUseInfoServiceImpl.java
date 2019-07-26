@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
-   @Autowired
-   private CouponUseInfoXMapper mapper;
-   @Autowired
-   private CouponXMapper couponXMapper;
-   @Autowired
-   private CouponThirdMapper couponThirdMapper;
-   @Autowired
-   private SSOService ssoService;
+    @Autowired
+    private CouponUseInfoXMapper mapper;
+    @Autowired
+    private CouponXMapper couponXMapper;
+    @Autowired
+    private CouponThirdMapper couponThirdMapper;
+    @Autowired
+    private SSOService ssoService;
 
     @Autowired
     private CouponUseInfoDao couponUseInfoDao;

@@ -11,6 +11,7 @@ import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,18 +27,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryDao categoryDao;
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findOneLevelList() {
         return mapper.selectOneLevelList();
     }
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findTwoLevelListByOneLevelId(int id) {
         return mapper.selectListByParentId(id) ;
     }
 
+    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findListById(int id) {
@@ -48,6 +52,8 @@ public class CategoryServiceImpl implements CategoryService {
         return categories;
     }
 
+    @Cacheable(value = "category")
+    @DataSource(DataSourceNames.TWO)
     @Override
     public List<CategoryBean> queryCategoryListByCategoryIdList(List<Integer> categoryIdList) {
         log.info("根据categoryid集合查询分类信息 数据库入参:{}", JSONUtil.toJsonString(categoryIdList));
