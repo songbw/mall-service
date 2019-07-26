@@ -25,10 +25,4 @@ public interface CouponUseInfoService {
     int deleteUserCoupon(CouponUseInfoBean bean);
 
     CouponUseInfo findById(CouponUseInfoBean bean);
-
-    OperaResult consumedToushi(ToushiResult bean) throws EquityException;
-
-    OperaResult obtainCoupon(ToushiResult bean) throws EquityException;
-
-    OperaResult userVerified(ToushiResult bean);
 }

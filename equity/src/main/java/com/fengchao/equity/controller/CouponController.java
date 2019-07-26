@@ -125,21 +125,7 @@ public class CouponController {
         return result;
     }
 
-    @PostMapping("consumed")//头食对接接口
-    public OperaResult consumed(@RequestBody ToushiResult bean) throws EquityException {
-//        result.getData().put("result",num);
-        return useInfoService.consumedToushi(bean);
-    }
 
-    @PostMapping("obtain")//头食对接接口
-    public OperaResult obtainCoupon(@RequestBody ToushiResult bean) throws EquityException{
-        return useInfoService.obtainCoupon(bean);
-    }
-
-    @PostMapping("user_verified")//头食对接接口
-    public OperaResult userVerified(@RequestBody ToushiResult bean) throws EquityException{
-        return useInfoService.userVerified(bean);
-    }
 
 
     @GetMapping("findByIdList")
