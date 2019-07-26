@@ -36,6 +36,9 @@ public class CommonController {
         log.info("===getToken enter");
 
         String token = guanAiTongService.getAccessToken();
+        if (null == token) {
+            return new ResultObject<>(400,"failed",null);
+        }
         TokenData tokenData = new TokenData();
         tokenData.access_token = token;
 

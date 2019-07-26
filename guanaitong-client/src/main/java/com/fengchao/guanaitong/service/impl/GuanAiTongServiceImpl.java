@@ -284,6 +284,10 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         String sign = getFormSign(map);
         String token = getAccessToken();
+        if (null == token) {
+            log.info("failed to get access_token!! ");
+            return null;
+        }
         theMap.put(TOKEN_KEY, token);
         theMap.put(SIGN_KEY, sign);
         Set<String> keySet = map.keySet();
@@ -304,7 +308,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         String cacheToken = RedisUtil.getValue(TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            //System.out.println("get cached token: {" + cacheToken + "} ttl="+RedisUtil.ttl(TOKEN_KEY)+"s");
+            log.info("get cached token: {" + cacheToken + "} ttl="+RedisUtil.ttl(TOKEN_KEY)+"s");
             return cacheToken;
         }
 
@@ -345,7 +349,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             if (RESPONSE_DATA_OK != resultCode) {
                 String msg = json.getString("message");
                 if (null != msg) {
-                    log.info("error: " + msg);
+                    log.warn("error: " + msg);
                 }
                 //System.out.println("=== get message:"+msg);
                 return null;
@@ -354,16 +358,20 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             JSONObject data = json.getJSONObject("data");
             if (null != data) {
                 String token = data.getString("access_token");
+                if (null == token) {
+                    log.warn("failed to get access_token from guanaitong");
+                    return null;
+                }
                 Integer expires = data.getInteger("expires_in");
                 System.out.println("access_token:"+token);
                 System.out.println("expires_in:"+expires.toString());
                 RedisUtil.putRedis(TOKEN_KEY,token,expires-5);
                 return token;
             } else {
-                log.info("====get data is null");
+                log.warn("data in response from guanaitong is null");
             }
         } else {
-            log.info("===convert String to json failed");
+            log.warn("data in response from guanaitong is null");
         }
 
         return null;

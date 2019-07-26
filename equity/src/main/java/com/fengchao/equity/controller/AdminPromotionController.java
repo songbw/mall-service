@@ -48,7 +48,17 @@ public class AdminPromotionController {
 
     @DeleteMapping("delete")
     public OperaResult deletePromotion(Integer id, OperaResult result){
-        result.getData().put("result", service.deletePromotion(id));
+        int num = service.deletePromotion(id);
+        if(num == 0){
+            result.setCode(700101);
+            result.setMsg("删除失败");
+        }else if(num == 1){
+            result.getData().put("result", num);
+        }else if(num == 2){
+            result.setCode(700102);
+            result.setMsg("活动已发布，不能删除");
+        }
+
         return result;
     }
 

@@ -7,6 +7,7 @@ import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.CouponThirdMapper;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
+import com.fengchao.equity.mapper.CouponUseInfoXMapper;
 import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponThirdService;
@@ -29,6 +30,8 @@ public class CouponThirdServiceImpl implements CouponThirdService {
 
     @Autowired
     private CouponUseInfoMapper mapper;
+    @Autowired
+    private CouponUseInfoXMapper xMapper;
     @Autowired
     private CouponThirdMapper couponThirdMapper;
     @Autowired
@@ -88,12 +91,12 @@ public class CouponThirdServiceImpl implements CouponThirdService {
             e.printStackTrace();
         }
 
-        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         couponUseInfo.setUserOpenId(openID);
         couponUseInfo.setConsumedTime(new Date());
         couponUseInfo.setUserCouponCode(couponCode);
         couponUseInfo.setStatus(2);
-        int num = mapper.updateStatusByToushiCode(couponUseInfo);
+        int num = xMapper.updateStatusByToushiCode(couponUseInfo);
         if(num==0){
             result.setCode(700022);
             result.setMsg("核销优惠券失败");
@@ -299,7 +302,7 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         for(Field f : couponBean.getClass().getDeclaredFields()){
             f.setAccessible(true);
             try {
-                if(f.getName().equals("imageUrl")){break;}
+                if(f.getName().equals("imageUrl")){continue;}
                 if(f.get(couponBean) == null){
                     result.setCode(700000);
                     result.setMsg(f.getName() + "不能为空");
@@ -342,7 +345,7 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         coupon.setImageUrl(couponBean.getImageUrl());
         coupon.setUrl(couponBean.getUrl());
         coupon.setPerLimited(couponBean.getPerLimited());
-        String rules = "{\"type\":3,\"serviceCoupon \":{\"price\":"+ couponBean.getPrice() +",\"description\":\""+ couponBean.getSupplierMerchantName() +"服务券\"}}";
+        String rules = "{\"type\":3,\"serviceCoupon \":{\"price\":"+ DataUtils.decimalFormat(couponBean.getPrice()) +",\"description\":\""+ couponBean.getSupplierMerchantName() +"服务券\"}}";
         coupon.setCouponRules(rules);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
         if(coupon.getCode() == null || "".equals(coupon.getCode())){

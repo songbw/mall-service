@@ -2,8 +2,7 @@ package com.fengchao.equity.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fengchao.equity.bean.PageBean;
-import com.fengchao.equity.model.CouponUseInfo;
+import com.fengchao.equity.model.CouponUseInfoX;
 import lombok.Data;
 
 import java.util.Date;
@@ -41,5 +40,5 @@ public class CouponBean {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private PageBean couponSkus;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<CouponUseInfo>  couponUseInfo;
+    private List<CouponUseInfoX>  couponUseInfo;
 }

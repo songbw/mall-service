@@ -40,4 +40,6 @@ public interface CouponService {
      * @return
      */
     List<CouponBean> queryCouponBeanListIdList(List<Integer> idList) throws Exception;
+
+    int invalid(int couponId);
 }

@@ -72,4 +72,20 @@ public class JobClientUtils {
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
         jobClient.submitJob(job);
     }
+
+    /**
+     * 用户优惠券失效任务
+     * @param id
+     */
+    public static void couponInvalidTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+        Job job = new Job();
+        job.setTaskId("coupon_invalid_trigger_" + id);
+        job.setParam("type", "couponInvalid");
+        job.setParam("couponId", id + "");
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker");
+        job.setNeedFeedback(true);
+        job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
+        job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
+        jobClient.submitJob(job);
+    }
 }

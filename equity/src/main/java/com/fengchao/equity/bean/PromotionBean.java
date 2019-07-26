@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 public class PromotionBean extends QueryBean {
 
+    private Integer id;
+
     private String name;
 
     private Integer promotionType;

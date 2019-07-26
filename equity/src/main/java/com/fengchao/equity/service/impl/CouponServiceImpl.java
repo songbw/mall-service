@@ -11,7 +11,7 @@ import com.fengchao.equity.mapper.*;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.model.CouponTags;
-import com.fengchao.equity.model.CouponUseInfo;
+import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
@@ -30,7 +30,7 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     private CouponXMapper mapper;
     @Autowired
-    private CouponUseInfoMapper useInfoMapper;
+    private CouponUseInfoXMapper useInfoMapper;
     @Autowired
     private CouponTagsMapper tagsMapper;
     @Autowired
@@ -74,23 +74,31 @@ public class CouponServiceImpl implements CouponService {
     public int updateCoupon(CouponBean bean) {
         CouponX coupon = beanToCoupon(bean);
         coupon.setId(bean.getId());
+        CouponX couponById = new CouponX();
         if(bean.getStatus() != null && bean.getStatus() == 2){
             coupon.setStatus(3);
-            CouponX couponById = mapper.selectByPrimaryKey(bean.getId());
+            couponById = mapper.selectByPrimaryKey(bean.getId());
             if(couponById == null){
                 return 0;
             }
-            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getReleaseStartDate());
-            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
         }
 
         int num = mapper.updateByPrimaryKeySelective(coupon);
+
+        if(bean.getStatus() != null && bean.getStatus() == 2 && num == 1){
+            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getReleaseStartDate());
+            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
+        }
 
         return num;
     }
 
     @Override
     public int deleteCoupon(Integer id) {
+        CouponX couponX = mapper.selectByPrimaryKey(id);
+        if(couponX.getStatus() != 1){
+            return 2;
+        }
         return mapper.deleteByPrimaryKey(id);
     }
 
@@ -180,15 +188,15 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public CouponX consumeCoupon(CouponUseInfoBean bean) {
-        CouponUseInfo useInfo = new CouponUseInfo();
-        CouponUseInfo couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
+        CouponUseInfoX useInfo = new CouponUseInfoX();
+        CouponUseInfoX couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
         }
         useInfo.setId(bean.getId());
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setStatus(2);
+        useInfo.setStatus(3);
         useInfoMapper.updateStatusByUserCode(useInfo);
         CouponX coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         return coupon;
@@ -392,6 +400,11 @@ public class CouponServiceImpl implements CouponService {
         log.info("根据id集合查询coupon列表 返回List<CouponBean>:{}", JSONUtil.toJsonString(couponBeanList));
 
         return couponBeanList;
+    }
+
+    @Override
+    public int invalid(int couponId) {
+        return useInfoMapper.updateStatusByCouponId(couponId);
     }
 
     //============================== private =========================

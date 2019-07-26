@@ -3,6 +3,7 @@ package com.fengchao.order.rpc;
 import com.alibaba.fastjson.JSON;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.rpc.extmodel.CouponBean;
+import com.fengchao.order.rpc.extmodel.CouponUseInfoBean;
 import com.fengchao.order.rpc.extmodel.ProductInfoBean;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import com.fengchao.order.feign.EquityService;
@@ -63,34 +64,34 @@ public class EquityRpcService {
     }
 
     /**
-     * 获取couponbean 列表
+     * 获取 couponuseinfobean 列表
      *
      * @param couponIdList
      * @return
      */
-    public List<CouponBean> queryCouponByIdList(List<Integer> couponIdList) {
+    public List<CouponUseInfoBean> queryCouponUseInfoByIdList(List<Integer> couponIdList) {
         // 返回值
-        List<CouponBean> couponBeanList = new ArrayList<>();
+        List<CouponUseInfoBean> couponUseInfoBeanList = new ArrayList<>();
 
-        log.info("根据id集合查询coupon列表 调用equity rpc服务 入参:{}", JSONUtil.toJsonString(couponIdList));
+        log.info("根据id集合查询 couponuseinfobean 列表 调用equity rpc服务 入参:{}", JSONUtil.toJsonString(couponIdList));
 
         if (CollectionUtils.isNotEmpty(couponIdList)) {
-            OperaResult operaResult = equityService.findCouponListByIdList(couponIdList);
-            log.info("根据id集合查询coupon列表 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+            OperaResult operaResult = equityService.findCouponUseInfoListByIdList(couponIdList);
+            log.info("根据id集合查询 couponuseinfobean 列表 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
 
             // 处理返回
             if (operaResult.getCode() == 200) {
-                List<CouponBean> _couponBeanList = (List<CouponBean>) operaResult.getData().get("result");
+                List<CouponUseInfoBean> _couponUseInfoBeanList = (List<CouponUseInfoBean>) operaResult.getData().get("result");
 
                 // 转 CouponBean
-                couponBeanList = JSON.parseArray(JSON.toJSONString(_couponBeanList), CouponBean.class);
+                couponUseInfoBeanList = JSON.parseArray(JSON.toJSONString(_couponUseInfoBeanList), CouponUseInfoBean.class);
             } else {
-                log.warn("根据id集合查询coupon列表 调用equity rpc服务 错误!");
+                log.warn("根据id集合查询 couponuseinfobean 列表 调用equity rpc服务 错误!");
             }
         }
 
-        log.info("EquityRpcService#queryCouponByIdList 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(couponBeanList));
+        log.info("EquityRpcService#queryCouponUseInfoByIdList 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(couponUseInfoBeanList));
 
-        return couponBeanList;
+        return couponUseInfoBeanList;
     }
 }
