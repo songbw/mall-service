@@ -34,11 +34,8 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
     private CategoryOverviewDao categoryOverviewDao;
 
     @Override
-    public void doDailyStatistic(String startDateTime, String endDateTime) throws Exception {
-        // 1. 根据时间范围查询已支付的订单详情
-        List<OrderDetailBean> orderDetailBeanList = ordersRpcService.queryPayedOrderDetailList(startDateTime, endDateTime);
-
-        // 2. 根据一级品类维度将订单详情分类
+    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList, String startDateTime, String endDateTime) throws Exception {
+        // 1. 根据一级品类维度将订单详情分类
         Map<Integer, List<OrderDetailBean>> orderDetailBeanListMap = new HashMap<>();
         for (OrderDetailBean orderDetailBean : orderDetailBeanList) { // 遍历订单详情
             // 处理品类信息
@@ -56,7 +53,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
             }
         }
 
-        // 3. 获取一级品类名称
+        // 2. 获取一级品类名称
         Set<Integer> firstCategoryIdSet = orderDetailBeanListMap.keySet();
         List<CategoryQueryBean> categoryQueryBeanList =
                 productRpcService.queryCategorysByCategoryIdList(new ArrayList<>(firstCategoryIdSet));
@@ -64,7 +61,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         Map<Integer, CategoryQueryBean> categoryQueryBeanMap =
                 categoryQueryBeanList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
 
-        // 4. 获取统计数据
+        // 3. 获取统计数据
         String statisticsDateTime =
                 DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
         List<CategoryOverview> categoryOverviewList = new ArrayList<>(); // 统计数据集合
@@ -95,12 +92,12 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         log.info("按照品类统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
                 startDateTime, endDateTime, JSONUtil.toJsonString(categoryOverviewList));
 
-        // 5. 插入统计数据
-        // 5.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+        // 4. 插入统计数据
+        // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
         categoryOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                 DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
 
-        // 5.2 执行插入
+        // 4.2 执行插入
         for (CategoryOverview categoryOverview : categoryOverviewList) {
             categoryOverviewDao.insertCategoryOverview(categoryOverview);
         }

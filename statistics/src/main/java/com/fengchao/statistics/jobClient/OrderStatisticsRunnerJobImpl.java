@@ -1,6 +1,8 @@
 package com.fengchao.statistics.jobClient;
 
 import com.fengchao.statistics.bean.QueryBean;
+import com.fengchao.statistics.rpc.OrdersRpcService;
+import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import com.fengchao.statistics.service.*;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
@@ -18,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 @Slf4j
 public class OrderStatisticsRunnerJobImpl implements JobRunner {
@@ -98,6 +101,8 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
                     BeanContext.getApplicationContext().getBean(PromotionOverviewService.class);
             PeriodOverviewService periodOverviewService =
                     BeanContext.getApplicationContext().getBean(PeriodOverviewService.class);
+            OrdersRpcService ordersRpcService =
+                    BeanContext.getApplicationContext().getBean(OrdersRpcService.class);
 
             // 3. 统计
             // 组装条件
@@ -106,10 +111,14 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             queryBean.setEndTime(endDateTime);
             log.info("执行订单统计任务 统计查询条件:{}", JSONUtil.toJsonString(queryBean));
 
-            // 执行统计
+            // 3.1 调用order rpc服务，根据时间范围查询已支付的订单详情
+            List<OrderDetailBean> payedOrderDetailBeanList =
+                    ordersRpcService.queryPayedOrderDetailList(startDateTime, endDateTime);
+
+            // 3.2执行统计
             overviewService.add(queryBean); // 总揽统计
-            categoryOverviewService.doDailyStatistic(startDateTime, endDateTime); // 安品类统计
-            merchantOverviewService.doDailyStatistic(startDateTime, endDateTime); // 按商户统计订单支付总额
+            categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 安品类统计
+            merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按商户统计订单支付总额
             promotionOverviewService.add(queryBean); //
             periodOverviewService.add(queryBean);
 

@@ -1,6 +1,7 @@
 package com.fengchao.statistics.service;
 
 import com.fengchao.statistics.bean.vo.CategoryOverviewResVo;
+import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 
 import java.util.List;
 
@@ -12,7 +13,17 @@ public interface CategoryOverviewService {
      * @param startDateTime
      * @param endDateTime
      */
-    void doDailyStatistic(String startDateTime, String endDateTime) throws Exception;
+    /**
+     * 每天 按照品类维度统计订单详情总额
+     *
+     * @param payedOrderDetailBeanList 需要统计的原始数据-已支付的订单详情
+     * @param startDateTime
+     * @param endDateTime
+     * @throws Exception
+     */
+    void doDailyStatistic(List<OrderDetailBean> payedOrderDetailBeanList,
+                          String startDateTime,
+                          String endDateTime) throws Exception;
 
     /**
      * 根据时间范围获取每日统计的数据
