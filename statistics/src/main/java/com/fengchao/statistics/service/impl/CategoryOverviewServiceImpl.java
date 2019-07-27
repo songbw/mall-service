@@ -113,10 +113,10 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         // 1. 查询数据库
         Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
         Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
-        log.info("根据时间范围获取daily型的统计数据 日期范围: {} - {}", _startDate, _endDate);
+        log.info("根据时间范围获取daily型的品类维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<CategoryOverview> categoryOverviewList =
                 categoryOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
-        log.info("根据时间范围获取daily型的统计数据 数据库返回: {}", JSONUtil.toJsonString(categoryOverviewList));
+        log.info("根据时间范围获取daily型的品类维度统计数据 数据库返回: {}", JSONUtil.toJsonString(categoryOverviewList));
 
         // 2. 将获取到的数据按照一级品类分组
         Map<String, List<CategoryOverview>> categoryOverviewListMap = new HashMap<>();
@@ -153,11 +153,11 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
             categoryOverviewResVoList.add(categoryOverviewResVo);
         }
 
-        log.info("根据时间范围获取daily型的统计数据 获取统计数据List<CategoryOverviewResVo>:{}",
+        log.info("根据时间范围获取daily型的品类维度统计数据 获取统计数据List<CategoryOverviewResVo>:{}",
                 JSONUtil.toJsonString(categoryOverviewResVoList));
 
 
-        return null;
+        return categoryOverviewResVoList;
     }
 
     // ========================================= private ===================

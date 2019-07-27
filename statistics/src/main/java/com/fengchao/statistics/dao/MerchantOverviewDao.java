@@ -1,5 +1,6 @@
 package com.fengchao.statistics.dao;
 
+import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.model.MerchantOverviewExample;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author tom
@@ -50,5 +52,25 @@ public class MerchantOverviewDao {
         int count = merchantOverviewMapper.deleteByExample(merchantOverviewExample);
 
         return count;
+    }
+
+    /**
+     * 根据时间范围获取daily型的统计数据
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public List<MerchantOverview> selectDailyCategoryOverviewsByDateRange(Date startDate, Date endDate) {
+        MerchantOverviewExample merchantOverviewExample = new MerchantOverviewExample();
+
+        MerchantOverviewExample.Criteria criteria = merchantOverviewExample.createCriteria();
+        criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+        criteria.andStatisticStartTimeBetween(startDate, endDate);
+
+        List<MerchantOverview> merchantOverviewList =
+                merchantOverviewMapper.selectByExample(merchantOverviewExample);
+
+        return merchantOverviewList;
     }
 }

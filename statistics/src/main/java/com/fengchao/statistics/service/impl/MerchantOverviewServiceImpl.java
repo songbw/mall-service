@@ -3,6 +3,7 @@ package com.fengchao.statistics.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.statistics.bean.*;
+import com.fengchao.statistics.bean.vo.MerchantOverviewResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MerchantOverviewDao;
 import com.fengchao.statistics.feign.OrderServiceClient;
@@ -116,22 +117,56 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 //        return mapper.selectSum(map);
 //    }
 
-
     @Override
-    public List<MerchantOverview> findsum(QueryBean queryBean) {
-        return null;
-    }
+    public List<MerchantOverviewResVo> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
+        // 1. 查询数据库
+        Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
+        Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
+        log.info("根据时间范围获取daily型的商户维度统计数据 日期范围: {} - {}", _startDate, _endDate);
+        List<MerchantOverview> merchantOverviewList =
+                merchantOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
+        log.info("根据时间范围获取daily型的商户维度统计数据 数据库返回: {}", JSONUtil.toJsonString(merchantOverviewList));
 
-    private SkuCode getMerchantInfo(int id) {
-        OperaResult result = productService.findMerchant(id);
-        if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData();
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            SkuCode skuCode = JSONObject.parseObject(jsonString, SkuCode.class);
-            return skuCode;
+        // 2. 将获取到的数据按照商户分组
+        Map<Integer, List<MerchantOverview>> merchantOverviewListMap = new HashMap<>();
+        for (MerchantOverview merchantOverview : merchantOverviewList) {
+            Integer merchantId = merchantOverview.getMerchantId(); // 一级品类code
+
+            List<MerchantOverview> _merchantOverviewList = merchantOverviewListMap.get(merchantId);
+            if (_merchantOverviewList == null) {
+                _merchantOverviewList = new ArrayList<>();
+                merchantOverviewListMap.put(merchantId, _merchantOverviewList);
+            }
+
+            _merchantOverviewList.add(merchantOverview);
         }
-        return null;
+
+        // 3. 组装统计数据 CategoryOverviewResVo
+        List<MerchantOverviewResVo> merchantOverviewResVoList = new ArrayList<>();
+        Set<Integer> merchantIdSet = merchantOverviewListMap.keySet();
+        for (Integer merchantId : merchantIdSet) {
+            List<MerchantOverview> _merchantOverviewList = merchantOverviewListMap.get(merchantId);
+
+            String merchantName = ""; // 一级品类名称
+            Long totalAmount = 0L; // 单位：分
+            for (MerchantOverview merchantOverview : _merchantOverviewList) {
+                totalAmount = totalAmount + merchantOverview.getOrderAmount();
+                merchantName = merchantOverview.getMerchantName();
+            }
+
+            MerchantOverviewResVo merchantOverviewResVo = new MerchantOverviewResVo();
+            merchantOverviewResVo.setMerchantId(merchantId);
+            merchantOverviewResVo.setMerchantName(merchantName);
+            merchantOverviewResVo.setOrderPaymentAmount(new BigDecimal(totalAmount).divide(new BigDecimal(100)).toString());
+
+            merchantOverviewResVoList.add(merchantOverviewResVo);
+        }
+
+        log.info("根据时间范围获取daily型的商户维度统计数据 获取统计数据List<MerchantOverviewResVo>:{}",
+                JSONUtil.toJsonString(merchantOverviewResVoList));
+
+
+        return merchantOverviewResVoList;
     }
 
 }
