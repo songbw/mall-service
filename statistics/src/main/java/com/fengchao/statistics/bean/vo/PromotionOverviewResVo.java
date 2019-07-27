@@ -13,7 +13,7 @@ public class PromotionOverviewResVo {
 
     private Integer promotionId;
     private String promotionName;
-    private String orderPaymentAmount; // 单位元
+    private String orderAmount; // 单位元
 
     private String statisticDate; // yyyyMMdd
 }

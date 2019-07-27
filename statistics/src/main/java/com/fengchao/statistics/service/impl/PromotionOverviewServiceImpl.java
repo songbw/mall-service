@@ -152,7 +152,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
         PromotionOverviewResVo promotionOverviewResVo = new PromotionOverviewResVo();
 
         promotionOverviewResVo.setPromotionId(promotionOverview.getPromotionId());
-        promotionOverviewResVo.setOrderPaymentAmount(new BigDecimal(promotionOverview.getOrderAmount())
+        promotionOverviewResVo.setOrderAmount(new BigDecimal(promotionOverview.getOrderAmount())
                 .divide(new BigDecimal(100)).toString());
         promotionOverviewResVo.setPromotionName(promotionOverview.getPromotionName());
         promotionOverviewResVo.setStatisticDate(DateUtil.

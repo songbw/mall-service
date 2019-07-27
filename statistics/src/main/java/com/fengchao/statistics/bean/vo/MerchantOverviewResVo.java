@@ -13,5 +13,5 @@ public class MerchantOverviewResVo {
 
     private Integer merchantId;
     private String merchantName;
-    private String orderPaymentAmount; // 单位元
+    private String orderAmount; // 单位元
 }

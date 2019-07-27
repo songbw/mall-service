@@ -1,5 +1,6 @@
 package com.fengchao.statistics.service.impl;
 
+import com.fengchao.statistics.bean.vo.MerchantCityRangeStatisticResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MCityOrderAmountDao;
 import com.fengchao.statistics.model.MCityOrderamount;
@@ -123,5 +124,62 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         }
 
         log.info("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
+    }
+
+    @Override
+    public Map<String, List<MerchantCityRangeStatisticResVo>> fetchStatisticDailyResult(String startDate,
+                                                                                        String endDate,
+                                                                                        Integer merchantId) throws Exception {
+        // 1. 查询数据库
+        Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
+        Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
+        log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 日期范围: {} - {}, 商户id:{}", _startDate, _endDate, merchantId);
+        List<MCityOrderamount> mCityOrderamountList =
+                mCityOrderAmountDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
+        log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 数据库返回: {}", JSONUtil.toJsonString(mCityOrderamountList));
+
+        // 2. 统计数据
+        // 2.1 将获取到的数据按照'城市id'分组， 并转换成 MerchantCityRangeStatisticResVo
+        Map<String, List<MerchantCityRangeStatisticResVo>> cityRangeMap = new HashMap<>();
+        for (MCityOrderamount mCityOrderamount : mCityOrderamountList) {
+            String cityId = mCityOrderamount.getCityId();
+            // 转 MerchantCityRangeStatisticResVo
+            MerchantCityRangeStatisticResVo merchantCityRangeStatisticResVo
+                    = convertToMerchantCityRangeStatisticResVo(mCityOrderamount);
+
+            List<MerchantCityRangeStatisticResVo> cityRangeList = cityRangeMap.get(cityId);
+            if (cityRangeList == null) {
+                cityRangeList = new ArrayList<>();
+                cityRangeMap.put(cityId, cityRangeList);
+            }
+            cityRangeList.add(merchantCityRangeStatisticResVo);
+        }
+
+        // 2.2 将数据按照日期排序
+        Set<String> cityIdSet = cityRangeMap.keySet();
+        for (String cityId : cityIdSet) {
+            List<MerchantCityRangeStatisticResVo> merchantCityRangeStatisticResVoList = cityRangeMap.get(cityId);
+
+            merchantCityRangeStatisticResVoList.sort(Comparator.comparing(MerchantCityRangeStatisticResVo::getStatisticDate));
+        }
+
+        log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 获取统计数据Map<String, List<MerchantCityRangeStatisticResVo>>:{}",
+                JSONUtil.toJsonString(cityRangeMap));
+        return cityRangeMap;
+    }
+
+    // ======================================== private ==========================================
+
+    private MerchantCityRangeStatisticResVo convertToMerchantCityRangeStatisticResVo(MCityOrderamount mCityOrderamount) {
+        MerchantCityRangeStatisticResVo merchantCityRangeStatisticResVo = new MerchantCityRangeStatisticResVo();
+
+        merchantCityRangeStatisticResVo.setCityId(mCityOrderamount.getCityId());
+        merchantCityRangeStatisticResVo.setCityName(mCityOrderamount.getCityName());
+        merchantCityRangeStatisticResVo.setOrderAmount(new BigDecimal(mCityOrderamount.getOrderAmount())
+                .divide(new BigDecimal(100)).toString()); // 单位：元
+        merchantCityRangeStatisticResVo.setStatisticDate(DateUtil.
+                dateTimeFormat(mCityOrderamount.getStatisticStartTime(), DateUtil.DATE_YYYYMMDD)); // 日期 20190101
+
+        return merchantCityRangeStatisticResVo;
     }
 }

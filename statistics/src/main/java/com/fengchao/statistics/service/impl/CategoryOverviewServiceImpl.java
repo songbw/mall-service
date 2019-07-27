@@ -146,7 +146,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
             CategoryOverviewResVo categoryOverviewResVo = new CategoryOverviewResVo();
             categoryOverviewResVo.setCategoryId(Integer.valueOf(key));
             categoryOverviewResVo.setCategoryName(categoryName);
-            categoryOverviewResVo.setTotalAmount(new BigDecimal(totalAmount).divide(new BigDecimal(100)).toString());
+            categoryOverviewResVo.setOrderAmount(new BigDecimal(totalAmount).divide(new BigDecimal(100)).toString());
 
             categoryOverviewResVoList.add(categoryOverviewResVo);
         }
@@ -158,6 +158,6 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         return categoryOverviewResVoList;
     }
 
-    // ========================================= private ===================
+
 
 }

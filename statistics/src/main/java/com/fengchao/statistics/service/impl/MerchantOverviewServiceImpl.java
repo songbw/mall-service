@@ -3,9 +3,7 @@ package com.fengchao.statistics.service.impl;
 import com.fengchao.statistics.bean.vo.MerchantOverviewResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MerchantOverviewDao;
-import com.fengchao.statistics.feign.ProductServiceClient;
 import com.fengchao.statistics.model.MerchantOverview;
-import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.VendorsRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import com.fengchao.statistics.rpc.extmodel.SysUser;
@@ -136,7 +134,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
             MerchantOverviewResVo merchantOverviewResVo = new MerchantOverviewResVo();
             merchantOverviewResVo.setMerchantId(merchantId);
             merchantOverviewResVo.setMerchantName(merchantName);
-            merchantOverviewResVo.setOrderPaymentAmount(new BigDecimal(totalAmount).divide(new BigDecimal(100)).toString());
+            merchantOverviewResVo.setOrderAmount(new BigDecimal(totalAmount).divide(new BigDecimal(100)).toString());
 
             merchantOverviewResVoList.add(merchantOverviewResVo);
         }

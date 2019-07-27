@@ -24,5 +24,5 @@ public class CategoryOverviewResVo {
     /**
      * 订单详情总金额
      */
-    private String totalAmount;
+    private String orderAmount;
 }
