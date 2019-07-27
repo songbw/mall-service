@@ -82,7 +82,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
         }
 
 
-        log.info("按照活动维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+        log.info("按照活动(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
                 startDateTime, endDateTime, JSONUtil.toJsonString(promotionOverviewList));
 
         // 4. 插入统计数据
@@ -97,7 +97,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             promotionOverviewDao.insertCategoryOverview(promotionOverview);
         }
 
-        log.info("按照活动维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
+        log.info("按照活动(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override

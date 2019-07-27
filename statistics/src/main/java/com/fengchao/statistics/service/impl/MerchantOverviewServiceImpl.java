@@ -25,12 +25,6 @@ import java.util.stream.Collectors;
 public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
     @Autowired
-    private ProductServiceClient productService;
-
-    @Autowired
-    private OrdersRpcService ordersRpcService;
-
-    @Autowired
     private VendorsRpcService vendorsRpcService;
 
     @Autowired
@@ -84,7 +78,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
         }
 
 
-        log.info("按照商户维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+        log.info("按照商户(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
                 startDateTime, endDateTime, JSONUtil.toJsonString(merchantOverviewList));
 
         // 4. 插入统计数据
@@ -99,7 +93,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
             merchantOverviewDao.insertCategoryOverview(merchantOverview);
         }
 
-        log.info("按照商户维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
+        log.info("按照商户(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override

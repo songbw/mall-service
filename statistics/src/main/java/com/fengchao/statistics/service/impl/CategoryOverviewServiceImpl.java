@@ -89,7 +89,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
             //
             categoryOverviewList.add(categoryOverview);
         }
-        log.info("按照品类统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+        log.info("按照品类(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
                 startDateTime, endDateTime, JSONUtil.toJsonString(categoryOverviewList));
 
         // 4. 插入统计数据
@@ -103,7 +103,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
             categoryOverviewDao.insertCategoryOverview(categoryOverview);
         }
 
-        log.info("按照品类统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
+        log.info("按照品类(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override

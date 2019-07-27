@@ -40,7 +40,7 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="promotion_overview">
+        <table tableName="m_city_orderamount">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
     </context>
