@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 活动概览统计分析
@@ -33,9 +34,9 @@ public class PromotionOverviewController {
         log.info("根据时间范围获取按照活动维度的统计结果, 入参 startDate:{}, endDate:{}", startDate, endDate);
 
         try {
-            List<PromotionOverviewResVo> promotionOverviewResVoList =
+            Map<String, List<PromotionOverviewResVo>> resultMap =
                     promotionOverviewService.fetchStatisticDailyResult(startDate, endDate);
-            operaResponse.setData(promotionOverviewResVoList);
+            operaResponse.setData(resultMap);
         } catch (Exception e) {
             log.info("根据时间范围获取按活动类维度的统计结果 异常:{}", e.getMessage(), e);
 

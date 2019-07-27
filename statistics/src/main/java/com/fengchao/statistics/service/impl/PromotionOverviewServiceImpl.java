@@ -100,7 +100,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     }
 
     @Override
-    public List<PromotionOverviewResVo> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
+    public Map<String, List<PromotionOverviewResVo>> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
         // 1. 查询数据库
         Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
         Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
@@ -109,45 +109,55 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 promotionOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的活动维度统计数据 数据库返回: {}", JSONUtil.toJsonString(promotionOverviewList));
 
-        // 2. 将获取到的数据按照活动分组
-        Map<Integer, List<PromotionOverview>> promotionOverviewListMap = new HashMap<>();
+        // 2. 统计数据
+        // 2.1 将获取到的数据按照'活动名称'分组， 并转换成PromotionOverviewResVo
+        Map<String, List<PromotionOverviewResVo>> promotionOverviewResVoByPromotionNameMap = new HashMap<>();
         for (PromotionOverview promotionOverview : promotionOverviewList) {
-            Integer promotionId = promotionOverview.getPromotionId(); // 活动id
+            // 转 PromotionOverviewResVo
+            PromotionOverviewResVo promotionOverviewResVo = convertToPromotionOverviewResVo(promotionOverview);
+            String promotionName = promotionOverview.getPromotionName(); // 活动name
 
-            List<PromotionOverview> _promotionOverviewList = promotionOverviewListMap.get(promotionId);
-            if (_promotionOverviewList == null) {
-                _promotionOverviewList = new ArrayList<>();
-                promotionOverviewListMap.put(promotionId, _promotionOverviewList);
+            List<PromotionOverviewResVo> promotionOverviewResVoList = promotionOverviewResVoByPromotionNameMap.get(promotionName);
+            if (promotionOverviewResVoList == null) {
+                promotionOverviewResVoList = new ArrayList<>();
+                promotionOverviewResVoByPromotionNameMap.put(promotionName, promotionOverviewResVoList);
             }
-
-            _promotionOverviewList.add(promotionOverview);
-        }
-
-        // 3. 组装统计数据 PromotionOverviewResVo
-        List<PromotionOverviewResVo> promotionOverviewResVoList = new ArrayList<>();
-        Set<Integer> promotionIdSet = promotionOverviewListMap.keySet();
-        for (Integer promotionId : promotionIdSet) {
-            List<PromotionOverview> _promotionOverviewList = promotionOverviewListMap.get(promotionId);
-
-            String promotionName = ""; // 活动名称
-            Long totalAmount = 0L; // 单位：分
-            for (PromotionOverview promotionOverview : _promotionOverviewList) {
-                totalAmount = totalAmount + promotionOverview.getOrderAmount();
-                promotionName = promotionOverview.getPromotionName();
-            }
-
-            PromotionOverviewResVo promotionOverviewResVo = new PromotionOverviewResVo();
-            promotionOverviewResVo.setPromotionId(promotionId);
-            promotionOverviewResVo.setPromotionName(promotionName);
-            promotionOverviewResVo.setOrderPaymentAmount(new BigDecimal(totalAmount).divide(new BigDecimal(100)).toString());
 
             promotionOverviewResVoList.add(promotionOverviewResVo);
         }
 
-        log.info("根据时间范围获取daily型的活动维度统计数据 获取统计数据List<PromotionOverviewResVo>:{}",
-                JSONUtil.toJsonString(promotionOverviewResVoList));
+        // 2.2 将数据按照日期排序
+        Set<String> promotionNameSet = promotionOverviewResVoByPromotionNameMap.keySet();
+        for (String promotionName : promotionNameSet) {
+            List<PromotionOverviewResVo> promotionOverviewResVoList = promotionOverviewResVoByPromotionNameMap.get(promotionName);
 
-        return promotionOverviewResVoList;
+            promotionOverviewResVoList.sort(Comparator.comparing(PromotionOverviewResVo::getStatisticDate));
+        }
+
+        log.info("根据时间范围获取daily型的活动维度统计数据 获取统计数据Map<String, List<PromotionOverviewResVo>>:{}",
+                JSONUtil.toJsonString(promotionOverviewResVoByPromotionNameMap));
+        return promotionOverviewResVoByPromotionNameMap;
+    }
+
+    //====================================== private ======================================
+
+    /**
+     *
+     *
+     * @param promotionOverview
+     * @return
+     */
+    private PromotionOverviewResVo convertToPromotionOverviewResVo(PromotionOverview promotionOverview) {
+        PromotionOverviewResVo promotionOverviewResVo = new PromotionOverviewResVo();
+
+        promotionOverviewResVo.setPromotionId(promotionOverview.getPromotionId());
+        promotionOverviewResVo.setOrderPaymentAmount(new BigDecimal(promotionOverview.getOrderAmount())
+                .divide(new BigDecimal(100)).toString());
+        promotionOverviewResVo.setPromotionName(promotionOverview.getPromotionName());
+        promotionOverviewResVo.setStatisticDate(DateUtil.
+                dateTimeFormat(promotionOverview.getStatisticStartTime(), DateUtil.DATE_YYYYMMDD));
+
+        return promotionOverviewResVo;
     }
 
 

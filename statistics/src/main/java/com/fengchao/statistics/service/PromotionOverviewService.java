@@ -4,6 +4,7 @@ import com.fengchao.statistics.bean.vo.PromotionOverviewResVo;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PromotionOverviewService {
 
@@ -26,5 +27,5 @@ public interface PromotionOverviewService {
      * @return
      * @throws Exception
      */
-    List<PromotionOverviewResVo> fetchStatisticDailyResult(String startDate, String endDate) throws Exception;
+    Map<String, List<PromotionOverviewResVo>> fetchStatisticDailyResult(String startDate, String endDate) throws Exception;
 }
