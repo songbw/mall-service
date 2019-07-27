@@ -1,14 +1,9 @@
 package com.fengchao.statistics.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.fengchao.statistics.bean.*;
 import com.fengchao.statistics.bean.vo.MerchantOverviewResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MerchantOverviewDao;
-import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.feign.ProductServiceClient;
-import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.VendorsRpcService;
@@ -119,7 +114,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
         // 2. 将获取到的数据按照商户分组
         Map<Integer, List<MerchantOverview>> merchantOverviewListMap = new HashMap<>();
         for (MerchantOverview merchantOverview : merchantOverviewList) {
-            Integer merchantId = merchantOverview.getMerchantId(); // 一级品类code
+            Integer merchantId = merchantOverview.getMerchantId(); // 商户id
 
             List<MerchantOverview> _merchantOverviewList = merchantOverviewListMap.get(merchantId);
             if (_merchantOverviewList == null) {
@@ -130,13 +125,13 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
             _merchantOverviewList.add(merchantOverview);
         }
 
-        // 3. 组装统计数据 CategoryOverviewResVo
+        // 3. 组装统计数据 MerchantOverviewResVo
         List<MerchantOverviewResVo> merchantOverviewResVoList = new ArrayList<>();
         Set<Integer> merchantIdSet = merchantOverviewListMap.keySet();
         for (Integer merchantId : merchantIdSet) {
             List<MerchantOverview> _merchantOverviewList = merchantOverviewListMap.get(merchantId);
 
-            String merchantName = ""; // 一级品类名称
+            String merchantName = ""; // 商户名称
             Long totalAmount = 0L; // 单位：分
             for (MerchantOverview merchantOverview : _merchantOverviewList) {
                 totalAmount = totalAmount + merchantOverview.getOrderAmount();

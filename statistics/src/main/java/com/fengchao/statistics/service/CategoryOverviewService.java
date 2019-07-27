@@ -10,12 +10,6 @@ public interface CategoryOverviewService {
     /**
      * 每天 按照品类维度统计订单详情总额
      *
-     * @param startDateTime
-     * @param endDateTime
-     */
-    /**
-     * 每天 按照品类维度统计订单详情总额
-     *
      * @param payedOrderDetailBeanList 需要统计的原始数据-已支付的订单详情
      * @param startDateTime
      * @param endDateTime
