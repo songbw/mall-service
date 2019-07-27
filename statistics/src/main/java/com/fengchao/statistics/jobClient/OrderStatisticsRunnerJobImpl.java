@@ -84,9 +84,9 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             String currentDate = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD);
             // 开始时间
             String startDateTime =
-                    DateUtil.calcDay(currentDate + "00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                    DateUtil.calcDay(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             String endDateTime =
-                    DateUtil.calcSecond(startDateTime + "23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                    DateUtil.calcSecond(startDateTime + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
             // 2. 获取各个统计service
             OverviewService overviewService = BeanContext.getApplicationContext().getBean(OverviewService.class);
@@ -109,7 +109,7 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             // 执行统计
             overviewService.add(queryBean); // 总揽统计
             categoryOverviewService.doDailyStatistic(startDateTime, endDateTime); // 安品类统计
-            merchantOverviewService.doDailyStatistic(queryBean); // 按商户统计订单支付总额
+            merchantOverviewService.doDailyStatistic(startDateTime, endDateTime); // 按商户统计订单支付总额
             promotionOverviewService.add(queryBean); //
             periodOverviewService.add(queryBean);
 

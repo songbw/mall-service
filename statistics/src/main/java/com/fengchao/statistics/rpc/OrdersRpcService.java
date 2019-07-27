@@ -44,7 +44,7 @@ public class OrdersRpcService {
         List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
 
         // 执行rpc调用
-        log.info("查询已支付的子订单 调用order rpc服务 入参:startDateTime{}, endDateTime", startDateTime, endDateTime);
+        log.info("查询已支付的子订单 调用order rpc服务 入参:startDateTime{}, endDateTime:{}", startDateTime, endDateTime);
         OperaResult operaResult = orderServiceClient.queryPayedOrderDetailList(startDateTime, endDateTime);
         log.info("查询已支付的子订单 调用order rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
 

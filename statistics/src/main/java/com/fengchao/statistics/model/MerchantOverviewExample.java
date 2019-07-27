@@ -572,6 +572,66 @@ public class MerchantOverviewExample {
             return (Criteria) this;
         }
 
+        public Criteria andPeriodTypeIsNull() {
+            addCriterion("period_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIsNotNull() {
+            addCriterion("period_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeEqualTo(Short value) {
+            addCriterion("period_type =", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotEqualTo(Short value) {
+            addCriterion("period_type <>", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeGreaterThan(Short value) {
+            addCriterion("period_type >", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeGreaterThanOrEqualTo(Short value) {
+            addCriterion("period_type >=", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeLessThan(Short value) {
+            addCriterion("period_type <", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeLessThanOrEqualTo(Short value) {
+            addCriterion("period_type <=", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIn(List<Short> values) {
+            addCriterion("period_type in", values, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotIn(List<Short> values) {
+            addCriterion("period_type not in", values, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeBetween(Short value1, Short value2) {
+            addCriterion("period_type between", value1, value2, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotBetween(Short value1, Short value2) {
+            addCriterion("period_type not between", value1, value2, "periodType");
+            return (Criteria) this;
+        }
+
         public Criteria andOrderAmountIsNull() {
             addCriterion("order_amount is null");
             return (Criteria) this;

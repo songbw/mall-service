@@ -104,6 +104,8 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         for (CategoryOverview categoryOverview : categoryOverviewList) {
             categoryOverviewDao.insertCategoryOverview(categoryOverview);
         }
+
+        log.info("按照品类统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override

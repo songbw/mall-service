@@ -17,6 +17,8 @@ public class MerchantOverview {
 
     private Date statisticEndTime;
 
+    private Short periodType;
+
     private Long orderAmount;
 
     private Short istatus;
@@ -79,6 +81,14 @@ public class MerchantOverview {
 
     public void setStatisticEndTime(Date statisticEndTime) {
         this.statisticEndTime = statisticEndTime;
+    }
+
+    public Short getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(Short periodType) {
+        this.periodType = periodType;
     }
 
     public Long getOrderAmount() {

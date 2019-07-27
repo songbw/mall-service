@@ -13,6 +13,7 @@ import java.util.List;
 @FeignClient(value = "product-aoyi", fallback = ProductServiceClientH.class)
 public interface ProductServiceClient {
 
+    @Deprecated
     @RequestMapping(value = "/merchantCode", method = RequestMethod.GET)
     OperaResult findMerchant(@RequestParam("id") int id);
 
