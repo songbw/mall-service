@@ -36,18 +36,21 @@ public class MerchantOverviewDao {
     }
 
     /**
-     * 根据统计周期类型 和 统计任务执行日期 删除 统计数据
+     * 根据统计周期类型 和 统计开始/结束时间 删除 统计数据
      *
      * @param period
-     * @param statisticDate
+     * @param statisticStartDate
+     * @param statisticEndDate
      * @return
      */
-    public int deleteCategoryOverviewByPeriodTypeAndStatisticDate(Short period, Date statisticDate) {
+    public int deleteCategoryOverviewByPeriodTypeAndStatisticDate(Short period,
+                                                                  Date statisticStartDate, Date statisticEndDate) {
         MerchantOverviewExample merchantOverviewExample = new MerchantOverviewExample();
 
         MerchantOverviewExample.Criteria criteria = merchantOverviewExample.createCriteria();
         criteria.andPeriodTypeEqualTo(period);
-        criteria.andStatisticsDateEqualTo(statisticDate);
+        criteria.andStatisticStartTimeEqualTo(statisticStartDate);
+        criteria.andStatisticEndTimeEqualTo(statisticEndDate);
 
         int count = merchantOverviewMapper.deleteByExample(merchantOverviewExample);
 

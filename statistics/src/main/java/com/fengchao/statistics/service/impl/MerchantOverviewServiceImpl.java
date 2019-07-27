@@ -91,7 +91,8 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
         // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
         merchantOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
                 StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
-                DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+                DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
+                DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
 
         // 4.2 执行插入
         for (MerchantOverview merchantOverview : merchantOverviewList) {
