@@ -188,28 +188,6 @@ public class OrderController {
     }
 
     /**
-     * 按商户统计订单支付总额
-     *
-     * @param start
-     * @param end
-     * @param result
-     * @return
-     */
-    @Deprecated
-    @GetMapping("/payment/merchant/count")
-    private OperaResult paymentMerchantCount(String start, String end, OperaResult result) {
-        log.info("按商户统计订单支付总额 入参: startDateTime:{}, endDateTime:{}", start, end);
-
-
-        List<MerchantPaymentBean> merchantPaymentBeanList = service.findDayMerchantPaymentCount(start, end);
-        result.getData().put("result", merchantPaymentBeanList) ;
-
-        log.info("按商户统计订单支付总额 返回:{}", JSONUtil.toJsonString(result));
-
-        return result;
-    }
-
-    /**
      * 按照时间范围查询已支付的子订单列表
      *
      * @param start
