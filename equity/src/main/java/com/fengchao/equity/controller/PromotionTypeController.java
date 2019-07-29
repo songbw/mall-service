@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.ws.rs.QueryParam;
 
 @RestController
-@RequestMapping(value = "/promotion/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/adminPromotion/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class PromotionTypeController {
 
