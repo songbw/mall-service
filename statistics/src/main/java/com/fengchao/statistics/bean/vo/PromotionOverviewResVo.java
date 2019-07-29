@@ -9,6 +9,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@Deprecated
 public class PromotionOverviewResVo {
 
     private String date; // '2019/6/1',

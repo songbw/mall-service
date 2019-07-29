@@ -124,7 +124,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     }
 
     @Override
-    public Map<String, List<PromotionOverviewResVo>> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
+    public Map<String, String> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
         // 1. 查询数据库
         Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
         Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
@@ -137,56 +137,60 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
         promotionOverviewList.sort(Comparator.comparing(PromotionOverview::getStatisticStartTime));
 
         // 2. 统计数据
-        // 2.1 按照日期维度分组 转换成 PromotionOverviewResVo
-        Map<String, List<PromotionOverviewResVo>> promotionOverviewResVoByPromotionNameMap = new HashMap<>(); // 按照日期维度分组
+        // 2.1 按照日期维度分组
+        Map<String, List<PromotionOverview>> dateRangeMap = new HashMap<>(); // 按照日期维度分组
         for (PromotionOverview promotionOverview : promotionOverviewList) {
-            // 转 PromotionOverviewResVo
-            PromotionOverviewResVo promotionOverviewResVo = convertToPromotionOverviewResVo(promotionOverview);
-            String _date = promotionOverview.getStatisticStartTime(); // 活动name
+            String _date = DateUtil.dateTimeFormat(
+                    promotionOverview.getStatisticStartTime(), DateUtil.DATE_YYYY_MM_DD); // 活动name
 
-            List<PromotionOverviewResVo> promotionOverviewResVoList = promotionOverviewResVoByPromotionNameMap.get(promotionName);
-            if (promotionOverviewResVoList == null) {
-                promotionOverviewResVoList = new ArrayList<>();
-                promotionOverviewResVoByPromotionNameMap.put(promotionName, promotionOverviewResVoList);
+            List<PromotionOverview> dateRangeList = dateRangeMap.get(_date);
+            if (dateRangeList == null) {
+                dateRangeList = new ArrayList<>();
+                dateRangeMap.put(_date, dateRangeList);
             }
 
-            promotionOverviewResVoList.add(promotionOverviewResVo);
+            dateRangeList.add(promotionOverview);
         }
 
-        // 2.2 将数据按照日期排序
-        Set<String> promotionNameSet = promotionOverviewResVoByPromotionNameMap.keySet();
-        for (String promotionName : promotionNameSet) {
-            List<PromotionOverviewResVo> promotionOverviewResVoList = promotionOverviewResVoByPromotionNameMap.get(promotionName);
+        // 2.2 将数据转换成前端需要的格式：{[date:'', '秒杀':8, '优选':9 ...] ...}
+        Map<String, String> resultMap = new HashMap<>();
+        Set<String> dateSet = dateRangeMap.keySet();
+        for (String date : dateSet) {
+            resultMap.put("date", date);
 
-            promotionOverviewResVoList.sort(Comparator.comparing(PromotionOverviewResVo::getStatisticDate));
+            List<PromotionOverview> _promotionOverviewList = dateRangeMap.get(date);
+            for (PromotionOverview promotionOverview : _promotionOverviewList) {
+                resultMap.put(promotionOverview.getPromotionType(), promotionOverview.getOrderCount() + "");
+            }
         }
 
         log.info("根据时间范围获取daily型的活动维度统计数据 获取统计数据Map<String, List<PromotionOverviewResVo>>:{}",
-                JSONUtil.toJsonString(promotionOverviewResVoByPromotionNameMap));
-        return promotionOverviewResVoByPromotionNameMap;
+                JSONUtil.toJsonString(resultMap));
+
+        return resultMap;
     }
 
     //====================================== private ======================================
 
     /**
-     * @param promotionOverview
-     * @return
-     */
-    private PromotionOverviewResVo convertToPromotionOverviewResVo(PromotionOverview promotionOverview) {
-        PromotionOverviewResVo promotionOverviewResVo = new PromotionOverviewResVo();
-
-        private String date; // '2019/6/1',
-
-
-        String promotionTypeName = promotionOverview.getPromotionType();
-
-        private Integer secKill = 0;
-        private Integer premium = 0;
-        private Integer normal = 0;
-        private Integer others = 0;
-
-        return promotionOverviewResVo;
-    }
+//     * @param promotionOverview
+//     * @return
+//     */
+//    private PromotionOverviewResVo convertToPromotionOverviewResVo(PromotionOverview promotionOverview) {
+//        PromotionOverviewResVo promotionOverviewResVo = new PromotionOverviewResVo();
+//
+//        private String date; // '2019/6/1',
+//
+//
+//        String promotionTypeName = promotionOverview.getPromotionType();
+//
+//        private Integer secKill = 0;
+//        private Integer premium = 0;
+//        private Integer normal = 0;
+//        private Integer others = 0;
+//
+//        return promotionOverviewResVo;
+//    }
 
 
 }

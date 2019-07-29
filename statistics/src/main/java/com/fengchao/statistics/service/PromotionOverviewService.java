@@ -27,5 +27,5 @@ public interface PromotionOverviewService {
      * @return
      * @throws Exception
      */
-    Map<String, List<PromotionOverviewResVo>> fetchStatisticDailyResult(String startDate, String endDate) throws Exception;
+    Map<String, String> fetchStatisticDailyResult(String startDate, String endDate) throws Exception;
 }
