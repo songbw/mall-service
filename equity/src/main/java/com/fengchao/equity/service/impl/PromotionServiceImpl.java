@@ -101,7 +101,8 @@ public class PromotionServiceImpl implements PromotionService {
         map.put("pageNo", pageNo);
         map.put("pageSize",bean.getLimit());
         map.put("name",bean.getName());
-        map.put("promotionType",bean.getPromotionType());
+        map.put("promotionTypeId",bean.getPromotionTypeId());
+        map.put("discountType",bean.getDiscountType());
         map.put("status",bean.getStatus());
         List<PromotionX> promotions = new ArrayList<>();
         total = promotionXMapper.selectCount(map);
@@ -266,7 +267,7 @@ public class PromotionServiceImpl implements PromotionService {
         promotionBean.setId(promotion.getId());
         promotionBean.setName(promotion.getName());
         // promotionBean.setTag(promotion.getTag());
-        promotionBean.setPromotionType(promotion.getDiscountType());
+//        promotionBean.setPromotionType(promotion.getDiscountType());
         promotionBean.setStatus(promotion.getStatus());
         // promotionBean.setStartDate(promotion.getStartDate());
         // promotionBean.setEndDate(promotion.getEndDate());

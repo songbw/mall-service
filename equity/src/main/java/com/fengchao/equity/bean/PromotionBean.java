@@ -12,7 +12,9 @@ public class PromotionBean extends QueryBean {
 
     private String name;
 
-    private Integer promotionType;
+    private Integer discountType;
+
+    private Long promotionTypeId;
 
     private Integer status;
 

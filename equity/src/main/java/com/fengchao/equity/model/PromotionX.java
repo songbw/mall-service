@@ -12,7 +12,7 @@ public class PromotionX {
 
     private String tag;
 
-    private Integer promotionType;
+//    private Integer promotionType;
 
     private Integer status;
 
@@ -24,7 +24,14 @@ public class PromotionX {
 
     private Date createdDate;
 
+    private Integer discountType;
+
+    private Long promotionTypeId;
+
     private List<PromotionMpu> promotionSkus;
+
+    public PromotionX() {
+    }
 
     public Integer getId() {
         return id;
@@ -50,13 +57,13 @@ public class PromotionX {
         this.tag = tag == null ? null : tag.trim();
     }
 
-    public Integer getPromotionType() {
-        return promotionType;
-    }
-
-    public void setPromotionType(Integer promotionType) {
-        this.promotionType = promotionType;
-    }
+//    public Integer getPromotionType() {
+//        return promotionType;
+//    }
+//
+//    public void setPromotionType(Integer promotionType) {
+//        this.promotionType = promotionType;
+//    }
 
     public Integer getStatus() {
         return status;
@@ -96,5 +103,21 @@ public class PromotionX {
 
     public void setPromotionSkus(List<PromotionMpu> promotionSkus) {
         this.promotionSkus = promotionSkus;
+    }
+
+    public Integer getDiscountType() {
+        return discountType;
+    }
+
+    public void setDiscountType(Integer discountType) {
+        this.discountType = discountType;
+    }
+
+    public Long getPromotionTypeId() {
+        return promotionTypeId;
+    }
+
+    public void setPromotionTypeId(Long promotionTypeId) {
+        this.promotionTypeId = promotionTypeId;
     }
 }

@@ -13,7 +13,7 @@ import javax.ws.rs.QueryParam;
 @RestController
 @RequestMapping(value = "/adminPromotion/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
-public class PromotionTypeController {
+public class AdminPromotionTypeController {
 
     @Autowired
     private PromotionTypeService service;
