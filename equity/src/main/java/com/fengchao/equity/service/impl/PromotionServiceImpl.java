@@ -266,7 +266,7 @@ public class PromotionServiceImpl implements PromotionService {
         promotionBean.setId(promotion.getId());
         promotionBean.setName(promotion.getName());
         // promotionBean.setTag(promotion.getTag());
-        promotionBean.setPromotionType(promotion.getPromotionType());
+        promotionBean.setPromotionType(promotion.getDiscountType());
         promotionBean.setStatus(promotion.getStatus());
         // promotionBean.setStartDate(promotion.getStartDate());
         // promotionBean.setEndDate(promotion.getEndDate());
