@@ -27,7 +27,7 @@ public class CouponEffectiveRunnerJobImpl implements JobRunner {
             CouponService couponService = BeanContext.getApplicationContext().getBean(CouponService.class);
             int couponId = Integer.parseInt(id) ;
             CouponBean couponBean = couponService.findByCouponId(couponId);
-            if (couponBean != null && couponBean.getStatus() != 3) {
+            if (couponBean != null && couponBean.getStatus() != 4) {
                 couponService.effective(couponId) ;
                 // 会发送到 LTS (JobTracker上)
                 bizLogger.info("优惠券生效成功");
