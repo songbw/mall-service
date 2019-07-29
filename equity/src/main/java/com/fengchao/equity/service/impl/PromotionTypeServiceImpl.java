@@ -25,7 +25,7 @@ public class PromotionTypeServiceImpl implements PromotionTypeService {
     public PageableData<PromotionType> getPromotionTypes(int page, int size) {
 
         PageableData<PromotionType> pageableData = new PageableData<>();
-
+        log.info("getPromotionTypes page, size==> " , page, size);
         // 执行查询
         PageInfo<PromotionType> pageInfo =  promotionTypeDao.selectPromotionType(page, size);
 
@@ -39,5 +39,20 @@ public class PromotionTypeServiceImpl implements PromotionTypeService {
 
         return pageableData;
 
+    }
+
+    @Override
+    public Long createPromotionType(PromotionType type) {
+        return promotionTypeDao.createPromotionType(type);
+    }
+
+    @Override
+    public Long updatePromotionType(PromotionType type) {
+        return promotionTypeDao.updatePromotionType(type);
+    }
+
+    @Override
+    public int removePromotionType(Long promotionTypeId) {
+        return promotionTypeDao.removePromotionType(promotionTypeId);
     }
 }

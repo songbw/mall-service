@@ -25,6 +25,7 @@ public class PromotionTypeDao {
     }
 
     public PageInfo<PromotionType> selectPromotionType(int page , int size){
+
         PromotionTypeExample example = new PromotionTypeExample();
         example.createCriteria().andIstatusEqualTo((short)1);
         PageHelper.startPage(page, size);
@@ -32,4 +33,20 @@ public class PromotionTypeDao {
         return new PageInfo<>(types);
     }
 
+    public Long createPromotionType(PromotionType type){
+         promotionTypeMapper.insertSelective(type);
+         return type.getId();
+    }
+
+    public Long updatePromotionType(PromotionType type){
+         promotionTypeMapper.updateByPrimaryKeySelective(type);
+         return type.getId();
+    }
+
+    public int removePromotionType(Long promotionTypeId){
+        PromotionType type = new PromotionType();
+        type.setId(promotionTypeId);
+        type.setIstatus((short)2);
+        return promotionTypeMapper.updateByPrimaryKeySelective(type);
+    }
 }
