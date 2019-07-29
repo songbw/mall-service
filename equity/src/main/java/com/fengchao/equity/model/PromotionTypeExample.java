@@ -1,18 +1,17 @@
-package com.fengchao.statistics.model;
+package com.fengchao.equity.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-public class PromotionOverviewExample {
+public class PromotionTypeExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public PromotionOverviewExample() {
+    public PromotionTypeExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -106,32 +105,6 @@ public class PromotionOverviewExample {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
-        protected void addCriterionForJDBCDate(String condition, Date value, String property) {
-            if (value == null) {
-                throw new RuntimeException("Value for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Date(value.getTime()), property);
-        }
-
-        protected void addCriterionForJDBCDate(String condition, List<Date> values, String property) {
-            if (values == null || values.size() == 0) {
-                throw new RuntimeException("Value list for " + property + " cannot be null or empty");
-            }
-            List<java.sql.Date> dateList = new ArrayList<java.sql.Date>();
-            Iterator<Date> iter = values.iterator();
-            while (iter.hasNext()) {
-                dateList.add(new java.sql.Date(iter.next().getTime()));
-            }
-            addCriterion(condition, dateList, property);
-        }
-
-        protected void addCriterionForJDBCDate(String condition, Date value1, Date value2, String property) {
-            if (value1 == null || value2 == null) {
-                throw new RuntimeException("Between values for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Date(value1.getTime()), new java.sql.Date(value2.getTime()), property);
-        }
-
         public Criteria andIdIsNull() {
             addCriterion("id is null");
             return (Criteria) this;
@@ -192,373 +165,143 @@ public class PromotionOverviewExample {
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIsNull() {
-            addCriterion("promotion_type is null");
+        public Criteria andTypeNameIsNull() {
+            addCriterion("type_name is null");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIsNotNull() {
-            addCriterion("promotion_type is not null");
+        public Criteria andTypeNameIsNotNull() {
+            addCriterion("type_name is not null");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeEqualTo(String value) {
-            addCriterion("promotion_type =", value, "promotionType");
+        public Criteria andTypeNameEqualTo(String value) {
+            addCriterion("type_name =", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotEqualTo(String value) {
-            addCriterion("promotion_type <>", value, "promotionType");
+        public Criteria andTypeNameNotEqualTo(String value) {
+            addCriterion("type_name <>", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeGreaterThan(String value) {
-            addCriterion("promotion_type >", value, "promotionType");
+        public Criteria andTypeNameGreaterThan(String value) {
+            addCriterion("type_name >", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeGreaterThanOrEqualTo(String value) {
-            addCriterion("promotion_type >=", value, "promotionType");
+        public Criteria andTypeNameGreaterThanOrEqualTo(String value) {
+            addCriterion("type_name >=", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLessThan(String value) {
-            addCriterion("promotion_type <", value, "promotionType");
+        public Criteria andTypeNameLessThan(String value) {
+            addCriterion("type_name <", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLessThanOrEqualTo(String value) {
-            addCriterion("promotion_type <=", value, "promotionType");
+        public Criteria andTypeNameLessThanOrEqualTo(String value) {
+            addCriterion("type_name <=", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLike(String value) {
-            addCriterion("promotion_type like", value, "promotionType");
+        public Criteria andTypeNameLike(String value) {
+            addCriterion("type_name like", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotLike(String value) {
-            addCriterion("promotion_type not like", value, "promotionType");
+        public Criteria andTypeNameNotLike(String value) {
+            addCriterion("type_name not like", value, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIn(List<String> values) {
-            addCriterion("promotion_type in", values, "promotionType");
+        public Criteria andTypeNameIn(List<String> values) {
+            addCriterion("type_name in", values, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotIn(List<String> values) {
-            addCriterion("promotion_type not in", values, "promotionType");
+        public Criteria andTypeNameNotIn(List<String> values) {
+            addCriterion("type_name not in", values, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeBetween(String value1, String value2) {
-            addCriterion("promotion_type between", value1, value2, "promotionType");
+        public Criteria andTypeNameBetween(String value1, String value2) {
+            addCriterion("type_name between", value1, value2, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotBetween(String value1, String value2) {
-            addCriterion("promotion_type not between", value1, value2, "promotionType");
+        public Criteria andTypeNameNotBetween(String value1, String value2) {
+            addCriterion("type_name not between", value1, value2, "typeName");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountIsNull() {
-            addCriterion("order_count is null");
+        public Criteria andTypeDescIsNull() {
+            addCriterion("type_desc is null");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountIsNotNull() {
-            addCriterion("order_count is not null");
+        public Criteria andTypeDescIsNotNull() {
+            addCriterion("type_desc is not null");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountEqualTo(Integer value) {
-            addCriterion("order_count =", value, "orderCount");
+        public Criteria andTypeDescEqualTo(String value) {
+            addCriterion("type_desc =", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotEqualTo(Integer value) {
-            addCriterion("order_count <>", value, "orderCount");
+        public Criteria andTypeDescNotEqualTo(String value) {
+            addCriterion("type_desc <>", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountGreaterThan(Integer value) {
-            addCriterion("order_count >", value, "orderCount");
+        public Criteria andTypeDescGreaterThan(String value) {
+            addCriterion("type_desc >", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountGreaterThanOrEqualTo(Integer value) {
-            addCriterion("order_count >=", value, "orderCount");
+        public Criteria andTypeDescGreaterThanOrEqualTo(String value) {
+            addCriterion("type_desc >=", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountLessThan(Integer value) {
-            addCriterion("order_count <", value, "orderCount");
+        public Criteria andTypeDescLessThan(String value) {
+            addCriterion("type_desc <", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountLessThanOrEqualTo(Integer value) {
-            addCriterion("order_count <=", value, "orderCount");
+        public Criteria andTypeDescLessThanOrEqualTo(String value) {
+            addCriterion("type_desc <=", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountIn(List<Integer> values) {
-            addCriterion("order_count in", values, "orderCount");
+        public Criteria andTypeDescLike(String value) {
+            addCriterion("type_desc like", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotIn(List<Integer> values) {
-            addCriterion("order_count not in", values, "orderCount");
+        public Criteria andTypeDescNotLike(String value) {
+            addCriterion("type_desc not like", value, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountBetween(Integer value1, Integer value2) {
-            addCriterion("order_count between", value1, value2, "orderCount");
+        public Criteria andTypeDescIn(List<String> values) {
+            addCriterion("type_desc in", values, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotBetween(Integer value1, Integer value2) {
-            addCriterion("order_count not between", value1, value2, "orderCount");
+        public Criteria andTypeDescNotIn(List<String> values) {
+            addCriterion("type_desc not in", values, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andStatisticsDateIsNull() {
-            addCriterion("statistics_date is null");
+        public Criteria andTypeDescBetween(String value1, String value2) {
+            addCriterion("type_desc between", value1, value2, "typeDesc");
             return (Criteria) this;
         }
 
-        public Criteria andStatisticsDateIsNotNull() {
-            addCriterion("statistics_date is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateEqualTo(Date value) {
-            addCriterionForJDBCDate("statistics_date =", value, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateNotEqualTo(Date value) {
-            addCriterionForJDBCDate("statistics_date <>", value, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateGreaterThan(Date value) {
-            addCriterionForJDBCDate("statistics_date >", value, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateGreaterThanOrEqualTo(Date value) {
-            addCriterionForJDBCDate("statistics_date >=", value, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateLessThan(Date value) {
-            addCriterionForJDBCDate("statistics_date <", value, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateLessThanOrEqualTo(Date value) {
-            addCriterionForJDBCDate("statistics_date <=", value, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateIn(List<Date> values) {
-            addCriterionForJDBCDate("statistics_date in", values, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateNotIn(List<Date> values) {
-            addCriterionForJDBCDate("statistics_date not in", values, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateBetween(Date value1, Date value2) {
-            addCriterionForJDBCDate("statistics_date between", value1, value2, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticsDateNotBetween(Date value1, Date value2) {
-            addCriterionForJDBCDate("statistics_date not between", value1, value2, "statisticsDate");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeIsNull() {
-            addCriterion("statistic_start_time is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeIsNotNull() {
-            addCriterion("statistic_start_time is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeEqualTo(Date value) {
-            addCriterion("statistic_start_time =", value, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeNotEqualTo(Date value) {
-            addCriterion("statistic_start_time <>", value, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeGreaterThan(Date value) {
-            addCriterion("statistic_start_time >", value, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeGreaterThanOrEqualTo(Date value) {
-            addCriterion("statistic_start_time >=", value, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeLessThan(Date value) {
-            addCriterion("statistic_start_time <", value, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeLessThanOrEqualTo(Date value) {
-            addCriterion("statistic_start_time <=", value, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeIn(List<Date> values) {
-            addCriterion("statistic_start_time in", values, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeNotIn(List<Date> values) {
-            addCriterion("statistic_start_time not in", values, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeBetween(Date value1, Date value2) {
-            addCriterion("statistic_start_time between", value1, value2, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticStartTimeNotBetween(Date value1, Date value2) {
-            addCriterion("statistic_start_time not between", value1, value2, "statisticStartTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeIsNull() {
-            addCriterion("statistic_end_time is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeIsNotNull() {
-            addCriterion("statistic_end_time is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeEqualTo(Date value) {
-            addCriterion("statistic_end_time =", value, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeNotEqualTo(Date value) {
-            addCriterion("statistic_end_time <>", value, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeGreaterThan(Date value) {
-            addCriterion("statistic_end_time >", value, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeGreaterThanOrEqualTo(Date value) {
-            addCriterion("statistic_end_time >=", value, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeLessThan(Date value) {
-            addCriterion("statistic_end_time <", value, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeLessThanOrEqualTo(Date value) {
-            addCriterion("statistic_end_time <=", value, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeIn(List<Date> values) {
-            addCriterion("statistic_end_time in", values, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeNotIn(List<Date> values) {
-            addCriterion("statistic_end_time not in", values, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeBetween(Date value1, Date value2) {
-            addCriterion("statistic_end_time between", value1, value2, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatisticEndTimeNotBetween(Date value1, Date value2) {
-            addCriterion("statistic_end_time not between", value1, value2, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeIsNull() {
-            addCriterion("period_type is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeIsNotNull() {
-            addCriterion("period_type is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeEqualTo(Short value) {
-            addCriterion("period_type =", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeNotEqualTo(Short value) {
-            addCriterion("period_type <>", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeGreaterThan(Short value) {
-            addCriterion("period_type >", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeGreaterThanOrEqualTo(Short value) {
-            addCriterion("period_type >=", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeLessThan(Short value) {
-            addCriterion("period_type <", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeLessThanOrEqualTo(Short value) {
-            addCriterion("period_type <=", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeIn(List<Short> values) {
-            addCriterion("period_type in", values, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeNotIn(List<Short> values) {
-            addCriterion("period_type not in", values, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeBetween(Short value1, Short value2) {
-            addCriterion("period_type between", value1, value2, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeNotBetween(Short value1, Short value2) {
-            addCriterion("period_type not between", value1, value2, "periodType");
+        public Criteria andTypeDescNotBetween(String value1, String value2) {
+            addCriterion("type_desc not between", value1, value2, "typeDesc");
             return (Criteria) this;
         }
 

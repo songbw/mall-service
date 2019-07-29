@@ -305,63 +305,63 @@ public class PromotionExample {
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIsNull() {
-            addCriterion("promotion_type is null");
+        public Criteria andDiscountTypeIsNull() {
+            addCriterion("discount_type is null");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIsNotNull() {
-            addCriterion("promotion_type is not null");
+        public Criteria andDiscountTypeIsNotNull() {
+            addCriterion("discount_type is not null");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeEqualTo(Integer value) {
-            addCriterion("promotion_type =", value, "promotionType");
+        public Criteria andDiscountTypeEqualTo(Integer value) {
+            addCriterion("discount_type =", value, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotEqualTo(Integer value) {
-            addCriterion("promotion_type <>", value, "promotionType");
+        public Criteria andDiscountTypeNotEqualTo(Integer value) {
+            addCriterion("discount_type <>", value, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeGreaterThan(Integer value) {
-            addCriterion("promotion_type >", value, "promotionType");
+        public Criteria andDiscountTypeGreaterThan(Integer value) {
+            addCriterion("discount_type >", value, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeGreaterThanOrEqualTo(Integer value) {
-            addCriterion("promotion_type >=", value, "promotionType");
+        public Criteria andDiscountTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("discount_type >=", value, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLessThan(Integer value) {
-            addCriterion("promotion_type <", value, "promotionType");
+        public Criteria andDiscountTypeLessThan(Integer value) {
+            addCriterion("discount_type <", value, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLessThanOrEqualTo(Integer value) {
-            addCriterion("promotion_type <=", value, "promotionType");
+        public Criteria andDiscountTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("discount_type <=", value, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIn(List<Integer> values) {
-            addCriterion("promotion_type in", values, "promotionType");
+        public Criteria andDiscountTypeIn(List<Integer> values) {
+            addCriterion("discount_type in", values, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotIn(List<Integer> values) {
-            addCriterion("promotion_type not in", values, "promotionType");
+        public Criteria andDiscountTypeNotIn(List<Integer> values) {
+            addCriterion("discount_type not in", values, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeBetween(Integer value1, Integer value2) {
-            addCriterion("promotion_type between", value1, value2, "promotionType");
+        public Criteria andDiscountTypeBetween(Integer value1, Integer value2) {
+            addCriterion("discount_type between", value1, value2, "discountType");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotBetween(Integer value1, Integer value2) {
-            addCriterion("promotion_type not between", value1, value2, "promotionType");
+        public Criteria andDiscountTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("discount_type not between", value1, value2, "discountType");
             return (Criteria) this;
         }
 
@@ -605,63 +605,63 @@ public class PromotionExample {
             return (Criteria) this;
         }
 
-        public Criteria andTypeIsNull() {
-            addCriterion("type is null");
+        public Criteria andPromotionTypeIdIsNull() {
+            addCriterion("promotion_type_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andTypeIsNotNull() {
-            addCriterion("type is not null");
+        public Criteria andPromotionTypeIdIsNotNull() {
+            addCriterion("promotion_type_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andTypeEqualTo(Short value) {
-            addCriterion("type =", value, "type");
+        public Criteria andPromotionTypeIdEqualTo(Long value) {
+            addCriterion("promotion_type_id =", value, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotEqualTo(Short value) {
-            addCriterion("type <>", value, "type");
+        public Criteria andPromotionTypeIdNotEqualTo(Long value) {
+            addCriterion("promotion_type_id <>", value, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThan(Short value) {
-            addCriterion("type >", value, "type");
+        public Criteria andPromotionTypeIdGreaterThan(Long value) {
+            addCriterion("promotion_type_id >", value, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThanOrEqualTo(Short value) {
-            addCriterion("type >=", value, "type");
+        public Criteria andPromotionTypeIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("promotion_type_id >=", value, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThan(Short value) {
-            addCriterion("type <", value, "type");
+        public Criteria andPromotionTypeIdLessThan(Long value) {
+            addCriterion("promotion_type_id <", value, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThanOrEqualTo(Short value) {
-            addCriterion("type <=", value, "type");
+        public Criteria andPromotionTypeIdLessThanOrEqualTo(Long value) {
+            addCriterion("promotion_type_id <=", value, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeIn(List<Short> values) {
-            addCriterion("type in", values, "type");
+        public Criteria andPromotionTypeIdIn(List<Long> values) {
+            addCriterion("promotion_type_id in", values, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotIn(List<Short> values) {
-            addCriterion("type not in", values, "type");
+        public Criteria andPromotionTypeIdNotIn(List<Long> values) {
+            addCriterion("promotion_type_id not in", values, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeBetween(Short value1, Short value2) {
-            addCriterion("type between", value1, value2, "type");
+        public Criteria andPromotionTypeIdBetween(Long value1, Long value2) {
+            addCriterion("promotion_type_id between", value1, value2, "promotionTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotBetween(Short value1, Short value2) {
-            addCriterion("type not between", value1, value2, "type");
+        public Criteria andPromotionTypeIdNotBetween(Long value1, Long value2) {
+            addCriterion("promotion_type_id not between", value1, value2, "promotionTypeId");
             return (Criteria) this;
         }
     }

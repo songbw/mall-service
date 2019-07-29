@@ -9,7 +9,7 @@ public class Promotion {
 
     private String tag;
 
-    private Integer promotionType;
+    private Integer discountType;
 
     private Integer status;
 
@@ -19,7 +19,7 @@ public class Promotion {
 
     private Date createdDate;
 
-    private Short type;
+    private Long promotionTypeId;
 
     public Integer getId() {
         return id;
@@ -45,12 +45,12 @@ public class Promotion {
         this.tag = tag == null ? null : tag.trim();
     }
 
-    public Integer getPromotionType() {
-        return promotionType;
+    public Integer getDiscountType() {
+        return discountType;
     }
 
-    public void setPromotionType(Integer promotionType) {
-        this.promotionType = promotionType;
+    public void setDiscountType(Integer discountType) {
+        this.discountType = discountType;
     }
 
     public Integer getStatus() {
@@ -85,11 +85,11 @@ public class Promotion {
         this.createdDate = createdDate;
     }
 
-    public Short getType() {
-        return type;
+    public Long getPromotionTypeId() {
+        return promotionTypeId;
     }
 
-    public void setType(Short type) {
-        this.type = type;
+    public void setPromotionTypeId(Long promotionTypeId) {
+        this.promotionTypeId = promotionTypeId;
     }
 }

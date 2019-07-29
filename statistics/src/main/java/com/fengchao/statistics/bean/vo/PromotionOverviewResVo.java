@@ -12,8 +12,8 @@ import lombok.Setter;
 public class PromotionOverviewResVo {
 
     private Integer promotionId;
-    private String promotionName;
-    private String orderAmount; // 单位元
+    private String promotionType; // 活动类型 1:秒杀 2:优选 3:普通
+    private String orderCount; // 订单数量
 
     private String statisticDate; // yyyyMMdd
 }

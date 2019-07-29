@@ -245,6 +245,10 @@ public class PromotionServiceImpl implements PromotionService {
         List<Promotion> promotionList = promotionDao.selectPromotionListByIdList(promotionIdList);
         log.info("查询活动列表 根据id集合查询 获取到数据库返回:{}", JSONUtil.toJsonString(promotionList));
 
+        // 获取活动的类型
+
+
+
 
         // 转dto
         List<PromotionBean> promotionBeanList = new ArrayList<>();
@@ -271,6 +275,7 @@ public class PromotionServiceImpl implements PromotionService {
         // promotionBean.setStartDate(promotion.getStartDate());
         // promotionBean.setEndDate(promotion.getEndDate());
         // promotionBean.setCreatedDate(promotion.getCreatedDate());
+        promotionBean.setType(promotion.getType().intValue());
 
         return promotionBean;
     }

@@ -5,15 +5,13 @@ import java.util.Date;
 public class PromotionOverview {
     private Long id;
 
-    private Integer promotionId;
+    private String promotionType;
 
-    private String promotionName;
+    private Integer orderCount;
 
     private Date statisticsDate;
 
     private Date statisticStartTime;
-
-    private Long orderAmount;
 
     private Date statisticEndTime;
 
@@ -33,20 +31,20 @@ public class PromotionOverview {
         this.id = id;
     }
 
-    public Integer getPromotionId() {
-        return promotionId;
+    public String getPromotionType() {
+        return promotionType;
     }
 
-    public void setPromotionId(Integer promotionId) {
-        this.promotionId = promotionId;
+    public void setPromotionType(String promotionType) {
+        this.promotionType = promotionType == null ? null : promotionType.trim();
     }
 
-    public String getPromotionName() {
-        return promotionName;
+    public Integer getOrderCount() {
+        return orderCount;
     }
 
-    public void setPromotionName(String promotionName) {
-        this.promotionName = promotionName == null ? null : promotionName.trim();
+    public void setOrderCount(Integer orderCount) {
+        this.orderCount = orderCount;
     }
 
     public Date getStatisticsDate() {
@@ -63,14 +61,6 @@ public class PromotionOverview {
 
     public void setStatisticStartTime(Date statisticStartTime) {
         this.statisticStartTime = statisticStartTime;
-    }
-
-    public Long getOrderAmount() {
-        return orderAmount;
-    }
-
-    public void setOrderAmount(Long orderAmount) {
-        this.orderAmount = orderAmount;
     }
 
     public Date getStatisticEndTime() {
