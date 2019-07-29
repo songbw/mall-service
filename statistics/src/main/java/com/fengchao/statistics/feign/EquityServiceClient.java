@@ -1,5 +1,6 @@
 package com.fengchao.statistics.feign;
 
+import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.hystric.EquityServiceClientH;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -20,5 +21,13 @@ public interface EquityServiceClient {
      */
     @RequestMapping(value = "/promotion/findByIdList", method = RequestMethod.GET)
     OperaResult queryPromotionByIdList(@RequestParam("idList") List<Integer> id);
+
+    /**
+     * 查询所有的活动类型
+     *
+     * @return
+     */
+    @RequestMapping(value = "/promotion/type/queryAllPromotionTypes", method = RequestMethod.GET)
+    OperaResponse queryAllPromotionTypeList();
 
 }

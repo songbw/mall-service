@@ -11,9 +11,26 @@ import lombok.Setter;
 @Getter
 public class PromotionOverviewResVo {
 
-    private Integer promotionId;
-    private String promotionType; // 活动类型 1:秒杀 2:优选 3:普通
-    private String orderCount; // 订单数量
+    private String date; // '2019/6/1',
 
-    private String statisticDate; // yyyyMMdd
+    /**
+     * 秒杀
+     */
+    private Integer secKill = 0;
+
+    /**
+     * 优选
+     */
+    private Integer premium = 0;
+
+    /**
+     * 普通
+     */
+    private Integer normal = 0;
+
+    /**
+     * 其他
+     */
+    private Integer others = 0;
+
 }

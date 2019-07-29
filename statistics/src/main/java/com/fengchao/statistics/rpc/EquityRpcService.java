@@ -1,7 +1,9 @@
 package com.fengchao.statistics.rpc;
 
 import com.alibaba.fastjson.JSON;
+import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
+import com.fengchao.statistics.bean.PromotionTypeResDto;
 import com.fengchao.statistics.feign.EquityServiceClient;
 import com.fengchao.statistics.feign.VendorsServiceClient;
 import com.fengchao.statistics.rpc.extmodel.PromotionBean;
@@ -61,5 +63,35 @@ public class EquityRpcService {
                 JSONUtil.toJsonString(promotionBeanList));
 
         return promotionBeanList;
+    }
+
+    /**
+     * 查询所有的活动类型信息
+     *
+     * @return
+     */
+    public List<PromotionTypeResDto> queryAllPromotionTypeList() {
+        // 返回值
+        List<PromotionTypeResDto> promotionTypeResDtoList = new ArrayList<>();
+
+        // 执行rpc调用
+        log.info("查询所有的活动类型信息 调用equity rpc服务 入参:无");
+        OperaResponse operaResponse = equityServiceClient.queryAllPromotionTypeList();
+        log.info("查询所有的活动类型信息 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        // 处理返回
+        if (operaResponse.getCode() == 200) {
+            Map _resultMap = (Map) operaResponse.getData();
+
+            // 转
+            promotionTypeResDtoList = JSON.parseArray(JSON.toJSONString(_resultMap), PromotionTypeResDto.class);
+        } else {
+            log.warn("查询所有的活动类型信息 调用equity rpc服务 错误!");
+        }
+
+        log.info("EquityRpcService#queryAllPromotionTypeList 调用equity rpc服务 返回:{}",
+                JSONUtil.toJsonString(promotionTypeResDtoList));
+
+        return promotionTypeResDtoList;
     }
 }

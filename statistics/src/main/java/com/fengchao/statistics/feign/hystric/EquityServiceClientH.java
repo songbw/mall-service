@@ -1,5 +1,6 @@
 package com.fengchao.statistics.feign.hystric;
 
+import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.EquityServiceClient;
 import org.springframework.stereotype.Component;
@@ -13,4 +14,10 @@ public class EquityServiceClientH implements EquityServiceClient {
     public OperaResult queryPromotionByIdList(List<Integer> idList) {
         return HystrixDefaultFallback.defaultFallback();
     }
+
+    @Override
+    public OperaResponse queryAllPromotionTypeList() {
+        return HystrixDefaultFallback.fallbackResponse();
+    }
 }
+

@@ -1,5 +1,6 @@
 package com.fengchao.statistics.service.impl;
 
+import com.fengchao.statistics.bean.PromotionTypeResDto;
 import com.fengchao.statistics.bean.vo.PromotionOverviewResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.PromotionOverviewDao;
@@ -34,8 +35,17 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     private PromotionOverviewDao promotionOverviewDao;
 
     @Override
-    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList ,
+    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList,
                                  String startDateTime, String endDateTime) throws Exception {
+        // 0. 获取活动类别信息
+        // 获取所有活动类型，准备插入空数据
+        List<PromotionTypeResDto> promotionTypeResDtoList = equityRpcService.queryAllPromotionTypeList();
+        // 准备空数据， 以'活动类别'维度生成空统计数据的map
+        Map<String, List<OrderDetailBean>> orderDetailBeansByPromotionTypeMap = new HashMap<>(); // !!
+        for (PromotionTypeResDto promotionTypeResDto : promotionTypeResDtoList) {
+            orderDetailBeansByPromotionTypeMap.put(promotionTypeResDto.getTypeName(), new ArrayList<>());
+        }
+
         // 1. 获取活动信息
         // 获取所有订单详情的活动id集合
         Set<Integer> promotionIdSet =
@@ -48,7 +58,6 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
 
 
         // 2. 根据'活动类别'维度将订单详情分类 活动类型 1:秒杀 2:优选 3:普通
-        Map<String, List<OrderDetailBean>> orderDetailBeansByPromotionTypeMap = new HashMap<>();
         for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
             // 从订单中获取活动id
             Integer promotionId = orderDetailBean.getPromotionId();
@@ -57,28 +66,16 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             }
 
             // 获取该订单的活动类型
-            String promotionType = "其他";
+            String promotionTypeName = "其他";
             PromotionBean promotionBean = promotionBeanMap.get(promotionId);
-            if (promotionBean != null) {
-                switch (promotionBean.getType()) { // 活动类型 1:秒杀 2:优选 3:普通
-                    case 1:
-                        promotionType = "秒杀";
-                        break;
-                    case 2:
-                        promotionType = "优选";
-                        break;
-                    case 3:
-                        promotionType = "普通";
-                        break;
-                    default:
-                        promotionType = "其他";
-                }
+            if (promotionBean != null) { // 活动类型 1:秒杀 2:优选 3:普通
+                promotionTypeName = promotionBean.getTypeName();
             }
 
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionType);
+            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
             if (_orderDetailBeanList == null) {
                 _orderDetailBeanList = new ArrayList<>();
-                orderDetailBeansByPromotionTypeMap.put(promotionType, _orderDetailBeanList);
+                orderDetailBeansByPromotionTypeMap.put(promotionTypeName, _orderDetailBeanList);
             }
             _orderDetailBeanList.add(orderDetailBean);
         }
@@ -88,8 +85,8 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
         List<PromotionOverview> promotionOverviewList = new ArrayList<>(); // 统计数据
         Set<String> promotionTypeSet = orderDetailBeansByPromotionTypeMap.keySet();
-        for (String promotionType : promotionTypeSet) { // 遍历
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionType);
+        for (String promotionTypeName : promotionTypeSet) { // 遍历
+            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
 
             Integer orderCount = 0; // 统计订单数量
             for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
@@ -98,7 +95,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
 
             PromotionOverview promotionOverview = new PromotionOverview();
 
-            promotionOverview.setPromotionType(promotionType);
+            promotionOverview.setPromotionType(promotionTypeName);
             promotionOverview.setOrderCount(orderCount);
 
             promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
@@ -119,14 +116,9 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
 
         // 4.2 执行插入
-        if (CollectionUtils.isNotEmpty(promotionOverviewList)) {
-            for (PromotionOverview promotionOverview : promotionOverviewList) {
-                promotionOverviewDao.insertCategoryOverview(promotionOverview);
-            }
-        } else {
-
+        for (PromotionOverview promotionOverview : promotionOverviewList) {
+            promotionOverviewDao.insertCategoryOverview(promotionOverview);
         }
-
 
         log.info("按照活动(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
@@ -141,15 +133,16 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 promotionOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的活动维度统计数据 数据库返回: {}", JSONUtil.toJsonString(promotionOverviewList));
 
-
+        // 根据start时间排序
+        promotionOverviewList.sort(Comparator.comparing(PromotionOverview::getStatisticStartTime));
 
         // 2. 统计数据
-        // 2.1 将获取到的数据按照'活动名称'分组， 并转换成PromotionOverviewResVo
-        Map<String, List<PromotionOverviewResVo>> promotionOverviewResVoByPromotionNameMap = new HashMap<>();
+        // 2.1 按照日期维度分组 转换成 PromotionOverviewResVo
+        Map<String, List<PromotionOverviewResVo>> promotionOverviewResVoByPromotionNameMap = new HashMap<>(); // 按照日期维度分组
         for (PromotionOverview promotionOverview : promotionOverviewList) {
             // 转 PromotionOverviewResVo
             PromotionOverviewResVo promotionOverviewResVo = convertToPromotionOverviewResVo(promotionOverview);
-            String promotionName = promotionOverview.getPromotionName(); // 活动name
+            String _date = promotionOverview.getStatisticStartTime(); // 活动name
 
             List<PromotionOverviewResVo> promotionOverviewResVoList = promotionOverviewResVoByPromotionNameMap.get(promotionName);
             if (promotionOverviewResVoList == null) {
@@ -176,20 +169,21 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     //====================================== private ======================================
 
     /**
-     *
-     *
      * @param promotionOverview
      * @return
      */
     private PromotionOverviewResVo convertToPromotionOverviewResVo(PromotionOverview promotionOverview) {
         PromotionOverviewResVo promotionOverviewResVo = new PromotionOverviewResVo();
 
-        promotionOverviewResVo.setPromotionId(promotionOverview.getPromotionId());
-        promotionOverviewResVo.setOrderAmount(new BigDecimal(promotionOverview.getOrderAmount())
-                .divide(new BigDecimal(100)).toString());
-        promotionOverviewResVo.setPromotionName(promotionOverview.getPromotionName());
-        promotionOverviewResVo.setStatisticDate(DateUtil.
-                dateTimeFormat(promotionOverview.getStatisticStartTime(), DateUtil.DATE_YYYYMMDD));
+        private String date; // '2019/6/1',
+
+
+        String promotionTypeName = promotionOverview.getPromotionType();
+
+        private Integer secKill = 0;
+        private Integer premium = 0;
+        private Integer normal = 0;
+        private Integer others = 0;
 
         return promotionOverviewResVo;
     }
