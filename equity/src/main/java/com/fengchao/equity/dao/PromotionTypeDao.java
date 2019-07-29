@@ -49,4 +49,18 @@ public class PromotionTypeDao {
         return promotionTypeList;
     }
 
+    /**
+     * 查询所有的PromotionType
+     *
+     * @return
+     */
+    public List<PromotionType> selectAllPromotionTypeList() {
+        PromotionTypeExample example = new PromotionTypeExample();
+        example.createCriteria().andIstatusEqualTo((short) 1);
+
+        List<PromotionType> promotionTypeList = promotionTypeMapper.selectByExample(example);
+
+        return promotionTypeList;
+    }
+
 }
