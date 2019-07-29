@@ -19,6 +19,8 @@ public class Promotion {
 
     private Date createdDate;
 
+    private Short type;
+
     public Integer getId() {
         return id;
     }
@@ -81,5 +83,13 @@ public class Promotion {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Short getType() {
+        return type;
+    }
+
+    public void setType(Short type) {
+        this.type = type;
     }
 }

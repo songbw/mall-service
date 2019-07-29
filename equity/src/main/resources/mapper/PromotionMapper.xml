@@ -10,6 +10,7 @@
     <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
     <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
     <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="type" jdbcType="SMALLINT" property="type" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, tag, promotion_type, status, start_date, end_date, created_date
+    id, name, tag, promotion_type, status, start_date, end_date, created_date, type
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionExample" resultMap="BaseResultMap">
     select
@@ -105,10 +106,10 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Promotion" useGeneratedKeys="true">
     insert into promotion (name, tag, promotion_type, 
       status, start_date, end_date, 
-      created_date)
+      created_date, type)
     values (#{name,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{promotionType,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
-      #{createdDate,jdbcType=TIMESTAMP})
+      #{createdDate,jdbcType=TIMESTAMP}, #{type,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Promotion" useGeneratedKeys="true">
     insert into promotion
@@ -134,6 +135,9 @@
       <if test="createdDate != null">
         created_date,
       </if>
+      <if test="type != null">
+        type,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -156,6 +160,9 @@
       </if>
       <if test="createdDate != null">
         #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=SMALLINT},
       </if>
     </trim>
   </insert>
@@ -192,6 +199,9 @@
       <if test="record.createdDate != null">
         created_date = #{record.createdDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=SMALLINT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -206,7 +216,8 @@
       status = #{record.status,jdbcType=INTEGER},
       start_date = #{record.startDate,jdbcType=TIMESTAMP},
       end_date = #{record.endDate,jdbcType=TIMESTAMP},
-      created_date = #{record.createdDate,jdbcType=TIMESTAMP}
+      created_date = #{record.createdDate,jdbcType=TIMESTAMP},
+      type = #{record.type,jdbcType=SMALLINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -235,6 +246,9 @@
       <if test="createdDate != null">
         created_date = #{createdDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="type != null">
+        type = #{type,jdbcType=SMALLINT},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -246,7 +260,8 @@
       status = #{status,jdbcType=INTEGER},
       start_date = #{startDate,jdbcType=TIMESTAMP},
       end_date = #{endDate,jdbcType=TIMESTAMP},
-      created_date = #{createdDate,jdbcType=TIMESTAMP}
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=SMALLINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

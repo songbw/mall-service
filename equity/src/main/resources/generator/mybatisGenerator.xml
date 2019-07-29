@@ -40,7 +40,7 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="coupon_use_info">
+        <table tableName="promotion">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
     </context>
