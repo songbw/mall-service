@@ -137,6 +137,14 @@ public class PaymentServiceImpl implements IPaymentService {
         return "success";
     }
 
+    @Override
+    public String refund(String subOrderNo) {
+        // TODO 获取退款金额和外部订单号
+        // TODO 调用退款接口
+        // TODO 回调时更新退款订单状态
+        return null;
+    }
+
     private PaymentResult getPayment(PaymentBean paymentBean) {
         paymentBean.setAppId(paymentBean.getiAppId());
         OperaResult result = pinganClientService.payment(paymentBean);

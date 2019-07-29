@@ -26,4 +26,7 @@ public interface GuanaitongClientService {
 
     @RequestMapping(value = "/seller/person/getDetailByOpenId", method = RequestMethod.POST)
     Result findUser(@RequestBody OpenId openId);
+
+    @RequestMapping(value = "/seller/pay/syncRefund", method = RequestMethod.POST)
+    Result refund(@RequestBody Map<String, String> map);
 }

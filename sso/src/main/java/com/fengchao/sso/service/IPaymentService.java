@@ -13,4 +13,6 @@ public interface IPaymentService {
 
     String gNotify(GATBackBean backBean) ;
 
+    String refund(String subOrderNo) ;
+
 }

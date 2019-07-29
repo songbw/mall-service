@@ -232,7 +232,6 @@ public class OrderServiceImpl implements OrderService {
         return id;
     }
 
-    @Cacheable(value = "orders")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findList(OrderQueryBean queryBean) {
@@ -266,7 +265,6 @@ public class OrderServiceImpl implements OrderService {
         return bean.getId();
     }
 
-    @Cacheable(value = "orders")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean searchOrderList(OrderBean orderBean) {
