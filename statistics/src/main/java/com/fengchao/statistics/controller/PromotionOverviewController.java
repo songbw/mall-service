@@ -34,9 +34,9 @@ public class PromotionOverviewController {
         log.info("根据时间范围获取按照活动维度的统计结果, 入参 startDate:{}, endDate:{}", startDate, endDate);
 
         try {
-            Map<String, List<PromotionOverviewResVo>> resultMap =
+            List<Map<String, Object>> result =
                     promotionOverviewService.fetchStatisticDailyResult(startDate, endDate);
-            operaResponse.setData(resultMap);
+            operaResponse.setData(result);
         } catch (Exception e) {
             log.info("根据时间范围获取按活动类维度的统计结果 异常:{}", e.getMessage(), e);
 

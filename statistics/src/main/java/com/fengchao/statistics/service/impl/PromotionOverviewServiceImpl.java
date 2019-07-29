@@ -124,7 +124,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     }
 
     @Override
-    public Map<String, String> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
+    public List<Map<String, Object>> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
         // 1. 查询数据库
         Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
         Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
@@ -153,21 +153,24 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
         }
 
         // 2.2 将数据转换成前端需要的格式：{[date:'', '秒杀':8, '优选':9 ...] ...}
-        Map<String, String> resultMap = new HashMap<>();
+        List<Map<String, Object>> result = new ArrayList<>();
         Set<String> dateSet = dateRangeMap.keySet();
         for (String date : dateSet) {
-            resultMap.put("date", date);
+            Map<String, Object> _map = new HashMap<>();
+            _map.put("date", date);
 
             List<PromotionOverview> _promotionOverviewList = dateRangeMap.get(date);
             for (PromotionOverview promotionOverview : _promotionOverviewList) {
-                resultMap.put(promotionOverview.getPromotionType(), promotionOverview.getOrderCount() + "");
+                _map.put(promotionOverview.getPromotionType(), promotionOverview.getOrderCount() + "");
             }
+
+            result.add(_map);
         }
 
         log.info("根据时间范围获取daily型的活动维度统计数据 获取统计数据Map<String, List<PromotionOverviewResVo>>:{}",
-                JSONUtil.toJsonString(resultMap));
+                JSONUtil.toJsonString(result));
 
-        return resultMap;
+        return result;
     }
 
     //====================================== private ======================================
