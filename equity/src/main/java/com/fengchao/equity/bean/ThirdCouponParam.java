@@ -24,5 +24,4 @@ public class ThirdCouponParam {
     private Date effectiveEndDate;
     private String imageUrl;
     private String description;
-    private String url;
 }
