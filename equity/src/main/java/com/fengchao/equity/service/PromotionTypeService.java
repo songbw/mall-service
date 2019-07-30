@@ -10,10 +10,18 @@ public interface PromotionTypeService {
 
     PageableData<PromotionType> getPromotionTypes(int page, int size);
 
+
     /**
      * 获取所有的PromotionType
      *
      * @return
      */
     List<PromotionTypeResDto> queryAllPromotionType();
+
+    Long createPromotionType(PromotionType type);
+
+    Long updatePromotionType(PromotionType type);
+
+    int removePromotionType(Long promotionTypeId);
+
 }

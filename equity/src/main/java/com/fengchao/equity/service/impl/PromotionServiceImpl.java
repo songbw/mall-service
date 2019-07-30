@@ -104,6 +104,7 @@ public class PromotionServiceImpl implements PromotionService {
         map.put("pageNo", pageNo);
         map.put("pageSize",bean.getLimit());
         map.put("name",bean.getName());
+        map.put("promotionTypeId",bean.getPromotionTypeId());
         map.put("discountType",bean.getDiscountType());
         map.put("status",bean.getStatus());
         List<PromotionX> promotions = new ArrayList<>();

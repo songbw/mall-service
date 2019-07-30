@@ -22,6 +22,8 @@ public class PromotionBean extends QueryBean {
      */
     private String typeName;
 
+    private Long promotionTypeId;
+
     private Integer status;
 
 }
