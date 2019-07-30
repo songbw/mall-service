@@ -115,7 +115,6 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         ThirdResquestParam param = new ThirdResquestParam();
         try {
             param.setOpen_id(AESUtils.encryptAES(userOpenId.getBytes()));
-            String open_id = new String(AESUtils.decryptAES(AESUtils.base642Byte(param.getOpen_id()), AESUtils.loadKeyAES()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -125,11 +124,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(param, Map.class);
         String urlMap = Pkcs8Util.formatUrlMap(props, false, false);
-        boolean verify = false;
         try {
             String sign = Pkcs8Util.getSign(urlMap);
             resquest.setSign(sign);
-            verify = Pkcs8Util.verify(urlMap.getBytes(), sign);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,6 +135,12 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         Response response = invocationBuilder.post(Entity.entity(resquest, MediaType.APPLICATION_JSON));
         if (response.getStatus() == 200) {
             OperaResult toushiResult = response.readEntity(OperaResult.class);
+            String coupon_code = (String) toushiResult.getData().get("coupon_code");
+            try {
+                coupon_code = new String(AESUtils.decryptAES(AESUtils.base642Byte(coupon_code), AESUtils.loadKeyAES()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return toushiResult;
         }
         return null;
@@ -344,11 +347,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public int occupyCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX useInfo = new CouponUseInfoX();
-        CouponUseInfoX couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
+        CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
         if(couponUseInfo != null){
             CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
             Date date = new Date();
-            if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().after(date)){
+            if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().before(date)){
                 return 2;
             }
         }
@@ -361,9 +364,18 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public int releaseCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX useInfo = new CouponUseInfoX();
+        CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
+        if(couponUseInfo != null){
+            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            Date date = new Date();
+            if(couponX.getEffectiveEndDate().before(date)){
+                useInfo.setStatus(4);
+            }else{
+                useInfo.setStatus(1);
+            }
+        }
         useInfo.setId(bean.getId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setStatus(1);
         return mapper.updateStatusByUserCode(useInfo);
     }
 
