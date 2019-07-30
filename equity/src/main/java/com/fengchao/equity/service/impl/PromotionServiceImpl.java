@@ -73,15 +73,16 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public int updatePromotion(PromotionX bean) {
-        PromotionX promotionX = null;
 
+
+        PromotionX promotionX  = promotionXMapper.selectByPrimaryKey(bean.getId());
+        if(promotionX == null){
+            return 0;
+        };
+        Date now = new Date();
         //处理已发布状态
         if(bean.getStatus() != null && bean.getStatus() == 2){
-            promotionX = promotionXMapper.selectByPrimaryKey(bean.getId());
-            if(promotionX == null){
-                return 0;
-            }
-            Date now = new Date();
+
             if(promotionX.getStartDate().after(now)){
                 //未开始
                 bean.setStatus(3);
@@ -96,8 +97,24 @@ public class PromotionServiceImpl implements PromotionService {
                 bean.setStatus(5);
                 //TODO 回收无法触发的定时器
             }
+        }else if(bean.getStatus() != null && bean.getStatus() == 4){  //处理已开始状态
+            //特殊处理"立即开始"动作中, 管理端会传入开始时间,并以管理端传入时间为准
+            if( bean.getStartDate() != null ){
+                promotionX.setStartDate(bean.getStartDate());
+            }
+            if(promotionX.getStartDate().before(now)  && promotionX.getEndDate().after(now)){
+                //已开始
+                bean.setStatus(4);
+                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+            }else if( promotionX.getEndDate().after(now)){
+                //已结束
+                bean.setStatus(5);
+                //TODO 回收无法触发的定时器
+            }
+        }else if(bean.getStatus() != null && bean.getStatus() == 5){  //处理已结束状态
+            bean.setStatus(5);
         }
-        return promotionXMapper.updateByPrimaryKeySelective(bean);
+        return  promotionXMapper.updateByPrimaryKeySelective(bean);
     }
 
 
