@@ -11,7 +11,7 @@
     <result column="site_url" property="siteUrl" jdbcType="VARCHAR" />
     <result column="sort_order" property="sortOrder" jdbcType="TINYINT" />
     <result column="is_show" property="isShow" jdbcType="BIT" />
-    <result column="add_time" property="addTime" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiBaseBrand" extends="BaseResultMap" >
     <result column="brand_desc" property="brandDesc" jdbcType="LONGVARCHAR" />
@@ -43,11 +43,14 @@
     values (#{brandName,jdbcType=VARCHAR}, #{brandCname,jdbcType=VARCHAR},
       #{brandEname,jdbcType=VARCHAR}, #{brandFirstChar,jdbcType=CHAR}, #{brandLogo,jdbcType=VARCHAR}, 
       #{siteUrl,jdbcType=VARCHAR}, #{sortOrder,jdbcType=TINYINT}, #{isShow,jdbcType=BIT}, 
-      #{addTime,jdbcType=VARCHAR}, #{brandDesc,jdbcType=LONGVARCHAR})
+      #{addTime}, #{brandDesc,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand"  keyProperty="id" useGeneratedKeys="true">
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand"  keyProperty="brandId" useGeneratedKeys="true">
     insert into aoyi_base_brand
     <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        brand_id,
+      </if>
       <if test="brandName != null" >
         brand_name,
       </if>
@@ -80,6 +83,9 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        #{brandId},
+      </if>
       <if test="brandName != null" >
         #{brandName,jdbcType=VARCHAR},
       </if>
@@ -105,14 +111,14 @@
         #{isShow,jdbcType=BIT},
       </if>
       <if test="addTime != null" >
-        #{addTime,jdbcType=VARCHAR},
+        #{addTime},
       </if>
       <if test="brandDesc != null" >
         #{brandDesc,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand"  keyProperty="brandId" useGeneratedKeys="true">
     update aoyi_base_brand
     <set >
       <if test="brandName != null" >
@@ -140,7 +146,7 @@
         is_show = #{isShow,jdbcType=BIT},
       </if>
       <if test="addTime != null" >
-        add_time = #{addTime,jdbcType=VARCHAR},
+        add_time = #{addTime},
       </if>
       <if test="brandDesc != null" >
         brand_desc = #{brandDesc,jdbcType=LONGVARCHAR},
@@ -158,7 +164,7 @@
       site_url = #{siteUrl,jdbcType=VARCHAR},
       sort_order = #{sortOrder,jdbcType=TINYINT},
       is_show = #{isShow,jdbcType=BIT},
-      add_time = #{addTime,jdbcType=VARCHAR},
+      add_time = #{addTime},
       brand_desc = #{brandDesc,jdbcType=LONGVARCHAR}
     where brand_id = #{brandId,jdbcType=INTEGER}
   </update>
@@ -172,7 +178,7 @@
       site_url = #{siteUrl,jdbcType=VARCHAR},
       sort_order = #{sortOrder,jdbcType=TINYINT},
       is_show = #{isShow,jdbcType=BIT},
-      add_time = #{addTime,jdbcType=VARCHAR}
+      add_time = #{addTime}
     where brand_id = #{brandId,jdbcType=INTEGER}
   </update>
   <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">

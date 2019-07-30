@@ -31,7 +31,7 @@ public class AdminBrandController {
 
     @PostMapping
     public OperaResult create(@RequestBody AoyiBaseBrand bean, OperaResult result){
-        result.getData().put("result",brandService.updateBrandbyId(bean));
+        result.getData().put("result",brandService.create(bean));
         return result;
     }
 
