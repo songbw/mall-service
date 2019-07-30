@@ -7,13 +7,11 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.dao.PromotionDao;
+import com.fengchao.equity.dao.PromotionTypeDao;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.PromotionXMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
-import com.fengchao.equity.model.AoyiProdIndex;
-import com.fengchao.equity.model.Promotion;
-import com.fengchao.equity.model.PromotionX;
-import com.fengchao.equity.model.PromotionMpu;
+import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
@@ -24,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,6 +40,9 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Autowired
     private PromotionDao promotionDao;
+
+    @Autowired
+    private PromotionTypeDao promotionTypeDao;
 
     @Override
     public int effective(int promotionId) {
@@ -73,24 +76,51 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public int updatePromotion(PromotionX bean) {
-        PromotionX promotionX = null;
 
+
+        PromotionX promotionX  = promotionXMapper.selectByPrimaryKey(bean.getId());
+        if(promotionX == null){
+            return 0;
+        };
+        Date now = new Date();
+        //处理已发布状态
         if(bean.getStatus() != null && bean.getStatus() == 2){
-            bean.setStatus(3);
-            promotionX = promotionXMapper.selectByPrimaryKey(bean.getId());
-            if(promotionX == null){
-                return 0;
+
+            if(promotionX.getStartDate().after(now)){
+                //未开始
+                bean.setStatus(3);
+                JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), promotionX.getStartDate());
+                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+            }else if(promotionX.getStartDate().before(now)  && promotionX.getEndDate().after(now)){
+                //已开始
+                bean.setStatus(4);
+                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+            }else if( promotionX.getEndDate().after(now)){
+                //已结束
+                bean.setStatus(5);
+                //TODO 回收无法触发的定时器
             }
+        }else if(bean.getStatus() != null && bean.getStatus() == 4){  //处理已开始状态
+            //特殊处理"立即开始"动作中, 管理端会传入开始时间,并以管理端传入时间为准
+            if( bean.getStartDate() != null ){
+                promotionX.setStartDate(bean.getStartDate());
+            }
+            if(promotionX.getStartDate().before(now)  && promotionX.getEndDate().after(now)){
+                //已开始
+                bean.setStatus(4);
+                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+            }else if( promotionX.getEndDate().after(now)){
+                //已结束
+                bean.setStatus(5);
+                //TODO 回收无法触发的定时器
+            }
+        }else if(bean.getStatus() != null && bean.getStatus() == 5){  //处理已结束状态
+            bean.setStatus(5);
         }
-
-        int num = promotionXMapper.updateByPrimaryKeySelective(bean);
-        if(bean.getStatus() != null && bean.getStatus() == 2 && num ==1){
-             JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), promotionX.getStartDate());
-             JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
-        }
-
-        return num;
+        return  promotionXMapper.updateByPrimaryKeySelective(bean);
     }
+
+
 
     @Override
     public PageBean searchPromotion(PromotionBean bean) {
@@ -246,11 +276,23 @@ public class PromotionServiceImpl implements PromotionService {
         List<Promotion> promotionList = promotionDao.selectPromotionListByIdList(promotionIdList);
         log.info("查询活动列表 根据id集合查询 获取到数据库返回:{}", JSONUtil.toJsonString(promotionList));
 
+        // 获取活动的类型
+        List<Long> promotionTypeIdList = promotionList.stream().map(p -> p.getPromotionTypeId()).collect(Collectors.toList());
+        log.info("查询活动列表 - 获取活动类型 数据库入参:{}", JSONUtil.toJsonString(promotionTypeIdList));
+        List<PromotionType> promotionTypeList = promotionTypeDao.selectPromotionTypesByIdList(promotionTypeIdList);
+        log.info("查询活动列表 - 获取活动类型 数据库返回:{}", JSONUtil.toJsonString(promotionTypeList));
+        // 转map key:promotionTypeId, value:PromotionType
+        Map<Long, PromotionType> promotionTypeMap = promotionTypeList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
 
         // 转dto
         List<PromotionBean> promotionBeanList = new ArrayList<>();
         for (Promotion promotion : promotionList) {
             PromotionBean promotionBean = convertToPromotionBean(promotion);
+            // 设置‘活动类型’
+            promotionBean.setTypeName(promotionTypeMap.get(promotion.getPromotionTypeId()) == null ?
+                    "" : promotionTypeMap.get(promotion.getPromotionTypeId()).getTypeName());
+
+
             promotionBeanList.add(promotionBean);
         }
 
@@ -267,7 +309,7 @@ public class PromotionServiceImpl implements PromotionService {
         promotionBean.setId(promotion.getId());
         promotionBean.setName(promotion.getName());
         // promotionBean.setTag(promotion.getTag());
-//        promotionBean.setPromotionType(promotion.getDiscountType());
+        promotionBean.setDiscountType(promotion.getDiscountType());
         promotionBean.setStatus(promotion.getStatus());
         // promotionBean.setStartDate(promotion.getStartDate());
         // promotionBean.setEndDate(promotion.getEndDate());

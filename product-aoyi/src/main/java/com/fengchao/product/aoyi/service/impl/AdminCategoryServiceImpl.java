@@ -3,27 +3,36 @@ package com.fengchao.product.aoyi.service.impl;
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.CategoryQueryBean;
 import com.fengchao.product.aoyi.bean.PageBean;
+import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper;
+import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 import com.fengchao.product.aoyi.service.AdminCategoryService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
+@Slf4j
 public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Autowired
     private AoyiBaseCategoryXMapper mapper;
+
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
@@ -187,5 +196,42 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         category.setIsShow(bean.getIsShow());
 
         mapper.updateByPrimaryKeySelective(category);
+    }
+
+    @Override
+    public List<CategoryQueryBean> queryCategorysByCategoryIdList(List<Integer> categoryIdList) throws Exception {
+        log.info("根据id集合查询品类列表 数据库入参:{}", JSONUtil.toJsonString(categoryIdList));
+
+        // 执行查库
+        List<AoyiBaseCategory> aoyiBaseCategoryList = categoryDao.selectByCategoryIdList(categoryIdList);
+        log.info("根据id集合查询品类列表 数据库返回:{}", JSONUtil.toJsonString(aoyiBaseCategoryList));
+
+        // 转dto
+        List<CategoryQueryBean> categoryQueryBeanList = new ArrayList<>();
+        for (AoyiBaseCategory aoyiBaseCategory : aoyiBaseCategoryList) {
+            CategoryQueryBean categoryQueryBean = convertToCategoryQueryBean(aoyiBaseCategory);
+            categoryQueryBeanList.add(categoryQueryBean);
+        }
+
+        log.info("根据id集合查询品类列表 AdminCategoryServiceImpl#queryCategorysByCategoryIdList 返回:{}",
+                JSONUtil.toJsonString(categoryQueryBeanList));
+
+        return categoryQueryBeanList;
+    }
+
+    // ====================================== private ===================================
+
+    /**
+     *
+     * @param aoyiBaseCategory
+     * @return
+     */
+    private CategoryQueryBean convertToCategoryQueryBean(AoyiBaseCategory aoyiBaseCategory) {
+        CategoryQueryBean categoryQueryBean = new CategoryQueryBean();
+
+        categoryQueryBean.setId(aoyiBaseCategory.getCategoryId());
+        categoryQueryBean.setName(aoyiBaseCategory.getCategoryName());
+
+        return categoryQueryBean;
     }
 }

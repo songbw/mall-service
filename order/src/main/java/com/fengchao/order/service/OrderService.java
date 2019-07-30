@@ -54,9 +54,23 @@ public interface OrderService {
 
     List<PromotionPaymentBean> findDayPromotionPaymentCount(String dayStart, String dayEnd) ;
 
+    /**
+     * 按商户统计订单支付总额
+     * 
+     * @param dayStart
+     * @param dayEnd
+     * @return
+     */
     List<MerchantPaymentBean> findDayMerchantPaymentCount(String dayStart, String dayEnd) ;
 
-    List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) ;
+    /**
+     * 查询已支付的子订单集合
+     *
+     * @param dayStart 开始时间
+     * @param dayEnd 结束时间
+     * @return
+     */
+    List<OrderDetailBean> queryPayedOrderDetail(String dayStart, String dayEnd) throws Exception;
 
     Integer findDayPaymentCount(String dayStart, String dayEnd) ;
 

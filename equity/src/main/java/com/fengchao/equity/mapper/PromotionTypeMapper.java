@@ -2,9 +2,8 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.model.PromotionType;
 import com.fengchao.equity.model.PromotionTypeExample;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 public interface PromotionTypeMapper {
     long countByExample(PromotionTypeExample example);

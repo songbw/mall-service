@@ -5,15 +5,25 @@ import java.util.Date;
 public class CategoryOverview {
     private Long id;
 
-    private String code;
+    private String categoryFcode;
 
-    private String name;
+    private String categoryFname;
 
-    private float orderPaymentAmount;
+    private Long orderAmount;
 
     private Date statisticsDate;
 
-    private Date createdAt;
+    private Date statisticStartTime;
+
+    private Date statisticEndTime;
+
+    private Short periodType;
+
+    private Short istatus;
+
+    private Date createTime;
+
+    private Date updateTime;
 
     public Long getId() {
         return id;
@@ -23,28 +33,28 @@ public class CategoryOverview {
         this.id = id;
     }
 
-    public String getCode() {
-        return code;
+    public String getCategoryFcode() {
+        return categoryFcode;
     }
 
-    public void setCode(String code) {
-        this.code = code == null ? null : code.trim();
+    public void setCategoryFcode(String categoryFcode) {
+        this.categoryFcode = categoryFcode == null ? null : categoryFcode.trim();
     }
 
-    public String getName() {
-        return name;
+    public String getCategoryFname() {
+        return categoryFname;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setCategoryFname(String categoryFname) {
+        this.categoryFname = categoryFname == null ? null : categoryFname.trim();
     }
 
-    public float getOrderPaymentAmount() {
-        return orderPaymentAmount;
+    public Long getOrderAmount() {
+        return orderAmount;
     }
 
-    public void setOrderPaymentAmount(float orderPaymentAmount) {
-        this.orderPaymentAmount = orderPaymentAmount;
+    public void setOrderAmount(Long orderAmount) {
+        this.orderAmount = orderAmount;
     }
 
     public Date getStatisticsDate() {
@@ -55,11 +65,51 @@ public class CategoryOverview {
         this.statisticsDate = statisticsDate;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getStatisticStartTime() {
+        return statisticStartTime;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setStatisticStartTime(Date statisticStartTime) {
+        this.statisticStartTime = statisticStartTime;
+    }
+
+    public Date getStatisticEndTime() {
+        return statisticEndTime;
+    }
+
+    public void setStatisticEndTime(Date statisticEndTime) {
+        this.statisticEndTime = statisticEndTime;
+    }
+
+    public Short getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(Short periodType) {
+        this.periodType = periodType;
+    }
+
+    public Short getIstatus() {
+        return istatus;
+    }
+
+    public void setIstatus(Short istatus) {
+        this.istatus = istatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }

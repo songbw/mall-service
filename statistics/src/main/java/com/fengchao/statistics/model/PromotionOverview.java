@@ -5,15 +5,23 @@ import java.util.Date;
 public class PromotionOverview {
     private Long id;
 
-    private Integer promotionId;
+    private String promotionType;
 
-    private String promotionName;
-
-    private float orderPaymentAmount;
+    private Integer orderCount;
 
     private Date statisticsDate;
 
-    private Date createdAt;
+    private Date statisticStartTime;
+
+    private Date statisticEndTime;
+
+    private Short periodType;
+
+    private Short istatus;
+
+    private Date createTime;
+
+    private Date updateTime;
 
     public Long getId() {
         return id;
@@ -23,28 +31,20 @@ public class PromotionOverview {
         this.id = id;
     }
 
-    public Integer getPromotionId() {
-        return promotionId;
+    public String getPromotionType() {
+        return promotionType;
     }
 
-    public void setPromotionId(Integer promotionId) {
-        this.promotionId = promotionId;
+    public void setPromotionType(String promotionType) {
+        this.promotionType = promotionType == null ? null : promotionType.trim();
     }
 
-    public String getPromotionName() {
-        return promotionName;
+    public Integer getOrderCount() {
+        return orderCount;
     }
 
-    public void setPromotionName(String promotionName) {
-        this.promotionName = promotionName == null ? null : promotionName.trim();
-    }
-
-    public float getOrderPaymentAmount() {
-        return orderPaymentAmount;
-    }
-
-    public void setOrderPaymentAmount(float orderPaymentAmount) {
-        this.orderPaymentAmount = orderPaymentAmount;
+    public void setOrderCount(Integer orderCount) {
+        this.orderCount = orderCount;
     }
 
     public Date getStatisticsDate() {
@@ -55,11 +55,51 @@ public class PromotionOverview {
         this.statisticsDate = statisticsDate;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getStatisticStartTime() {
+        return statisticStartTime;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setStatisticStartTime(Date statisticStartTime) {
+        this.statisticStartTime = statisticStartTime;
+    }
+
+    public Date getStatisticEndTime() {
+        return statisticEndTime;
+    }
+
+    public void setStatisticEndTime(Date statisticEndTime) {
+        this.statisticEndTime = statisticEndTime;
+    }
+
+    public Short getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(Short periodType) {
+        this.periodType = periodType;
+    }
+
+    public Short getIstatus() {
+        return istatus;
+    }
+
+    public void setIstatus(Short istatus) {
+        this.istatus = istatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }

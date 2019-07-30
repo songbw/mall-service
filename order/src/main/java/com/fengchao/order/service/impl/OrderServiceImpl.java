@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
+import com.fengchao.order.constants.PaymentStatusEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
@@ -15,10 +16,7 @@ import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
 import com.fengchao.order.service.OrderService;
-import com.fengchao.order.utils.CosUtil;
-import com.fengchao.order.utils.JobClientUtils;
-import com.fengchao.order.utils.Kuaidi100;
-import com.fengchao.order.utils.RandomUtil;
+import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -37,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
-    private OrderMapper mapper;
+    private OrderMapper orderMapper;
 
     @Autowired
     private OrderDetailXMapper orderDetailXMapper;
@@ -150,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
             // 添加主订单
-            mapper.insert(bean);
+            orderMapper.insert(bean);
             // 核销优惠券
             if (coupon != null) {
                 boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
@@ -208,7 +207,7 @@ public class OrderServiceImpl implements OrderService {
         order.setId(id);
         order.setUpdatedAt(new Date());
         order.setStatus(3);
-        mapper.updateStatusById(order) ;
+        orderMapper.updateStatusById(order) ;
         return id;
     }
 
@@ -216,7 +215,7 @@ public class OrderServiceImpl implements OrderService {
     @DataSource(DataSourceNames.TWO)
     @Override
     public Order findById(Integer id) {
-        Order order = mapper.selectByPrimaryKey(id) ;
+        Order order = orderMapper.selectByPrimaryKey(id) ;
         List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
         order.setSkus(orderDetailXES);
         return order;
@@ -229,7 +228,7 @@ public class OrderServiceImpl implements OrderService {
         order.setId(id);
         order.setUpdatedAt(new Date());
         order.setStatus(-1);
-        mapper.updateStatusById(order) ;
+        orderMapper.updateStatusById(order) ;
         return id;
     }
 
@@ -247,9 +246,9 @@ public class OrderServiceImpl implements OrderService {
             map.put("status", queryBean.getStatus()) ;
         }
         List<Order> orders = new ArrayList<>();
-        total = mapper.selectLimitCount(map);
+        total = orderMapper.selectLimitCount(map);
         if (total > 0) {
-            orders = mapper.selectLimit(map);
+            orders = orderMapper.selectLimit(map);
             orders.forEach(order -> {
                 order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
             });
@@ -262,7 +261,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
-        mapper.updateStatusById(bean) ;
+        orderMapper.updateStatusById(bean) ;
         return bean.getId();
     }
 
@@ -289,9 +288,9 @@ public class OrderServiceImpl implements OrderService {
             map.put("payDateEnd", orderBean.getPayDateEnd()) ;
         }
         List<OrderDetailBean> orderBeans = new ArrayList<>();
-        total = mapper.selectCount(map);
+        total = orderMapper.selectCount(map);
         if(total >  0){
-            orderBeans = mapper.selectOrderLimit(map);
+            orderBeans = orderMapper.selectOrderLimit(map);
             orderBeans.forEach(order -> {
                 if(order.getImage() == null || "".equals(order.getImage())){
                     AoyiProdIndex productIndex = findProduct(order.getSkuId());
@@ -315,13 +314,13 @@ public class OrderServiceImpl implements OrderService {
     @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateRemark(Order bean) {
-        return mapper.updateByPrimaryKeySelective(bean);
+        return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
     @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateOrderAddress(Order bean) {
-        return mapper.updateByPrimaryKeySelective(bean);
+        return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
     @Cacheable(value = "orders")
@@ -335,7 +334,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("pageNo", offset);
         map.put("pageSize", queryBean.getPageSize());
         map.put("orderId", queryBean.getOrderId());
-        Order order = mapper.selectByPrimaryKey(queryBean.getOrderId());
+        Order order = orderMapper.selectByPrimaryKey(queryBean.getOrderId());
         total = orderDetailXMapper.selectCount(map);
         if (total > 0) {
             List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectLimit(map);
@@ -405,12 +404,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) {
-        return mapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
+        return orderMapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
     }
 
     @Override
     public List<Order> findOutTradeNo(String outTradeNo) {
-        return mapper.selectByOutTradeNo(outTradeNo);
+        return orderMapper.selectByOutTradeNo(outTradeNo);
     }
 
     @Override
@@ -418,17 +417,17 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setOutTradeNo(outTradeNo);
         order.setPaymentNo(paymentNo);
-        return mapper.selectByOutTradeNoAndPaymentNo(order);
+        return orderMapper.selectByOutTradeNoAndPaymentNo(order);
     }
 
     @Override
     public Integer updatePaymentNo(Order order) {
-        return mapper.updatePaymentNo(order);
+        return orderMapper.updatePaymentNo(order);
     }
 
     @Override
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
-        return mapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+        return orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
     }
 
     @Override
@@ -436,9 +435,9 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        int dayPaymentCount = mapper.selectDayPaymentCount(map);
-        int dayCount = mapper.selectDayCount(map);
-        int dayPeopleCount = mapper.selectDayPeopleCount(map);
+        int dayPaymentCount = orderMapper.selectDayPaymentCount(map); // SUM(sale_amount)
+        int dayCount = orderMapper.selectDayCount(map); // count(id) FROM orders
+        int dayPeopleCount = orderMapper.selectDayPeopleCount(map); // count(DISTINCT(open_id))
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
         dayStatisticsBean.setOrderCount(dayCount);
@@ -460,7 +459,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        return mapper.selectDayPromotionPaymentCount(map);
+        return orderMapper.selectDayPromotionPaymentCount(map);
     }
 
     @Override
@@ -468,15 +467,52 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        return mapper.selectDayMerchantPaymentCount(map);
+        return orderMapper.selectDayMerchantPaymentCount(map);
     }
 
     @Override
-    public List<CategoryPaymentBean> findDayCategoryPaymentList(String dayStart, String dayEnd) {
-        HashMap map = new HashMap();
-        map.put("dayStart", dayStart);
-        map.put("dayEnd", dayEnd);
-        return mapper.selectDayCategoryPaymentList(map);
+    public List<OrderDetailBean> queryPayedOrderDetail(String startDateTime, String endDateTime) throws Exception {
+        // 1. 按照时间范围查询子订单集合
+        Date startTime = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date endTime = DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        List<OrderDetail> orderDetailList = adminOrderDao.selectOrderDetailsByCreateTimeRange(startTime, endTime);
+
+        // 2. 过滤出已支付的子订单集合
+        // 2.1 根据获取到的子订单获取主订单
+        List<Integer> ordersIdList =
+                orderDetailList.stream().map(detail -> detail.getOrderId()).collect(Collectors.toList());
+        // 2.2 查询主订单
+        List<Orders> ordersList = adminOrderDao.selectOrdersListByIdList(ordersIdList);
+        // 转map key : ordersId, value: Orders
+        Map<Integer, Orders> ordersMap = ordersList.stream().collect(Collectors.toMap(o -> o.getId(), o -> o));
+
+        // 2.3 过滤
+        List<OrderDetail> payedOrderDetailList = new ArrayList<>(); // 已支付的子订单集合
+        for (OrderDetail orderDetail : orderDetailList) { // 遍历子订单
+            Integer orderId = orderDetail.getOrderId();
+            Orders orders = ordersMap.get(orderId);
+            if (orders != null) {
+                // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
+                if (orders.getPayStatus() == PaymentStatusEnum.PAY_SUCCESS.getValue()) { // 如果 支付成功
+                    payedOrderDetailList.add(orderDetail);
+                }
+            }
+        }
+
+        // 3. 转dto
+        List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
+        for (OrderDetail orderDetail : payedOrderDetailList) {
+            OrderDetailBean orderDetailBean = convertToOrderDetailBean(orderDetail);
+            orderDetailBean.setPayStatus(PaymentStatusEnum.PAY_SUCCESS.getValue());
+            // 设置城市信息
+            Orders orders = ordersMap.get(orderDetail.getOrderId());
+            orderDetailBean.setCityId(orders == null ? "" : orders.getCityId());
+            orderDetailBean.setCityName(orders == null ? "" : orders.getCityName());
+
+            orderDetailBeanList.add(orderDetailBean);
+        }
+
+        return orderDetailBeanList;
     }
 
     @Override
@@ -484,7 +520,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = new HashMap();
         map.put("dayStart", dayStart);
         map.put("dayEnd", dayEnd);
-        return mapper.selectDayPaymentCount(map);
+        return orderMapper.selectDayPaymentCount(map);
     }
 
     @Override
@@ -501,6 +537,8 @@ public class OrderServiceImpl implements OrderService {
         List<Orders> ordersList = adminOrderDao.selectByPaymentNoAndOpenId(paymentNo, openId) ;
         return ordersList;
     }
+
+    // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {
         OperaResult result = productService.find(skuId);
@@ -544,4 +582,77 @@ public class OrderServiceImpl implements OrderService {
         }
         return false;
     }
+
+    /**
+     *
+     * @param orderDetail
+     * @return
+     */
+    private OrderDetailBean convertToOrderDetailBean(OrderDetail orderDetail) {
+        OrderDetailBean orderDetailBean = new OrderDetailBean();
+
+        orderDetailBean.setId(orderDetail.getId());
+        // orderDetailBean.setOpenId(orderDetail.get);
+        orderDetailBean.setSubOrderId(orderDetail.getSubOrderId());
+        // orderDetailBean.setTradeNo();
+        // orderDetailBean.setAoyiId();
+        // orderDetailBean.setCompanyCustNo();
+        orderDetailBean.setMerchantId(orderDetail.getMerchantId());
+        // orderDetailBean.setMerchantNo(orderDetail.getmer);
+        // orderDetailBean.setReceiverName(orderDetai);
+        // orderDetailBean.setTelephone();
+        // orderDetailBean.setMobile();
+        // orderDetailBean.setEmail();
+        // orderDetailBean.setProvinceId(orderDetail.);
+        // orderDetailBean.setProvinceName();
+        // orderDetailBean.setCityId();
+        // orderDetailBean.setCityName();
+        // orderDetailBean.setCountyId();
+        // orderDetailBean.setCountyName();
+        // orderDetailBean.setTownId();
+        // orderDetailBean.setAddress();
+        // orderDetailBean.setZip();
+        // orderDetailBean.setRemark();
+        // orderDetailBean.setInvoiceState();
+        // orderDetailBean.setInvoiceType();
+        // orderDetailBean.setInvoiceTitle();
+        // orderDetailBean.setInvoiceContent();
+        // orderDetailBean.setPayment();
+        // orderDetailBean.setServFee();
+        // orderDetailBean.setAmount();
+        // orderDetailBean.setStatus();
+        // orderDetailBean.setType();
+        // orderDetailBean.setCreatedAt();
+        // orderDetailBean.setUpdatedAt();
+        // orderDetailBean.setSkuId();
+        // orderDetailBean.setNum();
+        // orderDetailBean.setUnitPrice();
+        // orderDetailBean.setImage();
+        // orderDetailBean.setModel();
+        // orderDetailBean.setName();
+        // orderDetailBean.setPaymentNo();
+        // orderDetailBean.setPaymentAt();
+        // orderDetailBean.setLogisticsId();
+        // orderDetailBean.setLogisticsContent();
+        // orderDetailBean.setOutTradeNo();
+        // orderDetailBean.setPaymentAmount();
+        // orderDetailBean.setPayee(); // 商户号，充值钱包的时候没有
+        // orderDetailBean.setRefundFee(); // 退款金额，退款时候有
+        // orderDetailBean.setPayType(); // 支付方式
+        // orderDetailBean.setPaymentTotalFee(); // 订单总金额
+        // orderDetailBean.setPayer(); // C端个人账号。 表示唯一用户
+        // orderDetailBean.setPayStatus(); // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
+        // orderDetailBean.setPayOrderCategory(); // 1支付，2充值，3退款，4提现
+        // orderDetailBean.setCouponId();
+        // orderDetailBean.setCouponCode();
+        // orderDetailBean.setCouponDiscount();
+        orderDetailBean.setPromotionId(orderDetail.getPromotionId());
+        // orderDetailBean.setPromotionDiscount();
+        orderDetailBean.setSaleAmount(orderDetail.getSalePrice().floatValue()); // 实际支付价格
+        orderDetailBean.setCategory(orderDetail.getCategory()); // 品类
+
+        return orderDetailBean;
+    }
+
+
 }
