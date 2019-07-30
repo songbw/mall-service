@@ -431,20 +431,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public DayStatisticsBean findDayStatisticsCount(String dayStart, String dayEnd) {
-        HashMap map = new HashMap();
-        map.put("dayStart", dayStart);
-        map.put("dayEnd", dayEnd);
-        int dayPaymentCount = orderMapper.selectDayPaymentCount(map); // SUM(sale_amount)
-        int dayCount = orderMapper.selectDayCount(map); // count(id) FROM orders
-        int dayPeopleCount = orderMapper.selectDayPeopleCount(map); // count(DISTINCT(open_id))
+    public DayStatisticsBean findOverviewStatistics() throws Exception {
+        // 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
+        int dayPaymentCount = orderMapper.selectPayedOrdersAmount(); // 获取订单支付总额 SUM(sale_amount)
+        int dayCount = orderMapper.selectPayedOrdersCount(); // (已支付)订单总量 count(id) FROM orders
+        int dayPeopleCount = orderMapper.selectPayedOdersUserCount(); // (已支付)下单人数 count(DISTINCT(open_id))
+
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
         dayStatisticsBean.setOrderCount(dayCount);
         dayStatisticsBean.setOrderPeopleNum(dayPeopleCount);
-//        dayStatisticsBean.setOrderBackNum(dayRefundOrderCount);
+
+        logger.info("获取平台的关于订单的总体统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
         return dayStatisticsBean;
     }
+
     public String queryLogisticsInfo(String logisticsId) {
         String comcode = orderDetailXMapper.selectComCode(logisticsId);
         if(comcode == null || comcode.equals("")){
@@ -515,13 +516,14 @@ public class OrderServiceImpl implements OrderService {
         return orderDetailBeanList;
     }
 
-    @Override
-    public Integer findDayPaymentCount(String dayStart, String dayEnd) {
-        HashMap map = new HashMap();
-        map.put("dayStart", dayStart);
-        map.put("dayEnd", dayEnd);
-        return orderMapper.selectDayPaymentCount(map);
-    }
+//    @Override
+//    @Deprecated
+//    public Integer findDayPaymentCount(String dayStart, String dayEnd) {
+//        HashMap map = new HashMap();
+//        map.put("dayStart", dayStart);
+//        map.put("dayEnd", dayEnd);
+//        return orderMapper.selectDayPaymentCount(map);
+//    }
 
     @Override
     public String findPaymentStatus(String outerTradeNo) {
