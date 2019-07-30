@@ -72,9 +72,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponUseInfo.setCouponId(coupon.getId());
         couponUseInfo.setCode(bean.getCode());
         int num = 0;
-        if(!coupon.getSupplierMerchantId().equals(1)){
-            OperaResult toushiResult = collectThirdCoupon(bean.getUserOpenId(), bean.getCode());
-        }else if(coupon.getCollectType() == 4){
+//        if(!coupon.getSupplierMerchantId().equals(1)){
+//            OperaResult toushiResult = collectThirdCoupon(bean.getUserOpenId(), bean.getCode());
+//        }else
+            if(coupon.getCollectType() == 4){
             List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
             if(couponUseInfos != null){
                 CouponUseInfoX useInfo = couponUseInfos.get(0);
