@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.mapper;
 
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.HashMap;
 import java.util.List;

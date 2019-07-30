@@ -121,4 +121,15 @@ public class AdminOrderDao {
         return ordersList;
     }
 
+    /**
+     * 更新子订单状态
+     * @param orderDetail
+     */
+    public void updateOrderDetailStatus(OrderDetail orderDetail) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdEqualTo(orderDetail.getOrderId()) ;
+        orderDetailMapper.updateByExampleSelective(orderDetail, orderDetailExample) ;
+    }
+
 }

@@ -23,7 +23,6 @@ public class AdminBrandServiceImpl implements AdminBrandService {
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
 
-    @Cacheable(value = "brand")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findBrandList(Integer offset, Integer limit) {
@@ -62,7 +61,6 @@ public class AdminBrandServiceImpl implements AdminBrandService {
         brandMapper.deleteByPrimaryKey(id);
     }
 
-    @Cacheable(value = "brand")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(Integer offset, Integer limit, String query) {

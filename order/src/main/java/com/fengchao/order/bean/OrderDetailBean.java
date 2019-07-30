@@ -74,4 +74,5 @@ public class OrderDetailBean implements Serializable {
     private Integer promotionId;
     private BigDecimal promotionDiscount;
     private Float saleAmount;
+    private Float salePrice;
 }

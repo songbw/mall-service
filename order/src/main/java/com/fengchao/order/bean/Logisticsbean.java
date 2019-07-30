@@ -15,4 +15,5 @@ public class Logisticsbean implements Serializable {
     private Integer orderId;
     private String subOrderId;
     private Integer merchantId;
+    private String comCode;
 }

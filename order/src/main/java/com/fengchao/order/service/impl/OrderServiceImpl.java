@@ -209,6 +209,11 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(new Date());
         order.setStatus(3);
         mapper.updateStatusById(order) ;
+        // 更新子订单状态
+        OrderDetail orderDetail = new OrderDetail() ;
+        orderDetail.setOrderId(id);
+        orderDetail.setStatus(3);
+        adminOrderDao.updateOrderDetailStatus(orderDetail) ;
         return id;
     }
 
@@ -263,6 +268,11 @@ public class OrderServiceImpl implements OrderService {
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
         mapper.updateStatusById(bean) ;
+        // 更新子订单状态
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setOrderId(bean.getId());
+        orderDetail.setStatus(4);
+        adminOrderDao.updateOrderDetailStatus(orderDetail);
         return bean.getId();
     }
 
@@ -369,7 +379,6 @@ public class OrderServiceImpl implements OrderService {
         return receiver;
     }
 
-    @CachePut(value = "logistics", key = "#bean.logisticsId")
     @Override
     public Integer uploadLogistics(Logisticsbean bean) {
         final int i = 1;
@@ -380,7 +389,9 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setOrderId(Logistics.getOrderId());
                 orderDetailX.setSubOrderId(Logistics.getSubOrderId());
                 orderDetailX.setLogisticsContent(Logistics.getLogisticsContent());
+                orderDetailX.setComCode(Logistics.getComCode());
                 orderDetailX.setLogisticsId(Logistics.getLogisticsId());
+                orderDetailX.setStatus(2);
                 orderDetailXMapper.updateByOrderId(orderDetailX);
             });
         }
@@ -423,6 +434,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer updatePaymentNo(Order order) {
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setOrderId(order.getId());
+        orderDetail.setStatus(1);
+        adminOrderDao.updateOrderDetailStatus(orderDetail);
         return mapper.updatePaymentNo(order);
     }
 
