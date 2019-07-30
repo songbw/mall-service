@@ -3,6 +3,7 @@ package com.fengchao.statistics.service.impl;
 import com.fengchao.statistics.bean.QueryBean;
 import com.fengchao.statistics.bean.vo.OverviewResVo;
 import com.fengchao.statistics.rpc.OrdersRpcService;
+import com.fengchao.statistics.rpc.SsoRpcService;
 import com.fengchao.statistics.rpc.WorkOrdersRpcService;
 import com.fengchao.statistics.rpc.extmodel.DayStatisticsBean;
 import com.fengchao.statistics.service.OverviewService;
@@ -22,6 +23,9 @@ public class OverviewServiceImpl implements OverviewService {
 
     @Autowired
     private WorkOrdersRpcService workOrdersRpcService;
+
+    @Autowired
+    private SsoRpcService ssoRpcService;
 
     @Override
     public void add(QueryBean queryBean) {
@@ -52,24 +56,34 @@ public class OverviewServiceImpl implements OverviewService {
         // 3.(已支付)订单总量
         // 4.(已支付)下单人数
         DayStatisticsBean dayStatisticsBean = ordersRpcService.queryOrdersOverviewStatistic();
+        if (dayStatisticsBean == null) {
+            dayStatisticsBean = new DayStatisticsBean();
+        }
+
         Float orderAmount = dayStatisticsBean.getOrderPaymentAmount(); // 订单支付总额
         Integer orderCount = dayStatisticsBean.getOrderCount(); // (已支付)订单总量
         Integer orderUserCount = dayStatisticsBean.getOrderPeopleNum(); // (已支付)下单人数
 
         // 2.用户总数
-        int userCount = workOrdersRpcService.queryRefundOrdersCount();
+        int userCount = ssoRpcService.queryAllUsercount();
 
         // 5.退货单数
         int refundOrderCount = workOrdersRpcService.queryRefundOrdersCount();
 
         // 6.客单价
+        BigDecimal perCustomPriceB = new BigDecimal(0);
         BigDecimal orderAmoutB = new BigDecimal(orderAmount);
-        BigDecimal perCustomPriceB =
-                orderAmoutB.divide(new BigDecimal(orderUserCount), 2, BigDecimal.ROUND_HALF_UP);
+        if (orderUserCount != null && orderUserCount > 0) {
+            perCustomPriceB =
+                    orderAmoutB.divide(new BigDecimal(orderUserCount), 2, BigDecimal.ROUND_HALF_UP);
+        }
 
         // 7.订单均价
-        BigDecimal avgOrderPriceB =
-                orderAmoutB.divide(new BigDecimal(orderCount), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal avgOrderPriceB = new BigDecimal(0);
+        if (orderCount != null && orderCount > 0) {
+            avgOrderPriceB =
+                    orderAmoutB.divide(new BigDecimal(orderCount), 2, BigDecimal.ROUND_HALF_UP);
+        }
 
         OverviewResVo overviewResVo = new OverviewResVo();
         overviewResVo.setOrderAmount(orderAmoutB.toString()); // 订单支付总额

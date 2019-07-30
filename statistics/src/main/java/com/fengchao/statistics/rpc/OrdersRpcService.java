@@ -57,7 +57,7 @@ public class OrdersRpcService {
             log.warn("查询已支付的子订单 调用order rpc服务 错误!");
         }
 
-        log.info("OrdersRpcService#statisticOrdersAmountByCategory 调用equity rpc服务 返回:{}",
+        log.info("OrdersRpcService#statisticOrdersAmountByCategory 调用order rpc服务 返回:{}",
                 JSONUtil.toJsonString(orderDetailBeanList));
 
         return orderDetailBeanList;
@@ -82,15 +82,12 @@ public class OrdersRpcService {
 
         // 处理返回
         if (operaResponse.getCode() == 200) {
-            Map _resultMap = (Map) operaResponse.getData();
-
-            // 转
-            dayStatisticsBean = JSON.parseObject(JSON.toJSONString(_resultMap), DayStatisticsBean.class);
+            dayStatisticsBean = operaResponse.getData();
         } else {
             log.warn("获取订单相关的统计数据 调用order rpc服务 错误!");
         }
 
-        log.info("OrdersRpcService#queryOrdersOverviewStatistic 调用equity rpc服务 返回:{}",
+        log.info("OrdersRpcService#queryOrdersOverviewStatistic 调用order rpc服务 返回:{}",
                 JSONUtil.toJsonString(dayStatisticsBean));
 
         return dayStatisticsBean;

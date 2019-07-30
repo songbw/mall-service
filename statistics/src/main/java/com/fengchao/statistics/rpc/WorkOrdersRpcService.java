@@ -50,10 +50,10 @@ public class WorkOrdersRpcService {
             Map _resultMap = (Map) operaResponse.getData();
             refundOrdersCount = (int) _resultMap.get("count");
         } else {
-            log.warn("查询已支付的子订单 调用order rpc服务 错误!");
+            log.warn("查询已支付的子订单 调用workorders rpc服务 错误!");
         }
 
-        log.info("OrdersRpcService#statisticOrdersAmountByCategory 调用equity rpc服务 返回:{}",
+        log.info("OrdersRpcService#statisticOrdersAmountByCategory 调用workorders rpc服务 返回:{}",
                 JSONUtil.toJsonString(refundOrdersCount));
 
         return refundOrdersCount;

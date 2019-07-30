@@ -49,7 +49,7 @@ public class ProductRpcService {
             // 转
             categoryQueryBeanList = JSON.parseArray(JSON.toJSONString(_resultMap), CategoryQueryBean.class);
         } else {
-            log.warn("查询已支付的子订单 调用order rpc服务 错误!");
+            log.warn("查询已支付的子订单 调用product rpc服务 错误!");
         }
 
         log.info("ProductRpcService#queryCategorysByCategoryIdList 调用product rpc服务 返回:{}",

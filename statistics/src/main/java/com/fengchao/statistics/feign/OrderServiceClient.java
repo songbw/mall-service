@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "order", fallback = OrderServiceClientH.class)
+@FeignClient(value = "order", url = "${rpc.feign.client.order.url:}", fallback = OrderServiceClientH.class)
 public interface OrderServiceClient {
 
     @RequestMapping(value = "/order/statistics", method = RequestMethod.GET)

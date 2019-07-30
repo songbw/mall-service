@@ -36,18 +36,18 @@ public class SsoRpcService {
         int userCount = 0;
 
         // 执行rpc调用
-        log.info("查询所有用户数 调用workorders rpc服务 入参:无");
+        log.info("查询所有用户数 调用sso rpc服务 入参:无");
         OperaResult operaResult = ssoServiceClient.queryAllUsercount();
-        log.info("查询所有用户数 调用workorders rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+        log.info("查询所有用户数 调用sso rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
 
         // 处理返回
         if (operaResult.getCode() == 200) {
             userCount = (int) operaResult.getData().get("count");
         } else {
-            log.warn("查询所有用户数 调用workorders rpc服务 错误!");
+            log.warn("查询所有用户数 调用sso rpc服务 错误!");
         }
 
-        log.info("SsoRpcService#queryAllUsercount 调用equity rpc服务 返回:{}", userCount);
+        log.info("SsoRpcService#queryAllUsercount 调用sso rpc服务 返回:{}", userCount);
 
         return userCount;
     }
