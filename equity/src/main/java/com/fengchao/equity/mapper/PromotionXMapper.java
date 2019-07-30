@@ -1,7 +1,9 @@
 package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.bean.PromotionInfoBean;
+import com.fengchao.equity.model.PromotionExample;
 import com.fengchao.equity.model.PromotionX;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,4 +34,15 @@ public interface PromotionXMapper {
     int promotionEffective(int promotionId);
 
     PromotionX selectPromotionName(Integer id);
+
+    List<PromotionX> selectByExample(PromotionExample example);
+
+    int deleteByExample(PromotionExample example);
+
+    long countByExample(PromotionExample example);
+
+    int updateByExampleSelective(@Param("record") PromotionX record, @Param("example") PromotionExample example);
+
+    int updateByExample(@Param("record") PromotionX record, @Param("example") PromotionExample example);
+
 }

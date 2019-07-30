@@ -343,7 +343,6 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         coupon.setTags("7");
         coupon.setCouponType(3);
         coupon.setImageUrl(couponBean.getImageUrl());
-        coupon.setUrl(couponBean.getUrl());
         coupon.setPerLimited(couponBean.getPerLimited());
         String rules = "{\"type\":3,\"serviceCoupon \":{\"price\":"+ DataUtils.decimalFormat(couponBean.getPrice()) +",\"description\":\""+ couponBean.getSupplierMerchantName() +"服务券\"}}";
         coupon.setCouponRules(rules);
@@ -355,6 +354,41 @@ public class CouponThirdServiceImpl implements CouponThirdService {
 
         if(num == 1){
             result.getData().put("equity_code",uuid);
+        }
+        return result;
+    }
+
+    @Override
+    public OperaResult equityOffShelf(ThirdOffShelfResult bean) {
+        OperaResult result = new OperaResult();
+        ThirdOffShelfParam data = bean.getData();
+        for(Field f : data.getClass().getDeclaredFields()){
+            f.setAccessible(true);
+            try {
+                if(f.getName().equals("imageUrl")){continue;}
+                if(f.get(data) == null){
+                    result.setCode(700000);
+                    result.setMsg(f.getName() + "不能为空");
+                    return result;
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        CouponX couponX = couponXMapper.selectByCodeKey(data.getEquity_code());
+        if(couponX == null){
+            result.setCode(7000005);
+            result.setMsg("该优惠券权益不存在");
+            return result;
+        }
+        CouponX coupon = new CouponX();
+        coupon.setStatus(5);
+        coupon.setId(couponX.getId());
+        int num = couponXMapper.updateByPrimaryKeySelective(coupon);
+        if(num == 1){
+            result.getData().put("result", "优惠券权益已下架");
+        }else{
+            result.getData().put("result", "优惠券权益未成功下架");
         }
         return result;
     }

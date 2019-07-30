@@ -1,6 +1,7 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.bean.ThirdOffShelfResult;
 import com.fengchao.equity.bean.ThirdResult;
 import com.fengchao.equity.bean.ToushiResult;
 import com.fengchao.equity.exception.EquityException;
@@ -42,4 +43,8 @@ public class CouponThirdController {
         return service.equityCreate(bean);
     }
 
+    @PostMapping("offShelf")//头食对接接口
+    public OperaResult equityOffShelf(@RequestBody ThirdOffShelfResult bean) throws EquityException{
+        return service.equityOffShelf(bean);
+    }
 }

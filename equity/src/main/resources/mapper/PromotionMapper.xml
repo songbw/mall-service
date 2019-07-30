@@ -5,11 +5,12 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="tag" jdbcType="VARCHAR" property="tag" />
-    <result column="promotion_type" jdbcType="INTEGER" property="promotionType" />
+    <result column="discount_type" jdbcType="INTEGER" property="discountType" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
     <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
     <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="promotion_type_id" jdbcType="BIGINT" property="promotionTypeId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, tag, promotion_type, status, start_date, end_date, created_date
+    id, name, tag, discount_type, status, start_date, end_date, created_date, promotion_type_id
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionExample" resultMap="BaseResultMap">
     select
@@ -103,12 +104,12 @@
     </if>
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Promotion" useGeneratedKeys="true">
-    insert into promotion (name, tag, promotion_type, 
+    insert into promotion (name, tag, discount_type, 
       status, start_date, end_date, 
-      created_date)
-    values (#{name,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{promotionType,jdbcType=INTEGER}, 
+      created_date, promotion_type_id)
+    values (#{name,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{discountType,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
-      #{createdDate,jdbcType=TIMESTAMP})
+      #{createdDate,jdbcType=TIMESTAMP}, #{promotionTypeId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Promotion" useGeneratedKeys="true">
     insert into promotion
@@ -119,8 +120,8 @@
       <if test="tag != null">
         tag,
       </if>
-      <if test="promotionType != null">
-        promotion_type,
+      <if test="discountType != null">
+        discount_type,
       </if>
       <if test="status != null">
         status,
@@ -134,6 +135,9 @@
       <if test="createdDate != null">
         created_date,
       </if>
+      <if test="promotionTypeId != null">
+        promotion_type_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -142,8 +146,8 @@
       <if test="tag != null">
         #{tag,jdbcType=VARCHAR},
       </if>
-      <if test="promotionType != null">
-        #{promotionType,jdbcType=INTEGER},
+      <if test="discountType != null">
+        #{discountType,jdbcType=INTEGER},
       </if>
       <if test="status != null">
         #{status,jdbcType=INTEGER},
@@ -156,6 +160,9 @@
       </if>
       <if test="createdDate != null">
         #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="promotionTypeId != null">
+        #{promotionTypeId,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -177,8 +184,8 @@
       <if test="record.tag != null">
         tag = #{record.tag,jdbcType=VARCHAR},
       </if>
-      <if test="record.promotionType != null">
-        promotion_type = #{record.promotionType,jdbcType=INTEGER},
+      <if test="record.discountType != null">
+        discount_type = #{record.discountType,jdbcType=INTEGER},
       </if>
       <if test="record.status != null">
         status = #{record.status,jdbcType=INTEGER},
@@ -192,6 +199,9 @@
       <if test="record.createdDate != null">
         created_date = #{record.createdDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.promotionTypeId != null">
+        promotion_type_id = #{record.promotionTypeId,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -202,11 +212,12 @@
     set id = #{record.id,jdbcType=INTEGER},
       name = #{record.name,jdbcType=VARCHAR},
       tag = #{record.tag,jdbcType=VARCHAR},
-      promotion_type = #{record.promotionType,jdbcType=INTEGER},
+      discount_type = #{record.discountType,jdbcType=INTEGER},
       status = #{record.status,jdbcType=INTEGER},
       start_date = #{record.startDate,jdbcType=TIMESTAMP},
       end_date = #{record.endDate,jdbcType=TIMESTAMP},
-      created_date = #{record.createdDate,jdbcType=TIMESTAMP}
+      created_date = #{record.createdDate,jdbcType=TIMESTAMP},
+      promotion_type_id = #{record.promotionTypeId,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -220,8 +231,8 @@
       <if test="tag != null">
         tag = #{tag,jdbcType=VARCHAR},
       </if>
-      <if test="promotionType != null">
-        promotion_type = #{promotionType,jdbcType=INTEGER},
+      <if test="discountType != null">
+        discount_type = #{discountType,jdbcType=INTEGER},
       </if>
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},
@@ -235,6 +246,9 @@
       <if test="createdDate != null">
         created_date = #{createdDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="promotionTypeId != null">
+        promotion_type_id = #{promotionTypeId,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -242,11 +256,12 @@
     update promotion
     set name = #{name,jdbcType=VARCHAR},
       tag = #{tag,jdbcType=VARCHAR},
-      promotion_type = #{promotionType,jdbcType=INTEGER},
+      discount_type = #{discountType,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
       start_date = #{startDate,jdbcType=TIMESTAMP},
       end_date = #{endDate,jdbcType=TIMESTAMP},
-      created_date = #{createdDate,jdbcType=TIMESTAMP}
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      promotion_type_id = #{promotionTypeId,jdbcType=BIGINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
