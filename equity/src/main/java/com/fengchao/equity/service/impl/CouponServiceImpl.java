@@ -88,6 +88,7 @@ public class CouponServiceImpl implements CouponService {
         if(bean.getStatus() != null && bean.getStatus() == 2 && num == 1){
             JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getReleaseStartDate());
             JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
+            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
         }
 
         return num;
@@ -144,7 +145,10 @@ public class CouponServiceImpl implements CouponService {
     public CategoryCouponBean activeCategories() {
         CategoryCouponBean categoryCouponBean = new CategoryCouponBean();
         List<String> tags = mapper.selectTags();
-        List<CouponTags> tagList = tagsMapper.selectTags(tags);
+        List<CouponTags> tagList = null;
+        if(!tags.isEmpty()){
+            tagList = tagsMapper.selectTags(tags);
+        }
         List<String> categories = mapper.selectActiveCategories();
 
         OperaResult result = productService.findCategoryList(categories);

@@ -3,16 +3,21 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.service.OrderService;
+import com.fengchao.order.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 订单列表
  */
 @RestController
 @RequestMapping(value = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class OrderController {
 
     @Autowired
@@ -182,35 +187,32 @@ public class OrderController {
         return result;
     }
 
-    @GetMapping("/payment/merchant/count")
-    private OperaResult paymentMerchantCount(String start, String end, OperaResult result) {
-        if (StringUtils.isEmpty(start)) {
-            result.setCode(4000002);
-            result.setMsg("start 不能为空。");
-            return result;
-        }
-        if (StringUtils.isEmpty(end)) {
-            result.setCode(4000003);
-            result.setMsg("end 不能为空。");
-            return result;
-        }
-        result.getData().put("result", service.findDayMerchantPaymentCount(start, end)) ;
-        return result;
-    }
+    /**
+     * 按照时间范围查询已支付的子订单列表
+     *
+     * @param start
+     * @param end
+     * @param result
+     * @return
+     */
+    @GetMapping("/orderdetail/payed/list")
+    private OperaResult queryPayedOrderDetailList(String start, String end, OperaResult result) {
+        log.info("按照时间范围查询已支付的子订单列表 入参: startDateTime:{}, endDateTime:{}", start, end);
 
-    @GetMapping("/payment/category/list")
-    private OperaResult paymentCategoryList(String start, String end, OperaResult result) {
-        if (StringUtils.isEmpty(start)) {
-            result.setCode(4000002);
-            result.setMsg("start 不能为空。");
-            return result;
+        try {
+            List<OrderDetailBean> orderDetailBeanList = service.queryPayedOrderDetail(start, end);
+
+            result.getData().put("result", orderDetailBeanList);
+        } catch (Exception e) {
+            log.error("按照时间范围查询已支付的子订单列表 异常:{}", e.getMessage(), e);
+
+            result.setCode(500);
+            result.setMsg("按照时间范围查询已支付的子订单列表异常");
         }
-        if (StringUtils.isEmpty(end)) {
-            result.setCode(4000003);
-            result.setMsg("end 不能为空。");
-            return result;
-        }
-        result.getData().put("result", service.findDayCategoryPaymentList(start, end)) ;
+
+        log.info("按照时间范围查询已支付的子订单列表 返回:{}", JSONUtil.toJsonString(result));
+
+        result.getData().put("result", service.findDayMerchantPaymentCount(start, end)) ;
         return result;
     }
 

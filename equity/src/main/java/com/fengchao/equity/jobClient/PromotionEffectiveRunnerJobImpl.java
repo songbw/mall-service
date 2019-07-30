@@ -27,7 +27,8 @@ public class PromotionEffectiveRunnerJobImpl implements JobRunner {
             PromotionService promotionService = BeanContext.getApplicationContext().getBean(PromotionService.class);
             int promotionId = Integer.parseInt(id) ;
             PromotionX promotion = promotionService.findPromotionById(promotionId);
-            if (promotion != null && promotion.getStatus() != 2) {
+            //已发布状态才会触发开始状态
+            if (promotion != null && promotion.getStatus() ==3 ) {
                 promotionService.effective(promotionId) ;
                 // 会发送到 LTS (JobTracker上)
                 bizLogger.info("活动生效成功");

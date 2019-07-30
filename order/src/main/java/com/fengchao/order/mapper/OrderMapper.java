@@ -50,6 +50,12 @@ public interface OrderMapper {
 
     List<PromotionPaymentBean> selectDayPromotionPaymentCount(HashMap map) ;
 
+    /**
+     * 按商户统计订单支付总额
+     *
+     * @param map
+     * @return
+     */
     List<MerchantPaymentBean> selectDayMerchantPaymentCount(HashMap map) ;
 
     List<CategoryPaymentBean> selectDayCategoryPaymentList(HashMap map) ;

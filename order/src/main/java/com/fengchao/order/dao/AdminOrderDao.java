@@ -34,6 +34,23 @@ public class AdminOrderDao {
     }
 
     /**
+     * 根据orders的id集合查询 订单列表
+     *
+     * @param orderIdList
+     * @return
+     */
+    public List<Orders> selectOrdersListByIdList(List<Integer> orderIdList) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+
+        criteria.andIdIn(orderIdList);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
+
+    /**
      * 查询需要导出的订单主表信息
      *
      * @param orders
@@ -87,6 +104,24 @@ public class AdminOrderDao {
         if (merchantId != null && merchantId > 0) {
             criteria.andMerchantIdEqualTo(merchantId);
         }
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
+    /**
+     * 按照创建时间范围，查询子订单集合
+     *
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByCreateTimeRange(Date startDateTime, Date endDateTime) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andCreatedAtBetween(startDateTime, endDateTime);
 
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
 

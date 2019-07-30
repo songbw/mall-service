@@ -1,5 +1,6 @@
 package com.fengchao.equity.service.impl;
 
+import com.fengchao.equity.bean.PromotionTypeResDto;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.PromotionTypeDao;
@@ -12,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -38,7 +41,25 @@ public class PromotionTypeServiceImpl implements PromotionTypeService {
         log.info("分页查询活动列表 得到PageableData为:{}", JSONUtil.toJsonString(pageableData));
 
         return pageableData;
+    }
 
+    @Override
+    public List<PromotionTypeResDto> queryAllPromotionType() {
+        List<PromotionType> promotionTypeList = promotionTypeDao.selectAllPromotionTypeList();
+        log.info("查询所有活动类型列表 数据库返回:{}", JSONUtil.toJsonString(promotionTypeList));
+
+        // 转dto
+        List<PromotionTypeResDto> promotionTypeResDtoList = new ArrayList<>();
+        for (PromotionType promotionType : promotionTypeList) {
+            PromotionTypeResDto promotionTypeResDto = convertToPromotionTypeResDto(promotionType);
+
+            promotionTypeResDtoList.add(promotionTypeResDto);
+        }
+
+        log.info("查询所有活动类型列表 PromotionTypeServiceImpl#queryAllPromotionType 返回:{}",
+                JSONUtil.toJsonString(promotionTypeList));
+
+        return promotionTypeResDtoList;
     }
 
     @Override
@@ -54,5 +75,20 @@ public class PromotionTypeServiceImpl implements PromotionTypeService {
     @Override
     public int removePromotionType(Long promotionTypeId) {
         return promotionTypeDao.removePromotionType(promotionTypeId);
+    }
+
+    // ============================== private ===========================================
+
+    private PromotionTypeResDto convertToPromotionTypeResDto(PromotionType promotionType) {
+        PromotionTypeResDto promotionTypeResDto = new PromotionTypeResDto();
+
+        promotionTypeResDto.setId(promotionType.getId());
+        promotionTypeResDto.setTypeName(promotionType.getTypeName());
+        promotionTypeResDto.setTypeDesc(promotionType.getTypeDesc());
+        promotionTypeResDto.setIstatus(promotionType.getIstatus());
+        promotionTypeResDto.setCreateTime(promotionType.getCreateTime());
+        promotionTypeResDto.setUpdateTime(promotionType.getUpdateTime());
+
+        return promotionTypeResDto;
     }
 }

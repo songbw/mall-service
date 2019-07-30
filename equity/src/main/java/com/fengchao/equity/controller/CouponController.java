@@ -143,6 +143,13 @@ public class CouponController {
         return result;
     }
 
+    /**
+     * 根据id集合查询
+     *
+     * @param idList
+     * @param result
+     * @return
+     */
     @GetMapping("findByIdList")
     public OperaResult findByIdList(@RequestParam("idList") List<Integer> idList, OperaResult result){
         log.info("根据id集合获取coupon列表 入参:{}", JSONUtil.toJsonString(idList));

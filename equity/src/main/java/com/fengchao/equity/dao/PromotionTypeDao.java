@@ -33,6 +33,37 @@ public class PromotionTypeDao {
         return new PageInfo<>(types);
     }
 
+    /**
+     * 根据id集合查询promotionType 列表
+     *
+     * @param idList
+     * @return
+     */
+    public List<PromotionType> selectPromotionTypesByIdList(List<Long> idList) {
+        PromotionTypeExample promotionTypeExample = new PromotionTypeExample();
+
+        PromotionTypeExample.Criteria criteria = promotionTypeExample.createCriteria();
+        criteria.andIdIn(idList);
+
+        List<PromotionType> promotionTypeList = promotionTypeMapper.selectByExample(promotionTypeExample);
+
+        return promotionTypeList;
+    }
+
+    /**
+     * 查询所有的PromotionType
+     *
+     * @return
+     */
+    public List<PromotionType> selectAllPromotionTypeList() {
+        PromotionTypeExample example = new PromotionTypeExample();
+        example.createCriteria().andIstatusEqualTo((short) 1);
+
+        List<PromotionType> promotionTypeList = promotionTypeMapper.selectByExample(example);
+
+        return promotionTypeList;
+    }
+
     public Long createPromotionType(PromotionType type){
          promotionTypeMapper.insertSelective(type);
          return type.getId();

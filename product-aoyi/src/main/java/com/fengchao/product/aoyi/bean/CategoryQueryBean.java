@@ -1,8 +1,10 @@
 package com.fengchao.product.aoyi.bean;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class CategoryQueryBean {
     private Integer id;
     private String name;

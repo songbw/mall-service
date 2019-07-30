@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.statistics.bean.DayStatisticsBean;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.bean.QueryBean;
-import com.fengchao.statistics.feign.OrderService;
+import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.feign.SsoService;
 import com.fengchao.statistics.feign.WorkOrdersService;
 import com.fengchao.statistics.mapper.OverviewMapper;
@@ -25,7 +25,7 @@ public class OverviewServiceImpl implements OverviewService {
     @Autowired
     private OverviewMapper mapper;
     @Autowired
-    private OrderService orderService;
+    private OrderServiceClient orderService;
     @Autowired
     private WorkOrdersService workOrdersService;
     @Autowired
@@ -35,6 +35,7 @@ public class OverviewServiceImpl implements OverviewService {
     public void add(QueryBean queryBean) {
         Overview overview = new Overview();
         DayStatisticsBean statisticsBean = getStatistics(queryBean) ;
+
         if (statisticsBean != null) {
             overview.setCreatedAt(new Date());
             overview.setOrderPaymentAmount(statisticsBean.getOrderPaymentAmount());
