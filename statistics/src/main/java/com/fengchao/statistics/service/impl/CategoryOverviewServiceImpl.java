@@ -12,6 +12,7 @@ import com.fengchao.statistics.service.CategoryOverviewService;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -110,11 +111,15 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
     public List<CategoryOverviewResVo> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
         // 1. 查询数据库
         Date _startDate = DateUtil.parseDateTime(startDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-        Date _endDate = DateUtil.parseDateTime(endDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         log.info("根据时间范围获取daily型的品类维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<CategoryOverview> categoryOverviewList =
                 categoryOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的品类维度统计数据 数据库返回: {}", JSONUtil.toJsonString(categoryOverviewList));
+
+        if (CollectionUtils.isEmpty(categoryOverviewList)) {
+            return Collections.emptyList();
+        }
 
         // 2. 将获取到的数据按照一级品类分组
         Map<String, List<CategoryOverview>> categoryOverviewListMap = new HashMap<>();

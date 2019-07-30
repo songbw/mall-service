@@ -11,6 +11,7 @@ import com.fengchao.statistics.service.MerchantOverviewService;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -97,12 +98,15 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
     @Override
     public List<MerchantOverviewResVo> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
         // 1. 查询数据库
-        Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
-        Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
+        Date _startDate = DateUtil.parseDateTime(startDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         log.info("根据时间范围获取daily型的商户维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<MerchantOverview> merchantOverviewList =
                 merchantOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的商户维度统计数据 数据库返回: {}", JSONUtil.toJsonString(merchantOverviewList));
+        if (CollectionUtils.isEmpty(merchantOverviewList)) {
+            return Collections.emptyList();
+        }
 
         // 2. 将获取到的数据按照商户分组
         Map<Integer, List<MerchantOverview>> merchantOverviewListMap = new HashMap<>();
@@ -117,6 +121,9 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
             _merchantOverviewList.add(merchantOverview);
         }
+
+        log.info("根据时间范围获取daily型的商户维度统计数据 按照商户分组Map<Integer, List<MerchantOverview>>:{}",
+                JSONUtil.toJsonString(merchantOverviewListMap));
 
         // 3. 组装统计数据 MerchantOverviewResVo
         List<MerchantOverviewResVo> merchantOverviewResVoList = new ArrayList<>();
