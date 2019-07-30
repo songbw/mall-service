@@ -109,8 +109,8 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
     @Override
     public List<CategoryOverviewResVo> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
         // 1. 查询数据库
-        Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
-        Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
+        Date _startDate = DateUtil.parseDateTime(startDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date _endDate = DateUtil.parseDateTime(endDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         log.info("根据时间范围获取daily型的品类维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<CategoryOverview> categoryOverviewList =
                 categoryOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
@@ -129,6 +129,9 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
 
             _categoryOverviewList.add(categoryOverview);
         }
+
+        log.info("根据时间范围获取daily型的品类维度统计数据 按照一级品类分组Map<String, List<CategoryOverview>>:{}",
+                JSONUtil.toJsonString(categoryOverviewListMap));
 
         // 3. 组装统计数据 CategoryOverviewResVo
         List<CategoryOverviewResVo> categoryOverviewResVoList = new ArrayList<>();
