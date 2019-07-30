@@ -126,12 +126,16 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     @Override
     public List<Map<String, Object>> fetchStatisticDailyResult(String startDate, String endDate) throws Exception {
         // 1. 查询数据库
-        Date _startDate = DateUtil.parseDateTime(startDate, DateUtil.DATE_YYYY_MM_DD);
-        Date _endDate = DateUtil.parseDateTime(endDate, DateUtil.DATE_YYYY_MM_DD);
+        Date _startDate = DateUtil.parseDateTime(startDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         log.info("根据时间范围获取daily型的活动维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<PromotionOverview> promotionOverviewList =
                 promotionOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的活动维度统计数据 数据库返回: {}", JSONUtil.toJsonString(promotionOverviewList));
+
+        if (CollectionUtils.isEmpty(promotionOverviewList)) {
+            return Collections.emptyList();
+        }
 
         // 根据start时间排序
         promotionOverviewList.sort(Comparator.comparing(PromotionOverview::getStatisticStartTime));
@@ -152,7 +156,10 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             dateRangeList.add(promotionOverview);
         }
 
-        // 2.2 将数据转换成前端需要的格式：{[date:'', '秒杀':8, '优选':9 ...] ...}
+        log.info("根据时间范围获取daily型的活动维度统计数据 按照日期维度分组Map<String, List<PromotionOverview>>:{}",
+                JSONUtil.toJsonString(dateRangeMap));
+
+        // 2.2 将数据转换成前端需要的格式：{[date:'2019-09-09', '秒杀':8, '优选':9 ...] ...}
         List<Map<String, Object>> result = new ArrayList<>();
         Set<String> dateSet = dateRangeMap.keySet();
         for (String date : dateSet) {
@@ -167,7 +174,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             result.add(_map);
         }
 
-        log.info("根据时间范围获取daily型的活动维度统计数据 获取统计数据Map<String, List<PromotionOverviewResVo>>:{}",
+        log.info("根据时间范围获取daily型的活动维度统计数据 获取统计数据 List<Map<String, Object>>:{}",
                 JSONUtil.toJsonString(result));
 
         return result;
