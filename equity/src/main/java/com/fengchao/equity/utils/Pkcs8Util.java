@@ -122,25 +122,15 @@ public class Pkcs8Util {
 
     public static void main(String[] args) {
         Map<String, Object> map = new HashMap<String, Object>();
-//        //系统参数
         String teststr= "1044391000fd194ab888b1aa81c03c3710";
-//        String couponCode= "4567";
-        // 授权用户名(固定值)
-//        map.put("open_id", "20180801050402");// 请求时间戳,时区为GMT+8(北京时间)
         try {
-//            加密
-            String encryptAES = AESUtils.encryptAES(teststr.getBytes());
-//            String couponCodeAES = AESUtils.encryptAES(couponCode.getBytes());
-//            //加密后的内容Base64编码
-            map.put("open_id", encryptAES);
-//            map.put("coupon_code",couponCodeAES);
+            map.put("open_id", teststr);
+            map.put("coupon_code",teststr);
+//           加密
             String urlMap = formatUrlMap(map, false, false);
-//
             String sing = getSign(urlMap);
-            System.out.println(sing);
+//            解密
             verify(urlMap.getBytes(), sing);
-//            boolean verify = verify(urlMap.getBytes(), sing);
-//            System.out.println(verify);
         } catch (Exception e) {
             e.printStackTrace();
         }

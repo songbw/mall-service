@@ -1,10 +1,12 @@
 package com.fengchao.equity.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.feign.SSOService;
+import com.fengchao.equity.feign.VendorsService;
 import com.fengchao.equity.mapper.CouponThirdMapper;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
 import com.fengchao.equity.mapper.CouponUseInfoXMapper;
@@ -38,6 +40,8 @@ public class CouponThirdServiceImpl implements CouponThirdService {
     private CouponXMapper couponXMapper;
     @Autowired
     private SSOService ssoService;
+    @Autowired
+    private VendorsService vendorsService;
 
     @Override
     public OperaResult consumedToushi(ToushiResult bean) throws EquityException {
@@ -313,21 +317,44 @@ public class CouponThirdServiceImpl implements CouponThirdService {
             }
         }
 
-//        try {
-////            ObjectMapper objectMapper = new ObjectMapper();
-////            Map<String, Object> props = objectMapper.convertValue(couponBean, Map.class);
-////            String urlMap = Pkcs8Util.formatUrlMap(props, false, false);
-////            String sign = Pkcs8Util.getSign(urlMap);
-////            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
-////            if(!verify){
-////                result.setCode(700001);
-////                result.setMsg("验签失败");
-////                return result;
-////            }
-////        } catch (Exception e) {
-////            e.printStackTrace();
-////        }
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> props = objectMapper.convertValue(couponBean, Map.class);
+            String urlMap = Pkcs8Util.formatUrlMap(props, false, false);
+            String sign = Pkcs8Util.getSign(urlMap);
+            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
+            if(!verify){
+                result.setCode(700001);
+                result.setMsg("验签失败");
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+//        int merchantId = Integer.getInteger(couponBean.getSupplierMerchantId());
+//        OperaResult vendorInfo = vendorsService.vendorInfo(merchantId);
+//        if (vendorInfo.getCode() == 200) {
+//            Map<String, Object> data = vendorInfo.getData() ;
+//            Object object = data.get("user");
+//            String jsonString = JSONUtil.toJsonString(object);
+//            VendorsProfileBean vendorsProfileBean = JSONObject.parseObject(jsonString, VendorsProfileBean.class) ;
+//            if(vendorsProfileBean == null){
+//                result.setCode(700025);
+//                result.setMsg(vendorsProfileBean.getName() + "商户不存在");
+//                return result;
+//            }else if(!vendorsProfileBean.getName().equals(couponBean.getSupplierMerchantName())){
+//                result.setCode(700026);
+//                result.setMsg(vendorsProfileBean.getName() + "商户信息有误");
+//                return result;
+//            }
+//        }
+//
+//        if (result.getCode() == 200) {
+//            Object object = result.getData() ;
+//            String jsonString = JSON.toJSONString(object);
+//            VendorsProfileBean profileBean = JSONObject.parseObject(jsonString, VendorsProfileBean.class);
+//        }
         CouponX coupon = new CouponX();
         coupon.setName(couponBean.getName());
         coupon.setSupplierMerchantId(couponBean.getSupplierMerchantId());
@@ -375,6 +402,21 @@ public class CouponThirdServiceImpl implements CouponThirdService {
                 e.printStackTrace();
             }
         }
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> props = objectMapper.convertValue(data, Map.class);
+            String urlMap = Pkcs8Util.formatUrlMap(props, false, false);
+            boolean verify = Pkcs8Util.verify(urlMap.getBytes(), bean.getSign());
+            if(!verify){
+                result.setCode(700001);
+                result.setMsg("验签失败");
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         CouponX couponX = couponXMapper.selectByCodeKey(data.getEquity_code());
         if(couponX == null){
             result.setCode(7000005);
