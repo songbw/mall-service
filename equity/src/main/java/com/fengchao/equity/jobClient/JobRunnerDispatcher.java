@@ -27,7 +27,7 @@ public class JobRunnerDispatcher implements JobRunner {
         JOB_RUNNER_MAP.put("promotionEnd", new PromotionEndRunnerJobImpl());
         JOB_RUNNER_MAP.put("couponEffective", new CouponEffectiveRunnerJobImpl());
         JOB_RUNNER_MAP.put("couponEnd", new CouponEndRunnerJobImpl());
-        JOB_RUNNER_MAP.put("userCouponInvalid", new CouponInvalidRunnerJobImpl());
+        JOB_RUNNER_MAP.put("couponInvalid", new CouponInvalidRunnerJobImpl());
     }
 
     @Override
