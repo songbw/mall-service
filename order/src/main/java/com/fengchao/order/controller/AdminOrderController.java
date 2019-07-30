@@ -70,9 +70,9 @@ public class AdminOrderController {
         try {
             log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
-            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
-                throw new Exception("参数不合法, 商户id为空");
-            }
+//            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
+//                throw new Exception("参数不合法, 商户id为空");
+//            }
             if (orderExportReqVo.getPayStartDate() == null) {
                 throw new Exception("参数不合法, 查询开始时间为空");
             }
