@@ -167,4 +167,21 @@ public class AdminOrderDao {
         orderDetailMapper.updateByExampleSelective(orderDetail, orderDetailExample) ;
     }
 
+    /**
+     * 更新子订单
+     * @param orderDetail
+     * @return
+     */
+    public Integer updateOrderDetail(OrderDetail orderDetail) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        OrderDetail temp = new OrderDetail() ;
+        temp.setId(orderDetail.getId());
+        temp.setRemark(orderDetail.getRemark());
+        temp.setUpdatedAt(new Date());
+        criteria.andIdEqualTo(temp.getId()) ;
+        orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
+        return orderDetail.getId() ;
+    }
+
 }

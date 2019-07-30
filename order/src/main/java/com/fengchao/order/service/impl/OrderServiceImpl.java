@@ -553,6 +553,11 @@ public class OrderServiceImpl implements OrderService {
         return ordersList;
     }
 
+    @Override
+    public Integer updateSubOrder(OrderDetail bean) {
+        return adminOrderDao.updateOrderDetail(bean);
+    }
+
     // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {

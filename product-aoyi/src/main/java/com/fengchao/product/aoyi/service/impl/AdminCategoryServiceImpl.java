@@ -151,7 +151,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
-    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<CategoryQueryBean> selectByCategoryIdList(List<String> categories) {
