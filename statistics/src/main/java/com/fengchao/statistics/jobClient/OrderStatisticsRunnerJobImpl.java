@@ -14,12 +14,11 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.logger.BizLogger;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
-import jdk.internal.instrumentation.Tracer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.util.StopWatch;
 
-import java.util.*;
+import java.util.List;
 
 @Slf4j
 public class OrderStatisticsRunnerJobImpl implements JobRunner {
