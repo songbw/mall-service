@@ -1,6 +1,7 @@
 package com.fengchao.aoyi.client.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.OrderParamBean;
 import com.fengchao.aoyi.client.bean.QueryLogist;
 import com.fengchao.aoyi.client.bean.SubOrderT;
@@ -13,10 +14,10 @@ import java.util.List;
  */
 public interface OrderService {
 
-    List<SubOrderT> addOrder(OrderParamBean orderBean) throws AoyiClientException ;
+    OperaResult addOrder(OrderParamBean orderBean) ;
 
-    boolean confirmOrder(String orderId) throws AoyiClientException ;
+    OperaResult confirmOrder(String orderId) ;
 
-    JSONArray getOrderLogist(QueryLogist queryLogist) throws AoyiClientException;
+    OperaResult getOrderLogist(QueryLogist queryLogist) ;
 
 }

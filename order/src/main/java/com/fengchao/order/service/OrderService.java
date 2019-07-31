@@ -3,6 +3,7 @@ package com.fengchao.order.service;
 import com.alibaba.fastjson.JSONArray;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
+import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface OrderService {
 
 //    List<SubOrder> add(OrderParamBean bean) ;
 
-    List<OrderMerchantBean> add2(OrderParamBean bean);
+    OperaResult add2(OrderParamBean bean);
 
     Integer cancel(Integer id);
 
@@ -86,4 +87,6 @@ public interface OrderService {
     String findPaymentStatus(String outerTradeNo);
 
     List<Orders> findByPaymentNoAndOpenId(String paymentNo, String openId) ;
+
+    Integer updateSubOrder(OrderDetail bean);
 }

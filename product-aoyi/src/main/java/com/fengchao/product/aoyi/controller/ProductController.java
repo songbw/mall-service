@@ -49,8 +49,7 @@ public class ProductController {
      */
     @PostMapping("/inventory")
     private OperaResult inventory(@RequestBody InventoryQueryBean queryBean, OperaResult result) throws ProductException {
-        result.getData().put("result", service.findInventory(queryBean)) ;
-        return result;
+        return service.findInventory(queryBean);
     }
 
     /**

@@ -51,7 +51,7 @@
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, open_id, trade_no, aoyi_id, company_cust_no,merchant_no, receiver_name, telephone, mobile,
+    id, open_id, trade_no, aoyi_id, company_cust_no, merchant_id, merchant_no, receiver_name, telephone, mobile,
     email, province_id, province_name, city_id, city_name, county_id, county_name, town_id, address, zip, remark, invoice_state,
     invoice_type, invoice_title, invoice_content, payment, serv_Fee, amount, status, 
     type,out_trade_no, payment_no, payment_at, payment_amount, payee, refund_fee, pay_type, payment_total_fee, payer, pay_status, pay_order_category, created_at, updated_at, coupon_id, coupon_code, coupon_discount, sale_amount
@@ -107,6 +107,9 @@
     <if test="payDateEnd != null" >
         <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
     </if>
+    <if test="subStatus != null">
+      and order_detail.status = #{subStatus}
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -142,12 +145,12 @@
 
   <select id="selectOrderLimit" resultType="com.fengchao.order.bean.OrderDetailBean" parameterType="Map">
     select 	orders.id id, open_id openId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, orders.merchant_id merchantId, merchant_no merchantNo,receiver_name receiverName, telephone,
-    mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, remark, invoice_state invoiceState,province_name provinceName, city_name cityName,
+    mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, order_detail.remark, invoice_state invoiceState,province_name provinceName, city_name cityName,
     invoice_type invoiceType, invoice_title invoiceTitle, payment_no paymentNo, payment_at paymentAt, invoice_content invoiceContent, payment,county_name countyName,
     serv_Fee servFee, amount, type, orders.status, out_trade_no outTradeNo, payment_amount paymentAmount, payee, refund_fee refundFee, pay_type payType, payment_total_fee paymentTotalFee, payer,
     pay_status payStatus, pay_order_category payOrderCategory, coupon_id couponId, coupon_code couponCode, coupon_discount couponDiscount, sale_amount saleAmount,
     sub_order_id subOrderId, sku_id skuId, mpu, num,unit_price unitPrice, image, name, model, promotion_id promotionId, promotion_discount promotionDiscount,
-    order_detail.created_at createdAt, order_detail.updated_at updatedAt, order_detail.logistics_id logisticsId, order_detail.logistics_content logisticsContent    from order_detail
+    order_detail.created_at createdAt, order_detail.updated_at updatedAt, order_detail.logistics_id logisticsId, order_detail.logistics_content logisticsContent, order_detail.sale_price salePrice, order_detail.status subStatus, order_detail.mpu, order_detail.comcode, order_detail.sku_coupon_discount skuCouponDiscount   from order_detail
     RIGHT JOIN orders on order_detail.order_id = orders.id
     where 1 = 1
     <if test="openId != null and openId !=''">
@@ -177,6 +180,9 @@
     </if>
     <if test="payDateEnd != null" >
       <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="subStatus != null">
+      and order_detail.status = #{subStatus}
     </if>
     order by order_detail.updated_at desc
     limit #{pageNo},#{pageSize}

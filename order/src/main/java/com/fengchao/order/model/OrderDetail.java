@@ -48,6 +48,8 @@ public class OrderDetail {
 
     private String category;
 
+    private String remark;
+
     public Integer getId() {
         return id;
     }
@@ -222,5 +224,13 @@ public class OrderDetail {
 
     public void setCategory(String category) {
         this.category = category == null ? null : category.trim();
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
     }
 }

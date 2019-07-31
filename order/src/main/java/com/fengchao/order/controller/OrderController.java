@@ -2,6 +2,7 @@ package com.fengchao.order.controller;
 
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
+import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +33,7 @@ public class OrderController {
 
     @PostMapping
     private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result) {
-        result.getData().put("result", service.add2(bean)) ;
-        return result;
+        return service.add2(bean);
     }
 
     @DeleteMapping
@@ -243,6 +243,23 @@ public class OrderController {
             return result;
         }
         result.getData().put("result", service.findByPaymentNoAndOpenId(paymentNo, openId)) ;
+        return result;
+    }
+
+    @PutMapping("/subOrder")
+    private OperaResult updateSubOrder(@RequestBody OrderDetail bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        if (StringUtils.isEmpty(bean)) {
+            result.setCode(4000004);
+            result.setMsg("参数不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(bean.getId())) {
+            result.setCode(4000005);
+            result.setMsg("id不能为空。");
+            return result;
+        }
+        bean.setMerchantId(merchantId);
+        result.getData().put("result", service.updateSubOrder(bean)) ;
         return result;
     }
 

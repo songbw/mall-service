@@ -24,6 +24,7 @@
     <result column="comcode" jdbcType="VARCHAR" property="comcode" />
     <result column="sku_coupon_discount" jdbcType="INTEGER" property="skuCouponDiscount" />
     <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -86,7 +87,7 @@
   <sql id="Base_Column_List">
     id, merchant_id, order_id, sub_order_id, mpu, sku_id, num, promotion_id, promotion_discount, 
     sale_price, unit_price, image, model, name, status, created_at, updated_at, logistics_id, 
-    logistics_content, comcode, sku_coupon_discount, category
+    logistics_content, comcode, sku_coupon_discount, category, remark
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.order.model.OrderDetailExample" resultMap="BaseResultMap">
     select
@@ -125,14 +126,16 @@
       image, model, name, 
       status, created_at, updated_at, 
       logistics_id, logistics_content, comcode, 
-      sku_coupon_discount, category)
+      sku_coupon_discount, category, remark
+      )
     values (#{merchantId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, 
       #{mpu,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{num,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, 
       #{promotionDiscount,jdbcType=REAL}, #{salePrice,jdbcType=DECIMAL}, #{unitPrice,jdbcType=DECIMAL}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
       #{logisticsId,jdbcType=VARCHAR}, #{logisticsContent,jdbcType=VARCHAR}, #{comcode,jdbcType=VARCHAR}, 
-      #{skuCouponDiscount,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR})
+      #{skuCouponDiscount,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderDetail" useGeneratedKeys="true">
     insert into order_detail
@@ -200,6 +203,9 @@
       <if test="category != null">
         category,
       </if>
+      <if test="remark != null">
+        remark,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="merchantId != null">
@@ -264,6 +270,9 @@
       </if>
       <if test="category != null">
         #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -342,6 +351,9 @@
       <if test="record.category != null">
         category = #{record.category,jdbcType=VARCHAR},
       </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -370,7 +382,8 @@
       logistics_content = #{record.logisticsContent,jdbcType=VARCHAR},
       comcode = #{record.comcode,jdbcType=VARCHAR},
       sku_coupon_discount = #{record.skuCouponDiscount,jdbcType=INTEGER},
-      category = #{record.category,jdbcType=VARCHAR}
+      category = #{record.category,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -441,6 +454,9 @@
       <if test="category != null">
         category = #{category,jdbcType=VARCHAR},
       </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -466,7 +482,8 @@
       logistics_content = #{logisticsContent,jdbcType=VARCHAR},
       comcode = #{comcode,jdbcType=VARCHAR},
       sku_coupon_discount = #{skuCouponDiscount,jdbcType=INTEGER},
-      category = #{category,jdbcType=VARCHAR}
+      category = #{category,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

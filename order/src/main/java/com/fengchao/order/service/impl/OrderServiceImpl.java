@@ -73,7 +73,8 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<OrderMerchantBean> add2(OrderParamBean orderBean){
+    public OperaResult add2(OrderParamBean orderBean){
+        OperaResult operaResult = new OperaResult();
         Order bean = new Order();
         bean.setOpenId(orderBean.getOpenId());
         bean.setCompanyCustNo(orderBean.getCompanyCustNo());
@@ -196,7 +197,15 @@ public class OrderServiceImpl implements OrderService {
         orderBean.setMerchants(orderMerchantBeans);
         orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != 2));
         createOrder(orderBean) ;
-        return orderMerchantBeans;
+        OperaResponse result = aoyiClientService.order(orderBean);
+        if (result.getCode() == 200) {
+            operaResult.getData().put("result", orderMerchantBeans) ;
+        } else {
+            operaResult.setCode(result.getCode());
+            operaResult.setMsg(result.getMsg());
+            // 异常数据库回滚
+        }
+        return operaResult;
     }
 
 
@@ -207,6 +216,11 @@ public class OrderServiceImpl implements OrderService {
         order.setId(id);
         order.setUpdatedAt(new Date());
         order.setStatus(3);
+        // 更新子订单状态
+        OrderDetail orderDetail = new OrderDetail() ;
+        orderDetail.setOrderId(id);
+        orderDetail.setStatus(3);
+        adminOrderDao.updateOrderDetailStatus(orderDetail) ;
         orderMapper.updateStatusById(order) ;
         return id;
     }
@@ -261,6 +275,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
+        // 更新子订单状态
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setOrderId(bean.getId());
+        orderDetail.setStatus(4);
+        adminOrderDao.updateOrderDetailStatus(orderDetail);
         orderMapper.updateStatusById(bean) ;
         return bean.getId();
     }
@@ -281,6 +300,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("tradeNo",orderBean.getTradeNo());
         map.put("status",orderBean.getStatus());
         map.put("merchantId",orderBean.getMerchantId());
+        map.put("subStatus",orderBean.getSubStatus());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
             map.put("payDateStart", orderBean.getPayDateStart()) ;
         }
@@ -368,7 +388,6 @@ public class OrderServiceImpl implements OrderService {
         return receiver;
     }
 
-    @CachePut(value = "logistics", key = "#bean.logisticsId")
     @Override
     public Integer uploadLogistics(Logisticsbean bean) {
         final int i = 1;
@@ -379,7 +398,9 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setOrderId(Logistics.getOrderId());
                 orderDetailX.setSubOrderId(Logistics.getSubOrderId());
                 orderDetailX.setLogisticsContent(Logistics.getLogisticsContent());
+                orderDetailX.setComCode(Logistics.getComCode());
                 orderDetailX.setLogisticsId(Logistics.getLogisticsId());
+                orderDetailX.setStatus(2);
                 orderDetailXMapper.updateByOrderId(orderDetailX);
             });
         }
@@ -422,6 +443,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer updatePaymentNo(Order order) {
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setOrderId(order.getId());
+        orderDetail.setStatus(1);
+        adminOrderDao.updateOrderDetailStatus(orderDetail);
         return orderMapper.updatePaymentNo(order);
     }
 
@@ -540,6 +565,11 @@ public class OrderServiceImpl implements OrderService {
         return ordersList;
     }
 
+    @Override
+    public Integer updateSubOrder(OrderDetail bean) {
+        return adminOrderDao.updateOrderDetail(bean);
+    }
+
     // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {
@@ -563,12 +593,13 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
         logger.info(msg);
-        OperaResult result = aoyiClientService.order(bean);
+        OperaResponse result = aoyiClientService.order(bean);
         if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            List<SubOrderT> subOrderTS = JSONObject.parseArray(jsonString, SubOrderT.class);
+//            Map<String, Object> data = result.getData() ;
+//            Object object = data.get("result");
+//            String jsonString = JSON.toJSONString(object);
+//            List<SubOrderT> subOrderTS = JSONObject.parseArray(jsonString, SubOrderT.class);
+            List<SubOrderT> subOrderTS = (List<SubOrderT>) result.getData();
             return subOrderTS;
         }
         return null;

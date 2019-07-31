@@ -124,7 +124,7 @@ public class CouponController {
         return result;
     }
 
-    @PostMapping("occupy")
+    @PostMapping("occupy")//占用优惠券
     public OperaResult occupyCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
         int num = useInfoService.occupyCoupon(bean);
         if(num == 2){
@@ -136,7 +136,7 @@ public class CouponController {
         return result;
     }
 
-    @PostMapping("release")
+    @PostMapping("release")//释放优惠券
     public OperaResult releaseCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
         int num = useInfoService.releaseCoupon(bean);
         result.getData().put("result",num);

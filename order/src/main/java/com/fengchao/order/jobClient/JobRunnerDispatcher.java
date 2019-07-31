@@ -26,7 +26,7 @@ public class JobRunnerDispatcher implements JobRunner {
 
     static {
         JOB_RUNNER_MAP.put("orderCancel", new OrderCancelRunnerJobImpl());
-//        JOB_RUNNER_MAP.put("bType", new JobRunnerB());
+        JOB_RUNNER_MAP.put("subOrderFinish", new SubOrderFinishRunnerJobImpl());
     }
 
     @Override
