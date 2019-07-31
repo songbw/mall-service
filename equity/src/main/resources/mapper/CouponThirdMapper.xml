@@ -11,11 +11,10 @@
     <result column="effective_start_date" property="effectiveStartDate" jdbcType="VARCHAR" />
     <result column="effective_end_date" property="effectiveEndDate" jdbcType="VARCHAR" />
     <result column="description" property="description" jdbcType="VARCHAR" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, coupon_user_id, merchant_id, merchant_name, price, name, effective_start_date, effective_end_date,
-    description, url
+    description
   </sql>
   <select id="selectByUserCouponId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
@@ -26,12 +25,10 @@
   <insert id="insert" parameterType="com.fengchao.equity.model.CouponThird" >
     insert into coupon_third (id, coupon_user_id, merchant_id, 
       merchant_name, price, name, 
-      effective_start_date, effective_end_date, description, 
-      url)
+      effective_start_date, effective_end_date, descriptionl)
     values (#{id,jdbcType=INTEGER}, #{couponUserId,jdbcType=INTEGER}, #{merchantId,jdbcType=VARCHAR}, 
       #{merchantName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{effectiveStartDate,jdbcType=VARCHAR}, #{effectiveEndDate,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{url,jdbcType=VARCHAR})
+      #{effectiveStartDate,jdbcType=VARCHAR}, #{effectiveEndDate,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.equity.model.CouponThird" >
     insert into coupon_third
@@ -63,9 +60,6 @@
       <if test="description != null" >
         description,
       </if>
-      <if test="url != null" >
-        url,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -94,9 +88,6 @@
       </if>
       <if test="description != null" >
         #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="url != null" >
-        #{url,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

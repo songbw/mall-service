@@ -18,6 +18,8 @@ public class VendorsProfileBean implements Serializable {
 
     private String email;
 
+    private SysCompany company;
+
     public Long getId() {
         return id;
     }
@@ -50,6 +52,9 @@ public class VendorsProfileBean implements Serializable {
         this.email = email;
     }
 
+    public void setCompany(SysCompany company) {
+        this.company = company;
+    }
 
     public String getName() {
         return name;
@@ -73,5 +78,9 @@ public class VendorsProfileBean implements Serializable {
 
     public String getEmail() {
         return email;
+    }
+
+    public SysCompany getCompany() {
+        return company;
     }
 }
