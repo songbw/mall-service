@@ -37,90 +37,97 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     @Override
     public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList,
                                  String startDateTime, String endDateTime) throws Exception {
-        // 0. 获取活动类别信息
-        // 获取所有活动类型，准备插入空数据
-        List<PromotionTypeResDto> promotionTypeResDtoList = equityRpcService.queryAllPromotionTypeList();
-        // 准备空数据， 以'活动类别'维度生成空统计数据的map
-        Map<String, List<OrderDetailBean>> orderDetailBeansByPromotionTypeMap = new HashMap<>(); // !!
-        for (PromotionTypeResDto promotionTypeResDto : promotionTypeResDtoList) {
-            orderDetailBeansByPromotionTypeMap.put(promotionTypeResDto.getTypeName(), new ArrayList<>());
-        }
+        log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 开始...", startDateTime, endDateTime);
 
-        // 1. 获取活动信息
-        // 获取所有订单详情的活动id集合
-        Set<Integer> promotionIdSet =
-                orderDetailBeanList.stream().map(o -> o.getPromotionId()).collect(Collectors.toSet());
-        // 获取活动信息
-        List<PromotionBean> promotionBeanList = equityRpcService.queryPromotionByIdList(new ArrayList<>(promotionIdSet));
-        // 转map key:promotionId  value:PromotionBean
-        Map<Integer, PromotionBean> promotionBeanMap = promotionBeanList.stream()
-                .collect(Collectors.toMap(p -> p.getId().intValue(), p -> p));
-
-
-        // 2. 根据'活动类别'维度将订单详情分类 活动类型 1:秒杀 2:优选 3:普通
-        for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
-            // 从订单中获取活动id
-            Integer promotionId = orderDetailBean.getPromotionId();
-            if (promotionId == null || promotionId == 0) { // 无活动的订单
-                promotionId = -1;
+        try {
+            // 0. 获取活动类别信息
+            // 获取所有活动类型，准备插入空数据
+            List<PromotionTypeResDto> promotionTypeResDtoList = equityRpcService.queryAllPromotionTypeList();
+            // 准备空数据， 以'活动类别'维度生成空统计数据的map
+            Map<String, List<OrderDetailBean>> orderDetailBeansByPromotionTypeMap = new HashMap<>(); // !!
+            for (PromotionTypeResDto promotionTypeResDto : promotionTypeResDtoList) {
+                orderDetailBeansByPromotionTypeMap.put(promotionTypeResDto.getTypeName(), new ArrayList<>());
             }
 
-            // 获取该订单的活动类型
-            String promotionTypeName = "其他";
-            PromotionBean promotionBean = promotionBeanMap.get(promotionId);
-            if (promotionBean != null) { // 活动类型 1:秒杀 2:优选 3:普通
-                promotionTypeName = promotionBean.getTypeName();
+            // 1. 获取活动信息
+            // 获取所有订单详情的活动id集合
+            Set<Integer> promotionIdSet =
+                    orderDetailBeanList.stream().map(o -> o.getPromotionId()).collect(Collectors.toSet());
+            // 获取活动信息
+            List<PromotionBean> promotionBeanList = equityRpcService.queryPromotionByIdList(new ArrayList<>(promotionIdSet));
+            // 转map key:promotionId  value:PromotionBean
+            Map<Integer, PromotionBean> promotionBeanMap = promotionBeanList.stream()
+                    .collect(Collectors.toMap(p -> p.getId().intValue(), p -> p));
+
+
+            // 2. 根据'活动类别'维度将订单详情分类 活动类型 1:秒杀 2:优选 3:普通
+            for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
+                // 从订单中获取活动id
+                Integer promotionId = orderDetailBean.getPromotionId();
+                if (promotionId == null || promotionId == 0) { // 无活动的订单
+                    promotionId = -1;
+                }
+
+                // 获取该订单的活动类型
+                String promotionTypeName = "其他";
+                PromotionBean promotionBean = promotionBeanMap.get(promotionId);
+                if (promotionBean != null) { // 活动类型 1:秒杀 2:优选 3:普通
+                    promotionTypeName = promotionBean.getTypeName();
+                }
+
+                List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
+                if (_orderDetailBeanList == null) {
+                    _orderDetailBeanList = new ArrayList<>();
+                    orderDetailBeansByPromotionTypeMap.put(promotionTypeName, _orderDetailBeanList);
+                }
+                _orderDetailBeanList.add(orderDetailBean);
             }
 
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
-            if (_orderDetailBeanList == null) {
-                _orderDetailBeanList = new ArrayList<>();
-                orderDetailBeansByPromotionTypeMap.put(promotionTypeName, _orderDetailBeanList);
+            // 3. 获取统计数据
+            String statisticsDateTime =
+                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
+            List<PromotionOverview> promotionOverviewList = new ArrayList<>(); // 统计数据
+            Set<String> promotionTypeSet = orderDetailBeansByPromotionTypeMap.keySet();
+            for (String promotionTypeName : promotionTypeSet) { // 遍历
+                List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
+
+                Integer orderCount = 0; // 统计订单数量
+                for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
+                    orderCount++;
+                }
+
+                PromotionOverview promotionOverview = new PromotionOverview();
+
+                promotionOverview.setPromotionType(promotionTypeName);
+                promotionOverview.setOrderCount(orderCount);
+
+                promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+                promotionOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                promotionOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                promotionOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
             }
-            _orderDetailBeanList.add(orderDetailBean);
-        }
 
-        // 3. 获取统计数据
-        String statisticsDateTime =
-                DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
-        List<PromotionOverview> promotionOverviewList = new ArrayList<>(); // 统计数据
-        Set<String> promotionTypeSet = orderDetailBeansByPromotionTypeMap.keySet();
-        for (String promotionTypeName : promotionTypeSet) { // 遍历
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
 
-            Integer orderCount = 0; // 统计订单数量
-            for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
-                orderCount++;
+            log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+                    startDateTime, endDateTime, JSONUtil.toJsonString(promotionOverviewList));
+
+            // 4. 插入统计数据
+            // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+            promotionOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+                    StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
+                    DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
+                    DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+
+            // 4.2 执行插入
+            for (PromotionOverview promotionOverview : promotionOverviewList) {
+                promotionOverviewDao.insertCategoryOverview(promotionOverview);
             }
 
-            PromotionOverview promotionOverview = new PromotionOverview();
-
-            promotionOverview.setPromotionType(promotionTypeName);
-            promotionOverview.setOrderCount(orderCount);
-
-            promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
-            promotionOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-            promotionOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-            promotionOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+            log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!", startDateTime, endDateTime);
+        } catch (Exception e) {
+            log.error("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常:{}",
+                    startDateTime, endDateTime, e.getMessage(), e);
         }
-
-
-        log.info("按照活动(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
-                startDateTime, endDateTime, JSONUtil.toJsonString(promotionOverviewList));
-
-        // 4. 插入统计数据
-        // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-        promotionOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
-                StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
-                DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
-                DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-
-        // 4.2 执行插入
-        for (PromotionOverview promotionOverview : promotionOverviewList) {
-            promotionOverviewDao.insertCategoryOverview(promotionOverview);
-        }
-
-        log.info("按照活动(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override
