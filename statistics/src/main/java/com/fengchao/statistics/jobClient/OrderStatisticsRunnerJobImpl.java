@@ -119,8 +119,8 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             // overviewService.add(queryBean); // 总揽统计
             categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 安品类统计
             merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按商户统计订单支付总额
-            promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); //
-            periodOverviewService.add(queryBean);
+            promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按照活动统计订单数量
+            periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按照时间段统计订单支付总额
 
             // 4. 记录lts日志
             BizLogger bizLogger = jobContext.getBizLogger();

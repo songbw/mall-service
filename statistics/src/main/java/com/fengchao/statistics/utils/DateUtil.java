@@ -233,6 +233,19 @@ public class DateUtil {
         return date;
     }
 
+    /**
+     * 转换成 java.time.LocalTime
+     *
+     * @param time
+     * @param timeFormat
+     * @return
+     */
+    public static LocalTime convertToLocalTime(String time, String timeFormat) {
+        LocalTime localTime = LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat));
+
+        return localTime;
+    }
+
     public static void main(String args[]) {
         String re =
                 DateUtil.calcDay("2019-07-26 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
