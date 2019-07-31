@@ -33,8 +33,7 @@ public class OrderController {
 
     @PostMapping
     private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result) {
-        result.getData().put("result", service.add2(bean)) ;
-        return result;
+        return service.add2(bean);
     }
 
     @DeleteMapping

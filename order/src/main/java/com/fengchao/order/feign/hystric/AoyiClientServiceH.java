@@ -2,7 +2,7 @@ package com.fengchao.order.feign.hystric;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fengchao.order.bean.OperaResult;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OrderParamBean;
 import com.fengchao.order.feign.AoyiClientService;
 import org.springframework.stereotype.Component;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AoyiClientServiceH implements AoyiClientService {
     @Override
-    public OperaResult order(OrderParamBean orderParamBean) {
-        OperaResult result = new OperaResult();
+    public OperaResponse order(OrderParamBean orderParamBean) {
+        OperaResponse result = new OperaResponse();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
         try {

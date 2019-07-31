@@ -15,7 +15,7 @@ public interface OrderService {
 
 //    List<SubOrder> add(OrderParamBean bean) ;
 
-    List<OrderMerchantBean> add2(OrderParamBean bean);
+    OperaResult add2(OrderParamBean bean);
 
     Integer cancel(Integer id);
 

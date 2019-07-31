@@ -73,7 +73,8 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<OrderMerchantBean> add2(OrderParamBean orderBean){
+    public OperaResult add2(OrderParamBean orderBean){
+        OperaResult operaResult = new OperaResult();
         Order bean = new Order();
         bean.setOpenId(orderBean.getOpenId());
         bean.setCompanyCustNo(orderBean.getCompanyCustNo());
@@ -196,7 +197,15 @@ public class OrderServiceImpl implements OrderService {
         orderBean.setMerchants(orderMerchantBeans);
         orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != 2));
         createOrder(orderBean) ;
-        return orderMerchantBeans;
+        OperaResponse result = aoyiClientService.order(orderBean);
+        if (result.getCode() == 200) {
+            operaResult.getData().put("result", orderMerchantBeans) ;
+        } else {
+            operaResult.setCode(result.getCode());
+            operaResult.setMsg(result.getMsg());
+            // 异常数据库回滚
+        }
+        return operaResult;
     }
 
 
@@ -581,12 +590,13 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
         logger.info(msg);
-        OperaResult result = aoyiClientService.order(bean);
+        OperaResponse result = aoyiClientService.order(bean);
         if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            List<SubOrderT> subOrderTS = JSONObject.parseArray(jsonString, SubOrderT.class);
+//            Map<String, Object> data = result.getData() ;
+//            Object object = data.get("result");
+//            String jsonString = JSON.toJSONString(object);
+//            List<SubOrderT> subOrderTS = JSONObject.parseArray(jsonString, SubOrderT.class);
+            List<SubOrderT> subOrderTS = (List<SubOrderT>) result.getData();
             return subOrderTS;
         }
         return null;
