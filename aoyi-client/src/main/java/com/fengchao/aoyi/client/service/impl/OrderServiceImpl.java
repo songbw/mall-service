@@ -65,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
                 skus.setSkuId(sku.getSkuId());
                 skus.setNum(sku.getNum() + "");
                 skus.setUnitPrice(sku.getUnitPrice() + "");
-                skus.setSubOrderNo(sku.getSubOrderId());
+                skus.setSubOrderNo(subOrder.getOrderNo() + String.format("%03d", i.getAndIncrement()));
                 subOrder.getAoyiSkus().add(skus);
             });
             orderRequest.getAoyiOrderEntries().add(subOrder);
@@ -119,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
                 return operaResult;
             } else {
                 operaResult.setCode(100011);
-                String message = r.getString("message") ;
+                String message = data.getString("message") ;
                 if (message == null || "".equals(message)) {
                     operaResult.setMsg("创建订单失败");
                 } else {

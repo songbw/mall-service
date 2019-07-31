@@ -47,7 +47,9 @@ public class KuaidiCodeServiceImpl implements KuaidiCodeService {
     @Override
     public PageInfo<KuaidiCode> findList(KuaidiCodeQueryBean queryBean) {
         KuaidiCodeExample example = new KuaidiCodeExample();
-        example.createCriteria().andNameLike("%" + queryBean.getName() + "%") ;
+        if (queryBean.getName() != null) {
+            example.createCriteria().andNameLike("%" + queryBean.getName() + "%") ;
+        }
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
         List<KuaidiCode> types =  mapper.selectByExample(example);
         return new PageInfo<>(types);

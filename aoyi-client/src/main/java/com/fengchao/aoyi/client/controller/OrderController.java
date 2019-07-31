@@ -30,7 +30,6 @@ public class OrderController {
 
     @PostMapping
     private OperaResult create(@RequestBody OrderParamBean orderParamBean, OperaResult result) throws AoyiClientException {
-        result.setData(service.addOrder(orderParamBean)) ;
-        return result;
+        return service.addOrder(orderParamBean);
     }
 }

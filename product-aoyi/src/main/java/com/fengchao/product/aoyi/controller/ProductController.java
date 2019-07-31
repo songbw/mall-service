@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public class ProductController {
     private ProductService service;
 
     @PostMapping("/all")
-    private OperaResult findList(@RequestBody ProductQueryBean queryBean, OperaResult result) throws ProductException {
+    private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean, OperaResult result) throws ProductException {
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }
