@@ -69,17 +69,18 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
                     orderAmount = orderAmount.add(_tmpPrice);
                 }
 
+                // 组装统计数据
                 MerchantOverview merchantOverview = new MerchantOverview();
-
-
                 merchantOverview.setMerchantId(merchantId);
                 merchantOverview.setMerchantName(sysUserMap.get(merchantId) == null ?
                         "/" : sysUserMap.get(merchantId).getLoginName());
-                merchantOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+                merchantOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 merchantOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 merchantOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 merchantOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
                 merchantOverview.setOrderAmount(orderAmount.multiply(new BigDecimal(100)).longValue());
+
+                merchantOverviewList.add(merchantOverview); //
             }
 
 
@@ -88,10 +89,13 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
             // 4. 插入统计数据
             // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-            merchantOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+            int count = merchantOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
                     StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                     DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
                     DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+
+            log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 删除数据条数:{}",
+                    startDateTime, endDateTime, count);
 
             // 4.2 执行插入
             for (MerchantOverview merchantOverview : merchantOverviewList) {

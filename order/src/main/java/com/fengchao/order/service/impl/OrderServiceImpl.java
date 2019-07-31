@@ -537,10 +537,14 @@ public class OrderServiceImpl implements OrderService {
         for (OrderDetail orderDetail : payedOrderDetailList) {
             OrderDetailBean orderDetailBean = convertToOrderDetailBean(orderDetail);
             orderDetailBean.setPayStatus(PaymentStatusEnum.PAY_SUCCESS.getValue());
-            // 设置城市信息
+
+            // 设置相关信息
             Orders orders = ordersMap.get(orderDetail.getOrderId());
+            // a.设置城市信息
             orderDetailBean.setCityId(orders == null ? "" : orders.getCityId());
             orderDetailBean.setCityName(orders == null ? "" : orders.getCityName());
+            // b.设置支付时间
+            orderDetailBean.setPaymentAt(orders.getPaymentAt());
 
             orderDetailBeanList.add(orderDetailBean);
         }

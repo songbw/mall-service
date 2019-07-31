@@ -246,7 +246,7 @@ public class DateUtil {
     }
 
     public static void main(String args[]) {
-        parseDateTime("2019-09-09 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        System.out.println(convertToLocalTime("21:42:58", DateUtil.TIME_HH_mm_ss).toString());
     }
 
 }

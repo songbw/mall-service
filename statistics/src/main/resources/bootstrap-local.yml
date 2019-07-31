@@ -5,3 +5,5 @@ rpc:
     client:
       order:
         url: http://localhost:8004
+      equity:
+        url: http://localhost:8007

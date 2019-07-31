@@ -14,6 +14,7 @@ import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     @Override
     public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList,
                                  String startDateTime, String endDateTime) throws Exception {
-        log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 开始...", startDateTime, endDateTime);
+        log.info("按照活动promotion(天)维度统计订单详情总数量数据; 统计时间范围：{} - {} 开始...", startDateTime, endDateTime);
 
         try {
             // 0. 获取活动类别信息
@@ -71,7 +72,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 // 获取该订单的活动类型
                 String promotionTypeName = "其他";
                 PromotionBean promotionBean = promotionBeanMap.get(promotionId);
-                if (promotionBean != null) { // 活动类型 1:秒杀 2:优选 3:普通
+                if (promotionBean != null && StringUtils.isNotBlank(promotionBean.getTypeName())) { // 活动类型 1:秒杀 2:优选 3:普通
                     promotionTypeName = promotionBean.getTypeName();
                 }
 
@@ -82,7 +83,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 }
                 _orderDetailBeanList.add(orderDetailBean);
             }
-            log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 根据'活动类别'维度将订单详情分组结果:{}",
+            log.info("按照活动promotion(天)维度统计订单详情总数量数据; 统计时间范围：{} - {} 根据'活动类别'维度将订单详情分组结果:{}",
                     startDateTime, endDateTime, JSONUtil.toJsonString(orderDetailBeansByPromotionTypeMap));
 
             // 3. 获取统计数据
@@ -98,6 +99,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                     orderCount++;
                 }
 
+                // 组装统计数据
                 PromotionOverview promotionOverview = new PromotionOverview();
 
                 promotionOverview.setPromotionType(promotionTypeName);
@@ -107,27 +109,31 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 promotionOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+
+                promotionOverviewList.add(promotionOverview); //
             }
 
 
-            log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+            log.info("按照活动promotion(天)维度统计订单详情总数量数据; 统计时间范围：{} - {} 统计结果:{}",
                     startDateTime, endDateTime, JSONUtil.toJsonString(promotionOverviewList));
 
             // 4. 插入统计数据
             // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-            promotionOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+            int count = promotionOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
                     StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                     DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
                     DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+            log.info("按照活动promotion(天)维度统计订单详情总数量数据; 统计时间范围：{} - {} 删除数据条数:{}",
+                    startDateTime, endDateTime, count);
 
             // 4.2 执行插入
             for (PromotionOverview promotionOverview : promotionOverviewList) {
                 promotionOverviewDao.insertCategoryOverview(promotionOverview);
             }
 
-            log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!", startDateTime, endDateTime);
+            log.info("按照活动promotion(天)维度统计订单详情总数量数据; 统计时间范围：{} - {} 执行完成!", startDateTime, endDateTime);
         } catch (Exception e) {
-            log.error("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常:{}",
+            log.error("按照活动promotion(天)维度统计订单详情数量额数据; 统计时间范围：{} - {} 异常:{}",
                     startDateTime, endDateTime, e.getMessage(), e);
         }
     }

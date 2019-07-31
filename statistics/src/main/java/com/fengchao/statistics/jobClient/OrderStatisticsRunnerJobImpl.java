@@ -97,18 +97,13 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
 
             log.info("执行平台订单统计任务 获取的日统计数据List<OrderDetailBean>:{}", JSONUtil.toJsonString(payedOrderDetailBeanList));
 
-            if (CollectionUtils.isEmpty(payedOrderDetailBeanList)) {
-                log.info("执行订单统计任务 统计时间范围 startDateTime:{} - endDateTime:{}; 无统计数据，统计任务结束!!!!", startDateTime, endDateTime);
-                return new Result(Action.EXECUTE_SUCCESS, "执行平台订单统计任务完成");
-            }
-
             // 3.2执行统计
             // overviewService.add(queryBean); // 总揽统计
-            if (needExecuteTaskList.contains(CATEGORY)) {
+            if (needExecuteTaskList.contains(CATEGORY) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
                 categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 安品类统计
             }
 
-            if (needExecuteTaskList.contains(MERCHANT)) {
+            if (needExecuteTaskList.contains(MERCHANT) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
                 merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按商户统计订单支付总额
             }
 

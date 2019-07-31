@@ -11,8 +11,8 @@ import java.util.List;
 public class EquityServiceClientH implements EquityServiceClient {
 
     @Override
-    public OperaResult queryPromotionByIdList(List<Integer> idList) {
-        return HystrixDefaultFallback.defaultFallback();
+    public OperaResponse queryPromotionByIdList(List<Integer> idList) {
+        return HystrixDefaultFallback.fallbackResponse();
     }
 
     @Override

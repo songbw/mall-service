@@ -33,7 +33,7 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
                             String startDateTime, String endDateTime) throws Exception {
         log.info("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 开始...", startDateTime, endDateTime);
         try {
-            // 统计数据
+            // 1. 创建统计数据
             PeriodOverview periodOverview = new PeriodOverview();
 
             periodOverview.setEarlyMorning(0L);
@@ -44,31 +44,38 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
             periodOverview.setLateAtNight(0L);
 
 
-            // 将获取的订单按照时间段分组 - 并形成统计数据
+            // 2. 将获取的订单按照时间段分组 - 并形成统计数据
             for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
                 // 订单金额
-                Long saleAmount = 0L;
+                Long saleAmount = 0L; // 单位：分
                 if (orderDetailBean.getSaleAmount() != null) {
-                    saleAmount = new BigDecimal(orderDetailBean.getSaleAmount()).longValue();
+                    saleAmount = new BigDecimal(orderDetailBean.getSaleAmount()).multiply(new BigDecimal(100)).longValue();
                 }
 
                 //
-                String orderCreateTime = DateUtil.dateTimeFormat(orderDetailBean.getCreatedAt(), DateUtil.TIME_HH_mm_ss);
+                String orderCreateTime = DateUtil.dateTimeFormat(
+                        orderDetailBean.getPaymentAt() == null ? new Date() : orderDetailBean.getPaymentAt(), DateUtil.TIME_HH_mm_ss);
 
-                TimeRangeEnum timeRangeEnum = TimeRangeEnum.checkInRange(orderCreateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                TimeRangeEnum timeRangeEnum = TimeRangeEnum.checkInRange(orderCreateTime, DateUtil.TIME_HH_mm_ss);
                 switch (timeRangeEnum) {
                     case EARLYMORNINGRANGE:  // 凌晨
                         periodOverview.setEarlyMorning(periodOverview.getEarlyMorning() + saleAmount);
+                        break;
                     case MORNING: // 上午
                         periodOverview.setMorning(periodOverview.getMorning() + saleAmount);
+                        break;
                     case NOON:// 中午
                         periodOverview.setNoon(periodOverview.getNoon() + saleAmount);
+                        break;
                     case AFTERNOON: // 下午
                         periodOverview.setAfternoon(periodOverview.getAfternoon() + saleAmount);
+                        break;
                     case NIGHT: // 晚上
                         periodOverview.setNight(periodOverview.getNight() + saleAmount);
+                        break;
                     case LATEATNIGHT: // 深夜
                         periodOverview.setLateAtNight(periodOverview.getLateAtNight() + saleAmount);
+                        break;
                 }
             }
 
@@ -83,7 +90,16 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
             log.info("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
                     startDateTime, endDateTime, JSONUtil.toJsonString(periodOverview));
 
+            // 4. 插入统计数据
+            // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+            int count = periodOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+                    StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
+                    DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
+                    DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+            log.info("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 删除数据条数:{}",
+                    startDateTime, endDateTime, count);
 
+            // 4.2 执行插入
             periodOverviewDao.insertPeriodOverview(periodOverview);
         } catch (Exception e) {
             log.error("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常",
