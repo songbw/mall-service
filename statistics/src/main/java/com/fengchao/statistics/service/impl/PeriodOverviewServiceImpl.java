@@ -74,8 +74,8 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
 
             // 统计时间
             String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD);
-            periodOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            periodOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
             periodOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
             periodOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
             periodOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());

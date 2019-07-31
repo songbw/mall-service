@@ -39,7 +39,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         log.info("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {}, 开始...", startDateTime, endDateTime);
 
         try {
-            // 1. 根据一级品类维度将订单详情分类
+            // 1. 根据一级品类维度将订单详情分组
             Map<Integer, List<OrderDetailBean>> orderDetailBeanListMap = new HashMap<>();
             for (OrderDetailBean orderDetailBean : orderDetailBeanList) { // 遍历订单详情
                 // 处理品类信息
@@ -57,6 +57,8 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
                 }
             }
 
+            log.info("按照品类category(天)维度统计订单详情总金额数据; 根据一级品类维度将订单详情分组结果:{}", JSONUtil.toJsonString(orderDetailBeanListMap));
+
             // 2. 获取一级品类名称
             Set<Integer> firstCategoryIdSet = orderDetailBeanListMap.keySet();
             List<CategoryQueryBean> categoryQueryBeanList =
@@ -67,7 +69,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
 
             // 3. 获取统计数据
             String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
+                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
             List<CategoryOverview> categoryOverviewList = new ArrayList<>(); // 统计数据集合
             for (Integer categoryId : firstCategoryIdSet) { // 遍历 orderDetailBeanListMap
                 // 获取订单详情集合
@@ -85,7 +87,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
                 categoryOverview.setCategoryFname(categoryQueryBeanMap.get(categoryId) == null ?
                         "" : categoryQueryBeanMap.get(categoryId).getName()); // 品类名称
                 categoryOverview.setOrderAmount(totalPrice.multiply(new BigDecimal(100)).longValue());
-                categoryOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+                categoryOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 categoryOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 categoryOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 categoryOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
@@ -98,9 +100,12 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
 
             // 4. 插入统计数据
             // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-            categoryOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
+            int count = categoryOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                     DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
                     DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+
+            log.info("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 删除数据条数:{}",
+                    startDateTime, endDateTime, count);
 
             // 4.2 执行插入
             for (CategoryOverview categoryOverview : categoryOverviewList) {

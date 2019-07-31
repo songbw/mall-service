@@ -39,15 +39,12 @@ public class ProductRpcService {
 
         // 执行rpc调用
         log.info("根据categoryId集合查询品类列表 调用product rpc服务 入参:{}", JSONUtil.toJsonString(categoryIdList));
-        OperaResponse operaResponse = productServiceClient.queryCategorysByCategoryIdList(categoryIdList);
+        OperaResponse<List<CategoryQueryBean>> operaResponse = productServiceClient.queryCategorysByCategoryIdList(categoryIdList);
         log.info("根据categoryId集合查询品类列表 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回
         if (operaResponse.getCode() == 200) {
-            Map _resultMap = (Map) operaResponse.getData();
-
-            // 转
-            categoryQueryBeanList = JSON.parseArray(JSON.toJSONString(_resultMap), CategoryQueryBean.class);
+            categoryQueryBeanList = operaResponse.getData();
         } else {
             log.warn("查询已支付的子订单 调用product rpc服务 错误!");
         }

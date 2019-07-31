@@ -195,28 +195,27 @@ public class OrderController {
      *
      * @param start
      * @param end
-     * @param result
+     * @param operaResponse
      * @return
      */
     @GetMapping("/orderdetail/payed/list")
-    private OperaResult queryPayedOrderDetailList(String start, String end, OperaResult result) {
+    private OperaResponse queryPayedOrderDetailList(String start, String end, OperaResponse<List<OrderDetailBean>> operaResponse) {
         log.info("按照时间范围查询已支付的子订单列表 入参: startDateTime:{}, endDateTime:{}", start, end);
 
         try {
             List<OrderDetailBean> orderDetailBeanList = service.queryPayedOrderDetail(start, end);
 
-            result.getData().put("result", orderDetailBeanList);
+            operaResponse.setData(orderDetailBeanList);
         } catch (Exception e) {
             log.error("按照时间范围查询已支付的子订单列表 异常:{}", e.getMessage(), e);
 
-            result.setCode(500);
-            result.setMsg("按照时间范围查询已支付的子订单列表异常");
+            operaResponse.setCode(500);
+            operaResponse.setMsg("按照时间范围查询已支付的子订单列表异常");
         }
 
-        log.info("按照时间范围查询已支付的子订单列表 返回:{}", JSONUtil.toJsonString(result));
+        log.info("按照时间范围查询已支付的子订单列表 返回:{}", JSONUtil.toJsonString(operaResponse));
 
-        result.getData().put("result", service.findDayMerchantPaymentCount(start, end)) ;
-        return result;
+        return operaResponse;
     }
 
     @GetMapping("/payment/status")

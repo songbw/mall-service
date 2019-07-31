@@ -60,7 +60,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                     .collect(Collectors.toMap(p -> p.getId().intValue(), p -> p));
 
 
-            // 2. 根据'活动类别'维度将订单详情分类 活动类型 1:秒杀 2:优选 3:普通
+            // 2. 根据'活动类别'维度将订单详情分组 活动类型 1:秒杀 2:优选 3:普通
             for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
                 // 从订单中获取活动id
                 Integer promotionId = orderDetailBean.getPromotionId();
@@ -82,10 +82,12 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 }
                 _orderDetailBeanList.add(orderDetailBean);
             }
+            log.info("按照活动promotion(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 根据'活动类别'维度将订单详情分组结果:{}",
+                    startDateTime, endDateTime, JSONUtil.toJsonString(orderDetailBeansByPromotionTypeMap));
 
             // 3. 获取统计数据
             String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
+                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
             List<PromotionOverview> promotionOverviewList = new ArrayList<>(); // 统计数据
             Set<String> promotionTypeSet = orderDetailBeansByPromotionTypeMap.keySet();
             for (String promotionTypeName : promotionTypeSet) { // 遍历
@@ -101,7 +103,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 promotionOverview.setPromotionType(promotionTypeName);
                 promotionOverview.setOrderCount(orderCount);
 
-                promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+                promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());

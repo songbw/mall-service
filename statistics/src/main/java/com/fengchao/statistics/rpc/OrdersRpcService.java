@@ -43,16 +43,12 @@ public class OrdersRpcService {
 
         // 执行rpc调用
         log.info("查询已支付的子订单 调用order rpc服务 入参:startDateTime{}, endDateTime:{}", startDateTime, endDateTime);
-        OperaResult operaResult = orderServiceClient.queryPayedOrderDetailList(startDateTime, endDateTime);
+        OperaResponse<List<OrderDetailBean>> operaResult = orderServiceClient.queryPayedOrderDetailList(startDateTime, endDateTime);
         log.info("查询已支付的子订单 调用order rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
 
         // 处理返回
         if (operaResult.getCode() == 200) {
-            Map _resultMap
-                    = (Map) operaResult.getData().get("result");
-
-            // 转
-            orderDetailBeanList = JSON.parseArray(JSON.toJSONString(_resultMap), OrderDetailBean.class);
+            orderDetailBeanList = operaResult.getData();
         } else {
             log.warn("查询已支付的子订单 调用order rpc服务 错误!");
         }

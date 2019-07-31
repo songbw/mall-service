@@ -14,7 +14,9 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.logger.BizLogger;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
+import jdk.internal.instrumentation.Tracer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.util.StopWatch;
 
 import java.util.*;
@@ -64,16 +66,16 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
         List<String> needExecuteTaskList = JSON.parseArray(tasks, String.class);
         log.info("执行平台订单统计任务 需要执行的任务:{}", JSONUtil.toJsonString(needExecuteTaskList));
 
-
+        String startDateTime = "", endDateTime = "";
         try {
             // 1.处理查询的时间范围
             // 当前日期
             String currentDate = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD);
             // 开始时间
-            String startDateTime =
+            startDateTime =
                     DateUtil.calcDay(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            String endDateTime =
-                    DateUtil.calcSecond(startDateTime + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            endDateTime =
+                    DateUtil.calcSecond(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
             log.info("执行订单统计任务 统计时间范围 startDateTime:{} - endDateTime:{}", startDateTime, endDateTime);
 
@@ -94,6 +96,13 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             List<OrderDetailBean> payedOrderDetailBeanList =
                     ordersRpcService.queryPayedOrderDetailList(startDateTime, endDateTime);
 
+            log.info("执行平台订单统计任务 获取的日统计数据List<OrderDetailBean>:{}", JSONUtil.toJsonString(payedOrderDetailBeanList));
+
+            if (CollectionUtils.isEmpty(payedOrderDetailBeanList)) {
+                log.info("执行订单统计任务 统计时间范围 startDateTime:{} - endDateTime:{}; 无统计数据，统计任务结束!!!!", startDateTime, endDateTime);
+                return new Result(Action.EXECUTE_SUCCESS, "执行平台订单统计任务完成");
+            }
+
             // 3.2执行统计
             // overviewService.add(queryBean); // 总揽统计
             if (needExecuteTaskList.contains(CATEGORY)) {
@@ -111,17 +120,17 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             if (needExecuteTaskList.contains(PERIOD)) {
                 periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按照时间段统计订单支付总额
             }
-
-            stopWatch.start();
-            log.info(stopWatch.prettyPrint());
-
-            // 4. 记录lts日志
-            BizLogger bizLogger = jobContext.getBizLogger();
-            bizLogger.info(startDateTime + " 到 " + endDateTime + "的订单统计成功");
         } catch (Exception e) {
             log.error("执行平台订单统计任务异常:{}", e.getMessage(), e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
         }
+
+        stopWatch.stop();
+        log.info(stopWatch.prettyPrint());
+
+        // 4. 记录lts日志
+        BizLogger bizLogger = jobContext.getBizLogger();
+        bizLogger.info(startDateTime + " 到 " + endDateTime + "的日订单统计完成");
 
         log.info("执行平台订单统计任务完成");
         return new Result(Action.EXECUTE_SUCCESS, "执行平台订单统计任务完成");

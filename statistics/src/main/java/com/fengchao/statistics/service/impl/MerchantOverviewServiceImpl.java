@@ -34,7 +34,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
         log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 开始....", startDateTime, endDateTime);
 
         try {
-            // 1. 根据商户id维度将订单详情分类
+            // 1. 根据商户id维度将订单详情分组
             Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = new HashMap<>();
             for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
                 Integer merchantId = orderDetailBean.getMerchantId(); // 商户id
@@ -46,6 +46,9 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
                 _orderDetailBeanList.add(orderDetailBean);
             }
 
+            log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 根据商户id维度将订单详情分组结果:{}",
+                    startDateTime, endDateTime, JSONUtil.toJsonString(orderDetailBeansByMerchantMap));
+
             // 2. 获取商户名称
             Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
             List<SysUser> sysUserList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
@@ -55,7 +58,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
             // 3. 获取统计数据
             String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
+                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
             List<MerchantOverview> merchantOverviewList = new ArrayList<>(); // 统计数据
             for (Integer merchantId : merchantIdSet) { // 遍历map
                 List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);

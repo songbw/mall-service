@@ -117,11 +117,10 @@ public class DateUtil {
     /**
      * 将日期加上 diffTime 秒数 并 将指定的(日期/时间)格式转换成另一种指定的格式
      *
-     *
      * @param dateTime
      * @param originFormat
      * @param newFormat
-     * @param diffTime 间隔时间，单位：秒
+     * @param diffTime     间隔时间，单位：秒
      * @return
      */
     public static String dateTimeFormat(String dateTime, String originFormat, String newFormat, long diffTime) {
@@ -188,7 +187,7 @@ public class DateUtil {
      * @return
      */
     public static Long diffMinutes(String startDateTime, String startDateTimeFormat,
-                               String endDateTime, String endDateTimeFormat) {
+                                   String endDateTime, String endDateTimeFormat) {
         LocalDateTime start = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern(startDateTimeFormat));
         LocalDateTime end = LocalDateTime.parse(endDateTime, DateTimeFormatter.ofPattern(endDateTimeFormat));
 
@@ -247,11 +246,7 @@ public class DateUtil {
     }
 
     public static void main(String args[]) {
-        String re =
-                DateUtil.calcDay("2019-07-26 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
-                        -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-
-        System.out.println(re);
+        parseDateTime("2019-09-09 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
     }
 
 }

@@ -4,10 +4,13 @@ import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.hystric.OrderServiceClientH;
 import com.fengchao.statistics.rpc.extmodel.DayStatisticsBean;
+import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @FeignClient(value = "order", url = "${rpc.feign.client.order.url:}", fallback = OrderServiceClientH.class)
 public interface OrderServiceClient {
@@ -25,7 +28,7 @@ public interface OrderServiceClient {
 //    OperaResult paymentMerchantCount(@RequestParam("start") String start, @RequestParam("end") String end);
 
     @RequestMapping(value = "/order/orderdetail/payed/list", method = RequestMethod.GET)
-    OperaResult queryPayedOrderDetailList(@RequestParam("start") String start, @RequestParam("end") String end);
+    OperaResponse<List<OrderDetailBean>> queryPayedOrderDetailList(@RequestParam("start") String start, @RequestParam("end") String end);
 
 
 }
