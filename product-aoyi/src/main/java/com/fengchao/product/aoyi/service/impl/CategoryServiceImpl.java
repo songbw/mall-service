@@ -52,7 +52,6 @@ public class CategoryServiceImpl implements CategoryService {
         return categories;
     }
 
-    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<CategoryBean> queryCategoryListByCategoryIdList(List<Integer> categoryIdList) {
