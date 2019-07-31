@@ -107,6 +107,9 @@
     <if test="payDateEnd != null" >
         <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
     </if>
+    <if test="subStatus != null">
+      and order_detail.status = #{subStatus}
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -177,6 +180,9 @@
     </if>
     <if test="payDateEnd != null" >
       <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="subStatus != null">
+      and order_detail.status = #{subStatus}
     </if>
     order by order_detail.updated_at desc
     limit #{pageNo},#{pageSize}

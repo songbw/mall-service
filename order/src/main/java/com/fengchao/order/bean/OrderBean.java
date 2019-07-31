@@ -33,4 +33,5 @@ public class OrderBean implements Serializable {
     private String payDateStart;
     private String payDateEnd;
     private Integer merchantId;
+    private Integer subStatus;
 }
