@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.exception;
 
 import com.fengchao.product.aoyi.bean.OperaResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
+@Slf4j
 @ControllerAdvice
 @Component
 public class GlobalExceptionHandler {
@@ -21,8 +23,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     OperaResponse handleException(Exception e) {
+        log.info(e.getMessage(), e);
         OperaResponse operaResponse = new OperaResponse();
-        operaResponse.setMsg(e.getMessage());
+        operaResponse.setMsg("系统参数错误");
         operaResponse.setCode(200500);
         return operaResponse ;
     }
@@ -34,6 +37,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public OperaResponse validationError(MethodArgumentNotValidException ex) {
+        log.error(ex.getMessage(), ex);
         OperaResponse operaResponse = new OperaResponse();
         operaResponse.setMsg(ex.getMessage());
         operaResponse.setCode(200500);

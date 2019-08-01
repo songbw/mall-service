@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class PriceQueryBean extends QueryBean implements Serializable{
+public class PriceQueryBean implements Serializable{
     private String cityId ;
     private List<PriceBean> skus ;
 }

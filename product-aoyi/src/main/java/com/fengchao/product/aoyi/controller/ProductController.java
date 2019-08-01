@@ -8,15 +8,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 
+
 @RestController
 @RequestMapping(value = "/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
+@Validated
 public class ProductController {
 
     @Autowired
@@ -29,9 +32,11 @@ public class ProductController {
     }
 
     @GetMapping
-    private OperaResult find(String mpu, OperaResult result) throws ProductException {
+    private OperaResult find(String mpu, OperaResult result){
         if (StringUtils.isEmpty(mpu)) {
-            throw new ProductException(200005, "mpu信息为null");
+            result.setCode(200501);
+            result.setMsg("mpu 不能为空");
+            return result;
         }
         result.getData().put("result", service.findAndPromotion(mpu)) ;
         return result;
