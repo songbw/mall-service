@@ -36,75 +36,87 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
 
     @Override
     public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList, String startDateTime, String endDateTime) throws Exception {
-        // 1. 根据一级品类维度将订单详情分类
-        Map<Integer, List<OrderDetailBean>> orderDetailBeanListMap = new HashMap<>();
-        for (OrderDetailBean orderDetailBean : orderDetailBeanList) { // 遍历订单详情
-            // 处理品类信息
-            String category = orderDetailBean.getCategory();
-            if (StringUtils.isNotBlank(category)) {
-                // 一级品类信息
-                Integer firstCategory = Integer.valueOf(category.substring(0, 2));
+        log.info("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {}, 开始...", startDateTime, endDateTime);
 
-                List<OrderDetailBean> _list = orderDetailBeanListMap.get(firstCategory);
-                if (_list == null) {
-                    _list = new ArrayList<>();
-                    orderDetailBeanListMap.put(firstCategory, _list);
+        try {
+            // 1. 根据一级品类维度将订单详情分组
+            Map<Integer, List<OrderDetailBean>> orderDetailBeanListMap = new HashMap<>();
+            for (OrderDetailBean orderDetailBean : orderDetailBeanList) { // 遍历订单详情
+                // 处理品类信息
+                String category = orderDetailBean.getCategory();
+                if (StringUtils.isNotBlank(category)) {
+                    // 一级品类信息
+                    Integer firstCategory = Integer.valueOf(category.substring(0, 2));
+
+                    List<OrderDetailBean> _list = orderDetailBeanListMap.get(firstCategory);
+                    if (_list == null) {
+                        _list = new ArrayList<>();
+                        orderDetailBeanListMap.put(firstCategory, _list);
+                    }
+                    _list.add(orderDetailBean);
                 }
-                _list.add(orderDetailBean);
-            }
-        }
-
-        // 2. 获取一级品类名称
-        Set<Integer> firstCategoryIdSet = orderDetailBeanListMap.keySet();
-        List<CategoryQueryBean> categoryQueryBeanList =
-                productRpcService.queryCategorysByCategoryIdList(new ArrayList<>(firstCategoryIdSet));
-        // 转map key: categoryId  value: CategoryQueryBean
-        Map<Integer, CategoryQueryBean> categoryQueryBeanMap =
-                categoryQueryBeanList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
-
-        // 3. 获取统计数据
-        String statisticsDateTime =
-                DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
-        List<CategoryOverview> categoryOverviewList = new ArrayList<>(); // 统计数据集合
-        for (Integer categoryId : firstCategoryIdSet) { // 遍历 orderDetailBeanListMap
-            // 获取订单详情集合
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeanListMap.get(categoryId);
-            // 计算总金额
-            BigDecimal totalPrice = new BigDecimal(0);
-            for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
-                BigDecimal _tmpPrice = new BigDecimal(orderDetailBean.getSaleAmount());
-                totalPrice = totalPrice.add(_tmpPrice);
             }
 
+            log.info("按照品类category(天)维度统计订单详情总金额数据; 根据一级品类维度将订单详情分组结果:{}", JSONUtil.toJsonString(orderDetailBeanListMap));
 
-            CategoryOverview categoryOverview = new CategoryOverview();
-            categoryOverview.setCategoryFcode(String.valueOf(categoryId)); // 一级品类code
-            categoryOverview.setCategoryFname(categoryQueryBeanMap.get(categoryId) == null ?
-                    "" : categoryQueryBeanMap.get(categoryId).getName()); // 品类名称
-            categoryOverview.setOrderAmount(totalPrice.multiply(new BigDecimal(100)).longValue());
-            categoryOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
-            categoryOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-            categoryOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-            categoryOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+            // 2. 获取一级品类名称
+            Set<Integer> firstCategoryIdSet = orderDetailBeanListMap.keySet();
+            List<CategoryQueryBean> categoryQueryBeanList =
+                    productRpcService.queryCategorysByCategoryIdList(new ArrayList<>(firstCategoryIdSet));
+            // 转map key: categoryId  value: CategoryQueryBean
+            Map<Integer, CategoryQueryBean> categoryQueryBeanMap =
+                    categoryQueryBeanList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
 
-            //
-            categoryOverviewList.add(categoryOverview);
+            // 3. 获取统计数据
+            String statisticsDateTime =
+                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
+            List<CategoryOverview> categoryOverviewList = new ArrayList<>(); // 统计数据集合
+            for (Integer categoryId : firstCategoryIdSet) { // 遍历 orderDetailBeanListMap
+                // 获取订单详情集合
+                List<OrderDetailBean> _orderDetailBeanList = orderDetailBeanListMap.get(categoryId);
+                // 计算总金额
+                BigDecimal totalPrice = new BigDecimal(0);
+                for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
+                    BigDecimal _tmpPrice = new BigDecimal(orderDetailBean.getSaleAmount());
+                    totalPrice = totalPrice.add(_tmpPrice);
+                }
+
+
+                CategoryOverview categoryOverview = new CategoryOverview();
+                categoryOverview.setCategoryFcode(String.valueOf(categoryId)); // 一级品类code
+                categoryOverview.setCategoryFname(categoryQueryBeanMap.get(categoryId) == null ?
+                        "" : categoryQueryBeanMap.get(categoryId).getName()); // 品类名称
+                categoryOverview.setOrderAmount(totalPrice.multiply(new BigDecimal(100)).longValue());
+                categoryOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                categoryOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                categoryOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                categoryOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+
+                //
+                categoryOverviewList.add(categoryOverview);
+            }
+            log.info("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+                    startDateTime, endDateTime, JSONUtil.toJsonString(categoryOverviewList));
+
+            // 4. 插入统计数据
+            // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+            int count = categoryOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
+                    DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
+                    DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+
+            log.info("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 删除数据条数:{}",
+                    startDateTime, endDateTime, count);
+
+            // 4.2 执行插入
+            for (CategoryOverview categoryOverview : categoryOverviewList) {
+                categoryOverviewDao.insertCategoryOverview(categoryOverview);
+            }
+
+            log.info("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
+        } catch (Exception e) {
+            log.error("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {}, 异常:{}",
+                    startDateTime, endDateTime, e.getMessage(), e);
         }
-        log.info("按照品类(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
-                startDateTime, endDateTime, JSONUtil.toJsonString(categoryOverviewList));
-
-        // 4. 插入统计数据
-        // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-        categoryOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
-                DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
-                DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-
-        // 4.2 执行插入
-        for (CategoryOverview categoryOverview : categoryOverviewList) {
-            categoryOverviewDao.insertCategoryOverview(categoryOverview);
-        }
-
-        log.info("按照品类(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override

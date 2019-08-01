@@ -3,6 +3,7 @@ package com.fengchao.statistics.feign;
 import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.hystric.ProductServiceClientH;
+import com.fengchao.statistics.rpc.extmodel.CategoryQueryBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +25,6 @@ public interface ProductServiceClient {
      * @return
      */
     @RequestMapping(value = "/adminCategory/category/listByIds", method = RequestMethod.GET)
-    OperaResponse queryCategorysByCategoryIdList(@RequestParam("categoryIdList") List<Integer> categoryIdList);
+    OperaResponse<List<CategoryQueryBean>> queryCategorysByCategoryIdList(@RequestParam("categoryIdList") List<Integer> categoryIdList);
 
 }

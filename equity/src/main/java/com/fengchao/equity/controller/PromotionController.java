@@ -1,5 +1,6 @@
 package com.fengchao.equity.controller;
 
+import com.fengchao.equity.bean.OperaResponse;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.service.PromotionService;
@@ -39,23 +40,24 @@ public class PromotionController {
     }
 
     @GetMapping("findByIdList")
-    public OperaResult findPromotionListByIdList(@RequestParam("idList") List<Integer> idList, OperaResult result){
+    public OperaResponse findPromotionListByIdList(@RequestParam("idList") List<Integer> idList,
+                                                 OperaResponse<List<PromotionBean>> operaResponse) {
         log.info("查询活动列表 根据id集合查询 入参:{}", JSONUtil.toJsonString(idList));
 
         try {
             // 查询
             List<PromotionBean> promotionList = service.findPromotionListByIdList(idList);
 
-            result.getData().put("result", promotionList);
+            operaResponse.setData(promotionList);
         } catch (Exception e) {
             log.error("查询活动列表 根据id集合查询 异常:{}", e.getMessage(), e);
 
-            result.setData(null);
-            result.setCode(500);
-            result.setMsg("查询活动列表 根据id集合查询 异常");
+            operaResponse.setData(null);
+            operaResponse.setCode(500);
+            operaResponse.setMsg("查询活动列表 根据id集合查询 异常");
         }
 
-        log.info("查询活动列表 根据id集合查询 返回:{}", JSONUtil.toJsonString(result));
-        return result;
+        log.info("查询活动列表 根据id集合查询 返回:{}", JSONUtil.toJsonString(operaResponse));
+        return operaResponse;
     }
 }

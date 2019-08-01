@@ -49,7 +49,15 @@ public interface OrderService {
 
     Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
 
-    DayStatisticsBean findDayStatisticsCount(String dayStart, String dayEnd) ;
+    /**
+     * 获取平台的关于订单的总体统计数据
+     *  1.获取订单支付总额-
+     *  2.(已支付)订单总量-
+     *  3.(已支付)下单人数-
+     *
+     * @return
+     */
+    DayStatisticsBean findOverviewStatistics() throws Exception;
 
     String queryLogisticsInfo(String logisticsId);
 
@@ -73,7 +81,8 @@ public interface OrderService {
      */
     List<OrderDetailBean> queryPayedOrderDetail(String dayStart, String dayEnd) throws Exception;
 
-    Integer findDayPaymentCount(String dayStart, String dayEnd) ;
+//    @Deprecated
+//    Integer findDayPaymentCount(String dayStart, String dayEnd) ;
 
     String findPaymentStatus(String outerTradeNo);
 

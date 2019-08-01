@@ -49,10 +49,7 @@ public class VendorsRpcService {
 
         // 处理返回
         if (resultObject.getCode() == 200) {
-            Map _resultMap = (Map) resultObject.getData();
-
-            // 转
-            sysUserList = JSON.parseArray(JSON.toJSONString(_resultMap), SysUser.class);
+            sysUserList = resultObject.getData();
         } else {
             log.warn("根据id集合查询商户信息 调用vendors rpc服务 错误!");
         }

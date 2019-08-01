@@ -30,69 +30,83 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
     private MerchantOverviewDao merchantOverviewDao;
 
     @Override
-    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList , String startDateTime, String endDateTime) {
-        // 1. 根据商户id维度将订单详情分类
-        Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = new HashMap<>();
-        for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
-            Integer merchantId = orderDetailBean.getMerchantId(); // 商户id
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);
-            if (_orderDetailBeanList == null) {
-                _orderDetailBeanList = new ArrayList<>();
-                orderDetailBeansByMerchantMap.put(merchantId, _orderDetailBeanList);
-            }
-            _orderDetailBeanList.add(orderDetailBean);
-        }
+    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList , String startDateTime, String endDateTime) throws Exception {
+        log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 开始....", startDateTime, endDateTime);
 
-        // 2. 获取商户名称
-        Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
-        List<SysUser> sysUserList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
-        // 转map key:merchantId  value:SysUser
-        Map<Integer, SysUser> sysUserMap = sysUserList.stream()
-                .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
-
-        // 3. 获取统计数据
-        String statisticsDateTime =
-                DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
-        List<MerchantOverview> merchantOverviewList = new ArrayList<>(); // 统计数据
-        for (Integer merchantId : merchantIdSet) { // 遍历map
-            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);
-
-            BigDecimal orderAmount = new BigDecimal(0);
-            for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
-                BigDecimal _tmpPrice = new BigDecimal(orderDetailBean.getSaleAmount());
-                orderAmount = orderAmount.add(_tmpPrice);
+        try {
+            // 1. 根据商户id维度将订单详情分组
+            Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = new HashMap<>();
+            for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
+                Integer merchantId = orderDetailBean.getMerchantId(); // 商户id
+                List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);
+                if (_orderDetailBeanList == null) {
+                    _orderDetailBeanList = new ArrayList<>();
+                    orderDetailBeansByMerchantMap.put(merchantId, _orderDetailBeanList);
+                }
+                _orderDetailBeanList.add(orderDetailBean);
             }
 
-            MerchantOverview merchantOverview = new MerchantOverview();
+            log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 根据商户id维度将订单详情分组结果:{}",
+                    startDateTime, endDateTime, JSONUtil.toJsonString(orderDetailBeansByMerchantMap));
+
+            // 2. 获取商户名称
+            Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
+            List<SysUser> sysUserList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
+            // 转map key:merchantId  value:SysUser
+            Map<Integer, SysUser> sysUserMap = sysUserList.stream()
+                    .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
+
+            // 3. 获取统计数据
+            String statisticsDateTime =
+                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
+            List<MerchantOverview> merchantOverviewList = new ArrayList<>(); // 统计数据
+            for (Integer merchantId : merchantIdSet) { // 遍历map
+                List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);
+
+                BigDecimal orderAmount = new BigDecimal(0);
+                for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
+                    BigDecimal _tmpPrice = new BigDecimal(orderDetailBean.getSaleAmount());
+                    orderAmount = orderAmount.add(_tmpPrice);
+                }
+
+                // 组装统计数据
+                MerchantOverview merchantOverview = new MerchantOverview();
+                merchantOverview.setMerchantId(merchantId);
+                merchantOverview.setMerchantName(sysUserMap.get(merchantId) == null ?
+                        "/" : sysUserMap.get(merchantId).getLoginName());
+                merchantOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                merchantOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                merchantOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                merchantOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+                merchantOverview.setOrderAmount(orderAmount.multiply(new BigDecimal(100)).longValue());
+
+                merchantOverviewList.add(merchantOverview); //
+            }
 
 
-            merchantOverview.setMerchantId(merchantId);
-            merchantOverview.setMerchantName(sysUserMap.get(merchantId) == null ?
-                    "/" : sysUserMap.get(merchantId).getLoginName());
-            merchantOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
-            merchantOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-            merchantOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-            merchantOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
-            merchantOverview.setOrderAmount(orderAmount.multiply(new BigDecimal(100)).longValue());
+            log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
+                    startDateTime, endDateTime, JSONUtil.toJsonString(merchantOverviewList));
+
+            // 4. 插入统计数据
+            // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+            int count = merchantOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+                    StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
+                    DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
+                    DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+
+            log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 删除数据条数:{}",
+                    startDateTime, endDateTime, count);
+
+            // 4.2 执行插入
+            for (MerchantOverview merchantOverview : merchantOverviewList) {
+                merchantOverviewDao.insertCategoryOverview(merchantOverview);
+            }
+
+            log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!", startDateTime, endDateTime);
+        } catch (Exception e) {
+            log.error("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常:{}",
+                    startDateTime, endDateTime, e.getMessage(), e);
         }
-
-
-        log.info("按照商户(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 统计结果:{}",
-                startDateTime, endDateTime, JSONUtil.toJsonString(merchantOverviewList));
-
-        // 4. 插入统计数据
-        // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-        merchantOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
-                StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
-                DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
-                DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-
-        // 4.2 执行插入
-        for (MerchantOverview merchantOverview : merchantOverviewList) {
-            merchantOverviewDao.insertCategoryOverview(merchantOverview);
-        }
-
-        log.info("按照商户(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override
