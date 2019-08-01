@@ -36,8 +36,8 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     private PromotionOverviewDao promotionOverviewDao;
 
     @Override
-    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList,
-                                 String startDateTime, String endDateTime) throws Exception {
+    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList, String startDateTime,
+                                 String endDateTime, Date statisticDate) throws Exception {
         log.info("按照活动promotion(天)维度统计订单详情总数量数据; 统计时间范围：{} - {} 开始...", startDateTime, endDateTime);
 
         try {
@@ -87,8 +87,6 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                     startDateTime, endDateTime, JSONUtil.toJsonString(orderDetailBeansByPromotionTypeMap));
 
             // 3. 获取统计数据
-            String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
             List<PromotionOverview> promotionOverviewList = new ArrayList<>(); // 统计数据
             Set<String> promotionTypeSet = orderDetailBeansByPromotionTypeMap.keySet();
             for (String promotionTypeName : promotionTypeSet) { // 遍历
@@ -107,7 +105,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                 promotionOverview.setPromotionType(promotionTypeName);
                 promotionOverview.setOrderAmount(orderAmout);
 
-                promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                promotionOverview.setStatisticsDate(statisticDate);
                 promotionOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());

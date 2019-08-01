@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.StopWatch;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -81,6 +82,7 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             // 1.处理查询的时间范围
             // 当前日期
             String currentDate = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD);
+            Date statisticDate = DateUtil.parseDateTime(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 执行统计的时间
             // 开始时间
             if (StringUtils.isBlank(startDateTime)) {
                 startDateTime = DateUtil.calcDay(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
@@ -113,19 +115,19 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             // 3.2执行统计
             // overviewService.add(queryBean); // 总揽统计
             if (needExecuteTaskList.contains(CATEGORY) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
-                categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 安品类统计
+                categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 安品类统计
             }
 
             if (needExecuteTaskList.contains(MERCHANT) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
-                merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按商户统计订单支付总额
+                merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按商户统计订单支付总额
             }
 
             if (needExecuteTaskList.contains(PROMOTION)) {
-                promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按照活动统计订单数量
+                promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照活动统计订单数量
             }
 
             if (needExecuteTaskList.contains(PERIOD)) {
-                periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按照时间段统计订单支付总额
+                periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照时间段统计订单支付总额
             }
         } catch (Exception e) {
             log.error("执行平台订单统计任务异常:{}", e.getMessage(), e);
