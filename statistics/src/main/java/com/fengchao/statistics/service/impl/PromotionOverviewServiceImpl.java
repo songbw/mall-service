@@ -46,6 +46,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             List<PromotionTypeResDto> promotionTypeResDtoList = equityRpcService.queryAllPromotionTypeList();
             // 准备空数据， 以'活动类别'维度生成空统计数据的map
             Map<String, List<OrderDetailBean>> orderDetailBeansByPromotionTypeMap = new HashMap<>(); // !!
+            orderDetailBeansByPromotionTypeMap.put("其他", new ArrayList<>());
             for (PromotionTypeResDto promotionTypeResDto : promotionTypeResDtoList) {
                 orderDetailBeansByPromotionTypeMap.put(promotionTypeResDto.getTypeName(), new ArrayList<>());
             }
@@ -151,9 +152,6 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
         if (CollectionUtils.isEmpty(promotionOverviewList)) {
             return Collections.emptyList();
         }
-
-        // 根据start时间排序
-        promotionOverviewList.sort(Comparator.comparing(PromotionOverview::getStatisticStartTime));
 
         // 2. 统计数据
         // 2.1 按照日期维度分组
