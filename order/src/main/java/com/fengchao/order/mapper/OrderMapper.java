@@ -42,11 +42,26 @@ public interface OrderMapper {
 
     int updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
 
-    int selectDayPaymentCount(HashMap map) ;
+    /**
+     * 查询已支付订单的总额
+     *
+     * @return
+     */
+    int selectPayedOrdersAmount();
 
-    int selectDayCount(HashMap map);
+    /**
+     * 查询已支付的订单总数
+     *
+     * @return
+     */
+    int selectPayedOrdersCount();
 
-    int selectDayPeopleCount(HashMap map) ;
+    /**
+     * 查询下单(已支付)人数
+     *
+     * @return
+     */
+    int selectPayedOdersUserCount();
 
     List<PromotionPaymentBean> selectDayPromotionPaymentCount(HashMap map) ;
 

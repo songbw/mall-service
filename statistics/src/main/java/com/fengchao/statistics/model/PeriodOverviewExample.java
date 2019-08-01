@@ -5,14 +5,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class PromotionOverviewExample {
+public class PeriodOverviewExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public PromotionOverviewExample() {
+    public PeriodOverviewExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -192,193 +192,363 @@ public class PromotionOverviewExample {
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIsNull() {
-            addCriterion("promotion_type is null");
+        public Criteria andLateAtNightIsNull() {
+            addCriterion("late_at_night is null");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIsNotNull() {
-            addCriterion("promotion_type is not null");
+        public Criteria andLateAtNightIsNotNull() {
+            addCriterion("late_at_night is not null");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeEqualTo(String value) {
-            addCriterion("promotion_type =", value, "promotionType");
+        public Criteria andLateAtNightEqualTo(Long value) {
+            addCriterion("late_at_night =", value, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotEqualTo(String value) {
-            addCriterion("promotion_type <>", value, "promotionType");
+        public Criteria andLateAtNightNotEqualTo(Long value) {
+            addCriterion("late_at_night <>", value, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeGreaterThan(String value) {
-            addCriterion("promotion_type >", value, "promotionType");
+        public Criteria andLateAtNightGreaterThan(Long value) {
+            addCriterion("late_at_night >", value, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeGreaterThanOrEqualTo(String value) {
-            addCriterion("promotion_type >=", value, "promotionType");
+        public Criteria andLateAtNightGreaterThanOrEqualTo(Long value) {
+            addCriterion("late_at_night >=", value, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLessThan(String value) {
-            addCriterion("promotion_type <", value, "promotionType");
+        public Criteria andLateAtNightLessThan(Long value) {
+            addCriterion("late_at_night <", value, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLessThanOrEqualTo(String value) {
-            addCriterion("promotion_type <=", value, "promotionType");
+        public Criteria andLateAtNightLessThanOrEqualTo(Long value) {
+            addCriterion("late_at_night <=", value, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeLike(String value) {
-            addCriterion("promotion_type like", value, "promotionType");
+        public Criteria andLateAtNightIn(List<Long> values) {
+            addCriterion("late_at_night in", values, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotLike(String value) {
-            addCriterion("promotion_type not like", value, "promotionType");
+        public Criteria andLateAtNightNotIn(List<Long> values) {
+            addCriterion("late_at_night not in", values, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeIn(List<String> values) {
-            addCriterion("promotion_type in", values, "promotionType");
+        public Criteria andLateAtNightBetween(Long value1, Long value2) {
+            addCriterion("late_at_night between", value1, value2, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotIn(List<String> values) {
-            addCriterion("promotion_type not in", values, "promotionType");
+        public Criteria andLateAtNightNotBetween(Long value1, Long value2) {
+            addCriterion("late_at_night not between", value1, value2, "lateAtNight");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeBetween(String value1, String value2) {
-            addCriterion("promotion_type between", value1, value2, "promotionType");
+        public Criteria andEarlyMorningIsNull() {
+            addCriterion("early_morning is null");
             return (Criteria) this;
         }
 
-        public Criteria andPromotionTypeNotBetween(String value1, String value2) {
-            addCriterion("promotion_type not between", value1, value2, "promotionType");
+        public Criteria andEarlyMorningIsNotNull() {
+            addCriterion("early_morning is not null");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountIsNull() {
-            addCriterion("order_amount is null");
+        public Criteria andEarlyMorningEqualTo(Long value) {
+            addCriterion("early_morning =", value, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountIsNotNull() {
-            addCriterion("order_amount is not null");
+        public Criteria andEarlyMorningNotEqualTo(Long value) {
+            addCriterion("early_morning <>", value, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountEqualTo(Long value) {
-            addCriterion("order_amount =", value, "orderAmount");
+        public Criteria andEarlyMorningGreaterThan(Long value) {
+            addCriterion("early_morning >", value, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountNotEqualTo(Long value) {
-            addCriterion("order_amount <>", value, "orderAmount");
+        public Criteria andEarlyMorningGreaterThanOrEqualTo(Long value) {
+            addCriterion("early_morning >=", value, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountGreaterThan(Long value) {
-            addCriterion("order_amount >", value, "orderAmount");
+        public Criteria andEarlyMorningLessThan(Long value) {
+            addCriterion("early_morning <", value, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountGreaterThanOrEqualTo(Long value) {
-            addCriterion("order_amount >=", value, "orderAmount");
+        public Criteria andEarlyMorningLessThanOrEqualTo(Long value) {
+            addCriterion("early_morning <=", value, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountLessThan(Long value) {
-            addCriterion("order_amount <", value, "orderAmount");
+        public Criteria andEarlyMorningIn(List<Long> values) {
+            addCriterion("early_morning in", values, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountLessThanOrEqualTo(Long value) {
-            addCriterion("order_amount <=", value, "orderAmount");
+        public Criteria andEarlyMorningNotIn(List<Long> values) {
+            addCriterion("early_morning not in", values, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountIn(List<Long> values) {
-            addCriterion("order_amount in", values, "orderAmount");
+        public Criteria andEarlyMorningBetween(Long value1, Long value2) {
+            addCriterion("early_morning between", value1, value2, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountNotIn(List<Long> values) {
-            addCriterion("order_amount not in", values, "orderAmount");
+        public Criteria andEarlyMorningNotBetween(Long value1, Long value2) {
+            addCriterion("early_morning not between", value1, value2, "earlyMorning");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountBetween(Long value1, Long value2) {
-            addCriterion("order_amount between", value1, value2, "orderAmount");
+        public Criteria andMorningIsNull() {
+            addCriterion("morning is null");
             return (Criteria) this;
         }
 
-        public Criteria andOrderAmountNotBetween(Long value1, Long value2) {
-            addCriterion("order_amount not between", value1, value2, "orderAmount");
+        public Criteria andMorningIsNotNull() {
+            addCriterion("morning is not null");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeIsNull() {
-            addCriterion("period_type is null");
+        public Criteria andMorningEqualTo(Long value) {
+            addCriterion("morning =", value, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeIsNotNull() {
-            addCriterion("period_type is not null");
+        public Criteria andMorningNotEqualTo(Long value) {
+            addCriterion("morning <>", value, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeEqualTo(Short value) {
-            addCriterion("period_type =", value, "periodType");
+        public Criteria andMorningGreaterThan(Long value) {
+            addCriterion("morning >", value, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeNotEqualTo(Short value) {
-            addCriterion("period_type <>", value, "periodType");
+        public Criteria andMorningGreaterThanOrEqualTo(Long value) {
+            addCriterion("morning >=", value, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeGreaterThan(Short value) {
-            addCriterion("period_type >", value, "periodType");
+        public Criteria andMorningLessThan(Long value) {
+            addCriterion("morning <", value, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeGreaterThanOrEqualTo(Short value) {
-            addCriterion("period_type >=", value, "periodType");
+        public Criteria andMorningLessThanOrEqualTo(Long value) {
+            addCriterion("morning <=", value, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeLessThan(Short value) {
-            addCriterion("period_type <", value, "periodType");
+        public Criteria andMorningIn(List<Long> values) {
+            addCriterion("morning in", values, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeLessThanOrEqualTo(Short value) {
-            addCriterion("period_type <=", value, "periodType");
+        public Criteria andMorningNotIn(List<Long> values) {
+            addCriterion("morning not in", values, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeIn(List<Short> values) {
-            addCriterion("period_type in", values, "periodType");
+        public Criteria andMorningBetween(Long value1, Long value2) {
+            addCriterion("morning between", value1, value2, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeNotIn(List<Short> values) {
-            addCriterion("period_type not in", values, "periodType");
+        public Criteria andMorningNotBetween(Long value1, Long value2) {
+            addCriterion("morning not between", value1, value2, "morning");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeBetween(Short value1, Short value2) {
-            addCriterion("period_type between", value1, value2, "periodType");
+        public Criteria andNoonIsNull() {
+            addCriterion("noon is null");
             return (Criteria) this;
         }
 
-        public Criteria andPeriodTypeNotBetween(Short value1, Short value2) {
-            addCriterion("period_type not between", value1, value2, "periodType");
+        public Criteria andNoonIsNotNull() {
+            addCriterion("noon is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonEqualTo(Long value) {
+            addCriterion("noon =", value, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonNotEqualTo(Long value) {
+            addCriterion("noon <>", value, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonGreaterThan(Long value) {
+            addCriterion("noon >", value, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonGreaterThanOrEqualTo(Long value) {
+            addCriterion("noon >=", value, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonLessThan(Long value) {
+            addCriterion("noon <", value, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonLessThanOrEqualTo(Long value) {
+            addCriterion("noon <=", value, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonIn(List<Long> values) {
+            addCriterion("noon in", values, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonNotIn(List<Long> values) {
+            addCriterion("noon not in", values, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonBetween(Long value1, Long value2) {
+            addCriterion("noon between", value1, value2, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNoonNotBetween(Long value1, Long value2) {
+            addCriterion("noon not between", value1, value2, "noon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonIsNull() {
+            addCriterion("afternoon is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonIsNotNull() {
+            addCriterion("afternoon is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonEqualTo(Long value) {
+            addCriterion("afternoon =", value, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonNotEqualTo(Long value) {
+            addCriterion("afternoon <>", value, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonGreaterThan(Long value) {
+            addCriterion("afternoon >", value, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonGreaterThanOrEqualTo(Long value) {
+            addCriterion("afternoon >=", value, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonLessThan(Long value) {
+            addCriterion("afternoon <", value, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonLessThanOrEqualTo(Long value) {
+            addCriterion("afternoon <=", value, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonIn(List<Long> values) {
+            addCriterion("afternoon in", values, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonNotIn(List<Long> values) {
+            addCriterion("afternoon not in", values, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonBetween(Long value1, Long value2) {
+            addCriterion("afternoon between", value1, value2, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andAfternoonNotBetween(Long value1, Long value2) {
+            addCriterion("afternoon not between", value1, value2, "afternoon");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightIsNull() {
+            addCriterion("night is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightIsNotNull() {
+            addCriterion("night is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightEqualTo(Long value) {
+            addCriterion("night =", value, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightNotEqualTo(Long value) {
+            addCriterion("night <>", value, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightGreaterThan(Long value) {
+            addCriterion("night >", value, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightGreaterThanOrEqualTo(Long value) {
+            addCriterion("night >=", value, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightLessThan(Long value) {
+            addCriterion("night <", value, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightLessThanOrEqualTo(Long value) {
+            addCriterion("night <=", value, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightIn(List<Long> values) {
+            addCriterion("night in", values, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightNotIn(List<Long> values) {
+            addCriterion("night not in", values, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightBetween(Long value1, Long value2) {
+            addCriterion("night between", value1, value2, "night");
+            return (Criteria) this;
+        }
+
+        public Criteria andNightNotBetween(Long value1, Long value2) {
+            addCriterion("night not between", value1, value2, "night");
             return (Criteria) this;
         }
 
@@ -559,6 +729,66 @@ public class PromotionOverviewExample {
 
         public Criteria andStatisticEndTimeNotBetween(Date value1, Date value2) {
             addCriterion("statistic_end_time not between", value1, value2, "statisticEndTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIsNull() {
+            addCriterion("period_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIsNotNull() {
+            addCriterion("period_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeEqualTo(Short value) {
+            addCriterion("period_type =", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotEqualTo(Short value) {
+            addCriterion("period_type <>", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeGreaterThan(Short value) {
+            addCriterion("period_type >", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeGreaterThanOrEqualTo(Short value) {
+            addCriterion("period_type >=", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeLessThan(Short value) {
+            addCriterion("period_type <", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeLessThanOrEqualTo(Short value) {
+            addCriterion("period_type <=", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIn(List<Short> values) {
+            addCriterion("period_type in", values, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotIn(List<Short> values) {
+            addCriterion("period_type not in", values, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeBetween(Short value1, Short value2) {
+            addCriterion("period_type between", value1, value2, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotBetween(Short value1, Short value2) {
+            addCriterion("period_type not between", value1, value2, "periodType");
             return (Criteria) this;
         }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="server_name" value="statistics"/>
+    <property name="server_name" value="sso"/>
     <property name="log_dir" value="../logs/"/>
     <property name="maxFileSize" value="100MB"/>
     <property name="maxHistory" value="180"/>
@@ -17,7 +17,7 @@
 
     <!-- info日志 appender  -->
     <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log_dir}/request-statistic.log</file>
+        <file>${log_dir}/request-sso.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 按天回滚 daily -->
             <fileNamePattern>${log_dir}/${server_name}-info-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
@@ -33,6 +33,15 @@
             <pattern>%date{yyyy-MM-dd HH:mm:ss.sss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | traceId=%X{X-B3-TraceId:-} | %msg%n
             </pattern>
         </encoder>
+
+        <!-- 只打印info日志 -->
+        <!--
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        -->
 
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
@@ -53,7 +62,7 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%date{yyyy-MM-dd HH:mm:ss.sss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | traceId=%X{X-B3-TraceId:-} | %msg%n
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.sss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | traceId=%X{X-B3-TraceId:-} |%msg%n
             </pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -63,6 +72,44 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+
+    <!--<appender name="MyBatis" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+    <!--<file>${LOG_HOME}/logs/mybatis-sql.log</file>-->
+    <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+    <!--<FileNamePattern>${LOG_HOME}/logs/mybatis-sql.log.%d{yyyy-MM-dd}</FileNamePattern>-->
+    <!--<maxHistory>30</maxHistory>-->
+    <!--</rollingPolicy>-->
+    <!--<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+    <!--<pattern>%thread|%d{yyyy-MM-dd HH:mm:ss.SSS}|%level|%logger{36}|%m%n</pattern>-->
+    <!--</encoder>-->
+    <!--</appender>-->
+
+    <!--mybatis sql日志 日志的级别需要是DEBUG-->
+    <!--日志打印的包的范围，及分类日志文件存储
+    <springProfile name="test,prod">
+        <logger name="com.fengchao.equity.dao.*" level="DEBUG" additivity="false">
+            <appender-ref ref="INFO" />
+            <appender-ref ref="ERROR" />
+        </logger>
+    </springProfile>
+
+    <springProfile name="dev">
+        <logger name="com.fengchao.equity.dao.*" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="INFO" />
+            <appender-ref ref="ERROR" />
+        </logger>
+    </springProfile>-->
+
+    <!--控制台和日志文件输出级别
+    <root level="INFO" additivity = "false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="INFO" />
+        <appender-ref ref="ERROR" />
+    </root>-->
+
+
+
 
     <springProfile name="test,prod">
         <root level="INFO" additivity="false">

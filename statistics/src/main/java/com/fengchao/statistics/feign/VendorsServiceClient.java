@@ -2,6 +2,7 @@ package com.fengchao.statistics.feign;
 
 import com.fengchao.statistics.feign.hystric.VendorsServiceClientH;
 import com.fengchao.statistics.rpc.extmodel.ResultObject;
+import com.fengchao.statistics.rpc.extmodel.SysCompany;
 import com.fengchao.statistics.rpc.extmodel.SysUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,6 @@ import java.util.List;
 @FeignClient(value = "vendors", fallback = VendorsServiceClientH.class)
 public interface VendorsServiceClient {
 
-    @RequestMapping(value = "/vendors/listByIds", method = RequestMethod.GET)
-    ResultObject<List<SysUser>> queryMerchantByIdList(@RequestParam("idList") List<Long> idList);
+    @RequestMapping(value = "/vendors/companiesByIds", method = RequestMethod.GET)
+    ResultObject<List<SysCompany>> queryMerchantByIdList(@RequestParam("idList") List<Long> idList);
 }

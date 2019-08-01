@@ -1,5 +1,6 @@
 package com.fengchao.order.service.impl;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -455,20 +456,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public DayStatisticsBean findDayStatisticsCount(String dayStart, String dayEnd) {
-        HashMap map = new HashMap();
-        map.put("dayStart", dayStart);
-        map.put("dayEnd", dayEnd);
-        int dayPaymentCount = orderMapper.selectDayPaymentCount(map); // SUM(sale_amount)
-        int dayCount = orderMapper.selectDayCount(map); // count(id) FROM orders
-        int dayPeopleCount = orderMapper.selectDayPeopleCount(map); // count(DISTINCT(open_id))
+    public DayStatisticsBean findOverviewStatistics() throws Exception {
+        // 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
+        int dayPaymentCount = orderMapper.selectPayedOrdersAmount(); // 获取订单支付总额 SUM(sale_amount)
+        int dayCount = orderMapper.selectPayedOrdersCount(); // (已支付)订单总量 count(id) FROM orders
+        int dayPeopleCount = orderMapper.selectPayedOdersUserCount(); // (已支付)下单人数 count(DISTINCT(open_id))
+
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
         dayStatisticsBean.setOrderCount(dayCount);
         dayStatisticsBean.setOrderPeopleNum(dayPeopleCount);
-//        dayStatisticsBean.setOrderBackNum(dayRefundOrderCount);
+
+        logger.info("获取平台的关于订单的总体统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
         return dayStatisticsBean;
     }
+
     public String queryLogisticsInfo(String logisticsId) {
         String comcode = orderDetailXMapper.selectComCode(logisticsId);
         if(comcode == null || comcode.equals("")){
@@ -497,16 +499,20 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderDetailBean> queryPayedOrderDetail(String startDateTime, String endDateTime) throws Exception {
         // 1. 按照时间范围查询子订单集合
+        logger.info("按照时间范围查询已支付的子订单列表 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
         Date startTime = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         Date endTime = DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         List<OrderDetail> orderDetailList = adminOrderDao.selectOrderDetailsByCreateTimeRange(startTime, endTime);
+        logger.info("按照时间范围查询已支付的子订单列表 数据库返回List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
 
         // 2. 过滤出已支付的子订单集合
         // 2.1 根据获取到的子订单获取主订单
         List<Integer> ordersIdList =
                 orderDetailList.stream().map(detail -> detail.getOrderId()).collect(Collectors.toList());
-        // 2.2 查询主订单
+        logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库入参:{}", JSONUtil.toJsonString(ordersIdList));
+                // 2.2 查询主订单
         List<Orders> ordersList = adminOrderDao.selectOrdersListByIdList(ordersIdList);
+        logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
         // 转map key : ordersId, value: Orders
         Map<Integer, Orders> ordersMap = ordersList.stream().collect(Collectors.toMap(o -> o.getId(), o -> o));
 
@@ -515,37 +521,47 @@ public class OrderServiceImpl implements OrderService {
         for (OrderDetail orderDetail : orderDetailList) { // 遍历子订单
             Integer orderId = orderDetail.getOrderId();
             Orders orders = ordersMap.get(orderId);
-            if (orders != null) {
+            if (orders != null && orders.getPayStatus() != null) {
                 // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
-                if (orders.getPayStatus() == PaymentStatusEnum.PAY_SUCCESS.getValue()) { // 如果 支付成功
+                if (PaymentStatusEnum.PAY_SUCCESS.getValue() == orders.getPayStatus().intValue()) { // 如果 支付成功
                     payedOrderDetailList.add(orderDetail);
                 }
             }
         }
+        logger.info("按照时间范围查询已支付的子订单列表 获取的已支付子订单集合List<OrderDetail>:{}",
+                JSONUtil.toJsonString(payedOrderDetailList));
 
         // 3. 转dto
         List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
         for (OrderDetail orderDetail : payedOrderDetailList) {
             OrderDetailBean orderDetailBean = convertToOrderDetailBean(orderDetail);
             orderDetailBean.setPayStatus(PaymentStatusEnum.PAY_SUCCESS.getValue());
-            // 设置城市信息
+
+            // 设置相关信息
             Orders orders = ordersMap.get(orderDetail.getOrderId());
+            // a.设置城市信息
             orderDetailBean.setCityId(orders == null ? "" : orders.getCityId());
             orderDetailBean.setCityName(orders == null ? "" : orders.getCityName());
+            // b.设置支付时间
+            orderDetailBean.setPaymentAt(orders.getPaymentAt());
 
             orderDetailBeanList.add(orderDetailBean);
         }
 
+        logger.info("按照时间范围查询已支付的子订单列表 转List<OrderDetailBean>:{}",
+                JSONUtil.toJsonString(orderDetailBeanList));
+
         return orderDetailBeanList;
     }
 
-    @Override
-    public Integer findDayPaymentCount(String dayStart, String dayEnd) {
-        HashMap map = new HashMap();
-        map.put("dayStart", dayStart);
-        map.put("dayEnd", dayEnd);
-        return orderMapper.selectDayPaymentCount(map);
-    }
+//    @Override
+//    @Deprecated
+//    public Integer findDayPaymentCount(String dayStart, String dayEnd) {
+//        HashMap map = new HashMap();
+//        map.put("dayStart", dayStart);
+//        map.put("dayEnd", dayEnd);
+//        return orderMapper.selectDayPaymentCount(map);
+//    }
 
     @Override
     public String findPaymentStatus(String outerTradeNo) {
@@ -678,7 +694,7 @@ public class OrderServiceImpl implements OrderService {
         // orderDetailBean.setCouponDiscount();
         orderDetailBean.setPromotionId(orderDetail.getPromotionId());
         // orderDetailBean.setPromotionDiscount();
-        orderDetailBean.setSaleAmount(orderDetail.getSalePrice().floatValue()); // 实际支付价格
+        orderDetailBean.setSaleAmount(orderDetail.getSalePrice() == null ? 0 : orderDetail.getSalePrice().floatValue()); // 实际支付价格
         orderDetailBean.setCategory(orderDetail.getCategory()); // 品类
 
         return orderDetailBean;

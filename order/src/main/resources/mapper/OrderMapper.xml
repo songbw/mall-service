@@ -187,14 +187,17 @@
     order by order_detail.updated_at desc
     limit #{pageNo},#{pageSize}
   </select>
-  <select id="selectDayPaymentCount" resultType="java.lang.Integer" parameterType="Map">
-    SELECT SUM(sale_amount) FROM orders WHERE pay_status = 5 and <![CDATA[payment_at > #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  <select id="selectPayedOrdersAmount" resultType="java.lang.Integer">
+    SELECT SUM(sale_amount) FROM orders
+    WHERE pay_status = 5
   </select>
-  <select id="selectDayCount" resultType="java.lang.Integer">
-    SELECT count(id) FROM orders WHERE <![CDATA[created_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  <select id="selectPayedOrdersCount" resultType="java.lang.Integer">
+    SELECT count(id) FROM orders
+    WHERE pay_status = 5
   </select>
-  <select id="selectDayPeopleCount" resultType="java.lang.Integer" parameterType="Map">
-    SELECT count(DISTINCT(open_id)) FROM orders WHERE <![CDATA[created_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and created_at <= #{dayEnd,jdbcType=TIMESTAMP}]]>
+  <select id="selectPayedOdersUserCount" resultType="java.lang.Integer">
+    SELECT count(DISTINCT(open_id)) FROM orders
+    WHERE pay_status = 5
   </select>
   <select id="selectDayMerchantPaymentCount" resultType="com.fengchao.order.bean.MerchantPaymentBean" parameterType="Map">
     SELECT SUM(sale_amount) saleAmount, merchant_id merchantId FROM orders WHERE pay_status = 5 and <![CDATA[payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]> and merchant_id is not NULL GROUP BY merchant_id;

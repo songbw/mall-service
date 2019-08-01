@@ -46,15 +46,12 @@ public class EquityRpcService {
 
         // 执行rpc调用
         log.info("根据id集合查询活动信息 调用equity rpc服务 入参:{}", JSONUtil.toJsonString(promotionIdList));
-        OperaResult operaResult = equityServiceClient.queryPromotionByIdList(promotionIdList);
-        log.info("根据id集合查询活动信息 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+        OperaResponse<List<PromotionBean>> operaResponse = equityServiceClient.queryPromotionByIdList(promotionIdList);
+        log.info("根据id集合查询活动信息 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回
-        if (operaResult.getCode() == 200) {
-            Map _resultMap = (Map) operaResult.getData().get("result");
-
-            // 转
-            promotionBeanList = JSON.parseArray(JSON.toJSONString(_resultMap), PromotionBean.class);
+        if (operaResponse.getCode() == 200) {
+            promotionBeanList = operaResponse.getData();
         } else {
             log.warn("根据id集合查询活动信息 调用equity rpc服务 错误!");
         }
@@ -76,15 +73,12 @@ public class EquityRpcService {
 
         // 执行rpc调用
         log.info("查询所有的活动类型信息 调用equity rpc服务 入参:无");
-        OperaResponse operaResponse = equityServiceClient.queryAllPromotionTypeList();
+        OperaResponse<List<PromotionTypeResDto>> operaResponse = equityServiceClient.queryAllPromotionTypeList();
         log.info("查询所有的活动类型信息 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回
         if (operaResponse.getCode() == 200) {
-            Map _resultMap = (Map) operaResponse.getData();
-
-            // 转
-            promotionTypeResDtoList = JSON.parseArray(JSON.toJSONString(_resultMap), PromotionTypeResDto.class);
+            promotionTypeResDtoList = operaResponse.getData();
         } else {
             log.warn("查询所有的活动类型信息 调用equity rpc服务 错误!");
         }

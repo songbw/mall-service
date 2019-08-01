@@ -7,15 +7,15 @@ public class PromotionOverview {
 
     private String promotionType;
 
-    private Integer orderCount;
+    private Long orderAmount;
+
+    private Short periodType;
 
     private Date statisticsDate;
 
     private Date statisticStartTime;
 
     private Date statisticEndTime;
-
-    private Short periodType;
 
     private Short istatus;
 
@@ -39,12 +39,20 @@ public class PromotionOverview {
         this.promotionType = promotionType == null ? null : promotionType.trim();
     }
 
-    public Integer getOrderCount() {
-        return orderCount;
+    public Long getOrderAmount() {
+        return orderAmount;
     }
 
-    public void setOrderCount(Integer orderCount) {
-        this.orderCount = orderCount;
+    public void setOrderAmount(Long orderAmount) {
+        this.orderAmount = orderAmount;
+    }
+
+    public Short getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(Short periodType) {
+        this.periodType = periodType;
     }
 
     public Date getStatisticsDate() {
@@ -69,14 +77,6 @@ public class PromotionOverview {
 
     public void setStatisticEndTime(Date statisticEndTime) {
         this.statisticEndTime = statisticEndTime;
-    }
-
-    public Short getPeriodType() {
-        return periodType;
-    }
-
-    public void setPeriodType(Short periodType) {
-        this.periodType = periodType;
     }
 
     public Short getIstatus() {

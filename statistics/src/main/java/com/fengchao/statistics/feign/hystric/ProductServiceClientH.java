@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.ProductServiceClient;
+import com.fengchao.statistics.rpc.extmodel.CategoryQueryBean;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class ProductServiceClientH implements ProductServiceClient {
     }
 
     @Override
-    public OperaResponse queryCategorysByCategoryIdList(List<Integer> categoryIdList) {
+    public OperaResponse<List<CategoryQueryBean>> queryCategorysByCategoryIdList(List<Integer> categoryIdList) {
         return HystrixDefaultFallback.fallbackResponse();
     }
 }

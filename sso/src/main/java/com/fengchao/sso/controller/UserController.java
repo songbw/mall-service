@@ -2,16 +2,14 @@ package com.fengchao.sso.controller;
 
 import com.fengchao.sso.bean.LoginBean;
 import com.fengchao.sso.bean.UserBean;
+import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
 import com.fengchao.sso.config.SMSConfig;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.service.IUserService;
-import com.fengchao.sso.util.Md5Util;
-import com.fengchao.sso.util.OperaResult;
-import com.fengchao.sso.util.RedisUtil;
-import com.fengchao.sso.util.SMSUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -117,7 +116,9 @@ public class UserController {
 
     @GetMapping("/count")
     public OperaResult count(OperaResult result) {
+        log.info("查询用户总数,入参:无");
         result.getData().put("count", service.findUserCount());
+        log.info("查询用户总数,返回:{}", JSONUtil.toJsonString(result));
         return result;
     }
 }

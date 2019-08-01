@@ -1,16 +1,20 @@
 package com.fengchao.statistics.feign;
 
+import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.feign.hystric.WorkOrderServiceH;
+import com.fengchao.statistics.feign.hystric.WorkOrderServiceClientH;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "workorders", fallback = WorkOrderServiceH.class)
-public interface WorkOrdersService {
+@FeignClient(value = "workorders", fallback = WorkOrderServiceClientH.class)
+public interface WorkOrdersServiceClient {
 
+    /**
+     * 获取退货人数
+     *
+     * @return
+     */
     @RequestMapping(value = "/work_orders/refunds", method = RequestMethod.GET)
-    OperaResult refundCount(@RequestParam("timeStart") String timeStart, @RequestParam("timeEnd") String timeEnd);
-
+    OperaResponse refundOrdersCount();
 }
