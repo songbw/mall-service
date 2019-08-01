@@ -1,5 +1,7 @@
 package com.fengchao.statistics.jobClient;
 
+import brave.Tracer;
+import brave.propagation.TraceContext;
 import com.alibaba.fastjson.JSON;
 import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
@@ -17,6 +19,7 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.util.StopWatch;
 
 import java.util.Date;
@@ -60,6 +63,13 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
      */
     @Override
     public Result run(JobContext jobContext) throws Throwable {
+//        TraceContext traceContext =
+//        TraceContext.newBuilder().traceId(23L).spanId(33).build();
+//        log.info("=== {}" + traceContext.traceId());
+//
+//        MDC.put("X-B3-TraceId","234");
+
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("总统计时间");
         log.info("执行平台订单统计任务开始:{}", JSONUtil.toJsonString(jobContext));
