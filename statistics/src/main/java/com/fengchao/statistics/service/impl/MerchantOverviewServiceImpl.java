@@ -6,6 +6,7 @@ import com.fengchao.statistics.dao.MerchantOverviewDao;
 import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.rpc.VendorsRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
+import com.fengchao.statistics.rpc.extmodel.SysCompany;
 import com.fengchao.statistics.rpc.extmodel.SysUser;
 import com.fengchao.statistics.service.MerchantOverviewService;
 import com.fengchao.statistics.utils.DateUtil;
@@ -51,9 +52,9 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
             // 2. 获取商户名称
             Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
-            List<SysUser> sysUserList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
+            List<SysCompany> sysCompanyList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
             // 转map key:merchantId  value:SysUser
-            Map<Integer, SysUser> sysUserMap = sysUserList.stream()
+            Map<Integer, SysCompany> sysCompanyMap = sysCompanyList.stream()
                     .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
 
             // 3. 获取统计数据
@@ -72,8 +73,8 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
                 // 组装统计数据
                 MerchantOverview merchantOverview = new MerchantOverview();
                 merchantOverview.setMerchantId(merchantId);
-                merchantOverview.setMerchantName(sysUserMap.get(merchantId) == null ?
-                        "/" : sysUserMap.get(merchantId).getLoginName());
+                merchantOverview.setMerchantName(sysCompanyMap.get(merchantId) == null ?
+                        "/" : sysCompanyMap.get(merchantId).getName());
                 merchantOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 merchantOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 merchantOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
