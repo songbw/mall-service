@@ -149,7 +149,8 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
             periodOverviewResVoList.add(periodOverviewResVo);
         }
 
-
+        // 将统计数据按照时间排序
+        periodOverviewResVoList.sort(Comparator.comparing(PeriodOverviewResVo::getStatisticsDate));
 
         log.info("根据时间范围获取daily型的时间段维度统计数据 获取统计数据 List<PeriodOverviewResVo>:{}",
                 JSONUtil.toJsonString(periodOverviewResVoList));

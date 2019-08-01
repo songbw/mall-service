@@ -94,16 +94,18 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
             for (String promotionTypeName : promotionTypeSet) { // 遍历
                 List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
 
-                Integer orderCount = 0; // 统计订单数量
+                Long orderAmout = 0L; // 统计订单数量
                 for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
-                    orderCount++;
+                    Float _tmpPrice = (orderDetailBean.getSaleAmount() == null ? 0L : orderDetailBean.getSaleAmount());
+
+                    orderAmout = orderAmout + new BigDecimal(_tmpPrice).multiply(new BigDecimal(100)).longValue();
                 }
 
                 // 组装统计数据
                 PromotionOverview promotionOverview = new PromotionOverview();
 
                 promotionOverview.setPromotionType(promotionTypeName);
-                promotionOverview.setOrderCount(orderCount);
+                promotionOverview.setOrderAmount(orderAmout);
 
                 promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
@@ -183,7 +185,8 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
 
             List<PromotionOverview> _promotionOverviewList = dateRangeMap.get(date);
             for (PromotionOverview promotionOverview : _promotionOverviewList) {
-                _map.put(promotionOverview.getPromotionType(), promotionOverview.getOrderCount() + "");
+                String _orderAmount = new BigDecimal(promotionOverview.getOrderAmount()).divide(new BigDecimal(100)).toString();
+                _map.put(promotionOverview.getPromotionType(), _orderAmount);
             }
 
             result.add(_map);
