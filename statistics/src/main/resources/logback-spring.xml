@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="server_name" value="equity"/>
+    <property name="server_name" value="statistics"/>
     <property name="log_dir" value="../logs/"/>
     <property name="maxFileSize" value="100MB"/>
     <property name="maxHistory" value="180"/>
