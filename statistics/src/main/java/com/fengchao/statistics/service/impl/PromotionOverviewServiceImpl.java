@@ -36,8 +36,8 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
     private PromotionOverviewDao promotionOverviewDao;
 
     @Override
-    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList,
-                                 String startDateTime, String endDateTime) throws Exception {
+    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList, String startDateTime,
+                                 String endDateTime, Date statisticDate) throws Exception {
         log.info("按照活动promotion(天)维度统计订单详情总数量数据; 统计时间范围：{} - {} 开始...", startDateTime, endDateTime);
 
         try {
@@ -87,25 +87,25 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
                     startDateTime, endDateTime, JSONUtil.toJsonString(orderDetailBeansByPromotionTypeMap));
 
             // 3. 获取统计数据
-            String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
             List<PromotionOverview> promotionOverviewList = new ArrayList<>(); // 统计数据
             Set<String> promotionTypeSet = orderDetailBeansByPromotionTypeMap.keySet();
             for (String promotionTypeName : promotionTypeSet) { // 遍历
                 List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByPromotionTypeMap.get(promotionTypeName);
 
-                Integer orderCount = 0; // 统计订单数量
+                Long orderAmout = 0L; // 统计订单数量
                 for (OrderDetailBean orderDetailBean : _orderDetailBeanList) {
-                    orderCount++;
+                    Float _tmpPrice = (orderDetailBean.getSaleAmount() == null ? 0L : orderDetailBean.getSaleAmount());
+
+                    orderAmout = orderAmout + new BigDecimal(_tmpPrice).multiply(new BigDecimal(100)).longValue();
                 }
 
                 // 组装统计数据
                 PromotionOverview promotionOverview = new PromotionOverview();
 
                 promotionOverview.setPromotionType(promotionTypeName);
-                promotionOverview.setOrderCount(orderCount);
+                promotionOverview.setOrderAmount(orderAmout);
 
-                promotionOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                promotionOverview.setStatisticsDate(statisticDate);
                 promotionOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 promotionOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
@@ -183,7 +183,8 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
 
             List<PromotionOverview> _promotionOverviewList = dateRangeMap.get(date);
             for (PromotionOverview promotionOverview : _promotionOverviewList) {
-                _map.put(promotionOverview.getPromotionType(), promotionOverview.getOrderCount() + "");
+                String _orderAmount = new BigDecimal(promotionOverview.getOrderAmount()).divide(new BigDecimal(100)).toString();
+                _map.put(promotionOverview.getPromotionType(), _orderAmount);
             }
 
             result.add(_map);

@@ -29,8 +29,8 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
     private PeriodOverviewDao periodOverviewDao;
 
     @Override
-    public void doStatistic(List<OrderDetailBean> orderDetailBeanList,
-                            String startDateTime, String endDateTime) throws Exception {
+    public void doStatistic(List<OrderDetailBean> orderDetailBeanList, String startDateTime,
+                            String endDateTime, Date statisticDate) throws Exception {
         log.info("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 开始...", startDateTime, endDateTime);
         try {
             // 1. 创建统计数据
@@ -80,9 +80,7 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
             }
 
             // 统计时间
-            String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            periodOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+            periodOverview.setStatisticsDate(statisticDate);
             periodOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
             periodOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
             periodOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
@@ -149,7 +147,8 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
             periodOverviewResVoList.add(periodOverviewResVo);
         }
 
-
+        // 将统计数据按照时间排序
+        periodOverviewResVoList.sort(Comparator.comparing(PeriodOverviewResVo::getStatisticsDate));
 
         log.info("根据时间范围获取daily型的时间段维度统计数据 获取统计数据 List<PeriodOverviewResVo>:{}",
                 JSONUtil.toJsonString(periodOverviewResVoList));

@@ -262,63 +262,123 @@ public class PromotionOverviewExample {
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountIsNull() {
-            addCriterion("order_count is null");
+        public Criteria andOrderAmountIsNull() {
+            addCriterion("order_amount is null");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountIsNotNull() {
-            addCriterion("order_count is not null");
+        public Criteria andOrderAmountIsNotNull() {
+            addCriterion("order_amount is not null");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountEqualTo(Integer value) {
-            addCriterion("order_count =", value, "orderCount");
+        public Criteria andOrderAmountEqualTo(Long value) {
+            addCriterion("order_amount =", value, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotEqualTo(Integer value) {
-            addCriterion("order_count <>", value, "orderCount");
+        public Criteria andOrderAmountNotEqualTo(Long value) {
+            addCriterion("order_amount <>", value, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountGreaterThan(Integer value) {
-            addCriterion("order_count >", value, "orderCount");
+        public Criteria andOrderAmountGreaterThan(Long value) {
+            addCriterion("order_amount >", value, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountGreaterThanOrEqualTo(Integer value) {
-            addCriterion("order_count >=", value, "orderCount");
+        public Criteria andOrderAmountGreaterThanOrEqualTo(Long value) {
+            addCriterion("order_amount >=", value, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountLessThan(Integer value) {
-            addCriterion("order_count <", value, "orderCount");
+        public Criteria andOrderAmountLessThan(Long value) {
+            addCriterion("order_amount <", value, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountLessThanOrEqualTo(Integer value) {
-            addCriterion("order_count <=", value, "orderCount");
+        public Criteria andOrderAmountLessThanOrEqualTo(Long value) {
+            addCriterion("order_amount <=", value, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountIn(List<Integer> values) {
-            addCriterion("order_count in", values, "orderCount");
+        public Criteria andOrderAmountIn(List<Long> values) {
+            addCriterion("order_amount in", values, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotIn(List<Integer> values) {
-            addCriterion("order_count not in", values, "orderCount");
+        public Criteria andOrderAmountNotIn(List<Long> values) {
+            addCriterion("order_amount not in", values, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountBetween(Integer value1, Integer value2) {
-            addCriterion("order_count between", value1, value2, "orderCount");
+        public Criteria andOrderAmountBetween(Long value1, Long value2) {
+            addCriterion("order_amount between", value1, value2, "orderAmount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotBetween(Integer value1, Integer value2) {
-            addCriterion("order_count not between", value1, value2, "orderCount");
+        public Criteria andOrderAmountNotBetween(Long value1, Long value2) {
+            addCriterion("order_amount not between", value1, value2, "orderAmount");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIsNull() {
+            addCriterion("period_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIsNotNull() {
+            addCriterion("period_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeEqualTo(Short value) {
+            addCriterion("period_type =", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotEqualTo(Short value) {
+            addCriterion("period_type <>", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeGreaterThan(Short value) {
+            addCriterion("period_type >", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeGreaterThanOrEqualTo(Short value) {
+            addCriterion("period_type >=", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeLessThan(Short value) {
+            addCriterion("period_type <", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeLessThanOrEqualTo(Short value) {
+            addCriterion("period_type <=", value, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeIn(List<Short> values) {
+            addCriterion("period_type in", values, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotIn(List<Short> values) {
+            addCriterion("period_type not in", values, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeBetween(Short value1, Short value2) {
+            addCriterion("period_type between", value1, value2, "periodType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPeriodTypeNotBetween(Short value1, Short value2) {
+            addCriterion("period_type not between", value1, value2, "periodType");
             return (Criteria) this;
         }
 
@@ -499,66 +559,6 @@ public class PromotionOverviewExample {
 
         public Criteria andStatisticEndTimeNotBetween(Date value1, Date value2) {
             addCriterion("statistic_end_time not between", value1, value2, "statisticEndTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeIsNull() {
-            addCriterion("period_type is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeIsNotNull() {
-            addCriterion("period_type is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeEqualTo(Short value) {
-            addCriterion("period_type =", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeNotEqualTo(Short value) {
-            addCriterion("period_type <>", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeGreaterThan(Short value) {
-            addCriterion("period_type >", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeGreaterThanOrEqualTo(Short value) {
-            addCriterion("period_type >=", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeLessThan(Short value) {
-            addCriterion("period_type <", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeLessThanOrEqualTo(Short value) {
-            addCriterion("period_type <=", value, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeIn(List<Short> values) {
-            addCriterion("period_type in", values, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeNotIn(List<Short> values) {
-            addCriterion("period_type not in", values, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeBetween(Short value1, Short value2) {
-            addCriterion("period_type between", value1, value2, "periodType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPeriodTypeNotBetween(Short value1, Short value2) {
-            addCriterion("period_type not between", value1, value2, "periodType");
             return (Criteria) this;
         }
 

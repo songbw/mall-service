@@ -6,6 +6,7 @@ import com.fengchao.statistics.dao.MCityOrderAmountDao;
 import com.fengchao.statistics.model.MCityOrderamount;
 import com.fengchao.statistics.rpc.VendorsRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
+import com.fengchao.statistics.rpc.extmodel.SysCompany;
 import com.fengchao.statistics.rpc.extmodel.SysUser;
 import com.fengchao.statistics.service.MerchantStatisticService;
 import com.fengchao.statistics.utils.DateUtil;
@@ -48,9 +49,9 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
         // 2. 获取商户名称
         Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
-        List<SysUser> sysUserList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
+        List<SysCompany> sysCompanyList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
         // 转map key:merchantId  value:SysUser
-        Map<Integer, SysUser> sysUserMap = sysUserList.stream()
+        Map<Integer, SysCompany> sysCompanyMap = sysCompanyList.stream()
                 .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
 
         // 3. 获取统计数据
@@ -92,8 +93,8 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                 MCityOrderamount mCityOrderamount = new MCityOrderamount();
                 mCityOrderamount.setMerchantId(merchantId);
                 mCityOrderamount.setMerchantCode("");
-                mCityOrderamount.setMerchantName(sysUserMap.get(merchantId) == null ?
-                        "/" : sysUserMap.get(merchantId).getLoginName());
+                mCityOrderamount.setMerchantName(sysCompanyMap.get(merchantId) == null ?
+                        "/" : sysCompanyMap.get(merchantId).getName());
                 mCityOrderamount.setCityId(cityId);
                 mCityOrderamount.setCityName(cityName);
                 mCityOrderamount.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));

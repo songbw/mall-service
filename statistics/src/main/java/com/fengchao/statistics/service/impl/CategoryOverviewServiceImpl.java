@@ -35,7 +35,8 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
     private CategoryOverviewDao categoryOverviewDao;
 
     @Override
-    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList, String startDateTime, String endDateTime) throws Exception {
+    public void doDailyStatistic(List<OrderDetailBean> orderDetailBeanList, String startDateTime,
+                                 String endDateTime, Date statisticDate) throws Exception {
         log.info("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {}, 开始...", startDateTime, endDateTime);
 
         try {
@@ -68,8 +69,6 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
                     categoryQueryBeanList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
 
             // 3. 获取统计数据
-            String statisticsDateTime =
-                    DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, 1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 统计时间
             List<CategoryOverview> categoryOverviewList = new ArrayList<>(); // 统计数据集合
             for (Integer categoryId : firstCategoryIdSet) { // 遍历 orderDetailBeanListMap
                 // 获取订单详情集合
@@ -87,7 +86,7 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
                 categoryOverview.setCategoryFname(categoryQueryBeanMap.get(categoryId) == null ?
                         "" : categoryQueryBeanMap.get(categoryId).getName()); // 品类名称
                 categoryOverview.setOrderAmount(totalPrice.multiply(new BigDecimal(100)).longValue());
-                categoryOverview.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                categoryOverview.setStatisticsDate(statisticDate);
                 categoryOverview.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 categoryOverview.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 categoryOverview.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());

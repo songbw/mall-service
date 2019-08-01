@@ -16,8 +16,10 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.StopWatch;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -45,7 +47,8 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
 
 
     /**
-     * 统计任务-每天凌晨1点执行，统计前一天的数据
+     * 日统计任务-每天凌晨1点执行，统计前一天的数据
+     *
      * 1. 按品类统计订单支付总额
      * 2. 按商户统计订单支付总额
      * 3. 按活动统计订单数量
@@ -61,20 +64,32 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
         stopWatch.start("总统计时间");
         log.info("执行平台订单统计任务开始:{}", JSONUtil.toJsonString(jobContext));
 
+        // 0. 处理任务的入参
+        // 0.1 获取需要执行的任务参数
         String tasks = jobContext.getJob().getParam("tasks");
         List<String> needExecuteTaskList = JSON.parseArray(tasks, String.class);
         log.info("执行平台订单统计任务 需要执行的任务:{}", JSONUtil.toJsonString(needExecuteTaskList));
 
-        String startDateTime = "", endDateTime = "";
+        // 0.2 获取日统计需要执行的日期
+        String startDateTime = "", endDateTime = ""; // 日统计时间
+        String executeDate = jobContext.getJob().getParam("date");
+        if (StringUtils.isNotBlank(executeDate)) {
+            startDateTime = executeDate + " 00:00:00";
+            endDateTime = executeDate + " 23:59:59";
+        }
+
         try {
             // 1.处理查询的时间范围
             // 当前日期
             String currentDate = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD);
+            Date statisticDate = DateUtil.parseDateTime(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 执行统计的时间
             // 开始时间
-            startDateTime =
-                    DateUtil.calcDay(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            endDateTime =
-                    DateUtil.calcSecond(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            if (StringUtils.isBlank(startDateTime)) {
+                startDateTime = DateUtil.calcDay(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                        -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                endDateTime = DateUtil.calcSecond(startDateTime,
+                        DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            }
 
             log.info("执行订单统计任务 统计时间范围 startDateTime:{} - endDateTime:{}", startDateTime, endDateTime);
 
@@ -100,19 +115,19 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             // 3.2执行统计
             // overviewService.add(queryBean); // 总揽统计
             if (needExecuteTaskList.contains(CATEGORY) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
-                categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 安品类统计
+                categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 安品类统计
             }
 
             if (needExecuteTaskList.contains(MERCHANT) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
-                merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按商户统计订单支付总额
+                merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按商户统计订单支付总额
             }
 
             if (needExecuteTaskList.contains(PROMOTION)) {
-                promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按照活动统计订单数量
+                promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照活动统计订单数量
             }
 
             if (needExecuteTaskList.contains(PERIOD)) {
-                periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime); // 按照时间段统计订单支付总额
+                periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照时间段统计订单支付总额
             }
         } catch (Exception e) {
             log.error("执行平台订单统计任务异常:{}", e.getMessage(), e);
