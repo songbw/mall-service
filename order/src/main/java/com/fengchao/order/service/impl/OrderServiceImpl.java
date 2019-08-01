@@ -219,7 +219,7 @@ public class OrderServiceImpl implements OrderService {
         // 更新子订单状态
         OrderDetail orderDetail = new OrderDetail() ;
         orderDetail.setOrderId(id);
-        orderDetail.setStatus(3);
+        orderDetail.setStatus(4);
         adminOrderDao.updateOrderDetailStatus(orderDetail) ;
         orderMapper.updateStatusById(order) ;
         return id;
