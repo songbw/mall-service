@@ -27,9 +27,6 @@ import java.util.stream.Collectors;
 public class PromotionOverviewServiceImpl implements PromotionOverviewService {
 
     @Autowired
-    private OrderServiceClient orderService;
-
-    @Autowired
     private EquityRpcService equityRpcService;
 
     @Autowired

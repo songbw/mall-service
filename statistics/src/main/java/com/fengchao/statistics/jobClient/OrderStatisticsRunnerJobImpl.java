@@ -1,7 +1,13 @@
 package com.fengchao.statistics.jobClient;
 
 import brave.Tracer;
+import brave.Tracing;
+import brave.context.log4j2.ThreadContextCurrentTraceContext;
+import brave.propagation.B3Propagation;
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.ExtraFieldPropagation;
 import brave.propagation.TraceContext;
+import brave.sampler.Sampler;
 import com.alibaba.fastjson.JSON;
 import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
@@ -51,7 +57,7 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
 
     /**
      * 日统计任务-每天凌晨1点执行，统计前一天的数据
-     *
+     * <p>
      * 1. 按品类统计订单支付总额
      * 2. 按商户统计订单支付总额
      * 3. 按活动统计订单数量
@@ -63,13 +69,6 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
      */
     @Override
     public Result run(JobContext jobContext) throws Throwable {
-//        TraceContext traceContext =
-//        TraceContext.newBuilder().traceId(23L).spanId(33).build();
-//        log.info("=== {}" + traceContext.traceId());
-//
-//        MDC.put("X-B3-TraceId","234");
-
-
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("总统计时间");
         log.info("执行平台订单统计任务开始:{}", JSONUtil.toJsonString(jobContext));
