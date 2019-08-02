@@ -34,7 +34,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Autowired
     private CategoryDao categoryDao;
 
-    @Cacheable(value = "category")
+    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectLimit(Integer offset, Integer limit, Integer categoryClass) {
@@ -59,7 +59,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
-    @Cacheable(value = "category")
+    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(Integer offset, Integer limit,String categoryName) {
@@ -79,7 +79,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
-    @Cacheable(value = "category")
+    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> selectCategoryList(Integer id, boolean includeSub) {
@@ -96,7 +96,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categories;
     }
 
-    @Cacheable(value = "category")
+    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> selectAll() {

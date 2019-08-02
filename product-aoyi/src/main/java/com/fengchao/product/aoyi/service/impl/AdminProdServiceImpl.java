@@ -48,7 +48,6 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
 
-    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
@@ -81,7 +80,6 @@ public class AdminProdServiceImpl implements AdminProdService {
         return pageBean;
     }
 
-    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(SerachBean bean) {
@@ -127,6 +125,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         return pageBean;
     }
 
+    @Cacheable
     @DataSource(DataSourceNames.TWO)
     @Override
     public int getProdListToRedis(){
@@ -238,7 +237,6 @@ public class AdminProdServiceImpl implements AdminProdService {
         }
     }
 
-    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdAll(QueryProdBean bean) {

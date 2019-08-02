@@ -2,7 +2,7 @@ package com.fengchao.product.aoyi.exception;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class ProductException extends RuntimeException {
 
     private String module = "Product";

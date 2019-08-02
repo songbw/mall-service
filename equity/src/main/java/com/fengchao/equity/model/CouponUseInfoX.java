@@ -24,6 +24,8 @@ public class CouponUseInfoX {
 
     private Integer status;
 
+    private String url;
+
     private Integer type;
 
     private Integer deleteFlag;
@@ -125,5 +127,13 @@ public class CouponUseInfoX {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

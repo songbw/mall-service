@@ -16,10 +16,7 @@ import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
-import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -48,7 +45,6 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryService categoryService;
 
-    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
@@ -174,7 +170,6 @@ public class ProductServiceImpl implements ProductService {
         return aoyiProdIndexX;
     }
 
-    @Cacheable(value = "aoyiProdIndex")
     @Override
     public List<AoyiProdIndexX> findAll() throws ProductException {
         HashMap map = new HashMap();
@@ -240,7 +235,6 @@ public class ProductServiceImpl implements ProductService {
         return infoBean;
     }
 
-    @Cacheable(value = "productInfoBean")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception {

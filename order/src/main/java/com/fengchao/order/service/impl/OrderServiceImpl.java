@@ -162,7 +162,6 @@ public class OrderServiceImpl implements OrderService {
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
-
                 OrderDetailX orderDetailX = new OrderDetailX();
                 orderDetailX.setPromotionId(orderSku.getPromotionId());
                 orderDetailX.setSalePrice(orderSku.getSalePrice());
@@ -197,8 +196,8 @@ public class OrderServiceImpl implements OrderService {
         // 传数据给奥义
         orderBean.setMerchants(orderMerchantBeans);
         orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != 2));
-        createOrder(orderBean) ;
-        OperaResponse result = aoyiClientService.order(orderBean);
+//        createOrder(orderBean) ;
+        OperaResponse<List<SubOrderT>>  result = aoyiClientService.order(orderBean);
         if (result.getCode() == 200) {
             operaResult.getData().put("result", orderMerchantBeans) ;
         } else {
@@ -220,7 +219,7 @@ public class OrderServiceImpl implements OrderService {
         // 更新子订单状态
         OrderDetail orderDetail = new OrderDetail() ;
         orderDetail.setOrderId(id);
-        orderDetail.setStatus(3);
+        orderDetail.setStatus(4);
         adminOrderDao.updateOrderDetailStatus(orderDetail) ;
         orderMapper.updateStatusById(order) ;
         return id;

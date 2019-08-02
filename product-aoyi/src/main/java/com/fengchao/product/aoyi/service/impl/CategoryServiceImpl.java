@@ -27,14 +27,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryDao categoryDao;
 
-    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findOneLevelList() {
         return mapper.selectOneLevelList();
     }
 
-    @Cacheable(value = "category")
+    @Cacheable(value = "categoryO")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findTwoLevelListByOneLevelId(int id) {

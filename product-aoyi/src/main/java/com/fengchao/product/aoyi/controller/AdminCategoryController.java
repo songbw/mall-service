@@ -22,6 +22,14 @@ public class AdminCategoryController {
 
     @GetMapping("search")
     public OperaResult search(Integer offset, Integer limit, String query, OperaResult result){
+        if (offset < 0) {
+            offset = 1;
+        }
+        if (limit > 100) {
+            result.setCode(200500);
+            result.setMsg("limit 不能大于100");
+            return result;
+        }
         PageBean category = service.selectNameList(offset, limit, query);
         result.getData().put("result", category) ;
         return result;
@@ -36,6 +44,14 @@ public class AdminCategoryController {
 
     @GetMapping("/oneLevel")
     private OperaResult findOneLevelList(Integer offset, Integer limit, OperaResult result) {
+        if (offset < 0) {
+            offset = 1;
+        }
+        if (limit > 100) {
+            result.setCode(200500);
+            result.setMsg("limit 不能大于100");
+            return result;
+        }
         Integer categoryClass = 1;
         result.getData().put("result", service.selectLimit(offset, limit, categoryClass)) ;
         return result ;
@@ -43,6 +59,14 @@ public class AdminCategoryController {
 
     @GetMapping("/subcategory")
     private OperaResult findSubLevelList(Integer offset, Integer limit, Integer parentId, OperaResult result) {
+        if (offset < 0) {
+            offset = 1;
+        }
+        if (limit > 100) {
+            result.setCode(200500);
+            result.setMsg("limit 不能大于100");
+            return result;
+        }
         result.getData().put("result", service.selectSubLevelList(offset, limit, parentId)) ;
         return result ;
     }

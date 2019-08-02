@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/adminProd", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AdminProdController {
@@ -20,13 +22,21 @@ public class AdminProdController {
 
     @GetMapping("prodList")
     public OperaResult findProdList(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        if (offset < 0) {
+            offset = 1;
+        }
+        if (limit > 100) {
+            result.setCode(200500);
+            result.setMsg("limit 不能大于100");
+            return result;
+        }
         PageBean prod = prodService.findProdList(offset, limit, state, merchantId);
         result.getData().put("result", prod);
         return result;
     }
 
     @PostMapping("search")
-    public OperaResult searchProd(@RequestBody SerachBean bean, @RequestHeader("merchant") Integer merchantHeader, OperaResult result) {
+    public OperaResult searchProd(@Valid @RequestBody SerachBean bean, @RequestHeader("merchant") Integer merchantHeader, OperaResult result) {
         bean.setMerchantHeader(merchantHeader);
         PageBean pageBean = prodService.selectNameList(bean);
         result.getData().put("result", pageBean);
@@ -64,7 +74,7 @@ public class AdminProdController {
     }
 
     @PostMapping("prodAll")
-    public OperaResult findProdAll(@RequestBody QueryProdBean bean, OperaResult result) {
+    public OperaResult findProdAll(@Valid @RequestBody QueryProdBean bean, OperaResult result) {
         PageBean pageBean = prodService.findProdAll(bean);
         result.getData().put("result", pageBean);
         return result;
