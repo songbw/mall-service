@@ -330,7 +330,7 @@
     ps.mpu,
     ps.discount
     FROM promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
-    WHERE ps.mpu=#{mpu} and p.status <![CDATA[ < ]]> 3
+    WHERE ps.mpu=#{mpu} and p.status <![CDATA[ > ]]> 2 and p.status <![CDATA[ < ]]> 5
   </select>
 
   <update id="promotionEffective" parameterType="java.lang.Integer" >
