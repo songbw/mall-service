@@ -1,5 +1,6 @@
 package com.fengchao.guanaitong.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.guanaitong.service.IGuanAiTongService;
 import com.fengchao.guanaitong.util.RedisUtil;
@@ -9,6 +10,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
 
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -46,6 +48,48 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
     private static final int HTTP_STATUS_OK = 200;
     private static final int RESPONSE_DATA_OK = 0;
+
+
+    //okHttp3添加信任所有证书
+    private static OkHttpClient getUnsafeOkHttpClient() {
+
+        try {
+            final TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                        }
+
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[]{};
+                        }
+                    }
+            };
+
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            final javax.net.ssl.SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.sslSocketFactory(sslSocketFactory);
+
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            return builder.build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     private String getTokenSign(String timeStamp){
         StringBuilder sb = new StringBuilder();
@@ -118,12 +162,20 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         return map2string(map);
     }
 
-    private Map buildFormSignMap(Map m) {
+    private Map buildFormSignMap(Map m) throws Exception{
 
         Map<String, Object> tMap = new TreeMap<>();
-        String token = getAccessToken();
-        tMap.put(TOKEN_KEY, token);
-        tMap.put(APPSECRET_KEY, APPSECRET_VALUE);
+
+        try {
+            String token = getAccessToken();
+            tMap.put(TOKEN_KEY, token);
+            tMap.put(APPSECRET_KEY, APPSECRET_VALUE);
+        } catch (Exception e) {
+            log.info("getAccessToken got exception : {}",e.getMessage());
+            throw new Exception(e);
+        }
+
+
         //tMap.put(VERSION_KEY, VERSION_VALUE);
 
         Set<String> keySet = m.keySet();
@@ -136,48 +188,55 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         return tMap;
     }
 
-    private String getFormSign(Map map) {
+    private String getFormSign(Map map) throws Exception{
 
-        Map m = buildFormSignMap(map);
+        Map m;
+        try {
+            m = buildFormSignMap(map);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+
         String xFormString = map2string(m);
-
-        log.info("parameters for sign : " + xFormString);
+        log.info("getFormSign, parameters for sign : " + xFormString);
         byte[] bytes = xFormString.getBytes();
         return DigestUtils.sha1Hex(bytes);
     }
 
-    private JSONObject tryPost(String path, String xForm) {
+    private JSONObject tryPost(String path, String xForm) throws Exception {
 
-        OkHttpClient client = new OkHttpClient();
-        JSONObject  json;
+        OkHttpClient client = getUnsafeOkHttpClient();//new OkHttpClient();
+        JSONObject json;
         MediaType mediaType = MediaType.parse(MEDIA_TYPE);
         RequestBody body = RequestBody.create(mediaType, xForm);
         Request request = new Request.Builder()
-                .url(URL_PREFIX+path)
+                .url(URL_PREFIX + path)
                 .post(body).build();
 
+        Response response;
         try {
-            Response response = client.newCall(request).execute();
-
-            if (null == response || null == response.body()) {
-                return null;
-            }
-
-            String responseString = response.body().string();
-            log.info(responseString);
-            int code = response.code();
-            if (HTTP_STATUS_OK != code) {
-                log.info("error code = " + String.valueOf(code));
-                return null;
-            }
-
-            json = JSONObject.parseObject(responseString);
-            return json;
+            response = client.newCall(request).execute();
         } catch (IOException ex) {
-            log.info("try post got exception");
-            log.info(ex.getMessage());
+            log.info("try post got exception : " + ex.getMessage());
+            throw new Exception(ex);
+        }
+
+        if (null == response || null == response.body()) {
+            log.warn("tryPost got null response data from GuanAiTong : {}",path );
             return null;
         }
+
+        String responseString = response.body().string();
+        log.info("tryPost got response from GuanAiTong : {}",responseString);
+        int code = response.code();
+        if (HTTP_STATUS_OK != code) {
+            log.info("tryPost got response code = " + String.valueOf(code));
+            return null;
+        }
+
+        json = JSONObject.parseObject(responseString);
+        return json;
+
 /*
         if (null != json) {
             Integer resultCode = json.getInteger("code");
@@ -226,8 +285,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 */
 
     @Override
-    public String buildUrlXFormBody(Map map) {
+    public String buildUrlXFormBody(Map map) throws Exception{
 
+        log.info("buildUrlXFormBody map : {}", JSON.toJSONString(map));
         for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
             Map.Entry<String, Object> item = it.next();
             if (null == item.getValue()) {
@@ -242,10 +302,14 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         String timeStamp = timeStampS.toString();
         map.put(TIME_STAMP_KEY,timeStamp);
 
-        String sign = getFormSign(map);
-        String token = getAccessToken();
-        theMap.put(TOKEN_KEY, token);
-        theMap.put(SIGN_KEY, sign);
+        try {
+            String sign = getFormSign(map);
+            String token = getAccessToken();
+            theMap.put(TOKEN_KEY, token);
+            theMap.put(SIGN_KEY, sign);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
         Set<String> keySet = map.keySet();
         Iterator<String> iter = keySet.iterator();
         while (iter.hasNext()) {
@@ -255,18 +319,19 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
                 theMap.put(key, urlValue);
             } catch (UnsupportedEncodingException ex) {
                 log.info("urlEncode error: " + ex.getMessage());
+                throw new Exception(ex);
             }
         }
 
         String xForm = map2string(theMap);
-        log.info("buildXForm: " + xForm);
+        log.info("buildXForm: {}" ,xForm);
         return xForm;
 
     }
 
 
     @Override
-    public String buildXFormBody(Map map) {
+    public String buildXFormBody(Map map) throws Exception{
 
         for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
             Map.Entry<String, Object> item = it.next();
@@ -282,14 +347,19 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         String timeStamp = timeStampS.toString();
         map.put(TIME_STAMP_KEY,timeStamp);
 
-        String sign = getFormSign(map);
-        String token = getAccessToken();
-        if (null == token) {
-            log.info("failed to get access_token!! ");
-            return null;
+        try {
+            String sign = getFormSign(map);
+            String token = getAccessToken();
+            if (null == token) {
+                log.info("failed to get access_token!! ");
+                return null;
+            }
+            theMap.put(TOKEN_KEY, token);
+            theMap.put(SIGN_KEY, sign);
+        } catch (Exception e) {
+            throw new Exception(e);
         }
-        theMap.put(TOKEN_KEY, token);
-        theMap.put(SIGN_KEY, sign);
+
         Set<String> keySet = map.keySet();
         Iterator<String> iter = keySet.iterator();
         while (iter.hasNext()) {
@@ -298,60 +368,59 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xForm = map2string(theMap);
-        log.info("buildXForm: " + xForm);
+        log.info("buildXForm: {}" ,xForm);
         return xForm;
 
     }
 
     @Override
-    public String getAccessToken(){
+    public String getAccessToken() throws Exception {
 
         String cacheToken = RedisUtil.getValue(TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            log.info("get cached token: {" + cacheToken + "} ttl="+RedisUtil.ttl(TOKEN_KEY)+"s");
+            log.info("get cached token: {" + cacheToken + "} ttl=" + RedisUtil.ttl(TOKEN_KEY) + "s");
             return cacheToken;
         }
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = getUnsafeOkHttpClient();//new OkHttpClient();
         String xFormBody = getTokenRequestMap();
-        JSONObject  json;
+        JSONObject json;
         MediaType mediaType = MediaType.parse(MEDIA_TYPE);
         RequestBody body = RequestBody.create(mediaType, xFormBody);
         Request request = new Request.Builder()
-                .url(URL_PREFIX+TOKEN_CREATE_PATH)
+                .url(URL_PREFIX + TOKEN_CREATE_PATH)
                 .post(body).build();
 
+        Response response;
         try {
-            Response response = client.newCall(request).execute();
+            response = client.newCall(request).execute();
+        } catch (Exception ex) {
+            log.warn("get token from GuanAiTong: got exception: " + ex.getMessage());
+            throw new Exception(ex);
+        }
 
-            if (null == response || null == response.body()) {
-                return null;
-            }
-
-            String responseString = response.body().string();
-            log.info(responseString);
-            int code = response.code();
-            if (HTTP_STATUS_OK != code) {
-                return null;
-            }
-            //System.out.println("code = " + String.valueOf(code));
-
-            json = JSONObject.parseObject(responseString);
-
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+        if (null == response || null == response.body()) {
+            log.warn("try get token from guanAitong: no response");
             return null;
         }
 
+        String responseString = response.body().string();
+        log.info("get token from guanAiTong : " + responseString);
+        int code = response.code();
+        if (HTTP_STATUS_OK != code) {
+            return null;
+        }
+
+        json = JSONObject.parseObject(responseString);
+
         if (null != json) {
             Integer resultCode = json.getInteger("code");
-            //System.out.println("get code = " + resultCode.toString());
             if (RESPONSE_DATA_OK != resultCode) {
+                log.info("get token response code = " + resultCode.toString());
                 String msg = json.getString("message");
                 if (null != msg) {
-                    log.warn("error: " + msg);
+                    log.warn("get token from guanaitong, error: " + msg);
                 }
-                //System.out.println("=== get message:"+msg);
                 return null;
             }
 
@@ -359,13 +428,13 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             if (null != data) {
                 String token = data.getString("access_token");
                 if (null == token) {
-                    log.warn("failed to get access_token from guanaitong");
+                    log.warn("failed to get access_token from guanAiTong");
                     return null;
                 }
                 Integer expires = data.getInteger("expires_in");
-                System.out.println("access_token:"+token);
-                System.out.println("expires_in:"+expires.toString());
-                RedisUtil.putRedis(TOKEN_KEY,token,expires-5);
+                log.info("access_token:" + token);
+                log.info("expires_in:" + expires.toString());
+                RedisUtil.putRedis(TOKEN_KEY, token, expires - 5);
                 return token;
             } else {
                 log.warn("data in response from guanaitong is null");
@@ -378,7 +447,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     }
 
     @Override
-    public JSONObject guanAiTongPost(String path, Map map) {
+    public JSONObject guanAiTongPost(String path, Map map) throws Exception{
         if (null == path || path.isEmpty()) {
             log.info("path is null");
             return null;
@@ -398,13 +467,17 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             return null;
         }
 
-        JSONObject json = tryPost(path, xForm);
-        if (null == json) {
-            log.info("response data from remote is null");
-            //System.out.println("got data is null");
+        try {
+            JSONObject json = tryPost(path, xForm);
+            if (null == json) {
+                log.info("response data from remote is null");
+            }
+            return json;
+        } catch (Exception e) {
+            log.warn("get token from GuanAiTong: got exception: " +e.getMessage());
+            throw new Exception(e);
         }
 
-        return json;
 /*
         Integer code = json.getInteger("code");
         if (null == code || 0 != code) {
