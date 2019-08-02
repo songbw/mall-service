@@ -60,14 +60,16 @@ public class OrderServiceImpl implements OrderService {
             subOrder.setPayment(orderMerchantBean.getPayment());
             subOrder.setOrderType(orderMerchantBean.getType() + "");
             AtomicInteger i= new AtomicInteger(1);
+            List<SkusT> aoyiSkus = new ArrayList<>() ;
             orderMerchantBean.getSkus().forEach(sku -> {
                 SkusT skus = new SkusT();
                 skus.setSkuId(sku.getSkuId());
                 skus.setNum(sku.getNum() + "");
                 skus.setUnitPrice(sku.getUnitPrice() + "");
                 skus.setSubOrderNo(subOrder.getOrderNo() + String.format("%03d", i.getAndIncrement()));
-                subOrder.getAoyiSkus().add(skus);
+                aoyiSkus.add(skus);
             });
+            subOrder.setAoyiSkus(aoyiSkus);
             orderRequest.getAoyiOrderEntries().add(subOrder);
         }
         String jsonString = JSONObject.toJSONString(orderRequest);

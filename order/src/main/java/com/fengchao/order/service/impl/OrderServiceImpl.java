@@ -78,45 +78,53 @@ public class OrderServiceImpl implements OrderService {
         Order bean = new Order();
         bean.setOpenId(orderBean.getOpenId());
         bean.setCompanyCustNo(orderBean.getCompanyCustNo());
-        orderBean.setTradeNo(new Date().getTime() + "");
-        Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
-        if (receiver != null) {
-            receiver = handleBean(receiver);
-            orderBean.setReceiverName(receiver.getReceiverName());
-            orderBean.setTelephone(receiver.getTelephone());
-            orderBean.setMobile(receiver.getMobile());
-            orderBean.setEmail(receiver.getEmail());
-            orderBean.setProvinceId(receiver.getProvinceId());
-            orderBean.setCityId(receiver.getCityId());
-            orderBean.setCountyId(receiver.getCountyId());
-            orderBean.setTownId(receiver.getTownId());
-            orderBean.setAddress(receiver.getAddress());
-            orderBean.setZip(receiver.getZip());
-
-            bean.setReceiverName(receiver.getReceiverName());
-            bean.setTelephone(receiver.getTelephone());
-            bean.setMobile(receiver.getMobile());
-            bean.setEmail(receiver.getEmail());
-            bean.setProvinceId(receiver.getProvinceId());
-            bean.setCityId(receiver.getCityId());
-            bean.setCountyId(receiver.getCountyId());
-            bean.setTownId(receiver.getTownId());
-            bean.setAddress(receiver.getAddress());
-            bean.setZip(receiver.getZip());
-            bean.setProvinceName(receiver.getProvinceName());
-            bean.setCityName(receiver.getCityName());
-            bean.setCountyName(receiver.getCountyName());
-        }
-        orderBean.setInvoiceState("1");
-        orderBean.setInvoiceType("4");
-
-        bean.setInvoiceState("1");
-        bean.setInvoiceType("4");
-
         bean.setInvoiceTitle(orderBean.getInvoiceTitleName());
         bean.setTaxNo(orderBean.getInvoiceEnterpriseNumber());
         bean.setInvoiceContent(orderBean.getInvoiceTitleName());
         bean.setPayment(orderBean.getPayment());
+        orderBean.setTradeNo(new Date().getTime() + "");
+        Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
+        if (receiver == null) {
+            operaResult.setCode(400501);
+            operaResult.setMsg("收货地址为不存在，请查证后再提交订单！");
+            return operaResult;
+        }
+
+        // TODO 验证数据有效性
+        // TODO 验证业务逻辑有效性
+        // TODO 存库
+        // TODO 通知奥义 (如果成功则正常返回，如果失败则回滚数据库)
+
+        receiver = handleBean(receiver);
+        orderBean.setReceiverName(receiver.getReceiverName());
+        orderBean.setTelephone(receiver.getTelephone());
+        orderBean.setMobile(receiver.getMobile());
+        orderBean.setEmail(receiver.getEmail());
+        orderBean.setProvinceId(receiver.getProvinceId());
+        orderBean.setCityId(receiver.getCityId());
+        orderBean.setCountyId(receiver.getCountyId());
+        orderBean.setTownId(receiver.getTownId());
+        orderBean.setAddress(receiver.getAddress());
+        orderBean.setZip(receiver.getZip());
+        orderBean.setInvoiceState("1");
+        orderBean.setInvoiceType("4");
+
+        bean.setReceiverName(receiver.getReceiverName());
+        bean.setTelephone(receiver.getTelephone());
+        bean.setMobile(receiver.getMobile());
+        bean.setEmail(receiver.getEmail());
+        bean.setProvinceId(receiver.getProvinceId());
+        bean.setCityId(receiver.getCityId());
+        bean.setCountyId(receiver.getCountyId());
+        bean.setTownId(receiver.getTownId());
+        bean.setAddress(receiver.getAddress());
+        bean.setZip(receiver.getZip());
+        bean.setProvinceName(receiver.getProvinceName());
+        bean.setCityName(receiver.getCityName());
+        bean.setCountyName(receiver.getCountyName());
+
+        bean.setInvoiceState("1");
+        bean.setInvoiceType("4");
         bean.setStatus(0);
         bean.setType(1);
         Date date = new Date() ;
