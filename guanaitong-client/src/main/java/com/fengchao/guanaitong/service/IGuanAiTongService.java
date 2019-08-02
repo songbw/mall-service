@@ -5,11 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.Map;
 
 public interface IGuanAiTongService {
-    String getAccessToken();
+    String getAccessToken() throws Exception;
 
-    String buildXFormBody(Map map);
+    String buildXFormBody(Map map) throws Exception;
 
-    String buildUrlXFormBody(Map map);
+    String buildUrlXFormBody(Map map) throws Exception;
 
-    JSONObject guanAiTongPost(String path, Map map);
+    JSONObject guanAiTongPost(String path, Map map) throws Exception;
 }

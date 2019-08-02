@@ -276,10 +276,12 @@ public class OrderServiceImpl implements OrderService {
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
         // 更新子订单状态
-        OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setOrderId(bean.getId());
-        orderDetail.setStatus(4);
-        adminOrderDao.updateOrderDetailStatus(orderDetail);
+        if (bean.getStatus() == 2) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrderId(bean.getId());
+            orderDetail.setStatus(3);
+            adminOrderDao.updateOrderDetailStatus(orderDetail);
+        }
         orderMapper.updateStatusById(bean) ;
         return bean.getId();
     }
