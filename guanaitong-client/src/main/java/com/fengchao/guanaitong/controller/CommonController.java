@@ -35,13 +35,19 @@ public class CommonController {
 
         log.info("===getToken enter");
 
-        String token = guanAiTongService.getAccessToken();
+        String token = null;
+        try {
+            token = guanAiTongService.getAccessToken();
+        } catch (Exception e) {
+            log.info("getAccessToken got exception : {}",e.getMessage());
+
+        }
         if (null == token) {
-            return new ResultObject<>(400,"failed",null);
+            return new ResultObject<>(400,"failed to access GuanAiTong",null);
         }
         TokenData tokenData = new TokenData();
         tokenData.access_token = token;
-
+        log.info("get token exit normally, got token : ",token);
         return new ResultObject<>(200,"success",tokenData);
 
     }

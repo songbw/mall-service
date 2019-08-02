@@ -107,6 +107,8 @@ public class Order implements Serializable {
 
     private PageBean skusPage;
 
+    private Integer couponStatus;
+
     public Integer getId() {
         return id;
     }
@@ -505,5 +507,13 @@ public class Order implements Serializable {
 
     public void setSkusPage(PageBean skusPage) {
         this.skusPage = skusPage;
+    }
+
+    public Integer getCouponStatus() {
+        return couponStatus;
+    }
+
+    public void setCouponStatus(Integer couponStatus) {
+        this.couponStatus = couponStatus;
     }
 }

@@ -184,4 +184,52 @@ public class AdminOrderDao {
         return orderDetail.getId() ;
     }
 
+    /**
+     * 根据ID获取主订单信息
+     * @param id
+     * @return
+     */
+    public Orders selectById(Integer id) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andIdEqualTo(id) ;
+        Orders orders = ordersMapper.selectByPrimaryKey(id) ;
+        return orders;
+    }
+
+    /**
+     * 修改订单状态和优惠券状态
+     * @param bean
+     * @return
+     */
+    public Integer updateStatusAndCouponStatusById(Orders bean) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andIdEqualTo(bean.getId()) ;
+        Orders temp = new Orders();
+        temp.setUpdatedAt(bean.getUpdatedAt());
+        temp.setStatus(bean.getStatus());
+        if (bean.getCouponCode() != null) {
+            temp.setCouponStatus(bean.getCouponStatus());
+        }
+        ordersMapper.updateByExampleSelective(temp, ordersExample) ;
+        return bean.getId();
+    }
+
+    /**
+     * 根据优惠券信息查询主订单列表
+     * @param couponId
+     * @param couponCode
+     * @return
+     */
+    public List<Orders> selectByCouponIdAndCouponCode(Integer couponId, String couponCode, Integer couponStatus) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andCouponIdEqualTo(couponId) ;
+        criteria.andCouponCodeEqualTo(couponCode) ;
+        criteria.andCouponStatusEqualTo(couponStatus) ;
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample) ;
+        return ordersList;
+    }
+
 }

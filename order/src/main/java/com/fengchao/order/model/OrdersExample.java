@@ -695,6 +695,66 @@ public class OrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andCouponStatusIsNull() {
+            addCriterion("coupon_status is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusIsNotNull() {
+            addCriterion("coupon_status is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusEqualTo(Integer value) {
+            addCriterion("coupon_status =", value, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusNotEqualTo(Integer value) {
+            addCriterion("coupon_status <>", value, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusGreaterThan(Integer value) {
+            addCriterion("coupon_status >", value, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusGreaterThanOrEqualTo(Integer value) {
+            addCriterion("coupon_status >=", value, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusLessThan(Integer value) {
+            addCriterion("coupon_status <", value, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusLessThanOrEqualTo(Integer value) {
+            addCriterion("coupon_status <=", value, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusIn(List<Integer> values) {
+            addCriterion("coupon_status in", values, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusNotIn(List<Integer> values) {
+            addCriterion("coupon_status not in", values, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusBetween(Integer value1, Integer value2) {
+            addCriterion("coupon_status between", value1, value2, "couponStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCouponStatusNotBetween(Integer value1, Integer value2) {
+            addCriterion("coupon_status not between", value1, value2, "couponStatus");
+            return (Criteria) this;
+        }
+
         public Criteria andCompanyCustNoIsNull() {
             addCriterion("company_cust_no is null");
             return (Criteria) this;

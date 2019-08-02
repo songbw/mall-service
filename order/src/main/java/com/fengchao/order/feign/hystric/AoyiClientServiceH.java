@@ -20,7 +20,8 @@ public class AoyiClientServiceH implements AoyiClientService {
             e.printStackTrace();
         }
         result.setCode(404);
-        result.setMsg("添加订单服务失败 " + msg);
+        result.setMsg("添加订单服务失败 ");
+        result.setData(orderParamBean);
         return result;
     }
 
