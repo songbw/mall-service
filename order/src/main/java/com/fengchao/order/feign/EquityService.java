@@ -14,8 +14,29 @@ import java.util.List;
 @FeignClient(value = "equity", url = "${rpc.feign.client.equit.url:}", fallback = EquityServiceH.class)
 public interface EquityService {
 
+    /**
+     * 优惠券核销
+     * @param bean
+     * @return
+     */
     @RequestMapping(value = "/coupon/consume", method = RequestMethod.POST)
     OperaResult consume(@RequestBody CouponUseInfoBean bean);
+
+    /**
+     * 预占优惠券
+     * @param bean
+     * @return
+     */
+    @RequestMapping(value = "/coupon/occupy", method = RequestMethod.POST)
+    OperaResult occupy(@RequestBody CouponUseInfoBean bean);
+
+    /**
+     * 优惠券释放
+     * @param bean
+     * @return
+     */
+    @RequestMapping(value = "/coupon/release", method = RequestMethod.POST)
+    OperaResult release(@RequestBody CouponUseInfoBean bean);
 
     /**
      * 根据id集合获取Promotion列表

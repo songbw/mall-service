@@ -28,6 +28,16 @@ public class EquityServiceH implements EquityService {
     }
 
     @Override
+    public OperaResult occupy(CouponUseInfoBean bean) {
+        return HystrixDefaultFallback.defaultFallback();
+    }
+
+    @Override
+    public OperaResult release(CouponUseInfoBean bean) {
+        return HystrixDefaultFallback.defaultFallback();
+    }
+
+    @Override
     public OperaResult findPromotionListByIdList(List<Integer> idList) {
         return HystrixDefaultFallback.defaultFallback();
     }

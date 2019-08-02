@@ -201,11 +201,24 @@ public class ProductServiceImpl implements ProductService {
         return prodIndices;
     }
 
-    @Cacheable(value = "productInfoBean", key = "#mpu")
-    @DataSource(DataSourceNames.TWO)
+
+
     @Override
     public ProductInfoBean findAndPromotion(String mpu) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
+        AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
+        BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
+        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getSkuid());
+        infoBean.setPromotion(promotionInfoBeans);
+
+        List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
+        infoBean.setCoupon(couponBeans);
+        return infoBean;
+    }
+
+    @Cacheable(value = "AoyiProdIndexX", key = "#mpu")
+    @DataSource(DataSourceNames.TWO)
+    private AoyiProdIndexX findByMpu(String mpu) {
         AoyiProdIndexX aoyiProdIndexX = mapper.selectByMpu(mpu);
         String imageUrl = aoyiProdIndexX.getImagesUrl();
         if (imageUrl != null && (!"".equals(imageUrl))) {
@@ -226,13 +239,7 @@ public class ProductServiceImpl implements ProductService {
         if (aoyiProdIndexX.getIntroductionUrlExtend() != null) {
             aoyiProdIndexX.setIntroductionUrl(aoyiProdIndexX.getIntroductionUrlExtend());
         }
-        BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
-        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getSkuid());
-        infoBean.setPromotion(promotionInfoBeans);
-
-        List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
-        infoBean.setCoupon(couponBeans);
-        return infoBean;
+        return aoyiProdIndexX;
     }
 
     @DataSource(DataSourceNames.TWO)
