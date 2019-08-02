@@ -5,6 +5,7 @@ import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
 import com.fengchao.statistics.feign.ProductServiceClient;
 import com.fengchao.statistics.rpc.extmodel.CategoryQueryBean;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.List;
 @Component
 public class ProductServiceClientH implements ProductServiceClient {
 
+    @Setter
+    private Throwable cause;
 
     @Override
     public OperaResult findMerchant(int id) {
@@ -25,6 +28,6 @@ public class ProductServiceClientH implements ProductServiceClient {
 
     @Override
     public OperaResponse<List<CategoryQueryBean>> queryCategorysByCategoryIdList(List<Integer> categoryIdList) {
-        return HystrixDefaultFallback.fallbackResponse();
+        return HystrixDefaultFallback.fallbackResponse(cause);
     }
 }

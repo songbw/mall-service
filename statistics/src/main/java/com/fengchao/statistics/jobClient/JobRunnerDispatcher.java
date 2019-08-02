@@ -1,5 +1,7 @@
 package com.fengchao.statistics.jobClient;
 
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.TraceContext;
 import com.fengchao.statistics.utils.JSONUtil;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.domain.Job;
@@ -10,7 +12,9 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,6 +34,12 @@ public class JobRunnerDispatcher implements JobRunner {
 
     @Override
     public Result run(JobContext jobContext) throws Throwable {
+        // sleuth 自定义trace begin TODO : 目前MDC不设置会导致当前xiancheng5不打印traceid
+        CurrentTraceContext currentTraceContext = CurrentTraceContext.Default.create();
+        currentTraceContext.newScope(TraceContext.newBuilder().traceId(new Date().getTime()).spanId(1L).build());
+        MDC.put("X-B3-TraceId", currentTraceContext.get().traceIdString());
+        // sleuth 自定义trace begin
+
         log.info("接收到执行任务:{}", JSONUtil.toJsonString(jobContext));
 
         Job job = jobContext.getJob();

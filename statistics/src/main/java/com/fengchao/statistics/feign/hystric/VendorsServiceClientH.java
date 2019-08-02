@@ -4,6 +4,7 @@ import com.fengchao.statistics.feign.VendorsServiceClient;
 import com.fengchao.statistics.rpc.extmodel.ResultObject;
 import com.fengchao.statistics.rpc.extmodel.SysCompany;
 import com.fengchao.statistics.rpc.extmodel.SysUser;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.List;
  */
 @Component
 public class VendorsServiceClientH implements VendorsServiceClient {
+
+    @Setter
+    private Throwable cause;
 
     @Override
     public ResultObject<List<SysCompany>> queryMerchantByIdList(List<Long> idList) {

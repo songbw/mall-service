@@ -22,7 +22,8 @@ public class EquityServiceH implements EquityService {
             e.printStackTrace();
         }
         result.setCode(404);
-        result.setMsg("权益优惠券服务失败 " + msg);
+        result.setMsg("权益优惠券服务失败 ");
+        result.getData().put("error", bean) ;
         return result;
     }
 
