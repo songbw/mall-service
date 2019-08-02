@@ -222,12 +222,12 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         if (null == response || null == response.body()) {
-            log.warn("tryPost got null response data from GuanAiTong : {}",path );
+            log.warn("tryPost {} ,got null response data from GuanAiTong",path );
             return null;
         }
 
         String responseString = response.body().string();
-        log.info("tryPost got response from GuanAiTong : {}",responseString);
+        log.info("tryPost {} ,got response from GuanAiTong : {}",path,responseString);
         int code = response.code();
         if (HTTP_STATUS_OK != code) {
             log.info("tryPost got response code = " + String.valueOf(code));
@@ -474,7 +474,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             }
             return json;
         } catch (Exception e) {
-            log.warn("get token from GuanAiTong: got exception: " +e.getMessage());
+            //log.warn("access GuanAiTong {} , got exception: {}" ,path, e.getMessage());
             throw new Exception(e);
         }
 

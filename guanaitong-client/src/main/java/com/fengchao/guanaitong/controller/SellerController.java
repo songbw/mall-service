@@ -41,7 +41,7 @@ public class SellerController {
         json.put("data",null);
         try {
             out = response.getWriter();
-            out.append(json.toString());
+            out.append(json.toJSONString());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -68,7 +68,7 @@ public class SellerController {
 
         try {
             out = response.getWriter();
-            out.append(json.toString());
+            out.append(json.toJSONString());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -154,7 +154,6 @@ public class SellerController {
         try {
             JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.GET_DETAIL_PATH, map);
             if (null != json) {
-                log.info("guanAiTongPost {} got response : {}",GuanAiTong.GET_DETAIL_PATH, json.toJSONString());
                 buildResponse(response, json);
                 return;
             }
@@ -189,7 +188,6 @@ public class SellerController {
         try {
             JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.GET_ENTERPRISE_INFO_PATH, map);
             if (null != json) {
-                log.info("guanAiTongPost {} got response : {}",GuanAiTong.GET_ENTERPRISE_INFO_PATH, json.toJSONString());
                 buildResponse(response, json);
                 return;
             }
@@ -235,7 +233,6 @@ public class SellerController {
         try {
             JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.SEND_MESSAGE_PATH, map);
             if (null != json) {
-                log.info("guanAiTongPost {} got response : {}",GuanAiTong.SEND_MESSAGE_PATH, json.toJSONString());
                 buildResponse(response, json);
                 return;
             }
@@ -331,7 +328,6 @@ public class SellerController {
         try {
             JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_SYNC_REFUND_PATH, map);
             if (null != json) {
-                log.info("guanAiTongPost {} got response : {}",GuanAiTong.POST_SYNC_REFUND_PATH, json.toJSONString());
                 buildResponse(response, json);
                 return;
             }
@@ -365,7 +361,6 @@ public class SellerController {
         try {
             JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.GET_PAY_RECORD_PATH, map);
             if (null != json) {
-                log.info("guanAiTongPost {} got response : {}",GuanAiTong.GET_PAY_RECORD_PATH, json.toJSONString());
                 buildResponse(response, json);
                 return;
             }
@@ -399,12 +394,11 @@ public class SellerController {
         try {
             JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.GET_REFUND_RECORD_PATH, map);
             if (null != json) {
-                log.info("guanAiTongPost {} got response : {}",GuanAiTong.GET_REFUND_RECORD_PATH, json);
                 buildResponse(response, json);
                 return;
             }
         } catch (Exception ex) {
-            log.info("guanAiTongPost {} got exception : {}",GuanAiTong.GET_REFUND_RECORD_PATH,ex.getMessage());
+            log.info("guanAiTongPost {} got exception : {}",GuanAiTong.GET_REFUND_RECORD_PATH, ex.getMessage());
         }
 
         log.info("GuanAiTong response data is NULL");
