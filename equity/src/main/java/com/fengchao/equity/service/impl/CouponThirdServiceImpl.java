@@ -265,7 +265,7 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         }
         if(StringUtils.isEmpty(bean.getData().getOpen_id())){
             result.setCode(700011);
-            result.setMsg( "open_id用户ID为空");
+            result.setMsg("open_id用户ID为空");
             return result;
         }
         String openID = null;
@@ -315,6 +315,12 @@ public class CouponThirdServiceImpl implements CouponThirdService {
             }
         }
 
+        if(couponBean.getReleaseEndDate().before(new Date()) || couponBean.getEffectiveEndDate().before(new Date())
+                || couponBean.getReleaseStartDate().after(couponBean.getReleaseEndDate()) || couponBean.getEffectiveStartDate().after(couponBean.getEffectiveEndDate())){
+            result.setCode(700001);
+            result.setMsg("日期时间有误，请重新发布");
+            return result;
+        }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> props = objectMapper.convertValue(couponBean, Map.class);
@@ -332,9 +338,8 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         int merchantId = Integer.parseInt(couponBean.getSupplierMerchantId());
         OperaResult vendorInfo = vendorsService.vendorInfo(merchantId);
         if (vendorInfo.getCode() == 200) {
-            Map<String, Object> data = vendorInfo.getData() ;
-            Object object = data.get("user");
-            String jsonString = JSONUtil.toJsonString(object);
+            Object data = vendorInfo.getData() ;
+            String jsonString = JSONUtil.toJsonString(data);
             VendorsProfileBean vendorsProfileBean = JSONObject.parseObject(jsonString, VendorsProfileBean.class) ;
             if(vendorsProfileBean == null){
                 result.setCode(700025);
@@ -369,8 +374,12 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         coupon.setCollectType(1);
         coupon.setCouponType(3);
         coupon.setImageUrl(couponBean.getImageUrl());
-        coupon.setPerLimited(couponBean.getPerLimited());
-        String rules = "{\"type\":3,\"serviceCoupon \":{\"price\":"+ DataUtils.decimalFormat(couponBean.getPrice()) +",\"description\":\""+ couponBean.getSupplierMerchantName() +"服务券\"}}";
+        if(couponBean.getPerLimited() == -1){
+            coupon.setPerLimited(couponBean.getReleaseTotal());
+        }else{
+            coupon.setPerLimited(couponBean.getPerLimited());
+        }
+        String rules = "{\"type\":3,\"serviceCoupon\":{\"price\":"+ DataUtils.decimalFormat(couponBean.getPrice()) +",\"description\":\""+ couponBean.getSupplierMerchantName() +"服务券\"}}";
         coupon.setCouponRules(rules);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
         if(coupon.getCode() == null || "".equals(coupon.getCode())){

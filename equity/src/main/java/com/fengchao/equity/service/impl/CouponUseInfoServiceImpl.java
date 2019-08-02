@@ -73,22 +73,21 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponUseInfo.setCode(bean.getCode());
         couponUseInfo.setUserOpenId(bean.getUserOpenId());
         int num = 0;
-//        if(coupon.getSupplierMerchantId().equals(3)){
-//            OperaResult toushiResult = collectThirdCoupon(bean.getUserOpenId(), bean.getCode());
-//            String url = (String) toushiResult.getData().get("url");
-//            String user_coupon_code = (String) toushiResult.getData().get("coupon_code");
-//            try {
-//                user_coupon_code = new String(AESUtils.decryptAES(AESUtils.base642Byte(user_coupon_code), AESUtils.loadKeyAES()));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            couponUseInfo.setCollectedTime(new Date());
-//            couponUseInfo.setUserCouponCode(user_coupon_code);
-//            couponUseInfo.setUrl(url);
-//            num = mapper.insertSelective(couponUseInfo);
-//            couponUseInfoBean.setUserCouponCode(user_coupon_code);
-//        }else
-            if(coupon.getCollectType() == 4){
+        if(coupon.getSupplierMerchantId().equals(3)){
+            OperaResult toushiResult = collectThirdCoupon(bean.getUserOpenId(), bean.getCode());
+            String url = (String) toushiResult.getData().get("url");
+            String user_coupon_code = (String) toushiResult.getData().get("coupon_code");
+            try {
+                user_coupon_code = new String(AESUtils.decryptAES(AESUtils.base642Byte(user_coupon_code), AESUtils.loadKeyAES()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            couponUseInfo.setCollectedTime(new Date());
+            couponUseInfo.setUserCouponCode(user_coupon_code);
+            couponUseInfo.setUrl(url);
+            num = mapper.insertSelective(couponUseInfo);
+            couponUseInfoBean.setUserCouponCode(user_coupon_code);
+        }else if(coupon.getCollectType() == 4){
             List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
             if(couponUseInfos != null){
                 CouponUseInfoX useInfo = couponUseInfos.get(0);
