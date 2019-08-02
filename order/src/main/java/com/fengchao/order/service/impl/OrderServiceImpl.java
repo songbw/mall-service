@@ -1,6 +1,5 @@
 package com.fengchao.order.service.impl;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -129,6 +128,14 @@ public class OrderServiceImpl implements OrderService {
         List<OrderCouponMerchantBean> orderCouponMerchants = null;
         if (coupon != null) {
             orderCouponMerchants = coupon.getMerchants();
+            // 预占优惠券
+            boolean couponConsume = occupy(coupon.getId(), coupon.getCode()) ;
+            if (!couponConsume) {
+                // TODO 优惠券预占失败的话，订单失败
+                logger.info("订单" + bean.getId() + "优惠券核销失败");
+            } else {
+                bean.setCouponStatus(2);
+            }
         }
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
@@ -152,13 +159,7 @@ public class OrderServiceImpl implements OrderService {
             }
             // 添加主订单
             orderMapper.insert(bean);
-            // 核销优惠券
-            if (coupon != null) {
-                boolean couponConsume = consume(coupon.getId(), coupon.getCode()) ;
-                if (!couponConsume) {
-                    logger.info("订单" + bean.getId() + "优惠券核销失败");
-                }
-            }
+
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
@@ -180,7 +181,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setUnitPrice(orderSku.getUnitPrice());
                 orderDetailX.setNum(orderSku.getNum());
                 orderDetailX.setCategory(prodIndexWithBLOBs.getCategory());
-                orderDetailX.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100);
+                orderDetailX.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100) ;
 
                 // 添加子订单
                 orderDetailXMapper.insert(orderDetailX) ;
@@ -212,16 +213,30 @@ public class OrderServiceImpl implements OrderService {
     @CachePut(value = "orders", key = "#id")
     @Override
     public Integer cancel(Integer id) {
-        Order order = new Order();
-        order.setId(id);
-        order.setUpdatedAt(new Date());
-        order.setStatus(3);
-        // 更新子订单状态
-        OrderDetail orderDetail = new OrderDetail() ;
-        orderDetail.setOrderId(id);
-        orderDetail.setStatus(4);
-        adminOrderDao.updateOrderDetailStatus(orderDetail) ;
-        orderMapper.updateStatusById(order) ;
+        Orders order = adminOrderDao.selectById(id);
+        if (order != null) {
+            // 更新子订单状态
+            OrderDetail orderDetail = new OrderDetail() ;
+            orderDetail.setOrderId(id);
+            orderDetail.setStatus(4);
+            adminOrderDao.updateOrderDetailStatus(orderDetail) ;
+            // 修改主订单状态和优惠券状态
+            order.setId(id);
+            order.setUpdatedAt(new Date());
+            order.setStatus(3);
+            if (order.getCouponCode() != null && order.getCouponStatus() == 2) {
+                order.setCouponStatus(1);
+            }
+            // 取消订单
+            adminOrderDao.updateStatusAndCouponStatusById(order) ;
+            if (order.getCouponCode() != null) {
+                List<Orders> ordersList = adminOrderDao.selectByCouponIdAndCouponCode(order.getCouponId(),order.getCouponCode(), 2) ;
+                if (ordersList == null || ordersList.size() == 0) {
+                    // TODO 释放优惠券
+                    release(order.getCouponId(), order.getCouponCode()) ;
+                }
+            }
+        }
         return id;
     }
 
@@ -276,10 +291,12 @@ public class OrderServiceImpl implements OrderService {
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
         // 更新子订单状态
-        OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setOrderId(bean.getId());
-        orderDetail.setStatus(4);
-        adminOrderDao.updateOrderDetailStatus(orderDetail);
+        if (bean.getStatus() == 2) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrderId(bean.getId());
+            orderDetail.setStatus(3);
+            adminOrderDao.updateOrderDetailStatus(orderDetail);
+        }
         orderMapper.updateStatusById(bean) ;
         return bean.getId();
     }
@@ -452,6 +469,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
+        // 核销优惠券
+        if (order.getCouponId() != null && order.getCouponId() > 0 && order.getCouponCode() != null && (!"".equals(order.getCouponCode()))) {
+            consume(order.getCouponId(), order.getCouponCode()) ;
+            order.setCouponStatus(3);
+        }
         return orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
     }
 
@@ -618,11 +640,33 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
+    private boolean occupy(int id, String code) {
+        CouponUseInfoBean bean = new CouponUseInfoBean();
+        bean.setUserCouponCode(code);
+        bean.setId(id);
+        OperaResult result = equityService.occupy(bean);
+        if (result.getCode() == 200) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean consume(int id, String code) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
         bean.setUserCouponCode(code);
         bean.setId(id);
         OperaResult result = equityService.consume(bean);
+        if (result.getCode() == 200) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean release(int id, String code) {
+        CouponUseInfoBean bean = new CouponUseInfoBean();
+        bean.setUserCouponCode(code);
+        bean.setId(id);
+        OperaResult result = equityService.release(bean);
         if (result.getCode() == 200) {
             return true;
         }

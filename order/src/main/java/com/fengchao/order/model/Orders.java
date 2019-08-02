@@ -21,6 +21,8 @@ public class Orders {
 
     private Integer couponId;
 
+    private Integer couponStatus;
+
     private String companyCustNo;
 
     private String receiverName;
@@ -167,6 +169,14 @@ public class Orders {
 
     public void setCouponId(Integer couponId) {
         this.couponId = couponId;
+    }
+
+    public Integer getCouponStatus() {
+        return couponStatus;
+    }
+
+    public void setCouponStatus(Integer couponStatus) {
+        this.couponStatus = couponStatus;
     }
 
     public String getCompanyCustNo() {

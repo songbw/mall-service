@@ -18,11 +18,11 @@ public interface EquityServiceClient {
     /**
      * 根据id集合查询活动信息
      *
-     * @param id
+     * @param idList
      * @return
      */
     @RequestMapping(value = "/promotion/findByIdList", method = RequestMethod.GET)
-    OperaResponse<List<PromotionBean>> queryPromotionByIdList(@RequestParam("idList") List<Integer> id);
+    OperaResponse<List<PromotionBean>> queryPromotionByIdList(@RequestParam("idList") List<Integer> idList);
 
     /**
      * 查询所有的活动类型
