@@ -10,20 +10,20 @@ import java.util.List;
  */
 public interface ProductService {
 
-    List<PriceBean> findPrice(QueryCityPrice cityPrice) throws AoyiClientException;
+    OperaResult findPrice(QueryCityPrice cityPrice) ;
 
-    InventoryBean findInventory(QueryInventory inventory) throws AoyiClientException ;
+    OperaResult findInventory(QueryInventory inventory) ;
 
-    FreightFareBean findCarriage(QueryCarriage queryCarriage) throws AoyiClientException ;
+    OperaResult findCarriage(QueryCarriage queryCarriage) ;
 
-    List<CategoryResponse> category() throws AoyiClientException ;
+    OperaResult category() ;
 
-    List<String> getProdSkuPool(Integer categoryId) throws AoyiClientException ;
+    OperaResult getProdSkuPool(Integer categoryId) ;
 
-    List<ProdImage> getProdImage(String skuId) throws AoyiClientException ;
+    OperaResult getProdImage(String skuId) ;
 
-    AoyiProdIndex getProdDetail(String skuId) throws AoyiClientException ;
+    OperaResult getProdDetail(String skuId) ;
 
-    String getSaleStatus(String skuId) throws AoyiClientException ;
+    OperaResult getSaleStatus(String skuId) ;
 
 }

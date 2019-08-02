@@ -223,12 +223,13 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     private boolean confirmOrder(String orderId) {
-        OperaResult result = aoyiClientService.conform(orderId);
+        OperaResponse<Boolean> result = aoyiClientService.conform(orderId);
         if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            return Boolean.parseBoolean(jsonString);
+//            Map<String, Object> data = result.getData() ;
+//            Object object = data.get("result");
+//            String jsonString = JSON.toJSONString(object);
+            boolean flag = result.getData();
+            return flag;
         }
         return false;
     }

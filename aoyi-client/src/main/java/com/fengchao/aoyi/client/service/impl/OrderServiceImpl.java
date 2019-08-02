@@ -23,7 +23,8 @@ public class OrderServiceImpl implements OrderService {
     private static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Override
-    public List<SubOrderT> addOrder(OrderParamBean orderBean) throws AoyiClientException {
+    public OperaResult addOrder(OrderParamBean orderBean) {
+        OperaResult operaResult = new OperaResult();
         ObjectMapper objectMapper1 = new ObjectMapper();
         String msg = "";
         try {
@@ -64,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
                 skus.setSkuId(sku.getSkuId());
                 skus.setNum(sku.getNum() + "");
                 skus.setUnitPrice(sku.getUnitPrice() + "");
-                skus.setSubOrderNo(sku.getSubOrderId());
+                skus.setSubOrderNo(subOrder.getOrderNo() + String.format("%03d", i.getAndIncrement()));
                 subOrder.getAoyiSkus().add(skus);
             });
             orderRequest.getAoyiOrderEntries().add(subOrder);
@@ -80,6 +81,11 @@ public class OrderServiceImpl implements OrderService {
         }
         logger.info("addOrder request is " + jsonString);
         JSONObject r = HttpClient.post(orderRequest, JSONObject.class, object, HttpClient.AOYI_PUSH_ORDER_URL, HttpClient.AOYI_PUSH_ORDER) ;
+        if (r == null) {
+            operaResult.setCode(100011);
+            operaResult.setMsg("创建订单失败");
+            return operaResult;
+        }
         try {
             logger.info("addOrder response is " + objectMapper.writeValueAsString(r));
         } catch (JsonProcessingException e) {
@@ -109,17 +115,28 @@ public class OrderServiceImpl implements OrderService {
                     subOrder.setAoyiSkus(skuses);
                     subOrders.add(subOrder);
                 });
+                operaResult.setData(subOrders);
+                return operaResult;
             } else {
-                throw new AoyiClientException(100011, data.getString("message"));
+                operaResult.setCode(100011);
+                String message = data.getString("message") ;
+                if (message == null || "".equals(message)) {
+                    operaResult.setMsg("创建订单失败");
+                } else {
+                    operaResult.setMsg(message);
+                }
+                return operaResult;
             }
-            return subOrders;
         } else {
-            throw new AoyiClientException(100012, "创建订单失败");
+            operaResult.setCode(100011);
+            operaResult.setMsg("创建订单失败");
+            return operaResult;
         }
     }
 
     @Override
-    public boolean confirmOrder(String orderId) throws AoyiClientException {
+    public OperaResult confirmOrder(String orderId) {
+        OperaResult operaResult = new OperaResult();
         OrderConfirmT orderConfirm = new OrderConfirmT();
         orderConfirm.setOrderNo(orderId);
         orderConfirm.setMerchantNo("20");
@@ -131,18 +148,32 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
         JSONObject r = HttpClient.post(orderConfirm, JSONObject.class, object, HttpClient.AOYI_CONFRIM_ORDER_URL, HttpClient.AOYI_CONFRIM_ORDER) ;
+        if (r == null) {
+            operaResult.setCode(100012);
+            operaResult.setMsg("确认订单失败");
+            return operaResult;
+        }
         logger.info(r.toJSONString());
         String code = r.getString("CODE");
         if ("0".equals(code)) {
             JSONObject data = r.getJSONObject("RESULT");
-            return true;
+            operaResult.setData(true);
+            return operaResult;
         } else {
-            return false;
+            operaResult.setCode(100012);
+            String message = r.getString("message") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("确认订单失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 
     @Override
-    public JSONArray getOrderLogist(QueryLogist queryLogist) throws AoyiClientException {
+    public OperaResult getOrderLogist(QueryLogist queryLogist) {
+        OperaResult operaResult = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         String object = "";
         try {
@@ -151,17 +182,33 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
         JSONObject r = HttpClient.post(queryLogist, JSONObject.class, object, HttpClient.AOYI_ORDER_LOGIST_URL, HttpClient.AOYI_ORDER_LOGIST) ;
+        if (r == null) {
+            operaResult.setCode(100013);
+            operaResult.setMsg("获取物流失败");
+            return operaResult;
+        }
         logger.info(r.toJSONString());
         String code = r.getString("CODE");
         if ("0".equals(code)) {
             JSONObject data = r.getJSONObject("RESULT");
             if (data != null) {
                 JSONArray data1 = data.getJSONArray("data");
-                return data1;
+                operaResult.setData(data1);
+                return operaResult;
+            } else {
+                operaResult.setCode(100013);
+                operaResult.setMsg("获取物流失败");
+                return operaResult;
             }
-            throw new AoyiClientException(100013, "获取物流失败");
         } else {
-            throw new AoyiClientException(100013, "获取物流失败");
+            operaResult.setCode(100013);
+            String message = r.getString("message") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取物流失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 }

@@ -15,7 +15,7 @@ public interface ProductService {
 
     OperaResult findPrice(PriceQueryBean queryBean) throws ProductException ;
 
-    List<InventoryBean> findInventory(InventoryQueryBean queryBean) throws ProductException ;
+    OperaResult findInventory(InventoryQueryBean queryBean) ;
 
     List<FreightFareBean> findCarriage(CarriageQueryBean queryBean) throws ProductException ;
 

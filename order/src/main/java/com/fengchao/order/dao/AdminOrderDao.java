@@ -34,6 +34,23 @@ public class AdminOrderDao {
     }
 
     /**
+     * 根据orders的id集合查询 订单列表
+     *
+     * @param orderIdList
+     * @return
+     */
+    public List<Orders> selectOrdersListByIdList(List<Integer> orderIdList) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+
+        criteria.andIdIn(orderIdList);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
+
+    /**
      * 查询需要导出的订单主表信息
      *
      * @param orders
@@ -94,6 +111,24 @@ public class AdminOrderDao {
     }
 
     /**
+     * 按照创建时间范围，查询子订单集合
+     *
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByCreateTimeRange(Date startDateTime, Date endDateTime) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andCreatedAtBetween(startDateTime, endDateTime);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
+    /**
      * 根据支付单号查询已支付列表
      * @param paymentNo
      * @return
@@ -119,6 +154,34 @@ public class AdminOrderDao {
         criteria.andOpenIdEqualTo(openId) ;
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample) ;
         return ordersList;
+    }
+
+    /**
+     * 更新子订单状态
+     * @param orderDetail
+     */
+    public void updateOrderDetailStatus(OrderDetail orderDetail) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdEqualTo(orderDetail.getOrderId()) ;
+        orderDetailMapper.updateByExampleSelective(orderDetail, orderDetailExample) ;
+    }
+
+    /**
+     * 更新子订单
+     * @param orderDetail
+     * @return
+     */
+    public Integer updateOrderDetail(OrderDetail orderDetail) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        OrderDetail temp = new OrderDetail() ;
+        temp.setId(orderDetail.getId());
+        temp.setRemark(orderDetail.getRemark());
+        temp.setUpdatedAt(new Date());
+        criteria.andIdEqualTo(temp.getId()) ;
+        orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
+        return orderDetail.getId() ;
     }
 
 }

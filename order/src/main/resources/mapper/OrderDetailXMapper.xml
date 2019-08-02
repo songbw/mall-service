@@ -216,7 +216,8 @@
     update order_detail
     set logistics_id = #{logisticsId,jdbcType=VARCHAR},
         logistics_content = #{logisticsContent,jdbcType=VARCHAR},
-        comcode = null
+        comcode = #{comCode},
+        status = #{status}
     where sub_order_id = #{subOrderId,jdbcType=VARCHAR}
     and order_id = #{orderId,jdbcType=INTEGER}
   </update>

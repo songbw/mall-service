@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class AoyiBaseBrand implements Serializable {
     private Integer brandId;
@@ -21,7 +22,7 @@ public class AoyiBaseBrand implements Serializable {
 
     private Boolean isShow;
 
-    private String addTime;
+    private Date addTime;
 
     private String brandDesc;
 
@@ -97,12 +98,12 @@ public class AoyiBaseBrand implements Serializable {
         this.isShow = isShow;
     }
 
-    public String getAddTime() {
+    public Date getAddTime() {
         return addTime;
     }
 
-    public void setAddTime(String addTime) {
-        this.addTime = addTime == null ? null : addTime.trim();
+    public void setAddTime(Date addTime) {
+        this.addTime = addTime;
     }
 
     public String getBrandDesc() {

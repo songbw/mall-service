@@ -1,12 +1,14 @@
 package com.fengchao.order.bean;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 public class OrderDetailBean implements Serializable {
 
     private Integer id;
@@ -39,10 +41,12 @@ public class OrderDetailBean implements Serializable {
     private Float servFee;
     private Float amount;
     private Integer status;
+    private Integer subStatus;
     private Integer type;
     private Date createdAt;
     private Date updatedAt;
     private String skuId;
+    private String mpu;
     private Integer num;
     private BigDecimal unitPrice;
     private String image;
@@ -74,4 +78,13 @@ public class OrderDetailBean implements Serializable {
     private Integer promotionId;
     private BigDecimal promotionDiscount;
     private Float saleAmount;
+    private Float salePrice;
+
+
+    /**
+     * 品类
+     */
+    private String category;
+    private Integer skuCouponDiscount ;
+    private String comcode ;
 }

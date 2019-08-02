@@ -16,10 +16,7 @@ import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
-import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -48,7 +45,6 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryService categoryService;
 
-    @Cacheable(value = "aoyiProdIndex")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
@@ -94,6 +90,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public OperaResult findPrice(PriceQueryBean queryBean) throws ProductException {
+        OperaResult operaResult = new OperaResult();
         List<PriceSkus> list = new ArrayList<>();
         QueryCityPrice cityPrice = new QueryCityPrice();
         cityPrice.setCityId(queryBean.getCityId());
@@ -103,11 +100,16 @@ public class ProductServiceImpl implements ProductService {
             list.add(priceSkus) ;
         });
         cityPrice.setSkus(list);
-        return aoyiClientService.price(cityPrice);
+        OperaResponse operaResponse = aoyiClientService.price(cityPrice);
+        operaResult.setCode(operaResponse.getCode());
+        operaResult.setMsg(operaResponse.getMsg());
+        operaResult.getData().put("result", operaResponse.getData()) ;
+        return operaResult;
     }
 
     @Override
-    public List<InventoryBean> findInventory(InventoryQueryBean queryBean) throws ProductException {
+    public OperaResult findInventory(InventoryQueryBean queryBean) {
+        OperaResult operaResult = new OperaResult();
         List<InventoryBean> inventoryBeans = new ArrayList<>() ;
         for (InventoryBean sku : queryBean.getSkus()) {
             QueryInventory inventory = new QueryInventory();
@@ -119,34 +121,33 @@ public class ProductServiceImpl implements ProductService {
             inventorySkus.setSkuId(sku.getSkuId());
             ilist.add(inventorySkus);
             inventory.setSkuIds(ilist);
-            OperaResult operaResult = aoyiClientService.inventory(inventory);
-            Map result = (Map) operaResult.getData().get("result");
-            InventoryBean inventoryBean = new InventoryBean();
-            inventoryBean.setSkuId((String) result.get("skuId"));
-            inventoryBean.setState((String) result.get("state"));
-            inventoryBean.setPrice((String) result.get("price"));
-            inventoryBean.setRemainNum(sku.getRemainNum());
-            inventoryBeans.add(inventoryBean);
+            OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
+            InventoryBean inventoryBean = operaResponse.getData();
+            if (inventoryBean != null) {
+                inventoryBean.setSkuId(sku.getSkuId());
+                inventoryBean.setRemainNum(sku.getRemainNum());
+                inventoryBeans.add(inventoryBean);
+            }
         }
-        return inventoryBeans;
+        operaResult.getData().put("result", inventoryBeans) ;
+        return operaResult;
     }
 
     @Override
     public List<FreightFareBean> findCarriage(CarriageQueryBean queryBean) throws ProductException {
+        OperaResult operaResult = new OperaResult();
         List<FreightFareBean> freightFareBeans = new ArrayList<>();
         List<CarriageParam> params = queryBean.getCarriages();
         for (CarriageParam param : params) {
-            FreightFareBean freightFareBean = new FreightFareBean();
             QueryCarriage carriage = new QueryCarriage();
             carriage.setAmount(param.getAmount());
             carriage.setMerchantNo(param.getMerchantNo());
             carriage.setOrderNo(queryBean.getOrderId());
-            OperaResult operaResult = aoyiClientService.shipCarriage(carriage);
-            Map result = (Map) operaResult.getData().get("result");
-            freightFareBean.setFreightFare((String) result.get("freightFare"));
-            freightFareBean.setMerchantNo((String) result.get("merchantNo"));
-            freightFareBean.setOrderNo((String) result.get("orderNo"));
-            freightFareBeans.add(freightFareBean);
+            OperaResponse<FreightFareBean> operaResponse = aoyiClientService.shipCarriage(carriage);
+            FreightFareBean freightFareBean = operaResponse.getData();
+            if (freightFareBean != null) {
+                freightFareBeans.add(freightFareBean);
+            }
         }
         return freightFareBeans;
 
@@ -169,7 +170,6 @@ public class ProductServiceImpl implements ProductService {
         return aoyiProdIndexX;
     }
 
-    @Cacheable(value = "aoyiProdIndex")
     @Override
     public List<AoyiProdIndexX> findAll() throws ProductException {
         HashMap map = new HashMap();
@@ -235,7 +235,6 @@ public class ProductServiceImpl implements ProductService {
         return infoBean;
     }
 
-    @Cacheable(value = "productInfoBean")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception {

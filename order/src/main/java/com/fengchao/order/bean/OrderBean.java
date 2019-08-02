@@ -3,6 +3,10 @@ package com.fengchao.order.bean;
 import com.fengchao.order.model.OrderDetailX;
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
@@ -33,4 +37,5 @@ public class OrderBean implements Serializable {
     private String payDateStart;
     private String payDateEnd;
     private Integer merchantId;
+    private Integer subStatus;
 }

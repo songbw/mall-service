@@ -43,8 +43,5 @@
         <table tableName="promotion_type">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
-        <table tableName="promotion">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
     </context>
 </generatorConfiguration>

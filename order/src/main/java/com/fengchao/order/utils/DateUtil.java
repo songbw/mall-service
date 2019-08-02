@@ -35,11 +35,11 @@ public class DateUtil {
      *
      * @param originDate
      * @param originFormat
-     * @param seocndsToAdd
+     * @param secondsToAdd
      * @param newFormat
      * @return
      */
-    public static String calcMinute(String originDate, String originFormat, long seocndsToAdd, String newFormat) {
+    public static String calcSecond(String originDate, String originFormat, long secondsToAdd, String newFormat) {
         String formatDate = "";
 
         if (StringUtils.isNotBlank(originDate)) {
@@ -47,7 +47,34 @@ public class DateUtil {
             LocalDateTime localDateTime = LocalDateTime.parse(originDate, DateTimeFormatter.ofPattern(originFormat));
 
             // 计算分钟
-            LocalDateTime _localDateTime = localDateTime.plusSeconds(seocndsToAdd);
+            LocalDateTime _localDateTime = localDateTime.plusSeconds(secondsToAdd);
+
+
+            // 将计算完的日期转换成需要的格式
+            formatDate = _localDateTime.format(DateTimeFormatter.ofPattern(newFormat));
+        }
+
+        return formatDate;
+    }
+
+    /**
+     * 将一个日期加上或减去 daysToAdd 妙数,得出新的日期
+     *
+     * @param originDate
+     * @param originFormat
+     * @param daysToAdd
+     * @param newFormat
+     * @return
+     */
+    public static String calcDay(String originDate, String originFormat, long daysToAdd, String newFormat) {
+        String formatDate = "";
+
+        if (StringUtils.isNotBlank(originDate)) {
+            // 将原始的日期转换成localDate
+            LocalDateTime localDateTime = LocalDateTime.parse(originDate, DateTimeFormatter.ofPattern(originFormat));
+
+            // 计算天数
+            LocalDateTime _localDateTime = localDateTime.plusDays(daysToAdd);
 
 
             // 将计算完的日期转换成需要的格式
@@ -161,7 +188,7 @@ public class DateUtil {
      * @return
      */
     public static Long diffMinutes(String startDateTime, String startDateTimeFormat,
-                               String endDateTime, String endDateTimeFormat) {
+                                   String endDateTime, String endDateTimeFormat) {
         LocalDateTime start = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern(startDateTimeFormat));
         LocalDateTime end = LocalDateTime.parse(endDateTime, DateTimeFormatter.ofPattern(endDateTimeFormat));
 
@@ -191,5 +218,19 @@ public class DateUtil {
         return diff;
     }
 
+    /**
+     * 转 Date
+     *
+     * @param dateTime
+     * @param dateTimeFormat
+     * @return
+     */
+    public static Date parseDateTime(String dateTime, String dateTimeFormat) {
+        LocalDateTime _localDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern(dateTimeFormat));
+        Instant instant = _localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        Date date = Date.from(instant);
+
+        return date;
+    }
 
 }

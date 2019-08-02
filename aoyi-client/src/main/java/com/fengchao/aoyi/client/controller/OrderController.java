@@ -18,19 +18,18 @@ public class OrderController {
 
     @GetMapping("/conform")
     private OperaResult conform(String orderId, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.confirmOrder(orderId)) ;
+        result.setData(service.confirmOrder(orderId)) ;
         return result;
     }
 
     @PostMapping("/logist")
     private OperaResult logist(@RequestBody QueryLogist queryLogist, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.getOrderLogist(queryLogist)) ;
+        result.setData(service.getOrderLogist(queryLogist)) ;
         return result;
     }
 
     @PostMapping
     private OperaResult create(@RequestBody OrderParamBean orderParamBean, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.addOrder(orderParamBean)) ;
-        return result;
+        return service.addOrder(orderParamBean);
     }
 }

@@ -12,7 +12,15 @@ public class PromotionBean extends QueryBean {
 
     private String name;
 
+    /**
+     * 优惠方式（0：减价， 1：折扣）
+     */
     private Integer discountType;
+
+    /**
+     * 活动类型 1:秒杀 2:优选 3:普通
+     */
+    private String typeName;
 
     private Long promotionTypeId;
 

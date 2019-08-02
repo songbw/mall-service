@@ -22,7 +22,23 @@ public class JobClientUtils {
         job.setTaskTrackerNodeGroup("order_cancel_trade_TaskTracker");
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
-        job.setTriggerTime(DateUtils.addMinute(new Date(), 30).getTime());   // 1 小时之后执行
+        job.setTriggerTime(DateUtils.addMinute(new Date(), 30).getTime());   // 30 分钟之后执行
+        jobClient.submitJob(job);
+    }
+
+    /**
+     * 定时完成订单任务
+     * @param id
+     */
+    public static void subOrderFinishTrigger(JobClient jobClient, Integer id) {
+        Job job = new Job();
+        job.setTaskId("sub_order_finish_trigger_" + id);
+        job.setParam("type", "subOrderFinish");
+        job.setParam("orderId", id + "");
+        job.setTaskTrackerNodeGroup("order_cancel_trade_TaskTracker");
+        job.setNeedFeedback(true);
+        job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
+        job.setTriggerTime(DateUtils.addDay(new Date(), 15).getTime());   // 15 天之后执行
         jobClient.submitJob(job);
     }
 }

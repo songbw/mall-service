@@ -7,13 +7,11 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.dao.PromotionDao;
+import com.fengchao.equity.dao.PromotionTypeDao;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.PromotionXMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
-import com.fengchao.equity.model.AoyiProdIndex;
-import com.fengchao.equity.model.Promotion;
-import com.fengchao.equity.model.PromotionX;
-import com.fengchao.equity.model.PromotionMpu;
+import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
@@ -24,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,6 +40,9 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Autowired
     private PromotionDao promotionDao;
+
+    @Autowired
+    private PromotionTypeDao promotionTypeDao;
 
     @Override
     public int effective(int promotionId) {
@@ -273,11 +276,23 @@ public class PromotionServiceImpl implements PromotionService {
         List<Promotion> promotionList = promotionDao.selectPromotionListByIdList(promotionIdList);
         log.info("查询活动列表 根据id集合查询 获取到数据库返回:{}", JSONUtil.toJsonString(promotionList));
 
+        // 获取活动的类型
+        List<Long> promotionTypeIdList = promotionList.stream().map(p -> p.getPromotionTypeId()).collect(Collectors.toList());
+        log.info("查询活动列表 - 获取活动类型 数据库入参:{}", JSONUtil.toJsonString(promotionTypeIdList));
+        List<PromotionType> promotionTypeList = promotionTypeDao.selectPromotionTypesByIdList(promotionTypeIdList);
+        log.info("查询活动列表 - 获取活动类型 数据库返回:{}", JSONUtil.toJsonString(promotionTypeList));
+        // 转map key:promotionTypeId, value:PromotionType
+        Map<Long, PromotionType> promotionTypeMap = promotionTypeList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
 
         // 转dto
         List<PromotionBean> promotionBeanList = new ArrayList<>();
         for (Promotion promotion : promotionList) {
             PromotionBean promotionBean = convertToPromotionBean(promotion);
+            // 设置‘活动类型’
+            promotionBean.setTypeName(promotionTypeMap.get(promotion.getPromotionTypeId()) == null ?
+                    "" : promotionTypeMap.get(promotion.getPromotionTypeId()).getTypeName());
+
+
             promotionBeanList.add(promotionBean);
         }
 
@@ -294,7 +309,7 @@ public class PromotionServiceImpl implements PromotionService {
         promotionBean.setId(promotion.getId());
         promotionBean.setName(promotion.getName());
         // promotionBean.setTag(promotion.getTag());
-//        promotionBean.setPromotionType(promotion.getDiscountType());
+        promotionBean.setDiscountType(promotion.getDiscountType());
         promotionBean.setStatus(promotion.getStatus());
         // promotionBean.setStartDate(promotion.getStartDate());
         // promotionBean.setEndDate(promotion.getEndDate());

@@ -18,6 +18,14 @@ public class AdminBrandController {
 
     @GetMapping("brandList")
     public OperaResult findBrandList(Integer offset, Integer limit, OperaResult result){
+        if (offset < 0) {
+            offset = 1;
+        }
+        if (limit > 100) {
+            result.setCode(200500);
+            result.setMsg("limit 不能大于100");
+            return result;
+        }
         PageBean brand = brandService.findBrandList(offset,limit);
         result.getData().put("result",brand);
         return result;
@@ -31,7 +39,7 @@ public class AdminBrandController {
 
     @PostMapping
     public OperaResult create(@RequestBody AoyiBaseBrand bean, OperaResult result){
-        result.getData().put("result",brandService.updateBrandbyId(bean));
+        result.getData().put("result",brandService.create(bean));
         return result;
     }
 
@@ -43,6 +51,14 @@ public class AdminBrandController {
 
     @GetMapping("search")
     public OperaResult search(Integer offset, Integer limit, String query, OperaResult result){
+        if (offset < 0) {
+            offset = 1;
+        }
+        if (limit > 100) {
+            result.setCode(200500);
+            result.setMsg("limit 不能大于100");
+            return result;
+        }
         PageBean  category = brandService.selectNameList(offset,limit,query);
         result.getData().put("result", category) ;
         return result;

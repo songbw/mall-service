@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("serial")
-public class OperaResult implements Serializable {
+public class OperaResult<T> implements Serializable {
 	
 	// 结果码
 	private Integer code = 200;
@@ -13,7 +13,7 @@ public class OperaResult implements Serializable {
 	private String msg = "Success";
 	
 	//封装的对象
-	private Map<String,Object> data = new HashMap<String,Object>();
+	private T data;
 	
 	public Integer getCode() {
 		return code;
@@ -31,12 +31,11 @@ public class OperaResult implements Serializable {
 		this.msg = msg;
 	}
 
-	public Map<String, Object> getData() {
+	public T getData() {
 		return data;
 	}
 
-	public void setData(Map<String, Object> data) {
+	public void setData(T data) {
 		this.data = data;
 	}
-	
 }

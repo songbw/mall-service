@@ -21,8 +21,7 @@ public class ProductController {
 
     @PostMapping("/price")
     private OperaResult price(@RequestBody QueryCityPrice queryBean, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.findPrice(queryBean)) ;
-        return result;
+        return service.findPrice(queryBean);
     }
 
     /**
@@ -33,8 +32,7 @@ public class ProductController {
      */
     @PostMapping("/inventory")
     private OperaResult inventory(@RequestBody QueryInventory queryBean, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.findInventory(queryBean)) ;
-        return result;
+        return service.findInventory(queryBean);
     }
 
     /**
@@ -45,38 +43,32 @@ public class ProductController {
      */
     @PostMapping("/carriage")
     private OperaResult shipCarriage(@RequestBody QueryCarriage queryBean, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.findCarriage(queryBean)) ;
-        return result;
+        return service.findCarriage(queryBean);
     }
 
     @GetMapping("/category")
     private OperaResult category(OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.category()) ;
-        return result;
+        return service.category();
     }
 
     @GetMapping("/skus")
     private OperaResult prodSkus(Integer categoryId, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.getProdSkuPool(categoryId)) ;
-        return result;
+        return service.getProdSkuPool(categoryId);
     }
 
     @GetMapping("/image")
     private OperaResult image(String skuId, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.getProdImage(skuId)) ;
-        return result;
+        return service.getProdImage(skuId);
     }
 
     @GetMapping("/detail")
     private OperaResult detail(String skuId, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.getProdDetail(skuId)) ;
-        return result;
+        return service.getProdDetail(skuId);
     }
 
     @GetMapping("/status")
     private OperaResult status(String skuId, OperaResult result) throws AoyiClientException {
-        result.getData().put("result", service.getSaleStatus(skuId)) ;
-        return result;
+        return service.getSaleStatus(skuId);
     }
 
 }

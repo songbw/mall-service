@@ -28,7 +28,8 @@ public class ProductServiceImpl implements ProductService {
     private static Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Override
-    public List<PriceBean> findPrice(QueryCityPrice cityPrice) throws AoyiClientException {
+    public OperaResult findPrice(QueryCityPrice cityPrice) {
+        OperaResult operaResult = new OperaResult();
         List<PriceBean> priceBeans = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
         String object = "";
@@ -38,26 +39,47 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
         JSONObject r = HttpClient.post(cityPrice, JSONObject.class, object, HttpClient.AOYI_PRODUCT_PRICE_URL, HttpClient.AOYI_PRODUCT_PRICE) ;
-        logger.info(r.toJSONString());
-        String code = r.getString("CODE");
-        if ("0".equals(code)) {
-            JSONObject data = r.getJSONObject("RESULT");
-            JSONArray skus = data.getJSONArray("skus");
-            skus.forEach(price -> {
-                JSONObject p = (JSONObject) price;
-                PriceBean priceBean = new PriceBean();
-                priceBean.setSkuId(p.getString("skuId"));
-                priceBean.setPrice(p.getString("price"));
-                priceBeans.add(priceBean);
-            });
-            return priceBeans;
-        } else {
-            throw new AoyiClientException(100001, "获取价格失败");
+        if (r != null) {
+            logger.info(r.toJSONString());
+            String code = r.getString("CODE");
+            if ("0".equals(code)) {
+                JSONObject data = r.getJSONObject("RESULT");
+                JSONArray skus = data.getJSONArray("skus");
+                if (skus != null) {
+                    skus.forEach(price -> {
+                        JSONObject p = (JSONObject) price;
+                        PriceBean priceBean = new PriceBean();
+                        priceBean.setSkuId(p.getString("skuId"));
+                        priceBean.setPrice(p.getString("price"));
+                        priceBeans.add(priceBean);
+                    });
+                    operaResult.setData(priceBeans);
+                    return operaResult;
+                }else {
+                    operaResult.setCode(100001);
+                    operaResult.setMsg("获取价格返回值为空");
+                    return operaResult;
+                }
+            } else {
+                operaResult.setCode(100001);
+                String message = r.getString("MESSAGE") ;
+                if (message == null || "".equals(message)) {
+                    operaResult.setMsg("获取价格失败");
+                } else {
+                    operaResult.setMsg(message);
+                }
+                return operaResult;
+            }
+        } else  {
+            operaResult.setCode(100001);
+            operaResult.setMsg("获取价格失败");
+            return operaResult;
         }
     }
 
     @Override
-    public InventoryBean findInventory(QueryInventory inventory) throws AoyiClientException {
+    public OperaResult findInventory(QueryInventory inventory) {
+        OperaResult operaResult = new OperaResult();
         InventoryBean inventoryBean = new InventoryBean();
         ObjectMapper objectMapper = new ObjectMapper();
         String object = "";
@@ -67,21 +89,45 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
         JSONObject r = HttpClient.post(inventory, JSONObject.class, object, HttpClient.AOYI_PRODUCT_STOCK_URL, HttpClient.AOYI_PRODUCT_STOCK) ;
+        if (r == null) {
+            operaResult.setCode(100002);
+            operaResult.setMsg("获取库存失败");
+            return operaResult;
+        }
         logger.info(r.toJSONString());
         String code = r.getString("CODE");
         if ("0".equals(code)) {
             JSONObject data = r.getJSONObject("RESULT");
-            inventoryBean.setSkuId(data.getString("skuIds"));
-            inventoryBean.setState(data.getString("state"));
-            inventoryBean.setRemainNum(data.getString("remainNum"));
-            return inventoryBean;
+            if (data != null) {
+                inventoryBean.setSkuId(data.getString("skuIds"));
+                if (data.getString("state") == null) {
+                    inventoryBean.setState("0");
+                } else {
+                    inventoryBean.setState(data.getString("state"));
+                }
+                inventoryBean.setRemainNum(data.getString("remainNum"));
+                operaResult.setData(inventoryBean);
+                return operaResult;
+            } else {
+                operaResult.setCode(100002);
+                operaResult.setMsg("获取库存返回值为空");
+                return operaResult;
+            }
         } else {
-            throw new AoyiClientException(100002, "获取库存失败");
+            operaResult.setCode(100002);
+            String message = r.getString("MESSAGE") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取库存失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 
     @Override
-    public FreightFareBean findCarriage(QueryCarriage queryCarriage) throws AoyiClientException {
+    public OperaResult findCarriage(QueryCarriage queryCarriage) {
+        OperaResult operaResult = new OperaResult();
         FreightFareBean freightFareBean = new FreightFareBean();
         ObjectMapper objectMapper = new ObjectMapper();
         String object = "";
@@ -91,6 +137,11 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
         JSONObject r = HttpClient.post(queryCarriage, JSONObject.class, object, HttpClient.AOYI_FREIGHTFARE_URL, HttpClient.AOYI_FREIGHTFARE) ;
+        if (r == null) {
+            operaResult.setCode(100003);
+            operaResult.setMsg("获取运费失败");
+            return operaResult;
+        }
         logger.info(r.toJSONString());
         String code = r.getString("CODE");
         if ("0".equals(code)) {
@@ -98,16 +149,30 @@ public class ProductServiceImpl implements ProductService {
             freightFareBean.setFreightFare(data.getString("freightFare"));
             freightFareBean.setMerchantNo(queryCarriage.getMerchantNo());
             freightFareBean.setOrderNo(data.getString("orderNo"));
-            return freightFareBean;
+            operaResult.setData(freightFareBean);
+            return operaResult;
         } else {
-            throw new AoyiClientException(100003, "获取运费失败");
+            operaResult.setCode(100003);
+            String message = r.getString("MESSAGE") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取运费失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 
     @Override
-    public List<CategoryResponse> category() throws AoyiClientException {
+    public OperaResult category() {
+        OperaResult operaResult = new OperaResult();
         List<CategoryResponse> responses = new ArrayList<>();
         JSONObject bean = HttpClient.get("", JSONObject.class, HttpClient.AOYI_CATEGORY_GETVALIDCATEGORY_URL, HttpClient.AOYI_CATEGORY_GETVALIDCATEGORY) ;
+        if (bean == null) {
+            operaResult.setCode(100004);
+            operaResult.setMsg("获取类别失败");
+            return operaResult;
+        }
         logger.info(bean.toJSONString());
         String code = bean.getString("CODE");
         if ("0".equals(code)) {
@@ -119,17 +184,31 @@ public class ProductServiceImpl implements ProductService {
                 categoryResponse.setCategoryName(o.getString("categoryName"));
                 responses.add(categoryResponse);
             });
-            return responses;
+            operaResult.setData(responses);
+            return operaResult;
         } else {
-            throw new AoyiClientException(100004, "获取类别失败");
+            operaResult.setCode(100004);
+            String message = bean.getString("MESSAGE") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取类别失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 
     @Override
-    public List<String> getProdSkuPool(Integer categoryId) throws AoyiClientException {
+    public OperaResult getProdSkuPool(Integer categoryId){
+        OperaResult operaResult = new OperaResult();
         List<String> responses = new ArrayList<>();
         String object = "{\"categoryId\":\"" + categoryId + "\"}";
         JSONObject r = HttpClient.post(object, JSONObject.class, object, HttpClient.AOYI_PRODPOOL_GETPRODUCTINFO_RUL, HttpClient.AOYI_PRODPOOL_GETPRODUCTINFO) ;
+        if (r == null) {
+            operaResult.setCode(100005);
+            operaResult.setMsg("获取产品列表失败");
+            return operaResult;
+        }
         logger.info(r.toJSONString());
         String code = r.getString("CODE");
         if ("0".equals(code)) {
@@ -138,17 +217,31 @@ public class ProductServiceImpl implements ProductService {
                 JSONObject o = (JSONObject) category;
                 responses.add(o.getString("productSku"));
             });
-            return responses;
+            operaResult.setData(responses);
+            return operaResult;
         } else {
-            throw new AoyiClientException(100005, "获取产品列表失败");
+            operaResult.setCode(100005);
+            String message = r.getString("MESSAGE") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取产品列表失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 
     @Override
-    public List<ProdImage> getProdImage(String skuId) throws AoyiClientException {
+    public OperaResult getProdImage(String skuId) {
+        OperaResult operaResult = new OperaResult();
         List<ProdImage> responses = new ArrayList<>();
         String object = "{\"productSku\": " + skuId + "}";
         JSONObject r = HttpClient.post(object, JSONObject.class, object, HttpClient.AOYI_PRODPOOL_GETPRODIMAGE_URL, HttpClient.AOYI_PRODPOOL_GETPRODIMAGE) ;
+        if (r == null) {
+            operaResult.setCode(100006);
+            operaResult.setMsg("获取产品图片失败");
+            return operaResult;
+        }
         logger.info(r.toJSONString());
         String code = r.getString("CODE");
         if ("0".equals(code)) {
@@ -173,17 +266,31 @@ public class ProductServiceImpl implements ProductService {
                     responses.add(prodImage);
                 });
             }
-            return responses;
+            operaResult.setData(responses);
+            return operaResult;
         } else {
-            throw new AoyiClientException(100006, "获取产品图片失败");
+            operaResult.setCode(100006);
+            String message = r.getString("MESSAGE") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取产品图片失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 
     @Override
-    public AoyiProdIndex getProdDetail(String skuId) throws AoyiClientException {
+    public OperaResult getProdDetail(String skuId) {
+        OperaResult operaResult = new OperaResult();
         List<AoyiProdIndex> responses = new ArrayList<>();
         String object = "{\"productSku\":\"" + skuId + "\"}";
         JSONObject r = HttpClient.post(object, JSONObject.class, object, HttpClient.AOYI_PRODPOOL_GETPRODUCTDETAILINFO_URL, HttpClient.AOYI_PRODPOOL_GETPRODUCTDETAILINFO) ;
+        if (r == null) {
+            operaResult.setCode(100007);
+            operaResult.setMsg("获取产品详情失败");
+            return operaResult;
+        }
         logger.info(r.toJSONString());
         String code = r.getString("CODE");
         if ("0".equals(code)) {
@@ -203,7 +310,8 @@ public class ProductServiceImpl implements ProductService {
             prodIndex.setProdParams(data.getString("prodParams"));
             String zturl = "";
             String xqurl = "";
-            List<ProdImage> prodImages = getProdImage(skuId);
+            OperaResult imageResult = getProdImage(skuId) ;
+            List<ProdImage> prodImages = (List<ProdImage>) imageResult.getData();
             for (int i = 0; i < prodImages.size(); i++) {
                 ProdImage prodImage = prodImages.get(i) ;
                 String path = "/"+ prodIndex.getCategory() + "/"+ skuId + "/";
@@ -239,24 +347,46 @@ public class ProductServiceImpl implements ProductService {
             }
             prodIndex.setIntroductionUrl(xqurl);
             prodIndex.setImagesUrl(zturl);
-            return prodIndex;
+            operaResult.setData(prodIndex);
+            return operaResult;
         } else {
-            throw new AoyiClientException(100007, "获取产品详情失败");
+            operaResult.setCode(100007);
+            String message = r.getString("MESSAGE") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取产品详情失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 
     @Override
-    public String getSaleStatus(String skuId) throws AoyiClientException {
+    public OperaResult getSaleStatus(String skuId) {
+        OperaResult operaResult = new OperaResult();
         List<ProdImage> responses = new ArrayList<>();
         String object = "{\"productSku\":" + skuId + "}";
         JSONObject r = HttpClient.post(object, JSONObject.class, object, HttpClient.AOYI_PRODPOOL_GETBATCHPRODSALESTATUS_URL, HttpClient.AOYI_PRODPOOL_GETBATCHPRODSALESTATUS) ;
+        if (r == null) {
+            operaResult.setCode(100008);
+            operaResult.setMsg("获取上下架状态失败");
+            return operaResult;
+        }
         String code = r.getString("CODE");
         logger.info(r.toJSONString());
         if ("0".equals(code)) {
             JSONObject result = r.getJSONObject("RESULT") ;
-            return result.getString("status");
+            operaResult.setData(result.getString("status"));
+            return operaResult;
         } else {
-            throw new AoyiClientException(100007, "获取上下架状态失败");
+            operaResult.setCode(100008);
+            String message = r.getString("MESSAGE") ;
+            if (message == null || "".equals(message)) {
+                operaResult.setMsg("获取上下架状态失败");
+            } else {
+                operaResult.setMsg(message);
+            }
+            return operaResult;
         }
     }
 }
