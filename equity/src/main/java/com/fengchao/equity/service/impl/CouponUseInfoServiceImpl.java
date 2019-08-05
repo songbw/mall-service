@@ -85,7 +85,6 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             couponUseInfo.setCollectedTime(new Date());
             couponUseInfo.setUserCouponCode(user_coupon_code);
             couponUseInfo.setUrl(url);
-            couponUseInfo.setType(1);
             num = mapper.insertSelective(couponUseInfo);
             couponUseInfoBean.setUserCouponCode(user_coupon_code);
         }else if(coupon.getCollectType() == 4){
