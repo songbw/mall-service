@@ -13,6 +13,19 @@ import java.util.Map;
 public interface MerchantStatisticService {
 
     /**
+     * 每天 统计各个商户的整体运营数据，目前包括:
+     * 订单支付总额, 订单总量, 下单人数, 退货人数
+     *
+     * @param payedOrderDetailBeanList 需要统计的原始数据-已支付的订单详情
+     * @param startDateTime
+     * @param endDateTime
+     * @throws Exception
+     */
+    void statisticOverall(List<OrderDetailBean> payedOrderDetailBeanList,
+                          String startDateTime,
+                          String endDateTime) throws Exception;
+
+    /**
      * 每天 按照商户-城市的维度，统计订单支付总额
      *
      * @param payedOrderDetailBeanList 需要统计的原始数据-已支付的订单详情

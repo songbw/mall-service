@@ -4,6 +4,7 @@ import com.fengchao.statistics.bean.vo.MerchantCityRangeStatisticResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MCityOrderAmountDao;
 import com.fengchao.statistics.model.MCityOrderamount;
+import com.fengchao.statistics.model.MOverview;
 import com.fengchao.statistics.rpc.VendorsRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import com.fengchao.statistics.rpc.extmodel.SysCompany;
@@ -34,18 +35,68 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
     private MCityOrderAmountDao mCityOrderAmountDao;
 
     @Override
-    public void statisticDailyOrderAmoutByCity(List<OrderDetailBean> orderDetailBeanList, String startDateTime, String endDateTime) throws Exception {
+    public void statisticOverall(List<OrderDetailBean> payedOrderDetailBeanList, String startDateTime, String endDateTime) throws Exception {
         // 1. 根据商户id维度将订单详情分类
-        Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = new HashMap<>();
-        for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
-            Integer merchantId = orderDetailBean.getMerchantId(); // 商户id
+        Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = divideOrderDetailByMerchantId(payedOrderDetailBeanList);
+
+        log.info("");
+
+        // 2. 获取商户名称
+        Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
+        List<SysCompany> sysCompanyList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
+        // 转map key:merchantId  value:SysUser
+        Map<Integer, SysCompany> sysCompanyMap = sysCompanyList.stream()
+                .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
+
+        // 3. 组装统计数据 :
+        // 3.1 订单支付总额, 订单总量, 下单人数,
+        List<MOverview> mOverviewList = new ArrayList<>();
+        for (Integer merchantId : merchantIdSet) { // 遍历以商户为维度的数据map
+            // 某商户下的订单详情集合
             List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);
-            if (_orderDetailBeanList == null) {
-                _orderDetailBeanList = new ArrayList<>();
-                orderDetailBeansByMerchantMap.put(merchantId, _orderDetailBeanList);
+
+
+            Set<String> orderTradeNoSet = new HashSet<>(); // 主订单tradeNo集合
+            BigDecimal orderAmountB = new BigDecimal(0); // 订单总金额
+
+
+            for (OrderDetailBean _orderDetailBean : _orderDetailBeanList) {
+                if (_orderDetailBean.getTradeNo() != null) {
+                    orderTradeNoSet.add(_orderDetailBean.getTradeNo());
+                }
+
+
+                Float saleAmount = _orderDetailBean.getSaleAmount();
+                if (saleAmount != null) {
+                    orderAmountB = orderAmountB.add(new BigDecimal(saleAmount));
+                }
             }
-            _orderDetailBeanList.add(orderDetailBean);
+
+            // 组装统计数据
+            MOverview mOverview = new MOverview();
+            mOverview.setMerchantId(merchantId);
+            mOverview.setMerchantCode("");
+            mOverview.setMerchantName(sysCompanyMap.get(merchantId) == null ?
+                    "/" : sysCompanyMap.get(merchantId).getName());
+            mOverview.setOrderAmount(orderAmountB.multiply(new BigDecimal(100)).longValue());
+            mOverview.setOrderCount(orderCount);
+            mOverview.setOrderUserCount();
+            mOverview.setRefundUserCount();
+            mOverview.setStatisticStartTime();
+            mOverview.setStatisticEndTime();
+            mOverview.setPeriodType();
         }
+
+        // 3.2 退货人数
+
+
+    }
+
+    @Override
+    public void statisticDailyOrderAmoutByCity(List<OrderDetailBean> orderDetailBeanList, String startDateTime,
+                                               String endDateTime, Date statisticDate) throws Exception {
+        // 1. 根据商户id维度将订单详情分类
+        Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = divideOrderDetailByMerchantId(orderDetailBeanList);
 
         // 2. 获取商户名称
         Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
@@ -55,8 +106,6 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                 .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
 
         // 3. 获取统计数据
-        String statisticsDateTime =
-                DateUtil.calcDay(startDateTime, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD); // 统计时间
 
         // // 统计数据
         List<MCityOrderamount> mCityOrderamoutList = new ArrayList<>();
@@ -97,7 +146,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                         "/" : sysCompanyMap.get(merchantId).getName());
                 mCityOrderamount.setCityId(cityId);
                 mCityOrderamount.setCityName(cityName);
-                mCityOrderamount.setStatisticsDate(DateUtil.parseDateTime(statisticsDateTime, DateUtil.DATE_YYYY_MM_DD));
+                mCityOrderamount.setStatisticsDate(statisticDate);
                 mCityOrderamount.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 mCityOrderamount.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                 mCityOrderamount.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
@@ -171,6 +220,11 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
     // ======================================== private ==========================================
 
+    /**
+     *
+     * @param mCityOrderamount
+     * @return
+     */
     private MerchantCityRangeStatisticResVo convertToMerchantCityRangeStatisticResVo(MCityOrderamount mCityOrderamount) {
         MerchantCityRangeStatisticResVo merchantCityRangeStatisticResVo = new MerchantCityRangeStatisticResVo();
 
@@ -182,5 +236,24 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                 dateTimeFormat(mCityOrderamount.getStatisticStartTime(), DateUtil.DATE_YYYYMMDD)); // 日期 20190101
 
         return merchantCityRangeStatisticResVo;
+    }
+
+    /**
+     * 将订单按照商户订单分组
+     *
+     * @param orderDetailBeanList 订单详情列表
+     * @return
+     */
+    private Map<Integer, List<OrderDetailBean>> divideOrderDetailByMerchantId(List<OrderDetailBean> orderDetailBeanList) {
+        Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = new HashMap<>();
+        for (OrderDetailBean orderDetailBean : orderDetailBeanList) {
+            Integer merchantId = orderDetailBean.getMerchantId(); // 商户id
+            List<OrderDetailBean> _orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);
+            if (_orderDetailBeanList == null) {
+                _orderDetailBeanList = new ArrayList<>();
+                orderDetailBeansByMerchantMap.put(merchantId, _orderDetailBeanList);
+            }
+            _orderDetailBeanList.add(orderDetailBean);
+        }
     }
 }
