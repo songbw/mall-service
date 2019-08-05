@@ -92,14 +92,14 @@
             <appender-ref ref="ERROR" />
         </logger>
     </springProfile>
-
-    <springProfile name="dev">
-        <logger name="com.fengchao.equity.dao.*" level="DEBUG" additivity="false">
-            <appender-ref ref="CONSOLE" />
-            <appender-ref ref="INFO" />
-            <appender-ref ref="ERROR" />
-        </logger>
-    </springProfile>-->
+-->
+    <!--<springProfile name="dev,local">-->
+        <!--<logger name="com.fengchao.order.mapper" level="DEBUG" additivity="false">-->
+            <!--<appender-ref ref="CONSOLE" />-->
+            <!--<appender-ref ref="INFO" />-->
+            <!--<appender-ref ref="ERROR" />-->
+        <!--</logger>-->
+    <!--</springProfile>-->
 
     <!--控制台和日志文件输出级别
     <root level="INFO" additivity = "false">
@@ -107,43 +107,6 @@
         <appender-ref ref="INFO" />
         <appender-ref ref="ERROR" />
     </root>-->
-
-
-
-    <!--<logger name="dao" level="DEBUG" additivity="false">-->
-        <!--<appender-ref ref="CONSOLE"/>-->
-        <!--<appender-ref ref="INFO"/>-->
-        <!--<appender-ref ref="ERROR"/>-->
-    <!--</logger>-->
-    <!--<logger name="org.mybatis" level="DEBUG" additivity="false" >-->
-        <!--<appender-ref ref="CONSOLE"/>-->
-        <!--<appender-ref ref="INFO"/>-->
-        <!--<appender-ref ref="ERROR"/>-->
-    <!--</logger>-->
-    <!--<logger name="com.fengchao.order.mapper" level="debug" >-->
-        <!--<appender-ref ref="INFO"/>-->
-    <!--</logger>-->
-    <!--<logger name="jdbc.sqltiming" level="debug">-->
-        <!--<appender-ref ref="INFO"/>-->
-    <!--</logger>-->
-    <!--<logger name="com.ibatis" level="debug">-->
-        <!--<appender-ref ref="INFO"/>-->
-    <!--</logger>-->
-    <!--<logger name="com.ibatis.common.jdbc.SimpleDataSource" level="debug" />-->
-    <!--<logger name="com.ibatis.common.jdbc.ScriptRunner" level="debug" />-->
-    <!--<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate"-->
-            <!--level="debug" />-->
-    <!--<logger name="java.sql.Connection" level="debug">-->
-        <!--<appender-ref ref="INFO"/>-->
-    <!--</logger>-->
-    <!--<logger name="java.sql.Statement" level="debug">-->
-        <!--<appender-ref ref="INFO"/>-->
-    <!--</logger>-->
-    <!--<logger name="java.sql.PreparedStatement" level="debug">-->
-        <!--<appender-ref ref="INFO"/>-->
-    <!--</logger>-->
-
-    <!--<logger name="java.sql.ResultSet" level="debug" />-->
 
 
 

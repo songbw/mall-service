@@ -1,8 +1,10 @@
 package com.fengchao.order.feign;
 
 import com.fengchao.order.bean.CouponUseInfoBean;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
-import com.fengchao.order.feign.hystric.EquityServiceH;
+import com.fengchao.order.feign.hystric.EquityServiceClientH;
+import com.fengchao.order.rpc.extmodel.PromotionBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(value = "equity", url = "${rpc.feign.client.equit.url:}", fallback = EquityServiceH.class)
-public interface EquityService {
+@FeignClient(value = "equity", url = "${rpc.feign.client.equit.url:}", fallback = EquityServiceClientH.class)
+public interface EquityServiceClient {
 
     /**
      * 优惠券核销
@@ -45,7 +47,7 @@ public interface EquityService {
      * @return
      */
     @RequestMapping(value = "/promotion/findByIdList", method = RequestMethod.GET)
-    OperaResult findPromotionListByIdList(@RequestParam("idList") List<Integer> idList);
+    OperaResponse<List<PromotionBean>> findPromotionListByIdList(@RequestParam("idList") List<Integer> idList);
 
     /**
      * 根据id集合获取Coupon列表
