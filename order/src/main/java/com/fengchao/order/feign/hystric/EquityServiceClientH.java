@@ -3,14 +3,21 @@ package com.fengchao.order.feign.hystric;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.CouponUseInfoBean;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
-import com.fengchao.order.feign.EquityService;
+import com.fengchao.order.feign.EquityServiceClient;
+import com.fengchao.order.rpc.extmodel.PromotionBean;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class EquityServiceH implements EquityService {
+public class EquityServiceClientH implements EquityServiceClient {
+
+    @Setter
+    private Throwable cause;
+
     @Override
     public OperaResult consume(CouponUseInfoBean bean) {
         OperaResult result = new OperaResult();
@@ -29,22 +36,22 @@ public class EquityServiceH implements EquityService {
 
     @Override
     public OperaResult occupy(CouponUseInfoBean bean) {
-        return HystrixDefaultFallback.defaultFallback();
+        return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
     public OperaResult release(CouponUseInfoBean bean) {
-        return HystrixDefaultFallback.defaultFallback();
+        return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult findPromotionListByIdList(List<Integer> idList) {
-        return HystrixDefaultFallback.defaultFallback();
+    public OperaResponse<List<PromotionBean>> findPromotionListByIdList(List<Integer> idList) {
+        return HystrixDefaultFallback.fallbackResponse(cause);
     }
 
     @Override
     public OperaResult findCouponUseInfoListByIdList(List<Integer> idList) {
-        return HystrixDefaultFallback.defaultFallback();
+        return HystrixDefaultFallback.defaultFallback(cause);
     }
 
 }
