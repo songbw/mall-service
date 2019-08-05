@@ -1,12 +1,11 @@
 package com.fengchao.order.rpc;
 
 import com.alibaba.fastjson.JSON;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
-import com.fengchao.order.rpc.extmodel.CouponBean;
 import com.fengchao.order.rpc.extmodel.CouponUseInfoBean;
-import com.fengchao.order.rpc.extmodel.ProductInfoBean;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
-import com.fengchao.order.feign.EquityService;
+import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,10 +23,10 @@ import java.util.List;
 @Slf4j
 public class EquityRpcService {
 
-    private EquityService equityService;
+    private EquityServiceClient equityService;
 
     @Autowired
-    public EquityRpcService(EquityService equityService) {
+    public EquityRpcService(EquityServiceClient equityService) {
         this.equityService = equityService;
     }
 
@@ -44,15 +42,13 @@ public class EquityRpcService {
                 log.info("根据id集合查询活动列表 调用equity rpc服务 入参:{}", JSONUtil.toJsonString(promotionIdList));
 
         if (CollectionUtils.isNotEmpty(promotionIdList)) {
-            OperaResult operaResult = equityService.findPromotionListByIdList(promotionIdList);
-            log.info("根据id集合查询活动列表 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+            OperaResponse<List<PromotionBean>> operaResponse
+                    = equityService.findPromotionListByIdList(promotionIdList);
+            log.info("根据id集合查询活动列表 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
             // 处理返回
-            if (operaResult.getCode() == 200) {
-                List<PromotionBean> _promotionBeanList = (List<PromotionBean>) operaResult.getData().get("result");
-
-                // 转 PromotionBean
-                promotionBeanList = JSON.parseArray(JSON.toJSONString(_promotionBeanList), PromotionBean.class);
+            if (operaResponse.getCode() == 200) {
+                promotionBeanList = operaResponse.getData();
             } else {
                 log.warn("根据id集合查询活动列表 调用equity rpc服务 错误!");
             }

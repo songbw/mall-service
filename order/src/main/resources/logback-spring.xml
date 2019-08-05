@@ -74,14 +74,14 @@
     </appender>
 
     <!--<appender name="MyBatis" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-    <!--<file>${LOG_HOME}/logs/mybatis-sql.log</file>-->
-    <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-    <!--<FileNamePattern>${LOG_HOME}/logs/mybatis-sql.log.%d{yyyy-MM-dd}</FileNamePattern>-->
-    <!--<maxHistory>30</maxHistory>-->
-    <!--</rollingPolicy>-->
-    <!--<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
-    <!--<pattern>%thread|%d{yyyy-MM-dd HH:mm:ss.SSS}|%level|%logger{36}|%m%n</pattern>-->
-    <!--</encoder>-->
+        <!--<file>${log_dir}/mybatis-sql.log</file>-->
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+            <!--<FileNamePattern>${log_dir}/mybatis-sql.log.%d{yyyy-MM-dd}</FileNamePattern>-->
+            <!--<maxHistory>30</maxHistory>-->
+        <!--</rollingPolicy>-->
+        <!--<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+            <!--<pattern>%thread|%d{yyyy-MM-dd HH:mm:ss.SSS}|%level|%logger{36}|%m%n</pattern>-->
+        <!--</encoder>-->
     <!--</appender>-->
 
     <!--mybatis sql日志 日志的级别需要是DEBUG-->
@@ -92,14 +92,14 @@
             <appender-ref ref="ERROR" />
         </logger>
     </springProfile>
-
-    <springProfile name="dev">
-        <logger name="com.fengchao.equity.dao.*" level="DEBUG" additivity="false">
-            <appender-ref ref="CONSOLE" />
-            <appender-ref ref="INFO" />
-            <appender-ref ref="ERROR" />
-        </logger>
-    </springProfile>-->
+-->
+    <!--<springProfile name="dev,local">-->
+        <!--<logger name="com.fengchao.order.mapper" level="DEBUG" additivity="false">-->
+            <!--<appender-ref ref="CONSOLE" />-->
+            <!--<appender-ref ref="INFO" />-->
+            <!--<appender-ref ref="ERROR" />-->
+        <!--</logger>-->
+    <!--</springProfile>-->
 
     <!--控制台和日志文件输出级别
     <root level="INFO" additivity = "false">
@@ -107,6 +107,7 @@
         <appender-ref ref="INFO" />
         <appender-ref ref="ERROR" />
     </root>-->
+
 
 
 
