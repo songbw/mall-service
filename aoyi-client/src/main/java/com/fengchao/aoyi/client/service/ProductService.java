@@ -26,4 +26,6 @@ public interface ProductService {
 
     OperaResult getSaleStatus(String skuId) ;
 
+    OperaResult findGATPrice(QueryCityPrice cityPrice) ;
+
 }

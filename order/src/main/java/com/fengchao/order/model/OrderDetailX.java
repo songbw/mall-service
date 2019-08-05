@@ -19,6 +19,8 @@ public class OrderDetailX implements Serializable {
 
     private BigDecimal salePrice;
 
+    private BigDecimal checkedPrice;
+
     private String image;
 
     private String name;
@@ -223,5 +225,13 @@ public class OrderDetailX implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public BigDecimal getCheckedPrice() {
+        return checkedPrice;
+    }
+
+    public void setCheckedPrice(BigDecimal checkedPrice) {
+        this.checkedPrice = checkedPrice;
     }
 }

@@ -274,6 +274,25 @@ public class ProductServiceImpl implements ProductService {
         return productInfoBeanList;
     }
 
+    @Override
+    public OperaResult findPriceGAT(PriceQueryBean queryBean) throws ProductException {
+        OperaResult operaResult = new OperaResult();
+        List<PriceSkus> list = new ArrayList<>();
+        QueryCityPrice cityPrice = new QueryCityPrice();
+        cityPrice.setCityId(queryBean.getCityId());
+        queryBean.getSkus().forEach(priceBean -> {
+            PriceSkus priceSkus = new PriceSkus();
+            priceSkus.setSkuId(priceBean.getSkuId());
+            list.add(priceSkus) ;
+        });
+        cityPrice.setSkus(list);
+        OperaResponse operaResponse = aoyiClientService.priceGAT(cityPrice);
+        operaResult.setCode(operaResponse.getCode());
+        operaResult.setMsg(operaResponse.getMsg());
+        operaResult.getData().put("result", operaResponse.getData()) ;
+        return operaResult;
+    }
+
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
         OperaResult result = equityService.selectCouponBySku(bean);
         log.info(JSON.toJSONString(result));

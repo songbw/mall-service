@@ -1,5 +1,6 @@
 package com.fengchao.order.feign.hystric;
 
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
 
 /**
@@ -13,6 +14,13 @@ public class HystrixDefaultFallback {
         result.setCode(500);
         result.setMsg("rpc 查询失败降级");
 
+        return result;
+    }
+
+    public static OperaResponse defaultReponseFallback() {
+        OperaResponse result = new OperaResponse();
+        result.setCode(500);
+        result.setMsg("rpc 查询失败降级");
         return result;
     }
 }

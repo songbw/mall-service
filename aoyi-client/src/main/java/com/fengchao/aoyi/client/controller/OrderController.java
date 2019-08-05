@@ -32,4 +32,9 @@ public class OrderController {
     private OperaResult create(@RequestBody OrderParamBean orderParamBean, OperaResult result) throws AoyiClientException {
         return service.addOrder(orderParamBean);
     }
+
+    @PostMapping("/gat")
+    private OperaResult createGAT(@RequestBody OrderParamBean orderParamBean, OperaResult result) throws AoyiClientException {
+        return service.addOrderGAT(orderParamBean);
+    }
 }

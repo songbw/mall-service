@@ -213,4 +213,118 @@ public class OrderServiceImpl implements OrderService {
             return operaResult;
         }
     }
+
+    @Override
+    public OperaResult addOrderGAT(OrderParamBean orderBean) {
+        OperaResult operaResult = new OperaResult();
+        ObjectMapper objectMapper1 = new ObjectMapper();
+        String msg = "";
+        try {
+            msg = objectMapper1.writeValueAsString(orderBean);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        logger.info(msg);
+        OrderRequestT orderRequest = new OrderRequestT();
+        orderRequest.setTradeNo(orderBean.getTradeNo());
+        orderRequest.setCompanyCustNo(orderBean.getCompanyCustNo());
+        orderRequest.setReceiverName(orderBean.getReceiverName());
+        orderRequest.setTelephone(orderBean.getTelephone());
+        orderRequest.setMobile(orderBean.getMobile());
+        orderRequest.setEmail(orderBean.getEmail());
+        orderRequest.setProvinceId(orderBean.getProvinceId());
+        orderRequest.setCityId(orderBean.getCityId());
+        orderRequest.setCountyId(orderBean.getCountyId());
+        orderRequest.setTownId(orderBean.getTownId());
+        orderRequest.setAddress(orderBean.getAddress());
+        orderRequest.setZip(orderBean.getZip());
+        orderRequest.setInvoiceState(orderBean.getInvoiceState());
+        orderRequest.setInvoiceType(orderBean.getInvoiceType());
+        orderRequest.setInvoiceTitle(orderBean.getInvoiceTitleName());
+        orderRequest.setInvoiceContent(orderBean.getInvoiceTitleName());
+        List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+            SubOrderT subOrder = new SubOrderT();
+            subOrder.setOrderNo(orderMerchantBean.getTradeNo());
+            subOrder.setServfee(orderMerchantBean.getServFee() + "");
+            subOrder.setAmount(orderMerchantBean.getAmount() + "");
+            subOrder.setMerchantNo(orderMerchantBean.getMerchantNo());
+            subOrder.setPayment(orderMerchantBean.getPayment());
+            subOrder.setOrderType(orderMerchantBean.getType() + "");
+            AtomicInteger i= new AtomicInteger(1);
+            List<SkusT> aoyiSkus = new ArrayList<>() ;
+            orderMerchantBean.getSkus().forEach(sku -> {
+                SkusT skus = new SkusT();
+                skus.setSkuId(sku.getSkuId());
+                skus.setNum(sku.getNum() + "");
+                skus.setUnitPrice(sku.getUnitPrice() + "");
+                skus.setSubOrderNo(subOrder.getOrderNo() + String.format("%03d", i.getAndIncrement()));
+                aoyiSkus.add(skus);
+            });
+            subOrder.setAoyiSkus(aoyiSkus);
+            orderRequest.getAoyiOrderEntries().add(subOrder);
+        }
+        String jsonString = JSONObject.toJSONString(orderRequest);
+        List<SubOrderT> subOrders = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String object = "";
+        try {
+            object = objectMapper.writeValueAsString(orderRequest);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        logger.info("addOrderGAT request is " + jsonString);
+        JSONObject r = HttpClient.post(orderRequest, JSONObject.class, object, HttpClient.AOYI_PUSH_ORDER_URL_GAT, HttpClient.AOYI_PUSH_ORDER) ;
+        if (r == null) {
+            operaResult.setCode(100011);
+            operaResult.setMsg("创建订单失败");
+            return operaResult;
+        }
+        try {
+            logger.info("addOrderGAT response is " + objectMapper.writeValueAsString(r));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        String code = r.getString("CODE");
+        if ("0".equals(code)) {
+            JSONObject data = r.getJSONObject("RESULT");
+            logger.info(data.toJSONString());
+            if ("推送成功".equals(data.getString("message"))) {
+                JSONArray orderNoResults = data.getJSONArray("orderNoResults");
+                orderNoResults.forEach(orderNoResult -> {
+                    SubOrderT subOrder = new SubOrderT();
+                    JSONObject orderNo = (JSONObject) orderNoResult;
+                    subOrder.setOrderNo(orderNo.getString("orderNo"));
+                    JSONArray skus = orderNo.getJSONArray("orderSkusResults");
+                    List<SkusT> skuses = new ArrayList<>();
+                    for (Object o : skus) {
+                        JSONObject json = (JSONObject) o;
+                        SkusT resSkus = new SkusT();
+                        resSkus.setSubOrderNo(json.getString("subOrderNo"));
+                        resSkus.setSkuId(json.getString("skuId"));
+                        resSkus.setNum(json.getString("num"));
+                        resSkus.setUnitPrice(json.getString("unitPrice"));
+                        skuses.add(resSkus);
+                    }
+                    subOrder.setAoyiSkus(skuses);
+                    subOrders.add(subOrder);
+                });
+                operaResult.setData(subOrders);
+                return operaResult;
+            } else {
+                operaResult.setCode(100011);
+                String message = data.getString("message") ;
+                if (message == null || "".equals(message)) {
+                    operaResult.setMsg("创建订单失败");
+                } else {
+                    operaResult.setMsg(message);
+                }
+                return operaResult;
+            }
+        } else {
+            operaResult.setCode(100011);
+            operaResult.setMsg("创建订单失败");
+            return operaResult;
+        }
+    }
 }

@@ -101,4 +101,9 @@ public class ProductController {
 
         return result;
     }
+
+    @PostMapping("/priceGAT")
+    private OperaResult priceGAT(@RequestBody PriceQueryBean queryBean, OperaResult result) throws ProductException {
+        return service.findPriceGAT(queryBean);
+    }
 }

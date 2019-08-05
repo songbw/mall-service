@@ -71,4 +71,9 @@ public class ProductController {
         return service.getSaleStatus(skuId);
     }
 
+    @PostMapping("/priceGAT")
+    private OperaResult priceGAT(@RequestBody QueryCityPrice queryBean, OperaResult result) throws AoyiClientException {
+        return service.findGATPrice(queryBean);
+    }
+
 }

@@ -389,4 +389,54 @@ public class ProductServiceImpl implements ProductService {
             return operaResult;
         }
     }
+
+    @Override
+    public OperaResult findGATPrice(QueryCityPrice cityPrice) {
+        OperaResult operaResult = new OperaResult();
+        List<PriceBean> priceBeans = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String object = "";
+        try {
+            object = objectMapper.writeValueAsString(cityPrice);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        JSONObject r = HttpClient.post(cityPrice, JSONObject.class, object, HttpClient.AOYI_PRODUCT_PRICE_URL_GAT, HttpClient.AOYI_PRODUCT_PRICE) ;
+        if (r != null) {
+            logger.info(r.toJSONString());
+            String code = r.getString("CODE");
+            if ("0".equals(code)) {
+                JSONObject data = r.getJSONObject("RESULT");
+                JSONArray skus = data.getJSONArray("skus");
+                if (skus != null) {
+                    skus.forEach(price -> {
+                        JSONObject p = (JSONObject) price;
+                        PriceBean priceBean = new PriceBean();
+                        priceBean.setSkuId(p.getString("skuId"));
+                        priceBean.setPrice(p.getString("price"));
+                        priceBeans.add(priceBean);
+                    });
+                    operaResult.setData(priceBeans);
+                    return operaResult;
+                }else {
+                    operaResult.setCode(100001);
+                    operaResult.setMsg("获取价格返回值为空");
+                    return operaResult;
+                }
+            } else {
+                operaResult.setCode(100001);
+                String message = r.getString("MESSAGE") ;
+                if (message == null || "".equals(message)) {
+                    operaResult.setMsg("获取价格失败");
+                } else {
+                    operaResult.setMsg(message);
+                }
+                return operaResult;
+            }
+        } else  {
+            operaResult.setCode(100001);
+            operaResult.setMsg("获取价格失败");
+            return operaResult;
+        }
+    }
 }

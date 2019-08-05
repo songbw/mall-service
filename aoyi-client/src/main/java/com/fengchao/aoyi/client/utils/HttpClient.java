@@ -53,12 +53,14 @@ public class HttpClient {
     //批量查询商品价格接口
     public static final String AOYI_PRODUCT_PRICE = "aoyi.price.query";
     public static final String AOYI_PRODUCT_PRICE_URL = "/prodpool/aoyiApiProdPool/getProductPrice";
+    public static final String AOYI_PRODUCT_PRICE_URL_GAT = "/prodpool/aoyiApiProdPool/getGatProductPriceGAT";
     //商品库存查询
     public static final String AOYI_PRODUCT_STOCK = "aoyi.inventory.get";
     public static final String AOYI_PRODUCT_STOCK_URL = "/prodpool/aoyiApiProdPool/getProductStock";
     //获取订单 预占
     public static final String AOYI_PUSH_ORDER = "aoyi.order.add";
     public static final String AOYI_PUSH_ORDER_URL = "/order/aoyiApiOrder/pushOrder";
+    public static final String AOYI_PUSH_ORDER_URL_GAT = "/order/aoyiApiOrder/pushOrderGAT";
     //获取订单 确定
     public static final String AOYI_CONFRIM_ORDER = "aoyi.order.confirmOrder";
     public static final String AOYI_CONFRIM_ORDER_URL = "/order/aoyiApiOrder/confirmOrder";

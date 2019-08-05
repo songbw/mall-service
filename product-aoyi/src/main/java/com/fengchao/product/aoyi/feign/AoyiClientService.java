@@ -18,4 +18,7 @@ public interface AoyiClientService {
 
     @RequestMapping(value = "/product/carriage", method = RequestMethod.POST)
     OperaResponse<FreightFareBean> shipCarriage(@RequestBody QueryCarriage queryBean);
+
+    @RequestMapping(value = "/product/priceGAT", method = RequestMethod.POST)
+    OperaResponse priceGAT(@RequestBody QueryCityPrice queryBean);
 }
