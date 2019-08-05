@@ -73,7 +73,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponUseInfo.setCode(bean.getCode());
         couponUseInfo.setUserOpenId(bean.getUserOpenId());
         int num = 0;
-        if(coupon.getSupplierMerchantId().equals(3)){
+        if(coupon.getSupplierMerchantId().equals("3")){
             OperaResult toushiResult = collectThirdCoupon(bean.getUserOpenId(), bean.getCode());
             String url = (String) toushiResult.getData().get("url");
             String user_coupon_code = (String) toushiResult.getData().get("coupon_code");
