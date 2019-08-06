@@ -27,4 +27,10 @@ public class ProdESController {
         result.getData().put("result", service.query(queryBean)) ;
         return result;
     }
+
+    @PostMapping("/profix")
+    public OperaResult searchProfix(@RequestBody ProductQueryBean queryBean, OperaResult result) {
+        result.getData().put("result", service.queryByCategoryPrefix(queryBean)) ;
+        return result;
+    }
 }

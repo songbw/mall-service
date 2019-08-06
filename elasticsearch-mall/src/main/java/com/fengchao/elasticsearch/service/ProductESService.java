@@ -19,4 +19,6 @@ public interface ProductESService {
     boolean batchSave(List<AoyiProdIndex> list) ;
 
     int allCount();
+
+    PageBean queryByCategoryPrefix(ProductQueryBean queryBean);
 }
