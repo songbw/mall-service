@@ -6,6 +6,8 @@ import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.AoyiClientService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AoyiClientServiceH implements AoyiClientService {
     @Override
@@ -36,6 +38,11 @@ public class AoyiClientServiceH implements AoyiClientService {
 
     @Override
     public OperaResponse<FreightFareBean> shipCarriage(QueryCarriage queryBean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<List<SubOrderT>> orderGAT(OrderParamBean orderParamBean) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 
