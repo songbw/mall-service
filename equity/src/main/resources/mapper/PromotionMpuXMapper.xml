@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fengchao.equity.mapper.PromotionMpuMapper">
+<mapper namespace="com.fengchao.equity.mapper.PromotionMpuXMapper">
   <resultMap id="BaseResultMap" type="com.fengchao.equity.model.PromotionMpu">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="promotion_id" jdbcType="INTEGER" property="promotionId" />
@@ -14,7 +14,7 @@
   </sql>
   <select id="selectByPrimaryMpu" resultType="com.fengchao.equity.model.PromotionMpuX" parameterType="java.lang.Integer" >
     select
-    id, promotion_id promotionId, mpu, skuId, discount, schedule_id scheduleId
+    <include refid="Base_Column_List" />
     from promotion_mpu
     where promotion_id = #{id,jdbcType=INTEGER}
   </select>
@@ -106,4 +106,16 @@
       schedule_id = #{scheduleId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectMpuList"  resultType="java.lang.String" parameterType="java.lang.Integer" >
+    select
+    distinct mpu
+    from promotion_mpu
+    where promotion_id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectscheduleIdList"  resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select
+    distinct schedule_id
+    from promotion_mpu
+    where promotion_id = #{id,jdbcType=INTEGER}
+  </select>
 </mapper>

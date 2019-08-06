@@ -27,11 +27,11 @@ public class ProdServiceH implements ProdService {
     }
 
     @Override
-    public OperaResult find(String id) {
+    public OperaResult findProductListByMpuIdList(List<String> mpuIdList) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         result.setCode(404);
-        result.setMsg("获取商品信息失败 " + id);
+        result.setMsg("获取商品信息失败 " + mpuIdList);
         return result;
     }
 }

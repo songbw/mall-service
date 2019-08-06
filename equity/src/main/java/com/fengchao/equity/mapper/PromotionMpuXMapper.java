@@ -5,7 +5,7 @@ import com.fengchao.equity.model.PromotionMpuX;
 
 import java.util.List;
 
-public interface PromotionMpuMapper {
+public interface PromotionMpuXMapper {
     int deleteByPrimaryKey(Integer id);
 
     int insert(PromotionMpu record);
@@ -19,4 +19,8 @@ public interface PromotionMpuMapper {
     int deleteBypromotionId(PromotionMpu record);
 
     List<PromotionMpuX> selectByPrimaryMpu(Integer id);
+
+    List<String> selectMpuList(Integer id);
+
+    List<Integer> selectscheduleIdList(Integer id);
 }
