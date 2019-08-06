@@ -292,7 +292,7 @@ public class OrderServiceImpl implements OrderService {
             if ("推送成功".equals(data.getString("message"))) {
                 JSONArray orderNoResults = data.getJSONArray("orderNoResults");
                 orderNoResults.forEach(orderNoResult -> {
-                    SubOrderT subOrder = new SubOrderT();
+                    SubOrderTResponse subOrder = new SubOrderTResponse();
                     JSONObject orderNo = (JSONObject) orderNoResult;
                     subOrder.setOrderNo(orderNo.getString("orderNo"));
                     subOrder.setAoyiId(orderNo.getString("snOrderNo"));

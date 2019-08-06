@@ -123,7 +123,7 @@ public class HttpClient {
         try {
             bean = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(body,MediaType.APPLICATION_JSON_TYPE),obj);
         } catch (Exception e) {
-            logger.error("Aoyi Client error : ", e);
+            logger.error("Aoyi Client error : {}", e);
             throw new AoyiClientException();
         }
         return bean;

@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 public class SubOrderT {
     private String orderNo ;
-    private String aoyiId ;
     private String merchantNo;
     private String payment;
     private String servfee;
