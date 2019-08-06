@@ -1,6 +1,7 @@
 package com.fengchao.statistics.service;
 
 import com.fengchao.statistics.bean.vo.MOverallResVo;
+import com.fengchao.statistics.bean.vo.MUserStatisticResVo;
 import com.fengchao.statistics.bean.vo.MerchantCityRangeStatisticResVo;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 
@@ -16,12 +17,12 @@ public interface MerchantStatisticService {
 
     /**
      * 每天 统计各个商户的整体运营数据，目前包括:
-     *     订单支付总额, 订单总量, 下单人数, 退货人数
+     * 订单支付总额, 订单总量, 下单人数, 退货人数
      *
      * @param payedOrderDetailBeanList 需要统计的原始数据-已支付的订单详情
      * @param startDateTime
      * @param endDateTime
-     * @param statisticDate 统计执行日期
+     * @param statisticDate            统计执行日期
      * @throws Exception
      */
     @Deprecated
@@ -35,12 +36,12 @@ public interface MerchantStatisticService {
      * @param payedOrderDetailBeanList 需要统计的原始数据-已支付的订单详情
      * @param startDateTime
      * @param endDateTime
-     * @param statisticDate 统计执行日期
+     * @param statisticDate            统计执行日期
      * @throws Exception
      */
     void statisticDailyOrderAmountByCity(List<OrderDetailBean> payedOrderDetailBeanList,
-                                        String startDateTime,
-                                        String endDateTime, Date statisticDate) throws Exception;
+                                         String startDateTime,
+                                         String endDateTime, Date statisticDate) throws Exception;
 
     /**
      * 每天 按照商户维度统计用户数相关数据, 目前包括:
@@ -68,8 +69,8 @@ public interface MerchantStatisticService {
     /**
      * 订单支付总额变化趋势
      *
-     * @param startDate yyyy-MM-dd
-     * @param endDate yyyy-MM-dd
+     * @param startDate  yyyy-MM-dd
+     * @param endDate    yyyy-MM-dd
      * @param merchantId
      * @return
      * @throws Exception
@@ -77,4 +78,17 @@ public interface MerchantStatisticService {
     Map<String, List<MerchantCityRangeStatisticResVo>> fetchOrderAmountTrend(String startDate,
                                                                              String endDate,
                                                                              Integer merchantId) throws Exception;
+
+    /**
+     * 根据时间范围获取商户的用户变化趋势
+     *
+     * @param startDate
+     * @param endDate
+     * @param merchantId
+     * @return
+     * @throws Exception
+     */
+    Map<String, MUserStatisticResVo> fetchUserTrend(String startDate,
+                                                    String endDate,
+                                                    Integer merchantId) throws Exception;
 }

@@ -31,9 +31,9 @@ public class MerchantOverviewDao {
      * @param merchantOverview
      * @return
      */
-    public int insertMerchantOverview(MerchantOverview merchantOverview) {
-        int id = merchantOverviewMapper.insertSelective(merchantOverview);
-        return id;
+    public Long insertMerchantOverview(MerchantOverview merchantOverview) {
+        int count = merchantOverviewMapper.insertSelective(merchantOverview);
+        return merchantOverview.getId();
     }
 
     /**

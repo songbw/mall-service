@@ -31,9 +31,9 @@ public class MCityOrderAmountDao {
      * @param mCityOrderamount
      * @return
      */
-    public int insertMCityOrderAmount(MCityOrderamount mCityOrderamount) {
-        int id = mCityOrderamountMapper.insertSelective(mCityOrderamount);
-        return id;
+    public Long insertMCityOrderAmount(MCityOrderamount mCityOrderamount) {
+        int count = mCityOrderamountMapper.insertSelective(mCityOrderamount);
+        return mCityOrderamount.getId();
     }
 
     /**

@@ -3,8 +3,11 @@ package com.fengchao.statistics.dao;
 import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.mapper.CategoryOverviewMapper;
+import com.fengchao.statistics.mapper.MStatisticUserMapper;
 import com.fengchao.statistics.model.CategoryOverview;
 import com.fengchao.statistics.model.CategoryOverviewExample;
+import com.fengchao.statistics.model.MStatisticUser;
+import com.fengchao.statistics.model.MStatisticUserExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,24 +19,24 @@ import java.util.List;
  * @Date 19-7-25 下午5:17
  */
 @Component
-public class CategoryOverviewDao {
+public class MStatisticUserDao {
 
-    private CategoryOverviewMapper categoryOverviewMapper;
+    private MStatisticUserMapper mStatisticUserMapper;
 
     @Autowired
-    public CategoryOverviewDao(CategoryOverviewMapper categoryOverviewMapper) {
-        this.categoryOverviewMapper = categoryOverviewMapper;
+    public MStatisticUserDao(MStatisticUserMapper mStatisticUserMapper) {
+        this.mStatisticUserMapper = mStatisticUserMapper;
     }
 
     /**
      * 新增
      *
-     * @param categoryOverview
+     * @param mStatisticUser
      * @return
      */
-    public Long insertCategoryOverview(CategoryOverview categoryOverview) {
-        int count = categoryOverviewMapper.insertSelective(categoryOverview);
-        return categoryOverview.getId();
+    public Long insertMStatisticUser(MStatisticUser mStatisticUser) {
+        int count = mStatisticUserMapper.insertSelective(mStatisticUser);
+        return mStatisticUser.getId();
     }
 
     /**
@@ -46,14 +49,14 @@ public class CategoryOverviewDao {
      */
     public int deleteByPeriodTypeAndStatisticDate(Short period,
                                                   Date statisticStartDate, Date statisticEndDate) {
-        CategoryOverviewExample categoryOverviewExample = new CategoryOverviewExample();
+        MStatisticUserExample mStatisticUserExample = new MStatisticUserExample();
 
-        CategoryOverviewExample.Criteria criteria = categoryOverviewExample.createCriteria();
+        MStatisticUserExample.Criteria criteria = mStatisticUserExample.createCriteria();
         criteria.andPeriodTypeEqualTo(period);
         criteria.andStatisticStartTimeEqualTo(statisticStartDate);
         criteria.andStatisticEndTimeEqualTo(statisticEndDate);
 
-        int count = categoryOverviewMapper.deleteByExample(categoryOverviewExample);
+        int count = mStatisticUserMapper.deleteByExample(mStatisticUserExample);
 
         return count;
     }
@@ -65,18 +68,19 @@ public class CategoryOverviewDao {
      * @param endDate
      * @return
      */
-    public List<CategoryOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate) {
-        CategoryOverviewExample categoryOverviewExample = new CategoryOverviewExample();
+    public List<MStatisticUser> selectDailyStatisticByDateRange(Date startDate, Date endDate, Integer merchantId) {
+        MStatisticUserExample mStatisticUserExample = new MStatisticUserExample();
 
-        CategoryOverviewExample.Criteria criteria = categoryOverviewExample.createCriteria();
+        MStatisticUserExample.Criteria criteria = mStatisticUserExample.createCriteria();
         criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
 
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
         criteria.andStatisticStartTimeBetween(startDate, endDate);
+        criteria.andMerchantIdEqualTo(merchantId);
 
-        List<CategoryOverview> categoryOverviewList =
-                categoryOverviewMapper.selectByExample(categoryOverviewExample);
+        List<MStatisticUser> mStatisticUserList =
+                mStatisticUserMapper.selectByExample(mStatisticUserExample);
 
-        return categoryOverviewList;
+        return mStatisticUserList;
     }
 }

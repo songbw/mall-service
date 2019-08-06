@@ -1,12 +1,15 @@
 package com.fengchao.statistics.service.impl;
 
 import com.fengchao.statistics.bean.vo.MOverallResVo;
+import com.fengchao.statistics.bean.vo.MUserStatisticResVo;
 import com.fengchao.statistics.bean.vo.MerchantCityRangeStatisticResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MCityOrderAmountDao;
 import com.fengchao.statistics.dao.MOverviewDao;
+import com.fengchao.statistics.dao.MStatisticUserDao;
 import com.fengchao.statistics.model.MCityOrderamount;
 import com.fengchao.statistics.model.MOverview;
+import com.fengchao.statistics.model.MStatisticUser;
 import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.VendorsRpcService;
 import com.fengchao.statistics.rpc.WorkOrdersRpcService;
@@ -47,6 +50,9 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
     @Autowired
     private OrdersRpcService ordersRpcService;
+
+    @Autowired
+    private MStatisticUserDao mStatisticUserDao;
 
     @Override
     @Deprecated
@@ -245,8 +251,65 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
     }
 
     @Override
-    public void statisticDailyUserCount(List<OrderDetailBean> payedOrderDetailBeanList, String startDateTime, String endDateTime, Date statisticDate) throws Exception {
+    public void statisticDailyUserCount(List<OrderDetailBean> payedOrderDetailBeanList, String startDateTime,
+                                        String endDateTime, Date statisticDate) throws Exception {
+        // 1. 根据商户id维度将订单详情分类
+        Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = divideOrderDetailByMerchantId(payedOrderDetailBeanList);
+        log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {}, 根据商户id维度将订单详情分组结果:{}",
+                startDateTime, endDateTime, JSONUtil.toJsonString(orderDetailBeansByMerchantMap));
 
+        // 2. 获取商户名称
+        Set<Integer> merchantIdSet = orderDetailBeansByMerchantMap.keySet(); // 商户id集合
+        List<SysCompany> sysCompanyList = vendorsRpcService.queryMerchantByIdList(new ArrayList<>(merchantIdSet));
+        // 转map key:merchantId  value:SysUser
+        Map<Integer, SysCompany> sysCompanyMap = sysCompanyList.stream()
+                .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
+
+        // 3. 获取统计数据
+        List<MStatisticUser> mStatisticUserList = new ArrayList<>();
+        // 遍历　orderDetailBeansByMerchantMap
+        for (Integer merchantId : merchantIdSet) {
+            // 获取该商户的已支付的子订单
+            List<OrderDetailBean> orderDetailBeanList = orderDetailBeansByMerchantMap.get(merchantId);
+
+            // a.遍历该商户的子订单获取下单人数
+            Set<String> openIdSet = orderDetailBeanList.stream().map(o -> o.getOpenId()).collect(Collectors.toSet());
+
+            // b.获取该商户的退货人数
+
+            // 组装统计数据
+            MStatisticUser mStatisticUser = new MStatisticUser();
+            mStatisticUser.setMerchantId(merchantId);
+            mStatisticUser.setMerchantCode("");
+            mStatisticUser.setMerchantName(sysCompanyMap.get(merchantId) == null ? "" : sysCompanyMap.get(merchantId).getName());
+            mStatisticUser.setOrderUserCount(openIdSet.size());
+            mStatisticUser.setRefundUserCount(0);
+            mStatisticUser.setStatisticsDate(statisticDate);
+            mStatisticUser.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+            mStatisticUser.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+            mStatisticUser.setPeriodType(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
+
+            mStatisticUserList.add(mStatisticUser);
+        }
+
+        log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {} 统计结果:{}",
+                startDateTime, endDateTime, JSONUtil.toJsonString(mStatisticUserList));
+
+        // 4. 插入统计数据
+        // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+        int count = mStatisticUserDao.deleteByPeriodTypeAndStatisticDate(
+                StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
+                DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
+                DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+        log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {} 删除数据数量:{}",
+                startDateTime, endDateTime, count);
+
+        // 4.2 执行插入
+        for (MStatisticUser mStatisticUser : mStatisticUserList) {
+            mStatisticUserDao.insertMStatisticUser(mStatisticUser);
+        }
+
+        log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {} 执行完成!");
     }
 
     @Override
@@ -333,8 +396,68 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         return cityRangeMap;
     }
 
+    @Override
+    public Map<String, MUserStatisticResVo> fetchUserTrend(String startDate,
+                                                           String endDate,
+                                                           Integer merchantId) throws Exception {
+        // 1. 查询数据库
+        Date _startDate = DateUtil.parseDateTime(startDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        log.info("根据时间范围获取商户的用户变化趋势 日期范围: {} - {}, 商户id:{}", _startDate, _endDate, merchantId);
+        List<MStatisticUser> mStatisticUserList =
+                mStatisticUserDao.selectDailyStatisticByDateRange(_startDate, _endDate, merchantId);
+        log.info("根据时间范围获取商户的用户变化趋势 数据库返回: {}", JSONUtil.toJsonString(mStatisticUserList));
+
+        // 转map key：日期yyyy-MM-dd value: MStatisticUser
+        Map<String, MStatisticUser> mStatisticUserMap = new HashMap<>();
+        for (MStatisticUser mStatisticUser : mStatisticUserList) {
+            String _date = DateUtil.dateTimeFormat(mStatisticUser.getStatisticStartTime(), DateUtil.DATE_YYYY_MM_DD);
+            mStatisticUserMap.put(_date, mStatisticUser);
+        }
+
+        // 2. 统计数据
+
+
+        // 补充后的数据
+        Map<String, MUserStatisticResVo> mUserStatisticResVoMap = new HashMap<>();
+        String currentDate = startDate; // 当前时间 yyyy-MM-dd
+        while (DateUtil.compareDate(currentDate, DateUtil.DATE_YYYY_MM_DD, endDate, DateUtil.DATE_YYYY_MM_DD) <= 0) {
+            MUserStatisticResVo mUserStatisticResVo = null; // 该天的统计数据
+
+            MStatisticUser mStatisticUser = mStatisticUserMap.get(currentDate); // yyyy-MM-dd
+            if (mStatisticUser == null) {
+                mUserStatisticResVo = new MUserStatisticResVo(0, 0, currentDate);
+            } else {
+                mUserStatisticResVo = convertToMUserStatisticResVo(mStatisticUser);
+            }
+
+            mUserStatisticResVoMap.put(currentDate, mUserStatisticResVo);
+
+            currentDate = DateUtil.calcDay(currentDate, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD);
+        }
+
+        log.info("根据时间范围获取商户的用户变化趋势 获取统计数据Map<String, MUserStatisticResVo>:{}",
+                JSONUtil.toJsonString(mUserStatisticResVoMap));
+
+        return mUserStatisticResVoMap;
+    }
+
 
     // ======================================== private ==========================================
+
+    /**
+     * @param mStatisticUser
+     * @return
+     */
+    private MUserStatisticResVo convertToMUserStatisticResVo(MStatisticUser mStatisticUser) {
+        MUserStatisticResVo mUserStatisticResVo = new MUserStatisticResVo();
+        mUserStatisticResVo.setOrderUserCount(mStatisticUser.getOrderUserCount());
+        mUserStatisticResVo.setRefundUserCount(mStatisticUser.getRefundUserCount());
+        mUserStatisticResVo.setStatisticData(DateUtil.
+                dateTimeFormat(mStatisticUser.getStatisticStartTime(), DateUtil.DATE_YYYY_MM_DD)); // yyyy-MM-dd
+
+        return mUserStatisticResVo;
+    }
 
     /**
      * @param mCityOrderamount

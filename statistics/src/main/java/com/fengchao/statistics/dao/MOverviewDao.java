@@ -31,9 +31,9 @@ public class MOverviewDao {
      * @param mOverview
      * @return
      */
-    public int insertMOverview(MOverview mOverview) {
-        int id = mOverviewMapper.insertSelective(mOverview);
-        return id;
+    public Long insertMOverview(MOverview mOverview) {
+        int count = mOverviewMapper.insertSelective(mOverview);
+        return mOverview.getId();
     }
 
     /**

@@ -31,9 +31,9 @@ public class PromotionOverviewDao {
      * @param promotionOverview
      * @return
      */
-    public int insertCategoryOverview(PromotionOverview promotionOverview) {
-        int id = promotionOverviewMapper.insertSelective(promotionOverview);
-        return id;
+    public Long insertCategoryOverview(PromotionOverview promotionOverview) {
+        int count = promotionOverviewMapper.insertSelective(promotionOverview);
+        return promotionOverview.getId();
     }
 
     /**
