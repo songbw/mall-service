@@ -28,7 +28,9 @@ public class PromotionX {
 
     private Long promotionTypeId;
 
-    private List<PromotionMpu> promotionSkus;
+    private List<PromotionMpuX> promotionSkus;
+
+    private List<PromotionSchedule> promotionSchedules;
 
     public PromotionX() {
     }
@@ -97,11 +99,11 @@ public class PromotionX {
         this.createdDate = createdDate;
     }
 
-    public List<PromotionMpu> getPromotionSkus() {
+    public List<PromotionMpuX> getPromotionSkus() {
         return promotionSkus;
     }
 
-    public void setPromotionSkus(List<PromotionMpu> promotionSkus) {
+    public void setPromotionSkus(List<PromotionMpuX> promotionSkus) {
         this.promotionSkus = promotionSkus;
     }
 
@@ -119,5 +121,13 @@ public class PromotionX {
 
     public void setPromotionTypeId(Long promotionTypeId) {
         this.promotionTypeId = promotionTypeId;
+    }
+
+    public List<PromotionSchedule> getPromotionSchedules() {
+        return promotionSchedules;
+    }
+
+    public void setPromotionSchedules(List<PromotionSchedule> promotionSchedules) {
+        this.promotionSchedules = promotionSchedules;
     }
 }

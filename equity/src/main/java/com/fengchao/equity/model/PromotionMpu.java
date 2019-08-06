@@ -9,21 +9,9 @@ public class PromotionMpu {
 
     private String discount;
 
-    private String name;
-
-    private String price;
-
-    private String state;
-
-    private String sprice;
-
-    private String brand;
-
-    private String image;
-
-    private String model;
-
     private String skuid;
+
+    private Integer scheduleId;
 
     public Integer getId() {
         return id;
@@ -57,61 +45,6 @@ public class PromotionMpu {
         this.discount = discount == null ? null : discount.trim();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getSprice() {
-        return sprice;
-    }
-
-    public void setSprice(String sprice) {
-        this.sprice = sprice;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
 
     public String getSkuid() {
         return skuid;
@@ -119,5 +52,13 @@ public class PromotionMpu {
 
     public void setSkuid(String skuid) {
         this.skuid = skuid;
+    }
+
+    public Integer getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(Integer scheduleId) {
+        this.scheduleId = scheduleId;
     }
 }
