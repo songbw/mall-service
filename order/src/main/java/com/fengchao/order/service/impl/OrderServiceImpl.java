@@ -27,6 +27,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -225,8 +226,20 @@ public class OrderServiceImpl implements OrderService {
         orderBean.setMerchants(orderMerchantBeans);
         orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != 2));
 //        createOrder(orderBean) ;
-        OperaResponse<List<SubOrderT>>  result = aoyiClientService.order(orderBean);
+        OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
+        if ("1001".equals(orderBean.getCompanyCustNo())) {
+            result = aoyiClientService.orderGAT(orderBean);
+        } else {
+            result = aoyiClientService.order(orderBean);
+        }
         if (result.getCode() == 200) {
+            List<SubOrderT> subOrderTS = result.getData();
+            subOrderTS.forEach(subOrderT -> {
+                if (!StringUtils.isEmpty(subOrderT.getAoyiId())){
+                    // 更新aoyiId字段
+                    adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
+                }
+            });
             operaResult.getData().put("result", orderMerchantBeans) ;
         } else {
             operaResult.setCode(result.getCode());

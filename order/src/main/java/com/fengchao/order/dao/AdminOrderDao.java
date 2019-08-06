@@ -232,4 +232,21 @@ public class AdminOrderDao {
         return ordersList;
     }
 
+    /**
+     * 根据主订单号更新奥义订单号
+     * @param aoyiId
+     * @param tradeNo
+     * @return
+     */
+    public Integer updateAoyiIdByTradeNo(String aoyiId, String tradeNo) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andTradeNoEqualTo(tradeNo) ;
+        Orders temp = new Orders();
+        temp.setUpdatedAt(new Date());
+        temp.setAoyiId(aoyiId);
+        ordersMapper.updateByExampleSelective(temp, ordersExample) ;
+        return temp.getId();
+    }
+
 }

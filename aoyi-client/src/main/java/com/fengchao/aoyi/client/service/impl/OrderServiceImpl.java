@@ -295,6 +295,7 @@ public class OrderServiceImpl implements OrderService {
                     SubOrderT subOrder = new SubOrderT();
                     JSONObject orderNo = (JSONObject) orderNoResult;
                     subOrder.setOrderNo(orderNo.getString("orderNo"));
+                    subOrder.setAoyiId(orderNo.getString("snOrderNo"));
                     JSONArray skus = orderNo.getJSONArray("orderSkusResults");
                     List<SkusT> skuses = new ArrayList<>();
                     for (Object o : skus) {
