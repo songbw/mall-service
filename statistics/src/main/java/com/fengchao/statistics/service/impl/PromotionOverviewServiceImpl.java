@@ -1,10 +1,8 @@
 package com.fengchao.statistics.service.impl;
 
 import com.fengchao.statistics.bean.PromotionTypeResDto;
-import com.fengchao.statistics.bean.vo.PromotionOverviewResVo;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.PromotionOverviewDao;
-import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.model.PromotionOverview;
 import com.fengchao.statistics.rpc.EquityRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
@@ -117,7 +115,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
 
             // 4. 插入统计数据
             // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-            int count = promotionOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+            int count = promotionOverviewDao.deleteByPeriodTypeAndStatisticDate(
                     StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                     DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
                     DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
@@ -143,7 +141,7 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
         Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         log.info("根据时间范围获取daily型的活动维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<PromotionOverview> promotionOverviewList =
-                promotionOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
+                promotionOverviewDao.selectDailyStatisticByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的活动维度统计数据 数据库返回: {}", JSONUtil.toJsonString(promotionOverviewList));
 
         if (CollectionUtils.isEmpty(promotionOverviewList)) {

@@ -1,5 +1,6 @@
 package com.fengchao.statistics.dao;
 
+import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.mapper.MerchantOverviewMapper;
 import com.fengchao.statistics.model.MerchantOverview;
@@ -30,7 +31,7 @@ public class MerchantOverviewDao {
      * @param merchantOverview
      * @return
      */
-    public int insertCategoryOverview(MerchantOverview merchantOverview) {
+    public int insertMerchantOverview(MerchantOverview merchantOverview) {
         int id = merchantOverviewMapper.insertSelective(merchantOverview);
         return id;
     }
@@ -43,8 +44,8 @@ public class MerchantOverviewDao {
      * @param statisticEndDate
      * @return
      */
-    public int deleteCategoryOverviewByPeriodTypeAndStatisticDate(Short period,
-                                                                  Date statisticStartDate, Date statisticEndDate) {
+    public int deleteByPeriodTypeAndStatisticDate(Short period,
+                                                  Date statisticStartDate, Date statisticEndDate) {
         MerchantOverviewExample merchantOverviewExample = new MerchantOverviewExample();
 
         MerchantOverviewExample.Criteria criteria = merchantOverviewExample.createCriteria();
@@ -64,10 +65,12 @@ public class MerchantOverviewDao {
      * @param endDate
      * @return
      */
-    public List<MerchantOverview> selectDailyCategoryOverviewsByDateRange(Date startDate, Date endDate) {
+    public List<MerchantOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate) {
         MerchantOverviewExample merchantOverviewExample = new MerchantOverviewExample();
 
         MerchantOverviewExample.Criteria criteria = merchantOverviewExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
+
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
         criteria.andStatisticStartTimeBetween(startDate, endDate);
 

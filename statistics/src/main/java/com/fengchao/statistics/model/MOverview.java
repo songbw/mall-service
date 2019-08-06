@@ -17,7 +17,9 @@ public class MOverview {
 
     private Integer orderUserCount;
 
-    private Integer refundUserCount;
+    private Integer refundOrderCount;
+
+    private Date statisticsDate;
 
     private Date statisticStartTime;
 
@@ -87,12 +89,20 @@ public class MOverview {
         this.orderUserCount = orderUserCount;
     }
 
-    public Integer getRefundUserCount() {
-        return refundUserCount;
+    public Integer getRefundOrderCount() {
+        return refundOrderCount;
     }
 
-    public void setRefundUserCount(Integer refundUserCount) {
-        this.refundUserCount = refundUserCount;
+    public void setRefundOrderCount(Integer refundOrderCount) {
+        this.refundOrderCount = refundOrderCount;
+    }
+
+    public Date getStatisticsDate() {
+        return statisticsDate;
+    }
+
+    public void setStatisticsDate(Date statisticsDate) {
+        this.statisticsDate = statisticsDate;
     }
 
     public Date getStatisticStartTime() {

@@ -9,7 +9,8 @@
     <result column="order_amount" jdbcType="BIGINT" property="orderAmount" />
     <result column="order_count" jdbcType="INTEGER" property="orderCount" />
     <result column="order_user_count" jdbcType="INTEGER" property="orderUserCount" />
-    <result column="refund_user_count" jdbcType="INTEGER" property="refundUserCount" />
+    <result column="refund_order_count" jdbcType="INTEGER" property="refundOrderCount" />
+    <result column="statistics_date" jdbcType="DATE" property="statisticsDate" />
     <result column="statistic_start_time" jdbcType="TIMESTAMP" property="statisticStartTime" />
     <result column="statistic_end_time" jdbcType="TIMESTAMP" property="statisticEndTime" />
     <result column="period_type" jdbcType="SMALLINT" property="periodType" />
@@ -77,8 +78,8 @@
   </sql>
   <sql id="Base_Column_List">
     id, merchant_id, merchant_code, merchant_name, order_amount, order_count, order_user_count, 
-    refund_user_count, statistic_start_time, statistic_end_time, period_type, istatus, 
-    create_time, update_time
+    refund_order_count, statistics_date, statistic_start_time, statistic_end_time, period_type, 
+    istatus, create_time, update_time
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.statistics.model.MOverviewExample" resultMap="BaseResultMap">
     select
@@ -113,12 +114,12 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.statistics.model.MOverview" useGeneratedKeys="true">
     insert into m_overview (merchant_id, merchant_code, merchant_name, 
       order_amount, order_count, order_user_count, 
-      refund_user_count, statistic_start_time, 
+      refund_order_count, statistics_date, statistic_start_time, 
       statistic_end_time, period_type, istatus, 
       create_time, update_time)
     values (#{merchantId,jdbcType=INTEGER}, #{merchantCode,jdbcType=VARCHAR}, #{merchantName,jdbcType=VARCHAR}, 
       #{orderAmount,jdbcType=BIGINT}, #{orderCount,jdbcType=INTEGER}, #{orderUserCount,jdbcType=INTEGER}, 
-      #{refundUserCount,jdbcType=INTEGER}, #{statisticStartTime,jdbcType=TIMESTAMP}, 
+      #{refundOrderCount,jdbcType=INTEGER}, #{statisticsDate,jdbcType=DATE}, #{statisticStartTime,jdbcType=TIMESTAMP}, 
       #{statisticEndTime,jdbcType=TIMESTAMP}, #{periodType,jdbcType=SMALLINT}, #{istatus,jdbcType=SMALLINT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
@@ -143,8 +144,11 @@
       <if test="orderUserCount != null">
         order_user_count,
       </if>
-      <if test="refundUserCount != null">
-        refund_user_count,
+      <if test="refundOrderCount != null">
+        refund_order_count,
+      </if>
+      <if test="statisticsDate != null">
+        statistics_date,
       </if>
       <if test="statisticStartTime != null">
         statistic_start_time,
@@ -184,8 +188,11 @@
       <if test="orderUserCount != null">
         #{orderUserCount,jdbcType=INTEGER},
       </if>
-      <if test="refundUserCount != null">
-        #{refundUserCount,jdbcType=INTEGER},
+      <if test="refundOrderCount != null">
+        #{refundOrderCount,jdbcType=INTEGER},
+      </if>
+      <if test="statisticsDate != null">
+        #{statisticsDate,jdbcType=DATE},
       </if>
       <if test="statisticStartTime != null">
         #{statisticStartTime,jdbcType=TIMESTAMP},
@@ -237,8 +244,11 @@
       <if test="record.orderUserCount != null">
         order_user_count = #{record.orderUserCount,jdbcType=INTEGER},
       </if>
-      <if test="record.refundUserCount != null">
-        refund_user_count = #{record.refundUserCount,jdbcType=INTEGER},
+      <if test="record.refundOrderCount != null">
+        refund_order_count = #{record.refundOrderCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.statisticsDate != null">
+        statistics_date = #{record.statisticsDate,jdbcType=DATE},
       </if>
       <if test="record.statisticStartTime != null">
         statistic_start_time = #{record.statisticStartTime,jdbcType=TIMESTAMP},
@@ -272,7 +282,8 @@
       order_amount = #{record.orderAmount,jdbcType=BIGINT},
       order_count = #{record.orderCount,jdbcType=INTEGER},
       order_user_count = #{record.orderUserCount,jdbcType=INTEGER},
-      refund_user_count = #{record.refundUserCount,jdbcType=INTEGER},
+      refund_order_count = #{record.refundOrderCount,jdbcType=INTEGER},
+      statistics_date = #{record.statisticsDate,jdbcType=DATE},
       statistic_start_time = #{record.statisticStartTime,jdbcType=TIMESTAMP},
       statistic_end_time = #{record.statisticEndTime,jdbcType=TIMESTAMP},
       period_type = #{record.periodType,jdbcType=SMALLINT},
@@ -304,8 +315,11 @@
       <if test="orderUserCount != null">
         order_user_count = #{orderUserCount,jdbcType=INTEGER},
       </if>
-      <if test="refundUserCount != null">
-        refund_user_count = #{refundUserCount,jdbcType=INTEGER},
+      <if test="refundOrderCount != null">
+        refund_order_count = #{refundOrderCount,jdbcType=INTEGER},
+      </if>
+      <if test="statisticsDate != null">
+        statistics_date = #{statisticsDate,jdbcType=DATE},
       </if>
       <if test="statisticStartTime != null">
         statistic_start_time = #{statisticStartTime,jdbcType=TIMESTAMP},
@@ -336,7 +350,8 @@
       order_amount = #{orderAmount,jdbcType=BIGINT},
       order_count = #{orderCount,jdbcType=INTEGER},
       order_user_count = #{orderUserCount,jdbcType=INTEGER},
-      refund_user_count = #{refundUserCount,jdbcType=INTEGER},
+      refund_order_count = #{refundOrderCount,jdbcType=INTEGER},
+      statistics_date = #{statisticsDate,jdbcType=DATE},
       statistic_start_time = #{statisticStartTime,jdbcType=TIMESTAMP},
       statistic_end_time = #{statisticEndTime,jdbcType=TIMESTAMP},
       period_type = #{periodType,jdbcType=SMALLINT},

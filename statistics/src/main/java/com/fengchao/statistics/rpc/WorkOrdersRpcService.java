@@ -1,12 +1,8 @@
 package com.fengchao.statistics.rpc;
 
-import com.alibaba.fastjson.JSON;
 import com.fengchao.statistics.bean.OperaResponse;
-import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.feign.OrderServiceClient;
 import com.fengchao.statistics.feign.WorkOrdersServiceClient;
-import com.fengchao.statistics.rpc.extmodel.DayStatisticsBean;
-import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
+import com.fengchao.statistics.rpc.extmodel.WorkOrder;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +49,40 @@ public class WorkOrdersRpcService {
             log.warn("查询已支付的子订单 调用workorders rpc服务 错误!");
         }
 
-        log.info("OrdersRpcService#statisticOrdersAmountByCategory 调用workorders rpc服务 返回:{}",
+        log.info("WorkOrdersRpcService#queryRefundOrdersCount 调用workorders rpc服务 返回:{}",
                 JSONUtil.toJsonString(refundOrdersCount));
 
         return refundOrdersCount;
     }
 
+    /**
+     * 根据时间范围获取退货信息列表
+     *
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List<WorkOrder> queryRefundInfoList(String startDateTime, String endDateTime) {
+        // 返回值
+        List<WorkOrder> workOrderList = new ArrayList<>();
+
+        // 执行rpc调用
+        log.info("根据时间范围获取退货信息列表 调用workorders rpc服务 入参:无");
+        OperaResponse<List<WorkOrder>> operaResponse =
+                workOrdersServiceClient.queryRefundInfoList(startDateTime, endDateTime);
+        log.info("根据时间范围获取退货信息列表 调用workorders rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        // 处理返回
+        if (operaResponse.getCode() == 200) {
+            workOrderList = operaResponse.getData();
+        } else {
+            log.warn("根据时间范围获取退货信息列表 调用workorders rpc服务 错误!");
+        }
+
+        log.info("WorkOrdersRpcService#queryRefundInfoList 调用workorders rpc服务 返回:{}",
+                JSONUtil.toJsonString(workOrderList));
+
+        return workOrderList;
+    }
 
 }

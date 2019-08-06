@@ -42,7 +42,7 @@ public class MerchantRangeStatisticController {
             }
 
             Map<String, List<MerchantCityRangeStatisticResVo>> resultMap =
-                    merchantStatisticService.fetchStatisticDailyResult(startDate, endDate, merchantId);
+                    merchantStatisticService.fetchOrderAmountTrend(startDate, endDate, merchantId);
             operaResponse.setData(resultMap);
         } catch (Exception e) {
             log.info("根据时间范围获取按商户-城市(天)维度的统计结果 异常:{}", e.getMessage(), e);

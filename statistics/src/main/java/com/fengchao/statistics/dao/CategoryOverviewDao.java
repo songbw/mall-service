@@ -1,5 +1,6 @@
 package com.fengchao.statistics.dao;
 
+import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.mapper.CategoryOverviewMapper;
 import com.fengchao.statistics.model.CategoryOverview;
@@ -68,6 +69,8 @@ public class CategoryOverviewDao {
         CategoryOverviewExample categoryOverviewExample = new CategoryOverviewExample();
 
         CategoryOverviewExample.Criteria criteria = categoryOverviewExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
+
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
         criteria.andStatisticStartTimeBetween(startDate, endDate);
 

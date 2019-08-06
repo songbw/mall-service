@@ -1,5 +1,6 @@
 package com.fengchao.statistics.dao;
 
+import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.mapper.MCityOrderamountMapper;
 import com.fengchao.statistics.model.MCityOrderamount;
@@ -30,7 +31,7 @@ public class MCityOrderAmountDao {
      * @param mCityOrderamount
      * @return
      */
-    public int insertCategoryOverview(MCityOrderamount mCityOrderamount) {
+    public int insertMCityOrderAmount(MCityOrderamount mCityOrderamount) {
         int id = mCityOrderamountMapper.insertSelective(mCityOrderamount);
         return id;
     }
@@ -43,8 +44,8 @@ public class MCityOrderAmountDao {
      * @param statisticEndDate
      * @return
      */
-    public int deleteCategoryOverviewByPeriodTypeAndStatisticDate(Short period,
-                                                                  Date statisticStartDate, Date statisticEndDate) {
+    public int deleteByPeriodTypeAndStatisticDate(Short period,
+                                                  Date statisticStartDate, Date statisticEndDate) {
         MCityOrderamountExample mCityOrderamountExample = new MCityOrderamountExample();
 
         MCityOrderamountExample.Criteria criteria = mCityOrderamountExample.createCriteria();
@@ -60,16 +61,20 @@ public class MCityOrderAmountDao {
     /**
      * 根据时间范围获取daily型的统计数据
      *
-     * @param startDate
-     * @param endDate
+     * @param startDateTime
+     * @param endDateTime
      * @return
      */
-    public List<MCityOrderamount> selectDailyCategoryOverviewsByDateRange(Date startDate, Date endDate) {
+    public List<MCityOrderamount> selectDailyStatisticByDateRange(Date startDateTime, Date endDateTime, Integer merchantId) {
         MCityOrderamountExample mCityOrderamountExample = new MCityOrderamountExample();
 
         MCityOrderamountExample.Criteria criteria = mCityOrderamountExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
+
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
-        criteria.andStatisticStartTimeBetween(startDate, endDate);
+        criteria.andStatisticStartTimeBetween(startDateTime, endDateTime);
+        criteria.andMerchantIdEqualTo(merchantId);
+
 
         List<MCityOrderamount> mCityOrderamountList =
                 mCityOrderamountMapper.selectByExample(mCityOrderamountExample);

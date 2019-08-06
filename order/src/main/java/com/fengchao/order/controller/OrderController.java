@@ -140,6 +140,13 @@ public class OrderController {
         return result;
     }
 
+    /**
+     * 获取平台的订单相关整体运营统计数据
+     * 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
+     *
+     * @param operaResponse
+     * @return
+     */
     @GetMapping("/statistics")
     private OperaResponse statistics(OperaResponse operaResponse) {
         log.info("获取平台的关于订单的总体统计数据 入参:无");
@@ -155,6 +162,33 @@ public class OrderController {
         }
 
         log.info("获取平台的关于订单的总体统计数据 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        return operaResponse;
+    }
+
+    /**
+     * 获取商户的订单相关整体运营数据
+     * 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
+     *
+     * @param merchantId
+     * @return
+     */
+    @GetMapping("/merchant/statistics")
+    private OperaResponse merchantStatistics(@RequestParam("merchantId") Integer merchantId) {
+        OperaResponse operaResponse = new OperaResponse();
+        log.info("获取商户的关于订单的总体统计数据 入参merchantId:{}", merchantId);
+
+        try {
+            DayStatisticsBean dayStatisticsBean = service.findOverviewStatistics();
+            operaResponse.setData(dayStatisticsBean);
+        } catch (Exception e) {
+            log.error("获取商户的关于订单的总体统计数据 异常:{}", e.getMessage(), e);
+
+            operaResponse.setCode(500);
+            operaResponse.setMsg("获取商户的关于订单的总体统计数据异常");
+        }
+
+        log.info("获取商户的关于订单的总体统计数据 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         return operaResponse;
     }

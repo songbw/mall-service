@@ -245,6 +245,38 @@ public class DateUtil {
         return localTime;
     }
 
+    /**
+     * 比较日期
+     *
+     * @param date1
+     * @param format1
+     * @param date2
+     * @param format2
+     * @return
+     */
+    public static int compareDate(String date1, String format1, String date2, String format2) {
+        LocalDate localDate1 = LocalDate.parse(date1, DateTimeFormatter.ofPattern(format1));
+        LocalDate localDate2 = LocalDate.parse(date2, DateTimeFormatter.ofPattern(format2));
+
+        return localDate1.compareTo(localDate2);
+    }
+
+    /**
+     * 比较时间
+     *
+     * @param date1
+     * @param format1
+     * @param date2
+     * @param format2
+     * @return
+     */
+    public static int compareDateTime(String date1, String format1, String date2, String format2) {
+        LocalDateTime localDateTime1 = LocalDateTime.parse(date1, DateTimeFormatter.ofPattern(format1));
+        LocalDateTime localDateTime2 = LocalDateTime.parse(date2, DateTimeFormatter.ofPattern(format2));
+
+        return localDateTime1.compareTo(localDateTime2);
+    }
+
     public static void main(String args[]) {
         System.out.println(convertToLocalTime("21:42:58", DateUtil.TIME_HH_mm_ss).toString());
     }

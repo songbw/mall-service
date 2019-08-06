@@ -15,4 +15,9 @@ public class WorkOrderServiceClientH implements WorkOrdersServiceClient {
     public OperaResponse refundOrdersCount() {
         return HystrixDefaultFallback.fallbackResponse(cause);
     }
+
+    @Override
+    public OperaResponse queryRefundInfoList(String startDateTime, String endDateTime) {
+        return HystrixDefaultFallback.fallbackResponse(cause);
+    }
 }

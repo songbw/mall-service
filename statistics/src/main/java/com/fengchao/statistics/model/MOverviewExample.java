@@ -2,6 +2,7 @@ package com.fengchao.statistics.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class MOverviewExample {
@@ -103,6 +104,32 @@ public class MOverviewExample {
                 throw new RuntimeException("Between values for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value1, value2));
+        }
+
+        protected void addCriterionForJDBCDate(String condition, Date value, String property) {
+            if (value == null) {
+                throw new RuntimeException("Value for " + property + " cannot be null");
+            }
+            addCriterion(condition, new java.sql.Date(value.getTime()), property);
+        }
+
+        protected void addCriterionForJDBCDate(String condition, List<Date> values, String property) {
+            if (values == null || values.size() == 0) {
+                throw new RuntimeException("Value list for " + property + " cannot be null or empty");
+            }
+            List<java.sql.Date> dateList = new ArrayList<java.sql.Date>();
+            Iterator<Date> iter = values.iterator();
+            while (iter.hasNext()) {
+                dateList.add(new java.sql.Date(iter.next().getTime()));
+            }
+            addCriterion(condition, dateList, property);
+        }
+
+        protected void addCriterionForJDBCDate(String condition, Date value1, Date value2, String property) {
+            if (value1 == null || value2 == null) {
+                throw new RuntimeException("Between values for " + property + " cannot be null");
+            }
+            addCriterion(condition, new java.sql.Date(value1.getTime()), new java.sql.Date(value2.getTime()), property);
         }
 
         public Criteria andIdIsNull() {
@@ -545,63 +572,123 @@ public class MOverviewExample {
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountIsNull() {
-            addCriterion("refund_user_count is null");
+        public Criteria andRefundOrderCountIsNull() {
+            addCriterion("refund_order_count is null");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountIsNotNull() {
-            addCriterion("refund_user_count is not null");
+        public Criteria andRefundOrderCountIsNotNull() {
+            addCriterion("refund_order_count is not null");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountEqualTo(Integer value) {
-            addCriterion("refund_user_count =", value, "refundUserCount");
+        public Criteria andRefundOrderCountEqualTo(Integer value) {
+            addCriterion("refund_order_count =", value, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountNotEqualTo(Integer value) {
-            addCriterion("refund_user_count <>", value, "refundUserCount");
+        public Criteria andRefundOrderCountNotEqualTo(Integer value) {
+            addCriterion("refund_order_count <>", value, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountGreaterThan(Integer value) {
-            addCriterion("refund_user_count >", value, "refundUserCount");
+        public Criteria andRefundOrderCountGreaterThan(Integer value) {
+            addCriterion("refund_order_count >", value, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountGreaterThanOrEqualTo(Integer value) {
-            addCriterion("refund_user_count >=", value, "refundUserCount");
+        public Criteria andRefundOrderCountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("refund_order_count >=", value, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountLessThan(Integer value) {
-            addCriterion("refund_user_count <", value, "refundUserCount");
+        public Criteria andRefundOrderCountLessThan(Integer value) {
+            addCriterion("refund_order_count <", value, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountLessThanOrEqualTo(Integer value) {
-            addCriterion("refund_user_count <=", value, "refundUserCount");
+        public Criteria andRefundOrderCountLessThanOrEqualTo(Integer value) {
+            addCriterion("refund_order_count <=", value, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountIn(List<Integer> values) {
-            addCriterion("refund_user_count in", values, "refundUserCount");
+        public Criteria andRefundOrderCountIn(List<Integer> values) {
+            addCriterion("refund_order_count in", values, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountNotIn(List<Integer> values) {
-            addCriterion("refund_user_count not in", values, "refundUserCount");
+        public Criteria andRefundOrderCountNotIn(List<Integer> values) {
+            addCriterion("refund_order_count not in", values, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountBetween(Integer value1, Integer value2) {
-            addCriterion("refund_user_count between", value1, value2, "refundUserCount");
+        public Criteria andRefundOrderCountBetween(Integer value1, Integer value2) {
+            addCriterion("refund_order_count between", value1, value2, "refundOrderCount");
             return (Criteria) this;
         }
 
-        public Criteria andRefundUserCountNotBetween(Integer value1, Integer value2) {
-            addCriterion("refund_user_count not between", value1, value2, "refundUserCount");
+        public Criteria andRefundOrderCountNotBetween(Integer value1, Integer value2) {
+            addCriterion("refund_order_count not between", value1, value2, "refundOrderCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateIsNull() {
+            addCriterion("statistics_date is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateIsNotNull() {
+            addCriterion("statistics_date is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateEqualTo(Date value) {
+            addCriterionForJDBCDate("statistics_date =", value, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateNotEqualTo(Date value) {
+            addCriterionForJDBCDate("statistics_date <>", value, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateGreaterThan(Date value) {
+            addCriterionForJDBCDate("statistics_date >", value, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateGreaterThanOrEqualTo(Date value) {
+            addCriterionForJDBCDate("statistics_date >=", value, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateLessThan(Date value) {
+            addCriterionForJDBCDate("statistics_date <", value, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateLessThanOrEqualTo(Date value) {
+            addCriterionForJDBCDate("statistics_date <=", value, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateIn(List<Date> values) {
+            addCriterionForJDBCDate("statistics_date in", values, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateNotIn(List<Date> values) {
+            addCriterionForJDBCDate("statistics_date not in", values, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateBetween(Date value1, Date value2) {
+            addCriterionForJDBCDate("statistics_date between", value1, value2, "statisticsDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatisticsDateNotBetween(Date value1, Date value2) {
+            addCriterionForJDBCDate("statistics_date not between", value1, value2, "statisticsDate");
             return (Criteria) this;
         }
 

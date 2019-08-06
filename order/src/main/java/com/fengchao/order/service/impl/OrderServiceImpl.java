@@ -501,6 +501,22 @@ public class OrderServiceImpl implements OrderService {
         return dayStatisticsBean;
     }
 
+    public DayStatisticsBean findMerchantOverallStatistics() throws Exception {
+
+        // 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
+        int dayPaymentCount = orderMapper.selectPayedOrdersAmount(); // 获取订单支付总额 SUM(sale_amount)
+        int dayCount = orderMapper.selectPayedOrdersCount(); // (已支付)订单总量 count(id) FROM orders
+        int dayPeopleCount = orderMapper.selectPayedOdersUserCount(); // (已支付)下单人数 count(DISTINCT(open_id))
+
+        DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
+        dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);
+        dayStatisticsBean.setOrderCount(dayCount);
+        dayStatisticsBean.setOrderPeopleNum(dayPeopleCount);
+
+        logger.info("获取平台的关于订单的总体统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
+        return dayStatisticsBean;
+    }
+
     public String queryLogisticsInfo(String logisticsId) {
         String comcode = orderDetailXMapper.selectComCode(logisticsId);
         if(comcode == null || comcode.equals("")){

@@ -2,9 +2,9 @@ package com.fengchao.statistics.dao;
 
 import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
-import com.fengchao.statistics.mapper.PromotionOverviewMapper;
-import com.fengchao.statistics.model.PromotionOverview;
-import com.fengchao.statistics.model.PromotionOverviewExample;
+import com.fengchao.statistics.mapper.MOverviewMapper;
+import com.fengchao.statistics.model.MOverview;
+import com.fengchao.statistics.model.MOverviewExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,26 +13,26 @@ import java.util.List;
 
 /**
  * @Author tom
- * @Date 19-7-26 下午6:41
+ * @Date 19-7-25 下午5:17
  */
 @Component
-public class PromotionOverviewDao {
+public class MOverviewDao {
 
-    private PromotionOverviewMapper promotionOverviewMapper;
+    private MOverviewMapper mOverviewMapper;
 
     @Autowired
-    public PromotionOverviewDao(PromotionOverviewMapper promotionOverviewMapper) {
-        this.promotionOverviewMapper = promotionOverviewMapper;
+    public MOverviewDao(MOverviewMapper mOverviewMapper) {
+        this.mOverviewMapper = mOverviewMapper;
     }
 
     /**
      * 新增
      *
-     * @param promotionOverview
+     * @param mOverview
      * @return
      */
-    public int insertCategoryOverview(PromotionOverview promotionOverview) {
-        int id = promotionOverviewMapper.insertSelective(promotionOverview);
+    public int insertMOverview(MOverview mOverview) {
+        int id = mOverviewMapper.insertSelective(mOverview);
         return id;
     }
 
@@ -46,14 +46,14 @@ public class PromotionOverviewDao {
      */
     public int deleteByPeriodTypeAndStatisticDate(Short period,
                                                   Date statisticStartDate, Date statisticEndDate) {
-        PromotionOverviewExample promotionOverviewExample = new PromotionOverviewExample();
+        MOverviewExample mOverviewExample = new MOverviewExample();
 
-        PromotionOverviewExample.Criteria criteria = promotionOverviewExample.createCriteria();
+        MOverviewExample.Criteria criteria = mOverviewExample.createCriteria();
         criteria.andPeriodTypeEqualTo(period);
         criteria.andStatisticStartTimeEqualTo(statisticStartDate);
         criteria.andStatisticEndTimeEqualTo(statisticEndDate);
 
-        int count = promotionOverviewMapper.deleteByExample(promotionOverviewExample);
+        int count = mOverviewMapper.deleteByExample(mOverviewExample);
 
         return count;
     }
@@ -65,18 +65,19 @@ public class PromotionOverviewDao {
      * @param endDate
      * @return
      */
-    public List<PromotionOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate) {
-        PromotionOverviewExample promotionOverviewExample = new PromotionOverviewExample();
+    public List<MOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate, Integer merchantId) {
+        MOverviewExample mOverviewExample = new MOverviewExample();
 
-        PromotionOverviewExample.Criteria criteria = promotionOverviewExample.createCriteria();
+        MOverviewExample.Criteria criteria = mOverviewExample.createCriteria();
         criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
 
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
         criteria.andStatisticStartTimeBetween(startDate, endDate);
+        criteria.andMerchantIdEqualTo(merchantId);
 
-        List<PromotionOverview> promotionOverviewList =
-                promotionOverviewMapper.selectByExample(promotionOverviewExample);
+        List<MOverview> mOverviewList =
+                mOverviewMapper.selectByExample(mOverviewExample);
 
-        return promotionOverviewList;
+        return mOverviewList;
     }
 }

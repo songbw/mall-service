@@ -6,6 +6,7 @@ import com.fengchao.statistics.feign.hystric.WorkOrderServiceClientH;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "workorders", fallback = WorkOrderServiceClientH.class)
 public interface WorkOrdersServiceClient {
@@ -17,4 +18,15 @@ public interface WorkOrdersServiceClient {
      */
     @RequestMapping(value = "/work_orders/refunds", method = RequestMethod.GET)
     OperaResponse refundOrdersCount();
+
+    /**
+     * 根据时间范围获取退货信息列表
+     *
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    @RequestMapping(value = "/work_orders/refunds/list", method = RequestMethod.GET)
+    OperaResponse queryRefundInfoList(@RequestParam("timeStart") String startDateTime,
+                                      @RequestParam("timeEnd") String endDateTime);
 }
