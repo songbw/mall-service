@@ -8,6 +8,7 @@
         <version>2.1.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com.fengchao</groupId>
     <artifactId>equity</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -208,12 +209,12 @@
             </exclusions>
         </dependency>
 
-        <!-- CAT 监控 -->
+        <!-- CAT 监控
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
             <version>3.0.0</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <dependencyManagement>

@@ -11,7 +11,7 @@ import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
 import com.fengchao.order.feign.AoyiClientService;
-import com.fengchao.order.feign.EquityService;
+import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
     private AoyiBaseFulladdressMapper addressMapper;
 
     @Autowired
-    private EquityService equityService;
+    private EquityServiceClient equityService;
 
     @Autowired
     private JobClient jobClient;
