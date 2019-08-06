@@ -22,6 +22,11 @@ public class OrderServiceClientH implements OrderServiceClient {
     }
 
     @Override
+    public OperaResponse<DayStatisticsBean> merchantStatistics(Integer merchantId) {
+        return HystrixDefaultFallback.fallbackResponse(cause);
+    }
+
+    @Override
     public OperaResult paymentCount(String start, String end) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }

@@ -12,7 +12,7 @@ import lombok.Setter;
 public class MOverallResVo {
 
     /**
-     * 订单总额
+     * 订单总额 单位元
      */
     private String orderAmount;
 

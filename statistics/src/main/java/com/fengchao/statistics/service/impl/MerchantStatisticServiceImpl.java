@@ -7,8 +7,10 @@ import com.fengchao.statistics.dao.MCityOrderAmountDao;
 import com.fengchao.statistics.dao.MOverviewDao;
 import com.fengchao.statistics.model.MCityOrderamount;
 import com.fengchao.statistics.model.MOverview;
+import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.VendorsRpcService;
 import com.fengchao.statistics.rpc.WorkOrdersRpcService;
+import com.fengchao.statistics.rpc.extmodel.DayStatisticsBean;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import com.fengchao.statistics.rpc.extmodel.SysCompany;
 import com.fengchao.statistics.rpc.extmodel.WorkOrder;
@@ -42,6 +44,9 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
     @Autowired
     private MCityOrderAmountDao mCityOrderAmountDao;
+
+    @Autowired
+    private OrdersRpcService ordersRpcService;
 
     @Override
     @Deprecated
@@ -150,8 +155,8 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
     @Override
     public void statisticDailyOrderAmountByCity(List<OrderDetailBean> orderDetailBeanList,
-                                               String startDateTime,
-                                               String endDateTime, Date statisticDate) throws Exception {
+                                                String startDateTime,
+                                                String endDateTime, Date statisticDate) throws Exception {
         try {
             // 1. 根据商户id维度将订单详情分类
             Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = divideOrderDetailByMerchantId(orderDetailBeanList);
@@ -235,7 +240,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
             log.info("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!");
         } catch (Exception e) {
             log.error("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常:{}",
-                    startDateTime, endDateTime , e.getMessage(), e);
+                    startDateTime, endDateTime, e.getMessage(), e);
         }
     }
 
@@ -245,35 +250,22 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
     }
 
     @Override
-    public MOverallResVo fetchOverAll(String startDate, String endDate, Integer merchantId) throws Exception {
-        // 1. 查询数据库
-        Date _startDate = DateUtil.parseDateTime(startDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-        Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-        log.info("查询商户整体运营数据 数据库入参 日期范围: {} - {}, merchantId:{}",
-                _startDate, _endDate, merchantId);
-        List<MOverview> mOverviewList = mOverviewDao.selectDailyStatisticByDateRange(_startDate, _endDate, merchantId);
-        log.info("查询商户整体运营数据 数据库返回:{}", JSONUtil.toJsonString(mOverviewList));
+    public MOverallResVo fetchOverAll(Integer merchantId) throws Exception {
+        // 1. 查询订单相关的整体运营数据
+        // a.获取订单支付总额 b.(已支付)订单总量 c.(已支付)下单人数
+        DayStatisticsBean dayStatisticsBean = ordersRpcService.queryMerchantOrdersOverallStatistic(merchantId);
 
-        // 2. 组装统计数据
-        Long orderAmount = 0L;
-        Integer orderCount = 0;
-        Integer orderUserCount = 0; // 下单人数
-        Integer refundOrderCount = 0; // 退货单数
-        for (MOverview mOverview : mOverviewList) {
-            orderAmount = orderAmount + mOverview.getOrderAmount();
-            orderCount = orderCount + mOverview.getOrderCount();
-            orderUserCount = orderUserCount + mOverview.getOrderUserCount();
-            refundOrderCount = refundOrderCount + mOverview.getRefundOrderCount();
-        }
+        // 2. 查询该商户的退货人数
+        Integer refundUserCount = 0; // workOrdersRpcService.queryRefundInfoList();
 
+        // 3. 组装返回数据
         MOverallResVo mOverallResVo = new MOverallResVo();
-        mOverallResVo.setOrderAmount(new BigDecimal(orderAmount).divide(new BigDecimal(100)).toString());
-        mOverallResVo.setOrderCount(orderCount);
-        mOverallResVo.setOrderUserCount(orderUserCount);
-        mOverallResVo.setRefundOrderCount(refundOrderCount);
+        mOverallResVo.setOrderAmount(new BigDecimal(dayStatisticsBean.getOrderPaymentAmount()).toString()); // 订单总额
+        mOverallResVo.setOrderCount(dayStatisticsBean.getOrderCount()); // 订单总量
+        mOverallResVo.setOrderUserCount(dayStatisticsBean.getOrderPeopleNum()); // 下单人数
+        mOverallResVo.setRefundOrderCount(refundUserCount); // 退货单数
 
-        log.info("查询商户整体运营数据 日期范围: {} - {}, merchantId:{} 获取的统计数据为:{}",
-                startDate, endDate, merchantId, JSONUtil.toJsonString(mOverallResVo));
+        log.info("查询商户整体运营数据 merchantId:{} 获取的统计数据为:{}", merchantId, JSONUtil.toJsonString(mOverallResVo));
 
         return mOverallResVo;
     }
@@ -340,7 +332,6 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
         return cityRangeMap;
     }
-
 
 
     // ======================================== private ==========================================

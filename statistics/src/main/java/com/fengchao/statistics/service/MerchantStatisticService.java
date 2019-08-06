@@ -59,13 +59,11 @@ public interface MerchantStatisticService {
     /**
      * 商户整体运营数据
      *
-     * @param startDate
-     * @param endDate
      * @param merchantId
      * @return
      * @throws Exception
      */
-    MOverallResVo fetchOverAll(String startDate, String endDate, Integer merchantId) throws Exception;
+    MOverallResVo fetchOverAll(Integer merchantId) throws Exception;
 
     /**
      * 订单支付总额变化趋势

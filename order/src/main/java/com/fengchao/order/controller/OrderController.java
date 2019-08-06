@@ -174,40 +174,24 @@ public class OrderController {
      * @return
      */
     @GetMapping("/merchant/statistics")
-    private OperaResponse merchantStatistics(@RequestParam("merchantId") Integer merchantId) {
-        OperaResponse operaResponse = new OperaResponse();
-        log.info("获取商户的关于订单的总体统计数据 入参merchantId:{}", merchantId);
+    private OperaResponse<DayStatisticsBean> merchantStatistics(@RequestParam("merchantId") Integer merchantId) {
+        OperaResponse<DayStatisticsBean> operaResponse = new OperaResponse();
+        log.info("获取商户的关于订单的总体运营统计数据 入参merchantId:{}", merchantId);
 
         try {
-            DayStatisticsBean dayStatisticsBean = service.findOverviewStatistics();
+            DayStatisticsBean dayStatisticsBean = service.findMerchantOverallStatistics(merchantId);
             operaResponse.setData(dayStatisticsBean);
         } catch (Exception e) {
-            log.error("获取商户的关于订单的总体统计数据 异常:{}", e.getMessage(), e);
+            log.error("获取商户的关于订单的总体运营统计数据 异常:{}", e.getMessage(), e);
 
             operaResponse.setCode(500);
-            operaResponse.setMsg("获取商户的关于订单的总体统计数据异常");
+            operaResponse.setMsg("获取商户的关于订单的总体运营统计数据异常");
         }
 
-        log.info("获取商户的关于订单的总体统计数据 返回:{}", JSONUtil.toJsonString(operaResponse));
+        log.info("获取商户的关于订单的总体运营统计数据 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         return operaResponse;
     }
-
-//    @GetMapping("/payment/count")
-//    private OperaResult paymentCount(String start, String end, OperaResult result) {
-//        if (StringUtils.isEmpty(start)) {
-//            result.setCode(4000002);
-//            result.setMsg("start 不能为空。");
-//            return result;
-//        }
-//        if (StringUtils.isEmpty(end)) {
-//            result.setCode(4000003);
-//            result.setMsg("end 不能为空。");
-//            return result;
-//        }
-//        result.getData().put("result", service.findDayPaymentCount(start, end)) ;
-//        return result;
-//    }
 
     @GetMapping("/payment/promotion/count")
     private OperaResult paymentPromotionCount(String start, String end, OperaResult result) {

@@ -28,7 +28,7 @@ public class WorkOrdersRpcService {
     }
 
     /**
-     * 查询退货人数
+     * 查询退货单数
      *
      * @return
      */

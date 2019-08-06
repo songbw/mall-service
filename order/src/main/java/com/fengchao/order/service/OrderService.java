@@ -59,6 +59,19 @@ public interface OrderService {
      */
     DayStatisticsBean findOverviewStatistics() throws Exception;
 
+    /**
+     * 获取商户的关于订单的整体运营数据
+     *
+     * 1.获取订单支付总额-
+     * 2.(已支付)订单总量-
+     * ３.(已支付)下单人数-
+     *
+     * @param merchantId
+     * @return
+     * @throws Exception
+     */
+    DayStatisticsBean findMerchantOverallStatistics(Integer merchantId) throws Exception;
+
     String queryLogisticsInfo(String logisticsId);
 
     List<PromotionPaymentBean> findDayPromotionPaymentCount(String dayStart, String dayEnd) ;
