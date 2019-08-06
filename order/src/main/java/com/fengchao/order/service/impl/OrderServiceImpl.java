@@ -25,6 +25,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -71,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private AdminOrderDao adminOrderDao;
 
-
+    @Transactional
     @Override
     public OperaResult add2(OrderParamBean orderBean){
         OperaResult operaResult = new OperaResult();
@@ -230,6 +232,8 @@ public class OrderServiceImpl implements OrderService {
             operaResult.setCode(result.getCode());
             operaResult.setMsg(result.getMsg());
             // 异常数据库回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return  operaResult;
         }
         return operaResult;
     }
