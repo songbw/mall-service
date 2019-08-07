@@ -165,6 +165,66 @@ public class PromotionScheduleExample {
             return (Criteria) this;
         }
 
+        public Criteria andPromotionIdIsNull() {
+            addCriterion("promotion_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdIsNotNull() {
+            addCriterion("promotion_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdEqualTo(Integer value) {
+            addCriterion("promotion_id =", value, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdNotEqualTo(Integer value) {
+            addCriterion("promotion_id <>", value, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdGreaterThan(Integer value) {
+            addCriterion("promotion_id >", value, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("promotion_id >=", value, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdLessThan(Integer value) {
+            addCriterion("promotion_id <", value, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdLessThanOrEqualTo(Integer value) {
+            addCriterion("promotion_id <=", value, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdIn(List<Integer> values) {
+            addCriterion("promotion_id in", values, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdNotIn(List<Integer> values) {
+            addCriterion("promotion_id not in", values, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdBetween(Integer value1, Integer value2) {
+            addCriterion("promotion_id between", value1, value2, "promotionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPromotionIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("promotion_id not between", value1, value2, "promotionId");
+            return (Criteria) this;
+        }
+
         public Criteria andScheduleIsNull() {
             addCriterion("schedule is null");
             return (Criteria) this;
@@ -472,6 +532,66 @@ public class PromotionScheduleExample {
 
         public Criteria andUpdateTimeNotBetween(Date value1, Date value2) {
             addCriterion("update_time not between", value1, value2, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusIsNull() {
+            addCriterion("istatus is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusIsNotNull() {
+            addCriterion("istatus is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusEqualTo(Integer value) {
+            addCriterion("istatus =", value, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusNotEqualTo(Integer value) {
+            addCriterion("istatus <>", value, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusGreaterThan(Integer value) {
+            addCriterion("istatus >", value, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusGreaterThanOrEqualTo(Integer value) {
+            addCriterion("istatus >=", value, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusLessThan(Integer value) {
+            addCriterion("istatus <", value, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusLessThanOrEqualTo(Integer value) {
+            addCriterion("istatus <=", value, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusIn(List<Integer> values) {
+            addCriterion("istatus in", values, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusNotIn(List<Integer> values) {
+            addCriterion("istatus not in", values, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusBetween(Integer value1, Integer value2) {
+            addCriterion("istatus between", value1, value2, "istatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andIstatusNotBetween(Integer value1, Integer value2) {
+            addCriterion("istatus not between", value1, value2, "istatus");
             return (Criteria) this;
         }
     }

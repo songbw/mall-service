@@ -21,6 +21,8 @@ public class Promotion {
 
     private Long promotionTypeId;
 
+    private Boolean dailySchedule;
+
     public Integer getId() {
         return id;
     }
@@ -91,5 +93,13 @@ public class Promotion {
 
     public void setPromotionTypeId(Long promotionTypeId) {
         this.promotionTypeId = promotionTypeId;
+    }
+
+    public Boolean getDailySchedule() {
+        return dailySchedule;
+    }
+
+    public void setDailySchedule(Boolean dailySchedule) {
+        this.dailySchedule = dailySchedule;
     }
 }

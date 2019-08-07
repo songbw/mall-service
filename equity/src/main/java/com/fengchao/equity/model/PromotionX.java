@@ -28,6 +28,8 @@ public class PromotionX {
 
     private Long promotionTypeId;
 
+    private Boolean dailySchedule;
+
     private List<PromotionMpuX> promotionSkus;
 
     private List<PromotionSchedule> promotionSchedules;
@@ -129,5 +131,13 @@ public class PromotionX {
 
     public void setPromotionSchedules(List<PromotionSchedule> promotionSchedules) {
         this.promotionSchedules = promotionSchedules;
+    }
+
+    public Boolean getDailySchedule() {
+        return dailySchedule;
+    }
+
+    public void setDailySchedule(Boolean dailySchedule) {
+        this.dailySchedule = dailySchedule;
     }
 }

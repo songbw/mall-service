@@ -83,7 +83,6 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public int updatePromotion(PromotionX bean) {
 
-
         PromotionX promotionX  = promotionXMapper.selectByPrimaryKey(bean.getId());
         if(promotionX == null){
             return 0;
@@ -172,15 +171,19 @@ public class PromotionServiceImpl implements PromotionService {
         promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
         List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
         List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
-        OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
+
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
-        if (result.getCode() == 200) {
-            Object object = result.getData().get("result");
-            List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
-            for(AoyiProdIndex prod: aoyiProdIndices){
-                aoyiProdMap.put(prod.getMpu(), prod);
+        if(!mpuIdList.isEmpty()){
+            OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
+            if (result.getCode() == 200) {
+                Object object = result.getData().get("result");
+                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
+                for(AoyiProdIndex prod: aoyiProdIndices){
+                    aoyiProdMap.put(prod.getMpu(), prod);
+                }
             }
         }
+
         promotionMpus.forEach(promotionMpuX ->{
             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
             promotionMpuX.setImage(aoyiProdIndex.getImage());
@@ -190,14 +193,14 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpuX.setSprice(aoyiProdIndex.getSprice());
             promotionMpuX.setPrice(aoyiProdIndex.getPrice());
             promotionMpuX.setState(aoyiProdIndex.getState());
-            if(promotionMpuX.getScheduleId() != null){
-                PromotionSchedule schedule = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
-                promotionMpuX.setSchedule(schedule);
-            }
         });
         promotion.setPromotionSkus(promotionMpus);
-        List<PromotionSchedule> scheduleAll = scheduleDao.findScheduleAll(scheduleIdList);
-        promotion.setPromotionSchedules(scheduleAll);
+
+        if(!scheduleIdList.isEmpty()){
+            List<PromotionSchedule> scheduleAll = scheduleDao.findScheduleAll(scheduleIdList);
+            promotion.setPromotionSchedules(scheduleAll);
+        }
+
         return promotion;
     }
 
@@ -209,6 +212,7 @@ public class PromotionServiceImpl implements PromotionService {
             PromotionMpu promotionMpu = new PromotionMpu();
             promotionMpu.setId(promotionMpuX.getId());
             promotionMpu.setMpu(promotionMpuX.getMpu());
+            promotionMpu.setSkuid(promotionMpuX.getSkuid());
             promotionMpu.setDiscount(promotionMpuX.getDiscount());
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
@@ -225,6 +229,7 @@ public class PromotionServiceImpl implements PromotionService {
             PromotionMpu promotionMpu = new PromotionMpu();
             promotionMpu.setId(promotionMpuX.getId());
             promotionMpu.setMpu(promotionMpuX.getMpu());
+            promotionMpu.setSkuid(promotionMpuX.getSkuid());
             promotionMpu.setDiscount(promotionMpuX.getDiscount());
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
@@ -275,10 +280,10 @@ public class PromotionServiceImpl implements PromotionService {
                 promotionMpuX.setSprice(aoyiProdIndex.getSprice());
                 promotionMpuX.setPrice(aoyiProdIndex.getPrice());
                 promotionMpuX.setState(aoyiProdIndex.getState());
-                if(promotionMpuX.getScheduleId() != null){
-                    PromotionSchedule schedule = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
-                    promotionMpuX.setSchedule(schedule);
-                }
+//                if(promotionMpuX.getScheduleId() != null){
+//                    PromotionSchedule schedule = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
+//                    promotionMpuX.setSchedule(schedule);
+//                }
             });
             promotion.setPromotionSkus(promotionMpus);
         }

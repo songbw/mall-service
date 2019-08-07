@@ -2,9 +2,10 @@ package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.PromotionSchedule;
+import com.fengchao.equity.model.PromotionScheduleX;
 
 public interface PromotionScheduleService {
-    int createSchedule(PromotionSchedule bean);
+    int createSchedule(PromotionScheduleX bean);
 
     PageableData<PromotionSchedule> findSchedule(Integer offset, Integer limit);
 
@@ -12,5 +13,5 @@ public interface PromotionScheduleService {
 
     int deletePromotion(Integer id);
 
-    int updateSchedule(PromotionSchedule bean);
+    int updateSchedule(PromotionScheduleX bean);
 }
