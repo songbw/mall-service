@@ -85,7 +85,7 @@ public interface MerchantStatisticService {
      * @param startDate
      * @param endDate
      * @param merchantId
-     * @return
+     * @return map : key:yyyy-MM-dd value:MUserStatisticResVo
      * @throws Exception
      */
     Map<String, MUserStatisticResVo> fetchUserTrend(String startDate,

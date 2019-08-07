@@ -22,6 +22,7 @@ import com.fengchao.statistics.service.MerchantStatisticService;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -438,16 +439,21 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                 mStatisticUserDao.selectDailyStatisticByDateRange(_startDate, _endDate, merchantId);
         log.info("根据时间范围获取商户的用户变化趋势 数据库返回: {}", JSONUtil.toJsonString(mStatisticUserList));
 
+        if (CollectionUtils.isEmpty(mStatisticUserList)) {
+            return Collections.EMPTY_MAP;
+        }
+
         // 转map key：日期yyyy-MM-dd value: MStatisticUser
         Map<String, MStatisticUser> mStatisticUserMap = new HashMap<>();
         for (MStatisticUser mStatisticUser : mStatisticUserList) {
             String _date = DateUtil.dateTimeFormat(mStatisticUser.getStatisticStartTime(), DateUtil.DATE_YYYY_MM_DD);
             mStatisticUserMap.put(_date, mStatisticUser);
         }
+        log.info("根据时间范围获取商户的用户变化趋势 按日期分组结果:{}", JSONUtil.toJsonString(mStatisticUserMap));
 
         // 2. 统计数据
         // 补充后的数据
-        Map<String, MUserStatisticResVo> mUserStatisticResVoMap = new HashMap<>();
+        Map<String, MUserStatisticResVo> mUserStatisticResVoMap = new TreeMap<>(); // key:yyyy-MM-dd value:MUserStatisticResVo
         String currentDate = startDate; // 当前时间 yyyy-MM-dd
         while (DateUtil.compareDate(currentDate, DateUtil.DATE_YYYY_MM_DD, endDate, DateUtil.DATE_YYYY_MM_DD) <= 0) {
             MUserStatisticResVo mUserStatisticResVo = null; // 该天的统计数据
