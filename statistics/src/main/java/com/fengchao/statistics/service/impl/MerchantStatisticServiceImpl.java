@@ -345,10 +345,17 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
         // 3. 组装返回数据
         MOverallResVo mOverallResVo = new MOverallResVo();
-        mOverallResVo.setOrderAmount(new BigDecimal(dayStatisticsBean.getOrderPaymentAmount()).toString()); // 订单总额
-        mOverallResVo.setOrderCount(dayStatisticsBean.getOrderCount()); // 订单总量
-        mOverallResVo.setOrderUserCount(dayStatisticsBean.getOrderPeopleNum()); // 下单人数
-        mOverallResVo.setRefundOrderCount(refundUserCount); // 退货单数
+        if (dayStatisticsBean != null) {
+            mOverallResVo.setOrderAmount(new BigDecimal(dayStatisticsBean.getOrderPaymentAmount()).toString()); // 订单总额
+            mOverallResVo.setOrderCount(dayStatisticsBean.getOrderCount()); // 订单总量
+            mOverallResVo.setOrderUserCount(dayStatisticsBean.getOrderPeopleNum()); // 下单人数
+        } else {
+            mOverallResVo.setOrderAmount("0"); // 订单总额
+            mOverallResVo.setOrderCount(0); // 订单总量
+            mOverallResVo.setOrderUserCount(0); // 下单人数
+        }
+
+        mOverallResVo.setRefundUserCount(refundUserCount); // 退货人数
 
         log.info("查询商户整体运营数据 merchantId:{} 获取的统计数据为:{}", merchantId, JSONUtil.toJsonString(mOverallResVo));
 

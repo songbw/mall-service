@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HystrixDefaultFallback {
 
     public static OperaResult defaultFallback(Throwable cause) {
-        log.error(cause.getMessage(), cause);
+        log.error("降级异常:{}", cause.getMessage(), cause);
 
         OperaResult result = new OperaResult();
         result.setCode(500);
@@ -22,7 +22,7 @@ public class HystrixDefaultFallback {
     }
 
     public static OperaResponse fallbackResponse(Throwable cause) {
-        log.error(cause.getMessage(), cause);
+        log.error("降级异常:{}", cause.getMessage(), cause);
 
         OperaResponse result = new OperaResponse();
         result.setCode(500);

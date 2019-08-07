@@ -52,8 +52,8 @@ public class MerchantRangeStatisticController {
                 throw new Exception("入参 merchantId不合法");
             }
 
-            MOverallResVo resultMap = merchantStatisticService.fetchOverAll(merchantId);
-            operaResponse.setData(resultMap);
+            MOverallResVo mOverallResVo = merchantStatisticService.fetchOverAll(merchantId);
+            operaResponse.setData(mOverallResVo);
         } catch (Exception e) {
             log.info("查询商户整体运营数据 异常:{}", e.getMessage(), e);
 

@@ -24,10 +24,10 @@ public class MOverallResVo {
     /**
      * 下单人数
      */
-    private Integer OrderUserCount;
+    private Integer orderUserCount;
 
     /**
-     * 退货单数
+     * 退货人数
      */
-    private Integer RefundOrderCount;
+    private Integer refundUserCount;
 }

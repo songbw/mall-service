@@ -2,7 +2,7 @@ package com.fengchao.statistics.feign;
 
 import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.feign.hystric.OrderServiceClientH;
+import com.fengchao.statistics.feign.hystric.OrderServiceClientFallbackFactory;
 import com.fengchao.statistics.rpc.extmodel.DayStatisticsBean;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(value = "order", url = "${rpc.feign.client.order.url:}", fallback = OrderServiceClientH.class)
+@FeignClient(value = "order", url = "${rpc.feign.client.order.url:}", fallbackFactory = OrderServiceClientFallbackFactory.class)
 public interface OrderServiceClient {
 
     /**
