@@ -3,10 +3,7 @@ package com.fengchao.statistics.jobClient;
 import com.alibaba.fastjson.JSON;
 import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
-import com.fengchao.statistics.service.CategoryOverviewService;
-import com.fengchao.statistics.service.MerchantOverviewService;
-import com.fengchao.statistics.service.PeriodOverviewService;
-import com.fengchao.statistics.service.PromotionOverviewService;
+import com.fengchao.statistics.service.*;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import com.github.ltsopensource.core.domain.Action;
@@ -44,6 +41,16 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
      * 按照时间段统计任务
      */
     private static final String PERIOD = "period";
+
+    /**
+     * 商户维度，订单支付趋势统计任务
+     */
+    private static final String M_ORDERAMOUNT_TREND = "m_orderamount_trend";
+
+    /**
+     * 商户维度，用户数趋势
+     */
+    private static final String M_USER_TREND = "m_user_trend";
 
 
     /**
@@ -104,6 +111,8 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
                     BeanContext.getApplicationContext().getBean(PeriodOverviewService.class);
             OrdersRpcService ordersRpcService =
                     BeanContext.getApplicationContext().getBean(OrdersRpcService.class);
+            MerchantStatisticService merchantStatisticService =
+                    BeanContext.getApplicationContext().getBean(MerchantStatisticService.class);
 
             // 3. 统计
             // 3.1 调用order rpc服务，根据时间范围查询已支付的订单详情
@@ -131,7 +140,14 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
                 periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照时间段统计订单支付总额
             }
 
+            // 3.2.2 商户相关统计
+            if (needExecuteTaskList.contains(M_ORDERAMOUNT_TREND)) { // 商户维度，订单支付趋势统计任务
+                merchantStatisticService.statisticDailyOrderAmountByCity(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
+            }
 
+            if (needExecuteTaskList.contains(M_USER_TREND)) { // 商户维度，用户数趋势
+                merchantStatisticService.statisticDailyUserCount(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
+            }
         } catch (Exception e) {
             log.error("执行平台订单统计任务异常:{}", e.getMessage(), e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
