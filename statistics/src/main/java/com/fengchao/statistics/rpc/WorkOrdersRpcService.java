@@ -85,4 +85,32 @@ public class WorkOrdersRpcService {
         return workOrderList;
     }
 
+    /**
+     * 根据商户id查询退货人数
+     *
+     * @param merchantId
+     * @return
+     */
+    public Integer queryRefundUserCountByMerchantId(Long merchantId) {
+        // 返回值
+        Integer refundUserCount = 0;
+
+        // 执行rpc调用
+        log.info("根据商户id查询退货人数 调用workorders rpc服务 入参 merchantId:{}", merchantId);
+        OperaResponse<Integer> operaResponse = workOrdersServiceClient.queryRefundUserCountByMerchantId(merchantId);
+        log.info("根据商户id查询退货人数 调用workorders rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        // 处理返回
+        if (operaResponse.getCode() == 200) {
+            refundUserCount = operaResponse.getData();
+        } else {
+            log.warn("根据商户id查询退货人数 调用workorders rpc服务 错误!");
+        }
+
+        log.info("WorkOrdersRpcService#queryRefundUserCountByMerchantId 调用workorders rpc服务 返回:{}",
+                JSONUtil.toJsonString(refundUserCount));
+
+        return refundUserCount;
+    }
+
 }

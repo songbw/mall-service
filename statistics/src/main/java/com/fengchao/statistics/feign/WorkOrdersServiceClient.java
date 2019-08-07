@@ -29,4 +29,14 @@ public interface WorkOrdersServiceClient {
     @RequestMapping(value = "/work_orders/refunds/list", method = RequestMethod.GET)
     OperaResponse queryRefundInfoList(@RequestParam("timeStart") String startDateTime,
                                       @RequestParam("timeEnd") String endDateTime);
+
+    /**
+     * 根据商户id查询退货人数
+     *
+     * @param merchantId
+     * @return
+     */
+    @RequestMapping(value = "/work_orders/refund/user/count", method = RequestMethod.GET)
+    OperaResponse<Integer> queryRefundUserCountByMerchantId(@RequestParam("merchantId") Long merchantId);
+
 }

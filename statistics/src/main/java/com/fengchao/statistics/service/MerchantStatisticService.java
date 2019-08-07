@@ -64,7 +64,7 @@ public interface MerchantStatisticService {
      * @return
      * @throws Exception
      */
-    MOverallResVo fetchOverAll(Integer merchantId) throws Exception;
+    MOverallResVo fetchOverAll(Long merchantId) throws Exception;
 
     /**
      * 订单支付总额变化趋势

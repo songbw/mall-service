@@ -265,7 +265,24 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         Map<Integer, SysCompany> sysCompanyMap = sysCompanyList.stream()
                 .collect(Collectors.toMap(u -> u.getId().intValue(), u -> u));
 
-        // 3. 获取统计数据
+        // 3. 获取商户的退货信息
+        List<WorkOrder> workOrderList = workOrdersRpcService.queryRefundInfoList(startDateTime, endDateTime);
+        // 从退货信息中聚合出各个商户的退货人数 key:merchantId value:用户id的set集合
+        Map<Long, Set<String>> refundUserIdsMap = new HashMap<>();
+        for (WorkOrder workOrder : workOrderList) {
+            Long _merchantId = workOrder.getMerchantId();
+            Set<String> refundUserIdSet = refundUserIdsMap.get(_merchantId);
+            if (refundUserIdSet == null) {
+                refundUserIdSet = new HashSet<>();
+            }
+
+            refundUserIdSet.add(workOrder.getReceiverId());
+        }
+        log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {}, 从退货信息中聚合出各个商户的退货人数信息:{}",
+                startDateTime, endDateTime, JSONUtil.toJsonString(refundUserIdsMap));
+
+
+        // 4. 获取统计数据
         List<MStatisticUser> mStatisticUserList = new ArrayList<>();
         // 遍历　orderDetailBeansByMerchantMap
         for (Integer merchantId : merchantIdSet) {
@@ -276,14 +293,19 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
             Set<String> openIdSet = orderDetailBeanList.stream().map(o -> o.getOpenId()).collect(Collectors.toSet());
 
             // b.获取该商户的退货人数
+            int refudnUserCount = 0;
+            Set<String> refundUserIdSet = refundUserIdsMap.get(merchantId);
+            if (refundUserIdSet != null) {
+                refudnUserCount = refundUserIdSet.size();
+            }
 
             // 组装统计数据
             MStatisticUser mStatisticUser = new MStatisticUser();
             mStatisticUser.setMerchantId(merchantId);
             mStatisticUser.setMerchantCode("");
             mStatisticUser.setMerchantName(sysCompanyMap.get(merchantId) == null ? "" : sysCompanyMap.get(merchantId).getName());
-            mStatisticUser.setOrderUserCount(openIdSet.size());
-            mStatisticUser.setRefundUserCount(0);
+            mStatisticUser.setOrderUserCount(openIdSet.size()); // 下单人数
+            mStatisticUser.setRefundUserCount(refudnUserCount); // 退货人数
             mStatisticUser.setStatisticsDate(statisticDate);
             mStatisticUser.setStatisticStartTime(DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
             mStatisticUser.setStatisticEndTime(DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
@@ -295,8 +317,8 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {} 统计结果:{}",
                 startDateTime, endDateTime, JSONUtil.toJsonString(mStatisticUserList));
 
-        // 4. 插入统计数据
-        // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
+        // 5. 插入统计数据
+        // 5.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
         int count = mStatisticUserDao.deleteByPeriodTypeAndStatisticDate(
                 StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                 DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
@@ -304,7 +326,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {} 删除数据数量:{}",
                 startDateTime, endDateTime, count);
 
-        // 4.2 执行插入
+        // 5.2 执行插入
         for (MStatisticUser mStatisticUser : mStatisticUserList) {
             mStatisticUserDao.insertMStatisticUser(mStatisticUser);
         }
@@ -313,13 +335,13 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
     }
 
     @Override
-    public MOverallResVo fetchOverAll(Integer merchantId) throws Exception {
+    public MOverallResVo fetchOverAll(Long merchantId) throws Exception {
         // 1. 查询订单相关的整体运营数据
         // a.获取订单支付总额 b.(已支付)订单总量 c.(已支付)下单人数
-        DayStatisticsBean dayStatisticsBean = ordersRpcService.queryMerchantOrdersOverallStatistic(merchantId);
+        DayStatisticsBean dayStatisticsBean = ordersRpcService.queryMerchantOrdersOverallStatistic(merchantId.intValue());
 
         // 2. 查询该商户的退货人数
-        Integer refundUserCount = 0; // workOrdersRpcService.queryRefundInfoList();
+        Integer refundUserCount = workOrdersRpcService.queryRefundUserCountByMerchantId(merchantId);
 
         // 3. 组装返回数据
         MOverallResVo mOverallResVo = new MOverallResVo();
@@ -416,8 +438,6 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         }
 
         // 2. 统计数据
-
-
         // 补充后的数据
         Map<String, MUserStatisticResVo> mUserStatisticResVoMap = new HashMap<>();
         String currentDate = startDate; // 当前时间 yyyy-MM-dd
