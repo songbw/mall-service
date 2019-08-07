@@ -99,7 +99,7 @@ public class ProductESServiceImpl implements ProductESService {
         SearchRequest request = new SearchRequest();
         SearchSourceBuilder builder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        if (queryBean.getKeyword() != null) {
+        if (!StringUtils.isEmpty(queryBean.getKeyword())) {
             MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", queryBean.getKeyword());
             boolQueryBuilder.must(matchQueryBuilder) ;
         }
@@ -107,8 +107,10 @@ public class ProductESServiceImpl implements ProductESService {
             TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("category", queryBean.getCategory()) ;
             boolQueryBuilder.must(termQueryBuilder);
         }
-        PrefixQueryBuilder prefixQueryBuilder =  QueryBuilders.prefixQuery("skuid", queryBean.getSkuProfix()) ;
-        boolQueryBuilder.must(prefixQueryBuilder) ;
+        if (!StringUtils.isEmpty(queryBean.getSkuProfix())) {
+            PrefixQueryBuilder prefixQueryBuilder =  QueryBuilders.prefixQuery("skuid", queryBean.getSkuProfix()) ;
+            boolQueryBuilder.must(prefixQueryBuilder) ;
+        }
         builder.query(boolQueryBuilder);
         builder.from(PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize())).size(queryBean.getPageSize()); // 分页
         request.source(builder);

@@ -41,4 +41,6 @@ public interface ProductService {
      */
     OperaResult findPriceGAT(PriceQueryBean queryBean) throws ProductException ;
 
+    OperaResponse search(ProductQueryBean queryBean) ;
+
 }
