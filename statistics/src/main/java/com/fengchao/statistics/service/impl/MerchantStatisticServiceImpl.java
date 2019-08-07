@@ -1,5 +1,6 @@
 package com.fengchao.statistics.service.impl;
 
+import com.fasterxml.jackson.core.JsonToken;
 import com.fengchao.statistics.bean.vo.MOverallResVo;
 import com.fengchao.statistics.bean.vo.MUserStatisticResVo;
 import com.fengchao.statistics.bean.vo.MerchantCityRangeStatisticResVo;
@@ -390,6 +391,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                     = convertToMerchantCityRangeStatisticResVo(mCityOrderamount);
             cityRangeList.add(merchantCityRangeStatisticResVo);
         }
+        log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 按照城市分组结果:{}", JSONUtil.toJsonString(cityRangeMap));
 
         // 2.2 补充缺失的日期数据(因为有的日期该商户可能没有统计数据)
         Set<String> cityNameSet = cityRangeMap.keySet();
@@ -399,7 +401,6 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
             // 转map key:日期yyy-MM-dd  value:MerchantCityRangeStatisticResVo
             Map<String, MerchantCityRangeStatisticResVo> dateRangeMap =
                     merchantCityRangeStatisticResVoList.stream().collect(Collectors.toMap(m -> m.getStatisticDate(), m -> m));
-            // merchantCityRangeStatisticResVoList.sort(Comparator.comparing(MerchantCityRangeStatisticResVo::getStatisticDate));
 
             // 补充后的数据
             List<MerchantCityRangeStatisticResVo> fullStatisticResVoList = new ArrayList<>();
@@ -412,7 +413,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
                 fullStatisticResVoList.add(merchantCityRangeStatisticResVo);
 
-                currentDate = DateUtil.calcDay(currentDate, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD);
+                currentDate = DateUtil.plusDayWithDate(currentDate, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD);
             }
 
             // 重新设置数据
@@ -460,7 +461,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
             mUserStatisticResVoMap.put(currentDate, mUserStatisticResVo);
 
-            currentDate = DateUtil.calcDay(currentDate, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD);
+            currentDate = DateUtil.plusDayWithDate(currentDate, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD);
         }
 
         log.info("根据时间范围获取商户的用户变化趋势 获取统计数据Map<String, MUserStatisticResVo>:{}",

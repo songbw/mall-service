@@ -76,7 +76,9 @@ public class MerchantRangeStatisticController {
      * @return
      */
     @GetMapping("/order/amount")
-    public OperaResponse orderAmountTrend(String startDate, String endDate, Integer merchantId) {
+    public OperaResponse orderAmountTrend(@RequestParam(value = "startDate") String startDate,
+                                          @RequestParam(value = "endDate") String endDate,
+                                          @RequestParam(value = "merchantId") Integer merchantId) {
         OperaResponse operaResponse = new OperaResponse();
 
         log.info("根据时间范围获取按照商户-城市(天)维度的统计结果, 入参 startDate:{}, endDate:{}, merchantId:{}",
@@ -111,7 +113,10 @@ public class MerchantRangeStatisticController {
      * @param merchantId
      * @return
      */
-    public OperaResponse merchantUserTrend(String startDate, String endDate, Integer merchantId) {
+    @GetMapping("/user/count")
+    public OperaResponse merchantUserTrend(@RequestParam("startDate") String startDate,
+                                           @RequestParam("endDate") String endDate,
+                                           @RequestParam("merchantId") Integer merchantId) {
         OperaResponse operaResponse = new OperaResponse();
 
         log.info("根据时间范围获取商户的用户变化趋势 入参 startDate:{}, endDate:{}, merchantId:{}",

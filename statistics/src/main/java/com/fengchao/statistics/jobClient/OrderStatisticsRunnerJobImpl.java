@@ -85,7 +85,7 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             Date statisticDate = DateUtil.parseDateTime(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS); // 执行统计的时间
             // 开始时间
             if (StringUtils.isBlank(startDateTime)) {
-                startDateTime = DateUtil.calcDay(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                startDateTime = DateUtil.plusDayWithDateTime(currentDate + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
                         -1, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
                 endDateTime = DateUtil.calcSecond(startDateTime,
                         DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, (60 * 60 * 24 - 1), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
