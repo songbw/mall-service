@@ -68,10 +68,14 @@ public class ProductController {
         return result;
     }
 
-    @GetMapping("/es")
-    private OperaResult findAll(OperaResult result) throws ProductException {
-        result.getData().put("result", service.findAll()) ;
-        return result;
+    /**
+     * 从ES中查询商品列表
+     * @param queryBean
+     * @return
+     */
+    @PostMapping("/es")
+    private OperaResponse search(@RequestBody ProductQueryBean queryBean) {
+        return service.search(queryBean);
     }
 
     /**

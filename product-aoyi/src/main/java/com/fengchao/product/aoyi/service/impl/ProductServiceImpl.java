@@ -8,6 +8,7 @@ import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
+import com.fengchao.product.aoyi.feign.ESService;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
@@ -38,12 +39,12 @@ public class ProductServiceImpl implements ProductService {
     private AoyiClientService aoyiClientService;
     @Autowired
     private EquityService equityService;
-
     @Autowired
     private ProductDao productDao;
-
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private ESService esService;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -291,6 +292,11 @@ public class ProductServiceImpl implements ProductService {
         operaResult.setMsg(operaResponse.getMsg());
         operaResult.getData().put("result", operaResponse.getData()) ;
         return operaResult;
+    }
+
+    @Override
+    public OperaResponse search(ProductQueryBean queryBean){
+        return esService.search(queryBean) ;
     }
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
