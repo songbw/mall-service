@@ -167,9 +167,14 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
     public void statisticDailyOrderAmountByCity(List<OrderDetailBean> orderDetailBeanList,
                                                 String startDateTime,
                                                 String endDateTime, Date statisticDate) throws Exception {
-        log.info("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围：{} - {}, 开始...", startDateTime, endDateTime);
+        log.info("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围: {} - {}, 开始...", startDateTime, endDateTime);
 
         try {
+            if (CollectionUtils.isEmpty(orderDetailBeanList)) {
+                log.info("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围: {} - {} 统计数据为空 执行完成!");
+                return;
+            }
+
             // 1. 根据商户id维度将订单详情分类
             Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = divideOrderDetailByMerchantId(orderDetailBeanList);
             log.info("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围：{} - {}, 根据商户id维度将订单详情分组结果:{}",
@@ -200,6 +205,8 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                     }
                     cityRangeOrderDetailList.add(orderDetailBean);
                 }
+                log.info("按照商户-城市(天)维度统计订单详情总金额数据; merchantId:{} 以cityId维度分组结果:{}",
+                        merchantId, JSONUtil.toJsonString(cityRangeOrderDetailMap));
 
                 // 3.2 组装统计数据
                 Set<String> cityIdSet = cityRangeOrderDetailMap.keySet();
@@ -262,6 +269,11 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {}, 开始...", startDateTime, endDateTime);
 
         try {
+            if (CollectionUtils.isEmpty(payedOrderDetailBeanList)) {
+                log.info("按照商户维度统计用户数相关数据; 统计时间范围: {} - {} 统计数据为空 执行完成!");
+                return;
+            }
+
             // 1. 根据商户id维度将订单详情分类
             Map<Integer, List<OrderDetailBean>> orderDetailBeansByMerchantMap = divideOrderDetailByMerchantId(payedOrderDetailBeanList);
             log.info("按照商户维度统计用户数相关数据; 统计时间范围：{} - {}, 根据商户id维度将订单详情分组结果:{}",
