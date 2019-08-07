@@ -142,7 +142,6 @@ public class OrderServiceImpl implements OrderService {
         bean.setProvinceName(receiver.getProvinceName());
         bean.setCityName(receiver.getCityName());
         bean.setCountyName(receiver.getCountyName());
-
         bean.setInvoiceState("1");
         bean.setInvoiceType("4");
         bean.setStatus(0);
@@ -187,7 +186,6 @@ public class OrderServiceImpl implements OrderService {
             }
             // 添加主订单
             orderMapper.insert(bean);
-
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
@@ -287,8 +285,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findById(Integer id) {
         Order order = orderMapper.selectByPrimaryKey(id) ;
-        List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
-        order.setSkus(orderDetailXES);
+        if (order!= null) {
+            List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
+            order.setSkus(orderDetailXES);
+        }
         return order;
     }
 
