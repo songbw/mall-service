@@ -113,6 +113,7 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             log.info("执行平台订单统计任务 获取的日统计数据List<OrderDetailBean>:{}", JSONUtil.toJsonString(payedOrderDetailBeanList));
 
             // 3.2执行统计
+            // 3.2.1 平台统计相关
             // overviewService.add(queryBean); // 总揽统计
             if (needExecuteTaskList.contains(CATEGORY) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
                 categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 安品类统计
@@ -129,6 +130,8 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
             if (needExecuteTaskList.contains(PERIOD)) {
                 periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照时间段统计订单支付总额
             }
+
+
         } catch (Exception e) {
             log.error("执行平台订单统计任务异常:{}", e.getMessage(), e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());

@@ -99,6 +99,8 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
 
             // 4.2 执行插入
             periodOverviewDao.insertPeriodOverview(periodOverview);
+
+            log.info("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!", startDateTime, endDateTime);
         } catch (Exception e) {
             log.error("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常",
                     startDateTime, endDateTime, e.getMessage(), e);
