@@ -4,6 +4,7 @@ import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.PromotionScheduleDao;
 import com.fengchao.equity.model.PromotionSchedule;
+import com.fengchao.equity.model.PromotionScheduleX;
 import com.fengchao.equity.service.PromotionScheduleService;
 import com.fengchao.equity.utils.ConvertUtil;
 import com.github.pagehelper.PageInfo;
@@ -22,9 +23,14 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
     private PromotionScheduleDao scheduleDao;
 
     @Override
-    public int createSchedule(PromotionSchedule bean) {
-        bean.setCreateTime(new Date());
-        return scheduleDao.createPromotionSchedule(bean);
+    public int createSchedule(PromotionScheduleX bean) {
+        PromotionSchedule promotionSchedule = new PromotionSchedule();
+        promotionSchedule.setCreateTime(new Date());
+        promotionSchedule.setSchedule(bean.getSchedule());
+        promotionSchedule.setPromotionId(bean.getPromotionId());
+        promotionSchedule.setStartTime(bean.getStartTime());
+        promotionSchedule.setEndTime(bean.getEndTime());
+        return scheduleDao.createPromotionSchedule(promotionSchedule);
     }
 
     @Override
@@ -50,8 +56,14 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
     }
 
     @Override
-    public int updateSchedule(PromotionSchedule bean) {
-        bean.setUpdateTime(new Date());
-        return scheduleDao.updatePromotionSchedule(bean);
+    public int updateSchedule(PromotionScheduleX bean) {
+        PromotionSchedule promotionSchedule = new PromotionSchedule();
+        promotionSchedule.setId(bean.getId());
+        promotionSchedule.setUpdateTime(new Date());
+        promotionSchedule.setSchedule(bean.getSchedule());
+        promotionSchedule.setPromotionId(bean.getPromotionId());
+        promotionSchedule.setStartTime(bean.getStartTime());
+        promotionSchedule.setEndTime(bean.getEndTime());
+        return scheduleDao.updatePromotionSchedule(promotionSchedule);
     }
 }

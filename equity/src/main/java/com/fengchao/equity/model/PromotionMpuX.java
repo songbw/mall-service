@@ -27,8 +27,6 @@ public class PromotionMpuX {
 
     private Integer scheduleId;
 
-    private PromotionSchedule schedule;
-
     public Integer getId() {
         return id;
     }
@@ -133,11 +131,4 @@ public class PromotionMpuX {
         this.scheduleId = scheduleId;
     }
 
-    public PromotionSchedule getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(PromotionSchedule schedule) {
-        this.schedule = schedule;
-    }
 }

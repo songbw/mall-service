@@ -664,6 +664,66 @@ public class PromotionExample {
             addCriterion("promotion_type_id not between", value1, value2, "promotionTypeId");
             return (Criteria) this;
         }
+
+        public Criteria andDailyScheduleIsNull() {
+            addCriterion("daily_schedule is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleIsNotNull() {
+            addCriterion("daily_schedule is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleEqualTo(Boolean value) {
+            addCriterion("daily_schedule =", value, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleNotEqualTo(Boolean value) {
+            addCriterion("daily_schedule <>", value, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleGreaterThan(Boolean value) {
+            addCriterion("daily_schedule >", value, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("daily_schedule >=", value, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleLessThan(Boolean value) {
+            addCriterion("daily_schedule <", value, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleLessThanOrEqualTo(Boolean value) {
+            addCriterion("daily_schedule <=", value, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleIn(List<Boolean> values) {
+            addCriterion("daily_schedule in", values, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleNotIn(List<Boolean> values) {
+            addCriterion("daily_schedule not in", values, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleBetween(Boolean value1, Boolean value2) {
+            addCriterion("daily_schedule between", value1, value2, "dailySchedule");
+            return (Criteria) this;
+        }
+
+        public Criteria andDailyScheduleNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("daily_schedule not between", value1, value2, "dailySchedule");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

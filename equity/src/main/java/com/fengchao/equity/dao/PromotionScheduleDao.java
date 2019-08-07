@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -33,11 +34,17 @@ public class PromotionScheduleDao {
     }
 
     public int removePromotionSchedule(int scheduleId){
-        return mapper.deleteByPrimaryKey(scheduleId);
+        PromotionSchedule promotionSchedule = new PromotionSchedule();
+        promotionSchedule.setId(scheduleId);
+        promotionSchedule.setUpdateTime(new Date());
+        promotionSchedule.setIstatus(2);
+        return mapper.updateByPrimaryKeySelective(promotionSchedule);
     }
 
     public PageInfo<PromotionSchedule> findSchedule(Integer offset, Integer limit) {
         PromotionScheduleExample example = new PromotionScheduleExample();
+        PromotionScheduleExample.Criteria criteria = example.createCriteria();
+//        criteria.andIstatusEqualTo(1);
         PageHelper.startPage(offset, limit);
         List<PromotionSchedule> schedules = mapper.selectByExample(example);
         return new PageInfo<>(schedules);
@@ -47,6 +54,7 @@ public class PromotionScheduleDao {
         PromotionScheduleExample example = new PromotionScheduleExample();
         PromotionScheduleExample.Criteria criteria = example.createCriteria();
         criteria.andIdIn(scheduleIdList);
+//        criteria.andIstatusEqualTo(1);
         List<PromotionSchedule> schedules = mapper.selectByExample(example);
         return schedules;
     }

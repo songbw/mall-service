@@ -11,6 +11,7 @@
     <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
     <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
     <result column="promotion_type_id" jdbcType="BIGINT" property="promotionTypeId" />
+    <result column="daily_schedule" jdbcType="BIT" property="dailySchedule" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -71,7 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, tag, discount_type, status, start_date, end_date, created_date, promotion_type_id
+    id, name, tag, discount_type, status, start_date, end_date, created_date, promotion_type_id,
+    daily_schedule
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionExample" resultMap="BaseResultMap">
     select
@@ -106,10 +108,12 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionX" useGeneratedKeys="true">
     insert into promotion (name, tag, discount_type,
       status, start_date, end_date,
-      created_date, promotion_type_id)
+      created_date, promotion_type_id, daily_schedule
+      )
     values (#{name,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{discountType,jdbcType=INTEGER},
       #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP},
-      #{createdDate,jdbcType=TIMESTAMP}, #{promotionTypeId,jdbcType=BIGINT})
+      #{createdDate,jdbcType=TIMESTAMP}, #{promotionTypeId,jdbcType=BIGINT}, #{dailySchedule,jdbcType=BIT}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionX" useGeneratedKeys="true">
     insert into promotion
@@ -138,6 +142,9 @@
       <if test="promotionTypeId != null">
         promotion_type_id,
       </if>
+      <if test="dailySchedule != null">
+        daily_schedule,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -163,6 +170,9 @@
       </if>
       <if test="promotionTypeId != null">
         #{promotionTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="dailySchedule != null">
+        #{dailySchedule,jdbcType=BIT},
       </if>
     </trim>
   </insert>
@@ -202,6 +212,9 @@
       <if test="record.promotionTypeId != null">
         promotion_type_id = #{record.promotionTypeId,jdbcType=BIGINT},
       </if>
+      <if test="record.dailySchedule != null">
+        daily_schedule = #{record.dailySchedule,jdbcType=BIT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -217,7 +230,8 @@
     start_date = #{record.startDate,jdbcType=TIMESTAMP},
     end_date = #{record.endDate,jdbcType=TIMESTAMP},
     created_date = #{record.createdDate,jdbcType=TIMESTAMP},
-    promotion_type_id = #{record.promotionTypeId,jdbcType=BIGINT}
+    promotion_type_id = #{record.promotionTypeId,jdbcType=BIGINT},
+    daily_schedule = #{record.dailySchedule,jdbcType=BIT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -249,6 +263,9 @@
       <if test="promotionTypeId != null">
         promotion_type_id = #{promotionTypeId,jdbcType=BIGINT},
       </if>
+      <if test="dailySchedule != null">
+        daily_schedule = #{dailySchedule,jdbcType=BIT},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -261,7 +278,8 @@
       start_date = #{startDate,jdbcType=TIMESTAMP},
       end_date = #{endDate,jdbcType=TIMESTAMP},
       created_date = #{createdDate,jdbcType=TIMESTAMP},
-      promotion_type_id = #{promotionTypeId,jdbcType=BIGINT}
+      promotion_type_id = #{promotionTypeId,jdbcType=BIGINT},
+      daily_schedule = #{dailySchedule,jdbcType=BIT}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
