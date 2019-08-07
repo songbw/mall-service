@@ -525,6 +525,7 @@ public class OrderServiceImpl implements OrderService {
         // 总页数
         Integer totalPage = pageInfo.getPages();
 
+        Set<String> openIdSet = new HashSet<>(); // 下单人id 集合
         // 2.2 批量循环查询
         while (currentPageNo <= totalPage) {
             if (currentPageNo > 1) {
@@ -543,11 +544,10 @@ public class OrderServiceImpl implements OrderService {
             List<Orders> payedOrdersList = ordersDao.selectPayedOrdersListByOrdersId(new ArrayList<>(orderIdList));
             // 已支付的主订单id集合
             Set<Integer> payedOrdersIdSet = payedOrdersList.stream().map(o -> o.getId()).collect(Collectors.toSet());
-            // 已支付的主订单　下单人id 集合
-            Set<String> openIdSet = payedOrdersList.stream().map(o -> o.getOpenId()).collect(Collectors.toSet());
-
-            // 组装统计数据
-            openIdCount = openIdCount + openIdSet.size(); // 下单人数
+            // 已支付的主订单下单人id　
+            for (Orders orders : payedOrdersList) {
+                openIdSet.add(orders.getOpenId());
+            }
 
             // 过滤出已支付的子订单并统计
             for (OrderDetail orderDetail : orderDetailList) {
@@ -564,7 +564,7 @@ public class OrderServiceImpl implements OrderService {
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(orderAmount.floatValue());
         dayStatisticsBean.setOrderCount(orderCount);
-        dayStatisticsBean.setOrderPeopleNum(openIdCount);
+        dayStatisticsBean.setOrderPeopleNum(openIdSet.size()); // 下单人数
 
         logger.info("获取商户的关于订单的总体运营统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
 
