@@ -18,8 +18,7 @@ public class AdminPromotionScheduleController {
 
     @PostMapping("create")
     public OperaResult createSchedule(@RequestBody PromotionScheduleX bean, OperaResult result){
-        scheduleService.createSchedule(bean);
-        result.getData().put("scheduleId", bean.getId());
+        result.getData().put("scheduleId", scheduleService.createSchedule(bean));
         return result;
     }
 
@@ -29,11 +28,11 @@ public class AdminPromotionScheduleController {
         return result;
     }
 
-    @GetMapping("findById")
-    public OperaResult findScheduleById(Integer id, OperaResult result){
-        result.getData().put("result", scheduleService.findScheduleById(id));
-        return result;
-    }
+//    @GetMapping("findById")
+//    public OperaResult findScheduleById(Integer id, OperaResult result){
+//        result.getData().put("result", scheduleService.findScheduleById(id));
+//        return result;
+//    }
 
     @PutMapping("update")
     public OperaResult updateSchedule(@RequestBody PromotionScheduleX bean, OperaResult result){

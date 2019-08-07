@@ -26,4 +26,8 @@ public class PromotionInfoBean {
     private String skuid;
 
     private String discount;
+
+    private Integer scheduleId;
+
+    private Boolean dailySchedule;
 }

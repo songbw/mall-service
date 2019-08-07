@@ -24,6 +24,9 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
 
     @Override
     public int createSchedule(PromotionScheduleX bean) {
+//        if(bean.getPromotionId() == null){
+//            return 500;
+//        }
         PromotionSchedule promotionSchedule = new PromotionSchedule();
         promotionSchedule.setCreateTime(new Date());
         promotionSchedule.setSchedule(bean.getSchedule());
@@ -45,10 +48,10 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
         return pageableData;
     }
 
-    @Override
-    public PromotionSchedule findScheduleById(Integer id) {
-        return scheduleDao.findPromotionSchedule(id);
-    }
+//    @Override
+//    public PromotionSchedule findScheduleById(Integer id) {
+//        return scheduleDao.findPromotionSchedule(id);
+//    }
 
     @Override
     public int deletePromotion(Integer id) {

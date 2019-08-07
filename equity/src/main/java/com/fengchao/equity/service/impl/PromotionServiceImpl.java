@@ -170,7 +170,7 @@ public class PromotionServiceImpl implements PromotionService {
         List<PromotionMpuX> promotionMpus = null;
         promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
         List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
-        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
+//        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
 
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
         if(!mpuIdList.isEmpty()){
@@ -196,10 +196,8 @@ public class PromotionServiceImpl implements PromotionService {
         });
         promotion.setPromotionSkus(promotionMpus);
 
-        if(!scheduleIdList.isEmpty()){
-            List<PromotionSchedule> scheduleAll = scheduleDao.findScheduleAll(scheduleIdList);
-            promotion.setPromotionSchedules(scheduleAll);
-        }
+        List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
+        promotion.setPromotionSchedules(scheduleAll);
 
         return promotion;
     }
@@ -258,6 +256,10 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionX findPromotionToUser(Integer id, Boolean detail) {
 
         PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
+        if(promotion == null){
+            return promotion;
+        }
+
         List<PromotionMpuX> promotionMpus = null;
         if(detail != null && detail == true){
             promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
@@ -286,6 +288,9 @@ public class PromotionServiceImpl implements PromotionService {
 //                }
             });
             promotion.setPromotionSkus(promotionMpus);
+
+            List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
+            promotion.setPromotionSchedules(scheduleAll);
         }
         return promotion;
     }
@@ -297,7 +302,15 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public List<PromotionInfoBean> findPromotionByMpu(String mpu) {
-        return promotionXMapper.selectPromotionInfoByMpu(mpu);
+        List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(mpu);
+        beans.forEach(bean ->{
+            if(bean.getDailySchedule()){
+                PromotionSchedule promotionSchedule = scheduleDao.findPromotionSchedule(bean.getScheduleId()).get(0);
+                bean.setStartDate(promotionSchedule.getStartTime());
+                bean.setEndDate(promotionSchedule.getEndTime());
+            }
+        });
+        return beans;
     }
 
     @Override
