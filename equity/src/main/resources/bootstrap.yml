@@ -28,3 +28,6 @@ spring:
         max-interval: 2000
         initial-interval: 2000
         request-read-timeout: 10000
+  jackson:
+    time-zone: GMT+8
+

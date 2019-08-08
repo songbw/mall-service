@@ -500,6 +500,14 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         return couponUseInfoBeanList;
     }
 
+    @Override
+    public int verifyCoupon(CouponUseInfoBean bean) {
+        CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
+        if(couponUseInfo != null){
+        }
+        return 0;
+    }
+
     // ========================= private =====================================
 
     private CouponUseInfoBean convertToCouponUseInfoBean(CouponUseInfo couponUseInfo) {
