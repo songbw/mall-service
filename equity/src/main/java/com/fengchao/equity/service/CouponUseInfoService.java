@@ -39,4 +39,5 @@ public interface CouponUseInfoService {
      */
     List<CouponUseInfoBean> queryByIdList(List<Integer> idList) throws Exception;
 
+    int verifyCoupon(CouponUseInfoBean bean);
 }

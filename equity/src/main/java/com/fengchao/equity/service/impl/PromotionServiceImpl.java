@@ -309,10 +309,9 @@ public class PromotionServiceImpl implements PromotionService {
 //                }
             });
             promotion.setPromotionSkus(promotionMpus);
-
-            List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
-            promotion.setPromotionSchedules(scheduleAll);
         }
+        List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
+        promotion.setPromotionSchedules(scheduleAll);
         return promotion;
     }
 
