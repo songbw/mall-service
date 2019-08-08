@@ -9,4 +9,5 @@ public class ProductQueryBean extends QueryBean implements Serializable{
     private String category ;
     private String brand ;
     private String keyword;
+    private String skuProfix;
 }

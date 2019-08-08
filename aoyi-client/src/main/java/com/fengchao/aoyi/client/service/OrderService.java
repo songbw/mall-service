@@ -20,4 +20,6 @@ public interface OrderService {
 
     OperaResult getOrderLogist(QueryLogist queryLogist) ;
 
+    OperaResult addOrderGAT(OrderParamBean orderBean) ;
+
 }

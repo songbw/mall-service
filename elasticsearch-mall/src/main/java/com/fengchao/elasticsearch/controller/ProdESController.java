@@ -1,6 +1,7 @@
 package com.fengchao.elasticsearch.controller;
 
 import com.fengchao.elasticsearch.domain.AoyiProdIndex;
+import com.fengchao.elasticsearch.domain.OperaResponse;
 import com.fengchao.elasticsearch.domain.OperaResult;
 import com.fengchao.elasticsearch.domain.ProductQueryBean;
 import com.fengchao.elasticsearch.service.ProductESService;
@@ -26,5 +27,12 @@ public class ProdESController {
     public OperaResult search(@RequestBody ProductQueryBean queryBean, OperaResult result) {
         result.getData().put("result", service.query(queryBean)) ;
         return result;
+    }
+
+    @PostMapping("/search")
+    public OperaResponse searchProfix(@RequestBody ProductQueryBean queryBean) {
+        OperaResponse operaResponse = new OperaResponse();
+        operaResponse.setData(service.queryByCategoryPrefix(queryBean));
+        return operaResponse;
     }
 }

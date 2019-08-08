@@ -21,13 +21,19 @@ public class HystrixDefaultFallback {
         return result;
     }
 
+    public static OperaResponse defaultReponseFallback() {
+        OperaResponse result = new OperaResponse();
+        result.setCode(500);
+        result.setMsg("rpc 查询失败降级");
+        return result;
+    }
+
     public static OperaResponse fallbackResponse(Throwable cause) {
         log.error(cause.getMessage(), cause);
 
         OperaResponse result = new OperaResponse();
         result.setCode(500);
         result.setMsg("rpc 查询失败降级");
-
         return result;
     }
 }

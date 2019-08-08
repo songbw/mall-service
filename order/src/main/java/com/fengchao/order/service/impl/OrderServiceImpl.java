@@ -28,6 +28,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -75,30 +78,27 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrdersDao ordersDao;
 
-
+    @Transactional
     @Override
     public OperaResult add2(OrderParamBean orderBean){
         OperaResult operaResult = new OperaResult();
-        Order bean = new Order();
-        bean.setOpenId(orderBean.getOpenId());
-        bean.setCompanyCustNo(orderBean.getCompanyCustNo());
-        bean.setInvoiceTitle(orderBean.getInvoiceTitleName());
-        bean.setTaxNo(orderBean.getInvoiceEnterpriseNumber());
-        bean.setInvoiceContent(orderBean.getInvoiceTitleName());
-        bean.setPayment(orderBean.getPayment());
+        if (orderBean == null) {
+            operaResult.setCode(400501);
+            operaResult.setMsg("订单信息不能为空。");
+            return operaResult;
+        }
         orderBean.setTradeNo(new Date().getTime() + "");
+        if (orderBean.getReceiverId() == null || orderBean.getReceiverId() <= 0) {
+            operaResult.setCode(400501);
+            operaResult.setMsg("receiverId 不能为空。");
+            return operaResult;
+        }
         Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
         if (receiver == null) {
             operaResult.setCode(400501);
             operaResult.setMsg("收货地址为不存在，请查证后再提交订单！");
             return operaResult;
         }
-
-        // TODO 验证数据有效性
-        // TODO 验证业务逻辑有效性
-        // TODO 存库
-        // TODO 通知奥义 (如果成功则正常返回，如果失败则回滚数据库)
-
         receiver = handleBean(receiver);
         orderBean.setReceiverName(receiver.getReceiverName());
         orderBean.setTelephone(receiver.getTelephone());
@@ -113,6 +113,26 @@ public class OrderServiceImpl implements OrderService {
         orderBean.setInvoiceState("1");
         orderBean.setInvoiceType("4");
 
+        // TODO 验证数据有效性
+        // TODO 验证业务逻辑有效性
+        /**
+         * TODO
+         * 检查商品库存、检查商品价格
+         * 验证优惠券有效性、验证活动有效性
+         *
+         * 验证商品总价，验证支付总价
+         */
+
+        // TODO 存库
+        // TODO 通知奥义 (如果成功则正常返回，如果失败则回滚数据库)
+
+        Order bean = new Order();
+        bean.setOpenId(orderBean.getOpenId());
+        bean.setCompanyCustNo(orderBean.getCompanyCustNo());
+        bean.setInvoiceTitle(orderBean.getInvoiceTitleName());
+        bean.setTaxNo(orderBean.getInvoiceEnterpriseNumber());
+        bean.setInvoiceContent(orderBean.getInvoiceTitleName());
+        bean.setPayment(orderBean.getPayment());
         bean.setReceiverName(receiver.getReceiverName());
         bean.setTelephone(receiver.getTelephone());
         bean.setMobile(receiver.getMobile());
@@ -126,7 +146,6 @@ public class OrderServiceImpl implements OrderService {
         bean.setProvinceName(receiver.getProvinceName());
         bean.setCityName(receiver.getCityName());
         bean.setCountyName(receiver.getCountyName());
-
         bean.setInvoiceState("1");
         bean.setInvoiceType("4");
         bean.setStatus(0);
@@ -171,7 +190,6 @@ public class OrderServiceImpl implements OrderService {
             }
             // 添加主订单
             orderMapper.insert(bean);
-
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
@@ -210,13 +228,27 @@ public class OrderServiceImpl implements OrderService {
         orderBean.setMerchants(orderMerchantBeans);
         orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != 2));
 //        createOrder(orderBean) ;
-        OperaResponse<List<SubOrderT>>  result = aoyiClientService.order(orderBean);
+        OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
+        if ("1001".equals(orderBean.getCompanyCustNo())) {
+            result = aoyiClientService.orderGAT(orderBean);
+        } else {
+            result = aoyiClientService.order(orderBean);
+        }
         if (result.getCode() == 200) {
+            List<SubOrderT> subOrderTS = result.getData();
+            subOrderTS.forEach(subOrderT -> {
+                if (!StringUtils.isEmpty(subOrderT.getAoyiId())){
+                    // 更新aoyiId字段
+                    adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
+                }
+            });
             operaResult.getData().put("result", orderMerchantBeans) ;
         } else {
             operaResult.setCode(result.getCode());
             operaResult.setMsg(result.getMsg());
             // 异常数据库回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return  operaResult;
         }
         return operaResult;
     }
@@ -257,8 +289,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findById(Integer id) {
         Order order = orderMapper.selectByPrimaryKey(id) ;
-        List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
-        order.setSkus(orderDetailXES);
+        if (order!= null) {
+            List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectByOrderId(id) ;
+            order.setSkus(orderDetailXES);
+        }
         return order;
     }
 

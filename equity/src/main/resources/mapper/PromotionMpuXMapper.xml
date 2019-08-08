@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.equity.mapper.PromotionMpuXMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.PromotionMpu">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="promotion_id" jdbcType="INTEGER" property="promotionId" />
+    <result column="mpu" jdbcType="VARCHAR" property="mpu" />
+    <result column="skuId" jdbcType="VARCHAR" property="skuid" />
+    <result column="discount" jdbcType="VARCHAR" property="discount" />
+    <result column="schedule_id" jdbcType="INTEGER" property="scheduleId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, promotion_id, mpu, skuId, discount, schedule_id
+  </sql>
+  <select id="selectByPrimaryMpu" resultType="com.fengchao.equity.model.PromotionMpuX" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from promotion_mpu
+    where promotion_id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from promotion_mpu
+    where promotion_id = #{promotionId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBypromotionId" parameterType="com.fengchao.equity.model.PromotionMpu" >
+    delete from promotion_mpu
+    where mpu = #{mpu,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.equity.model.PromotionMpu" >
+    insert into promotion_mpu (id, promotion_id, mpu, skuId,
+      discount, schedule_id)
+    values (#{id,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR},
+      #{skuid,jdbcType=VARCHAR}, #{discount,jdbcType=VARCHAR}), #{scheduleId,jdbcType=INTEGER}
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.equity.model.PromotionMpu" >
+    insert into promotion_mpu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="promotionId != null" >
+        promotion_id,
+      </if>
+      <if test="mpu != null" >
+        mpu,
+      </if>
+      <if test="skuid != null" >
+        skuId,
+      </if>
+      <if test="discount != null" >
+        discount,
+      </if>
+      <if test="scheduleId != null" >
+        schedule_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="promotionId != null" >
+        #{promotionId,jdbcType=INTEGER},
+      </if>
+      <if test="mpu != null" >
+        #{mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="skuid != null" >
+        #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null" >
+        #{discount,jdbcType=VARCHAR},
+      </if>
+      <if test="scheduleId != null" >
+        #{scheduleId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.PromotionMpu" >
+    update promotion_mpu
+    <set >
+      <if test="promotionId != null" >
+        promotion_id = #{promotionId,jdbcType=INTEGER},
+      </if>
+      <if test="mpu != null" >
+        mpu = #{mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="skuid != null" >
+        skuId = #{skuid,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null" >
+        discount = #{discount,jdbcType=VARCHAR},
+      </if>
+      <if test="scheduleId != null" >
+        schedule_id = #{scheduleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where mpu = #{mpu,jdbcType=VARCHAR}
+    and promotion_id = #{promotionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionMpu" >
+    update promotion_mpu
+    set promotion_id = #{promotionId,jdbcType=INTEGER},
+      mpu = #{mpu,jdbcType=VARCHAR},
+      skuId = #{skuid,jdbcType=VARCHAR},
+      discount = #{discount,jdbcType=VARCHAR},
+      schedule_id = #{scheduleId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectMpuList"  resultType="java.lang.String" parameterType="java.lang.Integer" >
+    select
+    distinct mpu
+    from promotion_mpu
+    where promotion_id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectscheduleIdList"  resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select
+    distinct schedule_id
+    from promotion_mpu
+    where promotion_id = #{id,jdbcType=INTEGER}
+  </select>
+</mapper>

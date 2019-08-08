@@ -1,6 +1,7 @@
 package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.model.PromotionMpu;
+import com.fengchao.equity.model.PromotionMpuX;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ public interface PromotionMpuMapper {
 
     int deleteBypromotionId(PromotionMpu record);
 
-    List<PromotionMpu> selectByPrimaryMpu(Integer id);
+    List<PromotionMpuX> selectByPrimaryMpu(Integer id);
 }

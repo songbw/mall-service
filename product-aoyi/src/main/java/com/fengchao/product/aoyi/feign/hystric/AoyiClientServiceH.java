@@ -52,4 +52,9 @@ public class AoyiClientServiceH implements AoyiClientService {
         result.setMsg("价格服务失败" + msg);
         return result;
     }
+
+    @Override
+    public OperaResponse priceGAT(QueryCityPrice queryBean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
 }

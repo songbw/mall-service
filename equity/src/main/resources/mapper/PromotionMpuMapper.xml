@@ -7,13 +7,14 @@
     <result column="mpu" jdbcType="VARCHAR" property="mpu" />
     <result column="skuId" jdbcType="VARCHAR" property="skuid" />
     <result column="discount" jdbcType="VARCHAR" property="discount" />
+    <result column="schedule_id" jdbcType="INTEGER" property="scheduleId" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, promotion_id, mpu, skuId, discount
+    id, promotion_id, mpu, skuId, discount, schedule_id
   </sql>
-  <select id="selectByPrimaryMpu" resultType="com.fengchao.equity.model.PromotionMpu" parameterType="java.lang.Integer" >
+  <select id="selectByPrimaryMpu" resultType="com.fengchao.equity.model.PromotionMpuX" parameterType="java.lang.Integer" >
     select
-    <include refid="Base_Column_List" />
+    id, promotion_id promotionId, mpu, skuId, discount, schedule_id scheduleId
     from promotion_mpu
     where promotion_id = #{id,jdbcType=INTEGER}
   </select>
@@ -27,9 +28,9 @@
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.PromotionMpu" >
     insert into promotion_mpu (id, promotion_id, mpu, skuId,
-      discount)
+      discount, schedule_id)
     values (#{id,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR},
-      #{skuid,jdbcType=VARCHAR}, #{discount,jdbcType=VARCHAR})
+      #{skuid,jdbcType=VARCHAR}, #{discount,jdbcType=VARCHAR}), #{scheduleId,jdbcType=INTEGER}
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.equity.model.PromotionMpu" >
     insert into promotion_mpu
@@ -49,6 +50,9 @@
       <if test="discount != null" >
         discount,
       </if>
+      <if test="scheduleId != null" >
+        schedule_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -65,6 +69,9 @@
       </if>
       <if test="discount != null" >
         #{discount,jdbcType=VARCHAR},
+      </if>
+      <if test="scheduleId != null" >
+        #{scheduleId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -83,6 +90,9 @@
       <if test="discount != null" >
         discount = #{discount,jdbcType=VARCHAR},
       </if>
+      <if test="scheduleId != null" >
+        schedule_id = #{scheduleId,jdbcType=INTEGER},
+      </if>
     </set>
     where mpu = #{mpu,jdbcType=VARCHAR}
     and promotion_id = #{promotionId,jdbcType=INTEGER}
@@ -92,7 +102,8 @@
     set promotion_id = #{promotionId,jdbcType=INTEGER},
       mpu = #{mpu,jdbcType=VARCHAR},
       skuId = #{skuid,jdbcType=VARCHAR},
-      discount = #{discount,jdbcType=VARCHAR}
+      discount = #{discount,jdbcType=VARCHAR},
+      schedule_id = #{scheduleId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
