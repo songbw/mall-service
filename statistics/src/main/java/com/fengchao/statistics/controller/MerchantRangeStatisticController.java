@@ -89,9 +89,9 @@ public class MerchantRangeStatisticController {
                 throw new Exception("入参 merchantId不合法");
             }
 
-            Map<String, List<MerchantCityRangeStatisticResVo>> resultMap =
+            List<MerchantCityRangeStatisticResVo> resultList =
                     merchantStatisticService.fetchOrderAmountTrend(startDate, endDate, merchantId);
-            operaResponse.setData(resultMap);
+            operaResponse.setData(resultList);
         } catch (Exception e) {
             log.info("根据时间范围获取按商户-城市(天)维度的统计结果 异常:{}", e.getMessage(), e);
 
@@ -127,8 +127,8 @@ public class MerchantRangeStatisticController {
                 throw new Exception("入参 merchantId不合法");
             }
 
-            Map<String, MUserStatisticResVo> resultMap = merchantStatisticService.fetchUserTrend(startDate, endDate, merchantId);
-            operaResponse.setData(resultMap);
+            List<MUserStatisticResVo> resultList = merchantStatisticService.fetchUserTrend(startDate, endDate, merchantId);
+            operaResponse.setData(resultList);
         } catch (Exception e) {
             log.info("根据时间范围获取商户的用户变化趋势 异常:{}", e.getMessage(), e);
 

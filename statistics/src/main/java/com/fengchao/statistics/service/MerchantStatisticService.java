@@ -75,7 +75,7 @@ public interface MerchantStatisticService {
      * @return
      * @throws Exception
      */
-    Map<String, List<MerchantCityRangeStatisticResVo>> fetchOrderAmountTrend(String startDate,
+    List<MerchantCityRangeStatisticResVo> fetchOrderAmountTrend(String startDate,
                                                                              String endDate,
                                                                              Integer merchantId) throws Exception;
 
@@ -85,10 +85,10 @@ public interface MerchantStatisticService {
      * @param startDate
      * @param endDate
      * @param merchantId
-     * @return map : key:yyyy-MM-dd value:MUserStatisticResVo
+     * @return
      * @throws Exception
      */
-    Map<String, MUserStatisticResVo> fetchUserTrend(String startDate,
+    List<MUserStatisticResVo> fetchUserTrend(String startDate,
                                                     String endDate,
                                                     Integer merchantId) throws Exception;
 }

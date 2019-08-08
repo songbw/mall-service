@@ -388,7 +388,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
     }
 
     @Override
-    public Map<String, List<MerchantCityRangeStatisticResVo>> fetchOrderAmountTrend(String startDate,
+    public List<MerchantCityRangeStatisticResVo> fetchOrderAmountTrend(String startDate,
                                                                                     String endDate,
                                                                                     Integer merchantId) throws Exception {
         // 1. 查询数据库
@@ -400,58 +400,39 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 数据库返回: {}", JSONUtil.toJsonString(mCityOrderamountList));
 
         // 2. 统计数据
-        // 2.1 将获取到的数据按照'城市name'分组， 并转换成 MerchantCityRangeStatisticResVo
-        Map<String, List<MerchantCityRangeStatisticResVo>> cityRangeMap = new HashMap<>();
+        // 将获取到的数据按照'城市name'聚合， 并转换成 MerchantCityRangeStatisticResVo
+        Map<String, MerchantCityRangeStatisticResVo> cityRangeMap = new HashMap<>();
         for (MCityOrderamount mCityOrderamount : mCityOrderamountList) {
             String cityName = mCityOrderamount.getCityName();
-            List<MerchantCityRangeStatisticResVo> cityRangeList = cityRangeMap.get(cityName);
-            if (cityRangeList == null) {
-                cityRangeList = new ArrayList<>();
-                cityRangeMap.put(cityName, cityRangeList);
-            }
+            String cityId = mCityOrderamount.getCityId();
+            Long orderAmount = mCityOrderamount.getOrderAmount(); // 单位 分
 
-            // 转 MerchantCityRangeStatisticResVo
-            MerchantCityRangeStatisticResVo merchantCityRangeStatisticResVo
-                    = convertToMerchantCityRangeStatisticResVo(mCityOrderamount);
-            cityRangeList.add(merchantCityRangeStatisticResVo);
+            MerchantCityRangeStatisticResVo cityRangeResVo = cityRangeMap.get(cityName);
+            if (cityRangeResVo == null) {
+                cityRangeResVo = new MerchantCityRangeStatisticResVo();
+                cityRangeResVo.setCityId(cityId);
+                cityRangeResVo.setCityName(cityName);
+                cityRangeResVo.setOrderAmount(new BigDecimal(orderAmount).divide(new BigDecimal(100)).toString()); // 单位：元
+
+                cityRangeMap.put(cityName, cityRangeResVo);
+            } else {
+                cityRangeResVo.setOrderAmount(new BigDecimal(cityRangeResVo.getOrderAmount()).
+                        add(new BigDecimal(orderAmount).divide(new BigDecimal(100))).toString()); // 单位：元
+            }
         }
         log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 按照城市分组结果:{}", JSONUtil.toJsonString(cityRangeMap));
 
-        // 2.2 补充缺失的日期数据(因为有的日期该商户可能没有统计数据)
-        Set<String> cityNameSet = cityRangeMap.keySet();
-        for (String cityName : cityNameSet) {
-            //
-            List<MerchantCityRangeStatisticResVo> merchantCityRangeStatisticResVoList = cityRangeMap.get(cityName);
-            // 转map key:日期yyy-MM-dd  value:MerchantCityRangeStatisticResVo
-            Map<String, MerchantCityRangeStatisticResVo> dateRangeMap =
-                    merchantCityRangeStatisticResVoList.stream().collect(Collectors.toMap(m -> m.getStatisticDate(), m -> m));
+        // 转list
+        List<MerchantCityRangeStatisticResVo> resultList = new ArrayList<>(cityRangeMap.values());
 
-            // 补充后的数据
-            List<MerchantCityRangeStatisticResVo> fullStatisticResVoList = new ArrayList<>();
-            String currentDate = startDate; // 当前时间 yyyy-MM-dd
-            while (DateUtil.compareDate(currentDate, DateUtil.DATE_YYYY_MM_DD, endDate, DateUtil.DATE_YYYY_MM_DD) <= 0) {
-                MerchantCityRangeStatisticResVo merchantCityRangeStatisticResVo = dateRangeMap.get(currentDate); // yyyy-MM-dd
-                if (merchantCityRangeStatisticResVo == null) {
-                    merchantCityRangeStatisticResVo = new MerchantCityRangeStatisticResVo("", cityName, "0", currentDate);
-                }
+        log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 获取统计数据 List<MerchantCityRangeStatisticResVo>:{}",
+                JSONUtil.toJsonString(resultList));
 
-                fullStatisticResVoList.add(merchantCityRangeStatisticResVo);
-
-                currentDate = DateUtil.plusDayWithDate(currentDate, DateUtil.DATE_YYYY_MM_DD, 1, DateUtil.DATE_YYYY_MM_DD);
-            }
-
-            // 重新设置数据
-            cityRangeMap.put(cityName, fullStatisticResVoList);
-        }
-
-        log.info("根据时间范围获取daily型的商户-城市(天)维度统计数据 获取统计数据Map<String, List<MerchantCityRangeStatisticResVo>>:{}",
-                JSONUtil.toJsonString(cityRangeMap));
-
-        return cityRangeMap;
+        return resultList;
     }
 
     @Override
-    public Map<String, MUserStatisticResVo> fetchUserTrend(String startDate,
+    public List<MUserStatisticResVo> fetchUserTrend(String startDate,
                                                            String endDate,
                                                            Integer merchantId) throws Exception {
         // 1. 查询数据库
@@ -462,9 +443,9 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                 mStatisticUserDao.selectDailyStatisticByDateRange(_startDate, _endDate, merchantId);
         log.info("根据时间范围获取商户的用户变化趋势 数据库返回: {}", JSONUtil.toJsonString(mStatisticUserList));
 
-        if (CollectionUtils.isEmpty(mStatisticUserList)) {
-            return Collections.EMPTY_MAP;
-        }
+//        if (CollectionUtils.isEmpty(mStatisticUserList)) {
+//            return Collections.EMPTY_LIST;
+//        }
 
         // 转map key：日期yyyy-MM-dd value: MStatisticUser
         Map<String, MStatisticUser> mStatisticUserMap = new HashMap<>();
@@ -496,7 +477,12 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         log.info("根据时间范围获取商户的用户变化趋势 获取统计数据Map<String, MUserStatisticResVo>:{}",
                 JSONUtil.toJsonString(mUserStatisticResVoMap));
 
-        return mUserStatisticResVoMap;
+        //
+        List<MUserStatisticResVo> resultList = new ArrayList<>(mUserStatisticResVoMap.values());
+
+        log.info("根据时间范围获取商户的用户变化趋势 获取统计数据返回List<MUserStatisticResVo>:{}", JSONUtil.toJsonString(resultList));
+
+        return resultList;
     }
 
 
@@ -527,8 +513,6 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         merchantCityRangeStatisticResVo.setCityName(mCityOrderamount.getCityName());
         merchantCityRangeStatisticResVo.setOrderAmount(new BigDecimal(mCityOrderamount.getOrderAmount())
                 .divide(new BigDecimal(100)).toString()); // 单位：元
-        merchantCityRangeStatisticResVo.setStatisticDate(DateUtil.
-                dateTimeFormat(mCityOrderamount.getStatisticStartTime(), DateUtil.DATE_YYYY_MM_DD)); // 日期 2019-01-01
 
         return merchantCityRangeStatisticResVo;
     }
