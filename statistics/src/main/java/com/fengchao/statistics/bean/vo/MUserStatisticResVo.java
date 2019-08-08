@@ -24,15 +24,15 @@ public class MUserStatisticResVo {
     /**
      * 统计数据日期 yyyy-MM-dd
      */
-    private String statisticData;
+    private String statisticDate;
 
     public MUserStatisticResVo() {
 
     }
 
-    public MUserStatisticResVo(Integer orderUserCount, Integer refundUserCount, String statisticData) {
+    public MUserStatisticResVo(Integer orderUserCount, Integer refundUserCount, String statisticDate) {
         this.orderUserCount = orderUserCount;
         this.refundUserCount = refundUserCount;
-        this.statisticData = statisticData;
+        this.statisticDate = statisticDate;
     }
 }

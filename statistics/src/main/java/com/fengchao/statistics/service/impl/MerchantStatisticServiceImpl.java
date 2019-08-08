@@ -1,6 +1,5 @@
 package com.fengchao.statistics.service.impl;
 
-import com.fasterxml.jackson.core.JsonToken;
 import com.fengchao.statistics.bean.vo.MOverallResVo;
 import com.fengchao.statistics.bean.vo.MUserStatisticResVo;
 import com.fengchao.statistics.bean.vo.MerchantCityRangeStatisticResVo;
@@ -496,7 +495,7 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         MUserStatisticResVo mUserStatisticResVo = new MUserStatisticResVo();
         mUserStatisticResVo.setOrderUserCount(mStatisticUser.getOrderUserCount());
         mUserStatisticResVo.setRefundUserCount(mStatisticUser.getRefundUserCount());
-        mUserStatisticResVo.setStatisticData(DateUtil.
+        mUserStatisticResVo.setStatisticDate(DateUtil.
                 dateTimeFormat(mStatisticUser.getStatisticStartTime(), DateUtil.DATE_YYYY_MM_DD)); // yyyy-MM-dd
 
         return mUserStatisticResVo;
