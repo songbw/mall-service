@@ -2,9 +2,9 @@ package com.fengchao.statistics.dao;
 
 import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
-import com.fengchao.statistics.mapper.MerchantOverviewMapper;
-import com.fengchao.statistics.model.MerchantOverview;
-import com.fengchao.statistics.model.MerchantOverviewExample;
+import com.fengchao.statistics.mapper.MOverviewMapper;
+import com.fengchao.statistics.model.MOverview;
+import com.fengchao.statistics.model.MOverviewExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,27 +13,27 @@ import java.util.List;
 
 /**
  * @Author tom
- * @Date 19-7-26 下午6:41
+ * @Date 19-7-25 下午5:17
  */
 @Component
-public class MerchantOverviewDao {
+public class MOverviewDao {
 
-    private MerchantOverviewMapper merchantOverviewMapper;
+    private MOverviewMapper mOverviewMapper;
 
     @Autowired
-    public MerchantOverviewDao(MerchantOverviewMapper merchantOverviewMapper) {
-        this.merchantOverviewMapper = merchantOverviewMapper;
+    public MOverviewDao(MOverviewMapper mOverviewMapper) {
+        this.mOverviewMapper = mOverviewMapper;
     }
 
     /**
      * 新增
      *
-     * @param merchantOverview
+     * @param mOverview
      * @return
      */
-    public Long insertMerchantOverview(MerchantOverview merchantOverview) {
-        int count = merchantOverviewMapper.insertSelective(merchantOverview);
-        return merchantOverview.getId();
+    public Long insertMOverview(MOverview mOverview) {
+        int count = mOverviewMapper.insertSelective(mOverview);
+        return mOverview.getId();
     }
 
     /**
@@ -46,14 +46,14 @@ public class MerchantOverviewDao {
      */
     public int deleteByPeriodTypeAndStatisticDate(Short period,
                                                   Date statisticStartDate, Date statisticEndDate) {
-        MerchantOverviewExample merchantOverviewExample = new MerchantOverviewExample();
+        MOverviewExample mOverviewExample = new MOverviewExample();
 
-        MerchantOverviewExample.Criteria criteria = merchantOverviewExample.createCriteria();
+        MOverviewExample.Criteria criteria = mOverviewExample.createCriteria();
         criteria.andPeriodTypeEqualTo(period);
         criteria.andStatisticStartTimeEqualTo(statisticStartDate);
         criteria.andStatisticEndTimeEqualTo(statisticEndDate);
 
-        int count = merchantOverviewMapper.deleteByExample(merchantOverviewExample);
+        int count = mOverviewMapper.deleteByExample(mOverviewExample);
 
         return count;
     }
@@ -65,18 +65,19 @@ public class MerchantOverviewDao {
      * @param endDate
      * @return
      */
-    public List<MerchantOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate) {
-        MerchantOverviewExample merchantOverviewExample = new MerchantOverviewExample();
+    public List<MOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate, Integer merchantId) {
+        MOverviewExample mOverviewExample = new MOverviewExample();
 
-        MerchantOverviewExample.Criteria criteria = merchantOverviewExample.createCriteria();
+        MOverviewExample.Criteria criteria = mOverviewExample.createCriteria();
         criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
 
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
         criteria.andStatisticStartTimeBetween(startDate, endDate);
+        criteria.andMerchantIdEqualTo(merchantId);
 
-        List<MerchantOverview> merchantOverviewList =
-                merchantOverviewMapper.selectByExample(merchantOverviewExample);
+        List<MOverview> mOverviewList =
+                mOverviewMapper.selectByExample(mOverviewExample);
 
-        return merchantOverviewList;
+        return mOverviewList;
     }
 }

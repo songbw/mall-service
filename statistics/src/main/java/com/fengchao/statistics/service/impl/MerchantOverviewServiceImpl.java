@@ -7,7 +7,6 @@ import com.fengchao.statistics.model.MerchantOverview;
 import com.fengchao.statistics.rpc.VendorsRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import com.fengchao.statistics.rpc.extmodel.SysCompany;
-import com.fengchao.statistics.rpc.extmodel.SysUser;
 import com.fengchao.statistics.service.MerchantOverviewService;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
@@ -89,7 +88,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
             // 4. 插入统计数据
             // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-            int count = merchantOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+            int count = merchantOverviewDao.deleteByPeriodTypeAndStatisticDate(
                     StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                     DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
                     DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
@@ -99,7 +98,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
 
             // 4.2 执行插入
             for (MerchantOverview merchantOverview : merchantOverviewList) {
-                merchantOverviewDao.insertCategoryOverview(merchantOverview);
+                merchantOverviewDao.insertMerchantOverview(merchantOverview);
             }
 
             log.info("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!", startDateTime, endDateTime);
@@ -116,7 +115,7 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
         Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         log.info("根据时间范围获取daily型的商户维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<MerchantOverview> merchantOverviewList =
-                merchantOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
+                merchantOverviewDao.selectDailyStatisticByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的商户维度统计数据 数据库返回: {}", JSONUtil.toJsonString(merchantOverviewList));
         if (CollectionUtils.isEmpty(merchantOverviewList)) {
             return Collections.emptyList();

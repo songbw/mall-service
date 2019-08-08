@@ -66,7 +66,7 @@ public class DateUtil {
      * @param newFormat
      * @return
      */
-    public static String calcDay(String originDateTime, String originFormat, long daysToAdd, String newFormat) {
+    public static String plusDayWithDateTime(String originDateTime, String originFormat, long daysToAdd, String newFormat) {
         String formatDate = "";
 
         if (StringUtils.isNotBlank(originDateTime)) {
@@ -79,6 +79,33 @@ public class DateUtil {
 
             // 将计算完的日期转换成需要的格式
             formatDate = _localDateTime.format(DateTimeFormatter.ofPattern(newFormat));
+        }
+
+        return formatDate;
+    }
+
+    /**
+     * 将一个日期加上或减去 daysToAdd 天数, 得出新的日期
+     *
+     * @param originDate
+     * @param originFormat
+     * @param daysToAdd
+     * @param newFormat
+     * @return
+     */
+    public static String plusDayWithDate(String originDate, String originFormat, long daysToAdd, String newFormat) {
+        String formatDate = "";
+
+        if (StringUtils.isNotBlank(originDate)) {
+            // 将原始的日期转换成localDate
+            LocalDate localDate = LocalDate.parse(originDate, DateTimeFormatter.ofPattern(originFormat));
+
+            // 计算天数
+            LocalDate _localDate = localDate.plusDays(daysToAdd);
+
+
+            // 将计算完的日期转换成需要的格式
+            formatDate = _localDate.format(DateTimeFormatter.ofPattern(newFormat));
         }
 
         return formatDate;
@@ -243,6 +270,38 @@ public class DateUtil {
         LocalTime localTime = LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat));
 
         return localTime;
+    }
+
+    /**
+     * 比较日期
+     *
+     * @param date1
+     * @param format1
+     * @param date2
+     * @param format2
+     * @return
+     */
+    public static int compareDate(String date1, String format1, String date2, String format2) {
+        LocalDate localDate1 = LocalDate.parse(date1, DateTimeFormatter.ofPattern(format1));
+        LocalDate localDate2 = LocalDate.parse(date2, DateTimeFormatter.ofPattern(format2));
+
+        return localDate1.compareTo(localDate2);
+    }
+
+    /**
+     * 比较时间
+     *
+     * @param date1
+     * @param format1
+     * @param date2
+     * @param format2
+     * @return
+     */
+    public static int compareDateTime(String date1, String format1, String date2, String format2) {
+        LocalDateTime localDateTime1 = LocalDateTime.parse(date1, DateTimeFormatter.ofPattern(format1));
+        LocalDateTime localDateTime2 = LocalDateTime.parse(date2, DateTimeFormatter.ofPattern(format2));
+
+        return localDateTime1.compareTo(localDateTime2);
     }
 
     public static void main(String args[]) {

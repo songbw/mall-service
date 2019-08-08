@@ -18,5 +18,16 @@ public class MerchantCityRangeStatisticResVo {
     /**
      * 统计日期
      */
-    private String statisticDate; // 日期 20190101
+    private String statisticDate; // 日期 2019-01-01
+
+    public MerchantCityRangeStatisticResVo() {
+
+    }
+
+    public MerchantCityRangeStatisticResVo(String cityId, String cityName, String orderAmount, String statisticDate) {
+        this.cityId = cityId;
+        this.cityName = cityName;
+        this.orderAmount = orderAmount;
+        this.statisticDate = statisticDate;
+    }
 }

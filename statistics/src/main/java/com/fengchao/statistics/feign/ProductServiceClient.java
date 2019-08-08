@@ -2,7 +2,7 @@ package com.fengchao.statistics.feign;
 
 import com.fengchao.statistics.bean.OperaResponse;
 import com.fengchao.statistics.bean.OperaResult;
-import com.fengchao.statistics.feign.hystric.ProductServiceClientH;
+import com.fengchao.statistics.feign.hystric.ProductServiceClientFallbackFactory;
 import com.fengchao.statistics.rpc.extmodel.CategoryQueryBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(value = "product-aoyi", fallback = ProductServiceClientH.class)
+@FeignClient(value = "product-aoyi", fallbackFactory = ProductServiceClientFallbackFactory.class)
 public interface ProductServiceClient {
 
     @Deprecated

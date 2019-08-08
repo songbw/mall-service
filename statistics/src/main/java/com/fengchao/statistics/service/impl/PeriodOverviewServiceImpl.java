@@ -90,7 +90,7 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
 
             // 4. 插入统计数据
             // 4.1 首先按照“统计时间”和“统计类型”从数据库获取是否有已统计过的数据; 如果有，则删除
-            int count = periodOverviewDao.deleteCategoryOverviewByPeriodTypeAndStatisticDate(
+            int count = periodOverviewDao.deleteByPeriodTypeAndStatisticDate(
                     StatisticPeriodTypeEnum.DAY.getValue().shortValue(),
                     DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS),
                     DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
@@ -99,6 +99,8 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
 
             // 4.2 执行插入
             periodOverviewDao.insertPeriodOverview(periodOverview);
+
+            log.info("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 执行完成!", startDateTime, endDateTime);
         } catch (Exception e) {
             log.error("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常",
                     startDateTime, endDateTime, e.getMessage(), e);
@@ -113,7 +115,7 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
         Date _endDate = DateUtil.parseDateTime(endDate + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         log.info("根据时间范围获取daily型的时间段维度统计数据 日期范围: {} - {}", _startDate, _endDate);
         List<PeriodOverview> periodOverviewList =
-                periodOverviewDao.selectDailyCategoryOverviewsByDateRange(_startDate, _endDate);
+                periodOverviewDao.selectDailyStatisticByDateRange(_startDate, _endDate);
         log.info("根据时间范围获取daily型的时间段维度统计数据 数据库返回: {}", JSONUtil.toJsonString(periodOverviewList));
 
         if (CollectionUtils.isEmpty(periodOverviewList)) {

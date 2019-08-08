@@ -60,7 +60,7 @@ public class OrdersRpcService {
     }
 
     /**
-     * 获取订单相关的统计数据
+     * 获取平台订单相关的整体运营数据
      *  1.获取订单支付总额
      *  3.(已支付)订单总量
      *  4.(已支付)下单人数
@@ -84,6 +84,36 @@ public class OrdersRpcService {
         }
 
         log.info("OrdersRpcService#queryOrdersOverviewStatistic 调用order rpc服务 返回:{}",
+                JSONUtil.toJsonString(dayStatisticsBean));
+
+        return dayStatisticsBean;
+    }
+
+    /**
+     * 获取商户订单相关的整体运营数据
+     *  1.获取订单支付总额
+     *  3.(已支付)订单总量
+     *  4.(已支付)下单人数
+     *
+     * @return
+     */
+    public DayStatisticsBean queryMerchantOrdersOverallStatistic(Integer merchantId) {
+        // 返回值
+        DayStatisticsBean dayStatisticsBean = null;
+
+        // 执行rpc调用
+        log.info("获取商户订单相关的整体运营数据 调用order rpc服务 入参 merchantId:{}", merchantId);
+        OperaResponse<DayStatisticsBean> operaResponse = orderServiceClient.merchantStatistics(merchantId);
+        log.info("获取商户订单相关的整体运营数据 调用order rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        // 处理返回
+        if (operaResponse.getCode() == 200) {
+            dayStatisticsBean = operaResponse.getData();
+        } else {
+            log.warn("获取商户订单相关的整体运营数据 调用order rpc服务 错误!");
+        }
+
+        log.info("OrdersRpcService#queryMerchantOrdersOverallStatistic 调用order rpc服务 返回:{}",
                 JSONUtil.toJsonString(dayStatisticsBean));
 
         return dayStatisticsBean;

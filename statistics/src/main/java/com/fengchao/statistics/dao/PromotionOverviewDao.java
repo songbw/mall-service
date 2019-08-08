@@ -1,5 +1,6 @@
 package com.fengchao.statistics.dao;
 
+import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.mapper.PromotionOverviewMapper;
 import com.fengchao.statistics.model.PromotionOverview;
@@ -30,9 +31,9 @@ public class PromotionOverviewDao {
      * @param promotionOverview
      * @return
      */
-    public int insertCategoryOverview(PromotionOverview promotionOverview) {
-        int id = promotionOverviewMapper.insertSelective(promotionOverview);
-        return id;
+    public Long insertCategoryOverview(PromotionOverview promotionOverview) {
+        int count = promotionOverviewMapper.insertSelective(promotionOverview);
+        return promotionOverview.getId();
     }
 
     /**
@@ -43,8 +44,8 @@ public class PromotionOverviewDao {
      * @param statisticEndDate
      * @return
      */
-    public int deleteCategoryOverviewByPeriodTypeAndStatisticDate(Short period,
-                                                                  Date statisticStartDate, Date statisticEndDate) {
+    public int deleteByPeriodTypeAndStatisticDate(Short period,
+                                                  Date statisticStartDate, Date statisticEndDate) {
         PromotionOverviewExample promotionOverviewExample = new PromotionOverviewExample();
 
         PromotionOverviewExample.Criteria criteria = promotionOverviewExample.createCriteria();
@@ -64,10 +65,12 @@ public class PromotionOverviewDao {
      * @param endDate
      * @return
      */
-    public List<PromotionOverview> selectDailyCategoryOverviewsByDateRange(Date startDate, Date endDate) {
+    public List<PromotionOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate) {
         PromotionOverviewExample promotionOverviewExample = new PromotionOverviewExample();
 
         PromotionOverviewExample.Criteria criteria = promotionOverviewExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
+
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
         criteria.andStatisticStartTimeBetween(startDate, endDate);
 
