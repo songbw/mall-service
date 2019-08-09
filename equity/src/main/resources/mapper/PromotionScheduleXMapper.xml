@@ -250,8 +250,13 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-
-  <select id="selectDaliySchedule" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectBypromotionId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+     select
+     <include refid="Base_Column_List" />
+     from promotion_schedule
+     where promotion_id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectCurrentSchedule" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from promotion_schedule
@@ -259,4 +264,12 @@
     ORDER BY start_time desc
     LIMIT 0, 1
   </select>
+  <select id="selectSoonSchedule" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+     select
+     <include refid="Base_Column_List" />
+     from promotion_schedule
+     where end_time <![CDATA[ >= ]]> NOW() and promotion_id = #{id,jdbcType=INTEGER}
+     ORDER BY start_time asc
+     LIMIT 0, 1
+    </select>
 </mapper>

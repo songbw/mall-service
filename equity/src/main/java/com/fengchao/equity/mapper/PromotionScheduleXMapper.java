@@ -18,9 +18,9 @@ public interface PromotionScheduleXMapper {
 
     int insertSelective(PromotionSchedule record);
 
-    List<PromotionSchedule> selectByExample(PromotionScheduleExample example);
+    List<PromotionScheduleX> selectByExample(PromotionScheduleExample example);
 
-    PromotionSchedule selectByPrimaryKey(Integer id);
+    PromotionScheduleX selectByPrimaryKey(Integer id);
 
     int updateByExampleSelective(@Param("record") PromotionSchedule record, @Param("example") PromotionScheduleExample example);
 
@@ -30,5 +30,9 @@ public interface PromotionScheduleXMapper {
 
     int updateByPrimaryKey(PromotionSchedule record);
 
-    PromotionScheduleX selectDaliySchedule(Integer id);
+    PromotionScheduleX selectCurrentSchedule(Integer id);
+
+    PromotionScheduleX selectSoonSchedule(Integer id);
+
+    List<PromotionScheduleX> selectBypromotionId(Integer id);
 }
