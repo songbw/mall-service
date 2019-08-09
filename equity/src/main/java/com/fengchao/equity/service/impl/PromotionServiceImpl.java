@@ -394,51 +394,56 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public PromotionSchduleMpuBean findCurrentSchedule(Integer num) {
+        if(num == null){
+            num = 16;
+        }
         PromotionSchduleMpuBean bean = null;
         PromotionX promotion = promotionXMapper.selectDaliyPromotion();
         if(promotion == null){
             return bean;
         }else{
-            PromotionScheduleX schedule = scheduleXMapper.selectDaliySchedule(promotion.getId());
-            if(num == null){
-                num = 16;
-            }
-            PageHelper.startPage(1, num);
-            List<PromotionMpuX> promotionMpus = mpuXMapper.selectDaliyPromotionMpu(promotion.getId(), schedule.getId());
-            PageHelper.startPage(1, num);
-            List<String> mpuIdList = mpuXMapper.selectDaliyMpuList(promotion.getId(), schedule.getId());
-            OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
-            Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
-            if (result.getCode() == 200) {
-                Object object = result.getData().get("result");
-                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
-                for(AoyiProdIndex prod: aoyiProdIndices){
-                    aoyiProdMap.put(prod.getMpu(), prod);
-                }
-            }
-            promotionMpus.forEach(promotionMpuX ->{
-                AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-                promotionMpuX.setBrand(aoyiProdIndex.getBrand());
-                promotionMpuX.setModel(aoyiProdIndex.getModel());
-                promotionMpuX.setName(aoyiProdIndex.getName());
-                promotionMpuX.setSprice(aoyiProdIndex.getSprice());
-                promotionMpuX.setPrice(aoyiProdIndex.getPrice());
-                promotionMpuX.setState(aoyiProdIndex.getState());
-                String imageUrl = aoyiProdIndex.getImagesUrl();
-                if (imageUrl != null && (!"".equals(imageUrl))) {
-                    String image = "";
-                    if (imageUrl.indexOf("/") == 0) {
-                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                    } else {
-                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                    }
-                    aoyiProdIndex.setImage(image);
-                }
-                promotionMpuX.setImage(aoyiProdIndex.getImage());
-            });
-            schedule.setPromotionMpus(promotionMpus);
             bean = convertToSchduleMpuBean(promotion);
-            bean.setSchedule(schedule);
+//            PromotionScheduleX schedule = scheduleXMapper.selectCurrentSchedule(promotion.getId());
+
+            List<PromotionScheduleX> promotionSchedules = scheduleXMapper.selectBypromotionId(promotion.getId());
+            Integer finalNum = num;
+            promotionSchedules.forEach(schedule ->{
+                PageHelper.startPage(1, finalNum);
+                List<PromotionMpuX> promotionMpus = mpuXMapper.selectDaliyPromotionMpu(promotion.getId(), schedule.getId());
+                PageHelper.startPage(1, finalNum);
+                List<String> mpuIdList = mpuXMapper.selectDaliyMpuList(promotion.getId(), schedule.getId());
+                OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
+                Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
+                if (result.getCode() == 200) {
+                    Object object = result.getData().get("result");
+                    List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
+                    for(AoyiProdIndex prod: aoyiProdIndices){
+                        aoyiProdMap.put(prod.getMpu(), prod);
+                    }
+                }
+                promotionMpus.forEach(promotionMpuX ->{
+                    AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
+                    promotionMpuX.setBrand(aoyiProdIndex.getBrand());
+                    promotionMpuX.setModel(aoyiProdIndex.getModel());
+                    promotionMpuX.setName(aoyiProdIndex.getName());
+                    promotionMpuX.setSprice(aoyiProdIndex.getSprice());
+                    promotionMpuX.setPrice(aoyiProdIndex.getPrice());
+                    promotionMpuX.setState(aoyiProdIndex.getState());
+                    String imageUrl = aoyiProdIndex.getImagesUrl();
+                    if (imageUrl != null && (!"".equals(imageUrl))) {
+                        String image = "";
+                        if (imageUrl.indexOf("/") == 0) {
+                            image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                        } else {
+                            image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                        }
+                        aoyiProdIndex.setImage(image);
+                    }
+                    promotionMpuX.setImage(aoyiProdIndex.getImage());
+                });
+                schedule.setPromotionMpus(promotionMpus);
+            });
+            bean.setPromotionSchedules(promotionSchedules);
             return bean;
         }
     }
