@@ -9,7 +9,7 @@ public interface PromotionScheduleService {
 
     PageableData<PromotionSchedule> findSchedule(Integer offset, Integer limit);
 
-    PromotionSchedule findScheduleById(Integer id);
+//    PromotionSchedule findScheduleById(Integer id);
 
     int deletePromotion(Integer id);
 

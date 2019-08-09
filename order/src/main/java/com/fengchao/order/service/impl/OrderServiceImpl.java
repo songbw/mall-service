@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.constants.PaymentStatusEnum;
 import com.fengchao.order.dao.AdminOrderDao;
+import com.fengchao.order.dao.OrderDetailDao;
+import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
 import com.fengchao.order.feign.AoyiClientService;
@@ -18,6 +20,7 @@ import com.fengchao.order.model.*;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -46,9 +50,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ReceiverMapper receiverMapper;
-
-    @Autowired
-    private InvoiceInfoMapper invoiceInfoMapper;
 
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
@@ -69,10 +70,13 @@ public class OrderServiceImpl implements OrderService {
     private JobClient jobClient;
 
     @Autowired
-    private RefundOrderMapper refundOrderMapper;
+    private AdminOrderDao adminOrderDao;
 
     @Autowired
-    private AdminOrderDao adminOrderDao;
+    private OrderDetailDao orderDetailDao;
+
+    @Autowired
+    private OrdersDao ordersDao;
 
     @Transactional
     @Override
@@ -532,6 +536,72 @@ public class OrderServiceImpl implements OrderService {
         dayStatisticsBean.setOrderPeopleNum(dayPeopleCount);
 
         logger.info("获取平台的关于订单的总体统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
+        return dayStatisticsBean;
+    }
+
+    @Override
+    public DayStatisticsBean findMerchantOverallStatistics(Integer merchantId) throws Exception {
+        // 1. 初始化统计数据 ：　a.获取订单支付总额; b.(已支付)订单总量; c.(已支付)下单人数
+        BigDecimal orderAmount = new BigDecimal(0); // 获取订单支付总额
+        Integer orderCount = 0; // (已支付)订单总量
+        Integer openIdCount = 0; // (已支付)下单人数
+
+        // 2. 查询订单详情数据，分页查询，批量循环查询
+        int currentPageNo = 1;
+        int pageSize = 300;
+
+        // 2.1 初始化查询
+        logger.info("获取商户的关于订单的总体运营统计数据 初始化查询订单详情 数据库入参 merchantId:{}, currentPageNo:{}, pageSize:{}",
+                merchantId, currentPageNo, pageSize);
+        PageInfo<OrderDetail> pageInfo = orderDetailDao.selectOrderDetailsByMerchantIdPageable(merchantId, currentPageNo, pageSize);
+        logger.info("获取商户的关于订单的总体运营统计数据 初始化查询订单详情 数据库返回pageInfo:{}", JSONUtil.toJsonString(pageInfo));
+
+        // 总页数
+        Integer totalPage = pageInfo.getPages();
+
+        Set<String> openIdSet = new HashSet<>(); // 下单人id 集合
+        // 2.2 批量循环查询
+        while (currentPageNo <= totalPage) {
+            if (currentPageNo > 1) {
+                logger.info("获取商户的关于订单的总体运营统计数据 查询订单详情 数据库入参 merchantId:{}, currentPageNo:{}, pageSize:{}",
+                        merchantId, currentPageNo, pageSize);
+                pageInfo = orderDetailDao.selectOrderDetailsByMerchantIdPageable(merchantId, currentPageNo, pageSize);
+                logger.info("获取商户的关于订单的总体运营统计数据 查询订单详情 数据库返回pageInfo:{}", JSONUtil.toJsonString(pageInfo));
+            }
+
+            // 获取查询到的订单详情
+            List<OrderDetail> orderDetailList = pageInfo.getList();
+            // 获取主订单id集合
+            Set<Integer> orderIdList = orderDetailList.stream().map(o -> o.getOrderId()).collect(Collectors.toSet());
+
+            // 根据主订单id集合　查询已支付的主订单列表
+            List<Orders> payedOrdersList = ordersDao.selectPayedOrdersListByOrdersId(new ArrayList<>(orderIdList));
+            // 已支付的主订单id集合
+            Set<Integer> payedOrdersIdSet = payedOrdersList.stream().map(o -> o.getId()).collect(Collectors.toSet());
+            // 已支付的主订单下单人id　
+            for (Orders orders : payedOrdersList) {
+                openIdSet.add(orders.getOpenId());
+            }
+
+            // 过滤出已支付的子订单并统计
+            for (OrderDetail orderDetail : orderDetailList) {
+                if (payedOrdersIdSet.contains(orderDetail.getOrderId())) { // 表示该子订单已支付
+                    orderAmount = orderAmount.add(orderDetail.getSalePrice()); // 子订单支付总额
+                    orderCount = orderCount + 1; // 子订单数量
+                }
+            }
+
+            currentPageNo++;
+        }
+
+        // 3. 拼装结果
+        DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
+        dayStatisticsBean.setOrderPaymentAmount(orderAmount.floatValue());
+        dayStatisticsBean.setOrderCount(orderCount);
+        dayStatisticsBean.setOrderPeopleNum(openIdSet.size()); // 下单人数
+
+        logger.info("获取商户的关于订单的总体运营统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
+
         return dayStatisticsBean;
     }
 

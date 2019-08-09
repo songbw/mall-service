@@ -1,5 +1,6 @@
 package com.fengchao.statistics.dao;
 
+import com.fengchao.statistics.constants.IStatusEnum;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.mapper.CategoryOverviewMapper;
 import com.fengchao.statistics.mapper.PeriodOverviewMapper;
@@ -46,8 +47,8 @@ public class PeriodOverviewDao {
      * @param statisticEndDate
      * @return
      */
-    public int deleteCategoryOverviewByPeriodTypeAndStatisticDate(Short period,
-                                                                  Date statisticStartDate, Date statisticEndDate) {
+    public int deleteByPeriodTypeAndStatisticDate(Short period,
+                                                  Date statisticStartDate, Date statisticEndDate) {
         PeriodOverviewExample periodOverviewExample = new PeriodOverviewExample();
 
         PeriodOverviewExample.Criteria criteria = periodOverviewExample.createCriteria();
@@ -67,10 +68,12 @@ public class PeriodOverviewDao {
      * @param endDate
      * @return
      */
-    public List<PeriodOverview> selectDailyCategoryOverviewsByDateRange(Date startDate, Date endDate) {
+    public List<PeriodOverview> selectDailyStatisticByDateRange(Date startDate, Date endDate) {
         PeriodOverviewExample periodOverviewExample = new PeriodOverviewExample();
 
         PeriodOverviewExample.Criteria criteria = periodOverviewExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getValue().shortValue());
+
         criteria.andPeriodTypeEqualTo(StatisticPeriodTypeEnum.DAY.getValue().shortValue());
         criteria.andStatisticStartTimeBetween(startDate, endDate);
 

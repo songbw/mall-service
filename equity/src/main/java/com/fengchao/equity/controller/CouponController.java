@@ -143,6 +143,12 @@ public class CouponController {
         return result;
     }
 
+    @PostMapping("verify")//释放优惠券
+    public OperaResult verifyCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        int num = useInfoService.verifyCoupon(bean);
+        result.getData().put("result",num);
+        return result;
+    }
     /**
      * 根据id集合查询
      *

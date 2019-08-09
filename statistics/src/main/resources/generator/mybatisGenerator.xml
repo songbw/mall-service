@@ -32,7 +32,7 @@
         </javaClientGenerator>
         <!-- 要生成的表 tableName是数据库中的表名或视图名 domainObjectName是实体类名 -->
 
-        <table tableName="promotion_overview">
+        <table tableName="m_statistic_user">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
     </context>

@@ -15,6 +15,7 @@ import com.fengchao.equity.mapper.PromotionXMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.PromotionService;
+import com.fengchao.equity.utils.CosUtil;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
@@ -170,7 +171,7 @@ public class PromotionServiceImpl implements PromotionService {
         List<PromotionMpuX> promotionMpus = null;
         promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
         List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
-        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
+//        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
 
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
         if(!mpuIdList.isEmpty()){
@@ -186,20 +187,28 @@ public class PromotionServiceImpl implements PromotionService {
 
         promotionMpus.forEach(promotionMpuX ->{
             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-            promotionMpuX.setImage(aoyiProdIndex.getImage());
             promotionMpuX.setBrand(aoyiProdIndex.getBrand());
             promotionMpuX.setModel(aoyiProdIndex.getModel());
             promotionMpuX.setName(aoyiProdIndex.getName());
             promotionMpuX.setSprice(aoyiProdIndex.getSprice());
             promotionMpuX.setPrice(aoyiProdIndex.getPrice());
             promotionMpuX.setState(aoyiProdIndex.getState());
+            String imageUrl = aoyiProdIndex.getImagesUrl();
+            if (imageUrl != null && (!"".equals(imageUrl))) {
+                String image = "";
+                if (imageUrl.indexOf("/") == 0) {
+                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                } else {
+                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                }
+                aoyiProdIndex.setImage(image);
+            }
+            promotionMpuX.setImage(aoyiProdIndex.getImage());
         });
         promotion.setPromotionSkus(promotionMpus);
 
-        if(!scheduleIdList.isEmpty()){
-            List<PromotionSchedule> scheduleAll = scheduleDao.findScheduleAll(scheduleIdList);
-            promotion.setPromotionSchedules(scheduleAll);
-        }
+        List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
+        promotion.setPromotionSchedules(scheduleAll);
 
         return promotion;
     }
@@ -258,6 +267,10 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionX findPromotionToUser(Integer id, Boolean detail) {
 
         PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
+        if(promotion == null){
+            return promotion;
+        }
+
         List<PromotionMpuX> promotionMpus = null;
         if(detail != null && detail == true){
             promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
@@ -273,13 +286,23 @@ public class PromotionServiceImpl implements PromotionService {
             }
             promotionMpus.forEach(promotionMpuX ->{
                 AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-                promotionMpuX.setImage(aoyiProdIndex.getImage());
                 promotionMpuX.setBrand(aoyiProdIndex.getBrand());
                 promotionMpuX.setModel(aoyiProdIndex.getModel());
                 promotionMpuX.setName(aoyiProdIndex.getName());
                 promotionMpuX.setSprice(aoyiProdIndex.getSprice());
                 promotionMpuX.setPrice(aoyiProdIndex.getPrice());
                 promotionMpuX.setState(aoyiProdIndex.getState());
+                String imageUrl = aoyiProdIndex.getImagesUrl();
+                if (imageUrl != null && (!"".equals(imageUrl))) {
+                    String image = "";
+                    if (imageUrl.indexOf("/") == 0) {
+                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                    } else {
+                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                    }
+                    aoyiProdIndex.setImage(image);
+                }
+                promotionMpuX.setImage(aoyiProdIndex.getImage());
 //                if(promotionMpuX.getScheduleId() != null){
 //                    PromotionSchedule schedule = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
 //                    promotionMpuX.setSchedule(schedule);
@@ -287,6 +310,8 @@ public class PromotionServiceImpl implements PromotionService {
             });
             promotion.setPromotionSkus(promotionMpus);
         }
+        List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
+        promotion.setPromotionSchedules(scheduleAll);
         return promotion;
     }
 
@@ -297,7 +322,15 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public List<PromotionInfoBean> findPromotionByMpu(String mpu) {
-        return promotionXMapper.selectPromotionInfoByMpu(mpu);
+        List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(mpu);
+        beans.forEach(bean ->{
+            if(bean.getDailySchedule() !=null && bean.getDailySchedule()){
+                PromotionSchedule promotionSchedule = scheduleDao.findPromotionSchedule(bean.getScheduleId()).get(0);
+                bean.setStartDate(promotionSchedule.getStartTime());
+                bean.setEndDate(promotionSchedule.getEndTime());
+            }
+        });
+        return beans;
     }
 
     @Override

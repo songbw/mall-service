@@ -22,9 +22,13 @@ public class PromotionScheduleDao {
         return schedule.getId();
     }
 
-    public PromotionSchedule findPromotionSchedule(int scheduleId){
-        PromotionSchedule promotionSchedule = mapper.selectByPrimaryKey(scheduleId);
-        return promotionSchedule;
+    public List<PromotionSchedule> findPromotionSchedule(int scheduleId){
+        PromotionScheduleExample example = new PromotionScheduleExample();
+        PromotionScheduleExample.Criteria criteria = example.createCriteria();
+        criteria.andIstatusEqualTo(1);
+        criteria.andIdEqualTo(scheduleId);
+        List<PromotionSchedule> schedules = mapper.selectByExample(example);
+        return schedules;
     }
 
 
@@ -44,7 +48,7 @@ public class PromotionScheduleDao {
     public PageInfo<PromotionSchedule> findSchedule(Integer offset, Integer limit) {
         PromotionScheduleExample example = new PromotionScheduleExample();
         PromotionScheduleExample.Criteria criteria = example.createCriteria();
-//        criteria.andIstatusEqualTo(1);
+        criteria.andIstatusEqualTo(1);
         PageHelper.startPage(offset, limit);
         List<PromotionSchedule> schedules = mapper.selectByExample(example);
         return new PageInfo<>(schedules);
@@ -54,7 +58,17 @@ public class PromotionScheduleDao {
         PromotionScheduleExample example = new PromotionScheduleExample();
         PromotionScheduleExample.Criteria criteria = example.createCriteria();
         criteria.andIdIn(scheduleIdList);
-//        criteria.andIstatusEqualTo(1);
+        criteria.andIstatusEqualTo(1);
+        List<PromotionSchedule> schedules = mapper.selectByExample(example);
+        return schedules;
+    }
+
+    public List<PromotionSchedule> findByPromotionId(Integer id) {
+        PromotionScheduleExample example = new PromotionScheduleExample();
+        example.setOrderByClause("start_time desc");
+        PromotionScheduleExample.Criteria criteria = example.createCriteria();
+        criteria.andPromotionIdEqualTo(id);
+        criteria.andIstatusEqualTo(1);
         List<PromotionSchedule> schedules = mapper.selectByExample(example);
         return schedules;
     }
