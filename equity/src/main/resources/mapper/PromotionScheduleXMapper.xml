@@ -254,13 +254,14 @@
      select
      <include refid="Base_Column_List" />
      from promotion_schedule
-     where promotion_id = #{id,jdbcType=INTEGER}
+     where istatus = 1 and promotion_id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectCurrentSchedule" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from promotion_schedule
     where start_time <![CDATA[ <= ]]> NOW() and promotion_id = #{id,jdbcType=INTEGER}
+    and TO_DAYS(start_time)=TO_DAYS(NOW()) and istatus = 1
     ORDER BY start_time desc
     LIMIT 0, 1
   </select>
@@ -268,8 +269,9 @@
      select
      <include refid="Base_Column_List" />
      from promotion_schedule
-     where end_time <![CDATA[ >= ]]> NOW() and promotion_id = #{id,jdbcType=INTEGER}
-     ORDER BY start_time asc
+     where start_time <![CDATA[ >= ]]> NOW() and promotion_id = #{id,jdbcType=INTEGER}
+    and TO_DAYS(start_time)=TO_DAYS(NOW()) and istatus = 1
+    ORDER BY start_time asc
      LIMIT 0, 1
     </select>
 </mapper>
