@@ -6,6 +6,7 @@ import com.fengchao.equity.model.PromotionExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,4 +39,15 @@ public class PromotionDao {
 
         return promotionList;
     }
+
+    public List<Promotion> selectActivePromotion() {
+        PromotionExample promotionExample = new PromotionExample();
+        PromotionExample.Criteria criteria = promotionExample.createCriteria();
+
+        criteria.andStatusEqualTo(4);
+        List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
+
+        return promotionList;
+    }
+
 }

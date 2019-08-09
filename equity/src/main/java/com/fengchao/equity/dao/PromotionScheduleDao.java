@@ -65,7 +65,7 @@ public class PromotionScheduleDao {
 
     public List<PromotionSchedule> findByPromotionId(Integer id) {
         PromotionScheduleExample example = new PromotionScheduleExample();
-        example.setOrderByClause("start_time desc");
+        example.setOrderByClause("start_time");
         PromotionScheduleExample.Criteria criteria = example.createCriteria();
         criteria.andPromotionIdEqualTo(id);
         criteria.andIstatusEqualTo(1);

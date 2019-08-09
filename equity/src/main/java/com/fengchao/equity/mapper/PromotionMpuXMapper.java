@@ -2,6 +2,7 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.model.PromotionMpu;
 import com.fengchao.equity.model.PromotionMpuX;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,4 +24,9 @@ public interface PromotionMpuXMapper {
     List<String> selectMpuList(Integer id);
 
     List<Integer> selectscheduleIdList(Integer id);
+
+    List<PromotionMpuX> selectDaliyPromotionMpu(@Param("promotionId") Integer promotionId, @Param("scheduleId")Integer scheduleId);
+
+    List<String> selectDaliyMpuList(@Param("promotionId") Integer promotionId, @Param("scheduleId")Integer scheduleId);
+
 }

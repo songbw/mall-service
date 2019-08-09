@@ -97,7 +97,7 @@ public class CouponThirdServiceImpl implements CouponThirdService {
         couponUseInfo.setUserOpenId(openID);
         couponUseInfo.setConsumedTime(new Date());
         couponUseInfo.setUserCouponCode(couponCode);
-        couponUseInfo.setStatus(2);
+        couponUseInfo.setStatus(3);
         int num = xMapper.updateStatusByToushiCode(couponUseInfo);
         if(num==0){
             result.setCode(700022);

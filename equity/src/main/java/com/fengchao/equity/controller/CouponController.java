@@ -143,10 +143,18 @@ public class CouponController {
         return result;
     }
 
-    @PostMapping("verify")//释放优惠券
+    @PostMapping("verify")//验证优惠券
     public OperaResult verifyCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
         int num = useInfoService.verifyCoupon(bean);
-        result.getData().put("result",num);
+        if(num == 0){
+            result.setCode(500);
+            result.setMsg("优惠券不存在");
+        }else if(num == 1){
+            result.setMsg("优惠券在有效期内，可以使用");
+        }else if(num == 2){
+            result.setCode(500);
+            result.setMsg("优惠券不在有效期，不能使用");
+        }
         return result;
     }
     /**

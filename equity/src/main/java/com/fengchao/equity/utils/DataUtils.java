@@ -45,6 +45,17 @@ public class DataUtils {
         return format;
     }
 
+    public static boolean isContainDate(Date s1, Date e1,Date s2, Date e2){
+//        if((s1 < s2) && (e1 > s2)){
+//            System.out.println("有交集");
+//        }else if((s1 > s2)&&(s1 < e2)){
+//            System.out.println("有交集");
+//        }else{
+//            System.out.println("无交集");
+//        }
+
+        return false;
+    }
     public static void main(String[] args) {
         System.out.println(decimalFormat("0.01"));
     }

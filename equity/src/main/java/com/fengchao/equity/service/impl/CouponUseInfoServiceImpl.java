@@ -504,6 +504,15 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     public int verifyCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
         if(couponUseInfo != null){
+            if(couponUseInfo != null){
+                CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+                Date date = new Date();
+                if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().before(date)){
+                    return 2;
+                }else{
+                    return 1;
+                }
+            }
         }
         return 0;
     }

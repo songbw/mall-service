@@ -3,6 +3,7 @@ package com.fengchao.equity.service;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
+import com.fengchao.equity.bean.PromotionSchduleMpuBean;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionX;
 
@@ -47,4 +48,6 @@ public interface PromotionService {
      * @return
      */
     List<PromotionBean> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception;
+
+    PromotionSchduleMpuBean findCurrentSchedule(Integer num);
 }

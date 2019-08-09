@@ -1,17 +1,16 @@
 package com.fengchao.equity.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
+import java.util.List;
 
 public class PromotionScheduleX {
 
     private Integer id;
 
     private String schedule;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+
     private Date startTime;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+
     private Date endTime;
 
     private Date createTime;
@@ -21,6 +20,8 @@ public class PromotionScheduleX {
     private Integer istatus;
 
     private Integer promotionId;
+
+    private List<PromotionMpuX> promotionMpus;
 
     public Integer getId() {
         return id;
@@ -84,5 +85,13 @@ public class PromotionScheduleX {
 
     public void setPromotionId(Integer promotionId) {
         this.promotionId = promotionId;
+    }
+
+    public List<PromotionMpuX> getPromotionMpus() {
+        return promotionMpus;
+    }
+
+    public void setPromotionMpus(List<PromotionMpuX> promotionMpus) {
+        this.promotionMpus = promotionMpus;
     }
 }

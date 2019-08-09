@@ -1,10 +1,10 @@
 package com.fengchao.equity.service.impl;
 
+import com.fengchao.equity.bean.PromotionScheduleBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.PromotionScheduleDao;
 import com.fengchao.equity.model.PromotionSchedule;
-import com.fengchao.equity.model.PromotionScheduleX;
 import com.fengchao.equity.service.PromotionScheduleService;
 import com.fengchao.equity.utils.ConvertUtil;
 import com.github.pagehelper.PageInfo;
@@ -23,7 +23,7 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
     private PromotionScheduleDao scheduleDao;
 
     @Override
-    public int createSchedule(PromotionScheduleX bean) {
+    public int createSchedule(PromotionScheduleBean bean) {
 //        if(bean.getPromotionId() == null){
 //            return 500;
 //        }
@@ -59,7 +59,7 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
     }
 
     @Override
-    public int updateSchedule(PromotionScheduleX bean) {
+    public int updateSchedule(PromotionScheduleBean bean) {
         PromotionSchedule promotionSchedule = new PromotionSchedule();
         promotionSchedule.setId(bean.getId());
         promotionSchedule.setUpdateTime(new Date());

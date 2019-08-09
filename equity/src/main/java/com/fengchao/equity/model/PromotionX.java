@@ -34,6 +34,8 @@ public class PromotionX {
 
     private List<PromotionSchedule> promotionSchedules;
 
+    private PromotionScheduleX PromotionSchedule;
+
     public PromotionX() {
     }
 

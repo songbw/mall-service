@@ -1,6 +1,7 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.bean.PromotionScheduleBean;
 import com.fengchao.equity.model.PromotionScheduleX;
 import com.fengchao.equity.service.PromotionScheduleService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public class AdminPromotionScheduleController {
     private PromotionScheduleService scheduleService;
 
     @PostMapping("create")
-    public OperaResult createSchedule(@RequestBody PromotionScheduleX bean, OperaResult result){
+    public OperaResult createSchedule(@RequestBody PromotionScheduleBean bean, OperaResult result){
         result.getData().put("scheduleId", scheduleService.createSchedule(bean));
         return result;
     }
@@ -35,7 +36,7 @@ public class AdminPromotionScheduleController {
 //    }
 
     @PutMapping("update")
-    public OperaResult updateSchedule(@RequestBody PromotionScheduleX bean, OperaResult result){
+    public OperaResult updateSchedule(@RequestBody PromotionScheduleBean bean, OperaResult result){
         result.getData().put("result", scheduleService.updateSchedule(bean));
         return result;
     }

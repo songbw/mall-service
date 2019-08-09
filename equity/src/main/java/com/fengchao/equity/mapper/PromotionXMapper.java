@@ -45,4 +45,5 @@ public interface PromotionXMapper {
 
     int updateByExample(@Param("record") PromotionX record, @Param("example") PromotionExample example);
 
+    PromotionX selectDaliyPromotion();
 }

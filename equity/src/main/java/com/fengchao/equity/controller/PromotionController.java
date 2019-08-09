@@ -33,6 +33,12 @@ public class PromotionController {
         return result;
     }
 
+    @GetMapping("getCurrentScheduleMpu")
+    public OperaResult findCurrentSchedule(Integer num, OperaResult result){
+        result.getData().put("result", service.findCurrentSchedule(num));
+        return result;
+    }
+
     @GetMapping("findById")
     public OperaResult findPromotionName(Integer id, OperaResult result){
         result.getData().put("result", service.findPromotionName(id));
