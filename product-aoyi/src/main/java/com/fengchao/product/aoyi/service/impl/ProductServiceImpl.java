@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
@@ -296,6 +297,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public OperaResponse search(ProductQueryBean queryBean){
+        // TODO 驼峰修改
+//        ObjectMapper mapper = new ObjectMapper();
+//        mapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
         return esService.search(queryBean) ;
     }
 

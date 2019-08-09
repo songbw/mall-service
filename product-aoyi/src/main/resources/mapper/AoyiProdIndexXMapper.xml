@@ -379,7 +379,7 @@
   <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,p.created_at,p.updated_at,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
+    p.saleUnit, p.state, p.price, p.sprice,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
     from aoyi_prod_index p
     left join prod_extend e on p.mpu = e.mpu
     where 1 = 1
