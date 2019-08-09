@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh '/home/smartadmin/.jenkins/workspace/fengchao-equity/equity/jenkins/scripts/deliver.sh'
+                sh './equity/jenkins/scripts/deliver.sh'
             }
         }
     }
