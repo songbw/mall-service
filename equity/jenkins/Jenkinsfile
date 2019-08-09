@@ -12,7 +12,7 @@ pipeline {
                 echo 'skip test...'
             }
         }
-        stage('Deliver') {
+        stage('Deploy') {
             steps {
                 sh './equity/jenkins/scripts/deliver.sh'
             }
