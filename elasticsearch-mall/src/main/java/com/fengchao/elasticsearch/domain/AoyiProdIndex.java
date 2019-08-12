@@ -1,8 +1,12 @@
 package com.fengchao.elasticsearch.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class AoyiProdIndex {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AoyiProdIndex implements Serializable {
     private Integer id;
 
     private String skuid;
@@ -33,17 +37,11 @@ public class AoyiProdIndex {
 
     private String introductionUrl;
 
-    private String imageExtend;
+    private Integer merchantId;
 
-    private String imagesUrlExtend;
+    private Integer inventory;
 
-    private String introductionUrlExtend;
-
-    private Integer merchantId ;
-
-    private Integer inventory ;
-
-    private Integer brandId ;
+    private Integer brandId;
 
     private String mpu;
 
@@ -171,30 +169,6 @@ public class AoyiProdIndex {
         this.introductionUrl = introductionUrl == null ? null : introductionUrl.trim();
     }
 
-    public String getImageExtend() {
-        return imageExtend;
-    }
-
-    public void setImageExtend(String imageExtend) {
-        this.imageExtend = imageExtend;
-    }
-
-    public String getImagesUrlExtend() {
-        return imagesUrlExtend;
-    }
-
-    public void setImagesUrlExtend(String imagesUrlExtend) {
-        this.imagesUrlExtend = imagesUrlExtend;
-    }
-
-    public String getIntroductionUrlExtend() {
-        return introductionUrlExtend;
-    }
-
-    public void setIntroductionUrlExtend(String introductionUrlExtend) {
-        this.introductionUrlExtend = introductionUrlExtend;
-    }
-
     public Integer getMerchantId() {
         return merchantId;
     }
@@ -224,7 +198,7 @@ public class AoyiProdIndex {
     }
 
     public void setMpu(String mpu) {
-        this.mpu = mpu;
+        this.mpu = mpu == null ? null : mpu.trim();
     }
 
     public Date getCreatedAt() {
