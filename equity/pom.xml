@@ -209,12 +209,12 @@
             </exclusions>
         </dependency>
 
-        <!-- CAT 监控
+        <!-- CAT 监控 -->
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
             <version>3.0.0</version>
-        </dependency>-->
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
