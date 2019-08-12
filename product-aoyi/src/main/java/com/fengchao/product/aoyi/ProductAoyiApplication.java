@@ -10,9 +10,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 
-import javax.annotation.PostConstruct;
-import java.util.TimeZone;
-
 @EnableCaching
 @EnableFeignClients
 @EnableDiscoveryClient
@@ -25,8 +22,4 @@ public class ProductAoyiApplication {
 		SpringApplication.run(ProductAoyiApplication.class, args);
 	}
 
-	@PostConstruct
-	void started() {
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-	}
 }
