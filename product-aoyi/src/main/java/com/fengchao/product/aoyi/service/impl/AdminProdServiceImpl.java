@@ -160,7 +160,6 @@ public class AdminProdServiceImpl implements AdminProdService {
         return num;
     }
 
-    @CachePut(value = "aoyiProdIndex", key = "#bean.mpu")
     @Override
     public int add(AoyiProdIndexX bean) throws ProductException {
         if (bean.getMerchantId() > 0) {
@@ -215,7 +214,6 @@ public class AdminProdServiceImpl implements AdminProdService {
         return bean.getId();
     }
 
-    @CachePut(value = "aoyiProdIndex", key = "#bean.mpu")
     @Override
     public int update(AoyiProdIndexX bean) throws ProductException {
         if (bean.getId() > 0) {

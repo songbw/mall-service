@@ -38,18 +38,27 @@ public class ProductESServiceImpl implements ProductESService {
     public PageBean query(ProductQueryBean queryBean) {
         SearchRequest request = new SearchRequest();
         SearchSourceBuilder builder = new SearchSourceBuilder();
-        if (queryBean.getKeyword() != null) {
-            builder.query(QueryBuilders.matchQuery("name", queryBean.getKeyword()));
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        if (!StringUtils.isEmpty(queryBean.getKeyword())) {
+            MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", queryBean.getKeyword());
+            boolQueryBuilder.must(matchQueryBuilder) ;
         }
-//        builder.query(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("state", "1")).must(QueryBuilders.matchQuery("name", queryBean.getKeyword())).should(QueryBuilders.termQuery("category", queryBean.getCategory())));
+        TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
+        boolQueryBuilder.must(termQueryBuilder);
+        builder.query(boolQueryBuilder);
         builder.from(PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize())).size(queryBean.getPageSize()); // 分页
         request.source(builder);
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
-            List<Map<String, Object>> hits = new ArrayList<>();
+            List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
             for (SearchHit documentFields : response.getHits()) {
-                Map map = documentFields.getSourceAsMap();
-                String imageUrl = (String) map.get("images_url");
+                // doc 转 json
+                String sourceAsString = documentFields.getSourceAsString() ;
+                // json 转对象
+                AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
+                String imageUrl = aoyiProdIndex.getImagesUrl();
                 if (imageUrl != null && (!"".equals(imageUrl))) {
                     String image = "";
                     if (imageUrl.indexOf("/") == 0) {
@@ -57,12 +66,12 @@ public class ProductESServiceImpl implements ProductESService {
                     } else {
                         image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
                     }
-                    map.put("image", image) ;
+                    aoyiProdIndex.setImage(image);
                 }
-                hits.add(documentFields.getSourceAsMap());
+                aoyiProdIndices.add(aoyiProdIndex);
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
-            return PageBean.build(new PageBean(), hits, Integer.parseInt(response.getHits().getTotalHits().value + ""), queryBean.getPageNo(), queryBean.getPageSize());
+            return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits().value + ""), queryBean.getPageNo(), queryBean.getPageSize());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -112,6 +121,8 @@ public class ProductESServiceImpl implements ProductESService {
             PrefixQueryBuilder prefixQueryBuilder =  QueryBuilders.prefixQuery("skuid", queryBean.getSkuProfix()) ;
             boolQueryBuilder.must(prefixQueryBuilder) ;
         }
+        TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
+        boolQueryBuilder.must(stateTermQueryBuilder);
         builder.query(boolQueryBuilder);
         builder.from(PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize())).size(queryBean.getPageSize()); // 分页
         request.source(builder);

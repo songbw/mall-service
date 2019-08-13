@@ -2,7 +2,6 @@ package com.fengchao.product.aoyi.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
