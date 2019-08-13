@@ -21,13 +21,16 @@ public class CatAlarmController {
 
     @GetMapping("/alarm")
     public void alarm(String type, String key, String re, String to, String title, String content) {
-        log.info("type={}, key={}, re={}, to={}, value={}, content={}", type, key, re, to, title, content);
+        log.info("发送告警邮件; type={}, key={}, re={}, to={}, title={}, content={}", type, key, re, to, title, content);
 
-//        String []mail = to.split(",");
-//
-//        ArrayList<String> tos = CollUtil.newArrayList(mail);
-//
-//        MailUtil.send(tos, "测试", "邮件来自Hutool群发测试", false);
+        // 发送邮件
+        String []mail = to.split(",");
+
+        ArrayList<String> tos = CollUtil.newArrayList(mail);
+
+        MailUtil.send(tos, title, content, false);
+
+        log.info("{} 告警邮件发送成功", title);
     }
 
     @GetMapping("/mail")
@@ -40,4 +43,7 @@ public class CatAlarmController {
     }
 
 
+    public static void main(String args[]) {
+        // new CatAlarmController().alarm("1", "2", "3", "tom.jing@weesharing.com,peng.zhang@weesharing.com,jon.zhou@weesharing.com,", "asdf123", "asdf");
+    }
 }
