@@ -214,7 +214,20 @@
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
             <version>3.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>foundation-service</artifactId>
+                    <groupId>org.unidal.framework</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>org.unidal.framework</groupId>
+            <artifactId>foundation-service</artifactId>
+            <version>4.0.4</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
