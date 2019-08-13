@@ -377,15 +377,17 @@ public class OrderServiceImpl implements OrderService {
             orderBeans.forEach(order -> {
                 if(order.getImage() == null || "".equals(order.getImage())){
                     AoyiProdIndex productIndex = findProduct(order.getSkuId());
-                    String imagesUrl = productIndex.getImagesUrl();
-                    if (imagesUrl != null && (!"".equals(imagesUrl))) {
-                        String image = "";
-                        if (imagesUrl.indexOf("/") == 0) {
-                            image = CosUtil.iWalletUrlT + imagesUrl.split(":")[0];
-                        } else {
-                            image = CosUtil.baseAoyiProdUrl + imagesUrl.split(":")[0];
+                    if (productIndex != null) {
+                        String imagesUrl = productIndex.getImagesUrl();
+                        if (imagesUrl != null && (!"".equals(imagesUrl))) {
+                            String image = "";
+                            if (imagesUrl.indexOf("/") == 0) {
+                                image = CosUtil.iWalletUrlT + imagesUrl.split(":")[0];
+                            } else {
+                                image = CosUtil.baseAoyiProdUrl + imagesUrl.split(":")[0];
+                            }
+                            order.setImage(image);
                         }
-                        order.setImage(image);
                     }
                 }
             });

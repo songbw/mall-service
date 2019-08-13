@@ -107,7 +107,7 @@ public class LoginServiceImpl implements ILoginService {
                 userMapper.insertSelective(user);
             }
         }
-        RedisUtil.putRedis("User:" + token, loginBean.getOpenId(), RedisUtil.appexpire);
+        RedisUtil.putRedis("SSO:" + token, loginBean.getOpenId(), RedisUtil.appexpire);
         return tokenBean;
     }
 

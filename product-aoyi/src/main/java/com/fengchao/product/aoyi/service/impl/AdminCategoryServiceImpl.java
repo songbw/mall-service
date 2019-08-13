@@ -13,12 +13,8 @@ import com.fengchao.product.aoyi.service.AdminCategoryService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +30,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Autowired
     private CategoryDao categoryDao;
 
-    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectLimit(Integer offset, Integer limit, Integer categoryClass) {
@@ -59,7 +54,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
-    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectNameList(Integer offset, Integer limit,String categoryName) {
@@ -79,7 +73,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return pageBean;
     }
 
-    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> selectCategoryList(Integer id, boolean includeSub) {
@@ -96,7 +89,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categories;
     }
 
-    @Cacheable(value = "categoryA")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> selectAll() {
@@ -126,7 +118,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
     }
 
-    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean selectSubLevelList(Integer offset, Integer limit, Integer parentId) {
@@ -157,7 +148,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return mapper.selectByCategoryIdList(categories);
     }
 
-    @CachePut(value = "category", key = "#category.categoryId")
     @Override
     public int insertSelective(AoyiBaseCategoryX bean) {
         int categoryId = mapper.selectMaxIdByParentId(bean.getParentId()) ;
@@ -174,13 +164,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return bean.getCategoryId();
     }
 
-    @CacheEvict(value = "category", key = "#id")
     @Override
     public void delete(Integer id) {
         mapper.deleteByPrimaryKey(id);
     }
 
-    @CachePut(value = "category", key = "#category.categoryId")
     @Override
     public void updateByPrimaryKeySelective(CategoryBean bean) {
         AoyiBaseCategoryX category = new AoyiBaseCategoryX();

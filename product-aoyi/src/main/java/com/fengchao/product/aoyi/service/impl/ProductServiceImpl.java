@@ -221,24 +221,26 @@ public class ProductServiceImpl implements ProductService {
     @DataSource(DataSourceNames.TWO)
     private AoyiProdIndexX findByMpu(String mpu) {
         AoyiProdIndexX aoyiProdIndexX = mapper.selectByMpu(mpu);
-        String imageUrl = aoyiProdIndexX.getImagesUrl();
-        if (imageUrl != null && (!"".equals(imageUrl))) {
-            String image = "";
-            if (imageUrl.indexOf("/") == 0) {
-                image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-            } else {
-                image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+        if (aoyiProdIndexX != null) {
+            String imageUrl = aoyiProdIndexX.getImagesUrl();
+            if (imageUrl != null && (!"".equals(imageUrl))) {
+                String image = "";
+                if (imageUrl.indexOf("/") == 0) {
+                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                } else {
+                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                }
+                aoyiProdIndexX.setImage(image);
             }
-            aoyiProdIndexX.setImage(image);
-        }
-        if (aoyiProdIndexX.getImageExtend() != null) {
-            aoyiProdIndexX.setImage(aoyiProdIndexX.getImageExtend());
-        }
-        if (aoyiProdIndexX.getImagesUrlExtend() != null) {
-            aoyiProdIndexX.setImagesUrl(aoyiProdIndexX.getImagesUrlExtend());
-        }
-        if (aoyiProdIndexX.getIntroductionUrlExtend() != null) {
-            aoyiProdIndexX.setIntroductionUrl(aoyiProdIndexX.getIntroductionUrlExtend());
+            if (aoyiProdIndexX.getImageExtend() != null) {
+                aoyiProdIndexX.setImage(aoyiProdIndexX.getImageExtend());
+            }
+            if (aoyiProdIndexX.getImagesUrlExtend() != null) {
+                aoyiProdIndexX.setImagesUrl(aoyiProdIndexX.getImagesUrlExtend());
+            }
+            if (aoyiProdIndexX.getIntroductionUrlExtend() != null) {
+                aoyiProdIndexX.setIntroductionUrl(aoyiProdIndexX.getIntroductionUrlExtend());
+            }
         }
         return aoyiProdIndexX;
     }

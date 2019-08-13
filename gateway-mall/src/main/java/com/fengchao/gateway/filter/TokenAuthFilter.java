@@ -29,7 +29,31 @@ public class TokenAuthFilter implements GlobalFilter, Ordered {
         OperaResponse operaResponse = new OperaResponse();
         String url = exchange.getRequest().getURI().getPath();
         //忽略以下url请求
-        if(url.indexOf("/auth-service/") >= 0){
+        if(url.indexOf("/advertisers/") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("/advertising/") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("/toushi/") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("login") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("/thirdParty/token") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("/thirdLogin") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("/v2/vendors/vendors") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("/users/verification_code") >= 0){
+            return chain.filter(exchange);
+        }
+        if(url.indexOf("/vendors/vendors/password") >= 0){
             return chain.filter(exchange);
         }
         //从请求头中取得token
