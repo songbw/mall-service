@@ -20,8 +20,8 @@ import java.util.ArrayList;
 public class CatAlarmController {
 
     @GetMapping("/alarm")
-    public void alarm(String type, String key, String re, String to, String value, String content) {
-        log.info("type={}, key={}, re={}, to={}, value={}, content={}", type, key, re, to, value, content);
+    public void alarm(String type, String key, String re, String to, String title, String content) {
+        log.info("type={}, key={}, re={}, to={}, value={}, content={}", type, key, re, to, title, content);
 
 //        String []mail = to.split(",");
 //
