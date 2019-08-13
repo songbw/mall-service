@@ -34,7 +34,7 @@ public class JobRunnerDispatcher implements JobRunner {
 
     @Override
     public Result run(JobContext jobContext) throws Throwable {
-        // sleuth 自定义trace begin TODO : 目前MDC不设置会导致当前xiancheng5不打印traceid
+        // sleuth 自定义trace begin TODO : 目前MDC不设置会导致当前线程不打印traceid
         CurrentTraceContext currentTraceContext = CurrentTraceContext.Default.create();
         currentTraceContext.newScope(TraceContext.newBuilder().traceId(new Date().getTime()).spanId(1L).build());
         MDC.put("X-B3-TraceId", currentTraceContext.get().traceIdString());
