@@ -1,9 +1,14 @@
 package com.fengchao.equity.controller;
 
+import brave.Tracer;
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.TraceContext;
+import brave.propagation.TraceIdContext;
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Event;
 import com.dianping.cat.message.Transaction;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,15 +34,17 @@ public class HelloController {
     public String hello(@RequestParam(value = "flag", required = false) String flag) {
         log.info("equity service work!");
 
+        String traceId = MDC.get("X-B3-TraceId");
+
         Transaction t = Cat.newTransaction("Equity-Hello", "hello");
 
         try {
             if ("1".equals(flag)) {
-                Cat.logEvent("hello.test", "test", "-1", "test=hellooo");
+                Cat.logEvent("hello.test", "test", "-1", "traceId=" + traceId);
 
                 throw new Exception("测试");
             } else {
-                Cat.logEvent("hello.test", "test", Event.SUCCESS, "test=hellooo");
+                Cat.logEvent("hello.test", "test", Event.SUCCESS, "traceId=" + traceId);
             }
 //            Cat.logMetricForCount("metric.key");
 //            Cat.logMetricForDuration("metric.key", 5);
@@ -46,6 +53,7 @@ public class HelloController {
             t.setStatus(Transaction.SUCCESS);
         } catch (Exception e) {
             t.setStatus(e);
+            t.addData("traceId=" + traceId);
             Cat.logError(e);
         } finally {
             t.complete();
