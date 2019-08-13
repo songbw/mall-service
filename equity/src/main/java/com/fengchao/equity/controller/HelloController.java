@@ -1,5 +1,8 @@
 package com.fengchao.equity.controller;
 
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
+import com.dianping.cat.message.Transaction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class HelloController {
 
+    /**
+     * http://localhost:8007/equity/hello?flag=1 // 失败请求
+     *
+     * @param flag
+     * @return
+     */
     @GetMapping("hello")
     public String hello(@RequestParam(value = "flag", required = false) String flag) {
         log.info("equity service work!");
 
-        /**Transaction t = Cat.newTransaction("Equity-Hello", "hello");
+        Transaction t = Cat.newTransaction("Equity-Hello", "hello");
 
         try {
             if ("1".equals(flag)) {
@@ -40,7 +49,7 @@ public class HelloController {
             Cat.logError(e);
         } finally {
             t.complete();
-        }**/
+        }
 
         return "equity service work!";
     }

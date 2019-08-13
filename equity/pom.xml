@@ -209,12 +209,32 @@
             </exclusions>
         </dependency>
 
-        <!-- CAT 监控
+        <!-- CAT 监控 依赖begin-->
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
             <version>3.0.0</version>
-        </dependency>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>foundation-service</artifactId>-->
+                    <!--<groupId>org.unidal.framework</groupId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.unidal.framework</groupId>-->
+            <!--<artifactId>foundation-service</artifactId>-->
+            <!--<version>4.0.4</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <!-- CAT 监控 依赖end-->
+
     </dependencies>
 
     <dependencyManagement>
