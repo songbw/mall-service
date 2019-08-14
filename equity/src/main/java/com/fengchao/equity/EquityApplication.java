@@ -28,6 +28,4 @@ public class EquityApplication {
         SpringApplication.run(EquityApplication.class, args);
     }
 
-    @PostConstruct
-    void started() { TimeZone.setDefault(TimeZone.getTimeZone("UTC"));}
 }

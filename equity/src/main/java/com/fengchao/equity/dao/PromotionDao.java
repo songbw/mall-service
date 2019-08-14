@@ -3,9 +3,11 @@ package com.fengchao.equity.dao;
 import com.fengchao.equity.mapper.PromotionMapper;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionExample;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,11 +45,24 @@ public class PromotionDao {
     public List<Promotion> selectActivePromotion() {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
-
-        criteria.andStatusEqualTo(4);
+        List<Integer> list = new ArrayList<>();
+        list.add(3);
+        list.add(4);
+        criteria.andStatusIn(list);
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
         return promotionList;
     }
 
+    public List<Promotion> selectOverduePromotion() {
+        PromotionExample promotionExample = new PromotionExample();
+        PromotionExample.Criteria criteria = promotionExample.createCriteria();
+        criteria.andStatusEqualTo(5);
+        promotionExample.setOrderByClause("created_date desc");
+
+        PageHelper.startPage(1, 1);
+        List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
+
+        return promotionList;
+    }
 }

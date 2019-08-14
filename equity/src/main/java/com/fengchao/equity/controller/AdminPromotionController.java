@@ -36,7 +36,13 @@ public class AdminPromotionController {
 
     @PostMapping("update")
     public OperaResult updatePromotion(@RequestBody PromotionX bean, OperaResult result){
-        result.getData().put("result", service.updatePromotion(bean));
+        int num = service.updatePromotion(bean);
+        if(num == 2){
+            result.setCode(500);
+            result.setMsg("同时间有上线商品");
+        }else{
+            result.getData().put("result", num);
+        }
         return result;
     }
 
