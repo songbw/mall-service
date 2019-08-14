@@ -26,5 +26,7 @@ public class PromotionBean extends QueryBean {
 
     private Integer status;
 
+    private boolean dailySchedule;
+
 }
 
