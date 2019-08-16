@@ -1,6 +1,7 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.PromotionBean;
+import com.fengchao.equity.bean.PromotionResult;
 import com.fengchao.equity.model.PromotionX;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.bean.OperaResult;
@@ -36,7 +37,18 @@ public class AdminPromotionController {
 
     @PostMapping("update")
     public OperaResult updatePromotion(@RequestBody PromotionX bean, OperaResult result){
-        result.getData().put("result", service.updatePromotion(bean));
+        PromotionResult promotionResult = service.updatePromotion(bean);
+        if(promotionResult.getNum() == 2){
+            result.setCode(500);
+            result.setMsg("同时间有上线商品");
+            result.getData().put("mpus", promotionResult.getMpus());
+        }else if(promotionResult.getNum() == 3){
+            result.setCode(501);
+            result.setMsg("当天只能有1个秒杀活动");
+            result.getData().put("promotionId", promotionResult.getPromotionId());
+        }else{
+            result.getData().put("result", promotionResult.getNum());
+        }
         return result;
     }
 

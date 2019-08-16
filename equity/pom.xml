@@ -235,6 +235,11 @@
         </dependency>
         <!-- CAT 监控 依赖end-->
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

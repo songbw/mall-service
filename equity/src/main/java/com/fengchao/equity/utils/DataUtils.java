@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DataUtils {
@@ -46,15 +47,33 @@ public class DataUtils {
     }
 
     public static boolean isContainDate(Date s1, Date e1,Date s2, Date e2){
-//        if((s1 < s2) && (e1 > s2)){
+
+//        if((s1.before(s2)) && (e1 > s2)){
 //            System.out.println("有交集");
 //        }else if((s1 > s2)&&(s1 < e2)){
 //            System.out.println("有交集");
 //        }else{
 //            System.out.println("无交集");
 //        }
+        if((s1.equals(s2))&&(e1.equals(e2))){
+            return true;
+        }else if((s1.before(s2)) && (e1.after(s2))){
+            return true;
+        }else if((s1.after(s2))&&(s1.before(e2))){
+            return true;
+        }else{
+           return false;
+        }
+    }
 
-        return false;
+    public static boolean isSameDay(Date s1, Date s2){
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(s1);
+        c2.setTime(s2);
+        return (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR))
+                && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
+                && (c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH));
     }
     public static void main(String[] args) {
         System.out.println(decimalFormat("0.01"));

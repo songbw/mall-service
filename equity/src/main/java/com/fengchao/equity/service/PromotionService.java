@@ -3,6 +3,7 @@ package com.fengchao.equity.service;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
+import com.fengchao.equity.bean.PromotionResult;
 import com.fengchao.equity.model.PromotionX;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface PromotionService {
 
     PageBean findPromotion(Integer offset, Integer limit);
 
-    int updatePromotion(PromotionX bean);
+    PromotionResult updatePromotion(PromotionX bean);
 
     PageBean searchPromotion(PromotionBean bean);
 

@@ -222,7 +222,16 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 couponUseInfo.setCouponInfo(couponBean);
             });
         }
+        List<CouponX> coupons = couponXMapper.selectGrantCoupon();
+        List<CouponBean> couponBeans = new ArrayList<>() ;
+        coupons.forEach( coupon -> {
+            CouponBean couponBean = couponToBean(coupon);
+            couponBeans.add(couponBean);
+        });
         pageBean = PageBean.build(pageBean, couponUseInfos, total, bean.getOffset(), bean.getLimit());
+        CouponUserResultBean couponUserResultBean = new CouponUserResultBean();
+        couponUserResultBean.setGrantCoupons(couponBeans);
+        couponUserResultBean.setList(couponUseInfos);
         return pageBean;
     }
 

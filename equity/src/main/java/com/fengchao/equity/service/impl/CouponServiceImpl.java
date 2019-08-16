@@ -74,24 +74,29 @@ public class CouponServiceImpl implements CouponService {
     public int updateCoupon(CouponBean bean) {
         CouponX coupon = beanToCoupon(bean);
         coupon.setId(bean.getId());
-        CouponX couponById = new CouponX();
+        CouponX couponById;
         if(bean.getStatus() != null && bean.getStatus() == 2){
-            coupon.setStatus(3);
             couponById = mapper.selectByPrimaryKey(bean.getId());
-            if(couponById == null){
-                return 0;
+            Date now = new Date();
+            if(couponById.getReleaseStartDate().after(now)){
+
+                coupon.setStatus(3);
+                JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getReleaseStartDate());
+                JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
+                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+            }else if(couponById.getReleaseStartDate().before(now)  && couponById.getReleaseEndDate().after(now)){
+
+                coupon.setStatus(4);
+                JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
+                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+            }else if(couponById.getReleaseEndDate().before(now)){
+
+                coupon.setStatus(5);
+                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
             }
         }
 
-        int num = mapper.updateByPrimaryKeySelective(coupon);
-
-        if(bean.getStatus() != null && bean.getStatus() == 2 && num == 1){
-            JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getReleaseStartDate());
-            JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
-            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
-        }
-
-        return num;
+        return mapper.updateByPrimaryKeySelective(coupon);
     }
 
     @Override

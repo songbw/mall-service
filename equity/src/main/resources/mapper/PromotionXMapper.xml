@@ -310,6 +310,9 @@
     <if test="discountType != null" >
       and discount_type = #{discountType,jdbcType=INTEGER}
     </if>
+    <if test="dailySchedule != null" >
+      and daily_schedule = #{dailySchedule,jdbcType=BIT}
+    </if>
     <if test="status != null" >
       and status = #{status,jdbcType=INTEGER}
     </if>
@@ -327,6 +330,9 @@
     </if>
     <if test="discountType != null" >
       and discount_type = #{discountType,jdbcType=INTEGER}
+    </if>
+    <if test="dailySchedule != null" >
+      and daily_schedule = #{dailySchedule,jdbcType=BIT}
     </if>
     <if test="status != null" >
       and status = #{status,jdbcType=INTEGER}
@@ -370,4 +376,14 @@
     update promotion
     set status = 5 where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectSchedulePromotion" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from promotion
+    where status in (3, 4)
+    and daily_schedule = true
+  </select>
 </mapper>
