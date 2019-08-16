@@ -1,11 +1,10 @@
 package com.fengchao.equity.bean;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-
-@Setter
-@Getter
+@Data
 public class PromotionBean extends QueryBean {
 
     private Integer id;
@@ -26,7 +25,7 @@ public class PromotionBean extends QueryBean {
 
     private Integer status;
 
-    private boolean dailySchedule;
+    private String dailySchedule;
 
 }
 

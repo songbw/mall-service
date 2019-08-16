@@ -3,7 +3,6 @@ package com.fengchao.equity.dao;
 import com.fengchao.equity.mapper.CouponMapper;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponExample;
-import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

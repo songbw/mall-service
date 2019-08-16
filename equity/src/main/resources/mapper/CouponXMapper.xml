@@ -128,6 +128,9 @@
     <if test="tagId != null" >
       and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
     </if>
+    <if test="collectType != null" >
+      and collect_type = #{collectType,jdbcType=INTEGER}
+    </if>
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectActiveCouponCount" resultType="java.lang.Integer" parameterType="Map">
@@ -145,6 +148,9 @@
     </if>
     <if test="tagId != null" >
       and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
+    </if>
+    <if test="collectType != null" >
+      and collect_type = #{collectType,jdbcType=INTEGER}
     </if>
   </select>
   <select id="selectActiveCategories" resultType="java.lang.String" >
@@ -175,6 +181,12 @@
       </if>
     </trim>
     and status = 4
+  </select>
+  <select id="selectGrantCoupon" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    where status = 4 and collect_type = 2
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from coupon

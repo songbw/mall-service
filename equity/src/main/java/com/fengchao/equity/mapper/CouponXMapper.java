@@ -40,4 +40,6 @@ public interface CouponXMapper {
     int couponEffective(int couponId);
 
     int couponEnd(int couponId);
+
+    List<CouponX> selectGrantCoupon();
 }
