@@ -13,9 +13,9 @@ public class RedisDAO {
     @Autowired
     private StringRedisTemplate template;
 
-    public  void setKey(String key,String value){
+    public  void setKey(String key,String value, int expire){
         ValueOperations<String, String> ops = template.opsForValue();
-        ops.set(key,value,1, TimeUnit.DAYS);
+        ops.set(key,value,expire, TimeUnit.SECONDS);
     }
 
     public String getValue(String key){

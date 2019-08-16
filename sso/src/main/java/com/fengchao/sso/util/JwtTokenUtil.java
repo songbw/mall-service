@@ -1,5 +1,6 @@
 package com.fengchao.sso.util;
 
+import com.fengchao.sso.bean.ThirdLoginBean;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -9,29 +10,41 @@ import org.joda.time.DateTime;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JwtTokenUtil {
 
+    /**
+     * 过期时间 12小时
+     */
+    public static final int EXPIRATIONTIME = 1000 * 60 * 60 * 12;
 
     /**
-     * HS256算法生成Token
+     * JWT 密码
+     */
+    private static final String SECRET = "yearcon";
+
+
+    /**
+     * HS512算法生成Token
      * @param jwtUserInfo
      *          用户信息
      * @return
      *          生成的Token
      */
-    public static String generateToken(JWTUserInfo jwtUserInfo,int expire,String tokenSecret){
+    public static String generateToken(ThirdLoginBean jwtUserInfo){
         if(jwtUserInfo == null){
             return null;
         }
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(tokenSecret);
-        Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
-        return Jwts.builder()
-                .setSubject(jwtUserInfo.getUserId())
-                .claim("userName", jwtUserInfo.getUserName())
-                .claim("realName", jwtUserInfo.getRealName())
-                .setExpiration(DateTime.now().plusSeconds(expire).toDate())
-                .signWith(SignatureAlgorithm.HS256, signingKey)
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(SECRET);
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("alg", "HS512");
+        return Jwts.builder().setHeader(map)
+                .setSubject(jwtUserInfo.getiAppId() + jwtUserInfo.getOpenId())
+                .setExpiration(DateTime.now().plusSeconds(EXPIRATIONTIME).toDate())
+                .signWith(SignatureAlgorithm.HS512, signingKey)
                 .compact();
     }
 

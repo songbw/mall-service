@@ -13,7 +13,9 @@ import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.Token;
 import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.ILoginService;
+import com.fengchao.sso.util.JwtTokenUtil;
 import com.fengchao.sso.util.OperaResult;
+import com.fengchao.sso.util.RedisDAO;
 import com.fengchao.sso.util.RedisUtil;
 import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,21 +31,18 @@ public class LoginServiceImpl implements ILoginService {
 
     @Autowired
     private LoginMapper loginMapper;
-
     @Autowired
     private LoginCustomMapper loginCustomMapper;
-
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private TokenMapper tokenMapper;
-
     @Autowired
     private PinganClientService pinganClientService;
     @Autowired
     private GuanaitongClientService guanaitongClientService ;
-
+    @Autowired
+    private RedisDAO redisDAO ;
 
     @Override
     public Login selectByPrimaryName(String username) {
@@ -81,11 +80,12 @@ public class LoginServiceImpl implements ILoginService {
     @Override
     public Token thirdLogin(ThirdLoginBean loginBean) {
         Token tokenBean = new Token();
-        String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        String token = JwtTokenUtil.generateToken(loginBean);
+
         tokenBean.setToken(token);
         tokenBean.setOpenId(loginBean.getOpenId());
         tokenBean.setThirdToken(loginBean.getAccessToken());
-        tokenBean.setExpireDate(RedisUtil.appexpire);
+        tokenBean.setExpireDate(JwtTokenUtil.EXPIRATIONTIME);
         Token temp = tokenMapper.selectByOpenId(loginBean.getOpenId());
         if (temp != null) {
             tokenBean.setUpdatedAt(new Date());
@@ -107,7 +107,7 @@ public class LoginServiceImpl implements ILoginService {
                 userMapper.insertSelective(user);
             }
         }
-        RedisUtil.putRedis("SSO:" + token, loginBean.getOpenId(), RedisUtil.appexpire);
+        redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
         return tokenBean;
     }
 

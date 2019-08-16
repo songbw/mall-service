@@ -20,7 +20,6 @@ public class SkuCodeServiceImpl implements SkuCodeService {
     @Autowired
     private SkuCodeMapper mapper;
 
-    @CachePut(value = "skucode", key = "#bean.id")
     @Override
     public Integer add(SkuCode bean) throws ProductException {
         if (bean.getMerchantId() == null || bean.getMerchantId() <= 0) {
@@ -34,7 +33,6 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return bean.getId();
     }
 
-    @CachePut(value = "skucode", key = "#bean.id")
     @Override
     public Integer update(SkuCode bean) throws ProductException {
         if (bean.getId() == null || bean.getId() <= 0) {
@@ -45,7 +43,6 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return bean.getId();
     }
 
-    @Cacheable(value = "skucode", key = "#merchantId")
     @DataSource(DataSourceNames.TWO)
     @Override
     public SkuCode findByMerchantId(Integer merchantId) throws ProductException {
@@ -55,7 +52,6 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return mapper.selectByMerchantId(merchantId);
     }
 
-    @Cacheable(value = "skucode", key = "#id")
     @DataSource(DataSourceNames.TWO)
     @Override
     public SkuCode find(Integer id) throws ProductException {
@@ -65,14 +61,12 @@ public class SkuCodeServiceImpl implements SkuCodeService {
         return mapper.selectByPrimaryKey(id) ;
     }
 
-    @Cacheable(value = "skucode")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<SkuCode> findAll() throws ProductException {
         return mapper.selectList();
     }
 
-    @CachePut(value = "skucode", key = "#bean.id")
     @Override
     public Integer updateSkuValueAddById(SkuCode bean) throws ProductException {
         if (bean.getId() == null || bean.getId() <= 0) {

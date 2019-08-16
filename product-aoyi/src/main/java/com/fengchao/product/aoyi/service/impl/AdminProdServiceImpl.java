@@ -9,13 +9,11 @@ import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.feign.VendorsService;
 import com.fengchao.product.aoyi.mapper.*;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
-import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
-import com.fengchao.product.aoyi.model.AoyiProdIndexX;
-import com.fengchao.product.aoyi.model.SkuCode;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 //import com.fengchao.product.aoyi.utils.RedisUtil;
+import com.fengchao.product.aoyi.utils.ProductHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -63,22 +61,15 @@ public class AdminProdServiceImpl implements AdminProdService {
         total = prodMapper.selectSearchCount(map);
         if (total > 0) {
             prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
-                String imageUrl = aoyiProdIndex.getImagesUrl();
-                if (imageUrl != null && (!"".equals(imageUrl))) {
-                    String image = "";
-                    if (imageUrl.indexOf("/") == 0) {
-                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                    } else {
-                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                    }
-                    aoyiProdIndex.setImage(image);
-                }
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
         }
         pageBean = PageBean.build(pageBean, prods, total, offset, limit);
         return pageBean;
     }
+
+
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -108,16 +99,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         total = prodMapper.selectSearchCount(map);
         if (total > 0) {
             prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
-                String imageUrl = aoyiProdIndex.getImagesUrl();
-                if (imageUrl != null && (!"".equals(imageUrl))) {
-                    String image = "";
-                    if (imageUrl.indexOf("/") == 0) {
-                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                    } else {
-                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                    }
-                    aoyiProdIndex.setImage(image);
-                }
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
         }
@@ -135,25 +117,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             num = 1;
         }
         aoyiProdIndices.forEach(aoyiProdIndex -> {
-            String imageUrl = aoyiProdIndex.getImagesUrl();
-            if (imageUrl != null && (!"".equals(imageUrl))) {
-                String image = "";
-                if (imageUrl.indexOf("/") == 0) {
-                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                } else {
-                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                }
-                aoyiProdIndex.setImage(image);
-            }
-            if (aoyiProdIndex.getImageExtend() != null) {
-                aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
-            }
-            if (aoyiProdIndex.getImagesUrlExtend() != null) {
-                aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
-            }
-            if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
-                aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
-            }
+            aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
             String jsonObject = JSON.toJSONString(aoyiProdIndex) ;
 //            RedisUtil.putRedis(aoyiProdIndex.getSkuid(), jsonObject , RedisUtil.webexpire);
         });
@@ -245,25 +209,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         if (total > 0) {
             prodMapper.selectSkuByCouponIdLimit(bean).forEach(aoyiProdIndex -> {
                 ProductInfoBean infoBean = new ProductInfoBean();
-                String imageUrl = aoyiProdIndex.getImagesUrl();
-                if (imageUrl != null && (!"".equals(imageUrl))) {
-                    String image = "";
-                    if (imageUrl.indexOf("/") == 0) {
-                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                    } else {
-                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                    }
-                    aoyiProdIndex.setImage(image);
-                }
-                if (aoyiProdIndex.getImageExtend() != null) {
-                    aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
-                }
-                if (aoyiProdIndex.getImagesUrlExtend() != null) {
-                    aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
-                }
-                if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
-                    aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
-                }
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 OperaResult operaResult = equityService.findPromotionBySkuId(aoyiProdIndex.getSkuid());
                 Object object = operaResult.getData().get("result");

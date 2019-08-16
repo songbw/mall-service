@@ -17,6 +17,7 @@ import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.fengchao.product.aoyi.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,25 +64,7 @@ public class ProductServiceImpl implements ProductService {
         total = mapper.selectLimitCount(map);
         if (total > 0) {
             mapper.selectLimit(map).forEach(aoyiProdIndex -> {
-                String imageUrl = aoyiProdIndex.getImagesUrl();
-                if (imageUrl != null && (!"".equals(imageUrl))) {
-                    String image = "";
-                    if (imageUrl.indexOf("/") == 0) {
-                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                    } else {
-                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                    }
-                    aoyiProdIndex.setImage(image);
-                }
-                if (aoyiProdIndex.getImageExtend() != null) {
-                    aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
-                }
-                if (aoyiProdIndex.getImagesUrlExtend() != null) {
-                    aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
-                }
-                if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
-                    aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
-                }
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 prodIndices.add(aoyiProdIndex);
             });
         }
@@ -178,25 +161,7 @@ public class ProductServiceImpl implements ProductService {
         map.put("pageSize",1000);
         List<AoyiProdIndexX> prodIndices = new ArrayList<>();
         mapper.selectAll(map).forEach(aoyiProdIndex -> {
-            String imageUrl = aoyiProdIndex.getImagesUrl();
-            if (imageUrl != null && (!"".equals(imageUrl))) {
-                String image = "";
-                if (imageUrl.indexOf("/") == 0) {
-                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                } else {
-                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                }
-                aoyiProdIndex.setImage(image);
-            }
-            if (aoyiProdIndex.getImageExtend() != null) {
-                aoyiProdIndex.setImage(aoyiProdIndex.getImageExtend());
-            }
-            if (aoyiProdIndex.getImagesUrlExtend() != null) {
-                aoyiProdIndex.setImagesUrl(aoyiProdIndex.getImagesUrlExtend());
-            }
-            if (aoyiProdIndex.getIntroductionUrlExtend() != null) {
-                aoyiProdIndex.setIntroductionUrl(aoyiProdIndex.getIntroductionUrlExtend());
-            }
+            aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
             prodIndices.add(aoyiProdIndex);
         });
         return prodIndices;
@@ -222,25 +187,7 @@ public class ProductServiceImpl implements ProductService {
     private AoyiProdIndexX findByMpu(String mpu) {
         AoyiProdIndexX aoyiProdIndexX = mapper.selectByMpu(mpu);
         if (aoyiProdIndexX != null) {
-            String imageUrl = aoyiProdIndexX.getImagesUrl();
-            if (imageUrl != null && (!"".equals(imageUrl))) {
-                String image = "";
-                if (imageUrl.indexOf("/") == 0) {
-                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                } else {
-                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                }
-                aoyiProdIndexX.setImage(image);
-            }
-            if (aoyiProdIndexX.getImageExtend() != null) {
-                aoyiProdIndexX.setImage(aoyiProdIndexX.getImageExtend());
-            }
-            if (aoyiProdIndexX.getImagesUrlExtend() != null) {
-                aoyiProdIndexX.setImagesUrl(aoyiProdIndexX.getImagesUrlExtend());
-            }
-            if (aoyiProdIndexX.getIntroductionUrlExtend() != null) {
-                aoyiProdIndexX.setIntroductionUrl(aoyiProdIndexX.getIntroductionUrlExtend());
-            }
+            aoyiProdIndexX = ProductHandle.updateImage(aoyiProdIndexX) ;
         }
         return aoyiProdIndexX;
     }
