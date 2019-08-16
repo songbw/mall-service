@@ -328,16 +328,20 @@ public class PromotionServiceImpl implements PromotionService {
     public int createContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpuX> promotionSkus = bean.getPromotionSkus();
-        promotionSkus.forEach(promotionMpuX ->{
+        for(int i = 0; i < promotionSkus.size(); i++){
+            PromotionMpuX promotionMpuX = promotionSkus.get(i);
             PromotionMpu promotionMpu = new PromotionMpu();
             promotionMpu.setId(promotionMpuX.getId());
+            if(promotionMpuX.getMpu() == null){
+                return 0;
+            }
             promotionMpu.setMpu(promotionMpuX.getMpu());
             promotionMpu.setSkuid(promotionMpuX.getSkuid());
             promotionMpu.setDiscount(promotionMpuX.getDiscount());
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
             num[0] = promotionMpuMapper.insertSelective(promotionMpu);
-        });
+        };
         return num[0];
     }
 
@@ -573,6 +577,12 @@ public class PromotionServiceImpl implements PromotionService {
 //            bean.setPromotionSchedules(promotionSchedules);
             return promotion;
         }
+    }
+
+    @Override
+    public List<Promotion> findReleasePromotion() {
+        List<Promotion> promotions = promotionDao.selectActivePromotion();
+        return promotions;
     }
 
     // ====================================== private ==========================
