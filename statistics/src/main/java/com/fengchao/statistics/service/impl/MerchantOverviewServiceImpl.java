@@ -1,6 +1,9 @@
 package com.fengchao.statistics.service.impl;
 
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
 import com.fengchao.statistics.bean.vo.MerchantOverviewResVo;
+import com.fengchao.statistics.constants.StatisticConstants;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MerchantOverviewDao;
 import com.fengchao.statistics.model.MerchantOverview;
@@ -12,6 +15,7 @@ import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,6 +109,8 @@ public class MerchantOverviewServiceImpl implements MerchantOverviewService {
         } catch (Exception e) {
             log.error("按照商户merchant(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常:{}",
                     startDateTime, endDateTime, e.getMessage(), e);
+
+            Cat.logEvent(StatisticConstants.DAILY_STATISTIC_EXCEPTION_TYPE, StatisticConstants.MERCHANT, Event.SUCCESS, "traceId=" + MDC.get("X-B3-TraceId"));
         }
     }
 

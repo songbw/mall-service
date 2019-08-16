@@ -1,10 +1,12 @@
 package com.fengchao.statistics.service.impl;
 
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
 import com.fengchao.statistics.bean.vo.CategoryOverviewResVo;
+import com.fengchao.statistics.constants.StatisticConstants;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.CategoryOverviewDao;
 import com.fengchao.statistics.model.CategoryOverview;
-import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.ProductRpcService;
 import com.fengchao.statistics.rpc.extmodel.CategoryQueryBean;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
@@ -14,6 +16,7 @@ import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +30,6 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
 
     @Autowired
     private ProductRpcService productRpcService;
-
-    @Autowired
-    private OrdersRpcService ordersRpcService;
 
     @Autowired
     private CategoryOverviewDao categoryOverviewDao;
@@ -115,6 +115,8 @@ public class CategoryOverviewServiceImpl implements CategoryOverviewService {
         } catch (Exception e) {
             log.error("按照品类category(天)维度统计订单详情总金额数据; 统计时间范围：{} - {}, 异常:{}",
                     startDateTime, endDateTime, e.getMessage(), e);
+
+            Cat.logEvent(StatisticConstants.DAILY_STATISTIC_EXCEPTION_TYPE, StatisticConstants.CATEGORY, Event.SUCCESS, "traceId=" + MDC.get("X-B3-TraceId"));
         }
     }
 

@@ -1,9 +1,13 @@
 package com.fengchao.statistics.jobClient;
 
 import com.alibaba.fastjson.JSON;
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
+import com.fengchao.statistics.constants.StatisticConstants;
 import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
 import com.fengchao.statistics.service.*;
+import com.fengchao.statistics.utils.BeanContext;
 import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import com.github.ltsopensource.core.domain.Action;
@@ -14,44 +18,14 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.util.StopWatch;
 
 import java.util.Date;
 import java.util.List;
 
 @Slf4j
-public class OrderStatisticsRunnerJobImpl implements JobRunner {
-
-    /**
-     * 按照分类统计任务
-     */
-    private static final String CATEGORY = "category";
-
-    /**
-     * 按照商户统计任务
-     */
-    private static final String MERCHANT = "merchant";
-
-    /**
-     * 按照活动统计任务
-     */
-    private static final String PROMOTION = "promotion";
-
-    /**
-     * 按照时间段统计任务
-     */
-    private static final String PERIOD = "period";
-
-    /**
-     * 商户维度，订单支付趋势统计任务
-     */
-    private static final String M_ORDERAMOUNT_TREND = "m_orderamount_trend";
-
-    /**
-     * 商户维度，用户数趋势
-     */
-    private static final String M_USER_TREND = "m_user_trend";
-
+public class OrderStatisticsRunner implements  JobRunner {
 
     /**
      * 日统计任务-每天凌晨1点执行，统计前一天的数据
@@ -123,44 +97,51 @@ public class OrderStatisticsRunnerJobImpl implements JobRunner {
 
             // 3.2执行统计
             // 3.2.1 平台统计相关
-            // overviewService.add(queryBean); // 总揽统计
-            if (needExecuteTaskList.contains(CATEGORY) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
-                categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 安品类统计
+            // a.安品类统计，操作表category_overview
+            if (needExecuteTaskList.contains(StatisticConstants.CATEGORY) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
+                categoryOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
             }
 
-            if (needExecuteTaskList.contains(MERCHANT) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
-                merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按商户统计订单支付总额
+            // b.按商户统计订单支付总额 merchant_overview
+            if (needExecuteTaskList.contains(StatisticConstants.MERCHANT) && CollectionUtils.isNotEmpty(payedOrderDetailBeanList)) {
+                merchantOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
             }
 
-            if (needExecuteTaskList.contains(PROMOTION)) {
-                promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照活动统计订单数量
+            // c.按照活动统计订单支付总额 promotion_overview
+            if (needExecuteTaskList.contains(StatisticConstants.PROMOTION)) {
+                promotionOverviewService.doDailyStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
             }
 
-            if (needExecuteTaskList.contains(PERIOD)) {
-                periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate); // 按照时间段统计订单支付总额
+            // d.按照时间段统计订单支付总额 period_overview
+            if (needExecuteTaskList.contains(StatisticConstants.PERIOD)) {
+                periodOverviewService.doStatistic(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
             }
 
             // 3.2.2 商户相关统计
-            if (needExecuteTaskList.contains(M_ORDERAMOUNT_TREND)) { // 商户维度，订单支付趋势统计任务
+            // e.商户维度，订单支付趋势统计任务 m_city_orderamount
+            if (needExecuteTaskList.contains(StatisticConstants.M_ORDERAMOUNT_TREND)) {
                 merchantStatisticService.statisticDailyOrderAmountByCity(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
             }
 
-            if (needExecuteTaskList.contains(M_USER_TREND)) { // 商户维度，用户数趋势
+            // f.商户维度，用户数趋势
+            if (needExecuteTaskList.contains(StatisticConstants.M_USER_TREND)) {
                 merchantStatisticService.statisticDailyUserCount(payedOrderDetailBeanList, startDateTime, endDateTime, statisticDate);
             }
+
+            stopWatch.stop();
+            log.info(stopWatch.prettyPrint());
+
+            // 4. 记录lts日志
+            BizLogger bizLogger = jobContext.getBizLogger();
+            bizLogger.info(startDateTime + " 到 " + endDateTime + "的日订单统计完成");
+
+            log.info("执行平台订单统计任务完成");
         } catch (Exception e) {
             log.error("执行平台订单统计任务异常:{}", e.getMessage(), e);
-            return new Result(Action.EXECUTE_FAILED, e.getMessage());
+
+            throw new Exception("执行平台订单统计任务异常");
         }
 
-        stopWatch.stop();
-        log.info(stopWatch.prettyPrint());
-
-        // 4. 记录lts日志
-        BizLogger bizLogger = jobContext.getBizLogger();
-        bizLogger.info(startDateTime + " 到 " + endDateTime + "的日订单统计完成");
-
-        log.info("执行平台订单统计任务完成");
         return new Result(Action.EXECUTE_SUCCESS, "执行平台订单统计任务完成");
     }
 }

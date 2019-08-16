@@ -1,8 +1,11 @@
 package com.fengchao.statistics.service.impl;
 
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
 import com.fengchao.statistics.bean.vo.MOverallResVo;
 import com.fengchao.statistics.bean.vo.MUserStatisticResVo;
 import com.fengchao.statistics.bean.vo.MerchantCityRangeStatisticResVo;
+import com.fengchao.statistics.constants.StatisticConstants;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.MCityOrderAmountDao;
 import com.fengchao.statistics.dao.MOverviewDao;
@@ -22,6 +25,7 @@ import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -259,6 +263,8 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         } catch (Exception e) {
             log.error("按照商户-城市(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常:{}",
                     startDateTime, endDateTime, e.getMessage(), e);
+
+            Cat.logEvent(StatisticConstants.DAILY_STATISTIC_EXCEPTION_TYPE, StatisticConstants.M_ORDERAMOUNT_TREND, Event.SUCCESS, "traceId=" + MDC.get("X-B3-TraceId"));
         }
     }
 
@@ -355,6 +361,8 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         } catch (Exception e) {
             log.error("按照商户维度统计用户数相关数据; 统计时间范围：{} - {} 异常:{}",
                     startDateTime, endDateTime, e.getMessage(), e);
+
+            Cat.logEvent(StatisticConstants.DAILY_STATISTIC_EXCEPTION_TYPE, StatisticConstants.M_USER_TREND, Event.SUCCESS, "traceId=" + MDC.get("X-B3-TraceId"));
         }
     }
 
