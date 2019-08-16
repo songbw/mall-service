@@ -3,6 +3,8 @@ package com.fengchao.equity.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.PromotionDao;
 import com.fengchao.equity.dao.PromotionScheduleDao;
 import com.fengchao.equity.dao.PromotionTypeDao;
@@ -13,12 +15,10 @@ import com.fengchao.equity.mapper.PromotionXMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.PromotionService;
-import com.fengchao.equity.utils.CosUtil;
-import com.fengchao.equity.utils.DataUtils;
-import com.fengchao.equity.utils.JSONUtil;
-import com.fengchao.equity.utils.JobClientUtils;
+import com.fengchao.equity.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -580,9 +580,16 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<Promotion> findReleasePromotion() {
+    public PageableData<Promotion> findReleasePromotion(Integer offset, Integer limit) {
+        PageableData<Promotion> pageableData = new PageableData<>();
+        PageHelper.startPage(offset, limit);
         List<Promotion> promotions = promotionDao.selectActivePromotion();
-        return promotions;
+        PageInfo<Promotion> promotionPageInfo = new PageInfo<>(promotions);
+        PageVo pageVo = ConvertUtil.convertToPageVo(promotionPageInfo);
+        List<Promotion> groupInfoList = promotionPageInfo.getList();
+        pageableData.setList(groupInfoList);
+        pageableData.setPageInfo(pageVo);
+        return pageableData;
     }
 
     // ====================================== private ==========================

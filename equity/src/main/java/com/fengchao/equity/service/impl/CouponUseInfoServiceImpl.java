@@ -186,8 +186,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     }
 
     @Override
-    public PageBean selectCouponByOpenId(CouponUseInfoBean bean) throws EquityException {
-        PageBean pageBean = new PageBean();
+    public CouponUserResultBean selectCouponByOpenId(CouponUseInfoBean bean) throws EquityException {
         int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
@@ -228,11 +227,15 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             CouponBean couponBean = couponToBean(coupon);
             couponBeans.add(couponBean);
         });
-        pageBean = PageBean.build(pageBean, couponUseInfos, total, bean.getOffset(), bean.getLimit());
+//        pageBean = PageBean.build(pageBean, couponUseInfos, total, bean.getOffset(), bean.getLimit());
         CouponUserResultBean couponUserResultBean = new CouponUserResultBean();
         couponUserResultBean.setGrantCoupons(couponBeans);
         couponUserResultBean.setList(couponUseInfos);
-        return pageBean;
+        couponUserResultBean.setPageNo(bean.getOffset());
+        couponUserResultBean.setPageSize(bean.getLimit());
+        couponUserResultBean.setTotal(total);
+        couponUserResultBean.setPages(PageBean.getPages(total, bean.getLimit()));
+        return couponUserResultBean;
     }
 
     @Override
