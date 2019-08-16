@@ -98,8 +98,8 @@ public class AdminPromotionController {
     }
 
     @GetMapping("release")
-    public OperaResult findReleasePromotion(Integer offset, Integer limit, OperaResult result){
-        result.getData().put("result", service.findReleasePromotion(offset, limit));
+    public OperaResult findReleasePromotion(Integer pageNo, Integer pageSize, OperaResult result){
+        result.getData().put("result", service.findReleasePromotion(pageNo, pageSize));
         return result;
     }
 }
