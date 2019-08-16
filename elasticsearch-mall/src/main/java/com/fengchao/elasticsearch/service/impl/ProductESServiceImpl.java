@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.elasticsearch.domain.*;
 import com.fengchao.elasticsearch.service.ProductESService;
 import com.fengchao.elasticsearch.utils.CosUtil;
+import com.fengchao.elasticsearch.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -58,16 +59,7 @@ public class ProductESServiceImpl implements ProductESService {
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
-                String imageUrl = aoyiProdIndex.getImagesUrl();
-                if (imageUrl != null && (!"".equals(imageUrl))) {
-                    String image = "";
-                    if (imageUrl.indexOf("/") == 0) {
-                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                    } else {
-                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                    }
-                    aoyiProdIndex.setImage(image);
-                }
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
                 aoyiProdIndices.add(aoyiProdIndex);
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
@@ -117,8 +109,8 @@ public class ProductESServiceImpl implements ProductESService {
             TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("category", queryBean.getCategory()) ;
             boolQueryBuilder.must(termQueryBuilder);
         }
-        if (!StringUtils.isEmpty(queryBean.getSkuProfix())) {
-            PrefixQueryBuilder prefixQueryBuilder =  QueryBuilders.prefixQuery("skuid", queryBean.getSkuProfix()) ;
+        if (!StringUtils.isEmpty(queryBean.getSkuPrefix())) {
+            PrefixQueryBuilder prefixQueryBuilder =  QueryBuilders.prefixQuery("skuid", queryBean.getSkuPrefix()) ;
             boolQueryBuilder.must(prefixQueryBuilder) ;
         }
         TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
@@ -136,16 +128,7 @@ public class ProductESServiceImpl implements ProductESService {
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
-                String imageUrl = aoyiProdIndex.getImagesUrl();
-                if (imageUrl != null && (!"".equals(imageUrl))) {
-                    String image = "";
-                    if (imageUrl.indexOf("/") == 0) {
-                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                    } else {
-                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                    }
-                    aoyiProdIndex.setImage(image);
-                }
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
                 aoyiProdIndices.add(aoyiProdIndex);
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
