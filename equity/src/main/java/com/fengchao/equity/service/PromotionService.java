@@ -4,6 +4,7 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.bean.PromotionResult;
+import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionX;
 
 import java.util.List;
@@ -49,4 +50,6 @@ public interface PromotionService {
     List<PromotionBean> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception;
 
     PromotionX findCurrentSchedule(Integer num);
+
+    List<Promotion> findReleasePromotion();
 }

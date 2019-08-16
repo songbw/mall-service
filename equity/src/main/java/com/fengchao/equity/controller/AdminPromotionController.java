@@ -76,7 +76,12 @@ public class AdminPromotionController {
 
     @PostMapping("createContent")
     public OperaResult createContent(@RequestBody PromotionX bean, OperaResult result){
-        result.getData().put("result",service.createContent(bean));
+        int num = service.createContent(bean);
+        if(num != 1){
+            result.setCode(500);
+            result.setMsg("有商品mpu为空");
+        }
+        result.getData().put("result", num);
         return result;
     }
 
@@ -89,6 +94,12 @@ public class AdminPromotionController {
     @DeleteMapping("deleteContent")
     public OperaResult deleteContent(@RequestBody PromotionX bean, OperaResult result){
         result.getData().put("result", service.deleteContent(bean));
+        return result;
+    }
+
+    @GetMapping("release")
+    public OperaResult findReleasePromotion(OperaResult result){
+        result.getData().put("result", service.findReleasePromotion());
         return result;
     }
 }
