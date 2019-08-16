@@ -4,6 +4,7 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.bean.PromotionResult;
+import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionX;
 
@@ -51,5 +52,5 @@ public interface PromotionService {
 
     PromotionX findCurrentSchedule(Integer num);
 
-    List<Promotion> findReleasePromotion();
+    PageableData<Promotion> findReleasePromotion(Integer offset, Integer limit);
 }

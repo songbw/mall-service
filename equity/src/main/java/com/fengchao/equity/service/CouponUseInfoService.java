@@ -12,7 +12,7 @@ public interface CouponUseInfoService {
 
     int getCouponNum(CouponUseInfoBean bean);
 
-    PageBean selectCouponByOpenId(CouponUseInfoBean bean);
+    CouponUserResultBean selectCouponByOpenId(CouponUseInfoBean bean);
 
     int batchCode(CouponUseInfoBean bean);
 

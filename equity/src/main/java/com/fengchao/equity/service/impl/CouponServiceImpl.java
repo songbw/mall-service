@@ -125,6 +125,7 @@ public class CouponServiceImpl implements CouponService {
         map.put("categoryId", bean.getCategoryId());
         map.put("categoryName", bean.getCategoryName());
         map.put("tagId", bean.getTagId());
+        map.put("collect_type", 1);
         map.put("pageNo", pageNo);
         map.put("pageSize",bean.getLimit());
         if(bean.getTagName() != null && !"".equals(bean.getTagName())){
