@@ -40,7 +40,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
             ServerHttpRequest request = exchange.getRequest();
             String url = request.getURI().getPath();
             //忽略以下url请求
-            if(url.indexOf("/toushi/") >= 0 || url.indexOf("login") >= 0 || url.indexOf("/thirdParty/token") >= 0 || url.indexOf("/thirdLogin") >= 0 || url.indexOf("/v2/vendors/vendors") >= 0 || url.indexOf("/users/verification_code") >= 0 || url.indexOf("/vendors/vendors/password") >= 0){
+            if(url.indexOf("/toushi/") >= 0 || url.indexOf("login") >= 0 || url.indexOf("/thirdParty/token") >= 0 || url.indexOf("/thirdLogin") >= 0 || url.indexOf("/vendors") >= 0 || url.indexOf("/users/verification_code") >= 0 || url.indexOf("/vendors/vendors/password") >= 0){
                 return chain.filter(exchange);
             }
             HttpHeaders headers = request.getHeaders();

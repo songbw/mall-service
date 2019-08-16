@@ -334,6 +334,9 @@
     <if test="brand !=null and brand !=''">
       and p.brand = #{brand}
     </if>
+    <if test="priceOrder !=null and priceOrder !=''">
+      order by price ${priceOrder}
+    </if>
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectAll" resultMap="BaseResultMap" parameterType="Map">
