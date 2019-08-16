@@ -2,13 +2,11 @@ package com.fengchao.sso.controller;
 
 import com.fengchao.sso.bean.LoginBean;
 import com.fengchao.sso.bean.ThirdLoginBean;
-import com.github.pagehelper.util.StringUtil;
 import com.fengchao.sso.config.SMSConfig;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.service.ILoginService;
-import com.fengchao.sso.util.OperaResult;
-import com.fengchao.sso.util.RedisUtil;
-import com.fengchao.sso.util.SMSUtil;
+import com.fengchao.sso.util.*;
+import com.github.pagehelper.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,8 @@ public class LoginController {
 
     @Autowired
     private ILoginService loginService;
+    @Autowired
+    private RedisDAO redisDAO;
 
     @Autowired
     private SMSUtil smsUtil;
@@ -37,7 +37,7 @@ public class LoginController {
             result.setMsg("用户名已存在");
             return result;
         }else{
-            String value = RedisUtil.getValue(loginBean.getUsername());
+            String value = redisDAO.getValue(loginBean.getUsername());
             if(!value.equals(loginBean.getCode())){
                 result.setCode(10008);
                 result.setMsg("验证码不正确");
@@ -48,7 +48,7 @@ public class LoginController {
             }
             String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
             result.getData().put("Token",token);
-            RedisUtil.putRedis(loginBean.getUsername(), token, RedisUtil.webexpire);
+            redisDAO.setKey(loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
         }
         return result;
     }
@@ -65,7 +65,7 @@ public class LoginController {
         String string = smsUtil.sendMesModel(params, username,SMSConfig.TENT_TemplateID1);
 
         result.setMsg(string);
-        RedisUtil.putRedis(username, code, RedisUtil.webexpire);
+        redisDAO.setKey(username, code, JwtTokenUtil.EXPIRATIONTIME);
         return result;
     }
 
@@ -89,14 +89,13 @@ public class LoginController {
         }
         String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         result.getData().put("Token", token);
-        RedisUtil.putRedis(loginBean.getUsername(), token, RedisUtil.webexpire);
+        redisDAO.setKey(loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
         return result;
     }
 
     @PostMapping("/thirdLogin")
     public OperaResult thirdLogin(@RequestBody ThirdLoginBean loginBean, OperaResult result) {
         result.getData().put("result", loginService.thirdLogin(loginBean));
-//        RedisUtil.putRedis(loginBean.getUsername(), token, RedisUtil.webexpire);
         return result;
     }
 
@@ -112,7 +111,7 @@ public class LoginController {
             result.setMsg("用户名不正确");
             return result;
         }
-        String value = RedisUtil.getValue(loginBean.getUsername());
+        String value = redisDAO.getValue(loginBean.getUsername());
         if(value == null || !value.equals(loginBean.getCode())){
             result.setCode(10008);
             result.setMsg("验证码不正确");
@@ -120,7 +119,7 @@ public class LoginController {
         }
         String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         result.getData().put("Token", token);
-        RedisUtil.putRedis(loginBean.getUsername(), token, RedisUtil.webexpire);
+        redisDAO.setKey(loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
         return result;
     }
 
@@ -131,7 +130,7 @@ public class LoginController {
             result.setMsg("用户名不正确");
             return result;
         }
-        RedisUtil.removeValue(username) ;
+        redisDAO.removeValue(username) ;
         return result;
     }
 
@@ -184,7 +183,7 @@ public class LoginController {
             result.setMsg("验证码不为空");
             return result;
         }
-        String value = RedisUtil.getValue(loginBean.getUsername());
+        String value = redisDAO.getValue(loginBean.getUsername());
         if(StringUtil.isEmpty(value)  || !value.equals(loginBean.getCode())){
             result.setCode(100004);
             result.setMsg("验证码不正确");

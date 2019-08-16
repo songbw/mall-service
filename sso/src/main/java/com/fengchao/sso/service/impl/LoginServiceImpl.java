@@ -6,9 +6,9 @@ import com.fengchao.sso.bean.*;
 import com.fengchao.sso.feign.GuanaitongClientService;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.mapper.LoginMapper;
-import com.fengchao.sso.mapper.custom.LoginCustomMapper;
 import com.fengchao.sso.mapper.TokenMapper;
 import com.fengchao.sso.mapper.UserMapper;
+import com.fengchao.sso.mapper.custom.LoginCustomMapper;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.Token;
 import com.fengchao.sso.model.User;
@@ -16,15 +16,12 @@ import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.JwtTokenUtil;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RedisDAO;
-import com.fengchao.sso.util.RedisUtil;
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class LoginServiceImpl implements ILoginService {

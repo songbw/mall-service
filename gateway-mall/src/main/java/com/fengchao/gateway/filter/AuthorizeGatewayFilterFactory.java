@@ -64,7 +64,13 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
             String type = auth[0];
             // token value
             String tokenValue = auth[1];
-            String jwtValue = JwtHelper.getValue(tokenValue) ;
+            String jwtValue = "";
+            try {
+                jwtValue = JwtHelper.getValue(tokenValue) ;
+            } catch (Exception e) {
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return response.setComplete();
+            }
             if (jwtValue == null || "".equals(jwtValue)){
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
@@ -80,7 +86,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
-            if (tokenValue != redisValue) {
+            if (!tokenValue.equals(redisValue)) {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }

@@ -29,6 +29,8 @@ public class UserController {
 
     @Autowired
     private ILoginService loginService;
+    @Autowired
+    private RedisDAO redisDAO;
 
     @PutMapping
     private OperaResult update(@RequestBody UserBean bean, OperaResult result){
@@ -60,7 +62,7 @@ public class UserController {
     public OperaResult getActiveProfile(@RequestBody List<String> tokens, OperaResult result){
         List<UserBean> userList = new ArrayList<UserBean>();
         for (String token:tokens){
-            String username = RedisUtil.getKey(token);
+            String username = "" ;
             if(username != null || !username.equals("")){
                 Map<String, Object> map=new HashMap<>();
                 map.put("username", username);
@@ -76,7 +78,7 @@ public class UserController {
     public OperaResult logout(@RequestBody UserBean bean, OperaResult result) {
         Map<String, Object> map=new HashMap<>();
         Login user = service.selectuserById(bean);
-        RedisUtil.removeValue(user.getUsername()) ;
+        redisDAO.removeValue(user.getUsername()) ;
         return result;
     }
 

@@ -22,4 +22,8 @@ public class RedisDAO {
         ValueOperations<String, String> ops = this.template.opsForValue();
         return ops.get(key);
     }
+
+    public boolean removeValue(String key){
+        return this.template.delete(key);
+    }
 }
