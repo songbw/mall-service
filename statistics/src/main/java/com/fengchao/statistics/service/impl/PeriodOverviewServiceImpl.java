@@ -1,6 +1,9 @@
 package com.fengchao.statistics.service.impl;
 
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
 import com.fengchao.statistics.bean.vo.PeriodOverviewResVo;
+import com.fengchao.statistics.constants.StatisticConstants;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.PeriodOverviewDao;
 import com.fengchao.statistics.mapper.PeriodOverviewMapper;
@@ -11,6 +14,7 @@ import com.fengchao.statistics.utils.DateUtil;
 import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -104,6 +108,8 @@ public class PeriodOverviewServiceImpl implements PeriodOverviewService {
         } catch (Exception e) {
             log.error("按照时间段period(天)维度统计订单详情总金额数据; 统计时间范围：{} - {} 异常",
                     startDateTime, endDateTime, e.getMessage(), e);
+
+            Cat.logEvent(StatisticConstants.DAILY_STATISTIC_EXCEPTION_TYPE, StatisticConstants.PERIOD, Event.SUCCESS, "traceId=" + MDC.get("X-B3-TraceId"));
         }
 
     }

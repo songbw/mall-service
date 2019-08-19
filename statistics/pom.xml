@@ -176,6 +176,13 @@
 			<version>4.6.1</version>
 		</dependency>
 
+		<!-- CAT 监控 依赖begin-->
+		<dependency>
+			<groupId>com.dianping.cat</groupId>
+			<artifactId>cat-client</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

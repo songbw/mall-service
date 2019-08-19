@@ -1,4 +1,4 @@
-package com.fengchao.statistics.jobClient;
+package com.fengchao.statistics.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
