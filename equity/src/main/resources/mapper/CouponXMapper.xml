@@ -131,6 +131,7 @@
     <if test="collectType != null" >
       and collect_type = #{collectType,jdbcType=INTEGER}
     </if>
+    order by create_date desc
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectActiveCouponCount" resultType="java.lang.Integer" parameterType="Map">
@@ -186,7 +187,7 @@
     select
     <include refid="Base_Column_List" />
     from coupon
-    where status = 4 and collect_type = 2
+    where status = 4 and collect_type = 2 order by create_date desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from coupon

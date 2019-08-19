@@ -109,6 +109,7 @@
     <if test="consumedEndDate != null" >
       <![CDATA[ and consumed_time <= #{consumedEndDate,jdbcType=TIMESTAMP}]]>
     </if>
+    order by collected_time desc
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectBybatchCode" resultMap="BaseResultMap" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
