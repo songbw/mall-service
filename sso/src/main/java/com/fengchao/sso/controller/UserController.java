@@ -51,9 +51,9 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("/profileList")
-    public OperaResult getProfileList(Integer page, Integer limit, OperaResult result){
-        List<User> userList = service.selectUser(page, limit);
+    @GetMapping("/list")
+    public OperaResult getProfileList(Integer pageNo, Integer pageSize, OperaResult result){
+        List<User> userList = service.selectUser(pageNo, pageSize);
         result.getData().put("userList",userList);
         return result;
     }
