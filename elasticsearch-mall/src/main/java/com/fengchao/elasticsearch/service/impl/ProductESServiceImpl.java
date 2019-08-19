@@ -3,7 +3,6 @@ package com.fengchao.elasticsearch.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.elasticsearch.domain.*;
 import com.fengchao.elasticsearch.service.ProductESService;
-import com.fengchao.elasticsearch.utils.CosUtil;
 import com.fengchao.elasticsearch.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
@@ -13,14 +12,15 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Repository
@@ -44,10 +44,22 @@ public class ProductESServiceImpl implements ProductESService {
             MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", queryBean.getKeyword());
             boolQueryBuilder.must(matchQueryBuilder) ;
         }
+
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
         boolQueryBuilder.must(termQueryBuilder);
         builder.query(boolQueryBuilder);
+
+
         builder.from(PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize())).size(queryBean.getPageSize()); // 分页
+        if (!StringUtils.isEmpty(queryBean.getPriceOrder())) {
+            FieldSortBuilder fieldSortBuilder = new FieldSortBuilder("price");
+            fieldSortBuilder.setNumericType("double");
+            if ("DESC".equals(queryBean.getPriceOrder())) {
+                builder.sort(fieldSortBuilder.order(SortOrder.DESC));
+            }else {
+                builder.sort(fieldSortBuilder.order(SortOrder.ASC));
+            }
+        }
         request.source(builder);
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);

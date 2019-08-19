@@ -335,7 +335,7 @@
       and p.brand = #{brand}
     </if>
     <if test="priceOrder !=null and priceOrder !=''">
-      order by price ${priceOrder}
+      order by CAST(price AS DECIMAL) ${priceOrder}
     </if>
     limit #{pageNo},#{pageSize}
   </select>

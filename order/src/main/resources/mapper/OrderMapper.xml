@@ -548,7 +548,11 @@
   </update>
   <update id="updatePaymentByOutTradeNoAndPaymentNo" keyProperty="id" useGeneratedKeys="true">
     update orders
-    set payment_amount = #{paymentAmount},
+    set
+    <if test="couponStatus != null" >
+      coupon_status = #{couponStatus,jdbcType=INTEGER},
+    </if>
+    payment_amount = #{paymentAmount},
     payment_at = #{paymentAt},
     status = #{status},
     payee = #{payee},
@@ -558,9 +562,6 @@
     payer = #{payer},
     pay_status = #{payStatus},
     pay_order_category = #{payOrderCategory}
-    <if test="couponStatus != null" >
-      coupon_status = #{couponStatus,jdbcType=INTEGER},
-    </if>
     where id = #{id}
   </update>
 </mapper>
