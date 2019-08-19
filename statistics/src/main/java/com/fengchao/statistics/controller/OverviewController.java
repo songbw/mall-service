@@ -25,11 +25,11 @@ public class OverviewController {
 
     @Autowired
     private OverviewService overviewService;
-    @Autowired
-    private JobClient jobClient;
 
     /**
      * 获取总揽统计数据
+     *
+     * 订单支付总额（元） 用户总数（人） 订单总量（单） 下单人数（人） 退货单数（单） 客单价（元） 订单均价（元）
      *
      * @param operaResponse
      * @return
@@ -53,10 +53,5 @@ public class OverviewController {
         return operaResponse;
     }
 
-//    @GetMapping("cron")
-//    private OperaResult cron(OperaResult result) {
-//        // JobClientUtils.orderStatisticsTrigger(jobClient);
-//        return result;
-//    }
 
 }
