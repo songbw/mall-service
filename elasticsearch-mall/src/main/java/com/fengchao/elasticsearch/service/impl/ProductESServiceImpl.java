@@ -53,7 +53,6 @@ public class ProductESServiceImpl implements ProductESService {
         builder.from(PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize())).size(queryBean.getPageSize()); // 分页
         if (!StringUtils.isEmpty(queryBean.getPriceOrder())) {
             FieldSortBuilder fieldSortBuilder = new FieldSortBuilder("price");
-            fieldSortBuilder.setNumericType("double");
             if ("DESC".equals(queryBean.getPriceOrder())) {
                 builder.sort(fieldSortBuilder.order(SortOrder.DESC));
             }else {
