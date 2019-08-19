@@ -2,6 +2,7 @@ package com.fengchao.statistics.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.extra.mail.MailUtil;
+import com.fengchao.statistics.utils.BeanContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,8 @@ public class CatAlarmController {
     @GetMapping("/alarm")
     public void alarm(String type, String key, String re, String to, String title, String content) {
         log.info("发送告警邮件; type={}, key={}, re={}, to={}, title={}, content={}", type, key, re, to, title, content);
+        String profile = BeanContext.getApplicationContext().getEnvironment().getActiveProfiles()[0];
+        title = profile + "-" + title;
 
         // 发送邮件
         String []mail = to.split(",");

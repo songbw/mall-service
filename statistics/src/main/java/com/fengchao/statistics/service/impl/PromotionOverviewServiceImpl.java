@@ -1,6 +1,9 @@
 package com.fengchao.statistics.service.impl;
 
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
 import com.fengchao.statistics.bean.PromotionTypeResDto;
+import com.fengchao.statistics.constants.StatisticConstants;
 import com.fengchao.statistics.constants.StatisticPeriodTypeEnum;
 import com.fengchao.statistics.dao.PromotionOverviewDao;
 import com.fengchao.statistics.model.PromotionOverview;
@@ -13,6 +16,7 @@ import com.fengchao.statistics.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -131,6 +135,8 @@ public class PromotionOverviewServiceImpl implements PromotionOverviewService {
         } catch (Exception e) {
             log.error("按照活动promotion(天)维度统计订单详情数量额数据; 统计时间范围：{} - {} 异常:{}",
                     startDateTime, endDateTime, e.getMessage(), e);
+
+            Cat.logEvent(StatisticConstants.DAILY_STATISTIC_EXCEPTION_TYPE, StatisticConstants.PROMOTION, Event.SUCCESS, "traceId=" + MDC.get("X-B3-TraceId"));
         }
     }
 
