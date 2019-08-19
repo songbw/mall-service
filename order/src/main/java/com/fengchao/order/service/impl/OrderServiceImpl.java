@@ -21,6 +21,7 @@ import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -644,7 +645,10 @@ public class OrderServiceImpl implements OrderService {
         List<Integer> ordersIdList =
                 orderDetailList.stream().map(detail -> detail.getOrderId()).collect(Collectors.toList());
         logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库入参:{}", JSONUtil.toJsonString(ordersIdList));
-                // 2.2 查询主订单
+        // 2.2 查询主订单
+        if (CollectionUtils.isEmpty(ordersIdList)) {
+            return Collections.emptyList();
+        }
         List<Orders> ordersList = adminOrderDao.selectOrdersListByIdList(ordersIdList);
         logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
         // 转map key : ordersId, value: Orders

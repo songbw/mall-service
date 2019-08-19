@@ -1,8 +1,6 @@
 package com.fengchao.statistics.jobClient;
 
 import com.alibaba.fastjson.JSON;
-import com.dianping.cat.Cat;
-import com.dianping.cat.message.Event;
 import com.fengchao.statistics.constants.StatisticConstants;
 import com.fengchao.statistics.rpc.OrdersRpcService;
 import com.fengchao.statistics.rpc.extmodel.OrderDetailBean;
@@ -18,7 +16,6 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.MDC;
 import org.springframework.util.StopWatch;
 
 import java.util.Date;
