@@ -221,15 +221,21 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 couponUseInfo.setCouponInfo(couponBean);
             });
         }
-        List<CouponX> coupons = couponXMapper.selectGrantCoupon();
-        List<CouponBean> couponBeans = new ArrayList<>() ;
-        coupons.forEach( coupon -> {
-            CouponBean couponBean = couponToBean(coupon);
-            couponBeans.add(couponBean);
-        });
-//        pageBean = PageBean.build(pageBean, couponUseInfos, total, bean.getOffset(), bean.getLimit());
         CouponUserResultBean couponUserResultBean = new CouponUserResultBean();
-        couponUserResultBean.setGrantCoupons(couponBeans);
+        if(bean.getStatus() != null && bean.getStatus() == 1){
+            List<CouponX> coupons = couponXMapper.selectGrantCoupon();
+            List<CouponBean> couponBeans = new ArrayList<>() ;
+            coupons.forEach( coupon -> {
+//            CouponBean couponBean = couponToBean(coupon);
+//            couponBeans.add(couponBean);
+                map.put("couponId",coupon.getId());
+                int num = mapper.selectCollectCount(map);
+                coupon.setUserCollectNum(num);
+                couponBeans.add(couponToBean(coupon));
+            });
+            couponUserResultBean.setGrantCoupons(couponBeans);
+        }
+//        pageBean = PageBean.build(pageBean, couponUseInfos, total, bean.getOffset(), bean.getLimit());
         couponUserResultBean.setList(couponUseInfos);
         couponUserResultBean.setPageNo(bean.getOffset());
         couponUserResultBean.setPageSize(bean.getLimit());
