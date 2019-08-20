@@ -146,5 +146,10 @@ public class ExportOrdersVo {
      */
     private String countyName;
 
+    /**
+     * 运费
+     */
+    private String expressFee;
+
 
 }
