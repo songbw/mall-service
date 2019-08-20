@@ -58,20 +58,20 @@ public class DateUtil {
     }
 
     /**
-     * 将一个日期加上或减去 daysToAdd 妙数,得出新的日期
+     * 将一个日期加上或减去 daysToAdd 天数, 得出新的日期
      *
-     * @param originDate
+     * @param originDateTime
      * @param originFormat
      * @param daysToAdd
      * @param newFormat
      * @return
      */
-    public static String calcDay(String originDate, String originFormat, long daysToAdd, String newFormat) {
+    public static String plusDayWithDateTime(String originDateTime, String originFormat, long daysToAdd, String newFormat) {
         String formatDate = "";
 
-        if (StringUtils.isNotBlank(originDate)) {
+        if (StringUtils.isNotBlank(originDateTime)) {
             // 将原始的日期转换成localDate
-            LocalDateTime localDateTime = LocalDateTime.parse(originDate, DateTimeFormatter.ofPattern(originFormat));
+            LocalDateTime localDateTime = LocalDateTime.parse(originDateTime, DateTimeFormatter.ofPattern(originFormat));
 
             // 计算天数
             LocalDateTime _localDateTime = localDateTime.plusDays(daysToAdd);
@@ -79,6 +79,33 @@ public class DateUtil {
 
             // 将计算完的日期转换成需要的格式
             formatDate = _localDateTime.format(DateTimeFormatter.ofPattern(newFormat));
+        }
+
+        return formatDate;
+    }
+
+    /**
+     * 将一个日期加上或减去 daysToAdd 天数, 得出新的日期
+     *
+     * @param originDate
+     * @param originFormat
+     * @param daysToAdd
+     * @param newFormat
+     * @return
+     */
+    public static String plusDayWithDate(String originDate, String originFormat, long daysToAdd, String newFormat) {
+        String formatDate = "";
+
+        if (StringUtils.isNotBlank(originDate)) {
+            // 将原始的日期转换成localDate
+            LocalDate localDate = LocalDate.parse(originDate, DateTimeFormatter.ofPattern(originFormat));
+
+            // 计算天数
+            LocalDate _localDate = localDate.plusDays(daysToAdd);
+
+
+            // 将计算完的日期转换成需要的格式
+            formatDate = _localDate.format(DateTimeFormatter.ofPattern(newFormat));
         }
 
         return formatDate;
@@ -117,11 +144,10 @@ public class DateUtil {
     /**
      * 将日期加上 diffTime 秒数 并 将指定的(日期/时间)格式转换成另一种指定的格式
      *
-     *
      * @param dateTime
      * @param originFormat
      * @param newFormat
-     * @param diffTime 间隔时间，单位：秒
+     * @param diffTime     间隔时间，单位：秒
      * @return
      */
     public static String dateTimeFormat(String dateTime, String originFormat, String newFormat, long diffTime) {
@@ -231,6 +257,55 @@ public class DateUtil {
         Date date = Date.from(instant);
 
         return date;
+    }
+
+    /**
+     * 转换成 java.time.LocalTime
+     *
+     * @param time
+     * @param timeFormat
+     * @return
+     */
+    public static LocalTime convertToLocalTime(String time, String timeFormat) {
+        LocalTime localTime = LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat));
+
+        return localTime;
+    }
+
+    /**
+     * 比较日期
+     *
+     * @param date1
+     * @param format1
+     * @param date2
+     * @param format2
+     * @return
+     */
+    public static int compareDate(String date1, String format1, String date2, String format2) {
+        LocalDate localDate1 = LocalDate.parse(date1, DateTimeFormatter.ofPattern(format1));
+        LocalDate localDate2 = LocalDate.parse(date2, DateTimeFormatter.ofPattern(format2));
+
+        return localDate1.compareTo(localDate2);
+    }
+
+    /**
+     * 比较时间
+     *
+     * @param date1
+     * @param format1
+     * @param date2
+     * @param format2
+     * @return
+     */
+    public static int compareDateTime(String date1, String format1, String date2, String format2) {
+        LocalDateTime localDateTime1 = LocalDateTime.parse(date1, DateTimeFormatter.ofPattern(format1));
+        LocalDateTime localDateTime2 = LocalDateTime.parse(date2, DateTimeFormatter.ofPattern(format2));
+
+        return localDateTime1.compareTo(localDateTime2);
+    }
+
+    public static void main(String args[]) {
+        System.out.println(convertToLocalTime("21:42:58", DateUtil.TIME_HH_mm_ss).toString());
     }
 
 }

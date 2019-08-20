@@ -14,6 +14,7 @@ import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.EquityRpcService;
 import com.fengchao.order.service.AdminOrderService;
+import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,9 +60,16 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 查询条件转数据库实体
         Orders queryConditions = convertToOrdersForExport(orderExportReqVo);
         log.info("导出订单 根据条件获取订单orders集合 查询数据库条件:{}", JSONUtil.toJsonString(queryConditions));
+
         // 执行查询
-        List<Orders> ordersList = adminOrderDao.selectExportOrders(queryConditions,
-                orderExportReqVo.getPayStartDate(), orderExportReqVo.getPayEndDate());
+        Date startDate = orderExportReqVo.getPayStartDate();
+        Date endDate = orderExportReqVo.getPayEndDate();
+        String _start = DateUtil.dateTimeFormat(startDate, DateUtil.DATE_YYYY_MM_DD);
+        String _end = DateUtil.dateTimeFormat(endDate, DateUtil.DATE_YYYY_MM_DD);
+        Date startDateTime = DateUtil.parseDateTime(_start + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date endDateTime = DateUtil.parseDateTime(_end + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+
+        List<Orders> ordersList = adminOrderDao.selectExportOrders(queryConditions, startDateTime, endDateTime);
         log.info("导出订单 查询数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
         if (CollectionUtils.isEmpty(ordersList)) {
