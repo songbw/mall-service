@@ -424,7 +424,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponBean.setEffectiveStartDate(coupon.getEffectiveStartDate());
         couponBean.setEffectiveEndDate(coupon.getEffectiveEndDate());
         couponBean.setDescription(coupon.getDescription());
-        coupon.setDescription(coupon.getDescription());
+        couponBean.setUserCollectNum(coupon.getUserCollectNum());
         if(coupon.getExcludeDates()!= null && !"".equals(coupon.getExcludeDates())) {
             couponBean.setExcludeDates(JSONArray.parseArray(coupon.getExcludeDates()));
         }
