@@ -185,12 +185,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     * orderDetailBo.getNum()); // sku 的总价
                     exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
                     exportOrdersVo.setCouponPrice(orderDetailBo.getSkuCouponDiscount()); // 券支付金额
-                    exportOrdersVo.setPayPrice(exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // 实际支付的价格
+                    exportOrdersVo.setPayPrice(orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()); // 实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); //
                     // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
                     exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
                     exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省
                     exportOrdersVo.setCityName(ordersBo.getCityName()); // 市
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
+                    exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
 
                     exportOrdersVoList.add(exportOrdersVo);
                 } // 遍历子订单 end
@@ -277,7 +278,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orderDetailBo.setNum(orderDetail.getNum());
         orderDetailBo.setPromotionId(orderDetail.getPromotionId());
         orderDetailBo.setPromotionDiscount(orderDetail.getPromotionDiscount());
-        orderDetailBo.setSalePrice(orderDetail.getSalePrice());
+        orderDetailBo.setSalePrice(orderDetail.getSalePrice()); // 单位 元
         orderDetailBo.setUnitPrice(orderDetail.getUnitPrice());
         orderDetailBo.setImage(orderDetail.getImage());
         orderDetailBo.setModel(orderDetail.getModel());
