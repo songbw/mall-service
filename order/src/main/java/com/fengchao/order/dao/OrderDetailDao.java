@@ -40,4 +40,9 @@ public class OrderDetailDao {
 
         return pageInfo;
     }
+
+    public int insert(OrderDetail record){
+        return orderDetailMapper.insertSelective(record);
+    }
+
 }

@@ -194,28 +194,29 @@ public class OrderServiceImpl implements OrderService {
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
-                OrderDetailX orderDetailX = new OrderDetailX();
-                orderDetailX.setPromotionId(orderSku.getPromotionId());
-                orderDetailX.setSalePrice(orderSku.getSalePrice());
-                orderDetailX.setPromotionDiscount(orderSku.getPromotionDiscount());
-                orderDetailX.setCreatedAt(date);
-                orderDetailX.setUpdatedAt(date);
-                orderDetailX.setOrderId(bean.getId());
-                orderDetailX.setImage(prodIndexWithBLOBs.getImage());
-                orderDetailX.setModel(prodIndexWithBLOBs.getModel());
-                orderDetailX.setName(prodIndexWithBLOBs.getName());
-                orderDetailX.setStatus(0);
-                orderDetailX.setSkuId(orderSku.getSkuId());
-                orderDetailX.setMpu(orderSku.getMpu());
-                orderDetailX.setMerchantId(orderSku.getMerchantId());
-                orderDetailX.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
-                orderDetailX.setUnitPrice(orderSku.getUnitPrice());
-                orderDetailX.setNum(orderSku.getNum());
-                orderDetailX.setCategory(prodIndexWithBLOBs.getCategory());
-                orderDetailX.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100) ;
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setPromotionId(orderSku.getPromotionId());
+                orderDetail.setSalePrice(orderSku.getSalePrice());
+                orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
+                orderDetail.setCreatedAt(date);
+                orderDetail.setUpdatedAt(date);
+                orderDetail.setOrderId(bean.getId());
+                orderDetail.setImage(prodIndexWithBLOBs.getImage());
+                orderDetail.setModel(prodIndexWithBLOBs.getModel());
+                orderDetail.setName(prodIndexWithBLOBs.getName());
+                orderDetail.setStatus(0);
+                orderDetail.setSkuId(orderSku.getSkuId());
+                orderDetail.setMpu(orderSku.getMpu());
+                orderDetail.setMerchantId(orderSku.getMerchantId());
+                orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
+                orderDetail.setUnitPrice(orderSku.getUnitPrice());
+                orderDetail.setNum(orderSku.getNum());
+                orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
+                orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
 
                 // 添加子订单
-                orderDetailXMapper.insert(orderDetailX) ;
+                orderDetailDao.insert(orderDetail);
+//                orderDetailXMapper.insert(orderDetailX) ;
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.setOpenId(bean.getOpenId());

@@ -31,7 +31,7 @@ public class OrderDetailX implements Serializable {
 
     private Integer promotionId;
 
-    private BigDecimal promotionDiscount;
+    private Float promotionDiscount;
 
     private Date createdAt;
 
@@ -47,7 +47,7 @@ public class OrderDetailX implements Serializable {
 
     private Integer merchantId;
 
-    private Integer skuCouponDiscount ;
+    private Float skuCouponDiscount ;
 
     private String category;
 
@@ -187,11 +187,11 @@ public class OrderDetailX implements Serializable {
         this.comCode = comCode;
     }
 
-    public BigDecimal getPromotionDiscount() {
+    public Float getPromotionDiscount() {
         return promotionDiscount;
     }
 
-    public void setPromotionDiscount(BigDecimal promotionDiscount) {
+    public void setPromotionDiscount(Float promotionDiscount) {
         this.promotionDiscount = promotionDiscount;
     }
 
@@ -211,11 +211,11 @@ public class OrderDetailX implements Serializable {
         this.merchantId = merchantId;
     }
 
-    public Integer getSkuCouponDiscount() {
+    public Float getSkuCouponDiscount() {
         return skuCouponDiscount;
     }
 
-    public void setSkuCouponDiscount(Integer skuCouponDiscount) {
+    public void setSkuCouponDiscount(Float skuCouponDiscount) {
         this.skuCouponDiscount = skuCouponDiscount;
     }
 
