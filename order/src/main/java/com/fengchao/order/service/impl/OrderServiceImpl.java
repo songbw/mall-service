@@ -170,7 +170,8 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         // 多商户信息
-        List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants() ;
+        List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
+        logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             bean.setTradeNo(orderMerchantBean.getTradeNo() + RandomUtil.randomString(orderBean.getTradeNo(), 8));
             orderMerchantBean.setTradeNo(bean.getTradeNo());
