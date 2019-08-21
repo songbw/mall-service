@@ -190,6 +190,7 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
             // 添加主订单
+            logger.info("创建订单 新增主订单:{}", JSONUtil.toJsonString(bean));
             orderMapper.insert(bean);
             AtomicInteger i= new AtomicInteger(1);
             orderMerchantBean.getSkus().forEach(orderSku -> {
@@ -215,6 +216,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setSkuCouponDiscount(orderSku.getSkuCouponDiscount() * 100) ;
 
                 // 添加子订单
+                logger.info("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetailX));
                 orderDetailXMapper.insert(orderDetailX) ;
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();

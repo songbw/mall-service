@@ -34,7 +34,13 @@ public class OrderController {
 
     @PostMapping
     private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result) {
-        return service.add2(bean);
+        log.info("创建订单 入参:{}", JSONUtil.toJsonString(bean));
+
+        OperaResult operaResult = service.add2(bean);
+
+        log.info("创建订单 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
     }
 
     @DeleteMapping
@@ -62,9 +68,14 @@ public class OrderController {
     }
 
     @PostMapping("/searchOrder")
-    private OperaResult searchOrderList(@RequestBody OrderBean orderBean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+    private OperaResult searchOrderList(@RequestBody OrderBean orderBean,
+                                        @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        log.info("查询订单 入参 OrderBean:{}, merchantId:{}", JSONUtil.toJsonString(orderBean), merchantId);
+
         orderBean.setMerchantId(merchantId);
         result.getData().put("result", service.searchOrderList(orderBean)) ;
+
+        log.info("查询订单 返回:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
