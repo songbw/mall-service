@@ -242,7 +242,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             result = aoyiClientService.order(orderBean);
         }
-
+        logger.info("创建订单 传给奥弋之后:{}", JSONUtil.toJsonString(orderMerchantBeans));
         logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
 
         if (result.getCode() == 200) {
