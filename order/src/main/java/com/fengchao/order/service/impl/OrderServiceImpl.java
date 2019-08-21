@@ -239,6 +239,9 @@ public class OrderServiceImpl implements OrderService {
         } else {
             result = aoyiClientService.order(orderBean);
         }
+
+        logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
+
         if (result.getCode() == 200) {
             List<SubOrderT> subOrderTS = result.getData();
             subOrderTS.forEach(subOrderT -> {
@@ -513,10 +516,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer updatePaymentNo(Order order) {
-        OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setOrderId(order.getId());
-        orderDetail.setStatus(1);
-        adminOrderDao.updateOrderDetailStatus(orderDetail);
+//        OrderDetail orderDetail = new OrderDetail();
+//        orderDetail.setOrderId(order.getId());
+//        orderDetail.setStatus(1);
+//        adminOrderDao.updateOrderDetailStatus(orderDetail);
+
         return orderMapper.updatePaymentNo(order);
     }
 

@@ -141,7 +141,11 @@ public class OrderController {
 
     @PutMapping("/payment")
     private OperaResult payment(@RequestBody Order order, OperaResult result) {
-        result.getData().put("result", service.updatePaymentNo(order)) ;
+        log.info("预下单 入参:{}", JSONUtil.toJsonString(order));
+        Integer count = service.updatePaymentNo(order);
+        result.getData().put("result", count) ;
+
+        log.info("预下单 返回:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
