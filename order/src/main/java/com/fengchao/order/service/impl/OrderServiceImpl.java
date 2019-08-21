@@ -251,6 +251,7 @@ public class OrderServiceImpl implements OrderService {
                     adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
                 }
             });
+            logger.info("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
             operaResult.getData().put("result", orderMerchantBeans) ;
 
             logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
