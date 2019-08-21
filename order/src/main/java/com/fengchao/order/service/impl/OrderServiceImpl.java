@@ -251,6 +251,8 @@ public class OrderServiceImpl implements OrderService {
                 }
             });
             operaResult.getData().put("result", orderMerchantBeans) ;
+
+            logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         } else {
             operaResult.setCode(result.getCode());
             operaResult.setMsg(result.getMsg());
