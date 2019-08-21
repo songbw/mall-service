@@ -188,7 +188,7 @@
     order by order_detail.updated_at desc
     limit #{pageNo},#{pageSize}
   </select>
-  <select id="selectPayedOrdersAmount" resultType="java.lang.Integer">
+  <select id="selectPayedOrdersAmount" resultType="java.lang.Float">
     SELECT SUM(sale_amount) FROM orders
     WHERE pay_status = 5
   </select>
