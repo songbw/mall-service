@@ -529,7 +529,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public DayStatisticsBean findOverviewStatistics() throws Exception {
         // 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
-        int dayPaymentCount = orderMapper.selectPayedOrdersAmount(); // 获取订单支付总额 SUM(sale_amount)
+        Float dayPaymentCount = orderMapper.selectPayedOrdersAmount(); // 获取订单支付总额 SUM(sale_amount)
         int dayCount = orderMapper.selectPayedOrdersCount(); // (已支付)订单总量 count(id) FROM orders
         int dayPeopleCount = orderMapper.selectPayedOdersUserCount(); // (已支付)下单人数 count(DISTINCT(open_id))
 

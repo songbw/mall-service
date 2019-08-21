@@ -47,7 +47,7 @@ public interface OrderMapper {
      *
      * @return
      */
-    int selectPayedOrdersAmount();
+    Float selectPayedOrdersAmount();
 
     /**
      * 查询已支付的订单总数
