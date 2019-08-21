@@ -199,8 +199,8 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setPromotionId(orderSku.getPromotionId());
                 orderDetail.setSalePrice(orderSku.getSalePrice());
                 orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
-                orderDetail.setCreatedAt(date);
-                orderDetail.setUpdatedAt(date);
+                // orderDetail.setCreatedAt(date);
+                // orderDetail.setUpdatedAt(date);
                 orderDetail.setOrderId(bean.getId());
                 orderDetail.setImage(prodIndexWithBLOBs.getImage());
                 orderDetail.setModel(prodIndexWithBLOBs.getModel());
