@@ -393,6 +393,9 @@ public class OrderServiceImpl implements OrderService {
         if(orderBean.getPayDateEnd() != null && !orderBean.getPayDateEnd().equals("")){
             map.put("payDateEnd", orderBean.getPayDateEnd() + " 23:59:59");
         }
+
+        logger.info("查询订单 数据库查询入参:{}", JSONUtil.toJsonString(map));
+
         List<OrderDetailBean> orderBeans = new ArrayList<>();
         total = orderMapper.selectCount(map);
         if(total >  0){
