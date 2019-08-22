@@ -232,10 +232,19 @@ public class OrderServiceImpl implements OrderService {
             JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
         }
 
-        logger.info("创建订单 传给奥弋之前:{}", JSONUtil.toJsonString(orderMerchantBeans));
         // 传数据给奥义
-        orderBean.setMerchants(orderMerchantBeans);
-        orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != OrderConstants.AOYI_MERCHANG_CODE));
+        // 滤掉非aoyi商品的数据
+        List<OrderMerchantBean> orderMerchantBeanList = new ArrayList<>(); // aoyi的商品数据
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+            if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
+                orderMerchantBeanList.add(orderMerchantBean);
+            }
+        }
+
+        orderBean.setMerchants(orderMerchantBeanList);
+        // orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != OrderConstants.AOYI_MERCHANG_CODE));
+
+
 //        createOrder(orderBean) ;
         OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
         if ("1001".equals(orderBean.getCompanyCustNo())) { // 关爱通
@@ -243,7 +252,6 @@ public class OrderServiceImpl implements OrderService {
         } else { //
             result = aoyiClientService.order(orderBean);
         }
-        logger.info("创建订单 传给奥弋之后:{}", JSONUtil.toJsonString(orderMerchantBeans));
         logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
 
         if (result.getCode() == 200) {
@@ -380,10 +388,10 @@ public class OrderServiceImpl implements OrderService {
         map.put("merchantId",orderBean.getMerchantId());
         map.put("subStatus",orderBean.getSubStatus());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
-            map.put("payDateStart", orderBean.getPayDateStart()) ;
+            map.put("payDateStart", orderBean.getPayDateStart() + " 00:00:00");
         }
         if(orderBean.getPayDateEnd() != null && !orderBean.getPayDateEnd().equals("")){
-            map.put("payDateEnd", orderBean.getPayDateEnd()) ;
+            map.put("payDateEnd", orderBean.getPayDateEnd() + " 23:59:59");
         }
         List<OrderDetailBean> orderBeans = new ArrayList<>();
         total = orderMapper.selectCount(map);
