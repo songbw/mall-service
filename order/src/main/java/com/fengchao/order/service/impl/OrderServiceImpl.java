@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
+import com.fengchao.order.constants.OrderConstants;
 import com.fengchao.order.constants.PaymentStatusEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.dao.OrderDetailDao;
@@ -232,12 +233,12 @@ public class OrderServiceImpl implements OrderService {
         }
         // 传数据给奥义
         orderBean.setMerchants(orderMerchantBeans);
-        orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != 2));
+        orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != OrderConstants.AOYI_MERCHANG_CODE));
 //        createOrder(orderBean) ;
         OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
-        if ("1001".equals(orderBean.getCompanyCustNo())) {
+        if ("1001".equals(orderBean.getCompanyCustNo())) { // 关爱通
             result = aoyiClientService.orderGAT(orderBean);
-        } else {
+        } else { //
             result = aoyiClientService.order(orderBean);
         }
 
