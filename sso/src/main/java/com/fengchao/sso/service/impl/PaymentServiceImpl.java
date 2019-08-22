@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.sso.bean.*;
+import com.fengchao.sso.config.SSOConfiguration;
 import com.fengchao.sso.feign.AoyiClientService;
 import com.fengchao.sso.feign.GuanaitongClientService;
 import com.fengchao.sso.feign.OrderService;
@@ -13,6 +14,7 @@ import com.fengchao.sso.service.IPaymentService;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -22,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@EnableConfigurationProperties({SSOConfiguration.class})
 @Service
 public class PaymentServiceImpl implements IPaymentService {
 
@@ -33,6 +36,8 @@ public class PaymentServiceImpl implements IPaymentService {
     private AoyiClientService aoyiClientService;
     @Autowired
     private GuanaitongClientService guanaitongClientService;
+    @Autowired
+    private SSOConfiguration ssoConfiguration;
 
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
@@ -54,14 +59,16 @@ public class PaymentServiceImpl implements IPaymentService {
             String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
             guanaitongPaymentBean.setTrade_info(tradeInfoString);
             guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
-            guanaitongPaymentBean.setNotify_url("http://api.weesharing.com/v2/ssoes/payment/back");
+//            guanaitongPaymentBean.setNotify_url("http://api.weesharing.com/v2/ssoes/payment/back");
+            guanaitongPaymentBean.setNotify_url(ssoConfiguration.getGatBackUrl());
             guanaitongPaymentBean.setTotal_amount(total_amount);
 
             ObjectMapper oMapper = new ObjectMapper();
             Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
             Result result1 = guanaitongClientService.payment(map) ;
             JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
-            String guanaitongUrl = "https://openapi.guanaitong.cc/seller/pay/excashier?" + jsonObject.getString("data") ;
+            String guanaitongUrl = ssoConfiguration.getGatUrl() + jsonObject.getString("data") ;
+//            String guanaitongUrl = "https://openapi.guanaitong.cc/seller/pay/excashier?" + jsonObject.getString("data") ;
             orderList.forEach(order -> {
                 order.setPaymentNo(outer_trade_no);
                 order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
