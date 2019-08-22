@@ -388,10 +388,10 @@ public class OrderServiceImpl implements OrderService {
         map.put("merchantId",orderBean.getMerchantId());
         map.put("subStatus",orderBean.getSubStatus());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
-            map.put("payDateStart", orderBean.getPayDateStart()) ;
+            map.put("payDateStart", orderBean.getPayDateStart() + " 00:00:00");
         }
         if(orderBean.getPayDateEnd() != null && !orderBean.getPayDateEnd().equals("")){
-            map.put("payDateEnd", orderBean.getPayDateEnd()) ;
+            map.put("payDateEnd", orderBean.getPayDateEnd() + " 23:59:59");
         }
         List<OrderDetailBean> orderBeans = new ArrayList<>();
         total = orderMapper.selectCount(map);
