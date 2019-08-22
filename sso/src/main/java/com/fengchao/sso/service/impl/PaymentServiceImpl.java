@@ -2,22 +2,20 @@ package com.fengchao.sso.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.feign.AoyiClientService;
 import com.fengchao.sso.feign.GuanaitongClientService;
-import com.fengchao.sso.feign.OrderService;
+import com.fengchao.sso.feign.OrderServiceClient;
 import com.fengchao.sso.feign.PinganClientService;
+import com.fengchao.sso.rpc.OrderRpcService;
 import com.fengchao.sso.service.IPaymentService;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +26,14 @@ public class PaymentServiceImpl implements IPaymentService {
     @Autowired
     private PinganClientService pinganClientService;
     @Autowired
-    private OrderService orderService;
+    private OrderServiceClient orderService;
     @Autowired
     private AoyiClientService aoyiClientService;
     @Autowired
     private GuanaitongClientService guanaitongClientService;
+
+    @Autowired
+    private OrderRpcService orderRpcService;
 
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
@@ -103,6 +104,9 @@ public class PaymentServiceImpl implements IPaymentService {
     public String back(BackRequest beanRequest) {
         BackBean bean = beanRequest.getData();
         List<Order> orders = findByOutTradeNoAndPaymentNo(bean.getOutTradeNo(), bean.getOrderNo());
+
+        List<Integer> orderIdList = new ArrayList<>();
+        // 遍历更新主订单
         orders.forEach(order1 -> {
             order1.setPaymentAmount(bean.getTotalFee());
             order1.setPaymentAt(new Date());
@@ -114,10 +118,19 @@ public class PaymentServiceImpl implements IPaymentService {
             order1.setPayOrderCategory(bean.getOrderCategory());
             order1.setPayType(bean.getPayType());
             order1.setRefundFee(bean.getRefundFee());
+
+            // 执行更新
             updatePaymentByOutTradeNoAndPaymentNo(order1);
+
             // aoyi确认订单
             confirmOrder(order1.getTradeNo());
+
+            orderIdList.add(order1.getId());
         });
+
+        // 批量更新子订单状态为"待发货"
+        orderRpcService.batchUpdateOrderDetailStatusByOrderIds(orderIdList, 1); // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：失败
+
         return "success";
     }
 
@@ -125,15 +138,25 @@ public class PaymentServiceImpl implements IPaymentService {
     public String gNotify(GATBackBean backBean) {
         List<Order> orders = findByPaymentNoAndOpenId(backBean.getOuter_trade_no(), "10" + backBean.getBuyer_open_id());
         int amount = Math.round(backBean.getTotal_amount() * 100);
+
+        List<Integer> orderIdList = new ArrayList<>();
         orders.forEach(order1 -> {
             order1.setPaymentAmount(amount);
             order1.setPaymentAt(new Date());
             order1.setStatus(1);
             order1.setPayStatus(5);
+
+            // 执行更新
             updatePaymentByOutTradeNoAndPaymentNo(order1);
+
             // aoyi确认订单
             confirmOrder(order1.getTradeNo());
+
+            orderIdList.add(order1.getId());
         });
+
+        // 批量更新子订单状态为"待发货"
+        orderRpcService.batchUpdateOrderDetailStatusByOrderIds(orderIdList, 1); // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：失败
         return "success";
     }
 
@@ -214,6 +237,11 @@ public class PaymentServiceImpl implements IPaymentService {
         }
     }
 
+    /**
+     * 支付回调-更新主订单相关信息
+     *
+     * @param order
+     */
     private void updatePaymentByOutTradeNoAndPaymentNo(Order order) {
         OperaResult result = orderService.paymentByOutTradeNoAndPaymentNo(order);
         if (result.getCode() == 200) {
