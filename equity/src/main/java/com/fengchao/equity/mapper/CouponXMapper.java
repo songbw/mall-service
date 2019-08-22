@@ -2,6 +2,7 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.bean.AoyiProdBean;
 import com.fengchao.equity.bean.CouponResultBean;
+import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponX;
 
 import java.util.HashMap;
@@ -41,4 +42,8 @@ public interface CouponXMapper {
     int couponEnd(int couponId);
 
     List<CouponX> selectGrantCoupon();
+
+    List<CouponX> selectGiftCoupon();
+
+    List<Integer> selectActiveTagsCoupon();
 }

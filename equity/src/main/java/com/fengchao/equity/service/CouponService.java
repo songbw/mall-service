@@ -45,4 +45,6 @@ public interface CouponService {
     int invalid(int couponId);
 
     CouponUseInfoX adminConsumeCoupon(CouponUseInfoBean bean);
+
+    List<CouponBean> giftCoupon();
 }
