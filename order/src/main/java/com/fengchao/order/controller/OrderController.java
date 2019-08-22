@@ -72,7 +72,9 @@ public class OrderController {
                                         @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         log.info("查询订单 入参 OrderBean:{}, merchantId:{}", JSONUtil.toJsonString(orderBean), merchantId);
 
-        orderBean.setMerchantId(merchantId);
+        if (merchantId != null && merchantId > 0) {
+            orderBean.setMerchantId(merchantId);
+        }
         result.getData().put("result", service.searchOrderList(orderBean)) ;
 
         log.info("查询订单 返回:{}", JSONUtil.toJsonString(result));
