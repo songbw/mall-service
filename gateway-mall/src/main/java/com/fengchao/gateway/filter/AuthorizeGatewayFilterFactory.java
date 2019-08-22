@@ -38,7 +38,12 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 return chain.filter(exchange);
             }
             ServerHttpRequest request = exchange.getRequest();
+            ServerHttpResponse response = exchange.getResponse();
             String url = request.getURI().getPath();
+            if (url.indexOf("/hello") >= 0) {
+                response.setStatusCode(HttpStatus.OK);
+                return response.setComplete();
+            }
             //忽略以下url请求
             if(url.indexOf("/toushi/") >= 0 || url.indexOf("/findHomePage") >= 0 || url.indexOf("login") >= 0 || url.indexOf("/thirdParty/token") >= 0 || url.indexOf("/thirdLogin") >= 0 || url.indexOf("/vendors") >= 0 || url.indexOf("/users/verification_code") >= 0 || url.indexOf("/vendors/vendors/password") >= 0){
                 return chain.filter(exchange);
@@ -50,7 +55,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
              * 客户端端token格式："token" + " " + tokenValue
              */
             String authorization = headers.getFirst(AUTHORIZE_TOKEN);
-            ServerHttpResponse response = exchange.getResponse();
+
             if (StringUtils.isEmpty(authorization)) {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();

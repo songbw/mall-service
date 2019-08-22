@@ -20,41 +20,16 @@ import reactor.core.publisher.Mono;
 //@Component
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
-    @Autowired
-    private RedisDAO redisDAO;
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         exchange.getResponse().setStatusCode(HttpStatus.OK);
         exchange.getResponse().getHeaders().add("Content-Type", "application/json;charset=UTF-8");
-        OperaResponse operaResponse = new OperaResponse();
         String url = exchange.getRequest().getURI().getPath();
         //忽略以下url请求
-        if(url.indexOf("/toushi/") >= 0 || url.indexOf("login") >= 0 || url.indexOf("/thirdParty/token") >= 0 || url.indexOf("/thirdLogin") >= 0 || url.indexOf("/v2/vendors/vendors") >= 0 || url.indexOf("/users/verification_code") >= 0 || url.indexOf("/vendors/vendors/password") >= 0){
-            return chain.filter(exchange);
-        }
-        //从请求头中取得token
-        String token = exchange.getRequest().getHeaders().getFirst("Authorization");
-        if(StringUtils.isEmpty(token)){
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            operaResponse.setCode(401);
-            operaResponse.setMsg("验证token失败。");
-            return exchange.getResponse().writeWith(Flux.just(this.getBodyBuffer(exchange.getResponse(), operaResponse)));
-        }
-        //请求中的token是否在redis中存在
-        String verifyResult = redisDAO.getValue(token) ;
-        String subject = JwtHelper.getValue(token);
-        if (verifyResult == null || "".equals(verifyResult) || subject == null || "".equals(subject)) {
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            operaResponse.setCode(401);
-            operaResponse.setMsg("验证token失败。");
-            return exchange.getResponse().writeWith(Flux.just(this.getBodyBuffer(exchange.getResponse(), operaResponse)));
-        }
-        if (!verifyResult.equals(subject)) {
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            operaResponse.setCode(401);
-            operaResponse.setMsg("验证token失败。");
-            return exchange.getResponse().writeWith(Flux.just(this.getBodyBuffer(exchange.getResponse(), operaResponse)));
+        if(url.indexOf("/") >= 0){
+            ServerHttpResponse response = exchange.getResponse();
+            response.setStatusCode(HttpStatus.OK);
+            return response.setComplete();
         }
         return chain.filter(exchange);
     }
