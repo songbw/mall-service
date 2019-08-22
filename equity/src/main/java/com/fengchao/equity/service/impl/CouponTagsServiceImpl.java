@@ -3,6 +3,7 @@ package com.fengchao.equity.service.impl;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.mapper.CouponTagsMapper;
+import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.service.CouponTagsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ public class CouponTagsServiceImpl implements CouponTagsService {
 
     @Autowired
     private CouponTagsMapper mapper;
+    @Autowired
+    private CouponXMapper couponXMapper;
 
 
     @Override
@@ -48,6 +51,7 @@ public class CouponTagsServiceImpl implements CouponTagsService {
 
     @Override
     public int deleteTags(Integer id) throws EquityException {
+//        couponXMapper
         return mapper.deleteByPrimaryKey(id);
     }
 }

@@ -189,6 +189,9 @@
     from coupon
     where status = 4 and collect_type = 2 order by create_date desc
   </select>
+  <select id="selectActiveTags" resultType="java.lang.String" >
+    select distinct id from coupon where status = 4 and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from coupon
     where id = #{id,jdbcType=INTEGER}

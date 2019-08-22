@@ -2,7 +2,6 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.bean.AoyiProdBean;
 import com.fengchao.equity.bean.CouponResultBean;
-//import com.fengchao.equity.model.AoyiProdIndex;
 import com.fengchao.equity.model.CouponX;
 
 import java.util.HashMap;

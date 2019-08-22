@@ -8,7 +8,7 @@ import com.fengchao.aggregation.exception.AggregationException;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.service.AggregationService;
-import com.fengchao.aggregation.utils.RedisUtil;
+import com.fengchao.aggregation.utils.RedisDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,8 @@ public class AggregationServiceImpl implements AggregationService {
     private AggregationMapper mapper;
     @Autowired
     private AggregationMpuMapper mpuMapper;
+    @Autowired
+    private RedisDAO redisDAO;
 
 
     @Override
@@ -67,8 +69,8 @@ public class AggregationServiceImpl implements AggregationService {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(j);
-                    String skuid = jsonArray.getJSONObject(j).getString("skuid");
-                    String value = RedisUtil.getValue(skuid);
+                    String skuid = jsonArray.getJSONObject(j).getString("mpu");
+                    String value = redisDAO.getValue(skuid);
 //                    AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                     JSONObject product = JSONObject.parseObject(value);
                     if(product != null){
@@ -83,8 +85,8 @@ public class AggregationServiceImpl implements AggregationService {
                     JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
                     for (int l = 0; l < skus.size(); l++){
                         JSONObject jsonObject = skus.getJSONObject(l);
-                        String skuid = jsonObject.getString("skuid");
-                        String value = RedisUtil.getValue(skuid);
+                        String skuid = jsonObject.getString("mpu");
+                        String value = redisDAO.getValue(skuid);
 //                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                         JSONObject product = JSONObject.parseObject(value);
                         if(product != null){
@@ -190,8 +192,8 @@ public class AggregationServiceImpl implements AggregationService {
                     JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                     for (int j = 0; j < jsonArray.size(); j++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(j);
-                        String mpu = jsonArray.getJSONObject(j).getString("skuid");
-                        String value = RedisUtil.getValue(mpu);
+                        String mpu = jsonArray.getJSONObject(j).getString("mpu");
+                        String value = redisDAO.getValue(mpu);
 //                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                         JSONObject product = JSONObject.parseObject(value);
                         if(product != null){
@@ -206,8 +208,8 @@ public class AggregationServiceImpl implements AggregationService {
                         JSONArray mpus = lists.getJSONObject(j).getJSONArray("skus");
                         for (int l = 0; l < mpus.size(); l++){
                             JSONObject jsonObject = mpus.getJSONObject(l);
-                            String mpu = jsonObject.getString("skuid");
-                            String value = RedisUtil.getValue(mpu);
+                            String mpu = jsonObject.getString("mpu");
+                            String value = redisDAO.getValue(mpu);
 //                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
                             JSONObject product = JSONObject.parseObject(value);
                             if(product != null){

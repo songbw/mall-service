@@ -126,7 +126,7 @@ public class AdminCouponController {
             result.setCode(40013);
             result.setMsg("该券已核销");
         }else if(coupon.getStatus() == 4){
-            result.setCode(40013);
+            result.setCode(40014);
             result.setMsg("该券已过期");
         }else{
             result.getData().put("id",coupon.getCouponId());
