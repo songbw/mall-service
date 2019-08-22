@@ -267,6 +267,15 @@ public class OrderServiceImpl implements OrderService {
 
             logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         } else {
+
+            if (coupon != null) {
+                boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                if (!couponRelease) {
+                    // TODO 订单失败,释放优惠券，
+                    logger.info("订单" + bean.getId() + "释放优惠券失败");
+                }
+            }
+
             operaResult.setCode(result.getCode());
             operaResult.setMsg(result.getMsg());
             // 异常数据库回滚
