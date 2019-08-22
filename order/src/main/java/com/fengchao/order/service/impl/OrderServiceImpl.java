@@ -231,6 +231,8 @@ public class OrderServiceImpl implements OrderService {
             // 30分钟后取消订单
             JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
         }
+
+        logger.info("创建订单 传给奥弋之前:{}", JSONUtil.toJsonString(orderMerchantBeans));
         // 传数据给奥义
         orderBean.setMerchants(orderMerchantBeans);
         orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != OrderConstants.AOYI_MERCHANG_CODE));
@@ -241,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
         } else { //
             result = aoyiClientService.order(orderBean);
         }
-
+        logger.info("创建订单 传给奥弋之后:{}", JSONUtil.toJsonString(orderMerchantBeans));
         logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
 
         if (result.getCode() == 200) {

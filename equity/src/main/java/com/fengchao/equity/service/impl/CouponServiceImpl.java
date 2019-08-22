@@ -197,19 +197,20 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponX consumeCoupon(CouponUseInfoBean bean) {
+    public CouponUseInfoX consumeCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfoX couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
+        }else if (couponUseInfo.getStatus() == 3){
+            return couponUseInfo;
         }
         useInfo.setId(bean.getId());
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(3);
         useInfoMapper.updateStatusByUserCode(useInfo);
-        CouponX coupon = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
-        return coupon;
+        return couponUseInfo;
     }
 
     @Override
@@ -415,6 +416,34 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public int invalid(int couponId) {
         return useInfoMapper.updateStatusByCouponId(couponId);
+    }
+
+    @Override
+    public CouponUseInfoX adminConsumeCoupon(CouponUseInfoBean bean) {
+
+        CouponUseInfoX useInfo = new CouponUseInfoX();
+        CouponUseInfoX couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
+        if(couponUseInfo == null){
+            return null;
+        }else if (couponUseInfo.getStatus() == 3){
+            return couponUseInfo;
+        }
+
+        if(couponUseInfo != null){
+            CouponX couponX = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            Date date = new Date();
+            if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().before(date)){
+                couponUseInfo.setStatus(4);
+                return couponUseInfo;
+            }
+        }
+
+        useInfo.setId(bean.getId());
+        useInfo.setConsumedTime(new Date());
+        useInfo.setUserCouponCode(bean.getUserCouponCode());
+        useInfo.setStatus(3);
+        useInfoMapper.updateStatusByUserCode(useInfo);
+        return couponUseInfo;
     }
 
     //============================== private =========================

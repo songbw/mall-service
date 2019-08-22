@@ -1,6 +1,7 @@
 package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.model.CouponX;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface CouponService {
 
     CouponBean selectSkuByCouponId(CouponUseInfoBean bean);
 
-    CouponX consumeCoupon(CouponUseInfoBean bean);
+    CouponUseInfoX consumeCoupon(CouponUseInfoBean bean);
 
     List<CouponBean> selectCouponByMpu(AoyiProdBean bean);
 
@@ -42,4 +43,6 @@ public interface CouponService {
     List<CouponBean> queryCouponBeanListIdList(List<Integer> idList) throws Exception;
 
     int invalid(int couponId);
+
+    CouponUseInfoX adminConsumeCoupon(CouponUseInfoBean bean);
 }

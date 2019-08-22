@@ -521,7 +521,6 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Override
     public int verifyCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
-        if(couponUseInfo != null){
             if(couponUseInfo != null){
                 CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
                 Date date = new Date();
@@ -531,7 +530,6 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                     return 1;
                 }
             }
-        }
         return 0;
     }
 
