@@ -39,7 +39,7 @@ public class AdminCouponTagsController {
         CouponTagBean couponTagBean = couponTagsService.deleteTags(id);
         if(couponTagBean.getNum() == 2){
             result.setCode(500);
-            result.setMsg("该标签下有优惠");
+            result.setMsg("该标签下有优惠券");
             result.getData().put("couponIds", couponTagBean.getCouponIds());
         }else{
             result.getData().put("result", couponTagBean.getNum());

@@ -53,7 +53,7 @@ public class CouponTagsServiceImpl implements CouponTagsService {
     @Override
     public CouponTagBean deleteTags(Integer id) throws EquityException {
         CouponTagBean couponTagBean = new CouponTagBean();
-        List<Integer> couponIds = couponXMapper.selectActiveTagsCoupon();
+        List<Integer> couponIds = couponXMapper.selectActiveTagsCoupon(id);
         if(couponIds.isEmpty()){
             couponTagBean.setNum(mapper.deleteByPrimaryKey(id));
             return couponTagBean;

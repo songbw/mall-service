@@ -4,6 +4,7 @@ import com.fengchao.equity.bean.AoyiProdBean;
 import com.fengchao.equity.bean.CouponResultBean;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponX;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,5 +46,5 @@ public interface CouponXMapper {
 
     List<CouponX> selectGiftCoupon();
 
-    List<Integer> selectActiveTagsCoupon();
+    List<Integer> selectActiveTagsCoupon(@Param("tagId") Integer tagId);
 }
