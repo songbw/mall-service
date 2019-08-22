@@ -161,6 +161,15 @@ public class CouponController {
         }
         return result;
     }
+
+    @GetMapping("giftCoupon")
+    public OperaResult giftCoupon(OperaResult result){
+        List<CouponBean> beans = couponService.giftCoupon();
+        result.getData().put("result", beans);
+        return result;
+    }
+
+
     /**
      * 根据id集合查询
      *
