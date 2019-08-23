@@ -1,5 +1,6 @@
 package com.fengchao.equity.service.impl;
 
+import com.fengchao.equity.bean.CouponTagBean;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.mapper.CouponTagsMapper;
@@ -50,8 +51,16 @@ public class CouponTagsServiceImpl implements CouponTagsService {
     }
 
     @Override
-    public int deleteTags(Integer id) throws EquityException {
-//        couponXMapper
-        return mapper.deleteByPrimaryKey(id);
+    public CouponTagBean deleteTags(Integer id) throws EquityException {
+        CouponTagBean couponTagBean = new CouponTagBean();
+        List<Integer> couponIds = couponXMapper.selectActiveTagsCoupon(id);
+        if(couponIds.isEmpty()){
+            couponTagBean.setNum(mapper.deleteByPrimaryKey(id));
+            return couponTagBean;
+        }else{
+            couponTagBean.setNum(2);
+            couponTagBean.setCouponIds(couponIds);
+            return couponTagBean;
+        }
     }
 }

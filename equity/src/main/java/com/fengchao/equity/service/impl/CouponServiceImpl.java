@@ -446,6 +446,16 @@ public class CouponServiceImpl implements CouponService {
         return couponUseInfo;
     }
 
+    @Override
+    public List<CouponBean> giftCoupon() {
+        List<CouponBean> couponBeans = new ArrayList();
+        List<CouponX> coupons = mapper.selectGiftCoupon();
+        coupons.forEach(couponX -> {
+            couponBeans.add(couponToBean(couponX));
+        });
+        return couponBeans;
+    }
+
     //============================== private =========================
 
     /**

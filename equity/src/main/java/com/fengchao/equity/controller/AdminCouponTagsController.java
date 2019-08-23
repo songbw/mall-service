@@ -1,5 +1,6 @@
 package com.fengchao.equity.controller;
 
+import com.fengchao.equity.bean.CouponTagBean;
 import com.fengchao.equity.bean.QueryBean;
 import com.fengchao.equity.model.CouponTags;
 import com.fengchao.equity.service.CouponTagsService;
@@ -35,7 +36,14 @@ public class AdminCouponTagsController {
 
     @DeleteMapping("tags/{id}")
     public OperaResult deleteTags(@PathVariable("id")Integer id, OperaResult result){
-        result.getData().put("result",couponTagsService.deleteTags(id));
+        CouponTagBean couponTagBean = couponTagsService.deleteTags(id);
+        if(couponTagBean.getNum() == 2){
+            result.setCode(500);
+            result.setMsg("该标签下有优惠券");
+            result.getData().put("couponIds", couponTagBean.getCouponIds());
+        }else{
+            result.getData().put("result", couponTagBean.getNum());
+        }
         return result;
     }
 

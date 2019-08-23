@@ -267,6 +267,15 @@ public class OrderServiceImpl implements OrderService {
 
             logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         } else {
+
+            if (coupon != null) {
+                boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                if (!couponRelease) {
+                    // TODO 订单失败,释放优惠券，
+                    logger.info("订单" + bean.getId() + "释放优惠券失败");
+                }
+            }
+
             operaResult.setCode(result.getCode());
             operaResult.setMsg(result.getMsg());
             // 异常数据库回滚
@@ -393,6 +402,9 @@ public class OrderServiceImpl implements OrderService {
         if(orderBean.getPayDateEnd() != null && !orderBean.getPayDateEnd().equals("")){
             map.put("payDateEnd", orderBean.getPayDateEnd() + " 23:59:59");
         }
+
+        logger.info("查询订单 数据库查询入参:{}", JSONUtil.toJsonString(map));
+
         List<OrderDetailBean> orderBeans = new ArrayList<>();
         total = orderMapper.selectCount(map);
         if(total >  0){
@@ -547,6 +559,18 @@ public class OrderServiceImpl implements OrderService {
             order.setCouponStatus(3);
         }
         return orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+    }
+
+    @Override
+    public Integer batchUpdateOrderDetailStatus(List<Integer> orderIdList, Integer status) {
+        logger.info("根据主订单id集合批量更新子订单的状态 数据库入参 orderIdList:{}, status:{}",
+                JSONUtil.toJsonString(orderIdList), status);
+
+        int count = orderDetailDao.batchUpdateStatusByOrderIdList(orderIdList, status);
+
+        logger.info("根据主订单id集合批量更新子订单的状态 数据库返回:{}", count);
+
+        return count;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.fengchao.equity.service;
 
+import com.fengchao.equity.bean.CouponTagBean;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.model.CouponTags;
 
@@ -10,5 +11,5 @@ public interface CouponTagsService {
 
     int updateTags(CouponTags bean);
 
-    int deleteTags(Integer id);
+    CouponTagBean deleteTags(Integer id);
 }

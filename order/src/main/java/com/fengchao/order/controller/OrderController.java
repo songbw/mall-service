@@ -5,6 +5,7 @@ import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.JSONUtil;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -72,7 +73,9 @@ public class OrderController {
                                         @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         log.info("查询订单 入参 OrderBean:{}, merchantId:{}", JSONUtil.toJsonString(orderBean), merchantId);
 
-        orderBean.setMerchantId(merchantId);
+        if (merchantId != null && merchantId > 0) {
+            orderBean.setMerchantId(merchantId);
+        }
         result.getData().put("result", service.searchOrderList(orderBean)) ;
 
         log.info("查询订单 返回:{}", JSONUtil.toJsonString(result));
@@ -153,6 +156,34 @@ public class OrderController {
     private OperaResult paymentByOutTradeNoAndPaymentNo(@RequestBody Order order, OperaResult result) {
         result.getData().put("result", service.updatePaymentByOutTradeNoAndPaymentNo(order)) ;
         return result;
+    }
+
+    /**
+     * 根据主订单id集合批量更新子订单的状态
+     *
+     * @param orderIdList
+     * @param status
+     * @return
+     */
+    @GetMapping("/update/orderdetail/status")
+    private OperaResponse batchUpdateOrderDetailByOrderIds(@RequestParam("orderIdList") List<Integer> orderIdList,
+                                                           @RequestParam("status") Integer status) {
+        OperaResponse operaResponse = new OperaResponse();
+        log.info("根据主订单id集合批量更新子订单的状态 入参 orderIdList:{}, status:{}", orderIdList, status);
+
+        try {
+            int count = service.batchUpdateOrderDetailStatus(orderIdList, status);
+            operaResponse.setData(count);
+        } catch (Exception e) {
+            log.error("根据主订单id集合批量更新子订单的状态 异常:{}", e.getMessage(), e);
+
+            operaResponse.setCode(500);
+            operaResponse.setMsg("根据主订单id集合批量更新子订单的状态异常" + e.getMessage());
+        }
+
+        log.info("根据主订单id集合批量更新子订单的状态 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        return operaResponse;
     }
 
     /**

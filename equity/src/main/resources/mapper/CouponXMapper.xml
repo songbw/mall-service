@@ -59,7 +59,7 @@
     select
     count(id)
     from coupon where 1=1
-    <if test="status != null" >
+    <if test="status != null">
       and status = #{status,jdbcType=INTEGER}
     </if>
     <if test="releaseTotal != null" >
@@ -117,7 +117,7 @@
     <include refid="Base_Column_List" />
     from coupon
     left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
-    where status = 4
+    where status = 4 and customer_type = 0
     <if test="categoryName != null" >
       <bind name="patternName" value="'%' + categoryName + '%'" />
       and aoyi_base_category.category_name LIKE #{patternName}
@@ -139,7 +139,7 @@
     count(id)
     from coupon
     left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
-    where status = 4
+    where status = 4 and customer_type = 0
     <if test="categoryName != null" >
       <bind name="patternName" value="'%' + categoryName + '%'" />
       and aoyi_base_category.category_name LIKE #{patternName}
@@ -155,10 +155,10 @@
     </if>
   </select>
   <select id="selectActiveCategories" resultType="java.lang.String" >
-    select distinct category from coupon where status = 4
+    select distinct category from coupon where status = 4  and customer_type = 0
   </select>
   <select id="selectTags" resultType="java.lang.String" >
-    select distinct tags from coupon where tags != "" and status = 4
+    select distinct tags from coupon where tags != "" and status = 4  and customer_type = 0
   </select>
   <select id="selectCouponByMpu" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.PageBean">
     select
@@ -189,8 +189,13 @@
     from coupon
     where status = 4 and collect_type = 2 order by create_date desc
   </select>
-  <select id="selectActiveTags" resultType="java.lang.String" >
-    select distinct id from coupon where status = 4 and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
+  <select id="selectActiveTagsCoupon" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    select id from coupon where status in (1, 3, 4) and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
+  </select>
+  <select id="selectGiftCoupon" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from coupon where status = 4 and customer_type = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from coupon

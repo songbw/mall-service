@@ -50,6 +50,15 @@ public interface OrderService {
     Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) ;
 
     /**
+     * 批量更新子订单的状态
+     *
+     * @param orderIdList
+     * @param status
+     * @return
+     */
+    Integer batchUpdateOrderDetailStatus(List<Integer> orderIdList, Integer status);
+
+    /**
      * 获取平台的关于订单的总体统计数据
      *  1.获取订单支付总额-
      *  2.(已支付)订单总量-
