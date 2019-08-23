@@ -67,7 +67,7 @@ public class AdminProdController {
             result.setMsg(e.getMessage());
         }
 
-        log.info("创建商品 返回:{}", result);
+        log.info("创建商品 返回:{}", JSONUtil.toJsonString(result));
 
         return result;
     }
