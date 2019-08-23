@@ -52,5 +52,5 @@ public interface PromotionService {
 
     PromotionX findCurrentSchedule(Integer num);
 
-    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize);
+    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule);
 }
