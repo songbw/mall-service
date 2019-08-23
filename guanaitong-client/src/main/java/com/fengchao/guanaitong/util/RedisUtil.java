@@ -1,15 +1,15 @@
 package com.fengchao.guanaitong.util;
 
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+//import redis.clients.jedis.Jedis;
+//import redis.clients.jedis.JedisPool;
+//import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Set;
 
-@Component
+//@Component
 public class RedisUtil {
-
+/*
     public static  int webexpire = Config.getInt("redis.webexpire");
     public static  int appexpire = Config.getInt("redis.appexpire");
     private static String redisIp = Config.getString("redis.ip");
@@ -20,9 +20,7 @@ public class RedisUtil {
 
 
     public static JedisPool pool;
-    /**
-     * 初始化Redis连接池
-     */
+
     private static JedisPool getJedisPool(){
         if(pool == null ){
             JedisPoolConfig config = new JedisPoolConfig();
@@ -177,6 +175,6 @@ public class RedisUtil {
             returnResource(pool, jedis);
         }
     }
-
+*/
 }
 

@@ -2,11 +2,13 @@ package com.fengchao.guanaitong.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.guanaitong.service.IJSSDKService;
-import com.fengchao.guanaitong.util.RedisUtil;
+import com.fengchao.guanaitong.util.RedisDAO;
+//import com.fengchao.guanaitong.util.RedisUtil;
 import com.fengchao.guanaitong.util.WeChatJSSDK;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,23 +19,32 @@ import java.util.Random;
 @Service
 public class JSSDKServiceImpl implements IJSSDKService {
 
+    private RedisDAO redisDAO;
+
     private String getRandom() {
         Random random = new Random();
         String fourRandom = random.nextInt(1000000) + "";
         int randLength = fourRandom.length();
+        StringBuilder sb = new StringBuilder();
         if (randLength < 6) {
             for (int i = 1; i <= 6 - randLength; i++)
-                fourRandom = "0" + fourRandom;
+                sb.append("0");
         }
-        return fourRandom;
+        sb.append(fourRandom);
+        return sb.toString();
+    }
+
+    @Autowired
+    public JSSDKServiceImpl(RedisDAO redisDAO) {
+        this.redisDAO = redisDAO;
     }
 
     @Override
     public String getAccessToken() throws Exception{
 
-        String cacheToken = RedisUtil.getValue(WeChatJSSDK.JS_SDK_TOKEN_KEY);
+        String cacheToken = redisDAO.getValue(WeChatJSSDK.JS_SDK_TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            log.info("get cached JSSDK token: {" + cacheToken + "} ttl=" + RedisUtil.ttl(WeChatJSSDK.JS_SDK_TOKEN_KEY) + "s");
+            log.info("get cached JSSDK token: {" + cacheToken + "} ttl=" + redisDAO.ttl(WeChatJSSDK.JS_SDK_TOKEN_KEY) + "s");
             return cacheToken;
         }
 
@@ -78,7 +89,7 @@ public class JSSDKServiceImpl implements IJSSDKService {
             Integer expires = json.getInteger("expires_in");
             log.info("access_token:" + token);
             log.info("expires_in:" + expires.toString());
-            RedisUtil.putRedis(WeChatJSSDK.JS_SDK_TOKEN_KEY, token, expires - 5);
+            redisDAO.setValue(WeChatJSSDK.JS_SDK_TOKEN_KEY, token, expires - 5);
             return token;
         } else {
             log.warn("data in response from guanaitong is null");
@@ -113,9 +124,9 @@ public class JSSDKServiceImpl implements IJSSDKService {
 
     @Override
     public String getApiTicket() throws Exception {
-        String cacheTicket = RedisUtil.getValue(WeChatJSSDK.JS_SDK_TICKET_KEY);
+        String cacheTicket = redisDAO.getValue(WeChatJSSDK.JS_SDK_TICKET_KEY);
         if (null != cacheTicket && !cacheTicket.isEmpty()) {
-            log.info("get cached JSSDK ticket: {" + cacheTicket + "} ttl=" + RedisUtil.ttl(WeChatJSSDK.JS_SDK_TICKET_KEY) + "s");
+            log.info("get cached JSSDK ticket: {" + cacheTicket + "} ttl=" + redisDAO.ttl(WeChatJSSDK.JS_SDK_TICKET_KEY) + "s");
             return cacheTicket;
         }
 
@@ -166,7 +177,7 @@ public class JSSDKServiceImpl implements IJSSDKService {
             Integer expires = json.getInteger("expires_in");
             log.info("api ticket:" + ticket);
             log.info("expires_in:" + expires.toString());
-            RedisUtil.putRedis(WeChatJSSDK.JS_SDK_TICKET_KEY, ticket, expires - 5);
+            redisDAO.setValue(WeChatJSSDK.JS_SDK_TICKET_KEY, ticket, expires - 5);
             return ticket;
         } else {
             log.warn("data in response from WeChat JSSDK is null");
