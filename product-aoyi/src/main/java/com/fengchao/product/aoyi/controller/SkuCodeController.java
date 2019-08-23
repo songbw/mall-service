@@ -5,13 +5,18 @@ import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.BrandService;
 import com.fengchao.product.aoyi.service.SkuCodeService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping(value = "/merchantCode", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class SkuCodeController {
 
     @Autowired
@@ -26,7 +31,10 @@ public class SkuCodeController {
 
     @GetMapping("all")
     private OperaResult findAll(OperaResult result) {
-        result.getData().put("result", service.findAll()) ;
+        log.info("获取所有商户信息 入参:无");
+        List<SkuCode> skuCodeList = service.findAll();
+        result.getData().put("result", skuCodeList);
+        log.info("获取所有商户信息 返回:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
