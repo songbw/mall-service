@@ -1,9 +1,6 @@
 package com.fengchao.product.aoyi.controller;
 
-import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.bean.QueryProdBean;
-import com.fengchao.product.aoyi.bean.SerachBean;
+import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
@@ -57,11 +54,18 @@ public class AdminProdController {
      */
     @PostMapping
     public OperaResult create(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId,
-                              OperaResult result) throws ProductException {
+                                OperaResult result) throws ProductException {
         log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
 
-        int id = prodService.add(bean);
-        result.getData().put("result", id);
+        try {
+            int id = prodService.add(bean);
+            result.getData().put("result", id);
+        } catch (Exception e) {
+            log.error("创建商品 异常:{}", e.getMessage(), e);
+
+            result.setCode(500);
+            result.setMsg(e.getMessage());
+        }
 
         log.info("创建商品 返回:{}", result);
 
