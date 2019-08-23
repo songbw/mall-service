@@ -562,6 +562,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Integer batchUpdateOrderDetailStatus(List<Integer> orderIdList, Integer status) {
+        logger.info("根据主订单id集合批量更新子订单的状态 数据库入参 orderIdList:{}, status:{}",
+                JSONUtil.toJsonString(orderIdList), status);
+
+        int count = orderDetailDao.batchUpdateStatusByOrderIdList(orderIdList, status);
+
+        logger.info("根据主订单id集合批量更新子订单的状态 数据库返回:{}", count);
+
+        return count;
+    }
+
+    @Override
     public DayStatisticsBean findOverviewStatistics() throws Exception {
         // 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
         Float dayPaymentCount = orderMapper.selectPayedOrdersAmount(); // 获取订单支付总额 SUM(sale_amount)

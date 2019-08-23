@@ -5,6 +5,7 @@ import com.fengchao.sso.bean.BackRequest;
 import com.fengchao.sso.bean.GATBackBean;
 import com.fengchao.sso.bean.PaymentBean;
 import com.fengchao.sso.service.IPaymentService;
+import com.fengchao.sso.util.JSONUtil;
 import com.fengchao.sso.util.OperaResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +32,23 @@ public class PaymentController {
 
     @PostMapping(value = "/pingan/back", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private String back(@RequestBody BackRequest bean) {
-        return service.back(bean);
+        logger.info("平安支付回调 入参:{}", JSONUtil.toJsonString(bean));
+
+        String result = service.back(bean);
+
+        logger.info("平安支付回调 返回:{}", result);
+        return result;
     }
 
     @PostMapping(value = "/back", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     private String gBack(GATBackBean bean) {
-        logger.info("关爱通back params is : " + JSON.toJSONString(bean));
-        return service.gNotify(bean) ;
+        logger.info("关爱通支付回调 入参:{}", JSON.toJSONString(bean));
+
+        String result = service.gNotify(bean);
+
+        logger.info("关爱通支付回调 返回:{}", result);
+
+        return result;
     }
 
     @PostMapping(value = "/refund", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

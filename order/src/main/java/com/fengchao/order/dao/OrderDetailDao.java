@@ -1,5 +1,6 @@
 package com.fengchao.order.dao;
 
+import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.mapper.OrderDetailMapper;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.OrderDetailExample;
@@ -43,6 +44,26 @@ public class OrderDetailDao {
 
     public int insert(OrderDetail record){
         return orderDetailMapper.insertSelective(record);
+    }
+
+    /**
+     * 根据主订单id集合批量更新子订单状态
+     *
+     * @param orderIdList
+     * @param status
+     * @return
+     */
+    public int batchUpdateStatusByOrderIdList(List<Integer> orderIdList, Integer status) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdIn(orderIdList);
+
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setStatus(status);
+
+        int count = orderDetailMapper.updateByExampleSelective(orderDetail, orderDetailExample);
+        return count;
     }
 
 }
