@@ -1,24 +1,30 @@
 package com.fengchao.product.aoyi.service.impl;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.fengchao.product.aoyi.dao.SkuCodeDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.mapper.SkuCodeMapper;
+import com.fengchao.product.aoyi.mapper.SkuCodeXMapper;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.service.SkuCodeService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class SkuCodeServiceImpl implements SkuCodeService {
 
     @Autowired
-    private SkuCodeMapper mapper;
+    private SkuCodeXMapper mapper;
+
+    @Autowired
+    private SkuCodeDao skuCodeDao;
 
     @Override
     public Integer add(SkuCode bean) throws ProductException {
@@ -64,7 +70,10 @@ public class SkuCodeServiceImpl implements SkuCodeService {
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<SkuCode> findAll() throws ProductException {
-        return mapper.selectList();
+        List<SkuCode> skuCodeList = skuCodeDao.selectAll();
+
+        log.info("获取所有商户信息 数据库返回:{}", JSONUtil.toJsonString(skuCodeList));
+        return skuCodeList;
     }
 
     @Override

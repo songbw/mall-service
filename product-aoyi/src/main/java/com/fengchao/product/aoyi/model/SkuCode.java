@@ -1,9 +1,8 @@
 package com.fengchao.product.aoyi.model;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class SkuCode implements Serializable {
+public class SkuCode {
     private Integer id;
 
     private Integer merchantId;
@@ -39,7 +38,7 @@ public class SkuCode implements Serializable {
     }
 
     public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
+        this.merchantName = merchantName == null ? null : merchantName.trim();
     }
 
     public String getMerchantCode() {

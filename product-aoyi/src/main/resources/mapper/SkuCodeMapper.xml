@@ -1,134 +1,237 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.product.aoyi.mapper.SkuCodeMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.SkuCode" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
-    <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
-    <result column="merchant_name" property="merchantName" jdbcType="VARCHAR" />
-    <result column="sku_value" property="skuValue" jdbcType="INTEGER" />
-    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
-    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.product.aoyi.mapper.SkuCodeMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.SkuCode">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
+    <result column="merchant_name" jdbcType="VARCHAR" property="merchantName" />
+    <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
+    <result column="sku_value" jdbcType="INTEGER" property="skuValue" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, merchant_id, merchant_code, merchant_name, sku_value, created_at, updated_at
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, merchant_id, merchant_name, merchant_code, sku_value, created_at, updated_at
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.SkuCodeExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sku_code
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from sku_code
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByMerchantId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sku_code
-    where merchant_id = #{merchantId,jdbcType=INTEGER}
-  </select>
-  <select id="selectLast" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sku_code
-    order by id DESC limit 1
-  </select>
-  <select id="selectList" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sku_code
-  </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from sku_code
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.SkuCode"  keyProperty="id" useGeneratedKeys="true">
-    insert into sku_code (merchant_id, merchant_code,merchant_name,
+  <delete id="deleteByExample" parameterType="com.fengchao.product.aoyi.model.SkuCodeExample">
+    delete from sku_code
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.SkuCode" useGeneratedKeys="true">
+    insert into sku_code (merchant_id, merchant_name, merchant_code, 
       sku_value, created_at, updated_at
       )
-    values (#{merchantId,jdbcType=INTEGER}, #{merchantCode,jdbcType=VARCHAR}, #{merchantName,jdbcType=VARCHAR},
+    values (#{merchantId,jdbcType=INTEGER}, #{merchantName,jdbcType=VARCHAR}, #{merchantCode,jdbcType=VARCHAR}, 
       #{skuValue,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.SkuCode"  keyProperty="id" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.SkuCode" useGeneratedKeys="true">
     insert into sku_code
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="merchantId != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="merchantId != null">
         merchant_id,
       </if>
-      <if test="merchantCode != null" >
-        merchant_code,
-      </if>
-      <if test="merchantName != null" >
+      <if test="merchantName != null">
         merchant_name,
       </if>
-      <if test="skuValue != null" >
+      <if test="merchantCode != null">
+        merchant_code,
+      </if>
+      <if test="skuValue != null">
         sku_value,
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         created_at,
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         updated_at,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="merchantId != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="merchantId != null">
         #{merchantId,jdbcType=INTEGER},
       </if>
-      <if test="merchantCode != null" >
-        #{merchantCode,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantName != null" >
+      <if test="merchantName != null">
         #{merchantName,jdbcType=VARCHAR},
       </if>
-      <if test="skuValue != null" >
+      <if test="merchantCode != null">
+        #{merchantCode,jdbcType=VARCHAR},
+      </if>
+      <if test="skuValue != null">
         #{skuValue,jdbcType=INTEGER},
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         #{updatedAt,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.SkuCode"  keyProperty="id" useGeneratedKeys="true">
+  <select id="countByExample" parameterType="com.fengchao.product.aoyi.model.SkuCodeExample" resultType="java.lang.Long">
+    select count(*) from sku_code
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
     update sku_code
-    <set >
-      <if test="merchantId != null" >
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.merchantId != null">
+        merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="record.merchantName != null">
+        merchant_name = #{record.merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.merchantCode != null">
+        merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.skuValue != null">
+        sku_value = #{record.skuValue,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdAt != null">
+        created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedAt != null">
+        updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update sku_code
+    set id = #{record.id,jdbcType=INTEGER},
+      merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      merchant_name = #{record.merchantName,jdbcType=VARCHAR},
+      merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
+      sku_value = #{record.skuValue,jdbcType=INTEGER},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.SkuCode">
+    update sku_code
+    <set>
+      <if test="merchantId != null">
         merchant_id = #{merchantId,jdbcType=INTEGER},
       </if>
-      <if test="merchantCode != null" >
-        merchant_code = #{merchantCode,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantName != null" >
+      <if test="merchantName != null">
         merchant_name = #{merchantName,jdbcType=VARCHAR},
       </if>
-      <if test="skuValue != null" >
+      <if test="merchantCode != null">
+        merchant_code = #{merchantCode,jdbcType=VARCHAR},
+      </if>
+      <if test="skuValue != null">
         sku_value = #{skuValue,jdbcType=INTEGER},
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         created_at = #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         updated_at = #{updatedAt,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.SkuCode"  keyProperty="id" useGeneratedKeys="true">
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.SkuCode">
     update sku_code
     set merchant_id = #{merchantId,jdbcType=INTEGER},
-      merchant_code = #{merchantCode,jdbcType=VARCHAR},
       merchant_name = #{merchantName,jdbcType=VARCHAR},
+      merchant_code = #{merchantCode,jdbcType=VARCHAR},
       sku_value = #{skuValue,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateSkuValueByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.SkuCode"  keyProperty="id" useGeneratedKeys="true">
-    update sku_code
-    set sku_value = #{skuValue,jdbcType=INTEGER},
-    updated_at = #{updatedAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

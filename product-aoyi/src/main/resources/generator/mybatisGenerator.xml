@@ -40,7 +40,7 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="aoyi_prod_index">
+        <table tableName="sku_code">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
     </context>
