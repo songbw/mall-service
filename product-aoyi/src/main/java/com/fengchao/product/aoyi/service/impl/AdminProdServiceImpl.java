@@ -12,7 +12,6 @@ import com.fengchao.product.aoyi.feign.VendorsService;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.AdminProdService;
-import com.fengchao.product.aoyi.utils.CosUtil;
 //import com.fengchao.product.aoyi.utils.RedisUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +36,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private ProdExtendMapper prodExtendMapper;
     @Autowired
-    private SkuCodeMapper skuCodeMapper;
+    private SkuCodeXMapper skuCodeMapper;
     @Autowired
     private EquityService equityService;
     @Autowired
