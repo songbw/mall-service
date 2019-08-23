@@ -280,7 +280,8 @@ public class CouponThirdServiceImpl implements CouponThirdService {
             e.printStackTrace();
         }
 
-        OperaResult userResult = ssoService.findUser(openID);
+        String iAppId = "10";
+        OperaResult userResult = ssoService.findUser(openID, iAppId);
         if (userResult.getCode() == 200) {
             Map<String, Object> data = userResult.getData() ;
             Object object = data.get("user");

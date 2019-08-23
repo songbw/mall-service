@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface SSOService {
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    OperaResult findUser(@RequestParam("openId") String openId);
+    OperaResult findUser(@RequestParam("openId") String openId, @RequestParam("iAppId")String iAppId);
 }

@@ -46,5 +46,5 @@ public interface CouponService {
 
     CouponUseInfoX adminConsumeCoupon(CouponUseInfoBean bean);
 
-    List<CouponBean> giftCoupon();
+    List<Object> giftCoupon(String openId, String iAppId);
 }
