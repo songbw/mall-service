@@ -75,14 +75,20 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public Token thirdLogin(ThirdLoginBean loginBean) {
-        Token tokenBean = new Token();
+    public TokenBean thirdLogin(ThirdLoginBean loginBean) {
         String token = JwtTokenUtil.generateToken(loginBean);
 
-        tokenBean.setToken(token);
-        tokenBean.setOpenId(loginBean.getOpenId());
-        tokenBean.setThirdToken(loginBean.getAccessToken());
-        tokenBean.setExpireDate(JwtTokenUtil.EXPIRATIONTIME);
+        TokenBean bean = new TokenBean();
+        bean.setToken(token);
+        bean.setOpenId(loginBean.getOpenId());
+        bean.setThirdToken(loginBean.getAccessToken());
+        bean.setExpireDate(JwtTokenUtil.EXPIRATIONTIME);
+
+        Token tokenBean = new Token();
+        tokenBean.setToken(bean.getToken());
+        tokenBean.setOpenId(bean.getOpenId());
+        tokenBean.setThirdToken(bean.getThirdToken());
+        tokenBean.setExpireDate(bean.getExpireDate());
         Token temp = tokenMapper.selectByOpenId(loginBean.getOpenId());
         if (temp != null) {
             tokenBean.setUpdatedAt(new Date());
@@ -95,6 +101,7 @@ public class LoginServiceImpl implements ILoginService {
             tempU.setiAppId(loginBean.getiAppId());
             User user = userMapper.selectByOpenId(tempU);
             if (user == null) {
+                bean.setNewUser(true);
                 user = new User();
                 user.setOpenId(loginBean.getOpenId());
                 String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
@@ -105,7 +112,7 @@ public class LoginServiceImpl implements ILoginService {
             }
         }
         redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
-        return tokenBean;
+        return bean;
     }
 
     @Override
