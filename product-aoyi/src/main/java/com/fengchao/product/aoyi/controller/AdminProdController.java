@@ -7,6 +7,8 @@ import com.fengchao.product.aoyi.bean.SerachBean;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/adminProd", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class AdminProdController {
 
     @Autowired
@@ -43,11 +46,25 @@ public class AdminProdController {
         return result;
     }
 
+    /**
+     * 创建商品
+     *
+     * @param bean
+     * @param merchantId
+     * @param result
+     * @return
+     * @throws ProductException
+     */
     @PostMapping
-    public OperaResult create(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
-//        bean.setMerchantId(merchantId);
+    public OperaResult create(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId,
+                              OperaResult result) throws ProductException {
+        log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
+
         int id = prodService.add(bean);
         result.getData().put("result", id);
+
+        log.info("创建商品 返回:{}", result);
+
         return result;
     }
 

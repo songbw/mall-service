@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -14,6 +15,7 @@ import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 //import com.fengchao.product.aoyi.utils.RedisUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +47,9 @@ public class AdminProdServiceImpl implements AdminProdService {
     private AoyiBaseCategoryXMapper categoryMapper;
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
+
+    @Autowired
+    private ProductDao productDao;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -127,6 +132,16 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public int add(AoyiProdIndexX bean) throws ProductException {
         if (bean.getMerchantId() > 0) {
+            // 1. 判断sku是否重复
+            List<AoyiProdIndex> aoyiProdIndexList =
+                    productDao.selectAoyiProdIndexListBySKUAndMerchant(bean.getSkuid(), bean.getMerchantId());
+
+            if (CollectionUtils.isNotEmpty(aoyiProdIndexList)) {
+                logger.warn("创建商品 sku:{},merchantId:{} 已存在!", bean.getSkuid(), bean.getMerchantId());
+
+                throw new ProductException(200001, "重复的sku");
+            }
+
             // 获取商户信息
             SkuCode skuCode = skuCodeMapper.selectByMerchantId(bean.getMerchantId()) ;
             if (skuCode == null) {
@@ -152,7 +167,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             }
             String merchantCode = skuCode.getMerchantCode();
             int skuValue = skuCode.getSkuValue() ;
-            AtomicInteger atomicInteger= new AtomicInteger(skuValue);
+            AtomicInteger atomicInteger= new AtomicInteger(skuValue); // FIXME : 这个原子操作好像没用呀!
             String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet()) ;
             bean.setMpu(sku);
             bean.setCreatedAt(new Date());

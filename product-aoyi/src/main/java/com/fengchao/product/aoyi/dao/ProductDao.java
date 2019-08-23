@@ -38,4 +38,23 @@ public class ProductDao {
 
         return aoyiProdIndexList;
     }
+
+    /**
+     * 根据skuid和merchantid查询 商品
+     *
+     * @param skuId
+     * @param merchantId
+     * @return
+     */
+    public List<AoyiProdIndex> selectAoyiProdIndexListBySKUAndMerchant(String skuId, Integer merchantId) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andSkuidEqualTo(skuId);
+        criteria.andMerchantIdEqualTo(merchantId);
+
+        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+
+        return aoyiProdIndexList;
+    }
 }
