@@ -3,18 +3,26 @@ package com.fengchao.aoyi.client.controller;
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.OrderParamBean;
 import com.fengchao.aoyi.client.bean.QueryLogist;
+import com.fengchao.aoyi.client.config.AoyiClientConfig;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+
 @RequestMapping(value = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class OrderController {
 
     @Autowired
     private OrderService service;
+
+    @GetMapping("/config")
+    private String testConfig() {
+        return service.testConfig();
+    }
 
     @GetMapping("/conform")
     private OperaResult conform(String orderId, OperaResult result) throws AoyiClientException {

@@ -12,8 +12,6 @@ import java.io.File;
 
 public class CosUtil {
 
-    public static String baseAoyiProdUrl = "http://aoyiprod-1252099010.cossh.myqcloud.com/";
-    public static String iWalletUrlT = "https://iwallet-1258175138.cos.ap-beijing.myqcloud.com";
     public static String iWalletBucketName = "iwallet-1258175138";
 
     private  static COSCredentials cred =  new BasicCOSCredentials("AKIDb6fBh75Ah3FG6lpeqqgLqJdnwxrb6eEl","Ws23sVxFMapz0sZ7UzWzOh9pW9hAXjka") ;

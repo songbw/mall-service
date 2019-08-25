@@ -14,6 +14,8 @@ import java.util.List;
  */
 public interface OrderService {
 
+    String testConfig();
+
     OperaResult addOrder(OrderParamBean orderBean) ;
 
     OperaResult confirmOrder(String orderId) ;
