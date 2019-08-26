@@ -1,16 +1,20 @@
 package com.fengchao.product.aoyi.dao;
 
+import com.fengchao.product.aoyi.bean.PriceBean;
+import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
+import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 /**
- * @Author tom
- * @Date 19-7-19 下午4:36
+ * @Author song
+ * @Date 19-8-26 下午3:05
  */
 @Component
 public class ProductDao {
@@ -56,5 +60,39 @@ public class ProductDao {
         List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
 
         return aoyiProdIndexList;
+    }
+
+    /**
+     * 更新商品价格
+     * @param bean
+     */
+    public void updatePrice(PriceBean bean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andSkuidEqualTo(bean.getSkuId());
+        criteria.andMerchantIdEqualTo(bean.getMerchantId());
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setPrice(bean.getPrice());
+        aoyiProdIndex.setUpdatedAt(new Date());
+
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
+    /**
+     * 更新上下架状态
+     * @param bean
+     */
+    public void updateState(StateBean bean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andSkuidEqualTo(bean.getSkuId());
+        criteria.andMerchantIdEqualTo(bean.getMerchantId());
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setState(bean.getState());
+        aoyiProdIndex.setUpdatedAt(new Date());
+
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
     }
 }
