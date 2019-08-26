@@ -450,8 +450,7 @@ public class CouponServiceImpl implements CouponService {
     public List<Object> giftCoupon(String openId, String iAppId) {
         List<Object> couponBeans = new ArrayList();
 
-        openId = openId.substring(2, openId.length());
-        OperaResult userResult = ssoService.findUser(openId, iAppId);
+        OperaResult userResult = ssoService.findUser(openId.substring(2, openId.length()), iAppId);
         if (userResult.getCode() == 200) {
             Map<String, Object> data = userResult.getData();
             Object object = data.get("user");
