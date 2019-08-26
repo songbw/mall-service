@@ -1,6 +1,5 @@
 package com.fengchao.product.aoyi.service.impl;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.fengchao.product.aoyi.dao.SkuCodeDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;

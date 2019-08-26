@@ -43,6 +43,25 @@ public class OrdersDao {
         return ordersList;
     }
 
+    /**
+     * 根据支付时间范围查询已支付的订单列表
+     *
+     * @param startPayTime yyyy-MM-dd HH:mm:ss
+     * @param endPayTime yyyy-MM-dd HH:mm:ss
+     * @return
+     */
+    public List<Orders> selectPayedOrdersListByPaymentTime(Date startPayTime, Date endPayTime) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+
+        criteria.andPaymentAtBetween(startPayTime, endPayTime);
+        criteria.andPayStatusEqualTo(PaymentStatusEnum.PAY_SUCCESS.getValue());
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
+
     public List<Orders> selectOrderListByOpenId(String openId) {
 
         OrdersExample ordersExample = new OrdersExample();
