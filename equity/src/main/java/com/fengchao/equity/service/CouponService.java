@@ -1,6 +1,8 @@
 package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.model.CouponX;
 
@@ -47,4 +49,6 @@ public interface CouponService {
     CouponUseInfoX adminConsumeCoupon(CouponUseInfoBean bean);
 
     List<Object> giftCoupon(String openId, String iAppId);
+
+    PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize);
 }
