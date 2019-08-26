@@ -1,6 +1,8 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
@@ -139,6 +141,13 @@ public class AdminCouponController {
     public OperaResult selectCouponByMpu(@RequestBody AoyiProdBean bean, OperaResult result){
         List<CouponBean> couponBeans = couponService.selectCouponByMpu(bean);
         result.getData().put("result",couponBeans);
+        return result;
+    }
+
+    @GetMapping("release")
+    public OperaResult findReleaseCoupon(Integer pageNo, Integer pageSize, OperaResult result){
+        PageableData<Coupon> releaseCoupon = couponService.findReleaseCoupon(pageNo, pageSize);
+        result.getData().put("result", releaseCoupon);
         return result;
     }
 }

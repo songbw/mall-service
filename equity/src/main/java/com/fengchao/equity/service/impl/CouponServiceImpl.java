@@ -5,15 +5,19 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.CouponDao;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.*;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponService;
+import com.fengchao.equity.utils.ConvertUtil;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -472,6 +476,17 @@ public class CouponServiceImpl implements CouponService {
             couponBeans.add(couponToBean(couponX));
         });
         return couponBeans;
+    }
+
+    @Override
+    public PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize) {
+        PageableData<Coupon> pageableData = new PageableData<>();
+        PageInfo<Coupon> releaseCoupon = couponDao.findReleaseCoupon(pageNo, pageSize);
+        PageVo pageVo = ConvertUtil.convertToPageVo(releaseCoupon);
+        List<Coupon> groupInfoList = releaseCoupon.getList();
+        pageableData.setList(groupInfoList);
+        pageableData.setPageInfo(pageVo);
+        return pageableData;
     }
 
     //============================== private =========================
