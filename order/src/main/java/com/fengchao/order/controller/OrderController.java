@@ -327,4 +327,9 @@ public class OrderController {
         return result;
     }
 
+    @GetMapping("/orderByopenId")
+    private OperaResult findOrderListByOpenId(String openId, OperaResult result) {
+        result.getData().put("result", service.findOrderListByOpenId(openId)) ;
+        return result;
+    }
 }

@@ -125,6 +125,12 @@
     from coupon_use_info
     where delete_flag = 0 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
   </select>
+  <select id="selectGiftCouponIds" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select
+      coupon_id
+    from coupon_use_info
+    where user_open_id = #{openId,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="com.fengchao.equity.bean.CouponUseInfoBean"  >
     update coupon_use_info
     set delete_flag = 1

@@ -111,4 +111,6 @@ public interface OrderService {
     List<Orders> findByPaymentNoAndOpenId(String paymentNo, String openId) ;
 
     Integer updateSubOrder(OrderDetail bean);
+
+    List<Orders> findOrderListByOpenId(String openId);
 }

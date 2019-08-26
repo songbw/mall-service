@@ -2,6 +2,7 @@ package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,13 @@ public class CouponUseInfoController {
 
         log.info("通过id集合查询coupon_use_info列表 返回:{}", JSONUtil.toJsonString(result));
 
+        return result;
+    }
+
+    @GetMapping("collectGiftCoupon")
+    public OperaResult getCollectGiftCoupon(@RequestParam("openId") String openId, OperaResult result) {
+        List<Coupon> collectGiftCoupon = couponUseInfoService.getCollectGiftCoupon(openId);
+        result.getData().put("result", collectGiftCoupon);
         return result;
     }
 }

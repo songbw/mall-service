@@ -770,6 +770,12 @@ public class OrderServiceImpl implements OrderService {
         return adminOrderDao.updateOrderDetail(bean);
     }
 
+    @Override
+    public List<Orders> findOrderListByOpenId(String openId) {
+        List<Orders> orders = ordersDao.selectOrderListByOpenId(openId);
+        return orders;
+    }
+
     // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {

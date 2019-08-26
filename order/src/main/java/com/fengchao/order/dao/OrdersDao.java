@@ -42,4 +42,16 @@ public class OrdersDao {
 
         return ordersList;
     }
+
+    public List<Orders> selectOrderListByOpenId(String openId) {
+
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+
+        criteria.andOpenIdEqualTo(openId);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
 }

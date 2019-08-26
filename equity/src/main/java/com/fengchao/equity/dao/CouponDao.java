@@ -51,4 +51,16 @@ public class CouponDao {
 
         return new PageInfo<>(couponList);
     }
+
+    public List<Coupon> selectGiftCouponListByIdList(List<Integer> couponIds) {
+        CouponExample couponExample = new CouponExample();
+        CouponExample.Criteria criteria = couponExample.createCriteria();
+
+        criteria.andIdIn(couponIds);
+        criteria.andCustomerTypeEqualTo(1);
+
+        List<Coupon> couponList = couponMapper.selectByExample(couponExample);
+
+        return couponList;
+    }
 }
