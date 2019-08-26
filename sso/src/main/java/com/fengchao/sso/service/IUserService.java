@@ -2,8 +2,10 @@ package com.fengchao.sso.service;
 
 import com.fengchao.sso.bean.UserBean;
 import com.fengchao.sso.model.Login;
+import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.model.User;
 import com.fengchao.sso.util.OperaResult;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +21,7 @@ public interface IUserService {
 
     User selectUserByOpenId(String openId, String iAppId);
 
-    List<User> selectUser(Integer page, Integer limit);
+    PageInfo<SUser> selectUser(Integer page, Integer limit);
 
     int updateByUsername(UserBean userBean);
 
