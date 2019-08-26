@@ -92,11 +92,11 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("state",bean.getState());
         map.put("brand",bean.getBrand());
         map.put("order",bean.getOrder());
-        if(bean.getMerchantHeader() == 0){
-            map.put("merchantId",bean.getMerchantId());
-        }else if(bean.getMerchantHeader() == bean.getMerchantId()){
-            map.put("merchantId",bean.getMerchantId());
-        }else{
+        if (bean.getMerchantHeader() == 0) {
+            map.put("merchantId", bean.getMerchantId());
+        } else if (bean.getMerchantHeader() == bean.getMerchantId()) {
+            map.put("merchantId", bean.getMerchantId());
+        } else {
             return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
         }
         total = prodMapper.selectSearchCount(map);
@@ -106,6 +106,36 @@ public class AdminProdServiceImpl implements AdminProdService {
                 prods.add(aoyiProdIndex);
             });
         }
+
+        pageBean = PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
+        return pageBean;
+    }
+
+    @DataSource(DataSourceNames.TWO)
+    public PageBean selectProductListPageable(SerachBean bean) {
+        PageBean pageBean = new PageBean();
+        List<AoyiProdIndexX> prods = new ArrayList<>();
+        int total = 0;
+        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
+        HashMap map = new HashMap();
+        map.put("name", bean.getQuery());
+        map.put("skuid",bean.getSkuid());
+        map.put("state",bean.getState());
+        if (bean.getMerchantHeader() == 0) {
+            map.put("merchantId", bean.getMerchantId());
+        } else if (bean.getMerchantHeader() == bean.getMerchantId()) {
+            map.put("merchantId", bean.getMerchantId());
+        } else {
+            return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
+        }
+        total = prodMapper.selectSearchCount(map);
+        if (total > 0) {
+            prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
+                prods.add(aoyiProdIndex);
+            });
+        }
+
         pageBean = PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
         return pageBean;
     }

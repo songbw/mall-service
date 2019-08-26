@@ -35,11 +35,25 @@ public class AdminProdController {
         return result;
     }
 
+    /**
+     * 搜索商品
+     *
+     * @param bean
+     * @param merchantHeader
+     * @param result
+     * @return
+     */
     @PostMapping("search")
-    public OperaResult searchProd(@Valid @RequestBody SerachBean bean, @RequestHeader("merchant") Integer merchantHeader, OperaResult result) {
+    public OperaResult searchProd(@Valid @RequestBody SerachBean bean, @RequestHeader("merchant") Integer merchantHeader,
+                                  OperaResult result) {
+        log.info("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantHeader);
+
         bean.setMerchantHeader(merchantHeader);
         PageBean pageBean = prodService.selectNameList(bean);
         result.getData().put("result", pageBean);
+
+        log.info("搜索商品 返回:{}", JSONUtil.toJsonString(result));
+
         return result;
     }
 
