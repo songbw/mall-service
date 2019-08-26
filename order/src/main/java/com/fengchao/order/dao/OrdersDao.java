@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,6 +38,25 @@ public class OrdersDao {
 
         criteria.andPayStatusEqualTo(PaymentStatusEnum.PAY_SUCCESS.getValue());
         criteria.andIdIn(ordersIdList);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
+
+    /**
+     * 根据支付时间范围查询已支付的订单列表
+     *
+     * @param startPayTime yyyy-MM-dd HH:mm:ss
+     * @param endPayTime yyyy-MM-dd HH:mm:ss
+     * @return
+     */
+    public List<Orders> selectPayedOrdersListByPaymentTime(Date startPayTime, Date endPayTime) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+
+        criteria.andPaymentAtBetween(startPayTime, endPayTime);
+        criteria.andPayStatusEqualTo(PaymentStatusEnum.PAY_SUCCESS.getValue());
 
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
