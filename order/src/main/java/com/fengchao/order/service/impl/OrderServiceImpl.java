@@ -680,7 +680,7 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.selectDayMerchantPaymentCount(map);
     }
 
-    @Override
+    /*@Override
     public List<OrderDetailBean> queryPayedOrderDetail(String startDateTime, String endDateTime) throws Exception {
         // 1. 按照时间范围查询子订单集合
         logger.info("按照时间范围查询已支付的子订单列表 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
@@ -717,6 +717,53 @@ public class OrderServiceImpl implements OrderService {
         }
         logger.info("按照时间范围查询已支付的子订单列表 获取的已支付子订单集合List<OrderDetail>:{}",
                 JSONUtil.toJsonString(payedOrderDetailList));
+
+        // 3. 转dto
+        List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
+        for (OrderDetail orderDetail : payedOrderDetailList) {
+            OrderDetailBean orderDetailBean = convertToOrderDetailBean(orderDetail);
+            orderDetailBean.setPayStatus(PaymentStatusEnum.PAY_SUCCESS.getValue());
+
+            // 设置相关信息
+            Orders orders = ordersMap.get(orderDetail.getOrderId());
+            // a.设置城市信息
+            orderDetailBean.setCityId(orders == null ? "" : orders.getCityId());
+            orderDetailBean.setCityName(orders == null ? "" : orders.getCityName());
+            // b.设置支付时间
+            orderDetailBean.setPaymentAt(orders.getPaymentAt());
+
+            orderDetailBeanList.add(orderDetailBean);
+        }
+
+        logger.info("按照时间范围查询已支付的子订单列表 转List<OrderDetailBean>:{}",
+                JSONUtil.toJsonString(orderDetailBeanList));
+
+        return orderDetailBeanList;
+    }*/
+
+    @Override
+    public List<OrderDetailBean> queryPayedOrderDetail(String startDateTime, String endDateTime) throws Exception {
+        // 1. 按照时间范围查询已支付的主订单集合
+        logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
+        Date startTime = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date endTime = DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentTime(startTime, endTime);
+        logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
+
+        // 转map key : ordersId, value: Orders
+        Map<Integer, Orders> ordersMap = ordersList.stream().collect(Collectors.toMap(o -> o.getId(), o -> o));
+
+        // 2. 查询已支付的子订单集合
+        // 2.1 根据获取到主订单获取主订单id列表
+        List<Integer> ordersIdList =
+                ordersList.stream().map(orders -> orders.getId()).collect(Collectors.toList());
+        logger.info("按照时间范围查询已支付的子订单列表 查询子订单列表 数据库入参:{}", JSONUtil.toJsonString(ordersIdList));
+        // 2.2 根据查询子订单
+        if (CollectionUtils.isEmpty(ordersIdList)) {
+            return Collections.emptyList();
+        }
+        List<OrderDetail> payedOrderDetailList = orderDetailDao.selectOrderDetailsByOrdersIdList(ordersIdList);
+        logger.info("按照时间范围查询已支付的子订单列表 查询子订单列表 数据库返回List<OrderDetail>:{}", JSONUtil.toJsonString(payedOrderDetailList));
 
         // 3. 转dto
         List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
