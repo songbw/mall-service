@@ -81,6 +81,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
+    @Deprecated
     public PageBean selectNameList(SerachBean bean) {
         PageBean pageBean = new PageBean();
         List<AoyiProdIndexX> prods = new ArrayList<>();
