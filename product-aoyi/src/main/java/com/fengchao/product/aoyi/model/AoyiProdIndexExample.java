@@ -935,6 +935,66 @@ public class AoyiProdIndexExample {
             return (Criteria) this;
         }
 
+        public Criteria andIpriceIsNull() {
+            addCriterion("iprice is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceIsNotNull() {
+            addCriterion("iprice is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceEqualTo(Integer value) {
+            addCriterion("iprice =", value, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceNotEqualTo(Integer value) {
+            addCriterion("iprice <>", value, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceGreaterThan(Integer value) {
+            addCriterion("iprice >", value, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceGreaterThanOrEqualTo(Integer value) {
+            addCriterion("iprice >=", value, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceLessThan(Integer value) {
+            addCriterion("iprice <", value, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceLessThanOrEqualTo(Integer value) {
+            addCriterion("iprice <=", value, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceIn(List<Integer> values) {
+            addCriterion("iprice in", values, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceNotIn(List<Integer> values) {
+            addCriterion("iprice not in", values, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceBetween(Integer value1, Integer value2) {
+            addCriterion("iprice between", value1, value2, "iprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpriceNotBetween(Integer value1, Integer value2) {
+            addCriterion("iprice not between", value1, value2, "iprice");
+            return (Criteria) this;
+        }
+
         public Criteria andSpriceIsNull() {
             addCriterion("sprice is null");
             return (Criteria) this;
