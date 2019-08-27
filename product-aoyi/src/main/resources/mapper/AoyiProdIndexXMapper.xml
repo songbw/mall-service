@@ -510,7 +510,7 @@
             <if test="state != null and state !=''">
               and state = #{state}
             </if>
-          order by iprice limit #{offset}, #{pageSize}) t2
+          order by id desc limit #{offset}, #{pageSize}) t2
         ON t1.id = t2.id;
   </select>
 </mapper>
