@@ -501,7 +501,7 @@
         INNER JOIN
         (select id from aoyi_prod_index where 1 = 1
             <if test="name != null and name != ''">
-              <bind name="pattern1" value="name + '%'"/>
+              <bind name="pattern1" value="'%' + name + '%'"/>
               and name LIKE #{pattern1}
             </if>
             <if test="skuid !=null and skuid !=''">
