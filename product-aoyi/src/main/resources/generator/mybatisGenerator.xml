@@ -41,7 +41,9 @@
         <!--</table>-->
 
         <table tableName="sku_code">
-            <generatedKey column="id" sqlStatement="JDBC" />
+            <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         </table>
+
+
     </context>
 </generatorConfiguration>

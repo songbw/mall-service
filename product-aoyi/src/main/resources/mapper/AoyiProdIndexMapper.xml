@@ -14,6 +14,7 @@
     <result column="saleUnit" jdbcType="VARCHAR" property="saleunit" />
     <result column="state" jdbcType="VARCHAR" property="state" />
     <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="iprice" jdbcType="INTEGER" property="iprice" />
     <result column="sprice" jdbcType="VARCHAR" property="sprice" />
     <result column="images_url" jdbcType="VARCHAR" property="imagesUrl" />
     <result column="introduction_url" jdbcType="VARCHAR" property="introductionUrl" />
@@ -88,8 +89,8 @@
   </sql>
   <sql id="Base_Column_List">
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
-    sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, created_at, 
-    updated_at
+    iprice, sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, 
+    created_at, updated_at
   </sql>
   <sql id="Blob_Column_List">
     introduction, prodParams
@@ -146,19 +147,19 @@
     insert into aoyi_prod_index (skuId, brand, category, 
       image, model, name, 
       weight, upc, saleUnit, 
-      state, price, sprice, 
-      images_url, introduction_url, merchant_id, 
-      inventory, brand_id, mpu, 
-      created_at, updated_at, introduction, 
-      prodParams)
+      state, price, iprice, 
+      sprice, images_url, introduction_url, 
+      merchant_id, inventory, brand_id, 
+      mpu, created_at, updated_at, 
+      introduction, prodParams)
     values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, #{saleunit,jdbcType=VARCHAR}, 
-      #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{sprice,jdbcType=VARCHAR}, 
-      #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, #{merchantId,jdbcType=INTEGER}, 
-      #{inventory,jdbcType=INTEGER}, #{brandId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{introduction,jdbcType=LONGVARCHAR}, 
-      #{prodparams,jdbcType=LONGVARCHAR})
+      #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{iprice,jdbcType=INTEGER}, 
+      #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, 
+      #{merchantId,jdbcType=INTEGER}, #{inventory,jdbcType=INTEGER}, #{brandId,jdbcType=INTEGER}, 
+      #{mpu,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
     insert into aoyi_prod_index
@@ -195,6 +196,9 @@
       </if>
       <if test="price != null">
         price,
+      </if>
+      <if test="iprice != null">
+        iprice,
       </if>
       <if test="sprice != null">
         sprice,
@@ -263,6 +267,9 @@
       </if>
       <if test="price != null">
         #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="iprice != null">
+        #{iprice,jdbcType=INTEGER},
       </if>
       <if test="sprice != null">
         #{sprice,jdbcType=VARCHAR},
@@ -344,6 +351,9 @@
       <if test="record.price != null">
         price = #{record.price,jdbcType=VARCHAR},
       </if>
+      <if test="record.iprice != null">
+        iprice = #{record.iprice,jdbcType=INTEGER},
+      </if>
       <if test="record.sprice != null">
         sprice = #{record.sprice,jdbcType=VARCHAR},
       </if>
@@ -396,6 +406,7 @@
       saleUnit = #{record.saleunit,jdbcType=VARCHAR},
       state = #{record.state,jdbcType=VARCHAR},
       price = #{record.price,jdbcType=VARCHAR},
+      iprice = #{record.iprice,jdbcType=INTEGER},
       sprice = #{record.sprice,jdbcType=VARCHAR},
       images_url = #{record.imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
@@ -425,6 +436,7 @@
       saleUnit = #{record.saleunit,jdbcType=VARCHAR},
       state = #{record.state,jdbcType=VARCHAR},
       price = #{record.price,jdbcType=VARCHAR},
+      iprice = #{record.iprice,jdbcType=INTEGER},
       sprice = #{record.sprice,jdbcType=VARCHAR},
       images_url = #{record.imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
@@ -473,6 +485,9 @@
       </if>
       <if test="price != null">
         price = #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="iprice != null">
+        iprice = #{iprice,jdbcType=INTEGER},
       </if>
       <if test="sprice != null">
         sprice = #{sprice,jdbcType=VARCHAR},
@@ -523,6 +538,7 @@
       saleUnit = #{saleunit,jdbcType=VARCHAR},
       state = #{state,jdbcType=VARCHAR},
       price = #{price,jdbcType=VARCHAR},
+      iprice = #{iprice,jdbcType=INTEGER},
       sprice = #{sprice,jdbcType=VARCHAR},
       images_url = #{imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{introductionUrl,jdbcType=VARCHAR},
@@ -549,6 +565,7 @@
       saleUnit = #{saleunit,jdbcType=VARCHAR},
       state = #{state,jdbcType=VARCHAR},
       price = #{price,jdbcType=VARCHAR},
+      iprice = #{iprice,jdbcType=INTEGER},
       sprice = #{sprice,jdbcType=VARCHAR},
       images_url = #{imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{introductionUrl,jdbcType=VARCHAR},

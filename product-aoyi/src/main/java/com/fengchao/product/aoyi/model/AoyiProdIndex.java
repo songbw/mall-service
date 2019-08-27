@@ -27,6 +27,8 @@ public class AoyiProdIndex {
 
     private String price;
 
+    private Integer iprice;
+
     private String sprice;
 
     private String imagesUrl;
@@ -139,6 +141,14 @@ public class AoyiProdIndex {
 
     public void setPrice(String price) {
         this.price = price == null ? null : price.trim();
+    }
+
+    public Integer getIprice() {
+        return iprice;
+    }
+
+    public void setIprice(Integer iprice) {
+        this.iprice = iprice;
     }
 
     public String getSprice() {
