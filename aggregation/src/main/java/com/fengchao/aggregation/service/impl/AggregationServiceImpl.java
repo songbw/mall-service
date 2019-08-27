@@ -70,12 +70,14 @@ public class AggregationServiceImpl implements AggregationService {
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(j);
                     String skuid = jsonArray.getJSONObject(j).getString("mpu");
-                    String value = redisDAO.getValue(skuid);
+                    if(skuid != null && !skuid.equals("")){
+                        String value = redisDAO.getValue(skuid);
 //                    AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                    JSONObject product = JSONObject.parseObject(value);
-                    if(product != null){
-                        jsonObject.put("imagePath",product.getString("image"));
-                        jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                        JSONObject product = JSONObject.parseObject(value);
+                        if(product != null){
+                            jsonObject.put("imagePath",product.getString("image"));
+                            jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                        }
                     }
                 }
             }
@@ -86,13 +88,15 @@ public class AggregationServiceImpl implements AggregationService {
                     for (int l = 0; l < skus.size(); l++){
                         JSONObject jsonObject = skus.getJSONObject(l);
                         String skuid = jsonObject.getString("mpu");
-                        String value = redisDAO.getValue(skuid);
-//                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                        JSONObject product = JSONObject.parseObject(value);
-                        if(product != null){
-                            jsonObject.put("price",product.getString("price"));
-                            jsonObject.put("imagePath",product.getString("image"));
-                            jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                        if(skuid != null && !skuid.equals("")){
+//                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
+                            String value = redisDAO.getValue(skuid);
+                            JSONObject product = JSONObject.parseObject(value);
+                            if(product != null){
+                                jsonObject.put("price",product.getString("price"));
+                                jsonObject.put("imagePath",product.getString("image"));
+                                jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                            }
                         }
                     }
                 }
@@ -193,13 +197,15 @@ public class AggregationServiceImpl implements AggregationService {
                     for (int j = 0; j < jsonArray.size(); j++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(j);
                         String mpu = jsonArray.getJSONObject(j).getString("mpu");
-                        String value = redisDAO.getValue(mpu);
+                        if(mpu != null && !mpu.equals("")){
+                            String value = redisDAO.getValue(mpu);
 //                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                        JSONObject product = JSONObject.parseObject(value);
-                        if(product != null){
-                           jsonObject.put("imagePath",product.getString("image"));
-                           jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
-                       }
+                            JSONObject product = JSONObject.parseObject(value);
+                            if(product != null){
+                                jsonObject.put("imagePath",product.getString("image"));
+                                jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                            }
+                        }
                 }
             }
             if (type == 4) {
@@ -209,13 +215,15 @@ public class AggregationServiceImpl implements AggregationService {
                         for (int l = 0; l < mpus.size(); l++){
                             JSONObject jsonObject = mpus.getJSONObject(l);
                             String mpu = jsonObject.getString("mpu");
-                            String value = redisDAO.getValue(mpu);
+                            if(mpu != null && !mpu.equals("")){
+                                String value = redisDAO.getValue(mpu);
 //                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                            JSONObject product = JSONObject.parseObject(value);
-                            if(product != null){
-                                jsonObject.put("price",product.getString("price"));
-                                jsonObject.put("imagePath",product.getString("image"));
-                                jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                                JSONObject product = JSONObject.parseObject(value);
+                                if(product != null){
+                                    jsonObject.put("price",product.getString("price"));
+                                    jsonObject.put("imagePath",product.getString("image"));
+                                    jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                                }
                             }
                         }
                     }
