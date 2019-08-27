@@ -41,4 +41,12 @@ public interface AoyiProdIndexXMapper {
     int selectSkuByCouponIdCount(QueryProdBean bean);
 
     List<AoyiProdIndexX> selectSkuByCouponIdLimit(QueryProdBean bean);
+
+    /**
+     * 分页查询商品列表
+     *
+     * @param map
+     * @return
+     */
+    List<AoyiProdIndexX> selectProductListPageable(HashMap map);
 }

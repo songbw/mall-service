@@ -494,12 +494,23 @@
     limit #{pageNo},#{pageSize}
   </select>
 
-  <select id="selectProductListPageable" resultMap="BaseResultMap">
-    SELECT
-    t1.*
-FROM
+  <select id="selectProductListPageable" resultMap="BaseResultMap" parameterType="Map">
+    SELECT t1.*
+      FROM
     aoyi_prod_index t1
-        INNER JOIN (select id from aoyi_prod_index order by price limit 60000, 200) t2
+        INNER JOIN
+        (select id from aoyi_prod_index where 1 = 1
+            <if test="name != null and name != ''">
+              <bind name="pattern1" value="name + '%'"/>
+              and name LIKE #{pattern1}
+            </if>
+            <if test="skuid !=null and skuid !=''">
+              and skuid = #{skuid}
+            </if>
+            <if test="state != null and state !=''">
+              and state = #{state}
+            </if>
+          order by iprice limit 60000, 200) t2
         ON t1.id = t2.id;
   </select>
 </mapper>
