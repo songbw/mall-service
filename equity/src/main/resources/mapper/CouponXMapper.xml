@@ -155,10 +155,10 @@
     </if>
   </select>
   <select id="selectActiveCategories" resultType="java.lang.String" >
-    select distinct category from coupon where status = 4  and customer_type = 1
+    select distinct category from coupon where status = 4  and customer_type = 0
   </select>
   <select id="selectTags" resultType="java.lang.String" >
-    select distinct tags from coupon where tags != "" and status = 4  and customer_type = 1
+    select distinct tags from coupon where tags != "" and status = 4  and customer_type = 0
   </select>
   <select id="selectCouponByMpu" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.PageBean">
     select

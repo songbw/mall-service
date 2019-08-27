@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SSOServiceH implements SSOService {
     @Override
-    public OperaResult findUser(String openId) {
+    public OperaResult findUser(String openId, String iAppId) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         result.setCode(404);

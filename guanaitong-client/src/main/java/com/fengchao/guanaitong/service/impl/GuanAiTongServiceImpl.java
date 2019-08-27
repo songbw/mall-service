@@ -3,10 +3,12 @@ package com.fengchao.guanaitong.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.guanaitong.service.IGuanAiTongService;
-import com.fengchao.guanaitong.util.RedisUtil;
+import com.fengchao.guanaitong.util.RedisDAO;
+//import com.fengchao.guanaitong.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -24,9 +26,11 @@ import java.util.*;
 @Service
 public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
+    private RedisDAO redisDAO;
+
     private final String MEDIA_TYPE="application/x-www-form-urlencoded; charset=utf-8";
-    private final String URL_PREFIX = "https://openapi.guanaitong.cc/";//test
-    //private final String URL_PREFIX = "https://openapi.guanaitong.com/"; //normal
+    //private final String URL_PREFIX = "https://openapi.guanaitong.cc/";//test
+    private final String URL_PREFIX = "https://openapi.guanaitong.com/"; //normal
 
     private static final String TOKEN_CREATE_PATH = "token/create";
 
@@ -34,10 +38,12 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     private final String GRANT_TYPE_VALUE = "client_credential";
 
     private final String APPID_KEY = "appid";
-    private final String APPID_VALUE = "20110843";
+    //private final String APPID_VALUE = "20110843";//test
+    private final String APPID_VALUE = "20091390";//normal
 
     private final String APPSECRET_KEY = "appsecret";
-    private final String APPSECRET_VALUE = "78dde3cc1e3cab6cbbabbc1bf88faa4e";
+    //private final String APPSECRET_VALUE = "78dde3cc1e3cab6cbbabbc1bf88faa4e";//test
+    private final String APPSECRET_VALUE = "f9d6639e19a68bf1e61425b1fdcd45aa";//normal
 
     //private final String VERSION_KEY = "version";
     //private final String VERSION_VALUE = "1.0.0";
@@ -284,6 +290,11 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     }
 */
 
+    @Autowired
+    public GuanAiTongServiceImpl(RedisDAO redisDAO) {
+        this.redisDAO = redisDAO;
+    }
+
     @Override
     public String buildUrlXFormBody(Map map) throws Exception{
 
@@ -376,9 +387,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     @Override
     public String getAccessToken() throws Exception {
 
-        String cacheToken = RedisUtil.getValue(TOKEN_KEY);
+        String cacheToken = redisDAO.getValue(TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            log.info("get cached token: {" + cacheToken + "} ttl=" + RedisUtil.ttl(TOKEN_KEY) + "s");
+            log.info("get cached token: {" + cacheToken + "} ttl=" + redisDAO.ttl(TOKEN_KEY) + "s");
             return cacheToken;
         }
 
@@ -434,7 +445,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
                 Integer expires = data.getInteger("expires_in");
                 log.info("access_token:" + token);
                 log.info("expires_in:" + expires.toString());
-                RedisUtil.putRedis(TOKEN_KEY, token, expires - 5);
+                redisDAO.setValue(TOKEN_KEY, token, expires - 5);
                 return token;
             } else {
                 log.warn("data in response from guanaitong is null");

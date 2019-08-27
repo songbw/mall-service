@@ -5,8 +5,9 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class PriceBean implements Serializable {
+public class StateBean implements Serializable {
     private String skuId;
-    private String price;
+    // 0：下架；1：上架
+    private String state;
     private int merchantId;
 }

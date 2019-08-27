@@ -533,6 +533,15 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         return 0;
     }
 
+    @Override
+    public List<Coupon> getCollectGiftCoupon(String openId) {
+
+        List<Integer> couponIds = mapper.selectGiftCouponIds(openId);
+        List<Coupon> coupons = couponDao.selectGiftCouponListByIdList(couponIds);
+
+        return coupons;
+    }
+
     // ========================= private =====================================
 
     private CouponUseInfoBean convertToCouponUseInfoBean(CouponUseInfo couponUseInfo) {

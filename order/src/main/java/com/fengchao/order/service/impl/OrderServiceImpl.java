@@ -682,41 +682,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDetailBean> queryPayedOrderDetail(String startDateTime, String endDateTime) throws Exception {
-        // 1. 按照时间范围查询子订单集合
-        logger.info("按照时间范围查询已支付的子订单列表 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
+        // 1. 按照时间范围查询已支付的主订单集合
+        logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
         Date startTime = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         Date endTime = DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-        List<OrderDetail> orderDetailList = adminOrderDao.selectOrderDetailsByCreateTimeRange(startTime, endTime);
-        logger.info("按照时间范围查询已支付的子订单列表 数据库返回List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
+        List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentTime(startTime, endTime);
+        logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
-        // 2. 过滤出已支付的子订单集合
-        // 2.1 根据获取到的子订单获取主订单
-        List<Integer> ordersIdList =
-                orderDetailList.stream().map(detail -> detail.getOrderId()).collect(Collectors.toList());
-        logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库入参:{}", JSONUtil.toJsonString(ordersIdList));
-        // 2.2 查询主订单
-        if (CollectionUtils.isEmpty(ordersIdList)) {
-            return Collections.emptyList();
-        }
-        List<Orders> ordersList = adminOrderDao.selectOrdersListByIdList(ordersIdList);
-        logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
         // 转map key : ordersId, value: Orders
         Map<Integer, Orders> ordersMap = ordersList.stream().collect(Collectors.toMap(o -> o.getId(), o -> o));
 
-        // 2.3 过滤
-        List<OrderDetail> payedOrderDetailList = new ArrayList<>(); // 已支付的子订单集合
-        for (OrderDetail orderDetail : orderDetailList) { // 遍历子订单
-            Integer orderId = orderDetail.getOrderId();
-            Orders orders = ordersMap.get(orderId);
-            if (orders != null && orders.getPayStatus() != null) {
-                // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
-                if (PaymentStatusEnum.PAY_SUCCESS.getValue() == orders.getPayStatus().intValue()) { // 如果 支付成功
-                    payedOrderDetailList.add(orderDetail);
-                }
-            }
+        // 2. 查询已支付的子订单集合
+        // 2.1 根据获取到主订单获取主订单id列表
+        List<Integer> ordersIdList =
+                ordersList.stream().map(orders -> orders.getId()).collect(Collectors.toList());
+        logger.info("按照时间范围查询已支付的子订单列表 查询子订单列表 数据库入参:{}", JSONUtil.toJsonString(ordersIdList));
+        // 2.2 根据查询子订单
+        if (CollectionUtils.isEmpty(ordersIdList)) {
+            return Collections.emptyList();
         }
-        logger.info("按照时间范围查询已支付的子订单列表 获取的已支付子订单集合List<OrderDetail>:{}",
-                JSONUtil.toJsonString(payedOrderDetailList));
+        List<OrderDetail> payedOrderDetailList = orderDetailDao.selectOrderDetailsByOrdersIdList(ordersIdList);
+        logger.info("按照时间范围查询已支付的子订单列表 查询子订单列表 数据库返回List<OrderDetail>:{}", JSONUtil.toJsonString(payedOrderDetailList));
 
         // 3. 转dto
         List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
@@ -768,6 +754,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer updateSubOrder(OrderDetail bean) {
         return adminOrderDao.updateOrderDetail(bean);
+    }
+
+    @Override
+    public List<Orders> findOrderListByOpenId(String openId) {
+        List<Orders> orders = ordersDao.selectOrderListByOpenId(openId);
+        return orders;
     }
 
     // ========================================= private ======================================

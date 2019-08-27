@@ -5,22 +5,34 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.aoyi.client.bean.*;
+import com.fengchao.aoyi.client.config.AoyiClientConfig;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.OrderService;
 import com.fengchao.aoyi.client.utils.HttpClient;
 import com.fengchao.aoyi.client.utils.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@EnableConfigurationProperties({AoyiClientConfig.class})
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
+    @Autowired
+    private AoyiClientConfig aoyiClientConfig;
+
+    @Override
+    public String testConfig() {
+        return aoyiClientConfig.getGatBackUrl();
+    }
 
     @Override
     public OperaResult addOrder(OrderParamBean orderBean) {

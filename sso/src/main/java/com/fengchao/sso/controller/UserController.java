@@ -53,8 +53,13 @@ public class UserController {
 
     @GetMapping("/list")
     public OperaResult getProfileList(Integer pageNo, Integer pageSize, OperaResult result){
-        List<User> userList = service.selectUser(pageNo, pageSize);
-        result.getData().put("userList",userList);
+        if(pageNo == null || pageNo <= 0){
+            pageNo = 1;
+        }
+        if (pageSize == null || pageSize > 200) {
+            pageNo = 10;
+        }
+        result.getData().put("userList",service.selectUser(pageNo, pageSize));
         return result;
     }
 

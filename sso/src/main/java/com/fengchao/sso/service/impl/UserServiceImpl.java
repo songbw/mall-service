@@ -1,7 +1,9 @@
 package com.fengchao.sso.service.impl;
 
 import com.fengchao.sso.bean.UserBean;
+import com.fengchao.sso.dao.UserDao;
 import com.fengchao.sso.feign.PinganClientService;
+import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.util.OperaResult;
 import com.github.pagehelper.PageHelper;
 import com.fengchao.sso.mapper.UserMapper;
@@ -9,8 +11,10 @@ import com.fengchao.sso.mapper.custom.LoginCustomMapper;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.IUserService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,6 +32,8 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private PinganClientService pinganClientService;
+    @Autowired
+    private UserDao userDao;
 
     public User selectById(String id) {
         return mapper.selectByPrimaryKey(id);
@@ -66,9 +72,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User> selectUser(Integer page, Integer limit) {
-        PageHelper.startPage(page, limit);
-        return loginCustomMapper.selectUser();
+    public PageInfo<SUser> selectUser(Integer page, Integer limit) {
+        PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit);
+        return users;
     }
 
     @Override

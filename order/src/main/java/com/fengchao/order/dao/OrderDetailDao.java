@@ -42,6 +42,23 @@ public class OrderDetailDao {
         return pageInfo;
     }
 
+    /**
+     * 根据主订单id集合查询子订单集合
+     *
+     * @param ordersIdList
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByOrdersIdList(List<Integer> ordersIdList) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdIn(ordersIdList);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
     public int insert(OrderDetail record){
         return orderDetailMapper.insertSelective(record);
     }

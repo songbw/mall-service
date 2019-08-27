@@ -140,7 +140,6 @@ public class AdminProdServiceImpl implements AdminProdService {
         return pageBean;
     }
 
-    @Cacheable
     @DataSource(DataSourceNames.TWO)
     @Override
     public int getProdListToRedis(){
@@ -232,7 +231,6 @@ public class AdminProdServiceImpl implements AdminProdService {
         return bean.getId();
     }
 
-    @CacheEvict(value = "aoyiProdIndex", key = "#mpu")
     @Override
     public void delete(Integer merchantId, Integer id) throws ProductException {
         if (id > 0) {

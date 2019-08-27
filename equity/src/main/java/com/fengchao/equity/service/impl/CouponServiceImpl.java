@@ -5,17 +5,19 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.CouponDao;
 import com.fengchao.equity.feign.ProdService;
+import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.*;
-import com.fengchao.equity.model.Coupon;
-import com.fengchao.equity.model.CouponX;
-import com.fengchao.equity.model.CouponTags;
-import com.fengchao.equity.model.CouponUseInfoX;
+import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponService;
+import com.fengchao.equity.utils.ConvertUtil;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ public class CouponServiceImpl implements CouponService {
 
     @Autowired
     private CouponDao couponDao;
+    @Autowired
+    private SSOService ssoService;
 
     @Override
     public int createCoupon(CouponBean bean) {
@@ -447,13 +451,42 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public List<CouponBean> giftCoupon() {
-        List<CouponBean> couponBeans = new ArrayList();
+    public List<Object> giftCoupon(String openId, String iAppId) {
+        List<Object> couponBeans = new ArrayList();
+
+        OperaResult userResult = ssoService.findUser(openId.substring(2, openId.length()), iAppId);
+        if (userResult.getCode() == 200) {
+            Map<String, Object> data = userResult.getData();
+            Object object = data.get("user");
+            String jsonString = JSONUtil.toJsonString(object);
+            User user = JSONObject.parseObject(jsonString, User.class) ;
+            if(user == null){
+                couponBeans.add(2);
+                return couponBeans;
+            }
+        }
+
+        HashMap map = new HashMap();
+        map.put("userOpenId", openId);
         List<CouponX> coupons = mapper.selectGiftCoupon();
         coupons.forEach(couponX -> {
+            map.put("couponId",couponX.getId());
+            int num = useInfoMapper.selectCollectCount(map);
+            couponX.setUserCollectNum(num);
             couponBeans.add(couponToBean(couponX));
         });
         return couponBeans;
+    }
+
+    @Override
+    public PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize) {
+        PageableData<Coupon> pageableData = new PageableData<>();
+        PageInfo<Coupon> releaseCoupon = couponDao.findReleaseCoupon(pageNo, pageSize);
+        PageVo pageVo = ConvertUtil.convertToPageVo(releaseCoupon);
+        List<Coupon> groupInfoList = releaseCoupon.getList();
+        pageableData.setList(groupInfoList);
+        pageableData.setPageInfo(pageVo);
+        return pageableData;
     }
 
     //============================== private =========================
