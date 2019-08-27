@@ -113,6 +113,21 @@ public class OrderServiceClientFallbackFactory implements FallbackFactory<OrderS
             public OperaResponse batchUpdateOrderDetailStatusByOrderIds(List<Integer> orderIdList, Integer status) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
+
+            @Override
+            public OperaResult findOrderListByOpenId(String openId) {
+                OperaResult result = new OperaResult();
+                ObjectMapper objectMapper = new ObjectMapper();
+                String msg = "";
+                try {
+                    msg = objectMapper.writeValueAsString("openId: " + openId);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                result.setCode(404);
+                result.setMsg("获取订单服务失败" + msg);
+                return result;
+            }
         };
     }
 

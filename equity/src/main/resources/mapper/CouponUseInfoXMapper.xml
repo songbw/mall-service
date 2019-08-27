@@ -127,7 +127,7 @@
   </select>
   <select id="selectGiftCouponIds" resultType="java.lang.Integer" parameterType="java.lang.String" >
     select
-      coupon_id
+    distinct coupon_id
     from coupon_use_info
     where user_open_id = #{openId,jdbcType=VARCHAR}
   </select>

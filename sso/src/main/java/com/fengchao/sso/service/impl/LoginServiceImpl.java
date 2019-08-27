@@ -3,12 +3,15 @@ package com.fengchao.sso.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.sso.bean.*;
+import com.fengchao.sso.feign.EquityService;
 import com.fengchao.sso.feign.GuanaitongClientService;
+import com.fengchao.sso.feign.OrderServiceClient;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.mapper.LoginMapper;
 import com.fengchao.sso.mapper.TokenMapper;
 import com.fengchao.sso.mapper.UserMapper;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
+import com.fengchao.sso.model.Coupon;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.Token;
 import com.fengchao.sso.model.User;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -38,6 +42,10 @@ public class LoginServiceImpl implements ILoginService {
     private PinganClientService pinganClientService;
     @Autowired
     private GuanaitongClientService guanaitongClientService ;
+    @Autowired
+    private OrderServiceClient orderService;
+    @Autowired
+    private EquityService equityService;
     @Autowired
     private RedisDAO redisDAO ;
 
@@ -93,6 +101,25 @@ public class LoginServiceImpl implements ILoginService {
         if (temp != null) {
             tokenBean.setUpdatedAt(new Date());
             tokenMapper.updateByPrimaryKey(tokenBean);
+            List<Order> orders = null;
+            OperaResult orderResult = orderService.findOrderListByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
+            if (orderResult.getCode() == 200) {
+                Map<String, Object> data = orderResult.getData() ;
+                Object object = data.get("result");
+                String jsonString = JSON.toJSONString(object);
+                orders = JSONObject.parseArray(jsonString, Order.class) ;
+            }
+            List<Coupon> coupons = null;
+            OperaResult couponResult = equityService.findCollectGiftCouponByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
+            if (couponResult.getCode() == 200) {
+                Map<String, Object> data = couponResult.getData() ;
+                Object object = data.get("result");
+                String jsonString = JSON.toJSONString(object);
+                coupons = JSONObject.parseArray(jsonString, Coupon.class) ;
+            }
+            if(orders != null && coupons != null){
+                bean.setNewUser(true);
+            }
         } else {
             tokenBean.setCreatedAt(new Date());
             tokenMapper.insertSelective(tokenBean);
