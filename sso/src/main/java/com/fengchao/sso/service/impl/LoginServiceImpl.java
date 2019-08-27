@@ -101,24 +101,29 @@ public class LoginServiceImpl implements ILoginService {
         if (temp != null) {
             tokenBean.setUpdatedAt(new Date());
             tokenMapper.updateByPrimaryKey(tokenBean);
-            List<Order> orders = null;
             OperaResult orderResult = orderService.findOrderListByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
             if (orderResult.getCode() == 200) {
                 Map<String, Object> data = orderResult.getData() ;
                 Object object = data.get("result");
                 String jsonString = JSON.toJSONString(object);
-                orders = JSONObject.parseArray(jsonString, Order.class) ;
+                List<Order> orders = JSONObject.parseArray(jsonString, Order.class) ;
+                if(orders.isEmpty()){
+                    bean.setNewUser(true);
+                }else{
+                    return bean;
+                }
             }
-            List<Coupon> coupons = null;
             OperaResult couponResult = equityService.findCollectGiftCouponByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
             if (couponResult.getCode() == 200) {
                 Map<String, Object> data = couponResult.getData() ;
                 Object object = data.get("result");
                 String jsonString = JSON.toJSONString(object);
-                coupons = JSONObject.parseArray(jsonString, Coupon.class) ;
-            }
-            if(orders != null && coupons != null){
-                bean.setNewUser(true);
+                List<Coupon> coupons = JSONObject.parseArray(jsonString, Coupon.class) ;
+                if(coupons.isEmpty() && bean.isNewUser()){
+                    bean.setNewUser(true);
+                }else{
+                    bean.setNewUser(false);
+                }
             }
         } else {
             tokenBean.setCreatedAt(new Date());
