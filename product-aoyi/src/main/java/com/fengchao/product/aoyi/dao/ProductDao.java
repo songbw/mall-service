@@ -27,6 +27,18 @@ public class ProductDao {
     }
 
     /**
+     * 新增
+     *
+     * @param aoyiProdIndexWithBLOBs
+     * @return
+     */
+    public Integer insert(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
+        int count = aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
+
+        return aoyiProdIndexWithBLOBs.getId();
+    }
+
+    /**
      * 根据mpuId集合 查询product列表
      *
      * @param mpuIdList

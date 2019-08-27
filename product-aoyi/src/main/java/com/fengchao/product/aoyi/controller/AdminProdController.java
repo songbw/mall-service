@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -72,7 +73,18 @@ public class AdminProdController {
         log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
 
         try {
+            // 入参校验
+            if (bean.getMerchantId() <= 0) {
+                throw new Exception("参数merchantId不合法");
+            }
+
+            if (StringUtils.isBlank(bean.getPrice()) || Float.valueOf(bean.getPrice()) <= 0) {
+                throw new Exception("参数price不合法");
+            }
+
+            // 执行新增商品
             int id = prodService.add(bean);
+
             result.getData().put("result", id);
         } catch (Exception e) {
             log.error("创建商品 异常:{}", e.getMessage(), e);
