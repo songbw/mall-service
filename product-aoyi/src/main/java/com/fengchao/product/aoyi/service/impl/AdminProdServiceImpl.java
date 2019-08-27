@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.constants.ProductStatusEnum;
 import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.ProductExtendDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -35,7 +36,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private AoyiProdIndexXMapper prodXMapper;
     @Autowired
-    private ProdExtendMapper prodExtendMapper;
+    private ProdExtendXMapper prodExtendMapper;
     @Autowired
     private SkuCodeXMapper skuCodeMapper;
     @Autowired
@@ -49,6 +50,9 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
+    private ProductExtendDao productExtendDao;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -113,12 +117,9 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @DataSource(DataSourceNames.TWO)
+    @Override
     public PageBean selectProductListPageable(SerachBean bean) {
-        PageBean pageBean = new PageBean();
-
-        List<AoyiProdIndexX> prods = new ArrayList<>();
-
-
+        // 1.组装数据库查询参数
         HashMap sqlParamMap = new HashMap();
         sqlParamMap.put("name", bean.getQuery());
         sqlParamMap.put("skuid",bean.getSkuid());
@@ -126,32 +127,29 @@ public class AdminProdServiceImpl implements AdminProdService {
         if (bean.getMerchantHeader() > 0) {
             sqlParamMap.put("merchantId", bean.getMerchantId());
         }
+        int offset = PageBean.getOffset(bean.getOffset(), bean.getLimit());
+        sqlParamMap.put("offset", offset);
+        sqlParamMap.put("pageSize", bean.getLimit());
 
-
+        // 2.查询数据
+        // 2.1 查询条数
         int totalCount = prodXMapper.selectSearchCount(sqlParamMap);
+
+        // 2.2 查询商品表
+        List<AoyiProdIndexX> aoyiProdIndexXList = new ArrayList<>(); // 结果数据
         if (totalCount > 0) { // 如果存在数据
-            int offset = PageBean.getOffset(bean.getOffset(), bean.getLimit());
-            sqlParamMap.put("offset", offset);
-            sqlParamMap.put("pageSize", bean.getLimit());
+            // 查询
+            aoyiProdIndexXList = prodXMapper.selectProductListPageable(sqlParamMap);
 
-
-            // 查询商品表
-            List<AoyiProdIndexX> aoyiProdIndexXList = prodXMapper.selectProductListPageable(sqlParamMap);
-
-            // 准备查询prod_extend表
-            List<String> mpuList = aoyiProdIndexXList.stream().map(p -> p.getMpu()).collect(Collectors.toList());
-
-
-
-            // e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend,
-
-            prodXMapper.selectSearchLimit(sqlParamMap).forEach(aoyiProdIndex -> {
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
-                prods.add(aoyiProdIndex);
-            });
+            // 组装数据
+            for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
+                ProductHandle.updateImage(aoyiProdIndexX);
+            }
         }
 
-        pageBean = PageBean.build(pageBean, prods, totalCount, bean.getOffset(), bean.getLimit());
+        PageBean pageBean = new PageBean();
+        PageBean.build(pageBean, aoyiProdIndexXList, totalCount, bean.getOffset(), bean.getLimit());
+
         return pageBean;
     }
 

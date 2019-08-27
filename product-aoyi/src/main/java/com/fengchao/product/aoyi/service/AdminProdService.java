@@ -11,6 +11,14 @@ public interface AdminProdService {
 
     PageBean selectNameList(SerachBean bean);
 
+    /**
+     * 分页查询商品列表
+     *
+     * @param bean
+     * @return
+     */
+    PageBean selectProductListPageable(SerachBean bean);
+
     int getProdListToRedis();
 
     int add(AoyiProdIndexX bean) throws ProductException;

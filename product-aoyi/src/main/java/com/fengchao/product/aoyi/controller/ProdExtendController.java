@@ -1,7 +1,7 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.model.ProdExtend;
+import com.fengchao.product.aoyi.model.ProdExtendX;
 import com.fengchao.product.aoyi.service.ProdExtendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,7 +15,7 @@ public class ProdExtendController {
     private ProdExtendService service;
 
     @PostMapping("update")
-    public OperaResult updateProdExtend(@RequestBody ProdExtend bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+    public OperaResult updateProdExtend(@RequestBody ProdExtendX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         result.getData().put("result", service.updateProdExtend(bean));
         return result;
     }

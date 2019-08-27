@@ -1,90 +1,202 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.product.aoyi.mapper.ProdExtendMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.ProdExtend" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="mpu" property="skuid" jdbcType="VARCHAR" />
-    <result column="image" property="image" jdbcType="VARCHAR" />
-    <result column="images_url" property="imagesUrl" jdbcType="VARCHAR" />
-    <result column="introduction_url" property="introductionUrl" jdbcType="VARCHAR" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.product.aoyi.mapper.ProdExtendMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.ProdExtend">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="mpu" jdbcType="VARCHAR" property="mpu" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="images_url" jdbcType="VARCHAR" property="imagesUrl" />
+    <result column="introduction_url" jdbcType="VARCHAR" property="introductionUrl" />
   </resultMap>
-  <sql id="Base_Column_List" >
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
     id, mpu, image, images_url, introduction_url
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.ProdExtendExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from prod_extend
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from prod_extend
-    where mpu = #{skuid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from prod_extend
-    where mpu = #{skuid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.ProdExtend" >
-    insert into prod_extend (id, mpu, image,
-      images_url, introduction_url)
-    values (#{id,jdbcType=INTEGER}, #{skuid,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, 
-      #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR})
+  <delete id="deleteByExample" parameterType="com.fengchao.product.aoyi.model.ProdExtendExample">
+    delete from prod_extend
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.ProdExtend" useGeneratedKeys="true">
+    insert into prod_extend (mpu, image, images_url, 
+      introduction_url)
+    values (#{mpu,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, 
+      #{introductionUrl,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.ProdExtend" >
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.ProdExtend" useGeneratedKeys="true">
     insert into prod_extend
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="skuid != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="mpu != null">
         mpu,
       </if>
-      <if test="image != null" >
+      <if test="image != null">
         image,
       </if>
-      <if test="imagesUrl != null" >
+      <if test="imagesUrl != null">
         images_url,
       </if>
-      <if test="introductionUrl != null" >
+      <if test="introductionUrl != null">
         introduction_url,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="mpu != null">
+        #{mpu,jdbcType=VARCHAR},
       </if>
-      <if test="skuid != null" >
-        #{skuid,jdbcType=VARCHAR},
-      </if>
-      <if test="image != null" >
+      <if test="image != null">
         #{image,jdbcType=VARCHAR},
       </if>
-      <if test="imagesUrl != null" >
+      <if test="imagesUrl != null">
         #{imagesUrl,jdbcType=VARCHAR},
       </if>
-      <if test="introductionUrl != null" >
+      <if test="introductionUrl != null">
         #{introductionUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.ProdExtend" >
+  <select id="countByExample" parameterType="com.fengchao.product.aoyi.model.ProdExtendExample" resultType="java.lang.Long">
+    select count(*) from prod_extend
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
     update prod_extend
-    <set >
-      <if test="skuid != null" >
-        mpu = #{skuid,jdbcType=VARCHAR},
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
       </if>
-      <if test="image != null" >
+      <if test="record.mpu != null">
+        mpu = #{record.mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="record.image != null">
+        image = #{record.image,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imagesUrl != null">
+        images_url = #{record.imagesUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.introductionUrl != null">
+        introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update prod_extend
+    set id = #{record.id,jdbcType=INTEGER},
+      mpu = #{record.mpu,jdbcType=VARCHAR},
+      image = #{record.image,jdbcType=VARCHAR},
+      images_url = #{record.imagesUrl,jdbcType=VARCHAR},
+      introduction_url = #{record.introductionUrl,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.ProdExtend">
+    update prod_extend
+    <set>
+      <if test="mpu != null">
+        mpu = #{mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
         image = #{image,jdbcType=VARCHAR},
       </if>
-      <if test="imagesUrl != null" >
+      <if test="imagesUrl != null">
         images_url = #{imagesUrl,jdbcType=VARCHAR},
       </if>
-      <if test="introductionUrl != null" >
+      <if test="introductionUrl != null">
         introduction_url = #{introductionUrl,jdbcType=VARCHAR},
       </if>
     </set>
-    where mpu = #{skuid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.ProdExtend" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.ProdExtend">
     update prod_extend
-    set mpu = #{skuid,jdbcType=VARCHAR},
+    set mpu = #{mpu,jdbcType=VARCHAR},
       image = #{image,jdbcType=VARCHAR},
       images_url = #{imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{introductionUrl,jdbcType=VARCHAR}

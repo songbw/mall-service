@@ -50,7 +50,8 @@ public class AdminProdController {
         log.info("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantHeader);
 
         bean.setMerchantHeader(merchantHeader);
-        PageBean pageBean = prodService.selectNameList(bean);
+        // PageBean pageBean = prodService.selectNameList(bean);
+        PageBean pageBean = prodService.selectProductListPageable(bean);
         result.getData().put("result", pageBean);
 
         log.info("搜索商品 返回:{}", JSONUtil.toJsonString(result));
