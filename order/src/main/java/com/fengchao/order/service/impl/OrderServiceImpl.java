@@ -872,7 +872,7 @@ public class OrderServiceImpl implements OrderService {
         // orderDetailBean.setCreatedAt();
         // orderDetailBean.setUpdatedAt();
         // orderDetailBean.setSkuId();
-        // orderDetailBean.setNum();
+        orderDetailBean.setNum(orderDetail.getNum());
         // orderDetailBean.setUnitPrice();
         // orderDetailBean.setImage();
         // orderDetailBean.setModel();
