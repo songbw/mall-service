@@ -1,9 +1,9 @@
 package com.fengchao.product.aoyi.model;
 
-public class ProdExtend {
+public class ProdExtendX {
     private Integer id;
 
-    private String mpu;
+    private String skuid;
 
     private String image;
 
@@ -19,12 +19,12 @@ public class ProdExtend {
         this.id = id;
     }
 
-    public String getMpu() {
-        return mpu;
+    public String getSkuid() {
+        return skuid;
     }
 
-    public void setMpu(String mpu) {
-        this.mpu = mpu == null ? null : mpu.trim();
+    public void setSkuid(String skuid) {
+        this.skuid = skuid == null ? null : skuid.trim();
     }
 
     public String getImage() {

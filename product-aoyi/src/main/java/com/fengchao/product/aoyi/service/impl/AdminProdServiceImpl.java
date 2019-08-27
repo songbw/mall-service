@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.constants.ProductStatusEnum;
 import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.ProductExtendDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -20,13 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminProdServiceImpl implements AdminProdService {
@@ -34,9 +34,9 @@ public class AdminProdServiceImpl implements AdminProdService {
     private static Logger logger = LoggerFactory.getLogger(AdminProdServiceImpl.class);
 
     @Autowired
-    private AoyiProdIndexXMapper prodMapper;
+    private AoyiProdIndexXMapper prodXMapper;
     @Autowired
-    private ProdExtendMapper prodExtendMapper;
+    private ProdExtendXMapper prodExtendMapper;
     @Autowired
     private SkuCodeXMapper skuCodeMapper;
     @Autowired
@@ -51,6 +51,9 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private ProductDao productDao;
 
+    @Autowired
+    private ProductExtendDao productExtendDao;
+
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
@@ -63,9 +66,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("state",state);
         map.put("merchantId",merchantId);
         List<AoyiProdIndexX> prods = new ArrayList<>();
-        total = prodMapper.selectSearchCount(map);
+        total = prodXMapper.selectSearchCount(map);
         if (total > 0) {
-            prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
+            prodXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
@@ -101,38 +104,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         } else {
             return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
         }
-        total = prodMapper.selectSearchCount(map);
+        total = prodXMapper.selectSearchCount(map);
         if (total > 0) {
-            prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
-                prods.add(aoyiProdIndex);
-            });
-        }
-
-        pageBean = PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
-        return pageBean;
-    }
-
-    @DataSource(DataSourceNames.TWO)
-    public PageBean selectProductListPageable(SerachBean bean) {
-        PageBean pageBean = new PageBean();
-        List<AoyiProdIndexX> prods = new ArrayList<>();
-        int total = 0;
-        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
-        HashMap map = new HashMap();
-        map.put("name", bean.getQuery());
-        map.put("skuid",bean.getSkuid());
-        map.put("state",bean.getState());
-        if (bean.getMerchantHeader() == 0) {
-            map.put("merchantId", bean.getMerchantId());
-        } else if (bean.getMerchantHeader() == bean.getMerchantId()) {
-            map.put("merchantId", bean.getMerchantId());
-        } else {
-            return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
-        }
-        total = prodMapper.selectSearchCount(map);
-        if (total > 0) {
-            prodMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
+            prodXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
@@ -144,9 +118,46 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
+    public PageBean selectProductListPageable(SerachBean bean) {
+        // 1.组装数据库查询参数
+        HashMap sqlParamMap = new HashMap();
+        sqlParamMap.put("name", bean.getQuery());
+        sqlParamMap.put("skuid",bean.getSkuid());
+        sqlParamMap.put("state",bean.getState());
+        if (bean.getMerchantHeader() > 0) {
+            sqlParamMap.put("merchantId", bean.getMerchantId());
+        }
+        int offset = PageBean.getOffset(bean.getOffset(), bean.getLimit());
+        sqlParamMap.put("offset", offset);
+        sqlParamMap.put("pageSize", bean.getLimit());
+
+        // 2.查询数据
+        // 2.1 查询条数
+        int totalCount = prodXMapper.selectSearchCount(sqlParamMap);
+
+        // 2.2 查询商品表
+        List<AoyiProdIndexX> aoyiProdIndexXList = new ArrayList<>(); // 结果数据
+        if (totalCount > 0) { // 如果存在数据
+            // 查询
+            aoyiProdIndexXList = prodXMapper.selectProductListPageable(sqlParamMap);
+
+            // 组装数据
+            for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
+                ProductHandle.updateImage(aoyiProdIndexX);
+            }
+        }
+
+        PageBean pageBean = new PageBean();
+        PageBean.build(pageBean, aoyiProdIndexXList, totalCount, bean.getOffset(), bean.getLimit());
+
+        return pageBean;
+    }
+
+    @DataSource(DataSourceNames.TWO)
+    @Override
     public int getProdListToRedis(){
         int num = 0;
-        List<AoyiProdIndexX> aoyiProdIndices = prodMapper.selectProdAll();
+        List<AoyiProdIndexX> aoyiProdIndices = prodXMapper.selectProdAll();
         if(aoyiProdIndices != null){
             num = 1;
         }
@@ -243,7 +254,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     public int update(AoyiProdIndexX bean) throws ProductException {
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());
-            prodMapper.updateByPrimaryKeySelective(bean);
+            prodXMapper.updateByPrimaryKeySelective(bean);
         } else {
             throw new ProductException(200002, "id为null或等于0");
         }
@@ -253,7 +264,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public void delete(Integer merchantId, Integer id) throws ProductException {
         if (id > 0) {
-            prodMapper.deleteByPrimaryKey(id);
+            prodXMapper.deleteByPrimaryKey(id);
         } else {
             throw new ProductException(200002, "id为null或等于0");
         }
@@ -265,9 +276,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         PageBean pageBean = new PageBean();
         int total = 0;
         List<ProductInfoBean> infoBeans = new ArrayList<>();
-        total = prodMapper.selectSkuByCouponIdCount(bean);
+        total = prodXMapper.selectSkuByCouponIdCount(bean);
         if (total > 0) {
-            prodMapper.selectSkuByCouponIdLimit(bean).forEach(aoyiProdIndex -> {
+            prodXMapper.selectSkuByCouponIdLimit(bean).forEach(aoyiProdIndex -> {
                 ProductInfoBean infoBean = new ProductInfoBean();
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
