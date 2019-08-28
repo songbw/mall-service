@@ -2,6 +2,7 @@ package com.fengchao.guanaitong.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fengchao.guanaitong.config.GuanAiTongConfig;
 import com.fengchao.guanaitong.service.IGuanAiTongService;
 import com.fengchao.guanaitong.util.RedisDAO;
 //import com.fengchao.guanaitong.util.RedisUtil;
@@ -101,11 +102,11 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         StringBuilder sb = new StringBuilder();
         sb.append(APPID_KEY);
         sb.append("=");
-        sb.append(APPID_VALUE);
+        sb.append(GuanAiTongConfig.getAppId());
         sb.append("&");
         sb.append(APPSECRET_KEY);
         sb.append("=");
-        sb.append(APPSECRET_VALUE);
+        sb.append(GuanAiTongConfig.getAppSecret());
         sb.append("&");
         sb.append(GRANT_TYPE_KEY);
         sb.append("=");
@@ -156,7 +157,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
                     }
                 });
 */
-        map.put(APPID_KEY,APPID_VALUE);
+        map.put(APPID_KEY,GuanAiTongConfig.getAppId());
         map.put(GRANT_TYPE_KEY,GRANT_TYPE_VALUE);
         Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         Long timeStampS = timeStampMs/1000;
@@ -175,7 +176,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         try {
             String token = getAccessToken();
             tMap.put(TOKEN_KEY, token);
-            tMap.put(APPSECRET_KEY, APPSECRET_VALUE);
+            tMap.put(APPSECRET_KEY, GuanAiTongConfig.getAppSecret());
         } catch (Exception e) {
             log.info("getAccessToken got exception : {}",e.getMessage());
             throw new Exception(e);

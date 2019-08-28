@@ -18,4 +18,7 @@ eureka:
     service-url:
       defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
 
+GAT_APP_ID: appId which got from guan ai tong
+GAT_APP_SECRET: appSceret which got from guan ai tong
+
 
