@@ -1,20 +1,24 @@
 package com.fengchao.aggregation.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.aggregation.bean.AggregationBean;
+import com.fengchao.aggregation.bean.OperaResult;
 import com.fengchao.aggregation.bean.PageBean;
 import com.fengchao.aggregation.exception.AggregationException;
+import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.service.AggregationService;
+import com.fengchao.aggregation.utils.CosUtil;
 import com.fengchao.aggregation.utils.RedisDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
+import static io.lettuce.core.GeoArgs.Unit.m;
 
 @Service
 public class AggregationServiceImpl implements AggregationService {
@@ -25,7 +29,8 @@ public class AggregationServiceImpl implements AggregationService {
     private AggregationMpuMapper mpuMapper;
     @Autowired
     private RedisDAO redisDAO;
-
+    @Autowired
+    private ProdService prodService;
 
     @Override
     public PageBean findAggregation(Integer offset, Integer limit, String order, Integer merchantId) throws AggregationException {
@@ -59,9 +64,102 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findAggregationById(Integer id) throws AggregationException {
         Aggregation aggregation = mapper.selectByPrimaryKey(id);
-        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
-        if(AggregationArray == null || AggregationArray.size() < 1 ){
+        Aggregation aggregationByIdtest = findAggregationByIdtest(aggregation.getContent());
+//        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
+//        if(AggregationArray == null || AggregationArray.size() < 1 ){
+//            return aggregation;
+//        }
+//        for (int i = 0; i < AggregationArray.size(); i++) {
+//            int type = AggregationArray.getJSONObject(i).getInteger("type");
+//            if (type == 3) {
+//                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+//                for (int j = 0; j < jsonArray.size(); j++) {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(j);
+//                    String skuid = jsonArray.getJSONObject(j).getString("mpu");
+//                    if(skuid != null && !skuid.equals("")){
+//                        String value = redisDAO.getValue(skuid);
+////                    AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
+//                        JSONObject product = JSONObject.parseObject(value);
+//                        if(product != null){
+//                            jsonObject.put("imagePath",product.getString("image"));
+//                            jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+//                        }
+//                    }else{
+//                        String skuid1 = jsonObject.getString("skuid");
+//                        System.out.println(skuid1);
+//                    }
+//                }
+//            }
+//            if (type == 4) {
+//                JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+//                for (int j = 0; j < lists.size(); j++) {
+//                    JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
+//                    for (int l = 0; l < skus.size(); l++){
+//                        JSONObject jsonObject = skus.getJSONObject(l);
+//                        String skuid = jsonObject.getString("mpu");
+//                        if(skuid != null && !skuid.equals("")){
+////                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
+//                            String value = redisDAO.getValue(skuid);
+//                            JSONObject product = JSONObject.parseObject(value);
+//                            if(product != null){
+//                                jsonObject.put("price",product.getString("price"));
+//                                jsonObject.put("imagePath",product.getString("image"));
+//                                jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+//                            }
+//                        }else{
+//                            String skuid1 = jsonObject.getString("skuid");
+//                            System.out.println(skuid1);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        aggregation.setContent(aggregationByIdtest.getContent());
+        return aggregation;
+    }
+
+    public Aggregation findAggregationByIdtest(String content) throws AggregationException {
+        List<String> mpus = new ArrayList<>();
+        Aggregation aggregation = new Aggregation();
+        JSONArray AggregationArray = JSONObject.parseArray(content);
+        if(content == null || content.equals("") ){
             return aggregation;
+        }
+        for (int i = 0; i < AggregationArray.size(); i++) {
+            int type = AggregationArray.getJSONObject(i).getInteger("type");
+            if (type == 3 ) {
+                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    String mpu = jsonArray.getJSONObject(j).getString("mpu");
+                    if(mpu != null && !mpu.equals("")){
+                        mpus.add(mpu);
+                    }
+                }
+            } else if (type == 4) {
+                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
+                    for (int m = 0; m < array.size(); m++){
+                        String mpu = array.getJSONObject(m).getString("mpu");
+                        if(mpu != null && !mpu.equals("")){
+                            mpus.add(mpu);
+                        }
+                    }
+                }
+            }
+        }
+        HashSet<String> hashSet = new HashSet<>(mpus);
+        mpus.clear();mpus.addAll(hashSet);
+        Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
+        if(!mpus.isEmpty()){
+            OperaResult result = prodService.findProductListByMpuIdList(mpus);
+            if (result.getCode() == 200) {
+                Object object = result.getData().get("result");
+                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
+                for(AoyiProdIndex prod: aoyiProdIndices){
+                    aoyiProdMap.put(prod.getMpu(), prod);
+                }
+            }
         }
         for (int i = 0; i < AggregationArray.size(); i++) {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
@@ -69,33 +167,47 @@ public class AggregationServiceImpl implements AggregationService {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(j);
-                    String skuid = jsonArray.getJSONObject(j).getString("mpu");
-                    if(skuid != null && !skuid.equals("")){
-                        String value = redisDAO.getValue(skuid);
-//                    AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                        JSONObject product = JSONObject.parseObject(value);
-                        if(product != null){
-                            jsonObject.put("imagePath",product.getString("image"));
-                            jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                    String mpu = jsonObject.getString("mpu");
+                        if (mpu != null && !mpu.equals("")) {
+                            AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
+                            String imageUrl = aoyiProdIndex.getImagesUrl();
+                            if (imageUrl != null && (!"".equals(imageUrl))) {
+                                String image = "";
+                                if (imageUrl.indexOf("/") == 0) {
+                                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                                } else {
+                                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                                }
+                                aoyiProdIndex.setImage(image);
+                            }
+                            jsonObject.put("imagePath", aoyiProdIndex.getImage());
+                            jsonObject.put("intro", aoyiProdIndex.getBrand() + " " + aoyiProdIndex.getName());
                         }
-                    }
                 }
             }
             if (type == 4) {
-                JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
-                for (int j = 0; j < lists.size(); j++) {
-                    JSONArray skus = lists.getJSONObject(j).getJSONArray("skus");
-                    for (int l = 0; l < skus.size(); l++){
-                        JSONObject jsonObject = skus.getJSONObject(l);
-                        String skuid = jsonObject.getString("mpu");
-                        if(skuid != null && !skuid.equals("")){
-//                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                            String value = redisDAO.getValue(skuid);
-                            JSONObject product = JSONObject.parseObject(value);
-                            if(product != null){
-                                jsonObject.put("price",product.getString("price"));
-                                jsonObject.put("imagePath",product.getString("image"));
-                                jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
+                    for (int m = 0; m < array.size(); m++) {
+                        JSONObject jsonObject = array.getJSONObject(m);
+                        String mpu = array.getJSONObject(m).getString("mpu");
+                        if (mpu != null && !mpu.equals("")) {
+                            AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
+                            if(aoyiProdIndex != null){
+                                String imageUrl = aoyiProdIndex.getImagesUrl();
+                                if (imageUrl != null && (!"".equals(imageUrl))) {
+                                    String image = "";
+                                    if (imageUrl.indexOf("/") == 0) {
+                                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                                    } else {
+                                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                                    }
+                                    aoyiProdIndex.setImage(image);
+                                }
+                                jsonObject.put("price", aoyiProdIndex.getPrice());
+                                jsonObject.put("imagePath", aoyiProdIndex.getImage());
+                                jsonObject.put("intro", aoyiProdIndex.getBrand() + " " + aoyiProdIndex.getName());
                             }
                         }
                     }
@@ -185,51 +297,52 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findHomePage() throws AggregationException {
         Aggregation homePage = mapper.findHomePage();
-        JSONArray AggregationArray = JSONObject.parseArray(homePage.getContent());
-        if(AggregationArray == null || AggregationArray.size() < 1 ){
-            return homePage;
-        }
-        for (int i = 0; i < AggregationArray.size(); i++) {
-            mpuMapper.deleteByPrimaryKey(homePage.getId());
-            int type = AggregationArray.getJSONObject(i).getInteger("type");
-            if (type == 3) {
-                    JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
-                    for (int j = 0; j < jsonArray.size(); j++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(j);
-                        String mpu = jsonArray.getJSONObject(j).getString("mpu");
-                        if(mpu != null && !mpu.equals("")){
-                            String value = redisDAO.getValue(mpu);
-//                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                            JSONObject product = JSONObject.parseObject(value);
-                            if(product != null){
-                                jsonObject.put("imagePath",product.getString("image"));
-                                jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
-                            }
-                        }
-                }
-            }
-            if (type == 4) {
-                    JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
-                    for (int j = 0; j < lists.size(); j++) {
-                        JSONArray mpus = lists.getJSONObject(j).getJSONArray("skus");
-                        for (int l = 0; l < mpus.size(); l++){
-                            JSONObject jsonObject = mpus.getJSONObject(l);
-                            String mpu = jsonObject.getString("mpu");
-                            if(mpu != null && !mpu.equals("")){
-                                String value = redisDAO.getValue(mpu);
-//                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
-                                JSONObject product = JSONObject.parseObject(value);
-                                if(product != null){
-                                    jsonObject.put("price",product.getString("price"));
-                                    jsonObject.put("imagePath",product.getString("image"));
-                                    jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        homePage.setContent(AggregationArray.toString());
+        Aggregation aggregationByIdtest = findAggregationByIdtest(homePage.getContent());
+//        JSONArray AggregationArray = JSONObject.parseArray(homePage.getContent());
+//        if(AggregationArray == null || AggregationArray.size() < 1 ){
+//            return homePage;
+//        }
+//        for (int i = 0; i < AggregationArray.size(); i++) {
+//            mpuMapper.deleteByPrimaryKey(homePage.getId());
+//            int type = AggregationArray.getJSONObject(i).getInteger("type");
+//            if (type == 3) {
+//                    JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+//                    for (int j = 0; j < jsonArray.size(); j++) {
+//                        JSONObject jsonObject = jsonArray.getJSONObject(j);
+//                        String mpu = jsonArray.getJSONObject(j).getString("mpu");
+//                        if(mpu != null && !mpu.equals("")){
+//                            String value = redisDAO.getValue(mpu);
+////                        AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
+//                            JSONObject product = JSONObject.parseObject(value);
+//                            if(product != null){
+//                                jsonObject.put("imagePath",product.getString("image"));
+//                                jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+//                            }
+//                        }
+//                }
+//            }
+//            if (type == 4) {
+//                    JSONArray lists = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+//                    for (int j = 0; j < lists.size(); j++) {
+//                        JSONArray mpus = lists.getJSONObject(j).getJSONArray("skus");
+//                        for (int l = 0; l < mpus.size(); l++){
+//                            JSONObject jsonObject = mpus.getJSONObject(l);
+//                            String mpu = jsonObject.getString("mpu");
+//                            if(mpu != null && !mpu.equals("")){
+//                                String value = redisDAO.getValue(mpu);
+////                            AoyiProdIndex product = (AoyiProdIndex)net.sf.json.JSONObject.toBean(net.sf.json.JSONObject.fromObject(value), AoyiProdIndex.class);
+//                                JSONObject product = JSONObject.parseObject(value);
+//                                if(product != null){
+//                                    jsonObject.put("price",product.getString("price"));
+//                                    jsonObject.put("imagePath",product.getString("image"));
+//                                    jsonObject.put("intro",product.getString("brand") + " " + product.getString("name"));
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+        homePage.setContent(aggregationByIdtest.getContent());
         return homePage;
     }
 

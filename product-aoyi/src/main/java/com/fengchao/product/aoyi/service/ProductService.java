@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.service;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
 import java.util.List;
@@ -43,4 +44,5 @@ public interface ProductService {
 
     OperaResponse search(ProductQueryBean queryBean) ;
 
+    List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList);
 }
