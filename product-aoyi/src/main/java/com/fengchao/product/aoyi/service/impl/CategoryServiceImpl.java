@@ -33,14 +33,12 @@ public class CategoryServiceImpl implements CategoryService {
         return mapper.selectOneLevelList();
     }
 
-    @Cacheable(value = "categoryO")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findTwoLevelListByOneLevelId(int id) {
         return mapper.selectListByParentId(id) ;
     }
 
-    @Cacheable(value = "category")
     @DataSource(DataSourceNames.TWO)
     @Override
     public List<AoyiBaseCategoryX> findListById(int id) {
