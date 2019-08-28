@@ -253,6 +253,15 @@ public class ProductServiceImpl implements ProductService {
         return esService.search(queryBean) ;
     }
 
+    @Override
+    public List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList) {
+        // 1. 查询商品信息
+        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        return aoyiProdIndexList;
+    }
+
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
         OperaResult result = equityService.selectCouponBySku(bean);
         log.info(JSON.toJSONString(result));
