@@ -510,6 +510,20 @@
             <if test="state != null and state !=''">
               and state = #{state}
             </if>
+            <if test="categoryID !=null and categoryID !=''">
+              <bind name="pattern2" value="categoryID + '%'"/>
+              and category LIKE #{pattern2}
+            </if>
+            <if test="mpu !=null and mpu !=''">
+              and mpu = #{mpu}
+            </if>
+            <if test="brand !=null and brand !=''">
+              <bind name="pattern4" value="'%' + brand + '%'"/>
+              and aoyi_prod_index.brand LIKE #{pattern4}
+            </if>
+            <if test="merchantId != null and merchantId !=''">
+              and merchant_id = #{merchantId}
+            </if>
           order by id desc limit #{offset}, #{pageSize}) t2
         ON t1.id = t2.id;
   </select>

@@ -38,4 +38,21 @@ public class CategoryDao {
 
         return aoyiBaseCategoryList;
     }
+
+    /**
+     * 根据品类级别查询品类集合
+     *
+     * @param categoryClass
+     * @return
+     */
+    public List<AoyiBaseCategory> seelctByCategoryClass(String categoryClass) {
+        AoyiBaseCategoryExample aoyiBaseCategoryExample = new AoyiBaseCategoryExample();
+
+        AoyiBaseCategoryExample.Criteria criteria = aoyiBaseCategoryExample.createCriteria();
+        criteria.andCategoryClassEqualTo(categoryClass);
+
+        List<AoyiBaseCategory> aoyiBaseCategoryList = aoyiBaseCategoryMapper.selectByExample(aoyiBaseCategoryExample);
+
+        return aoyiBaseCategoryList;
+    }
 }
