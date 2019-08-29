@@ -144,7 +144,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     public String gNotify(GATBackBean backBean) {
-        List<Order> orders = findByPaymentNoAndOpenId(backBean.getOuter_trade_no(), "10" + backBean.getBuyer_open_id());
+        List<Order> orders = findByPaymentNoAndOpenId(backBean.getOuter_trade_no(), ssoConfiguration.getiAppId() + backBean.getBuyer_open_id());
         int amount = Math.round(backBean.getTotal_amount() * 100);
 
         List<Integer> orderIdList = new ArrayList<>();

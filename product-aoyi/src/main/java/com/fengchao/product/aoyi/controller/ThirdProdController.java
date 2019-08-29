@@ -31,26 +31,13 @@ public class ThirdProdController {
      */
     @PostMapping
     public OperaResult create(@RequestBody AoyiProdIndexX bean){
-        OperaResult result = new OperaResult();
         log.info("新增商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
-        try {
-            int id = service.add(bean);
-            result.getData().put("result", id);
-        } catch (Exception e) {
-            log.error("新增商品 异常:{}", e.getMessage(), e);
-            result.setCode(500);
-            result.setMsg(e.getMessage());
-        }
-        log.info("新增商品 返回:{}", JSONUtil.toJsonString(result));
-        return result;
+        return service.add(bean);
     }
 
     @PutMapping
-    public OperaResult update(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
-//        bean.setMerchantId(merchantId);
-        int id = service.update(bean);
-        result.getData().put("result", id);
-        return result;
+    public OperaResult update(@RequestBody AoyiProdIndexX bean){
+        return service.update(bean);
     }
 
     /**

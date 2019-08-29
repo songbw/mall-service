@@ -1,5 +1,6 @@
 package com.fengchao.base.controller;
 
+import com.fengchao.base.bean.AyFcImages;
 import com.fengchao.base.bean.OperaResult;
 import com.fengchao.base.service.UploadService;
 import com.fengchao.base.utils.Config;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -33,6 +36,14 @@ public class UploadController {
         String baseUrl = Config.getString("base.url");
         result.getData().put("baseUrl", baseUrl) ;
         result.getData().put("cdnUrl", cdnUrl) ;
+        return result;
+    }
+
+    @PostMapping("/down/upload")
+    private OperaResult downUpload(@RequestBody List<AyFcImages> images) {
+        OperaResult result = new OperaResult();
+
+        service.downUpload(images) ;
         return result;
     }
 }
