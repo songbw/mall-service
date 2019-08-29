@@ -13,7 +13,7 @@ import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.EquityService;
-import com.fengchao.product.aoyi.feign.VendorsService;
+import com.fengchao.product.aoyi.feign.VendorsServiceClient;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
@@ -22,7 +22,6 @@ import com.fengchao.product.aoyi.service.AdminProdService;
 //import com.fengchao.product.aoyi.utils.RedisUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
-import com.netflix.discovery.converters.Auto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private EquityService equityService;
     @Autowired
-    private VendorsService vendorsService;
+    private VendorsServiceClient vendorsService;
     @Autowired
     private AoyiBaseCategoryXMapper categoryMapper;
     @Autowired
