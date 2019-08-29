@@ -1,6 +1,9 @@
 package com.fengchao.product.aoyi.controller;
 
-import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.bean.OperaResult;
+import com.fengchao.product.aoyi.bean.PageBean;
+import com.fengchao.product.aoyi.bean.QueryProdBean;
+import com.fengchao.product.aoyi.bean.SerachBean;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
@@ -14,7 +17,6 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/adminProd", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -166,20 +169,17 @@ public class AdminProdController {
      * @param response
      */
     @GetMapping(value = "/export")
-    public void exportOrder(@RequestBody SerachBean serachBean, HttpServletResponse response) throws Exception {
+    public void exportOrder(SerachBean serachBean,
+                            @RequestHeader(name = "merchant", required = false, defaultValue = "0") Integer merchantHeader, // FIXME :
+                            HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
         // 创建HSSFWorkbook对象
         HSSFWorkbook workbook = null;
 
+        log.info("导出商品列表 入参:{}", JSONUtil.toJsonString(serachBean));
         try {
-            log.info("导出商品列表 入参:{}", JSONUtil.toJsonString(serachBean));
-
-            // 创建HSSFWorkbook对象
-            workbook = new HSSFWorkbook();
-            // 创建HSSFSheet对象
-            HSSFSheet sheet = workbook.createSheet("商品列表");
-
             // 1.根据条件获取订单集合
+            serachBean.setMerchantHeader(merchantHeader);
             List<ProductExportResVo> productExportResVoList = prodService.exportProductList(serachBean);
 
             log.info("导出商品列表 获取导出记录{}条", productExportResVoList.size());
@@ -188,6 +188,11 @@ public class AdminProdController {
             }
 
             // 2.开始组装excel
+            // 2.0 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("商品列表");
+
             // 2.1 组装title
             createTitle(sheet);
 

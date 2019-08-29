@@ -26,7 +26,7 @@ public class ProductExportResVo {
     /**
      * 商品状态
      */
-    private int state;
+    private String state;
 
     /**
      * 商品名称

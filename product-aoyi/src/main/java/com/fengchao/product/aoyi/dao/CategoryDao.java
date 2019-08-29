@@ -45,7 +45,7 @@ public class CategoryDao {
      * @param categoryClass
      * @return
      */
-    public List<AoyiBaseCategory> seelctByCategoryClass(String categoryClass) {
+    public List<AoyiBaseCategory> selectByCategoryClass(String categoryClass) {
         AoyiBaseCategoryExample aoyiBaseCategoryExample = new AoyiBaseCategoryExample();
 
         AoyiBaseCategoryExample.Criteria criteria = aoyiBaseCategoryExample.createCriteria();

@@ -345,14 +345,14 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 2.2 查询所有的分类信息
             // 2.2.1 查询一级品类名称
             List<AoyiBaseCategory> categorysWithClass1
-                    = categoryDao.seelctByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL1.getValue()));
+                    = categoryDao.selectByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL1.getValue()));
             // 转map key:categoryId, value:AoyiBaseCategory
             Map<Integer, AoyiBaseCategory> categoryMapWithClass1 =
                     categorysWithClass1.stream().collect(Collectors.toMap(c -> c.getCategoryId(), c -> c));
 
             // 2.2.2 查询二级品类名称
             List<AoyiBaseCategory> categorysWithClass2
-                    = categoryDao.seelctByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL2.getValue()));
+                    = categoryDao.selectByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL2.getValue()));
             // 将二级品类名称加入一级品类名称
             for (AoyiBaseCategory categoryWithClass2 : categorysWithClass2) {
                 // 获取该二级品类的一级品类
@@ -368,7 +368,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
             // 2.2.3 查询三级品类名称
             List<AoyiBaseCategory> categorysWithClass3
-                    = categoryDao.seelctByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL3.getValue()));
+                    = categoryDao.selectByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL3.getValue()));
 
             // 将三级品类名称加入二级品类名称
             for (AoyiBaseCategory categoryWithClass3 : categorysWithClass3) {
@@ -487,7 +487,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         // 商品状态
         Integer state = Integer.valueOf(aoyiProdIndexX.getState()); // -1:初始状态；0：下架；1：上架
         ProductStatusEnum productStatusEnum = ProductStatusEnum.getProductStatusEnum(state);
-        productExportResVo.setState(productStatusEnum.getValue()); // 商品状态
+        productExportResVo.setState(productStatusEnum.getDesc()); // 商品状态
 
         productExportResVo.setProductName(aoyiProdIndexX.getName()); // 商品名称
         productExportResVo.setBrand(aoyiProdIndexX.getBrand()); // 商品品牌

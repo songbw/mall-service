@@ -10,7 +10,8 @@ public enum ProductStatusEnum {
 
     INIT(-1, "初始状态"),
     PUT_ON(0, "下架"),
-    PUT_OFF(1, "上架");
+    PUT_OFF(1, "上架"),
+    UN_KNOWN(999, "未知");
 
     private int value;
 
@@ -44,7 +45,7 @@ public enum ProductStatusEnum {
             case 1:
                 return PUT_OFF;
             default:
-                return null;
+                return UN_KNOWN;
         }
     }
 }
