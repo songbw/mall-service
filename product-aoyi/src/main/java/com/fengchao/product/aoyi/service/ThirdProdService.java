@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.service;
 
+import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -7,9 +8,9 @@ import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
 public interface ThirdProdService {
 
-    int add(AoyiProdIndexX bean) throws ProductException;
+    OperaResult add(AoyiProdIndexX bean);
 
-    int update(AoyiProdIndexX bean) throws ProductException;
+    OperaResult update(AoyiProdIndexX bean);
 
     void updatePrice(PriceBean bean);
 

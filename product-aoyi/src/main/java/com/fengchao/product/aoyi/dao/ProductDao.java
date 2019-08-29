@@ -107,4 +107,19 @@ public class ProductDao {
 
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
     }
+
+    /**
+     * 根据SKU获取商品列表
+     * @param skuId
+     * @param merchantId
+     * @return
+     */
+    public List<AoyiProdIndex> findBySkuId(String skuId, int merchantId) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andSkuidEqualTo(skuId);
+        criteria.andMerchantIdEqualTo(merchantId);
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        return aoyiProdIndices;
+    }
 }
