@@ -1,6 +1,5 @@
 package com.fengchao.order.jobClient;
 
-import com.fengchao.order.service.OrderService;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.core.logger.Logger;
@@ -9,7 +8,6 @@ import com.github.ltsopensource.spring.boot.annotation.JobRunner4TaskTracker;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 

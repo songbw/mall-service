@@ -36,7 +36,6 @@ public class PaymentServiceImpl implements IPaymentService {
     private GuanaitongClientService guanaitongClientService;
     @Autowired
     private SSOConfiguration ssoConfiguration;
-
     @Autowired
     private OrderRpcService orderRpcService;
 
@@ -44,67 +43,69 @@ public class PaymentServiceImpl implements IPaymentService {
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
-        if ("10".equals(paymentBean.getiAppId())) {
-            // 关爱通支付
-            GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
-            String outer_trade_no = paymentBean.gettAppId() + new Date().getTime() + RandomUtil.getRandomString(3) ;
-            guanaitongPaymentBean.setOuter_trade_no(outer_trade_no);
-            guanaitongPaymentBean.setBuyer_open_id(paymentBean.getOpenId());
-            guanaitongPaymentBean.setReason("下单");
-            float total_amount = 0.00f;
-            for (Order order: orderList) {
-                total_amount = total_amount + order.getSaleAmount() ;
-            }
-            TradeInfoBean tradeInfoBean = new TradeInfoBean();
-            tradeInfoBean.setThirdTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-            String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
-            guanaitongPaymentBean.setTrade_info(tradeInfoString);
-            guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
-//            guanaitongPaymentBean.setNotify_url("http://api.weesharing.com/v2/ssoes/payment/back");
-            guanaitongPaymentBean.setNotify_url(ssoConfiguration.getGatBackUrl());
-            guanaitongPaymentBean.setTotal_amount(total_amount);
-
-            ObjectMapper oMapper = new ObjectMapper();
-            Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
-            Result result1 = guanaitongClientService.payment(map) ;
-            JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
-            String guanaitongUrl = ssoConfiguration.getGatUrl() + jsonObject.getString("data") ;
-//            String guanaitongUrl = "https://openapi.guanaitong.cc/seller/pay/excashier?" + jsonObject.getString("data") ;
+        PaymentResult result1 = getPayment(paymentBean);
+        if ("200".equals(result1.getReturnCode())) {
+            result.getData().put("result", result1.getData());
             orderList.forEach(order -> {
-                order.setPaymentNo(outer_trade_no);
+                order.setPaymentNo(result1.getData().getOrderNo());
                 order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                 order.setUpdatedAt(new Date());
                 updatePaymentNo(order);
             });
-            UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
-            urlEncodeBean.setUrlEncode(guanaitongUrl);
-            result.getData().put("result", urlEncodeBean);
-        } else {
-            PaymentResult result1 = getPayment(paymentBean);
-            if ("200".equals(result1.getReturnCode())) {
-                result.getData().put("result", result1.getData());
-                orderList.forEach(order -> {
-                    order.setPaymentNo(result1.getData().getOrderNo());
-                    order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-                    order.setUpdatedAt(new Date());
-                    updatePaymentNo(order);
-                });
-            } else if ("订单号重复".equals(result1.getMsg())) {
-                List<Order> orders = findOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-                if (orders.size() > 0) {
-                    OrderNo orderNo = new OrderNo();
-                    orderNo.setOrderNo(orders.get(0).getPaymentNo());
-                    result.getData().put("result", orderNo);
-                } else {
-                    result.setCode(-1);
-                    result.setMsg(result1.getMsg());
-                }
-            }else {
+        } else if ("订单号重复".equals(result1.getMsg())) {
+            List<Order> orders = findOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+            if (orders.size() > 0) {
+                OrderNo orderNo = new OrderNo();
+                orderNo.setOrderNo(orders.get(0).getPaymentNo());
+                result.getData().put("result", orderNo);
+            } else {
                 result.setCode(-1);
                 result.setMsg(result1.getMsg());
             }
+        }else {
+            result.setCode(-1);
+            result.setMsg(result1.getMsg());
         }
         return result ;
+    }
+
+    @Override
+    public OperaResult gPayment(PaymentBean paymentBean) {
+        OperaResult result = new OperaResult();
+        List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
+        // 关爱通支付
+        GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
+        String outer_trade_no = paymentBean.gettAppId() + new Date().getTime() + RandomUtil.getRandomString(3) ;
+        guanaitongPaymentBean.setOuter_trade_no(outer_trade_no);
+        guanaitongPaymentBean.setBuyer_open_id(paymentBean.getOpenId());
+        guanaitongPaymentBean.setReason("下单");
+        float total_amount = 0.00f;
+        for (Order order: orderList) {
+            total_amount = total_amount + order.getSaleAmount() ;
+        }
+        TradeInfoBean tradeInfoBean = new TradeInfoBean();
+        tradeInfoBean.setThirdTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+        String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
+        guanaitongPaymentBean.setTrade_info(tradeInfoString);
+        guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
+        guanaitongPaymentBean.setNotify_url(ssoConfiguration.getGatBackUrl());
+        guanaitongPaymentBean.setTotal_amount(total_amount);
+
+        ObjectMapper oMapper = new ObjectMapper();
+        Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
+        Result result1 = guanaitongClientService.payment(map) ;
+        JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
+        String guanaitongUrl = ssoConfiguration.getGatUrl() + jsonObject.getString("data") ;
+        orderList.forEach(order -> {
+            order.setPaymentNo(outer_trade_no);
+            order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+            order.setUpdatedAt(new Date());
+            updatePaymentNo(order);
+        });
+        UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
+        urlEncodeBean.setUrlEncode(guanaitongUrl);
+        result.getData().put("result", urlEncodeBean);
+        return result;
     }
 
     @Override
