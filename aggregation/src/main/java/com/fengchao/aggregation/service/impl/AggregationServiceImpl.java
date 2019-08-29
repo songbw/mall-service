@@ -28,8 +28,6 @@ public class AggregationServiceImpl implements AggregationService {
     @Autowired
     private AggregationMpuMapper mpuMapper;
     @Autowired
-    private RedisDAO redisDAO;
-    @Autowired
     private ProdService prodService;
 
     @Override
@@ -170,18 +168,19 @@ public class AggregationServiceImpl implements AggregationService {
                     String mpu = jsonObject.getString("mpu");
                         if (mpu != null && !mpu.equals("")) {
                             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
-                            String imageUrl = aoyiProdIndex.getImagesUrl();
-                            if (imageUrl != null && (!"".equals(imageUrl))) {
-                                String image = "";
-                                if (imageUrl.indexOf("/") == 0) {
-                                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                                } else {
-                                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                            if(aoyiProdIndex != null){
+                                String imageUrl = aoyiProdIndex.getImagesUrl();
+                                if (imageUrl != null && (!"".equals(imageUrl))) {
+                                    String image = "";
+                                    if (imageUrl.indexOf("/") == 0) {
+                                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                                    } else {
+                                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                                    }
+                                    aoyiProdIndex.setImage(image);
                                 }
-                                aoyiProdIndex.setImage(image);
+                                jsonObject.put("imagePath", aoyiProdIndex.getImage());
                             }
-                            jsonObject.put("imagePath", aoyiProdIndex.getImage());
-                            jsonObject.put("intro", aoyiProdIndex.getBrand() + " " + aoyiProdIndex.getName());
                         }
                 }
             }
@@ -207,7 +206,6 @@ public class AggregationServiceImpl implements AggregationService {
                                 }
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
-                                jsonObject.put("intro", aoyiProdIndex.getBrand() + " " + aoyiProdIndex.getName());
                             }
                         }
                     }
