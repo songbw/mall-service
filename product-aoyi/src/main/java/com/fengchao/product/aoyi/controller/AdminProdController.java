@@ -164,6 +164,7 @@ public class AdminProdController {
      * 进货价格(元) sprice
      *
      * 测试: http://localhost:8002/adminProd/export
+     *      http://localhost:8002/adminProd/export?query=海尔
      *
      * @param serachBean 导出条件
      * @param response
@@ -311,6 +312,7 @@ public class AdminProdController {
     private void createContent(HSSFSheet sheet, List<ProductExportResVo> productExportResVoList) {
 
         int currentRowNum = 1; // 行号
+        int totalRowNum = productExportResVoList.size(); // 总行数
         for (ProductExportResVo productExportResVo : productExportResVoList) {
             // 新增一行
             HSSFRow hssfRow = sheet.createRow(currentRowNum);
@@ -360,7 +362,11 @@ public class AdminProdController {
             titleCell10.setCellValue(productExportResVo.getCostPrice());
 
             //
+            if (currentRowNum % 100 == 0) {
+                log.info("导出商品列表 第{}行, 共{}行", currentRowNum, totalRowNum);
+            }
             currentRowNum++;
+            productExportResVo = null; // 释放
         }
     }
 

@@ -389,6 +389,10 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 3.1 分页查询商品表-批量查询，避免一次返回数据太多，并且还要利用返回的数据批量查询其他表，这样也避免查询时的入参太大
             // 获取记录数
             int totalCount = prodXMapper.selectSearchCount(sqlParamMap);
+            if (totalCount > 50000) { // 如果导出的记录数大于5w则终止导出,excel表的上线是65535
+                logger.error("导出商品列表 导出数据过大");
+                throw new Exception("导出商品列表失败 导出数据过大");
+            }
             // 遍历查询
             if (totalCount > 0) {
                 PageBean pageBean = new PageBean();
@@ -413,10 +417,12 @@ public class AdminProdServiceImpl implements AdminProdService {
                         productExportResVo.setMerchantName(sysCompany == null ? "/" : sysCompany.getName());
 
                         // 处理商品类别
-                        AoyiBaseCategory aoyiBaseCategory = categoryMapWithClass3.get(aoyiProdIndexX.getCategory());
+                        AoyiBaseCategory aoyiBaseCategory = categoryMapWithClass3.get(Integer.valueOf(aoyiProdIndexX.getCategory()));
                         productExportResVo.setCategory(aoyiBaseCategory == null ? "/" : aoyiBaseCategory.getCategoryName());
 
                         productExportResVoList.add(productExportResVo);
+
+                        aoyiProdIndexX = null; // 释放
                     }
 
                 }
