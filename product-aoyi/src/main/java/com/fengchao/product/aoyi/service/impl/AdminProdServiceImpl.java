@@ -418,7 +418,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                         ProductExportResVo productExportResVo = convertToProductExportResVo(aoyiProdIndexX);
 
                         // 处理商品供应商名称
-                        SysCompany sysCompany = sysCompanyMap.get(aoyiProdIndexX.getMerchantId());
+                        SysCompany sysCompany = sysCompanyMap.get(aoyiProdIndexX.getMerchantId().longValue());
                         productExportResVo.setMerchantName(sysCompany == null ? "/" : sysCompany.getName());
 
                         // 处理商品类别
