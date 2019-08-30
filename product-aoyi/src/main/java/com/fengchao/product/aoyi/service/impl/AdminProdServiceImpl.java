@@ -11,6 +11,7 @@ import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.ProductExtendDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
+import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
@@ -396,7 +397,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             int totalCount = prodXMapper.selectSearchCount(sqlParamMap);
             if (totalCount > 50000) { // 如果导出的记录数大于5w则终止导出,excel表的上线是65535
                 logger.error("导出商品列表 导出数据过大");
-                throw new Exception("导出商品列表失败 导出数据过大");
+                throw new ExportProuctOverRangeException();
             }
             // 遍历查询
             if (totalCount > 0) {
@@ -436,10 +437,14 @@ public class AdminProdServiceImpl implements AdminProdService {
 
                 }
             }
+        } catch (ExportProuctOverRangeException e) {
+            logger.error("导出商品列表 异常了:{}", e.getMessage(), e);
+
+            throw e;
         } catch (Exception e) {
             logger.error("导出商品列表 异常:{}", e.getMessage(), e);
 
-            throw new Exception(e);
+            throw e;
         }
 
         logger.info("导出商品列表 导出数据列表个数List<ProductExportResVo> size:{}", productExportResVoList.size());
