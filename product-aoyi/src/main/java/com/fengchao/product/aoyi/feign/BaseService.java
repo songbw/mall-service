@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.feign;
 
 import com.fengchao.product.aoyi.bean.OperaResult;
+import com.fengchao.product.aoyi.feign.hystric.BaseServiceH;
 import com.fengchao.product.aoyi.feign.hystric.ESServiceH;
 import com.fengchao.product.aoyi.model.AyFcImages;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient(value = "base", fallback = ESServiceH.class)
+@FeignClient(value = "base", fallback = BaseServiceH.class)
 public interface BaseService {
 
     @RequestMapping(value = "/down/upload", method = RequestMethod.POST)
