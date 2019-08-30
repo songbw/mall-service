@@ -229,14 +229,14 @@ public class AdminProdController {
         } catch (Exception e) {
             log.error("导出文件异常:{}", e.getMessage(), e);
 
-            response.setStatus(401);
+            response.setStatus(400);
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json; charset=utf-8");
             PrintWriter writer = null;
             try {
                 writer = response.getWriter();
                 Map<String, String> map = new HashMap<>();
-                map.put("code", "401");
+                map.put("code", "400");
                 map.put("msg", e.getMessage());
                 map.put("data", null);
 
