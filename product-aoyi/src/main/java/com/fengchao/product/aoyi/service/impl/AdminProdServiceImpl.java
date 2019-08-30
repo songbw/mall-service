@@ -23,6 +23,7 @@ import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -417,9 +418,13 @@ public class AdminProdServiceImpl implements AdminProdService {
                         productExportResVo.setMerchantName(sysCompany == null ? "/" : sysCompany.getName());
 
                         // 处理商品类别
-                        AoyiBaseCategory aoyiBaseCategory = categoryMapWithClass3.get(Integer.valueOf(aoyiProdIndexX.getCategory()));
+                        AoyiBaseCategory aoyiBaseCategory = null;
+                        if (StringUtils.isNotBlank(aoyiProdIndexX.getCategory())) {
+                            aoyiBaseCategory = categoryMapWithClass3.get(Integer.valueOf(aoyiProdIndexX.getCategory()));
+                        }
                         productExportResVo.setCategory(aoyiBaseCategory == null ? "/" : aoyiBaseCategory.getCategoryName());
 
+                        //
                         productExportResVoList.add(productExportResVo);
 
                         aoyiProdIndexX = null; // 释放
