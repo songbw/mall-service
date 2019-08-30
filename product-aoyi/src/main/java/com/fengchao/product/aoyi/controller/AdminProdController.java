@@ -95,8 +95,10 @@ public class AdminProdController {
                 throw new Exception("参数merchantId不合法");
             }
 
-            if (StringUtils.isBlank(bean.getPrice()) || Float.valueOf(bean.getPrice()) <= 0) {
-                throw new Exception("参数price不合法");
+            if (merchantId == 0) { // 平台需要校验销售价格
+                if (StringUtils.isBlank(bean.getPrice()) || Float.valueOf(bean.getPrice()) <= 0) {
+                    throw new Exception("参数price不合法");
+                }
             }
 
             // 执行新增商品
