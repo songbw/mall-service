@@ -9,8 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class UploadController {
@@ -40,9 +38,8 @@ public class UploadController {
     }
 
     @PostMapping("/down/upload")
-    private OperaResult downUpload(@RequestBody List<AyFcImages> images) {
+    private OperaResult downUpload(@RequestBody AyFcImages images) {
         OperaResult result = new OperaResult();
-
         service.downUpload(images) ;
         return result;
     }

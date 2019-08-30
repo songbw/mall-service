@@ -128,13 +128,13 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         }
         packImg(bean);
         // 修改商品信息
+        bean.setMerchantId(2);
         productDao.update(bean);
         return result;
     }
 
     private void packImg(AoyiProdIndexX bean) {
         String path = "/"+ bean.getCategory() + "/"+ bean.getSkuid() + "/";
-        List<AyFcImages> ayFcImagesList = new ArrayList<>();
         // 组装主图字段，添加图片
         if (bean.getZtImage() != null && bean.getZtImage().size() > 0){
             bean.getZtImage().forEach(zt -> {
@@ -154,7 +154,6 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 ayFcImages.setPath(path);
                 ayFcImages.setType("ZT");
                 ayFcImagesDao.insert(ayFcImages) ;
-                ayFcImagesList.add(ayFcImages);
             });
         }
         // 组装详情图字段，添加图片对应表
@@ -176,12 +175,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 ayFcImages.setPath(path);
                 ayFcImages.setType("XQ");
                 ayFcImagesDao.insert(ayFcImages) ;
-                ayFcImagesList.add(ayFcImages);
             });
-        }
-        if (ayFcImagesList.size() > 0) {
-            // TODO 下载上传图片
-            baseService.downUpload(ayFcImagesList) ;
         }
     }
 

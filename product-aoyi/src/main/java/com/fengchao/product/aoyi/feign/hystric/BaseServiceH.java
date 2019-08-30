@@ -11,7 +11,7 @@ import java.util.List;
 public class BaseServiceH implements BaseService {
 
     @Override
-    public OperaResult downUpload(List<AyFcImages> images) {
+    public OperaResult downUpload(AyFcImages images) {
         return HystrixDefaultFallback.defaultFallback(new Throwable());
     }
 }

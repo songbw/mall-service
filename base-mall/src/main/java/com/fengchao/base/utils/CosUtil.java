@@ -15,7 +15,7 @@ public class CosUtil {
     public static String iWalletUrlT = "https://iwallet-1258175138.cos.ap-beijing.myqcloud.com";
     public static String iWalletBucketName = "iwallet-1258175138";
 
-    private  static COSCredentials cred =  new BasicCOSCredentials("AKIDb6fBh75Ah3FG6lpeqqgLqJdnwxrb6eEl","Ws23sVxFMapz0sZ7UzWzOh9pW9hAXjka") ;
+    private  static COSCredentials cred =  new BasicCOSCredentials("AKIDmMgkY6GO9h16vUQsgEW8WfZGjyzlq8f4","c4OVP5ZqxrY2FCtKUO2QYR3QXP1NVO3T") ;
     private static ClientConfig clientConfig = new ClientConfig(new Region("ap-beijing"));
     private static COSClient cosClient = new COSClient(cred, clientConfig);
 
