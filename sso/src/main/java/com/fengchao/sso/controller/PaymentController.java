@@ -30,6 +30,11 @@ public class PaymentController {
         return service.payment(paymentBean);
     }
 
+    @PostMapping(value = "/gat",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    private OperaResult gatPayment(@RequestBody PaymentBean paymentBean, OperaResult result){
+        return service.gPayment(paymentBean);
+    }
+
     @PostMapping(value = "/pingan/back", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private String back(@RequestBody BackRequest bean) {
         logger.info("平安支付回调 入参:{}", JSONUtil.toJsonString(bean));

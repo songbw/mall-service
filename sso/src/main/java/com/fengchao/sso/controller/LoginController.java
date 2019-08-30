@@ -202,5 +202,15 @@ public class LoginController {
         }
         return loginService.findThirdPartyToken(iAppId, initCode) ;
     }
+
+    @GetMapping("/thirdParty/token/gat")
+    public OperaResult thirdPartyTokenGAT(String iAppId, String initCode, OperaResult result) {
+        if (StringUtil.isEmpty(initCode)){
+            result.setCode(100000);
+            result.setMsg("initCode不正确");
+            return result;
+        }
+        return loginService.findThirdPartyTokenGAT(iAppId, initCode) ;
+    }
 }
 

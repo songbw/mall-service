@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class AoyiProdIndexX implements Serializable {
     private Integer id;
@@ -51,6 +52,10 @@ public class AoyiProdIndexX implements Serializable {
     private Date createdAt;
 
     private Date updatedAt;
+
+    private List<String> ztImage;
+
+    private List<String> xqImage;
 
     public Integer getId() {
         return id;
@@ -242,5 +247,21 @@ public class AoyiProdIndexX implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<String> getZtImage() {
+        return ztImage;
+    }
+
+    public void setZtImage(List<String> ztImage) {
+        this.ztImage = ztImage;
+    }
+
+    public List<String> getXqImage() {
+        return xqImage;
+    }
+
+    public void setXqImage(List<String> xqImage) {
+        this.xqImage = xqImage;
     }
 }

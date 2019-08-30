@@ -9,6 +9,8 @@ public interface IPaymentService {
 
     OperaResult payment(PaymentBean paymentBean) ;
 
+    OperaResult gPayment(PaymentBean paymentBean) ;
+
     String back(BackRequest beanRequest) ;
 
     String gNotify(GATBackBean backBean) ;

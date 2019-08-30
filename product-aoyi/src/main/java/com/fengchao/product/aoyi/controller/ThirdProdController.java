@@ -23,40 +23,21 @@ public class ThirdProdController {
     private ThirdProdService service;
 
     /**
-     * 创建商品
+     * 新增商品
      *
      * @param bean
-     * @param merchantId
-     * @param result
      * @return
      * @throws ProductException
      */
     @PostMapping
-    public OperaResult create(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId,
-                                OperaResult result) throws ProductException {
-        log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
-
-        try {
-            int id = service.add(bean);
-            result.getData().put("result", id);
-        } catch (Exception e) {
-            log.error("创建商品 异常:{}", e.getMessage(), e);
-
-            result.setCode(500);
-            result.setMsg(e.getMessage());
-        }
-
-        log.info("创建商品 返回:{}", JSONUtil.toJsonString(result));
-
-        return result;
+    public OperaResult create(@RequestBody AoyiProdIndexX bean){
+        log.info("新增商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.add(bean);
     }
 
     @PutMapping
-    public OperaResult update(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
-//        bean.setMerchantId(merchantId);
-        int id = service.update(bean);
-        result.getData().put("result", id);
-        return result;
+    public OperaResult update(@RequestBody AoyiProdIndexX bean){
+        return service.update(bean);
     }
 
     /**

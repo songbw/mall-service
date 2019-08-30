@@ -20,4 +20,6 @@ public interface ILoginService {
     TokenBean thirdLogin(ThirdLoginBean loginBean) ;
 
     OperaResult findThirdPartyToken(String iAppId, String initCode);
+
+    OperaResult findThirdPartyTokenGAT(String iAppId, String initCode);
 }

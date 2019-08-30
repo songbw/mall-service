@@ -151,37 +151,42 @@ public class LoginServiceImpl implements ILoginService {
     public OperaResult findThirdPartyToken(String iAppId, String initCode) {
         OperaResult result = new OperaResult();
         AccessToken accessToken = new AccessToken() ;
-        if ("10".equals(iAppId)) {
-            // 获取关爱通登录信息
-            OpenId openId = getGuanaitongOpenId(initCode) ;
-            if (openId ==null || openId.getOpen_id() == null || "".equals(openId.getOpen_id())) {
-                result.setCode(9000001);
-                result.setMsg("关爱通获取openId失败。");
-                return  result;
+        accessToken = getPingAnToken(initCode) ;
+        result.getData().put("result", accessToken);
+        return result ;
+    }
+
+    @Override
+    public OperaResult findThirdPartyTokenGAT(String iAppId, String initCode) {
+        OperaResult result = new OperaResult();
+        AccessToken accessToken = new AccessToken() ;
+        // 获取关爱通登录信息
+        OpenId openId = getGuanaitongOpenId(initCode) ;
+        if (openId ==null || openId.getOpen_id() == null || "".equals(openId.getOpen_id())) {
+            result.setCode(9000001);
+            result.setMsg("关爱通获取openId失败。");
+            return  result;
+        }
+        accessToken.setOpenId(openId.getOpen_id());
+        User temp = new User();
+        temp.setOpenId(openId.getOpen_id());
+        temp.setiAppId(iAppId);
+        User user = userMapper.selectByOpenId(temp);
+        if (user == null) {
+            GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id()) ;
+            user = new User();
+            user.setOpenId(openId.getOpen_id());
+            if (!StringUtils.isEmpty(guanaitongUserBean.getName())) {
+                user.setNickname(guanaitongUserBean.getName());
+            } else {
+                String nickname = "fc_" + guanaitongUserBean.getOpen_id().substring(user.getOpenId().length() - 8);
+                user.setNickname(nickname);
             }
-            accessToken.setOpenId(openId.getOpen_id());
-            User temp = new User();
-            temp.setOpenId(openId.getOpen_id());
-            temp.setiAppId(iAppId);
-            User user = userMapper.selectByOpenId(temp);
-            if (user == null) {
-                GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id()) ;
-                user = new User();
-                user.setOpenId(openId.getOpen_id());
-                if (!StringUtils.isEmpty(guanaitongUserBean.getName())) {
-                    user.setNickname(guanaitongUserBean.getName());
-                } else {
-                    String nickname = "fc_" + guanaitongUserBean.getOpen_id().substring(user.getOpenId().length() - 8);
-                    user.setNickname(nickname);
-                }
-                user.setName(guanaitongUserBean.getName());
-                user.setTelephone(guanaitongUserBean.getMobile());
-                user.setCreatedAt(new Date());
-                user.setiAppId(iAppId);
-                userMapper.insertSelective(user);
-            }
-        } else {
-            accessToken = getPingAnToken(initCode) ;
+            user.setName(guanaitongUserBean.getName());
+            user.setTelephone(guanaitongUserBean.getMobile());
+            user.setCreatedAt(new Date());
+            user.setiAppId(iAppId);
+            userMapper.insertSelective(user);
         }
         result.getData().put("result", accessToken);
         return result ;

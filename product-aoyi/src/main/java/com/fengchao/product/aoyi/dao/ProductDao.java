@@ -6,8 +6,11 @@ import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -103,6 +106,63 @@ public class ProductDao {
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         aoyiProdIndex.setState(bean.getState());
+        aoyiProdIndex.setUpdatedAt(new Date());
+
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
+    /**
+     * 根据SKU获取商品列表
+     * @param skuId
+     * @param merchantId
+     * @return
+     */
+    public List<AoyiProdIndex> findBySkuId(String skuId, int merchantId) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andSkuidEqualTo(skuId);
+        criteria.andMerchantIdEqualTo(merchantId);
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 添加商品数据
+     * @param aoyiProdIndexX
+     * @return
+     */
+    public Integer insertX(AoyiProdIndexX aoyiProdIndexX) {
+        AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndexWithBLOBs.setSkuid(aoyiProdIndexX.getSkuid());
+        aoyiProdIndexWithBLOBs.setBrand(aoyiProdIndexX.getBrand());
+        aoyiProdIndexWithBLOBs.setCategory(aoyiProdIndexX.getCategory());
+        aoyiProdIndexWithBLOBs.setModel(aoyiProdIndexX.getModel());
+        aoyiProdIndexWithBLOBs.setMpu(aoyiProdIndexX.getMpu());
+        aoyiProdIndexWithBLOBs.setMerchantId(aoyiProdIndexX.getMerchantId());
+        aoyiProdIndexWithBLOBs.setState(aoyiProdIndexX.getState());
+        aoyiProdIndexWithBLOBs.setName(aoyiProdIndexX.getName());
+        aoyiProdIndexWithBLOBs.setPrice(aoyiProdIndexX.getPrice());
+        aoyiProdIndexWithBLOBs.setSprice(aoyiProdIndexX.getSprice());
+        aoyiProdIndexWithBLOBs.setImagesUrl(aoyiProdIndexX.getImagesUrl());
+        aoyiProdIndexWithBLOBs.setIntroductionUrl(aoyiProdIndexX.getIntroductionUrl());
+        aoyiProdIndexWithBLOBs.setCreatedAt(aoyiProdIndexX.getCreatedAt());
+        aoyiProdIndexWithBLOBs.setUpdatedAt(aoyiProdIndexX.getUpdatedAt());
+        int count = aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
+        return aoyiProdIndexWithBLOBs.getId();
+    }
+
+    /**
+     * 更新产品信息
+     * @param bean
+     */
+    public void update(AoyiProdIndexX bean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andSkuidEqualTo(bean.getSkuid());
+        criteria.andMerchantIdEqualTo(bean.getMerchantId());
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(bean, aoyiProdIndex);
         aoyiProdIndex.setUpdatedAt(new Date());
 
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);

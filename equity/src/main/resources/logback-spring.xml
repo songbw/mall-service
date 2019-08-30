@@ -113,7 +113,7 @@
 
 
 
-    <springProfile name="test,prod,gatsn">
+    <springProfile name="test,prod,gatsn,gatzy">
         <root level="INFO" additivity="false">
             <appender-ref ref="INFO"/>
             <appender-ref ref="ERROR"/>
