@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.bean.QueryProdBean;
 import com.fengchao.product.aoyi.bean.SerachBean;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
+import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
@@ -228,6 +229,29 @@ public class AdminProdController {
 
             //
             log.info("export product file finish");
+        } catch (ExportProuctOverRangeException e) {
+            log.error("导出文件异常了:{}", e.getMessage(), e);
+
+            response.setStatus(416);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "416");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出商品列表文件 错误了:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
         } catch (Exception e) {
             log.error("导出文件异常:{}", e.getMessage(), e);
 
