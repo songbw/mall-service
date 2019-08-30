@@ -135,6 +135,7 @@ public class ProductDao {
         AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs();
         aoyiProdIndexWithBLOBs.setSkuid(aoyiProdIndexX.getSkuid());
         aoyiProdIndexWithBLOBs.setBrand(aoyiProdIndexX.getBrand());
+        aoyiProdIndexWithBLOBs.setBrandId(aoyiProdIndexX.getBrandId());
         aoyiProdIndexWithBLOBs.setCategory(aoyiProdIndexX.getCategory());
         aoyiProdIndexWithBLOBs.setModel(aoyiProdIndexX.getModel());
         aoyiProdIndexWithBLOBs.setMpu(aoyiProdIndexX.getMpu());
