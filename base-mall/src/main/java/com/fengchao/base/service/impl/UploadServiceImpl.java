@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class UploadServiceImpl implements UploadService {
@@ -31,18 +30,16 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public void downUpload(List<AyFcImages> images) {
+    public void downUpload(AyFcImages img) {
         String base = "aoyi";
-        images.forEach(img -> {
-            String array1[] = img.getAyImage().split(img.getType());
-            String fileName = array1[1];
-            try {
-                URLConnectionDownloader.download(img.getAyImage(), fileName, base + img.getPath() + img.getType());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + fileName),img.getPath() + img.getType() + fileName) ;
-        });
+        String array1[] = img.getAyImage().split(img.getType());
+        String fileName = array1[1];
+        try {
+            URLConnectionDownloader.download(img.getAyImage(), fileName, base + img.getPath() + img.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + fileName),img.getPath() + img.getType() + fileName) ;
     }
 
     private File saveFile(MultipartFile file) {

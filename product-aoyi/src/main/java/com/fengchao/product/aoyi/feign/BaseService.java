@@ -15,6 +15,6 @@ import java.util.List;
 public interface BaseService {
 
     @RequestMapping(value = "/down/upload", method = RequestMethod.POST)
-    OperaResult downUpload(@RequestBody List<AyFcImages> images);
+    OperaResult downUpload(@RequestBody AyFcImages images);
 
 }
