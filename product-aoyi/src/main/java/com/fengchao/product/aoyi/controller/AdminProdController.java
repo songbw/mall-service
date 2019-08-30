@@ -171,7 +171,7 @@ public class AdminProdController {
      */
     @GetMapping(value = "/export")
     public void exportOrder(SerachBean serachBean,
-                            @RequestHeader(name = "merchant") Integer merchantHeader, // FIXME :
+                            @RequestHeader(name = "merchant", required = false, defaultValue = "0") Integer merchantHeader, // FIXME :
                             HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
         // 创建HSSFWorkbook对象
@@ -208,6 +208,7 @@ public class AdminProdController {
             // 3. 输出文件
             try {
                 response.setHeader("content-type", "application/octet-stream");
+                response.setCharacterEncoding("utf-8");
                 response.setContentType("application/octet-stream");
                 response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
