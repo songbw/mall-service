@@ -225,7 +225,7 @@ public class OrderServiceImpl implements OrderService {
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.setOpenId(bean.getOpenId());
-                shoppingCart.setMpu(orderSku.getSkuId());
+                shoppingCart.setMpu(orderSku.getMpu());
                 shoppingCartMapper.deleteByOpenIdAndSku(shoppingCart);
             });
             // 30分钟后取消订单

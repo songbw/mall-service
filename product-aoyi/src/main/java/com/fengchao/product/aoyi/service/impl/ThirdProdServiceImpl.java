@@ -58,12 +58,6 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             result.setMsg("category 不能为空。");
             return result;
         }
-        // model不能为空
-        if (StringUtils.isEmpty(bean.getModel())){
-            result.setCode(2000004);
-            result.setMsg("model 不能为空。");
-            return result;
-        }
         // name不能为空
         if (StringUtils.isEmpty(bean.getName())){
             result.setCode(2000005);
