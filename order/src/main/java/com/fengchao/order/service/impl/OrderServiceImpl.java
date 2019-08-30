@@ -589,8 +589,8 @@ public class OrderServiceImpl implements OrderService {
         return dayStatisticsBean;
     }
 
-    @Override
-    public DayStatisticsBean findMerchantOverallStatistics(Integer merchantId) throws Exception {
+    @Deprecated
+    public DayStatisticsBean findMerchantOverallStatisticsDeprecated(Integer merchantId) throws Exception {
         // 1. 初始化统计数据 ：　a.获取订单支付总额; b.(已支付)订单总量; c.(已支付)下单人数
         BigDecimal orderAmount = new BigDecimal(0); // 获取订单支付总额
         Integer orderCount = 0; // (已支付)订单总量
@@ -639,6 +639,58 @@ public class OrderServiceImpl implements OrderService {
                     orderAmount = orderAmount.add(orderDetail.getSalePrice()); // 子订单支付总额
                     orderCount = orderCount + 1; // 子订单数量
                 }
+            }
+
+            currentPageNo++;
+        }
+
+        // 3. 拼装结果
+        DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
+        dayStatisticsBean.setOrderPaymentAmount(orderAmount.floatValue());
+        dayStatisticsBean.setOrderCount(orderCount);
+        dayStatisticsBean.setOrderPeopleNum(openIdSet.size()); // 下单人数
+
+        logger.info("获取商户的关于订单的总体运营统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
+
+        return dayStatisticsBean;
+    }
+
+    @Override
+    public DayStatisticsBean findMerchantOverallStatistics(Integer merchantId) throws Exception {
+        // 1. 初始化统计数据 ：　a.获取订单支付总额; b.(已支付)订单总量; c.(已支付)下单人数
+        BigDecimal orderAmount = new BigDecimal(0); // 获取订单支付总额
+        Integer orderCount = 0; // (已支付)订单总量
+        Set<String> openIdSet = new HashSet<>(); // 下单人id 集合
+
+        // 2. 查询已支付的主订单详情数据，分页查询(批量循环查询)
+        int currentPageNo = 1;
+        int pageSize = 300;
+
+        // 2.1 初始化查询
+        logger.info("获取商户的关于订单的总体运营统计数据 初始化查询主订单详情 数据库入参 merchantId:{}, currentPageNo:{}, pageSize:{}",
+                merchantId, currentPageNo, pageSize);
+        PageInfo<Orders> pageInfo = ordersDao.selectPayedOrderListByMerchantIdPageable(merchantId, currentPageNo, pageSize);
+        logger.info("获取商户的关于订单的总体运营统计数据 初始化查询主订单详情 数据库返回 pageInfo:{}", JSONUtil.toJsonString(pageInfo));
+
+        // 总页数
+        Integer totalPage = pageInfo.getPages(); // FIXME : 如果没有数据会怎样?
+
+
+        // 2.2 批量循环查询
+        while (currentPageNo <= totalPage) {
+            if (currentPageNo > 1) {
+                logger.info("获取商户的关于订单的总体运营统计数据 查询主订单详情 数据库入参 merchantId:{}, currentPageNo:{}, pageSize:{}",
+                        merchantId, currentPageNo, pageSize);
+                pageInfo = ordersDao.selectPayedOrderListByMerchantIdPageable(merchantId, currentPageNo, pageSize);
+                logger.info("获取商户的关于订单的总体运营统计数据 查询主订单详情 数据库返回pageInfo:{}", JSONUtil.toJsonString(pageInfo));
+            }
+
+            // 获取查询到的主订单详情 并统计
+            List<Orders> ordersList = pageInfo.getList();
+            for (Orders orders : ordersList) {
+                orderAmount = orderAmount.add(new BigDecimal(orders.getSaleAmount() - orders.getServFee()));
+                orderCount = orderCount + 1; // 订单数量
+                openIdSet.add(orders.getOpenId()); //
             }
 
             currentPageNo++;
