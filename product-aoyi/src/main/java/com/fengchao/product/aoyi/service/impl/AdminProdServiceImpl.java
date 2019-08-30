@@ -257,9 +257,13 @@ public class AdminProdServiceImpl implements AdminProdService {
             }
         }
         // 设置价格
-        BigDecimal bprice = new BigDecimal(requestProdParams.getPrice());
-        int iprice = bprice.multiply(new BigDecimal(100)).intValue(); // 价格，单位：分
-        aoyiProdIndexWithBLOBs.setIprice(iprice);
+        aoyiProdIndexWithBLOBs.setIprice(0);
+        if (StringUtils.isNotBlank(requestProdParams.getPrice())) {
+            BigDecimal bprice = new BigDecimal(requestProdParams.getPrice());
+            int iprice = bprice.multiply(new BigDecimal(100)).intValue(); // 价格，单位：分
+            aoyiProdIndexWithBLOBs.setIprice(iprice);
+        }
+
 
         // 执行插入
         int result = productDao.insert(aoyiProdIndexWithBLOBs);
