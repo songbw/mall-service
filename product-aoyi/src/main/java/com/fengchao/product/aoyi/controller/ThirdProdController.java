@@ -37,6 +37,7 @@ public class ThirdProdController {
 
     @PutMapping
     public OperaResult update(@RequestBody AoyiProdIndexX bean){
+        log.info("修改商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
         return service.update(bean);
     }
 
