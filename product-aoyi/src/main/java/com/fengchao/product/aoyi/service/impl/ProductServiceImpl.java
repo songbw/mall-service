@@ -18,6 +18,7 @@ import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,11 @@ public class ProductServiceImpl implements ProductService {
         }
         pageBean = PageBean.build(pageBean, prodIndices, total, queryBean.getPageNo(), queryBean.getPageSize());
         return pageBean;
+    }
+
+    @Override
+    public PageInfo<AoyiProdIndex> findListByCategories(ProductQueryBean queryBean) throws ProductException {
+        return productDao.selectListByCategories(queryBean);
     }
 
     @Override

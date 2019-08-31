@@ -30,6 +30,12 @@ public class ProductController {
         return result;
     }
 
+    @PostMapping("/all/categories")
+    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, OperaResult result) throws ProductException {
+        result.getData().put("result", service.findListByCategories(queryBean)) ;
+        return result;
+    }
+
     @GetMapping
     private OperaResult find(String mpu, OperaResult result){
         if (StringUtils.isEmpty(mpu)) {
