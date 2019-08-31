@@ -195,8 +195,18 @@ public class OrderServiceImpl implements OrderService {
             logger.info("创建订单 新增主订单:{}", JSONUtil.toJsonString(bean));
             orderMapper.insert(bean);
             AtomicInteger i= new AtomicInteger(1);
-            orderMerchantBean.getSkus().forEach(orderSku -> {
+            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
+
+                // 判断产品上下架状态
+                if ("0".equals(prodIndexWithBLOBs.getState())) {
+                    operaResult.setCode(400502);
+                    operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "已下架。");
+                    // 异常数据库回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return operaResult;
+                }
+
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setPromotionId(orderSku.getPromotionId());
                 orderDetail.setSalePrice(orderSku.getSalePrice());
@@ -227,7 +237,7 @@ public class OrderServiceImpl implements OrderService {
                 shoppingCart.setOpenId(bean.getOpenId());
                 shoppingCart.setMpu(orderSku.getMpu());
                 shoppingCartMapper.deleteByOpenIdAndSku(shoppingCart);
-            });
+            }
             // 30分钟后取消订单
             JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
         }
