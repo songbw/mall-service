@@ -197,6 +197,15 @@
     <include refid="Base_Column_List" />
     from coupon where status = 4 and customer_type = 1
   </select>
+  <select id="selectCouponListByIdList"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    where id  in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from coupon
     where id = #{id,jdbcType=INTEGER}

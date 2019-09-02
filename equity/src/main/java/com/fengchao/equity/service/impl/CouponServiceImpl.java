@@ -489,6 +489,17 @@ public class CouponServiceImpl implements CouponService {
         return pageableData;
     }
 
+    @Override
+    public List<CouponBean> findCouponListByIdList(List<Integer> ids) {
+        List<CouponX> couponList = mapper.selectCouponListByIdList(ids);
+        List<CouponBean> couponBeanList = new ArrayList<>();
+        for (CouponX coupon : couponList) {
+            CouponBean couponBean = couponToBean(coupon);
+            couponBeanList.add(couponBean);
+        }
+        return couponBeanList;
+    }
+
     //============================== private =========================
 
     /**

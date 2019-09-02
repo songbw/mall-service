@@ -47,4 +47,6 @@ public interface CouponXMapper {
     List<CouponX> selectGiftCoupon();
 
     List<Integer> selectActiveTagsCoupon(@Param("tagId") Integer tagId);
+
+    List<CouponX> selectCouponListByIdList(List<Integer> ids);
 }
