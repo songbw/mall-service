@@ -490,10 +490,15 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public List<CouponBean> findCouponListByIdList(List<Integer> ids) {
+    public List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId) {
         List<CouponX> couponList = mapper.selectCouponListByIdList(ids);
         List<CouponBean> couponBeanList = new ArrayList<>();
+        HashMap map = new HashMap();
+        map.put("userOpenId", openId);
         for (CouponX coupon : couponList) {
+            map.put("couponId",coupon.getId());
+            int num = useInfoMapper.selectCollectCount(map);
+            coupon.setUserCollectNum(num);
             CouponBean couponBean = couponToBean(coupon);
             couponBeanList.add(couponBean);
         }

@@ -51,5 +51,5 @@ public interface CouponService {
 
     PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize);
 
-    List<CouponBean> findCouponListByIdList(List<Integer> ids);
+    List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId);
 }
