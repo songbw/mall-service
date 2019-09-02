@@ -72,8 +72,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public PageInfo<SUser> selectUser(Integer page, Integer limit) {
-        PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit);
+    public PageInfo<SUser> selectUser(Integer page, Integer limit, String name, String sex, String telephone) {
+        PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit, name, sex, telephone);
         return users;
     }
 

@@ -60,7 +60,7 @@ public class UserController {
         if (pageSize == null || pageSize > 200) {
             pageNo = 10;
         }
-        result.getData().put("userList",service.selectUser(pageNo, pageSize));
+        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone));
         return result;
     }
 
@@ -130,7 +130,7 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("prifile")
+    @GetMapping("profile")
     public OperaResult findById(Integer id) {
         OperaResult result = new OperaResult();
         if(id == null || id == 0){
