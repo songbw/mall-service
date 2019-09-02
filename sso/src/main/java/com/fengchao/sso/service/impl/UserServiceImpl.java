@@ -35,7 +35,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private UserDao userDao;
 
-    public User selectById(String id) {
+    public User selectById(Integer id) {
         return mapper.selectByPrimaryKey(id);
     }
 

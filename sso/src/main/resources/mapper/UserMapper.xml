@@ -22,11 +22,11 @@
   <sql id="Base_Column_List" >
     id, name, sex, age, idcard, login_id, portrait, open_id openId, nickname, head_img headImg, birth, telephone, created_at createdAt, updated_at updatedAt, i_app_id
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
     select
     <include refid="Base_Column_List" />
     from s_user
-    where id = #{id,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectByOpenId" resultMap="BaseResultMap" parameterType="com.fengchao.sso.model.User">
     select

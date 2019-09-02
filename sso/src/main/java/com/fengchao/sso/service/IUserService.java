@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IUserService {
-    User selectById(String id);
+    User selectById(Integer id);
 
     int update(UserBean bean);
 

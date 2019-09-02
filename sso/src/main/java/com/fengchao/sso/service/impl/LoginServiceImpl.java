@@ -110,6 +110,7 @@ public class LoginServiceImpl implements ILoginService {
                 if(orders.isEmpty()){
                     bean.setNewUser(true);
                 }else{
+                    redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
                     return bean;
                 }
             }
