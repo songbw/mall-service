@@ -12,13 +12,10 @@ import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.service.AggregationService;
 import com.fengchao.aggregation.utils.CosUtil;
-import com.fengchao.aggregation.utils.RedisDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
-import static io.lettuce.core.GeoArgs.Unit.m;
 
 @Service
 public class AggregationServiceImpl implements AggregationService {
@@ -62,7 +59,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findAggregationById(Integer id) throws AggregationException {
         Aggregation aggregation = mapper.selectByPrimaryKey(id);
-        Aggregation aggregationByIdtest = findAggregationByIdtest(aggregation.getContent());
+        Aggregation aggregationByIdtest = convertContent(aggregation.getContent());
 //        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
 //        if(AggregationArray == null || AggregationArray.size() < 1 ){
 //            return aggregation;
@@ -116,7 +113,7 @@ public class AggregationServiceImpl implements AggregationService {
         return aggregation;
     }
 
-    public Aggregation findAggregationByIdtest(String content) throws AggregationException {
+    public Aggregation convertContent(String content) throws AggregationException {
         List<String> mpus = new ArrayList<>();
         Aggregation aggregation = new Aggregation();
         JSONArray AggregationArray = JSONObject.parseArray(content);
@@ -295,7 +292,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findHomePage() throws AggregationException {
         Aggregation homePage = mapper.findHomePage();
-        Aggregation aggregationByIdtest = findAggregationByIdtest(homePage.getContent());
+        Aggregation aggregationByIdtest = convertContent(homePage.getContent());
 //        JSONArray AggregationArray = JSONObject.parseArray(homePage.getContent());
 //        if(AggregationArray == null || AggregationArray.size() < 1 ){
 //            return homePage;
