@@ -1,9 +1,12 @@
 package com.fengchao.equity.service.impl;
 
+import com.fengchao.equity.bean.PromotionInitialScheduleBean;
 import com.fengchao.equity.bean.PromotionScheduleBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
+import com.fengchao.equity.dao.PromotionInitialScheduleDao;
 import com.fengchao.equity.dao.PromotionScheduleDao;
+import com.fengchao.equity.model.PromotionInitialSchedule;
 import com.fengchao.equity.model.PromotionSchedule;
 import com.fengchao.equity.service.PromotionScheduleService;
 import com.fengchao.equity.utils.ConvertUtil;
@@ -12,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +25,8 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
 
     @Autowired
     private PromotionScheduleDao scheduleDao;
+    @Autowired
+    private PromotionInitialScheduleDao initialScheduleDao;
 
     @Override
     public int createSchedule(PromotionScheduleBean bean) {
@@ -68,5 +74,34 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
         promotionSchedule.setStartTime(bean.getStartTime());
         promotionSchedule.setEndTime(bean.getEndTime());
         return scheduleDao.updatePromotionSchedule(promotionSchedule);
+    }
+
+    @Override
+    public PromotionInitialScheduleBean findInitialSchedule() {
+        PromotionInitialScheduleBean bean = new PromotionInitialScheduleBean();
+        List<String> schedules = new ArrayList<>();
+        List<PromotionInitialSchedule> initialSchedule = initialScheduleDao.findInitialSchedule();
+        initialSchedule.forEach(schedule -> {
+            schedules.add(schedule.getInitialSchedule());
+        });
+        bean.setInitialSchedules(schedules);
+        return bean;
+    }
+
+    @Override
+    public int createInitialSchedule(PromotionInitialScheduleBean bean) {
+        List<PromotionInitialSchedule> promotionSchedule = initialScheduleDao.findInitialSchedule();
+        if(!promotionSchedule.isEmpty()){
+            int num = initialScheduleDao.deleteInitialSchedule();
+            if(num == 0){
+                return num;
+            }
+        }
+        bean.getInitialSchedules().forEach(schedule -> {
+            PromotionInitialSchedule initialSchedule = new PromotionInitialSchedule();
+            initialSchedule.setInitialSchedule(schedule);
+            initialScheduleDao.createInitialSchedule(initialSchedule);
+        });
+        return 1;
     }
 }

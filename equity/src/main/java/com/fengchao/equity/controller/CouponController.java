@@ -203,8 +203,8 @@ public class CouponController {
     }
 
     @GetMapping("batchCoupon")
-    public OperaResult findCouponListByIdList(@RequestParam("ids") List<Integer> ids, OperaResult result){
-        List<CouponBean> couponBeanList = couponService.findCouponListByIdList(ids);
+    public OperaResult findCouponListByIdList(@RequestParam("ids") List<Integer> ids, String openId, OperaResult result){
+        List<CouponBean> couponBeanList = couponService.findCouponListByIdList(ids, openId);
         result.getData().put("result", couponBeanList);
         return result;
     }
