@@ -1,8 +1,8 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.bean.PromotionInitialScheduleBean;
 import com.fengchao.equity.bean.PromotionScheduleBean;
-import com.fengchao.equity.model.PromotionScheduleX;
 import com.fengchao.equity.service.PromotionScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,4 +47,15 @@ public class AdminPromotionScheduleController {
         return result;
     }
 
+    @PostMapping("createInitial")
+    public OperaResult createInitialSchedule(@RequestBody PromotionInitialScheduleBean bean, OperaResult result){
+        result.getData().put("result", scheduleService.createInitialSchedule(bean));
+        return result;
+    }
+
+    @GetMapping("initial")
+    public OperaResult findInitialSchedule(OperaResult result){
+        result.getData().put("result", scheduleService.findInitialSchedule());
+        return result;
+    }
 }
