@@ -182,7 +182,7 @@ public class ProductServiceImpl implements ProductService {
         ProductInfoBean infoBean = new ProductInfoBean();
         AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
         BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
-        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getSkuid());
+        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu());
         infoBean.setPromotion(promotionInfoBeans);
 
         List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
