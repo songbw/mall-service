@@ -34,6 +34,8 @@ public class ImageDownUpRunnerJobImpl implements JobRunner {
                     if (result.getCode() == 200) {
                         image.setStatus(1);
                         dao.updateStatus(image);
+                    } else {
+                        LOGGER.info("调用base服务失败：{}", result);
                     }
                 });
             }
