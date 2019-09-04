@@ -17,4 +17,6 @@ public interface ThirdProdService {
     void updateState(StateBean bean);
 
     void delete(Integer merchantId, Integer id) throws ProductException;
+
+    void uploadProdImage() ;
 }
