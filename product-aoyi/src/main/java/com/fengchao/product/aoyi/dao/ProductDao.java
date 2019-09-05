@@ -172,6 +172,23 @@ public class ProductDao {
     }
 
     /**
+     * 根据MPU更新产品信息
+     * @param bean
+     */
+    public void updateByMpu(AoyiProdIndexX bean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuEqualTo(bean.getMpu());
+        criteria.andMerchantIdEqualTo(bean.getMerchantId());
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(bean, aoyiProdIndex);
+        aoyiProdIndex.setUpdatedAt(new Date());
+
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
+    /**
      * 查询product列表
      *
      * @param queryBean

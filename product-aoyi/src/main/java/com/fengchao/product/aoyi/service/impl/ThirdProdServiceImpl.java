@@ -127,6 +127,20 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         return result;
     }
 
+    @Override
+    public OperaResult updateByMpu(AoyiProdIndexX bean) {
+        OperaResult result = new OperaResult();
+        // mpu不能为空
+        if (StringUtils.isEmpty(bean.getMpu())){
+            result.setCode(2000001);
+            result.setMsg("mpu 不能为空。");
+            return result;
+        }
+        // 修改商品信息
+        productDao.updateByMpu(bean);
+        return result;
+    }
+
     private void packImg(AoyiProdIndexX bean) {
         String path = "/"+ bean.getCategory() + "/"+ bean.getSkuid() + "/";
         // 组装主图字段，添加图片
