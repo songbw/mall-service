@@ -68,13 +68,11 @@ public class PromotionDao {
         return promotionList;
     }
 
-    public List<Promotion> selectOverduePromotion() {
+    public List<Promotion> findOnlineMpu() {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
-        criteria.andStatusEqualTo(5);
-        promotionExample.setOrderByClause("created_date desc");
+        criteria.andStatusEqualTo(4);
 
-        PageHelper.startPage(1, 1);
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
         return promotionList;

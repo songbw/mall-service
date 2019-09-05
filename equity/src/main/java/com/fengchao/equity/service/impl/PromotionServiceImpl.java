@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -340,6 +341,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setDiscount(promotionMpuX.getDiscount());
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
+            promotionMpu.setPromotionImage(promotionMpuX.getPromotionImage());
             num[0] = promotionMpuMapper.insertSelective(promotionMpu);
         };
         return num[0];
@@ -357,6 +359,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setDiscount(promotionMpuX.getDiscount());
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
+            promotionMpu.setPromotionImage(promotionMpuX.getPromotionImage());
             num[0] = promotionMpuMapper.updateByPrimaryKeySelective(promotionMpu);
         });
         return num[0];
@@ -590,6 +593,32 @@ public class PromotionServiceImpl implements PromotionService {
         pageableData.setList(groupInfoList);
         pageableData.setPageInfo(pageVo);
         return pageableData;
+    }
+
+    @Override
+    public List<PromotionMpuX> findOnlineMpu() {
+        List<PromotionMpuX> mpus = new ArrayList();
+        List<Promotion> onlineMpu = promotionDao.findOnlineMpu();
+        Date now = new Date();
+        onlineMpu.forEach(promotion -> {
+            if(promotion.getDailySchedule()){
+                List<PromotionSchedule> schedules = scheduleDao.findByPromotionId(promotion.getId());
+                schedules.forEach(schedule -> {
+                    if(schedule.getStartTime().before(now) && schedule.getEndTime().after(now)){
+                        List<PromotionMpuX> mpuList = mpuXMapper.selectDaliyPromotionMpu(promotion.getId(), schedule.getId());
+                        mpuList.forEach(mpu -> {
+                            mpus.add(mpu);
+                        });
+                    }
+                });
+            }else{
+                List<PromotionMpuX> mpuList = mpuXMapper.selectByPrimaryMpu(promotion.getId());
+                mpuList.forEach(mpu -> {
+                    mpus.add(mpu);
+                });
+            }
+        });
+        return mpus;
     }
 
     // ====================================== private ==========================

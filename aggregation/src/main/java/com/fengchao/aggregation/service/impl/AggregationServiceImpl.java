@@ -7,6 +7,7 @@ import com.fengchao.aggregation.bean.AggregationBean;
 import com.fengchao.aggregation.bean.OperaResult;
 import com.fengchao.aggregation.bean.PageBean;
 import com.fengchao.aggregation.exception.AggregationException;
+import com.fengchao.aggregation.feign.EquityService;
 import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
@@ -26,6 +27,8 @@ public class AggregationServiceImpl implements AggregationService {
     private AggregationMpuMapper mpuMapper;
     @Autowired
     private ProdService prodService;
+    @Autowired
+    private EquityService equityService;
 
     @Override
     public PageBean findAggregation(Integer offset, Integer limit, String order, Integer merchantId) throws AggregationException {
@@ -145,7 +148,8 @@ public class AggregationServiceImpl implements AggregationService {
         }
         HashSet<String> hashSet = new HashSet<>(mpus);
         mpus.clear();mpus.addAll(hashSet);
-        Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
+        Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
+        Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
             OperaResult result = prodService.findProductListByMpuIdList(mpus);
             if (result.getCode() == 200) {
@@ -153,6 +157,14 @@ public class AggregationServiceImpl implements AggregationService {
                 List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
                 for(AoyiProdIndex prod: aoyiProdIndices){
                     aoyiProdMap.put(prod.getMpu(), prod);
+                }
+            }
+            OperaResult onlinePromotion = equityService.findOnlinePromotion();
+            if (onlinePromotion.getCode() == 200) {
+                Object object = result.getData().get("result");
+                List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
+                for(PromotionMpu mpu: promotionMpus){
+                    promotionMap.put(mpu.getMpu(), mpu);
                 }
             }
         }
@@ -201,8 +213,13 @@ public class AggregationServiceImpl implements AggregationService {
                                     }
                                     aoyiProdIndex.setImage(image);
                                 }
+                                PromotionMpu promotionMpu = promotionMap.get(mpu);
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
+                                if(promotionMpu != null){
+                                    float promotionPrice = Float.valueOf(aoyiProdIndex.getPrice()) - Float.valueOf(promotionMpu.getDiscount());
+                                    jsonObject.put("promotionPrice",  promotionPrice);
+                                }
                             }
                         }
                     }
