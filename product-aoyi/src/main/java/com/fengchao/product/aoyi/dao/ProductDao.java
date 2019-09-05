@@ -179,7 +179,6 @@ public class ProductDao {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andMpuEqualTo(bean.getMpu());
-        criteria.andMerchantIdEqualTo(bean.getMerchantId());
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         BeanUtils.copyProperties(bean, aoyiProdIndex);
