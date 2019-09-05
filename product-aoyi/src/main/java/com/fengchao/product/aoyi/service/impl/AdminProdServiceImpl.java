@@ -238,6 +238,10 @@ public class AdminProdServiceImpl implements AdminProdService {
         AtomicInteger atomicInteger = new AtomicInteger(skuValue); // FIXME : 这个原子操作好像没用呀!
         String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet());
         aoyiProdIndexWithBLOBs.setMpu(sku);
+        // 如果没有传SKU则将MPU赋值给SKU
+        if (aoyiProdIndexWithBLOBs.getSkuid() == null || "".equals(aoyiProdIndexWithBLOBs.getSkuid())) {
+            aoyiProdIndexWithBLOBs.setSkuid(aoyiProdIndexWithBLOBs.getMpu());
+        }
 
         // 设置状态
         aoyiProdIndexWithBLOBs.setState(String.valueOf(ProductStatusEnum.INIT.getValue()));

@@ -41,6 +41,12 @@ public class ThirdProdController {
         return service.update(bean);
     }
 
+    @PutMapping("mpu")
+    public OperaResult updateByMup(@RequestBody AoyiProdIndexX bean){
+        log.info("根据MPU修改商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.updateByMpu(bean);
+    }
+
     /**
      * 更新产品价格
      * @param bean

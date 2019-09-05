@@ -25,4 +25,6 @@ public interface ReceiverMapper {
     int updateStatusById(Receiver record) ;
 
     int updateStatusByOpenId(Receiver record) ;
+
+    List<Receiver> selectByOpenId(String openId);
 }

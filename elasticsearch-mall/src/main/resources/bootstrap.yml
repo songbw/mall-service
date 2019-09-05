@@ -23,9 +23,6 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
-      #使用uri时eureka注册信息可以直接写在git仓库中，但这必须要先知道config-server的http://host:port。
-      #      uri: http://localhost:9004
-      #      name: mysql
       profile: ${spring.profiles.active}
       retry:
         max-attempts: 3

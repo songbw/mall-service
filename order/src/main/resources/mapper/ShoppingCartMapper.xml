@@ -41,6 +41,12 @@
     from shopping_cart
     where open_id = #{openId} and is_del = 0 and status = 0
   </select>
+  <select id="selectByOpenId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from shopping_cart
+    where open_id = #{openId}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from shopping_cart
     where id = #{id,jdbcType=INTEGER}

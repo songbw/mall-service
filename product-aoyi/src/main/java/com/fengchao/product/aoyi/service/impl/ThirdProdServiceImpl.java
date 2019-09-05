@@ -12,13 +12,13 @@ import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.AyFcImages;
 import com.fengchao.product.aoyi.service.ThirdProdService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -127,6 +127,20 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         return result;
     }
 
+    @Override
+    public OperaResult updateByMpu(AoyiProdIndexX bean) {
+        OperaResult result = new OperaResult();
+        // mpu不能为空
+        if (StringUtils.isEmpty(bean.getMpu())){
+            result.setCode(2000001);
+            result.setMsg("mpu 不能为空。");
+            return result;
+        }
+        // 修改商品信息
+        productDao.updateByMpu(bean);
+        return result;
+    }
+
     private void packImg(AoyiProdIndexX bean) {
         String path = "/"+ bean.getCategory() + "/"+ bean.getSkuid() + "/";
         // 组装主图字段，添加图片
@@ -189,6 +203,22 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             prodMapper.deleteByPrimaryKey(id);
         } else {
             throw new ProductException(200002, "id为null或等于0");
+        }
+    }
+
+    @Override
+    public void uploadProdImage() {
+        List<AyFcImages> ayFcImages = ayFcImagesDao.findNoUploadImage();
+        if (ayFcImages != null && ayFcImages.size() > 0) {
+            ayFcImages.forEach(image -> {
+                OperaResult result = baseService.downUpload(image);
+                if (result.getCode() == 200) {
+                    image.setStatus(1);
+                    ayFcImagesDao.updateStatus(image);
+                } else {
+                    logger.info("调用base服务失败：{}", JSONUtil.toJsonString(result));
+                }
+            });
         }
     }
 

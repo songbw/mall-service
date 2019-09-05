@@ -12,9 +12,13 @@ public interface ThirdProdService {
 
     OperaResult update(AoyiProdIndexX bean);
 
+    OperaResult updateByMpu(AoyiProdIndexX bean);
+
     void updatePrice(PriceBean bean);
 
     void updateState(StateBean bean);
 
     void delete(Integer merchantId, Integer id) throws ProductException;
+
+    void uploadProdImage() ;
 }
