@@ -120,6 +120,12 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             result.setMsg("skuid 不能为空。");
             return result;
         }
+        List<AoyiProdIndex> aoyiProdIndices = productDao.findBySkuId(bean.getSkuid(), 2) ;
+        if (aoyiProdIndices == null || aoyiProdIndices.size() == 0) {
+            result.setCode(2000001);
+            result.setMsg("skuid "+ bean.getSkuid() +" 不存在，请重新添加。");
+            return result;
+        }
         packImg(bean);
         // 修改商品信息
         bean.setMerchantId(2);

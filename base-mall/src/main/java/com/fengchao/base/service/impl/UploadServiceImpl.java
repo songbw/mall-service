@@ -27,6 +27,7 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public String uploadRelative(MultipartFile file, String path) {
+
         path = "/" + path + "/" + new Date().getTime() + "." + file.getOriginalFilename().split("\\.")[1];
         String url = CosUtil.upload(CosUtil.iWalletBucketName,saveFile(file),path) ;
         return url;
@@ -47,6 +48,10 @@ public class UploadServiceImpl implements UploadService {
     }
 
     private File saveFile(MultipartFile file) {
+        File sf=new File("file");
+        if(!sf.exists()){
+            sf.mkdirs();
+        }
         File convFile = new File("file/"+ file.getOriginalFilename());
         try {
             convFile.createNewFile();
