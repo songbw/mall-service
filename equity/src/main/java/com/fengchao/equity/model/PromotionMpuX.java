@@ -27,6 +27,8 @@ public class PromotionMpuX {
 
     private Integer scheduleId;
 
+    private String promotionImage;
+
     public Integer getId() {
         return id;
     }
@@ -131,4 +133,11 @@ public class PromotionMpuX {
         this.scheduleId = scheduleId;
     }
 
+    public String getPromotionImage() {
+        return promotionImage;
+    }
+
+    public void setPromotionImage(String promotionImage) {
+        this.promotionImage = promotionImage;
+    }
 }

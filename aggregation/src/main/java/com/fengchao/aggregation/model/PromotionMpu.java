@@ -1,4 +1,4 @@
-package com.fengchao.equity.model;
+package com.fengchao.aggregation.model;
 
 public class PromotionMpu {
     private Integer id;

@@ -66,4 +66,10 @@ public class PromotionController {
         log.info("查询活动列表 根据id集合查询 返回:{}", JSONUtil.toJsonString(operaResponse));
         return operaResponse;
     }
+
+    @GetMapping("findOnline")
+    public OperaResult findOnlineMpu(OperaResult result){
+        result.getData().put("result", service.findOnlineMpu());
+        return result;
+    }
 }
