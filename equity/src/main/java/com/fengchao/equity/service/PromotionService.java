@@ -54,7 +54,7 @@ public interface PromotionService {
 
     PromotionX findCurrentSchedule(Integer num);
 
-    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule);
+    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name);
 
     List<PromotionMpuX> findOnlineMpu();
 }

@@ -583,10 +583,10 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule) {
+    public PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name) {
         PageableData<Promotion> pageableData = new PageableData<>();
         PageHelper.startPage(pageNo, pageSize);
-        List<Promotion> promotions = promotionDao.searchActivePromotion(dailySchedule);
+        List<Promotion> promotions = promotionDao.searchActivePromotion(dailySchedule, name);
         PageInfo<Promotion> promotionPageInfo = new PageInfo<>(promotions);
         PageVo pageVo = ConvertUtil.convertToPageVo(promotionPageInfo);
         List<Promotion> groupInfoList = promotionPageInfo.getList();
