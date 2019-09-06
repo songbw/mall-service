@@ -268,6 +268,30 @@ public class ProductServiceImpl implements ProductService {
         return aoyiProdIndexList;
     }
 
+    @Override
+    public OperaResult findInventorySelf(InventorySelfQueryBean queryBean) {
+        OperaResult result = new OperaResult();
+        log.info("根据mup集合查询库存信息 数据库查询参数:{}", JSONUtil.toJsonString(queryBean));
+        List<String> mpuList = new ArrayList<>() ;
+        queryBean.getInventories().forEach(inventoryMpus -> {
+            mpuList.add(inventoryMpus.getMpu()) ;
+        });
+        List<InventoryMpus> inventories = new ArrayList<>() ;
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuList);
+        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+            for (InventoryMpus inventory: queryBean.getInventories()) {
+                if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){
+                    if (aoyiProdIndex.getInventory() >= inventory.getRemainNum()) {
+                        inventory.setState("1");
+                    }
+                    inventories.add(inventory) ;
+                }
+            }
+        });
+        result.getData().put("result", inventories) ;
+        return result;
+    }
+
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
         OperaResult result = equityService.selectCouponBySku(bean);
         log.info(JSON.toJSONString(result));
