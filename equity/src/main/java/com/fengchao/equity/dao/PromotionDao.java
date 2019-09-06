@@ -3,7 +3,6 @@ package com.fengchao.equity.dao;
 import com.fengchao.equity.mapper.PromotionMapper;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionExample;
-import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
