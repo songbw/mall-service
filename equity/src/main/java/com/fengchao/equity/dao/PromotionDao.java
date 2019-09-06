@@ -52,14 +52,17 @@ public class PromotionDao {
         return promotionList;
     }
 
-    public List<Promotion> searchActivePromotion(Boolean dailySchedule) {
+    public List<Promotion> searchActivePromotion(Boolean dailySchedule, String name) {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
         List<Integer> list = new ArrayList<>();
         list.add(3);
         list.add(4);
         criteria.andStatusIn(list);
-        if(dailySchedule != null && !dailySchedule.equals("") ){
+        if(name != null && !name.equals("") ){
+            criteria.andNameLike("%" + name + "%");
+        }
+        if(dailySchedule != null && !dailySchedule.equals("")){
             criteria.andDailyScheduleEqualTo(dailySchedule);
         }
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
