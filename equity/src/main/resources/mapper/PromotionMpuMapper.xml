@@ -222,7 +222,7 @@
         promotion_image = #{promotionImage,jdbcType=VARCHAR},
       </if>
     </set>
-    where promotion_id = #{promotionId,jdbcType=INTEGER}
+    where promotion_id = #{promotionId,jdbcType=INTEGER} and mpu = #{mpu,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionMpu">
     update promotion_mpu
