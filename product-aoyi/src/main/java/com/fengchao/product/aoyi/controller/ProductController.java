@@ -137,11 +137,22 @@ public class ProductController {
     /**
      *  自营库存
      * @param queryBean
-     * @param result
      * @return
      */
     @PostMapping("/inventory/self")
-    private OperaResult inventorySelf(@RequestBody InventorySelfQueryBean queryBean, OperaResult result) {
+    private OperaResult inventorySelf(@RequestBody InventorySelfQueryBean queryBean) {
         return service.findInventorySelf(queryBean);
     }
+
+    /**
+     * 批量减库存
+     * @param inventories
+     * @return
+     */
+    @PutMapping("/inventory/sub")
+    private OperaResult inventorySub(@RequestBody List<InventoryMpus>  inventories) {
+        return service.inventorySub(inventories);
+    }
+
+
 }

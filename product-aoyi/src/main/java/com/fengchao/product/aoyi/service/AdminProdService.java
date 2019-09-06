@@ -1,8 +1,6 @@
 package com.fengchao.product.aoyi.service;
 
-import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.bean.QueryProdBean;
-import com.fengchao.product.aoyi.bean.SerachBean;
+import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
@@ -40,4 +38,11 @@ public interface AdminProdService {
      * @throws Exception
      */
     List<ProductExportResVo> exportProductList(SerachBean bean) throws Exception;
+
+    /**
+     * 修改库存
+     * @param inventory
+     * @return
+     */
+    OperaResult inventoryUpdate(InventoryMpus inventory) ;
 }

@@ -73,7 +73,6 @@ public class ProductDao {
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andSkuidEqualTo(skuId);
         criteria.andMerchantIdEqualTo(merchantId);
-
         List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
 
         return aoyiProdIndexList;

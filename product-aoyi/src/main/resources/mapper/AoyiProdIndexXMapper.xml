@@ -527,4 +527,10 @@
           order by id desc limit #{offset}, #{pageSize}) t2
         ON t1.id = t2.id;
   </select>
+  <select id="selectForUpdateByMpu" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_prod_index
+    where mpu = #{mpu} and <![CDATA[merchant_id <> 2]]>  for update
+  </select>
 </mapper>

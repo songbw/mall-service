@@ -24,11 +24,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -289,6 +288,27 @@ public class ProductServiceImpl implements ProductService {
             }
         });
         result.getData().put("result", inventories) ;
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public OperaResult inventorySub(List<InventoryMpus> inventories) {
+        OperaResult result = new OperaResult();
+        for (InventoryMpus inventoryMpus : inventories) {
+            AoyiProdIndexX prodIndexX = mapper.selectForUpdateByMpu(inventoryMpus.getMpu()) ;
+            if (prodIndexX.getInventory() <= 0 || prodIndexX.getInventory() < inventoryMpus.getRemainNum()) {
+                result.setCode(200010);
+                result.setMsg("商品 " + prodIndexX.getName() + " 库存不足。");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
+            AoyiProdIndexX temp = new AoyiProdIndexX();
+            temp.setMpu(prodIndexX.getMpu());
+            temp.setUpdatedAt(new Date());
+            temp.setInventory(prodIndexX.getInventory() - inventoryMpus.getRemainNum());
+            mapper.updateByPrimaryKeySelective(temp) ;
+        }
         return result;
     }
 

@@ -1,9 +1,6 @@
 package com.fengchao.product.aoyi.controller;
 
-import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.bean.QueryProdBean;
-import com.fengchao.product.aoyi.bean.SerachBean;
+import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -394,6 +391,16 @@ public class AdminProdController {
             currentRowNum++;
             productExportResVo = null; // 释放
         }
+    }
+
+    /**
+     *  库存修改
+     * @param inventory
+     * @return
+     */
+    @PutMapping("/inventory")
+    private OperaResult inventoryUpdate(@RequestBody InventoryMpus inventory) throws ProductException {
+        return prodService.inventoryUpdate(inventory);
     }
 
 }

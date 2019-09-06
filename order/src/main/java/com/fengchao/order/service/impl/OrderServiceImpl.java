@@ -170,6 +170,7 @@ public class OrderServiceImpl implements OrderService {
                 bean.setCouponStatus(2);
             }
         }
+        List<InventoryMpus> inventories = new ArrayList<>() ;
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
@@ -206,6 +207,13 @@ public class OrderServiceImpl implements OrderService {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return operaResult;
                 }
+                // 添加扣除库存列表
+                if (orderSku.getMerchantId() != 2) {
+                    InventoryMpus inventoryMpus = new InventoryMpus();
+                    inventoryMpus.setMpu(orderSku.getMpu());
+                    inventoryMpus.setRemainNum(orderSku.getNum());
+                    inventories.add(inventoryMpus) ;
+                }
 
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setPromotionId(orderSku.getPromotionId());
@@ -240,6 +248,15 @@ public class OrderServiceImpl implements OrderService {
             }
             // 30分钟后取消订单
             JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
+        }
+        // 批量扣除库存
+        OperaResult inventoryResult = productService.inventorySub(inventories) ;
+        if (inventoryResult.getCode() != 200) {
+            operaResult.setCode(inventoryResult.getCode());
+            operaResult.setMsg(inventoryResult.getMsg());
+            // 异常数据库回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return  operaResult;
         }
 
         // 传数据给奥义

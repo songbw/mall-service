@@ -55,4 +55,12 @@ public interface ProductService {
      * @return
      */
     OperaResult findInventorySelf(InventorySelfQueryBean queryBean) ;
+
+    /**
+     * 批量减库存
+     * @param inventories
+     * @return
+     */
+    OperaResult inventorySub(List<InventoryMpus> inventories) ;
+
 }

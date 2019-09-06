@@ -524,4 +524,19 @@ public class AdminProdServiceImpl implements AdminProdService {
 
         return productExportResVo;
     }
+
+    @Override
+    public OperaResult inventoryUpdate(InventoryMpus inventory) {
+        OperaResult result = new OperaResult();
+        AoyiProdIndexX prodIndexX = prodXMapper.selectForUpdateByMpu(inventory.getMpu()) ;
+        if (prodIndexX != null) {
+            AoyiProdIndexX temp = new AoyiProdIndexX();
+            temp.setMpu(prodIndexX.getMpu());
+            temp.setUpdatedAt(new Date());
+            temp.setInventory(prodIndexX.getInventory() - inventory.getRemainNum());
+            prodXMapper.updateByPrimaryKeySelective(temp) ;
+            result.getData().put("id", prodIndexX.getId()) ;
+        }
+        return result;
+    }
 }
