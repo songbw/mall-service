@@ -48,4 +48,11 @@ public interface ProductService {
     OperaResponse search(ProductQueryBean queryBean) ;
 
     List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList);
+
+    /**
+     * 查询自营库存
+     * @param queryBean
+     * @return
+     */
+    OperaResult findInventorySelf(InventorySelfQueryBean queryBean) ;
 }

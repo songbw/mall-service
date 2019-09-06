@@ -133,4 +133,15 @@ public class ProductController {
         }
         return result;
     }
+
+    /**
+     *  自营库存
+     * @param queryBean
+     * @param result
+     * @return
+     */
+    @PostMapping("/inventory/self")
+    private OperaResult inventorySelf(@RequestBody InventorySelfQueryBean queryBean, OperaResult result) {
+        return service.findInventorySelf(queryBean);
+    }
 }
