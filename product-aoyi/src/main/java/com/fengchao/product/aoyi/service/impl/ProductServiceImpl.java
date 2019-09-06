@@ -297,6 +297,12 @@ public class ProductServiceImpl implements ProductService {
         OperaResult result = new OperaResult();
         for (InventoryMpus inventoryMpus : inventories) {
             AoyiProdIndexX prodIndexX = mapper.selectForUpdateByMpu(inventoryMpus.getMpu()) ;
+            if (prodIndexX == null) {
+                result.setCode(200010);
+                result.setMsg("商品 " + prodIndexX.getMpu() + " 不存在。");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
             if (prodIndexX.getInventory() <= 0 || prodIndexX.getInventory() < inventoryMpus.getRemainNum()) {
                 result.setCode(200010);
                 result.setMsg("商品 " + prodIndexX.getName() + " 库存不足。");
