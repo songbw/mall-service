@@ -1,10 +1,10 @@
 package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.mapper.AyFcImagesMapper;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
 import com.fengchao.product.aoyi.model.AyFcImages;
 import com.fengchao.product.aoyi.model.AyFcImagesExample;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +43,10 @@ public class AyFcImagesDao {
         AyFcImagesExample example = new AyFcImagesExample();
         AyFcImagesExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(0);
+
+        PageHelper.startPage(1, 1000);
         List<AyFcImages> images = mapper.selectByExample(example);
+        PageInfo<AyFcImages> pageInfo = new PageInfo(images);
         return images;
     }
 
