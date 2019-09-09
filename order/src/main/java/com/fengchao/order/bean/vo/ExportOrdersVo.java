@@ -151,5 +151,10 @@ public class ExportOrdersVo {
      */
     private String expressFee;
 
+    /**
+     * 详细地址
+     */
+    private String address;
+
 
 }
