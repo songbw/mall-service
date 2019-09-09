@@ -200,6 +200,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCityName(ordersBo.getCityName()); // 市
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
                     exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
+                    exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
 
                     exportOrdersVoList.add(exportOrdersVo);
                 } // 遍历子订单 end

@@ -262,6 +262,9 @@ public class AdminOrderController {
 
         HSSFCell titleCell23 = titleRow.createCell(23);
         titleCell23.setCellValue("区");
+
+        HSSFCell titleCell24 = titleRow.createCell(24);
+        titleCell24.setCellValue("详细地址");
     }
 
     /**
@@ -426,6 +429,10 @@ public class AdminOrderController {
                 // 区
                 HSSFCell cell23 = currentRow.createCell(23);
                 cell23.setCellValue(exportOrdersVo.getCountyName());
+
+                // 详细地址
+                HSSFCell cell24 = currentRow.createCell(24);
+                cell24.setCellValue(exportOrdersVo.getAddress());
 
                 //
                 currentRowNum++;
