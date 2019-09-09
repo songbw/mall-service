@@ -204,7 +204,7 @@ public class PromotionServiceImpl implements PromotionService {
                 //已开始
                 bean.setStatus(4);
                 JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
-            }else if( promotionX.getEndDate().after(now)){
+            }else if( promotionX.getEndDate().before(now)){
                 //已结束
                 bean.setStatus(5);
                 //TODO 回收无法触发的定时器
