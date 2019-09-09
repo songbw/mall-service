@@ -24,10 +24,11 @@
     <result column="comcode" property="comCode" jdbcType="VARCHAR" />
     <result column="sku_coupon_discount" property="skuCouponDiscount" jdbcType="VARCHAR" />
     <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, order_id, merchant_id, sub_order_id, sku_id, mpu, promotion_id, promotion_discount, num, unit_price, sale_price, image, name, model, status, created_at,
-    updated_at, logistics_id, logistics_content, sku_coupon_discount, category
+    updated_at, logistics_id, logistics_content, sku_coupon_discount, category, remark
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
