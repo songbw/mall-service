@@ -841,6 +841,19 @@ public class OrderServiceImpl implements OrderService {
         return orders;
     }
 
+    @Override
+    public Integer updateSubOrderStatus(OrderDetail bean) {
+        orderDetailDao.updateOrderDetailStatus(bean) ;
+        return bean.getId();
+    }
+
+    @Override
+    public Integer subOrderCancel(OrderDetail bean) {
+        bean.setStatus(5);
+        orderDetailDao.updateOrderDetailStatus(bean) ;
+        return bean.getId();
+    }
+
     // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {

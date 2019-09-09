@@ -2,14 +2,19 @@ package com.fengchao.order.dao;
 
 import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.mapper.OrderDetailMapper;
+import com.fengchao.order.mapper.OrdersMapper;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.OrderDetailExample;
+import com.fengchao.order.model.Orders;
+import com.fengchao.order.model.OrdersExample;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,10 +26,12 @@ import java.util.List;
 public class OrderDetailDao {
 
     private OrderDetailMapper orderDetailMapper;
+    private OrdersMapper ordersMapper;
 
     @Autowired
-    public OrderDetailDao(OrderDetailMapper orderDetailMapper) {
+    public OrderDetailDao(OrderDetailMapper orderDetailMapper, OrdersMapper ordersMapper) {
         this.orderDetailMapper = orderDetailMapper;
+        this.ordersMapper = ordersMapper;
     }
 
     public PageInfo<OrderDetail> selectOrderDetailsByMerchantIdPageable(Integer merchantId, Integer pageNo, Integer pageSize) {
@@ -81,6 +88,44 @@ public class OrderDetailDao {
 
         int count = orderDetailMapper.updateByExampleSelective(orderDetail, orderDetailExample);
         return count;
+    }
+
+    /**
+     * 更新子订单状态
+     * @param orderDetail
+     * @return
+     */
+    public Integer updateOrderDetailStatus(OrderDetail orderDetail) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        OrderDetail temp = new OrderDetail() ;
+        temp.setId(orderDetail.getId());
+        temp.setStatus(orderDetail.getStatus());
+        temp.setUpdatedAt(new Date());
+        criteria.andIdEqualTo(temp.getId()) ;
+        orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
+        if (orderDetail.getStatus() == 4 || orderDetail.getStatus() == 5) {
+            OrderDetail findOrderDetail = orderDetailMapper.selectByPrimaryKey(orderDetail.getId()) ;
+            //  判断主订单所属子订单是否全部为取消
+            OrderDetailExample orderDetailExample1 = new OrderDetailExample() ;
+            OrderDetailExample.Criteria criteria1 = orderDetailExample1.createCriteria();
+            criteria1.andOrderIdEqualTo(findOrderDetail.getOrderId());
+            List<Integer> list = new ArrayList<>();
+            list.add(4) ;
+            list.add(5) ;
+            criteria1.andStatusNotIn(list) ;
+            List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample1) ;
+            // 更新主订单状态为取消
+            if (orderDetailList == null || orderDetailList.size() == 0) {
+                OrdersExample ordersExample = new OrdersExample() ;
+                OrdersExample.Criteria oCriteria = ordersExample.createCriteria();
+                Orders orders = new Orders();
+                orders.setStatus(3);
+                oCriteria.andIdEqualTo(findOrderDetail.getOrderId());
+                ordersMapper.updateByExampleSelective(orders, ordersExample) ;
+            }
+        }
+        return orderDetail.getId() ;
     }
 
 }

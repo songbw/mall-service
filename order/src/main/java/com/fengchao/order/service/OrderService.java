@@ -113,4 +113,8 @@ public interface OrderService {
     Integer updateSubOrder(OrderDetail bean);
 
     List<Orders> findOrderListByOpenId(String openId);
+
+    Integer updateSubOrderStatus(OrderDetail bean);
+
+    Integer subOrderCancel(OrderDetail bean);
 }
