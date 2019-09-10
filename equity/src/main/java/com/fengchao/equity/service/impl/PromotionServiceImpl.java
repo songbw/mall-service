@@ -447,10 +447,11 @@ public class PromotionServiceImpl implements PromotionService {
             if(beans.get(i).getDailySchedule() != null && beans.get(i).getDailySchedule()){
                 PromotionSchedule promotionSchedule = scheduleDao.findPromotionSchedule(beans.get(i).getScheduleId()).get(0);
                 if(promotionSchedule.getStartTime().after(now) && promotionSchedule.getEndTime().before(now)){
-                    break;
+                    beans.get(i).setStartDate(promotionSchedule.getStartTime());
+                    beans.get(i).setEndDate(promotionSchedule.getEndTime());
+                }else{
+                    beans.remove(i);
                 }
-                beans.get(i).setStartDate(promotionSchedule.getStartTime());
-                beans.get(i).setEndDate(promotionSchedule.getEndTime());
             }
         }
 //        beans.forEach(bean ->{

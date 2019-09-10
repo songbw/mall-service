@@ -217,7 +217,7 @@ public class AggregationServiceImpl implements AggregationService {
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
                                 if(promotionMpu != null){
-                                    jsonObject.put("promotionPrice",  promotionMpu.getDiscount());
+                                    jsonObject.put("discount",  promotionMpu.getDiscount());
                                 }
                             }
                         }
