@@ -89,6 +89,7 @@ public class ProductDao {
         criteria.andMerchantIdEqualTo(bean.getMerchantId());
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setSprice(bean.getSPrice());
         aoyiProdIndex.setPrice(bean.getPrice());
         aoyiProdIndex.setUpdatedAt(new Date());
 
