@@ -313,7 +313,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    @CachePut(value = "orders", key = "#id")
     @Override
     public Integer cancel(Integer id) {
         Orders order = adminOrderDao.selectById(id);
@@ -343,7 +342,6 @@ public class OrderServiceImpl implements OrderService {
         return id;
     }
 
-    @Cacheable(value = "orders", key = "#id")
     @DataSource(DataSourceNames.TWO)
     @Override
     public Order findById(Integer id) {
@@ -355,7 +353,6 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    @CacheEvict(value = "orders", key = "#id")
     @Override
     public Integer delete(Integer id) {
         Order order = new Order();
@@ -391,7 +388,6 @@ public class OrderServiceImpl implements OrderService {
         return pageBean;
     }
 
-    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateStatus(Order bean) {
         bean.setUpdatedAt(new Date());
@@ -458,19 +454,16 @@ public class OrderServiceImpl implements OrderService {
         return pageBean;
     }
 
-    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateRemark(Order bean) {
         return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
-    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateOrderAddress(Order bean) {
         return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
-    @Cacheable(value = "orders")
     @DataSource(DataSourceNames.TWO)
     @Override
     public Order searchDetail(OrderQueryBean queryBean) {

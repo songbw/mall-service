@@ -66,6 +66,11 @@ public class ThirdProdController {
             result.setMsg("price 不能为null");
             return result;
         }
+        if (StringUtils.isEmpty(bean.getSPrice())) {
+            result.setCode(210002);
+            result.setMsg("sprice 不能为null");
+            return result;
+        }
         if (StringUtils.isEmpty(bean.getSkuId())) {
             result.setCode(210002);
             result.setMsg("skuid 不能为null");
