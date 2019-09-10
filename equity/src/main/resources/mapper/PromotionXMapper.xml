@@ -325,6 +325,9 @@
     <if test="discountType != null" >
       and discount_type = #{discountType,jdbcType=INTEGER}
     </if>
+    <if test="accountType != null" >
+      and account_type = #{accountType,jdbcType=INTEGER}
+    </if>
     <if test="dailySchedule != null" >
       and daily_schedule = #{dailySchedule,jdbcType=BIT}
     </if>
@@ -345,6 +348,9 @@
     </if>
     <if test="discountType != null" >
       and discount_type = #{discountType,jdbcType=INTEGER}
+    </if>
+    <if test="accountType != null" >
+      and account_type = #{accountType,jdbcType=INTEGER}
     </if>
     <if test="dailySchedule != null" >
       and daily_schedule = #{dailySchedule,jdbcType=BIT}

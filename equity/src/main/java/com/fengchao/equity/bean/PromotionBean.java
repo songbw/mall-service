@@ -27,5 +27,7 @@ public class PromotionBean extends QueryBean {
 
     private String dailySchedule;
 
+    private Integer accountType;
+
 }
 

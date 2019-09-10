@@ -248,6 +248,7 @@ public class PromotionServiceImpl implements PromotionService {
         map.put("name",bean.getName());
         map.put("promotionTypeId",bean.getPromotionTypeId());
         map.put("discountType",bean.getDiscountType());
+        map.put("accountType",bean.getAccountType());
         if(StringUtils.isNotEmpty(bean.getDailySchedule())){
             map.put("dailySchedule",Boolean.valueOf(bean.getDailySchedule()));
         }
