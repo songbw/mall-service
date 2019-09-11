@@ -174,6 +174,17 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
                                     "" : promotionBeanMap.get(orderDetailBo.getPromotionId()).getName()); // 活动
                     exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
+                    // 结算类型 （0：普通类结算， 1：秒杀类结算， 2：精品类结算）
+                    if (promotionBeanMap.get(orderDetailBo.getPromotionId()) != null) {
+                        Integer settlement = promotionBeanMap.get(orderDetailBo.getPromotionId()).getAccountType();
+                        if (settlement == 0) {
+                            exportOrdersVo.setSettlementType("普通类结算");
+                        } else if (settlement == 1) {
+                            exportOrdersVo.setSettlementType("秒杀类结算");
+                        } else if (settlement == 2) {
+                            exportOrdersVo.setSettlementType("精品类结算");
+                        }
+                    }
                     exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
                     exportOrdersVo.setCouponId(ordersBo.getCouponId() == null ? null : ordersBo.getCouponId().longValue()); // 券码id
                     exportOrdersVo.setCouponSupplier(
@@ -192,8 +203,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()
                                     * orderDetailBo.getNum()); // sku 的总价
                     exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
-                    exportOrdersVo.setCouponPrice(orderDetailBo.getSkuCouponDiscount()); // 券支付金额
-                    exportOrdersVo.setPayPrice(orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()); // 实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); //
+                    exportOrdersVo.setCouponPrice(ordersBo.getCouponDiscount() == null ?
+                            0 : new BigDecimal(ordersBo.getCouponDiscount()).multiply(new BigDecimal(100)).intValue()); // 主订单 券支付金额
+                    exportOrdersVo.setPayPrice(new BigDecimal(ordersBo.getSaleAmount()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
                     // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
                     exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
                     exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省

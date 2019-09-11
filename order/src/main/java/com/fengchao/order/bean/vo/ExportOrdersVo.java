@@ -79,6 +79,11 @@ public class ExportOrdersVo {
     private Long promotionId;
 
     /**
+     * 结算类型 : 结算类型（0：普通类结算， 1：秒杀类结算， 2：精品类结算）
+     */
+    private String settlementType;
+
+    /**
      * 券码
      */
     private String couponCode;
@@ -116,8 +121,7 @@ public class ExportOrdersVo {
     private Integer couponPrice;
 
     /**
-     * 实际支付的价格 单位分
-     * 计算：totalRealPrice - couponPrice
+     * 主订单实际支付的价格 单位分
      */
     private Integer payPrice;
 
@@ -155,6 +159,8 @@ public class ExportOrdersVo {
      * 详细地址
      */
     private String address;
+
+
 
 
 }
