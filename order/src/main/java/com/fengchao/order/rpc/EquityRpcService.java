@@ -23,11 +23,11 @@ import java.util.List;
 @Slf4j
 public class EquityRpcService {
 
-    private EquityServiceClient equityService;
+    private EquityServiceClient equityServiceClient;
 
     @Autowired
-    public EquityRpcService(EquityServiceClient equityService) {
-        this.equityService = equityService;
+    public EquityRpcService(EquityServiceClient equityServiceClient) {
+        this.equityServiceClient = equityServiceClient;
     }
 
     /**
@@ -43,7 +43,7 @@ public class EquityRpcService {
 
         if (CollectionUtils.isNotEmpty(promotionIdList)) {
             OperaResponse<List<PromotionBean>> operaResponse
-                    = equityService.findPromotionListByIdList(promotionIdList);
+                    = equityServiceClient.findPromotionListByIdList(promotionIdList);
             log.info("根据id集合查询活动列表 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
             // 处理返回
@@ -72,7 +72,7 @@ public class EquityRpcService {
         log.info("根据id集合查询 couponuseinfobean 列表 调用equity rpc服务 入参:{}", JSONUtil.toJsonString(couponIdList));
 
         if (CollectionUtils.isNotEmpty(couponIdList)) {
-            OperaResult operaResult = equityService.findCouponUseInfoListByIdList(couponIdList);
+            OperaResult operaResult = equityServiceClient.findCouponUseInfoListByIdList(couponIdList);
             log.info("根据id集合查询 couponuseinfobean 列表 调用equity rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
 
             // 处理返回
