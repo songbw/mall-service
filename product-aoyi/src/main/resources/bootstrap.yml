@@ -29,12 +29,3 @@ spring:
         max-interval: 2000
         initial-interval: 2000
         request-read-timeout: 10000
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: ALWAYS
