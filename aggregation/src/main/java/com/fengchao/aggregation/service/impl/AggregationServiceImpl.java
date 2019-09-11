@@ -161,7 +161,7 @@ public class AggregationServiceImpl implements AggregationService {
             }
             OperaResult onlinePromotion = equityService.findOnlinePromotion();
             if (onlinePromotion.getCode() == 200) {
-                Object object = result.getData().get("result");
+                Object object = onlinePromotion.getData().get("result");
                 List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
                 for(PromotionMpu mpu: promotionMpus){
                     promotionMap.put(mpu.getMpu(), mpu);
@@ -217,8 +217,7 @@ public class AggregationServiceImpl implements AggregationService {
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
                                 if(promotionMpu != null){
-                                    float promotionPrice = Float.valueOf(aoyiProdIndex.getPrice()) - Float.valueOf(promotionMpu.getDiscount());
-                                    jsonObject.put("promotionPrice",  promotionPrice);
+                                    jsonObject.put("discount",  promotionMpu.getDiscount());
                                 }
                             }
                         }

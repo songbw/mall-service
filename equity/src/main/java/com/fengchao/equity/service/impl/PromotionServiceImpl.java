@@ -204,7 +204,7 @@ public class PromotionServiceImpl implements PromotionService {
                 //已开始
                 bean.setStatus(4);
                 JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
-            }else if( promotionX.getEndDate().after(now)){
+            }else if( promotionX.getEndDate().before(now)){
                 //已结束
                 bean.setStatus(5);
                 //TODO 回收无法触发的定时器
@@ -248,6 +248,7 @@ public class PromotionServiceImpl implements PromotionService {
         map.put("name",bean.getName());
         map.put("promotionTypeId",bean.getPromotionTypeId());
         map.put("discountType",bean.getDiscountType());
+        map.put("accountType",bean.getAccountType());
         if(StringUtils.isNotEmpty(bean.getDailySchedule())){
             map.put("dailySchedule",Boolean.valueOf(bean.getDailySchedule()));
         }
@@ -446,10 +447,11 @@ public class PromotionServiceImpl implements PromotionService {
             if(beans.get(i).getDailySchedule() != null && beans.get(i).getDailySchedule()){
                 PromotionSchedule promotionSchedule = scheduleDao.findPromotionSchedule(beans.get(i).getScheduleId()).get(0);
                 if(promotionSchedule.getStartTime().after(now) && promotionSchedule.getEndTime().before(now)){
-                    break;
+                    beans.get(i).setStartDate(promotionSchedule.getStartTime());
+                    beans.get(i).setEndDate(promotionSchedule.getEndTime());
+                }else{
+                    beans.remove(i);
                 }
-                beans.get(i).setStartDate(promotionSchedule.getStartTime());
-                beans.get(i).setEndDate(promotionSchedule.getEndTime());
             }
         }
 //        beans.forEach(bean ->{

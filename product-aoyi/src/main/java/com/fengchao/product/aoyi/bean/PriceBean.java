@@ -8,5 +8,6 @@ import java.io.Serializable;
 public class PriceBean implements Serializable {
     private String skuId;
     private String price;
+    private String sPrice;
     private int merchantId;
 }
