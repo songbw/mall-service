@@ -28,5 +28,4 @@ public interface PromotionMpuXMapper {
     List<PromotionMpuX> selectDaliyPromotionMpu(@Param("promotionId") Integer promotionId, @Param("scheduleId")Integer scheduleId);
 
     List<String> selectDaliyMpuList(@Param("promotionId") Integer promotionId, @Param("scheduleId")Integer scheduleId);
-
 }

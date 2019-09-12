@@ -29,8 +29,4 @@ public interface PromotionMpuMapper {
     int updateByPrimaryKeySelective(PromotionMpu record);
 
     int updateByPrimaryKey(PromotionMpu record);
-
-    List<PromotionMpuX> selectByPrimaryMpu(Integer id);
-
-    int deleteBypromotionId(PromotionMpu record);
 }

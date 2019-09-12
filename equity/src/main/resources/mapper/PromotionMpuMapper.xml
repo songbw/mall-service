@@ -249,14 +249,4 @@
       per_limited = #{perLimited,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <select id="selectByPrimaryMpu" parameterType="java.lang.Integer" resultType="com.fengchao.equity.model.PromotionMpuX">
-    select
-    id, promotion_id promotionId, mpu, skuId, discount, schedule_id scheduleId
-    from promotion_mpu
-    where promotion_id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteBypromotionId" parameterType="com.fengchao.equity.model.PromotionMpu">
-    delete from promotion_mpu
-    where mpu = #{mpu,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
-  </delete>
 </mapper>

@@ -282,7 +282,7 @@ public class PromotionServiceImpl implements PromotionService {
             return promotion;
         }
         List<PromotionMpuX> promotionMpus = null;
-        promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
+        promotionMpus = mpuXMapper.selectByPrimaryMpu(promotion.getId());
         List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
 //        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
 
@@ -343,6 +343,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
             promotionMpu.setPromotionImage(promotionMpuX.getPromotionImage());
+            promotionMpu.setPerLimited(promotionMpuX.getPerLimited());
             num[0] = promotionMpuMapper.insertSelective(promotionMpu);
         };
         return num[0];
@@ -377,7 +378,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setDiscount(promotionMpuX.getDiscount());
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
-            num[0] = promotionMpuMapper.deleteBypromotionId(promotionMpu);
+            num[0] = mpuXMapper.deleteBypromotionId(promotionMpu);
         });
         return num[0];
     }
@@ -392,7 +393,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         List<PromotionMpuX> promotionMpus = null;
         if(detail != null && detail == true){
-            promotionMpus = promotionMpuMapper.selectByPrimaryMpu(promotion.getId());
+            promotionMpus = mpuXMapper.selectByPrimaryMpu(promotion.getId());
             List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
             OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
             Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
