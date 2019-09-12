@@ -2,12 +2,9 @@ package com.fengchao.order.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.order.bean.OperaResult;
-import com.fengchao.order.bean.PageBean;
-import com.fengchao.order.bean.PromotionInfoBean;
-import com.fengchao.order.bean.ShoppingCartQueryBean;
+import com.fengchao.order.bean.*;
 import com.fengchao.order.dao.OrderDetailDao;
-import com.fengchao.order.feign.EquityService;
+import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.mapper.ShoppingCartMapper;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.ShoppingCart;
@@ -24,7 +21,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Autowired
     private ShoppingCartMapper mapper;
     @Autowired
-    private EquityService equityService;
+    private EquityServiceClient equityService;
     @Autowired
     private OrderDetailDao orderDetailDao;
 
@@ -105,14 +102,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private int findPromotionBySku(String mpu, String openId) {
         AtomicInteger perLimit = new AtomicInteger(0);
-        OperaResult result = equityService.findPromotionBySkuId(mpu);
+        List<String> mpus = new ArrayList<>() ;
+        mpus.add(mpu) ;
+        OperaResult result = equityService.findPromotionByMpuList(mpus);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
             String jsonString = JSON.toJSONString(object);
-            List<PromotionInfoBean> subOrderTS = JSONObject.parseArray(jsonString, PromotionInfoBean.class);
+            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
             if (subOrderTS != null && subOrderTS.size() > 0) {
-                PromotionInfoBean promotionInfoBean = subOrderTS.get(0) ;
+                PromotionMpuX promotionInfoBean = subOrderTS.get(0) ;
                 if (promotionInfoBean.getPerLimited() == -1) {
                     return -1;
                 } else {

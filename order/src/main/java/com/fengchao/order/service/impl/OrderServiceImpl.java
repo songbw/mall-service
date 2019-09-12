@@ -26,9 +26,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -170,9 +167,16 @@ public class OrderServiceImpl implements OrderService {
                 bean.setCouponStatus(2);
             }
         }
+
+
         List<InventoryMpus> inventories = new ArrayList<>() ;
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
+        // 验证商品是否超过限购数量
+        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
+        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
+            return verifyLimitResult ;
+        }
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             bean.setTradeNo(orderMerchantBean.getTradeNo() + RandomUtil.randomString(orderBean.getTradeNo(), 8));
@@ -192,7 +196,6 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
             }
-            // TODO 限购验证
             // 添加主订单
             logger.info("创建订单 新增主订单:{}", JSONUtil.toJsonString(bean));
             orderMapper.insert(bean);
@@ -311,6 +314,58 @@ public class OrderServiceImpl implements OrderService {
             return  operaResult;
         }
         return operaResult;
+    }
+
+    /**
+     * 验证商品限购数量
+     * @param orderMerchantBeans
+     * @return
+     */
+    private OperaResult verifyPerLimit(List<OrderMerchantBean> orderMerchantBeans, String openId) {
+        List<String> errorMpus = new ArrayList<>() ;
+        List<String> mpus = new ArrayList<>() ;
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+                mpus.add(orderSku.getMpu()) ;
+            }
+        }
+        OperaResult result = equityService.findPromotionByMpuList(mpus);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
+            if (subOrderTS != null && subOrderTS.size() > 0) {
+                for (PromotionMpuX promotionMpuX : subOrderTS) {
+                    if (promotionMpuX.getPerLimited() == -1) {
+                        continue;
+                    } else {
+                        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOpenIdAndMpuAndPromotionId(openId, promotionMpuX.getMpu(), promotionMpuX.getId()) ;
+                        if (orderDetailList != null && orderDetailList.size() > 0) {
+                            AtomicInteger sum = new AtomicInteger(0);
+                            orderDetailList.forEach(orderDetail -> {
+                                sum.set(sum.get() + orderDetail.getNum());
+                            });
+                            promotionMpuX.setPerLimited(promotionMpuX.getPerLimited() - sum.get());
+                            for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+                                for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+                                    if (orderSku.getNum() > promotionMpuX.getPerLimited()) {
+                                        errorMpus.add(orderSku.getMpu());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (errorMpus != null && errorMpus.size() > 0) {
+                result.setCode(4000001);
+                result.setMsg("商品超过限购数量，无法添加。");
+                result.getData().put("mpus", errorMpus) ;
+                return result;
+            }
+        }
+        return null;
     }
 
 
