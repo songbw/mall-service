@@ -563,6 +563,66 @@ public class PromotionMpuExample {
             addCriterion("promotion_image not between", value1, value2, "promotionImage");
             return (Criteria) this;
         }
+
+        public Criteria andPerLimitedIsNull() {
+            addCriterion("per_limited is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedIsNotNull() {
+            addCriterion("per_limited is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedEqualTo(Integer value) {
+            addCriterion("per_limited =", value, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedNotEqualTo(Integer value) {
+            addCriterion("per_limited <>", value, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedGreaterThan(Integer value) {
+            addCriterion("per_limited >", value, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedGreaterThanOrEqualTo(Integer value) {
+            addCriterion("per_limited >=", value, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedLessThan(Integer value) {
+            addCriterion("per_limited <", value, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedLessThanOrEqualTo(Integer value) {
+            addCriterion("per_limited <=", value, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedIn(List<Integer> values) {
+            addCriterion("per_limited in", values, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedNotIn(List<Integer> values) {
+            addCriterion("per_limited not in", values, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedBetween(Integer value1, Integer value2) {
+            addCriterion("per_limited between", value1, value2, "perLimited");
+            return (Criteria) this;
+        }
+
+        public Criteria andPerLimitedNotBetween(Integer value1, Integer value2) {
+            addCriterion("per_limited not between", value1, value2, "perLimited");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

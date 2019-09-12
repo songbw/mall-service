@@ -30,4 +30,8 @@ public class PromotionInfoBean {
     private Integer scheduleId;
 
     private Boolean dailySchedule;
+
+    private String promotionImage;
+
+    private Integer perLimited;
 }

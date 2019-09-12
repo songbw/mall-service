@@ -9,9 +9,10 @@
     <result column="discount" jdbcType="VARCHAR" property="discount" />
     <result column="schedule_id" jdbcType="INTEGER" property="scheduleId" />
     <result column="promotion_image" jdbcType="VARCHAR" property="promotionImage" />
+    <result column="per_limited" jdbcType="INTEGER" property="perLimited" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, promotion_id, mpu, skuId, discount, schedule_id, promotion_image
+    id, promotion_id, mpu, skuId, discount, schedule_id, promotion_image, per_limited
   </sql>
   <select id="selectByPrimaryMpu" resultType="com.fengchao.equity.model.PromotionMpuX" parameterType="java.lang.Integer" >
     select
@@ -28,12 +29,12 @@
     where mpu = #{mpu,jdbcType=VARCHAR} and promotion_id = #{promotionId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionMpu" useGeneratedKeys="true">
-    insert into promotion_mpu (promotion_id, mpu, skuId,
-      discount, schedule_id, promotion_image
-      )
+     insert into promotion_mpu (promotion_id, mpu, skuId,
+      discount, schedule_id, promotion_image,
+      per_limited)
     values (#{promotionId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, #{skuid,jdbcType=VARCHAR},
-      #{discount,jdbcType=VARCHAR}, #{scheduleId,jdbcType=INTEGER}, #{promotionImage,jdbcType=VARCHAR}
-      )
+      #{discount,jdbcType=VARCHAR}, #{scheduleId,jdbcType=INTEGER}, #{promotionImage,jdbcType=VARCHAR},
+      #{perLimited,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionMpu" useGeneratedKeys="true">
     insert into promotion_mpu
@@ -56,6 +57,9 @@
       <if test="promotionImage != null">
         promotion_image,
       </if>
+      <if test="perLimited != null">
+        per_limited,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="promotionId != null">
@@ -75,6 +79,9 @@
       </if>
       <if test="promotionImage != null">
         #{promotionImage,jdbcType=VARCHAR},
+      </if>
+      <if test="perLimited != null">
+        #{perLimited,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -99,6 +106,9 @@
       <if test="promotionImage != null">
         promotion_image = #{promotionImage,jdbcType=VARCHAR},
       </if>
+      <if test="record.perLimited != null">
+        per_limited = #{record.perLimited,jdbcType=INTEGER},
+      </if>
     </set>
     where mpu = #{mpu,jdbcType=VARCHAR}
     and promotion_id = #{promotionId,jdbcType=INTEGER}
@@ -110,7 +120,8 @@
       skuId = #{skuid,jdbcType=VARCHAR},
       discount = #{discount,jdbcType=VARCHAR},
       schedule_id = #{scheduleId,jdbcType=INTEGER},
-      promotion_image = #{promotionImage,jdbcType=VARCHAR}
+      promotion_image = #{record.promotionImage,jdbcType=VARCHAR},
+      per_limited = #{record.perLimited,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectMpuList"  resultType="java.lang.String" parameterType="java.lang.Integer" >
