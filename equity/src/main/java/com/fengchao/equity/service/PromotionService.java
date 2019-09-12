@@ -57,4 +57,6 @@ public interface PromotionService {
     PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name);
 
     List<PromotionMpuX> findOnlineMpu();
+
+    List<PromotionMpuX> findPromotionByMpuList(List<String> mpus);
 }

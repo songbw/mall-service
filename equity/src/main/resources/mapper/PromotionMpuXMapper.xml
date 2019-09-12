@@ -150,4 +150,14 @@
      where promotion_id = #{promotionId,jdbcType=INTEGER}
     and schedule_id = #{scheduleId,jdbcType=INTEGER}
   </select>
+  <select id="selectPromotionByMpuList"  resultType="com.fengchao.equity.bean.PromotionInfoBean" parameterType="java.util.List" >
+    select
+    ps.mpu,
+    ps.per_limited perLimited
+    from promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
+    WHERE p.status = 4 and ps.mpu in
+    <foreach item="item" index="index" collection="mpus" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

@@ -628,6 +628,12 @@ public class PromotionServiceImpl implements PromotionService {
         return mpus;
     }
 
+    @Override
+    public List<PromotionMpuX> findPromotionByMpuList(List<String> mpus) {
+        List<PromotionMpuX> promotionMpuXList = mpuXMapper.selectPromotionByMpuList(mpus);
+        return promotionMpuXList;
+    }
+
     // ====================================== private ==========================
 
     private PromotionBean convertToPromotionBean(Promotion promotion) {
