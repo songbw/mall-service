@@ -152,6 +152,7 @@
   </select>
   <select id="selectPromotionByMpuList"  resultType="com.fengchao.equity.bean.PromotionInfoBean" parameterType="java.util.List" >
     select
+    p.id,
     ps.mpu,
     ps.per_limited perLimited
     from promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
