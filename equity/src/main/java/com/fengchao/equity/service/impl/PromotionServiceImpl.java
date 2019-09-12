@@ -362,6 +362,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
             promotionMpu.setPromotionImage(promotionMpuX.getPromotionImage());
+            promotionMpu.setPerLimited(promotionMpuX.getPerLimited());
             num[0] = promotionMpuMapper.updateByPrimaryKeySelective(promotionMpu);
         });
         return num[0];
