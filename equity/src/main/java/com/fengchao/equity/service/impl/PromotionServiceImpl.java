@@ -362,6 +362,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setPromotionId(bean.getId());
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
             promotionMpu.setPromotionImage(promotionMpuX.getPromotionImage());
+            promotionMpu.setPerLimited(promotionMpuX.getPerLimited());
             num[0] = promotionMpuMapper.updateByPrimaryKeySelective(promotionMpu);
         });
         return num[0];
@@ -625,6 +626,12 @@ public class PromotionServiceImpl implements PromotionService {
             }
         });
         return mpus;
+    }
+
+    @Override
+    public List<PromotionMpuX> findPromotionByMpuList(List<String> mpus) {
+        List<PromotionMpuX> promotionMpuXList = mpuXMapper.selectPromotionByMpuList(mpus);
+        return promotionMpuXList;
     }
 
     // ====================================== private ==========================
