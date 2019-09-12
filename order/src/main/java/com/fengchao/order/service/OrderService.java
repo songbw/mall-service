@@ -117,4 +117,6 @@ public interface OrderService {
     Integer updateSubOrderStatus(OrderDetail bean);
 
     Integer subOrderCancel(OrderDetail bean);
+
+    OperaResponse logistics(List<Logisticsbean> logisticsbeans) ;
 }

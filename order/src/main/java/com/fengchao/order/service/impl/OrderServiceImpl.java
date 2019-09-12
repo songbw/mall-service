@@ -903,6 +903,34 @@ public class OrderServiceImpl implements OrderService {
         return bean.getId();
     }
 
+    @Override
+    public OperaResponse logistics(List<Logisticsbean> logisticsbeans) {
+        OperaResponse<List<Logisticsbean>> response = new OperaResponse<List<Logisticsbean>>();
+        List<Logisticsbean> logisticsbeanList = new ArrayList<>();
+        for (Logisticsbean logistics: logisticsbeans) {
+            if (StringUtils.isEmpty(logistics.getLogisticsId())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            if (StringUtils.isEmpty(logistics.getLogisticsContent())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            if (StringUtils.isEmpty(logistics.getSubOrderId())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            orderDetailDao.updateBySubOrderId(logistics) ;
+        }
+        if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
+            response.setCode(4000002);
+            response.setMsg("信息不完整");
+            response.setData(logisticsbeanList);
+            return response;
+        }
+        return response;
+    }
+
     // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {
