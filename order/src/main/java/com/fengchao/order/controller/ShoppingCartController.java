@@ -23,9 +23,8 @@ public class ShoppingCartController {
     }
 
     @PostMapping
-    private OperaResult add(@RequestBody ShoppingCart bean, OperaResult result) {
-        result.getData().put("result", service.add(bean)) ;
-        return result;
+    private OperaResult add(@RequestBody ShoppingCart bean) {
+        return service.add(bean);
     }
 
     @DeleteMapping
@@ -35,9 +34,8 @@ public class ShoppingCartController {
     }
 
     @PutMapping("/num")
-    private OperaResult modifyNum(@RequestBody ShoppingCart bean, OperaResult result) {
-        result.getData().put("result", service.modifyNum(bean)) ;
-        return result;
+    private OperaResult modifyNum(@RequestBody ShoppingCart bean) {
+        return service.modifyNum(bean);
     }
 
 }

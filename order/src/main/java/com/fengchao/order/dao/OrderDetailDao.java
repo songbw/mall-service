@@ -128,4 +128,23 @@ public class OrderDetailDao {
         return orderDetail.getId() ;
     }
 
+    /**
+     * 根据openId、mpu、promotionId查询子订单列表
+     * @param openId
+     * @param mpu
+     * @param promotionId
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByOpenIdAndMpuAndPromotionId(String openId, String mpu, int promotionId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andMpuEqualTo(mpu);
+        criteria.andPromotionIdEqualTo(promotionId) ;
+        criteria.andSubOrderIdLike("%" + openId + "%") ;
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
 }

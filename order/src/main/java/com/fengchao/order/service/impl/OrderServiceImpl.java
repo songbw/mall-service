@@ -192,6 +192,7 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
             }
+            // TODO 限购验证
             // 添加主订单
             logger.info("创建订单 新增主订单:{}", JSONUtil.toJsonString(bean));
             orderMapper.insert(bean);
@@ -274,7 +275,7 @@ public class OrderServiceImpl implements OrderService {
 
 //        createOrder(orderBean) ;
         OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
-        if ("1001".equals(orderBean.getCompanyCustNo())) { // 关爱通
+        if ("1001".equals(orderBean.getCompanyCustNo()) || "1002".equals(orderBean.getCompanyCustNo())) { // 关爱通
             result = aoyiClientService.orderGAT(orderBean);
         } else { //
             result = aoyiClientService.order(orderBean);
