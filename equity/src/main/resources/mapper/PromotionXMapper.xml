@@ -374,6 +374,7 @@
     p.created_date createdDate,
     p.daily_schedule dailySchedule,
     ps.mpu,
+    ps.skuId,
     ps.discount,
     ps.schedule_id scheduleId,
     ps.promotion_image promotionImage,
