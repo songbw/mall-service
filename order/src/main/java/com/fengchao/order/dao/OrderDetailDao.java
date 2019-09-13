@@ -161,6 +161,7 @@ public class OrderDetailDao {
         OrderDetail temp = new OrderDetail() ;
         temp.setLogisticsId(logisticsbean.getLogisticsId());
         temp.setLogisticsContent(logisticsbean.getLogisticsContent());
+        temp.setStatus(2);
         temp.setUpdatedAt(new Date());
 
         kuaidiCriteria.andNameEqualTo(logisticsbean.getLogisticsContent()) ;
@@ -171,6 +172,22 @@ public class OrderDetailDao {
         }
         criteria.andSubOrderIdEqualTo(logisticsbean.getSubOrderId()) ;
         return orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
+    }
+
+    /**
+     * 根据子订单号查询子订单信息
+     * @param subOrderId
+     * @return
+     */
+    public OrderDetail selectBySubOrderId(String subOrderId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andSubOrderIdEqualTo(subOrderId) ;
+        List<OrderDetail> orderDetails = orderDetailMapper.selectByExample(orderDetailExample) ;
+        if (orderDetails != null && orderDetails.size() > 0) {
+            return orderDetails.get(0);
+        }
+        return null;
     }
 
 }
