@@ -101,31 +101,31 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private int findPromotionBySku(String mpu, String openId) {
-        AtomicInteger perLimit = new AtomicInteger(0);
-        List<String> mpus = new ArrayList<>() ;
-        mpus.add(mpu) ;
-        OperaResult result = equityService.findPromotionByMpuList(mpus);
-        if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
-            if (subOrderTS != null && subOrderTS.size() > 0) {
-                PromotionMpuX promotionInfoBean = subOrderTS.get(0) ;
-                if (promotionInfoBean.getPerLimited() == -1) {
-                    return -1;
-                } else {
-                    List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOpenIdAndMpuAndPromotionId(openId, mpu, promotionInfoBean.getId()) ;
-                    if (orderDetailList != null && orderDetailList.size() > 0) {
-                        orderDetailList.forEach(orderDetail -> {
-                            perLimit.set(perLimit.get() + orderDetail.getNum());
-                        });
-                    }
-                    return promotionInfoBean.getPerLimited() - perLimit.get();
-                }
-            }
-            return -1;
-        }
+//        AtomicInteger perLimit = new AtomicInteger(0);
+//        List<String> mpus = new ArrayList<>() ;
+//        mpus.add(mpu) ;
+//        OperaResult result = equityService.findPromotionByMpuList(mpus);
+//        if (result.getCode() == 200) {
+//            Map<String, Object> data = result.getData() ;
+//            Object object = data.get("result");
+//            String jsonString = JSON.toJSONString(object);
+//            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
+//            if (subOrderTS != null && subOrderTS.size() > 0) {
+//                PromotionMpuX promotionInfoBean = subOrderTS.get(0) ;
+//                if (promotionInfoBean.getPerLimited() == -1) {
+//                    return -1;
+//                } else {
+//                    List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOpenIdAndMpuAndPromotionId(openId, mpu, promotionInfoBean.getId()) ;
+//                    if (orderDetailList != null && orderDetailList.size() > 0) {
+//                        orderDetailList.forEach(orderDetail -> {
+//                            perLimit.set(perLimit.get() + orderDetail.getNum());
+//                        });
+//                    }
+//                    return promotionInfoBean.getPerLimited() - perLimit.get();
+//                }
+//            }
+//            return -1;
+//        }
         return -1;
     }
 }

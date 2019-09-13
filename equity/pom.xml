@@ -210,17 +210,17 @@
         </dependency>
 
         <!-- CAT 监控 依赖begin-->
-        <dependency>
-            <groupId>com.dianping.cat</groupId>
-            <artifactId>cat-client</artifactId>
-            <version>3.0.0</version>
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>foundation-service</artifactId>-->
-                    <!--<groupId>org.unidal.framework</groupId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.dianping.cat</groupId>-->
+            <!--<artifactId>cat-client</artifactId>-->
+            <!--<version>3.0.0</version>-->
+            <!--&lt;!&ndash;<exclusions>&ndash;&gt;-->
+                <!--&lt;!&ndash;<exclusion>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<artifactId>foundation-service</artifactId>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<groupId>org.unidal.framework</groupId>&ndash;&gt;-->
+                <!--&lt;!&ndash;</exclusion>&ndash;&gt;-->
+            <!--&lt;!&ndash;</exclusions>&ndash;&gt;-->
+        <!--</dependency>-->
 
         <!--<dependency>-->
             <!--<groupId>org.unidal.framework</groupId>-->

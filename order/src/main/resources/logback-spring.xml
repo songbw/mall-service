@@ -119,7 +119,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="dev,local">
+    <springProfile name="dev,local,test">
         <root level="INFO" additivity="false">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="INFO"/>

@@ -1,5 +1,6 @@
 package com.fengchao.order.service.impl;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -14,6 +15,7 @@ import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
 import com.fengchao.order.feign.AoyiClientService;
+import com.fengchao.order.feign.BaseService;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
@@ -76,6 +78,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrdersDao ordersDao;
+    @Autowired
+    private BaseService baseService;
 
     @Transactional
     @Override
@@ -173,10 +177,10 @@ public class OrderServiceImpl implements OrderService {
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
         // 验证商品是否超过限购数量
-        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
-        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
-            return verifyLimitResult ;
-        }
+//        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
+//        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
+//            return verifyLimitResult ;
+//        }
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             bean.setTradeNo(orderMerchantBean.getTradeNo() + RandomUtil.randomString(orderBean.getTradeNo(), 8));
@@ -588,14 +592,17 @@ public class OrderServiceImpl implements OrderService {
         JSONArray jsonArray = new JSONArray();
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
-            logistics.forEach(logist -> {
+            for (OrderDetailX logist : logistics) {
                 if (logist.getLogisticsId() != null && logist.getComCode() != null) {
-                    String jsonString = Kuaidi100.synQueryData(logist.getLogisticsId(), logist.getComCode()) ;
-                    JSONObject jsonObject = JSONObject.parseObject(jsonString);
-                    jsonArray.add(jsonObject);
+                    OperaResponse<JSONObject> response =  baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode()) ;
+                    if (response.getCode() == 200) {
+                        JSONObject jsonObject = response.getData();
+                        jsonArray.add(jsonObject);
+                    }
                 }
-            });
+            }
         }
+        logger.info("物流查询结果： {}", JSONUtils.toJSONString(jsonArray));
         return jsonArray;
     }
 
