@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="server_name" value="product-aoyi"/>
-    <property name="log_dir" value="../logs/"/>
+    <property name="server_name" value="product"/>
+    <property name="log_dir" value="/data/logs/product"/>
     <property name="maxFileSize" value="100MB"/>
     <property name="maxHistory" value="180"/>
 
@@ -17,7 +17,7 @@
 
     <!-- info日志 appender  -->
     <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log_dir}/request-product.log</file>
+        <file>${log_dir}/log.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 按天回滚 daily -->
             <fileNamePattern>${log_dir}/${server_name}-info-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
