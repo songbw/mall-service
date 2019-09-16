@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh './sso/jenkins/scripts/deliver.sh'
+                sh './gateway-mall/jenkins/scripts/deliver.sh'
             }
         }
     }

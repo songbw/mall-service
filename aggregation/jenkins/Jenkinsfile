@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh './sso/jenkins/scripts/deliver.sh'
+                sh './aggregation/jenkins/scripts/deliver.sh'
             }
         }
     }
