@@ -1,19 +1,20 @@
 package com.fengchao.order.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.fengchao.order.bean.*;
+import com.fengchao.order.bean.OperaResult;
+import com.fengchao.order.bean.PageBean;
+import com.fengchao.order.bean.ShoppingCartQueryBean;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.mapper.ShoppingCartMapper;
-import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.ShoppingCart;
 import com.fengchao.order.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
