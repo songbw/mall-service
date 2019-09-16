@@ -6,10 +6,8 @@ import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.rpc.ProductRpcService;
-import com.fengchao.order.rpc.extmodel.CouponBean;
-import com.fengchao.order.rpc.extmodel.CouponUseInfoBean;
-import com.fengchao.order.rpc.extmodel.ProductInfoBean;
-import com.fengchao.order.rpc.extmodel.PromotionBean;
+import com.fengchao.order.rpc.VendorsRpcService;
+import com.fengchao.order.rpc.extmodel.*;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.EquityRpcService;
@@ -39,13 +37,17 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     private ProductRpcService productRpcService;
 
+    private VendorsRpcService vendorsRpcService;
+
     @Autowired
     public AdminOrderServiceImpl(AdminOrderDao adminOrderDao,
                                  EquityRpcService equityRpcService,
-                                 ProductRpcService productRpcService) {
+                                 ProductRpcService productRpcService,
+                                 VendorsRpcService vendorsRpcService) {
         this.adminOrderDao = adminOrderDao;
         this.equityRpcService = equityRpcService;
         this.productRpcService = productRpcService;
+        this.vendorsRpcService = vendorsRpcService;
     }
 
     /**
@@ -150,7 +152,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 productInfoBeanList.stream().collect(Collectors.toMap(p -> p.getMpu(), p -> p));
 
         // 4.4 获取导出需要的供应商信息列表
-
+        List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
+        // 转map
+        Map<Long, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
@@ -159,6 +163,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             if (CollectionUtils.isNotEmpty(orderDetailBoList)) { // 目前不存在子订单的这种情况是不存在的!!!!
                 for (OrderDetailBo orderDetailBo : orderDetailBoList) { // 遍历子订单
                     ExportOrdersVo exportOrdersVo = new ExportOrdersVo();
+
+                    exportOrdersVo.setMerchantId(Long.valueOf(orderDetailBo.getMerchantId()));
+                    exportOrdersVo.setMerchantName(merchantMap.get(Long.valueOf(orderDetailBo.getMerchantId())) == null ?
+                            "未找到" : merchantMap.get(Long.valueOf(orderDetailBo.getMerchantId())).getName());
 
                     exportOrdersVo.setOpenId(ordersBo.getOpenId()); // 用户id
                     exportOrdersVo.setTradeNo(ordersBo.getTradeNo()); // 主订单编号
@@ -179,8 +187,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
                     // 结算类型 （0：普通类结算， 1：秒杀类结算， 2：精品类结算）
                     if (promotionBeanMap.get(orderDetailBo.getPromotionId()) != null) {
-                        Integer settlement = promotionBeanMap.get(orderDetailBo.getPromotionId()).getAccountType();
-                        if (settlement == 0) {
+                        Integer settlement = promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
+                                null : promotionBeanMap.get(orderDetailBo.getPromotionId()).getAccountType();
+                        if (settlement == null) {
+                            exportOrdersVo.setSettlementType("未找到结算类型");
+                        } else if (settlement == 0) {
                             exportOrdersVo.setSettlementType("普通类结算");
                         } else if (settlement == 1) {
                             exportOrdersVo.setSettlementType("秒杀类结算");
@@ -210,6 +221,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             0 : new BigDecimal(ordersBo.getCouponDiscount()).multiply(new BigDecimal(100)).intValue()); // 主订单 券支付金额
                     exportOrdersVo.setPayPrice(new BigDecimal(ordersBo.getSaleAmount()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
                     // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
+
                     exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
                     exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省
                     exportOrdersVo.setCityName(ordersBo.getCityName()); // 市

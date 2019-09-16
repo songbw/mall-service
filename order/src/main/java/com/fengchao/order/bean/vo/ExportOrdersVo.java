@@ -160,7 +160,14 @@ public class ExportOrdersVo {
      */
     private String address;
 
+    /**
+     * 供应商名称
+     */
+    private String merchantName;
 
-
+    /**
+     * 供应商id
+     */
+    private Long merchantId;
 
 }
