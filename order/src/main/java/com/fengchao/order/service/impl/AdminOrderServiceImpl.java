@@ -149,6 +149,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Map<String, ProductInfoBean> productInfoBeanMap =
                 productInfoBeanList.stream().collect(Collectors.toMap(p -> p.getMpu(), p -> p));
 
+        // 4.4 获取导出需要的供应商信息列表
+
+
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
         for (OrdersBo ordersBo : ordersBoList) { // 遍历主订单
