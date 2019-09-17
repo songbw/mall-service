@@ -176,7 +176,128 @@ public class AdminOrderController {
                 workbook.close();
             }
         }
+    }
 
+    /**
+     * 导出订单对账单，
+     * 目前所需对账订单的状态为:"已完成" & "已退款"
+     *
+     * <p>
+     * 导出title同订单导出接口
+     *
+     * 测试: http://localhost:8004/adminorder/export?merchantId=12&payStartDate=2019-01-10&payEndDate=2019-09-10
+     *
+     * @param orderExportReqVo 导出条件
+     * @param response
+     */
+    @GetMapping(value = "/export/reconciliation")
+    public void exportOrderReconciliation(OrderExportReqVo orderExportReqVo, HttpServletResponse response) throws Exception {
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
+
+        try {
+            log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+
+            if (orderExportReqVo.getPayStartDate() == null) {
+                throw new Exception("参数不合法, 查询开始时间为空");
+            }
+            if (orderExportReqVo.getPayEndDate() == null) {
+                throw new Exception("参数不合法, 查询结束时间为空");
+            }
+
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("订单结算");
+
+            // 1.根据条件获取订单集合
+            List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
+//                    adminOrderService.exportOrdersMock();
+
+            if (CollectionUtils.isEmpty(exportOrdersVoList)) {
+                throw new Exception("未找出有效的导出数据!");
+            }
+
+            // 将要导出的ExportOrdersVo以主订单维度形成map
+            Map<String, List<ExportOrdersVo>> exportOrdersVoMap = new HashMap<>();
+            for (ExportOrdersVo exportOrdersVo : exportOrdersVoList) {
+                String tradeNo = exportOrdersVo.getTradeNo();
+                List<ExportOrdersVo> _exportOrdersVoList = exportOrdersVoMap.get(tradeNo);
+                if (_exportOrdersVoList == null) {
+                    _exportOrdersVoList = new ArrayList<>();
+                    exportOrdersVoMap.put(tradeNo, _exportOrdersVoList);
+                }
+                _exportOrdersVoList.add(exportOrdersVo);
+            }
+
+            // 2.开始组装excel
+            // 2.1 组装title
+            createTitle(sheet);
+
+            // 2.2 组装业务数据
+            createContent(sheet, exportOrdersVoMap);
+
+
+            ///////// 文件名
+            String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
+            String fileName = "exportorder_" + date + ".xls";
+
+            // 3. 输出文件
+            try {
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出订单文件 出错了:{}", e.getMessage(), e);
+
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
+            log.info("export file finish");
+        } catch (Exception e) {
+            log.error("导出订单文件异常:{}", e.getMessage(), e);
+
+//            response.setHeader("content-type", "application/json;charset=UTF-8");
+//            response.setContentType("application/json");
+            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setStatus(400);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "400");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出订单文件 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+
+            if (workbook != null) {
+                workbook.close();
+            }
+        }
     }
 
     // ================================ private ===============================
@@ -274,7 +395,7 @@ public class AdminOrderController {
      * 组装业务数据
      *
      * @param sheet
-     * @param exportOrdersVoMap
+     * @param exportOrdersVoMap key: tradeNo
      */
     private void createContent(HSSFSheet sheet, Map<String, List<ExportOrdersVo>> exportOrdersVoMap) {
         Set<String> tradeNoSet = exportOrdersVoMap.keySet();

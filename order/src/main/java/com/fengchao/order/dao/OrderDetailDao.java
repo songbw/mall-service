@@ -1,6 +1,5 @@
 package com.fengchao.order.dao;
 
-import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.mapper.OrderDetailMapper;
 import com.fengchao.order.mapper.OrdersMapper;
 import com.fengchao.order.model.OrderDetail;
@@ -60,6 +59,26 @@ public class OrderDetailDao {
 
         OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
         criteria.andOrderIdIn(ordersIdList);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
+    /**
+     *
+     *
+     * @param merchantId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsForReconciliation(Integer merchantId, Date startTime, Date endTime) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andMerchantIdEqualTo(merchantId);
+
 
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
 
