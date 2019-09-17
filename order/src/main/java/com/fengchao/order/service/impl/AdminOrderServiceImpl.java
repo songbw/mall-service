@@ -171,6 +171,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setOpenId(ordersBo.getOpenId()); // 用户id
                     exportOrdersVo.setTradeNo(ordersBo.getTradeNo()); // 主订单编号
                     exportOrdersVo.setSubOrderId(orderDetailBo.getSubOrderId()); // 子订单编号
+                    exportOrdersVo.setOrderDetailStatus(orderDetailBo.getOrderDetailStatus()); // 子订单状态
                     exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
                     exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
 
