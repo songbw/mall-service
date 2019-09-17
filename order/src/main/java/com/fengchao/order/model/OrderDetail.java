@@ -34,6 +34,8 @@ public class OrderDetail {
 
     private Integer status;
 
+    private Date completeTime;
+
     private Date createdAt;
 
     private Date updatedAt;
@@ -168,6 +170,14 @@ public class OrderDetail {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
     }
 
     public Date getCreatedAt() {
