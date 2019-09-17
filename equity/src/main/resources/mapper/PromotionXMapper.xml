@@ -374,8 +374,11 @@
     p.created_date createdDate,
     p.daily_schedule dailySchedule,
     ps.mpu,
+    ps.skuId,
     ps.discount,
-    ps.schedule_id scheduleId
+    ps.schedule_id scheduleId,
+    ps.promotion_image promotionImage,
+    ps.per_limited perLimited
     FROM promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
     WHERE ps.mpu=#{mpu} and p.status <![CDATA[ > ]]> 2 and p.status <![CDATA[ < ]]> 5
   </select>

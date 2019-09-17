@@ -1,5 +1,6 @@
 package com.fengchao.order.service.impl;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -14,6 +15,7 @@ import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
 import com.fengchao.order.feign.AoyiClientService;
+import com.fengchao.order.feign.BaseService;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
@@ -26,9 +28,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -79,6 +78,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrdersDao ordersDao;
+    @Autowired
+    private BaseService baseService;
 
     @Transactional
     @Override
@@ -170,9 +171,16 @@ public class OrderServiceImpl implements OrderService {
                 bean.setCouponStatus(2);
             }
         }
+
+
         List<InventoryMpus> inventories = new ArrayList<>() ;
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
+        // 验证商品是否超过限购数量
+//        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
+//        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
+//            return verifyLimitResult ;
+//        }
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             bean.setTradeNo(orderMerchantBean.getTradeNo() + RandomUtil.randomString(orderBean.getTradeNo(), 8));
@@ -274,7 +282,7 @@ public class OrderServiceImpl implements OrderService {
 
 //        createOrder(orderBean) ;
         OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
-        if ("1001".equals(orderBean.getCompanyCustNo())) { // 关爱通
+        if ("1001".equals(orderBean.getCompanyCustNo()) || "1002".equals(orderBean.getCompanyCustNo())) { // 关爱通
             result = aoyiClientService.orderGAT(orderBean);
         } else { //
             result = aoyiClientService.order(orderBean);
@@ -310,6 +318,58 @@ public class OrderServiceImpl implements OrderService {
             return  operaResult;
         }
         return operaResult;
+    }
+
+    /**
+     * 验证商品限购数量
+     * @param orderMerchantBeans
+     * @return
+     */
+    private OperaResult verifyPerLimit(List<OrderMerchantBean> orderMerchantBeans, String openId) {
+        List<String> errorMpus = new ArrayList<>() ;
+        List<String> mpus = new ArrayList<>() ;
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+                mpus.add(orderSku.getMpu()) ;
+            }
+        }
+        OperaResult result = equityService.findPromotionByMpuList(mpus);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
+            if (subOrderTS != null && subOrderTS.size() > 0) {
+                for (PromotionMpuX promotionMpuX : subOrderTS) {
+                    if (promotionMpuX.getPerLimited() == -1) {
+                        continue;
+                    } else {
+                        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOpenIdAndMpuAndPromotionId(openId, promotionMpuX.getMpu(), promotionMpuX.getId()) ;
+                        if (orderDetailList != null && orderDetailList.size() > 0) {
+                            AtomicInteger sum = new AtomicInteger(0);
+                            orderDetailList.forEach(orderDetail -> {
+                                sum.set(sum.get() + orderDetail.getNum());
+                            });
+                            promotionMpuX.setPerLimited(promotionMpuX.getPerLimited() - sum.get());
+                            for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+                                for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+                                    if (orderSku.getNum() > promotionMpuX.getPerLimited()) {
+                                        errorMpus.add(orderSku.getMpu());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (errorMpus != null && errorMpus.size() > 0) {
+                result.setCode(4000001);
+                result.setMsg("商品超过限购数量，无法添加。");
+                result.getData().put("mpus", errorMpus) ;
+                return result;
+            }
+        }
+        return null;
     }
 
 
@@ -532,14 +592,17 @@ public class OrderServiceImpl implements OrderService {
         JSONArray jsonArray = new JSONArray();
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
-            logistics.forEach(logist -> {
+            for (OrderDetailX logist : logistics) {
                 if (logist.getLogisticsId() != null && logist.getComCode() != null) {
-                    String jsonString = Kuaidi100.synQueryData(logist.getLogisticsId(), logist.getComCode()) ;
-                    JSONObject jsonObject = JSONObject.parseObject(jsonString);
-                    jsonArray.add(jsonObject);
+                    OperaResponse<JSONObject> response =  baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode()) ;
+                    if (response.getCode() == 200) {
+                        JSONObject jsonObject = response.getData();
+                        jsonArray.add(jsonObject);
+                    }
                 }
-            });
+            }
         }
+        logger.info("物流查询结果： {}", JSONUtils.toJSONString(jsonArray));
         return jsonArray;
     }
 
@@ -845,6 +908,36 @@ public class OrderServiceImpl implements OrderService {
         bean.setStatus(5);
         orderDetailDao.updateOrderDetailStatus(bean) ;
         return bean.getId();
+    }
+
+    @Override
+    public OperaResponse logistics(List<Logisticsbean> logisticsbeans) {
+        OperaResponse<List<Logisticsbean>> response = new OperaResponse<List<Logisticsbean>>();
+        List<Logisticsbean> logisticsbeanList = new ArrayList<>();
+        for (Logisticsbean logistics: logisticsbeans) {
+            if (StringUtils.isEmpty(logistics.getLogisticsId())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            if (StringUtils.isEmpty(logistics.getLogisticsContent())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            if (StringUtils.isEmpty(logistics.getSubOrderId())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            orderDetailDao.updateBySubOrderId(logistics) ;
+            OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
+            JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+        }
+        if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
+            response.setCode(4000002);
+            response.setMsg("信息不完整");
+            response.setData(logisticsbeanList);
+            return response;
+        }
+        return response;
     }
 
     // ========================================= private ======================================

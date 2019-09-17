@@ -29,6 +29,8 @@ public class PromotionMpuX {
 
     private String promotionImage;
 
+    private Integer perLimited;
+
     public Integer getId() {
         return id;
     }
@@ -139,5 +141,13 @@ public class PromotionMpuX {
 
     public void setPromotionImage(String promotionImage) {
         this.promotionImage = promotionImage;
+    }
+
+    public Integer getPerLimited() {
+        return perLimited;
+    }
+
+    public void setPerLimited(Integer perLimited) {
+        this.perLimited = perLimited;
     }
 }

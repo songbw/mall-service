@@ -72,4 +72,10 @@ public class PromotionController {
         result.getData().put("result", service.findOnlineMpu());
         return result;
     }
+
+    @GetMapping("mpuList")
+    public OperaResult findPromotionByMpuList(@RequestParam("mpuList")List<String> Mpus, OperaResult result){
+        result.getData().put("result", service.findPromotionByMpuList(Mpus));
+        return result;
+    }
 }

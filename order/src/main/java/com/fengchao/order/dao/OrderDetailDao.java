@@ -1,11 +1,10 @@
 package com.fengchao.order.dao;
 
+import com.fengchao.order.bean.Logisticsbean;
+import com.fengchao.order.mapper.KuaidiCodeMapper;
 import com.fengchao.order.mapper.OrderDetailMapper;
 import com.fengchao.order.mapper.OrdersMapper;
-import com.fengchao.order.model.OrderDetail;
-import com.fengchao.order.model.OrderDetailExample;
-import com.fengchao.order.model.Orders;
-import com.fengchao.order.model.OrdersExample;
+import com.fengchao.order.model.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +25,13 @@ public class OrderDetailDao {
 
     private OrderDetailMapper orderDetailMapper;
     private OrdersMapper ordersMapper;
+    private KuaidiCodeMapper kuaidiCodeMapper;
 
     @Autowired
-    public OrderDetailDao(OrderDetailMapper orderDetailMapper, OrdersMapper ordersMapper) {
+    public OrderDetailDao(OrderDetailMapper orderDetailMapper, OrdersMapper ordersMapper, KuaidiCodeMapper kuaidiCodeMapper) {
         this.orderDetailMapper = orderDetailMapper;
         this.ordersMapper = ordersMapper;
+        this.kuaidiCodeMapper = kuaidiCodeMapper;
     }
 
     public PageInfo<OrderDetail> selectOrderDetailsByMerchantIdPageable(Integer merchantId, Integer pageNo, Integer pageSize) {
@@ -145,6 +146,67 @@ public class OrderDetailDao {
             }
         }
         return orderDetail.getId() ;
+    }
+
+    /**
+     * 根据openId、mpu、promotionId查询子订单列表
+     * @param openId
+     * @param mpu
+     * @param promotionId
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByOpenIdAndMpuAndPromotionId(String openId, String mpu, int promotionId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andMpuEqualTo(mpu);
+        criteria.andPromotionIdEqualTo(promotionId) ;
+        criteria.andSubOrderIdLike("%" + openId + "%") ;
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
+    /**
+     * 根据子订单号更新物流信息
+     * @param logisticsbean
+     * @return
+     */
+    public int updateBySubOrderId(Logisticsbean logisticsbean) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        KuaidiCodeExample kuaidiCodeExample = new KuaidiCodeExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        KuaidiCodeExample.Criteria kuaidiCriteria = kuaidiCodeExample.createCriteria();
+        OrderDetail temp = new OrderDetail() ;
+        temp.setLogisticsId(logisticsbean.getLogisticsId());
+        temp.setLogisticsContent(logisticsbean.getLogisticsContent());
+        temp.setStatus(2);
+        temp.setUpdatedAt(new Date());
+
+        kuaidiCriteria.andNameEqualTo(logisticsbean.getLogisticsContent()) ;
+
+        List<KuaidiCode> kuaidiCodes = kuaidiCodeMapper.selectByExample(kuaidiCodeExample);
+        if (kuaidiCodes != null && kuaidiCodes.size() > 0) {
+            temp.setComcode(kuaidiCodes.get(0).getCode());
+        }
+        criteria.andSubOrderIdEqualTo(logisticsbean.getSubOrderId()) ;
+        return orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
+    }
+
+    /**
+     * 根据子订单号查询子订单信息
+     * @param subOrderId
+     * @return
+     */
+    public OrderDetail selectBySubOrderId(String subOrderId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andSubOrderIdEqualTo(subOrderId) ;
+        List<OrderDetail> orderDetails = orderDetailMapper.selectByExample(orderDetailExample) ;
+        if (orderDetails != null && orderDetails.size() > 0) {
+            return orderDetails.get(0);
+        }
+        return null;
     }
 
 }

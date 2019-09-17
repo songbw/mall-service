@@ -180,12 +180,13 @@ public class ProductServiceImpl implements ProductService {
     public ProductInfoBean findAndPromotion(String mpu) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
         AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
-        BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
-        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu());
-        infoBean.setPromotion(promotionInfoBeans);
-
-        List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
-        infoBean.setCoupon(couponBeans);
+        if (aoyiProdIndexX != null) {
+            BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu());
+            infoBean.setPromotion(promotionInfoBeans);
+            List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
+            infoBean.setCoupon(couponBeans);
+        }
         return infoBean;
     }
 

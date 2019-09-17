@@ -15,6 +15,8 @@ public class PromotionMpu {
 
     private String promotionImage;
 
+    private Integer perLimited;
+
     public Integer getId() {
         return id;
     }
@@ -69,5 +71,13 @@ public class PromotionMpu {
 
     public void setPromotionImage(String promotionImage) {
         this.promotionImage = promotionImage == null ? null : promotionImage.trim();
+    }
+
+    public Integer getPerLimited() {
+        return perLimited;
+    }
+
+    public void setPerLimited(Integer perLimited) {
+        this.perLimited = perLimited;
     }
 }

@@ -40,11 +40,7 @@ public class UploadController {
     @PostMapping("/down/upload")
     private OperaResult downUpload(@RequestBody AyFcImages images) {
         OperaResult result = new OperaResult();
-        new Thread(images.getPath()){
-            public void run(){
-                service.downUpload(images) ;
-            }
-        }.start();
+        service.downUpload(images) ;
         return result;
     }
 }

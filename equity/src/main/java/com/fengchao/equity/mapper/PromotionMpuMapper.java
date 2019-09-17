@@ -4,7 +4,6 @@ import com.fengchao.equity.model.PromotionMpu;
 import com.fengchao.equity.model.PromotionMpuExample;
 import java.util.List;
 
-import com.fengchao.equity.model.PromotionMpuX;
 import org.apache.ibatis.annotations.Param;
 
 public interface PromotionMpuMapper {
@@ -29,8 +28,4 @@ public interface PromotionMpuMapper {
     int updateByPrimaryKeySelective(PromotionMpu record);
 
     int updateByPrimaryKey(PromotionMpu record);
-
-    List<PromotionMpuX> selectByPrimaryMpu(Integer id);
-
-    int deleteBypromotionId(PromotionMpu record);
 }

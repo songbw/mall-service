@@ -57,4 +57,7 @@ public interface EquityServiceClient {
      */
     @RequestMapping(value = "/couponUseInfo/findByIdList", method = RequestMethod.GET)
     OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList);
+
+    @RequestMapping(value = "/promotion/mpuList", method = RequestMethod.GET)
+    OperaResult findPromotionByMpuList(@RequestParam("mpuList") List<String> mpuList);
 }

@@ -54,4 +54,9 @@ public class EquityServiceClientH implements EquityServiceClient {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
+    @Override
+    public OperaResult findPromotionByMpuList(List<String> mpuList) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
 }
