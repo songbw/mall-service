@@ -9,7 +9,7 @@
         <property name="log_dir" value="/data/logs/order"/>
     </springProfile>
 
-    <springProfile name="dev,local,test">
+    <springProfile name="dev,local">
         <property name="log_dir" value="./logs/"/>
     </springProfile>
 
