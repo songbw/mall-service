@@ -213,12 +213,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         }
                     }
                     exportOrdersVo.setPurchasePrice(purchasePrice); // 进货价格 单位分
-                    exportOrdersVo.setTotalRealPrice(
-                            orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()
-                                    * orderDetailBo.getNum()); // sku 的总价
+                    exportOrdersVo.setSkuPayPrice(orderDetailBo.getSalePrice() == null ?
+                            0 : orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()); // sku 实际支付价格 分
                     exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
                     exportOrdersVo.setCouponPrice(ordersBo.getCouponDiscount() == null ?
                             0 : new BigDecimal(ordersBo.getCouponDiscount()).multiply(new BigDecimal(100)).intValue()); // 主订单 券支付金额
+                    exportOrdersVo.setSkuCouponDiscount(orderDetailBo.getSkuCouponDiscount() == null ?
+                            0 :orderDetailBo.getSkuCouponDiscount()); // 子订单 sku的优惠券支付金额 分
                     exportOrdersVo.setPayPrice(new BigDecimal(ordersBo.getSaleAmount()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
                     // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
 
@@ -263,7 +264,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             exportOrdersVo.setCouponSupplier("couponsupplier_" + i);
             exportOrdersVo.setPurchasePrice(i);
             exportOrdersVo.setUnitPrice(i);
-            exportOrdersVo.setTotalRealPrice(i);
+            exportOrdersVo.setSkuPayPrice(i);
             exportOrdersVo.setCouponPrice(i);
             exportOrdersVo.setPayPrice(i);
             exportOrdersVo.setShareBenefitPercent("/");
@@ -282,7 +283,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     //=============================== private =============================
 
     /**
-     *
      * @param orderExportReqVo
      * @return
      */
@@ -298,7 +298,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     /**
-     *
      * @param orderDetail
      * @return
      */
@@ -331,7 +330,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     /**
-     *
      * @param orders
      * @return
      */

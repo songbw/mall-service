@@ -110,10 +110,9 @@ public class ExportOrdersVo {
     private Integer unitPrice;
 
     /**
-     * sku 的总价 单位：分
-     * 计算：unitPrice * quantity(购买数量)
+     * sku实际支付价格 单位:分
      */
-    private Integer totalRealPrice;
+    private Integer skuPayPrice;
 
     /**
      * 券支付金额 单位分
@@ -169,5 +168,10 @@ public class ExportOrdersVo {
      * 供应商id
      */
     private Long merchantId;
+
+    /**
+     * sku 优惠券使用金额 单位:分
+     */
+    private Integer skuCouponDiscount;
 
 }
