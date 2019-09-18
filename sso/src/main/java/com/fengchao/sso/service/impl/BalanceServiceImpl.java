@@ -128,12 +128,7 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("openId 必须大于0");
             return response;
         }
-        if (bean.getOrderId() == null || bean.getOrderId() <= 0) {
-            response.setCode(900405);
-            response.setMsg("orderId 必须大于0");
-            return response;
-        }
-        if (StringUtils.isEmpty(bean.getOrderNo())) {
+        if (StringUtils.isEmpty(bean.getOrderNos())) {
             response.setCode(900401);
             response.setMsg("orderNo 不能为Null");
             return response;
@@ -180,12 +175,7 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("openId 必须大于0");
             return response;
         }
-        if (bean.getOrderId() == null || bean.getOrderId() <= 0) {
-            response.setCode(900405);
-            response.setMsg("orderId 必须大于0");
-            return response;
-        }
-        if (StringUtils.isEmpty(bean.getOrderNo())) {
+        if (StringUtils.isEmpty(bean.getOrderNos())) {
             response.setCode(900401);
             response.setMsg("orderNo 不能为Null");
             return response;

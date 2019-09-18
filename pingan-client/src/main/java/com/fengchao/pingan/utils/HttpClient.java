@@ -1,11 +1,16 @@
 package com.fengchao.pingan.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fengchao.pingan.bean.InitCodeRequestBean;
+import org.apache.commons.beanutils.BeanMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import java.util.Date;
 
 public class HttpClient {
 
@@ -38,6 +43,15 @@ public class HttpClient {
     public static Client createClient() {
         Client client = ClientBuilder.newClient();
         return client;
+    }
+
+    public static void main(String args[]) {
+        InitCodeRequestBean bean = new InitCodeRequestBean();
+        bean.setTimestamp(new Date().getTime() + "");
+        bean.setRandomSeries(RandomUtil.getRandomString(10));
+        bean.setAppId("ea70244ca3604a4ebc1c2fd8e48756d5");
+        BeanMap testMap = new BeanMap(bean);
+        System.out.println(testMap);
     }
 
 }

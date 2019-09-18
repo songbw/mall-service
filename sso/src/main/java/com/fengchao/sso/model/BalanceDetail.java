@@ -12,7 +12,7 @@ public class BalanceDetail {
 
     private Integer orderId;
 
-    private String orderNo;
+    private String orderNos;
 
     private BigDecimal saleAmount;
 
@@ -23,6 +23,12 @@ public class BalanceDetail {
     private Date createdAt;
 
     private Date updatedAt;
+
+    private String iAppId;
+
+    private String tAppId;
+
+    private String merchantNo;
 
     public Integer getId() {
         return id;
@@ -56,12 +62,12 @@ public class BalanceDetail {
         this.orderId = orderId;
     }
 
-    public String getOrderNo() {
-        return orderNo;
+    public String getOrderNos() {
+        return orderNos;
     }
 
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo == null ? null : orderNo.trim();
+    public void setOrderNos(String orderNos) {
+        this.orderNos = orderNos == null ? null : orderNos.trim();
     }
 
     public BigDecimal getSaleAmount() {
@@ -102,5 +108,29 @@ public class BalanceDetail {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getiAppId() {
+        return iAppId;
+    }
+
+    public void setiAppId(String iAppId) {
+        this.iAppId = iAppId == null ? null : iAppId.trim();
+    }
+
+    public String gettAppId() {
+        return tAppId;
+    }
+
+    public void settAppId(String tAppId) {
+        this.tAppId = tAppId == null ? null : tAppId.trim();
+    }
+
+    public String getMerchantNo() {
+        return merchantNo;
+    }
+
+    public void setMerchantNo(String merchantNo) {
+        this.merchantNo = merchantNo == null ? null : merchantNo.trim();
     }
 }
