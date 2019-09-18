@@ -100,31 +100,90 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OperaResponse<InitCodeBean> getInitCode(InitCodeRequestBean bean) {
-        WebTarget webTarget = HttpClient.createClient().target(HttpClient.USER_INFO);
+    public OperaResponse<InitCodeBean> getInitCode() {
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_AUTH_PATH + HttpClient.INIT_CODE_URL);
+        InitCodeRequestBean bean = new InitCodeRequestBean();
         bean.setAppId("ea70244ca3604a4ebc1c2fd8e48756d5");
         bean.setTimestamp(new Date().getTime() + "");
-        bean.setRandomSeries(RandomUtil.getRandomString(10));
-        ObjectMapper objectMapper = new ObjectMapper();
-        String messageString = null;
-        try {
-            messageString = objectMapper.writeValueAsString(bean);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        String requestString = null;
-        try {
-            requestString = objectMapper.writeValueAsString(bean);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        bean.setRandomSeries(RandomUtil.getRandomNumber(10));
+        bean.setCipherText(Pkcs8Util.getCiphe(bean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
-        Response response = invocationBuilder.post(Entity.entity(requestString, MediaType.APPLICATION_JSON));
-        if (response.getStatus() == 200) {
-//            return  response.readEntity(UserResult.class);
-            return null;
-        } else {
-            return null;
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        return  response.readEntity(OperaResponse.class);
+    }
+
+    @Override
+    public OperaResponse<AuthCodeBean> getAuthCode() {
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_AUTH_PATH + HttpClient.AUTH_CODE_URL);
+        InitCodeRequestBean bean = new InitCodeRequestBean();
+        bean.setAppId("ea70244ca3604a4ebc1c2fd8e48756d5");
+        bean.setTimestamp(new Date().getTime() + "");
+        bean.setRandomSeries(RandomUtil.getRandomNumber(10));
+        bean.setCipherText(Pkcs8Util.getCiphe(bean));
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        return  response.readEntity(OperaResponse.class);
+    }
+
+    @Override
+    public OperaResponse<AccessToken> getAuthAccessToken(String authCode) {
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_AUTH_PATH + HttpClient.ACCESS_TOKEN_URL);
+        AccessTokenRequestBean bean = new AccessTokenRequestBean();
+        bean.setAuthCode(authCode);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        return  response.readEntity(OperaResponse.class);
+    }
+
+    @Override
+    public OperaResponse<AccessToken> getRefreshToken(String refreshToken) {
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_AUTH_PATH + HttpClient.REFRESH_TOKEN_URL);
+        RefreshTokenRequestBean bean = new RefreshTokenRequestBean();
+        bean.setRefreshToken(refreshToken);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        return  response.readEntity(OperaResponse.class);
+    }
+
+    @Override
+    public OperaResponse<CheckTokenBean> checkToken(String accessToken) {
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_AUTH_PATH + HttpClient.CHECK_TOKEN_URL);
+        CheckTokenRequestBean bean = new CheckTokenRequestBean();
+        bean.setAccessToken(accessToken);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        return  response.readEntity(OperaResponse.class);
+    }
+
+    @Override
+    public OperaResponse checkRequestCode(String requestCode) {
+        OperaResponse<AuthCodeBean> authCodeBeanOperaResponse = getAuthCode();
+
+        if (authCodeBeanOperaResponse.getCode() != 200) {
+            return authCodeBeanOperaResponse;
         }
+        AuthCodeBean authCodeBean = authCodeBeanOperaResponse.getData();
+        OperaResponse<AccessToken> accessTokenOperaResponse =  getAuthAccessToken(authCodeBean.getAuthCode()) ;
+        if (accessTokenOperaResponse.getCode() != 200) {
+            return accessTokenOperaResponse;
+        }
+        AccessToken accessToken = accessTokenOperaResponse.getData();
+        CheckRequestCodeRequestBean bean = new CheckRequestCodeRequestBean();
+        bean.setRequestCode(requestCode);
+        bean.setAccessToken(accessToken.getAccessToken());
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_AUTH_PATH + HttpClient.CHECK_REQUEST_CODE_URL);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        return  response.readEntity(OperaResponse.class);
+    }
+
+    @Override
+    public OperaResponse<AuthUserBean> getAuthUserInfo(String userAccessToken) {
+        AuthUserRequestBean bean = new AuthUserRequestBean();
+        bean.setUserAccessToken(userAccessToken);
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_AUTH_PATH + HttpClient.USER_iNFO_URL);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        return  response.readEntity(OperaResponse.class);
     }
 }

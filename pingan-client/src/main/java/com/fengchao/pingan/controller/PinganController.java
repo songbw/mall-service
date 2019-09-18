@@ -52,4 +52,40 @@ public class PinganController {
         result.getData().put("result", paymentService.payRefund(bean));
         return result;
     }
+
+    @GetMapping("initCode")
+    private OperaResponse getInitCode() {
+        return userService.getInitCode() ;
+    }
+
+    @GetMapping("authCode")
+    private OperaResponse getAuthCode() {
+        return userService.getAuthCode() ;
+    }
+
+    @GetMapping("accessToken")
+    private OperaResponse getAccessToken(String authCode) {
+        return userService.getAuthAccessToken(authCode) ;
+    }
+
+    @GetMapping("refreshToken")
+    private OperaResponse getRefreshToken(String refreshToken) {
+        return userService.getRefreshToken(refreshToken) ;
+    }
+
+    @GetMapping("checkToken")
+    private OperaResponse checkToken(String accessToken) {
+        return userService.checkToken(accessToken) ;
+    }
+
+    @GetMapping("checkRequestCode")
+    private OperaResponse checkRequestCode(String requestCode) {
+        return userService.checkRequestCode(requestCode) ;
+    }
+
+    @GetMapping("userInfo")
+    private OperaResponse getUserInfo(String userAccessToken) {
+        return userService.getAuthUserInfo(userAccessToken) ;
+    }
+
 }
