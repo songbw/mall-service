@@ -1,6 +1,7 @@
 package com.fengchao.order.dao;
 
 import com.fengchao.order.bean.Logisticsbean;
+import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.mapper.KuaidiCodeMapper;
 import com.fengchao.order.mapper.OrderDetailMapper;
 import com.fengchao.order.mapper.OrdersMapper;
@@ -67,7 +68,7 @@ public class OrderDetailDao {
     }
 
     /**
-     *
+     * 查询需要对账(入账)的订单
      *
      * @param merchantId
      * @param startTime
@@ -78,7 +79,18 @@ public class OrderDetailDao {
         OrderDetailExample orderDetailExample = new OrderDetailExample();
 
         OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
-        criteria.andMerchantIdEqualTo(merchantId);
+
+        if (merchantId != null) {
+            criteria.andMerchantIdEqualTo(merchantId);
+        }
+
+        criteria.andCompleteTimeBetween(startTime, endTime);
+
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(OrderDetailStatusEnum.COMPLETED.getValue());
+        statusList.add(OrderDetailStatusEnum.APPLY_REFUND.getValue());
+
+        criteria.andStatusIn(statusList);
 
 
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
@@ -207,6 +219,22 @@ public class OrderDetailDao {
             return orderDetails.get(0);
         }
         return null;
+    }
+
+    /**
+     * 根据子订单No集合查询
+     *
+     * @param subOrderIdList
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailListBySubOrderIds(List<String> subOrderIdList) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andSubOrderIdIn(subOrderIdList);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+        return orderDetailList;
     }
 
 }

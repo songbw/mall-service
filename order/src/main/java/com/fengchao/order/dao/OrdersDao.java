@@ -78,6 +78,22 @@ public class OrdersDao {
     }
 
     /**
+     * 根据id集合查询
+     *
+     * @param idList
+     * @return
+     */
+    public List<Orders> selectOrdersListByIdList(List<Integer> idList) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andIdIn(idList);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
+
+    /**
      * 根据商户id， 分页查询已支付的主订单列表
      *
      * @param merchantId

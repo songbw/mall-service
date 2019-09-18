@@ -2,6 +2,7 @@ package com.fengchao.order.controller;
 
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
@@ -39,27 +40,27 @@ public class AdminOrderController {
     /**
      * 按照条件导出订单
      * 参考：https://blog.csdn.net/ethan_10/article/details/80335350
-     *
-     *              // 创建HSSFRow对象
-     *              HSSFRow row0 = sheet.createRow(0);
-     *
-     *              //创建HSSFCell对象
-     *              HSSFCell cell00 = row0.createCell(0);
-     *              cell00.setCellValue("单元格中的中文1");
-     *
-     *              HSSFCell cell01 = row0.createCell(1);
-     *              cell01.setCellValue("单元格中的中文2");
-     *
-     *              HSSFRow row1 = sheet.createRow(1);
-     *              HSSFCell cell10 = row1.createCell(0);
-     *              cell10.setCellValue("单元格中的中文3");
+     * <p>
+     * // 创建HSSFRow对象
+     * HSSFRow row0 = sheet.createRow(0);
+     * <p>
+     * //创建HSSFCell对象
+     * HSSFCell cell00 = row0.createCell(0);
+     * cell00.setCellValue("单元格中的中文1");
+     * <p>
+     * HSSFCell cell01 = row0.createCell(1);
+     * cell01.setCellValue("单元格中的中文2");
+     * <p>
+     * HSSFRow row1 = sheet.createRow(1);
+     * HSSFCell cell10 = row1.createCell(0);
+     * cell10.setCellValue("单元格中的中文3");
      *
      * <p>
      * 导出title：
      * 用户id，主订单编号，子订单编号， 订单支付时间， 订单生成时间，品类， 品牌（通过mpu获取）
      * ，sku， mpu， 商品名称， 购买数量 ， 活动 ， 券码， 券来源（券商户），进货价， 销售价，  券支付金额， 订单支付金额，
      * 平台分润比， 收件人名， 省 ， 市， 区
-     *
+     * <p>
      * 测试: http://localhost:8004/adminorder/export?merchantId=12&payStartDate=2019-01-10&payEndDate=2019-09-10
      *
      * @param orderExportReqVo 导出条件
@@ -180,11 +181,12 @@ public class AdminOrderController {
 
     /**
      * 导出订单对账单，
-     * 目前所需对账订单的状态为:"已完成" & "已退款"
+     * 1.导出入账订单,入账订单的状态为:"已完成" & "已退款"
+     * 2.导出出账订单,出账订单的状态是:"已退款"
      *
      * <p>
      * 导出title同订单导出接口
-     *
+     * <p>
      * 测试: http://localhost:8004/adminorder/export?merchantId=12&payStartDate=2019-01-10&payEndDate=2019-09-10
      *
      * @param orderExportReqVo 导出条件
@@ -199,6 +201,7 @@ public class AdminOrderController {
         try {
             log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
 
+            // 1.校验参数
             if (orderExportReqVo.getPayStartDate() == null) {
                 throw new Exception("参数不合法, 查询开始时间为空");
             }
@@ -206,44 +209,63 @@ public class AdminOrderController {
                 throw new Exception("参数不合法, 查询结束时间为空");
             }
 
-            // 创建HSSFWorkbook对象
-            workbook = new HSSFWorkbook();
-            // 创建HSSFSheet对象
-            HSSFSheet sheet = workbook.createSheet("订单结算");
+            // 2.获取入账订单集合
+            List<ExportOrdersVo> exportOrdersVoListIncome = adminOrderService.exportOrdersReconciliationIncome(orderExportReqVo);
+            List<ExportOrdersVo> exportOrdersVoListOut = adminOrderService.exportOrdersReconciliationOut(orderExportReqVo);
 
-            // 1.根据条件获取订单集合
-            List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
-//                    adminOrderService.exportOrdersMock();
-
-            if (CollectionUtils.isEmpty(exportOrdersVoList)) {
+            if (CollectionUtils.isEmpty(exportOrdersVoListIncome) && CollectionUtils.isEmpty(exportOrdersVoListOut)) {
                 throw new Exception("未找出有效的导出数据!");
             }
 
-            // 将要导出的ExportOrdersVo以主订单维度形成map
-            Map<String, List<ExportOrdersVo>> exportOrdersVoMap = new HashMap<>();
-            for (ExportOrdersVo exportOrdersVo : exportOrdersVoList) {
-                String tradeNo = exportOrdersVo.getTradeNo();
-                List<ExportOrdersVo> _exportOrdersVoList = exportOrdersVoMap.get(tradeNo);
-                if (_exportOrdersVoList == null) {
-                    _exportOrdersVoList = new ArrayList<>();
-                    exportOrdersVoMap.put(tradeNo, _exportOrdersVoList);
-                }
-                _exportOrdersVoList.add(exportOrdersVo);
+            // 3. 将要导出的ExportOrdersVo以主订单维度形成map key:tradeno
+            Map<String, List<ExportOrdersVo>> exportOrdersVoMapIncome = null;
+            Map<String, List<ExportOrdersVo>> exportOrdersVoMapOut = null;
+
+            // 3.1 处理入账
+            if (CollectionUtils.isEmpty(exportOrdersVoListIncome)) {
+                exportOrdersVoMapIncome = convertToExportOrdersVoMap(exportOrdersVoListIncome);
+            }
+            // 3.2 处理出账
+            if (CollectionUtils.isEmpty(exportOrdersVoListOut)) {
+                exportOrdersVoMapOut = convertToExportOrdersVoMap(exportOrdersVoListOut);
             }
 
-            // 2.开始组装excel
-            // 2.1 组装title
-            createTitle(sheet);
+            // 4.开始组装excel
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
 
-            // 2.2 组装业务数据
-            createContent(sheet, exportOrdersVoMap);
+            // 4.1 组装入账
+            if (exportOrdersVoMapIncome != null) {
+                // 创建HSSFSheet对象
+                HSSFSheet sheetIncome = workbook.createSheet("入账");
 
+                // 组装title
+                createTitle(sheetIncome);
 
+                // 组装业务数据
+                createContent(sheetIncome, exportOrdersVoMapIncome);
+            }
+
+            // 4.2 组装出账
+            /**
+            if (exportOrdersVoMapOut != null) {
+                // 创建HSSFSheet对象
+                HSSFSheet sheetOut = workbook.createSheet("入账");
+
+                // 组装title
+                createTitle(sheetOut);
+
+                // 组装业务数据
+                createContent(sheetOut, exportOrdersVoMapOut);
+            }
+             */
+
+            // 5. 输出文件
             ///////// 文件名
             String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
-            String fileName = "exportorder_" + date + ".xls";
+            String fileName = "statement_" + date + ".xls";
 
-            // 3. 输出文件
+            //
             try {
                 response.setHeader("content-type", "application/octet-stream");
                 response.setContentType("application/octet-stream");
@@ -253,7 +275,7 @@ public class AdminOrderController {
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
-                log.error("导出订单文件 出错了:{}", e.getMessage(), e);
+                log.error("导出订单对账单 出错了:{}", e.getMessage(), e);
 
                 throw new Exception(e);
             } finally {
@@ -263,9 +285,9 @@ public class AdminOrderController {
             }
 
             //
-            log.info("export file finish");
+            log.info("导出订单对账单 export file finish");
         } catch (Exception e) {
-            log.error("导出订单文件异常:{}", e.getMessage(), e);
+            log.error("导出订单对账单异常:{}", e.getMessage(), e);
 
 //            response.setHeader("content-type", "application/json;charset=UTF-8");
 //            response.setContentType("application/json");
@@ -283,7 +305,7 @@ public class AdminOrderController {
 
                 writer.write(JSONUtil.toJsonString(map));
             } catch (Exception e1) {
-                log.error("导出订单文件 错误:{}", e.getMessage(), e);
+                log.error("导出订单对账单 错误:{}", e.getMessage(), e);
             } finally {
                 if (writer != null) {
                     writer.close();
@@ -448,13 +470,13 @@ public class AdminOrderController {
                         // 该子订单记录集合在excel中的结束行
                         int endLineNum = currentRowNum;
 
-                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum,0,0));
-                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum,1,1));
-                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum,2,2));
-                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum,3,3));
-                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum,4,4));
-                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum,5,5));
-                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum,6,6));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 0, 0));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 1, 1));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 2, 2));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 3, 3));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 4, 4));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 5, 5));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 6, 6));
                     }
                 }
 
@@ -554,6 +576,28 @@ public class AdminOrderController {
             }
         }
     }
+
+    /**
+     * 将需要导出的数据转成主订单维度的map key:tradeno
+     *
+     * @param exportOrdersVoList
+     * @return
+     */
+    private Map<String, List<ExportOrdersVo>> convertToExportOrdersVoMap(List<ExportOrdersVo> exportOrdersVoList) {
+        Map<String, List<ExportOrdersVo>> exprotOrdersVoMap = new HashMap<>();
+        for (ExportOrdersVo exportOrdersVo : exportOrdersVoList) {
+            String tradeNo = exportOrdersVo.getTradeNo();
+            List<ExportOrdersVo> _exportOrdersVoList = exprotOrdersVoMap.get(tradeNo);
+            if (_exportOrdersVoList == null) {
+                exportOrdersVoList = new ArrayList<>();
+                exprotOrdersVoMap.put(tradeNo, _exportOrdersVoList);
+            }
+            exportOrdersVoList.add(exportOrdersVo);
+        }
+
+        return exprotOrdersVoMap;
+    }
+
 
     public static void main(String args[]) {
         // new AdminOrderController().excelPrint();

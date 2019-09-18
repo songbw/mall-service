@@ -27,4 +27,26 @@ public interface AdminOrderService {
      * @throws Exception
      */
     List<ExportOrdersVo> exportOrdersMock() throws Exception;
+
+    /**
+     * 导出订单入账对账单 - 获取导出的vo : List<ExportOrdersVo>
+     *
+     * 1.获取"已完成","已退款"状态的子订单
+     * 2.拼装导出数据
+     *
+     * @param orderExportReqVo
+     * @return
+     */
+    List<ExportOrdersVo> exportOrdersReconciliationIncome(OrderExportReqVo orderExportReqVo) throws Exception;
+
+    /**
+     * 导出订单入账对账单 - 获取导出的vo : List<ExportOrdersVo>
+     *
+     * 1.获取"已退款"状态的子订单
+     * 2.拼装导出数据
+     *
+     * @param orderExportReqVo
+     * @return
+     */
+    List<ExportOrdersVo> exportOrdersReconciliationOut(OrderExportReqVo orderExportReqVo) throws Exception;
 }
