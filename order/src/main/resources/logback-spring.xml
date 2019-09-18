@@ -10,7 +10,7 @@
     </springProfile>
 
     <springProfile name="dev,local">
-        <property name="log_dir" value="./logs/"/>
+        <property name="log_dir" value="../logs/"/>
     </springProfile>
 
     <!-- 控制台输出 -->

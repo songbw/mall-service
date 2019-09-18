@@ -67,6 +67,37 @@ public class OrderDetailDao {
         return orderDetailList;
     }
 
+    /**
+     * 查询需要对账(入账)的订单
+     *
+     * @param merchantId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsForReconciliation(Integer merchantId, Date startTime, Date endTime) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        if (merchantId != null) {
+            criteria.andMerchantIdEqualTo(merchantId);
+        }
+
+        criteria.andCompleteTimeBetween(startTime, endTime);
+
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(OrderDetailStatusEnum.COMPLETED.getValue());
+        statusList.add(OrderDetailStatusEnum.APPLY_REFUND.getValue());
+
+        criteria.andStatusIn(statusList);
+
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
     public int insert(OrderDetail record){
         return orderDetailMapper.insertSelective(record);
     }
@@ -188,6 +219,22 @@ public class OrderDetailDao {
             return orderDetails.get(0);
         }
         return null;
+    }
+
+    /**
+     * 根据子订单No集合查询
+     *
+     * @param subOrderIdList
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailListBySubOrderIds(List<String> subOrderIdList) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andSubOrderIdIn(subOrderIdList);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+        return orderDetailList;
     }
 
 }

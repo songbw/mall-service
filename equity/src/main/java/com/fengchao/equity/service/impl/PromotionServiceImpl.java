@@ -647,6 +647,7 @@ public class PromotionServiceImpl implements PromotionService {
         // promotionBean.setStartDate(promotion.getStartDate());
         // promotionBean.setEndDate(promotion.getEndDate());
         // promotionBean.setCreatedDate(promotion.getCreatedDate());
+        promotionBean.setAccountType(promotion.getAccountType());
 
         return promotionBean;
     }

@@ -27,5 +27,10 @@ public class PromotionBean {
 
     private Integer limit;
     private Integer offset;
+
+    /**
+     * 结算类型（0：普通类结算， 1：秒杀类结算， 2：精品类结算）
+     */
+    private Integer accountType;
 }
 
