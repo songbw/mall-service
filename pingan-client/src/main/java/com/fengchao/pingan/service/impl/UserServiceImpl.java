@@ -18,6 +18,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -93,6 +94,35 @@ public class UserServiceImpl implements UserService {
         Response response = invocationBuilder.post(Entity.entity(requestString, MediaType.APPLICATION_JSON));
         if (response.getStatus() == 200) {
             return  response.readEntity(UserResult.class);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public OperaResponse<InitCodeBean> getInitCode(InitCodeRequestBean bean) {
+        WebTarget webTarget = HttpClient.createClient().target(HttpClient.USER_INFO);
+        bean.setAppId("ea70244ca3604a4ebc1c2fd8e48756d5");
+        bean.setTimestamp(new Date().getTime() + "");
+        bean.setRandomSeries(RandomUtil.getRandomString(10));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String messageString = null;
+        try {
+            messageString = objectMapper.writeValueAsString(bean);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        String requestString = null;
+        try {
+            requestString = objectMapper.writeValueAsString(bean);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(requestString, MediaType.APPLICATION_JSON));
+        if (response.getStatus() == 200) {
+//            return  response.readEntity(UserResult.class);
+            return null;
         } else {
             return null;
         }
