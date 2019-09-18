@@ -54,7 +54,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                  ProductRpcService productRpcService,
                                  VendorsRpcService vendorsRpcService,
                                  OrderDetailDao orderDetailDao,
-                                 OrdersDao ordersDao) {
+                                 OrdersDao ordersDao,
+                                 WorkOrderRpcService workOrderRpcService) {
         this.adminOrderDao = adminOrderDao;
         this.equityRpcService = equityRpcService;
         this.productRpcService = productRpcService;

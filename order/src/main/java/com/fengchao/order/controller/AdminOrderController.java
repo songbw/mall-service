@@ -93,22 +93,12 @@ public class AdminOrderController {
             // 1.根据条件获取订单集合
             List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
 //                    adminOrderService.exportOrdersMock();
-
             if (CollectionUtils.isEmpty(exportOrdersVoList)) {
                 throw new Exception("未找出有效的导出数据!");
             }
 
             // 将要导出的ExportOrdersVo以主订单维度形成map
-            Map<String, List<ExportOrdersVo>> exportOrdersVoMap = new HashMap<>();
-            for (ExportOrdersVo exportOrdersVo : exportOrdersVoList) {
-                String tradeNo = exportOrdersVo.getTradeNo();
-                List<ExportOrdersVo> _exportOrdersVoList = exportOrdersVoMap.get(tradeNo);
-                if (_exportOrdersVoList == null) {
-                    _exportOrdersVoList = new ArrayList<>();
-                    exportOrdersVoMap.put(tradeNo, _exportOrdersVoList);
-                }
-                _exportOrdersVoList.add(exportOrdersVo);
-            }
+            Map<String, List<ExportOrdersVo>> exportOrdersVoMap = convertToExportOrdersVoMap(exportOrdersVoList);
 
             // 2.开始组装excel
             // 2.1 组装title
@@ -187,7 +177,7 @@ public class AdminOrderController {
      * <p>
      * 导出title同订单导出接口
      * <p>
-     * 测试: http://localhost:8004/adminorder/export?merchantId=12&payStartDate=2019-01-10&payEndDate=2019-09-10
+     * 测试: http://localhost:8004/adminorder/export/reconciliation?merchantId=2&payStartDate=2019-01-10&payEndDate=2019-09-10
      *
      * @param orderExportReqVo 导出条件
      * @param response
@@ -222,11 +212,11 @@ public class AdminOrderController {
             Map<String, List<ExportOrdersVo>> exportOrdersVoMapOut = null;
 
             // 3.1 处理入账
-            if (CollectionUtils.isEmpty(exportOrdersVoListIncome)) {
+            if (CollectionUtils.isNotEmpty(exportOrdersVoListIncome)) {
                 exportOrdersVoMapIncome = convertToExportOrdersVoMap(exportOrdersVoListIncome);
             }
             // 3.2 处理出账
-            if (CollectionUtils.isEmpty(exportOrdersVoListOut)) {
+            if (CollectionUtils.isNotEmpty(exportOrdersVoListOut)) {
                 exportOrdersVoMapOut = convertToExportOrdersVoMap(exportOrdersVoListOut);
             }
 
@@ -247,10 +237,9 @@ public class AdminOrderController {
             }
 
             // 4.2 组装出账
-            /**
             if (exportOrdersVoMapOut != null) {
                 // 创建HSSFSheet对象
-                HSSFSheet sheetOut = workbook.createSheet("入账");
+                HSSFSheet sheetOut = workbook.createSheet("出账");
 
                 // 组装title
                 createTitle(sheetOut);
@@ -258,7 +247,6 @@ public class AdminOrderController {
                 // 组装业务数据
                 createContent(sheetOut, exportOrdersVoMapOut);
             }
-             */
 
             // 5. 输出文件
             ///////// 文件名
@@ -585,14 +573,15 @@ public class AdminOrderController {
      */
     private Map<String, List<ExportOrdersVo>> convertToExportOrdersVoMap(List<ExportOrdersVo> exportOrdersVoList) {
         Map<String, List<ExportOrdersVo>> exprotOrdersVoMap = new HashMap<>();
+
         for (ExportOrdersVo exportOrdersVo : exportOrdersVoList) {
             String tradeNo = exportOrdersVo.getTradeNo();
             List<ExportOrdersVo> _exportOrdersVoList = exprotOrdersVoMap.get(tradeNo);
             if (_exportOrdersVoList == null) {
-                exportOrdersVoList = new ArrayList<>();
+                _exportOrdersVoList = new ArrayList<>();
                 exprotOrdersVoMap.put(tradeNo, _exportOrdersVoList);
             }
-            exportOrdersVoList.add(exportOrdersVo);
+            _exportOrdersVoList.add(exportOrdersVo);
         }
 
         return exprotOrdersVoMap;
