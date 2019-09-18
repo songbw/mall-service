@@ -125,7 +125,7 @@ public class BalanceServiceImpl implements IBalanceService {
         OperaResponse response = new OperaResponse();
         if (StringUtils.isEmpty(bean.getOpenId())) {
             response.setCode(900402);
-            response.setMsg("openId 必须大于0");
+            response.setMsg("openId 不能为null");
             return response;
         }
         if (StringUtils.isEmpty(bean.getOrderNos())) {

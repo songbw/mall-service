@@ -13,6 +13,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -67,9 +68,9 @@ public class BalanceDao {
     public PageInfo<BalanceDetail> selectBalanceDetailByPageable(BalanceDetailQueryBean bean) {
         BalanceDetailExample balanceDetailExample = new BalanceDetailExample();
         BalanceDetailExample.Criteria criteria = balanceDetailExample.createCriteria();
-//        if (name != null && (!"".equals(name))) {
-//            criteria.andNameEqualTo(name);
-//        }
+        if (StringUtils.isEmpty(bean.getOpenId())) {
+            criteria.andOpenIdEqualTo(bean.getOpenId());
+        }
 //        if (sex != null && (!"".equals(sex))) {
 //            criteria.andSexEqualTo(sex);
 //        }
