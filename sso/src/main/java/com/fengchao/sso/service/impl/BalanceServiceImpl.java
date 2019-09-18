@@ -128,9 +128,24 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("openId 不能为null");
             return response;
         }
+        if (StringUtils.isEmpty(bean.getiAppId())) {
+            response.setCode(900402);
+            response.setMsg("iAppId 不能为null");
+            return response;
+        }
+        if (StringUtils.isEmpty(bean.gettAppId())) {
+            response.setCode(900402);
+            response.setMsg("tAppId 不能为null");
+            return response;
+        }
+        if (StringUtils.isEmpty(bean.getMerchantNo())) {
+            response.setCode(900402);
+            response.setMsg("merchantNo 不能为null");
+            return response;
+        }
         if (StringUtils.isEmpty(bean.getOrderNos())) {
             response.setCode(900401);
-            response.setMsg("orderNo 不能为Null");
+            response.setMsg("orderNos 不能为Null");
             return response;
         }
         if (bean.getSaleAmount() == null || bean.getSaleAmount().compareTo(BigDecimal.ZERO) == -1) {
