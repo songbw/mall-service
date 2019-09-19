@@ -42,7 +42,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     private static Logger logger = LoggerFactory.getLogger(AdminProdServiceImpl.class);
 
     @Autowired
-    private AoyiProdIndexXMapper prodXMapper;
+    private AoyiProdIndexXMapper aoyiProdIndexXMapper;
     @Autowired
     private ProdExtendXMapper prodExtendMapper;
     @Autowired
@@ -80,9 +80,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("state",state);
         map.put("merchantId",merchantId);
         List<AoyiProdIndexX> prods = new ArrayList<>();
-        total = prodXMapper.selectSearchCount(map);
+        total = aoyiProdIndexXMapper.selectSearchCount(map);
         if (total > 0) {
-            prodXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
+            aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
@@ -119,9 +119,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         } else {
             return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
         }
-        total = prodXMapper.selectSearchCount(map);
+        total = aoyiProdIndexXMapper.selectSearchCount(map);
         if (total > 0) {
-            prodXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
+            aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
@@ -154,13 +154,13 @@ public class AdminProdServiceImpl implements AdminProdService {
 
         // 2.查询数据
         // 2.1 查询条数
-        int totalCount = prodXMapper.selectSearchCount(sqlParamMap);
+        int totalCount = aoyiProdIndexXMapper.selectSearchCount(sqlParamMap);
 
         // 2.2 查询商品表
         List<AoyiProdIndexX> aoyiProdIndexXList = new ArrayList<>(); // 结果数据
         if (totalCount > 0) { // 如果存在数据
             // 查询
-            aoyiProdIndexXList = prodXMapper.selectProductListPageable(sqlParamMap);
+            aoyiProdIndexXList = aoyiProdIndexXMapper.selectProductListPageable(sqlParamMap);
 
             // 组装数据
             for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
@@ -178,7 +178,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public int getProdListToRedis(){
         int num = 0;
-        List<AoyiProdIndexX> aoyiProdIndices = prodXMapper.selectProdAll();
+        List<AoyiProdIndexX> aoyiProdIndices = aoyiProdIndexXMapper.selectProdAll();
         if(aoyiProdIndices != null){
             num = 1;
         }
@@ -283,7 +283,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     public int update(AoyiProdIndexX bean) throws ProductException {
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());
-            prodXMapper.updateByPrimaryKeySelective(bean);
+            aoyiProdIndexXMapper.updateByPrimaryKeySelective(bean);
         } else {
             throw new ProductException(200002, "id为null或等于0");
         }
@@ -293,7 +293,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public void delete(Integer merchantId, Integer id) throws ProductException {
         if (id > 0) {
-            prodXMapper.deleteByPrimaryKey(id);
+            aoyiProdIndexXMapper.deleteByPrimaryKey(id);
         } else {
             throw new ProductException(200002, "id为null或等于0");
         }
@@ -305,9 +305,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         PageBean pageBean = new PageBean();
         int total = 0;
         List<ProductInfoBean> infoBeans = new ArrayList<>();
-        total = prodXMapper.selectSkuByCouponIdCount(bean);
+        total = aoyiProdIndexXMapper.selectSkuByCouponIdCount(bean);
         if (total > 0) {
-            prodXMapper.selectSkuByCouponIdLimit(bean).forEach(aoyiProdIndex -> {
+            aoyiProdIndexXMapper.selectSkuByCouponIdLimit(bean).forEach(aoyiProdIndex -> {
                 ProductInfoBean infoBean = new ProductInfoBean();
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
@@ -344,7 +344,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                 sqlParamMap.put("merchantId", bean.getMerchantId());
             }
             sqlParamMap.put("categoryID", bean.getCategoryID());
-            logger.info("导出商品列表 查询餐条件为:{}", JSONUtil.toJsonString(sqlParamMap));
+            logger.info("导出商品列表 查询条件为:{}", JSONUtil.toJsonString(sqlParamMap));
 
             // 2. 查询导出需要的相关数据
             // 2.1 查询所有商户信息
@@ -398,7 +398,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 3.查询导出数据
             // 3.1 分页查询商品表-批量查询，避免一次返回数据太多，并且还要利用返回的数据批量查询其他表，这样也避免查询时的入参太大
             // 获取记录数
-            int totalCount = prodXMapper.selectSearchCount(sqlParamMap);
+            int totalCount = aoyiProdIndexXMapper.selectSearchCount(sqlParamMap);
             if (totalCount > 50000) { // 如果导出的记录数大于5w则终止导出,excel表的上线是65535
                 logger.error("导出商品列表 导出数据过大");
                 throw new ExportProuctOverRangeException();
@@ -416,7 +416,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                     sqlParamMap.put("pageSize", 500);
 
                     // 执行数据查询
-                    List<AoyiProdIndexX> aoyiProdIndexXList = prodXMapper.selectProductListPageable(sqlParamMap);
+                    List<AoyiProdIndexX> aoyiProdIndexXList = aoyiProdIndexXMapper.selectProductListPageable(sqlParamMap);
 
                     // 转exportVo
                     for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
@@ -521,6 +521,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         productExportResVo.setUpc(aoyiProdIndexX.getUpc()); // 商品条形码
         productExportResVo.setSellPrice(aoyiProdIndexX.getPrice()); // 销售价格(元)
         productExportResVo.setCostPrice(aoyiProdIndexX.getSprice()); // 进货价格(元)  成本价格
+        productExportResVo.setInventory(aoyiProdIndexX.getInventory() == null ? "无" : String.valueOf(aoyiProdIndexX.getInventory())); // 库存
 
         return productExportResVo;
     }
@@ -528,13 +529,13 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public OperaResult inventoryUpdate(InventoryMpus inventory) {
         OperaResult result = new OperaResult();
-        AoyiProdIndexX prodIndexX = prodXMapper.selectForUpdateByMpu(inventory.getMpu()) ;
+        AoyiProdIndexX prodIndexX = aoyiProdIndexXMapper.selectForUpdateByMpu(inventory.getMpu()) ;
         if (prodIndexX != null) {
             AoyiProdIndexX temp = new AoyiProdIndexX();
             temp.setMpu(prodIndexX.getMpu());
             temp.setUpdatedAt(new Date());
             temp.setInventory(prodIndexX.getInventory() - inventory.getRemainNum());
-            prodXMapper.updateByPrimaryKeySelective(temp) ;
+            aoyiProdIndexXMapper.updateByPrimaryKeySelective(temp) ;
             result.getData().put("id", prodIndexX.getId()) ;
         }
         return result;

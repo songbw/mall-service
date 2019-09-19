@@ -324,6 +324,9 @@ public class AdminProdController {
 
         HSSFCell titleCell10 = titleRow.createCell(10);
         titleCell10.setCellValue("进货价格(元)");
+
+        HSSFCell titleCell11 = titleRow.createCell(11);
+        titleCell11.setCellValue("库存");
     }
 
     /**
@@ -383,6 +386,10 @@ public class AdminProdController {
             // 进货价格(元)
             HSSFCell titleCell10 = hssfRow.createCell(10);
             titleCell10.setCellValue(productExportResVo.getCostPrice());
+
+            // 库存
+            HSSFCell titleCell11 = hssfRow.createCell(11);
+            titleCell11.setCellValue(productExportResVo.getInventory());
 
             //
             if (currentRowNum % 100 == 0) {

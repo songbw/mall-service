@@ -198,6 +198,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 3.组装结果
         List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList);
 
+        // patch, 将状态统一为"已退款"
+        exportOrdersVoList.stream().forEach(e -> e.setOrderDetailStatus("已退款"));
+
         log.info("导出订单对账单(出账) 获取导出结果List<ExportOrdersVo>:{}", JSONUtil.toJsonString(exportOrdersVoList));
 
         return exportOrdersVoList;
@@ -336,9 +339,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 for (OrderDetailBo orderDetailBo : orderDetailBoList) { // 遍历子订单
                     ExportOrdersVo exportOrdersVo = new ExportOrdersVo();
 
-                    exportOrdersVo.setMerchantId(Long.valueOf(orderDetailBo.getMerchantId()));
-                    exportOrdersVo.setMerchantName(merchantMap.get(Long.valueOf(orderDetailBo.getMerchantId())) == null ?
-                            "未找到" : merchantMap.get(Long.valueOf(orderDetailBo.getMerchantId())).getName());
+                    exportOrdersVo.setMerchantId(0L);
+                    exportOrdersVo.setMerchantName("未找到.");
+
+                    if (orderDetailBo.getMerchantId() != null) {
+                        exportOrdersVo.setMerchantId(Long.valueOf(orderDetailBo.getMerchantId()));
+                        exportOrdersVo.setMerchantName(merchantMap.get(Long.valueOf(orderDetailBo.getMerchantId())) == null ?
+                                "未找到" : merchantMap.get(Long.valueOf(orderDetailBo.getMerchantId())).getName());
+                    }
 
                     exportOrdersVo.setOpenId(ordersBo.getOpenId()); // 用户id
                     exportOrdersVo.setTradeNo(ordersBo.getTradeNo()); // 主订单编号
@@ -357,7 +365,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setPromotion(
                             promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
                                     "" : promotionBeanMap.get(orderDetailBo.getPromotionId()).getName()); // 活动
-                    exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId().longValue()); // 活动id
+                    exportOrdersVo.setPromotionId(orderDetailBo.getPromotionId() == null ?
+                            0 : orderDetailBo.getPromotionId().longValue()); // 活动id
                     // 结算类型 （0：普通类结算， 1：秒杀类结算， 2：精品类结算）
                     if (promotionBeanMap.get(orderDetailBo.getPromotionId()) != null) {
                         Integer settlement = promotionBeanMap.get(orderDetailBo.getPromotionId()) == null ?
@@ -393,7 +402,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             0 : new BigDecimal(ordersBo.getCouponDiscount()).multiply(new BigDecimal(100)).intValue()); // 主订单 券支付金额
                     exportOrdersVo.setSkuCouponDiscount(orderDetailBo.getSkuCouponDiscount() == null ?
                             0 :orderDetailBo.getSkuCouponDiscount()); // 子订单 sku的优惠券支付金额 分
-                    exportOrdersVo.setPayPrice(new BigDecimal(ordersBo.getSaleAmount()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
+
+                    exportOrdersVo.setPayPrice(ordersBo.getSaleAmount() == null ?
+                            0 : new BigDecimal(ordersBo.getSaleAmount()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
                     // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
 
                     exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
