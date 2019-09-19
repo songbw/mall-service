@@ -111,6 +111,9 @@
     <if test="subStatus != null">
       and order_detail.status = #{subStatus}
     </if>
+    <if test="aoyiId != null">
+      and order.aoyi_id = #{aoyiId}
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -184,6 +187,9 @@
     </if>
     <if test="subStatus != null">
       and order_detail.status = #{subStatus}
+    </if>
+    <if test="aoyiId != null">
+      and order.aoyi_id = #{aoyiId}
     </if>
     order by order_detail.updated_at desc
     limit #{pageNo},#{pageSize}
