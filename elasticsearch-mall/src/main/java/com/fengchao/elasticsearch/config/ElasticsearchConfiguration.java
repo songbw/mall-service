@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Configuration;
 public class ElasticsearchConfiguration implements FactoryBean<RestHighLevelClient>, InitializingBean, DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
 
-    @Value("${spring.elasticsearch.host}")
+    @Value("${spring.data.elasticsearch.host}")
     private String host;
-    @Value("${spring.elasticsearch.port}")
+    @Value("${spring.data.elasticsearch.port}")
     private int port;
 //    @Value("${spring.data.elasticsearch.username}")
 //    private String username;
