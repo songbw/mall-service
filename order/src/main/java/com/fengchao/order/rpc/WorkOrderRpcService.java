@@ -42,7 +42,8 @@ public class WorkOrderRpcService {
         log.info("获取已退款的子订单id集合 调用workorder rpc服务 入参 merchantId:{}, startTime:{}, endTime:{}",
                 merchantId, startTime, endTime);
 
-        OperaResponse<List<String>> operaResponse = workOrderServiceClient.queryRefundedOrderDetailIdList(merchantId.longValue(), startTime, endTime);
+        OperaResponse<List<String>> operaResponse = workOrderServiceClient.queryRefundedOrderDetailIdList(
+                merchantId == null ? 0 : merchantId.longValue(), startTime, endTime);
         log.info("获取已退款的子订单id集合 调用workorder rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回
