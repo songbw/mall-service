@@ -69,7 +69,7 @@ public class ElasticsearchConfiguration implements FactoryBean<RestHighLevelClie
 //                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
 //                    }
 //                });
-        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port));
+        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "http"));
         restHighLevelClient = new RestHighLevelClient(builder);
     }
 
