@@ -68,4 +68,9 @@ public class ProductExportResVo {
      */
     private String costPrice;
 
+    /**
+     * 库存
+     */
+    private String inventory;
+
 }
