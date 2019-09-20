@@ -7,6 +7,7 @@ import com.fengchao.pingan.exception.PinganClientException;
 import com.fengchao.pingan.feign.WSPayClientService;
 import com.fengchao.pingan.service.PaymentService;
 import com.fengchao.pingan.utils.HttpClient;
+import com.fengchao.pingan.utils.JSONUtil;
 import com.fengchao.pingan.utils.Pkcs8Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,8 +114,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResult wsPayClient(PaymentBean paymentBean) {
+        logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(paymentBean));
         PaymentResult result = new PaymentResult();
         CommonResult<PrePayResultDTO> prePayResultDTOCommonResult = payClientService.payment(paymentBean) ;
+        logger.info("聚合支付返回值： {}", JSONUtil.toJsonString(prePayResultDTOCommonResult));
         if (prePayResultDTOCommonResult.getCode() == 200) {
             PrePayResultDTO prePayResultDTO = prePayResultDTOCommonResult.getData();
             OrderNo orderNo = new OrderNo();
