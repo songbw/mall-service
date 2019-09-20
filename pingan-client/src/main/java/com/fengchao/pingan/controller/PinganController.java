@@ -1,6 +1,7 @@
 package com.fengchao.pingan.controller;
 
 import com.fengchao.pingan.bean.*;
+import com.fengchao.pingan.feign.WSPayClientService;
 import com.fengchao.pingan.service.PaymentService;
 import com.fengchao.pingan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,8 @@ public class PinganController {
 
     @PostMapping("payment")
     private OperaResult payment(@RequestBody PaymentBean paymentBean, OperaResult result) {
-        result.getData().put("result", paymentService.paymentOrder(paymentBean)) ;
+//        result.getData().put("result", paymentService.paymentOrder(paymentBean)) ;
+        result.getData().put("result", paymentService.wsPayClient(paymentBean)) ;
         return result;
     }
 

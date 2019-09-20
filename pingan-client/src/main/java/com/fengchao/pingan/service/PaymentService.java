@@ -11,4 +11,6 @@ public interface PaymentService {
 
     PaymentResult payRefund(RefundBean bean) throws PinganClientException ;
 
+    PaymentResult wsPayClient(PaymentBean paymentBean);
+
 }
