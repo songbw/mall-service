@@ -21,6 +21,7 @@
         <module>sso</module>
         <module>equity</module>
         <module>guanaitong-client</module>
+        <module>freight</module>
     </modules>
 
 
