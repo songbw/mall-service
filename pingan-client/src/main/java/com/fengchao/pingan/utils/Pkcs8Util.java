@@ -9,11 +9,14 @@ import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
+
+import com.fengchao.pingan.bean.InitCodeRequestBean;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class Pkcs8Util {
 
-    private static String KEY_FILE="pkcs/pkcs8_private.pem" ;
+    private static String KEY_FILE = "pkcs/pkcs8_private.pem";
 
     private static String pkcs8 = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDOvqcZlQpkZv32" +
             "6u67sXEnlD86iRCt0AerY3XtkuEockKQIDcaJj6ZUkD8TSjZUhM8ypuPYdRjqWj7" +
@@ -49,10 +52,10 @@ public class Pkcs8Util {
         Signature dsa = Signature.getInstance("SHA1withRSA");      //采用SHA1withRSA加密
         dsa.initSign(privatekey);
         dsa.update(json.getBytes("UTF-8"));    //voucher需要加密的String必须变成byte类型的
-        return new String (Base64.encodeBase64(dsa.sign()));
+        return new String(Base64.encodeBase64(dsa.sign()));
     }
 
-    public static boolean verify(byte[] data, String publicKey, String sign) throws Exception{
+    public static boolean verify(byte[] data, String publicKey, String sign) throws Exception {
         byte[] keyBytes = Base64.decodeBase64(publicKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -65,49 +68,39 @@ public class Pkcs8Util {
 
 
     /**
-     *
      * 方法用途: 对所有传入参数按照字段名的Unicode码从小到大排序（字典序），并且生成url参数串<br>
      * 实现步骤: <br>
      *
-     * @param paraMap   要排序的Map对象
-     * @param urlEncode   是否需要URLENCODE
-     * @param keyToLower    是否需要将Key转换为全小写
-     *            true:key转化成小写，false:不转化
+     * @param paraMap    要排序的Map对象
+     * @param urlEncode  是否需要URLENCODE
+     * @param keyToLower 是否需要将Key转换为全小写
+     *                   true:key转化成小写，false:不转化
      * @return
      */
-    public static String formatUrlMap(Map<String, Object> paraMap, boolean urlEncode, boolean keyToLower)
-    {
+    public static String formatUrlMap(Map<String, Object> paraMap, boolean urlEncode, boolean keyToLower) {
         String buff = "";
         Map<String, Object> tmpMap = paraMap;
-        try
-        {
+        try {
             List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(tmpMap.entrySet());
             // 对所有传入参数按照字段名的 ASCII 码从小到大排序（字典序）
-            Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>()
-            {
+            Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
                 @Override
-                public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2)
-                {
+                public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
                     return (o1.getKey()).toString().compareTo(o2.getKey());
                 }
             });
             // 构造URL 键值对的格式
             StringBuilder buf = new StringBuilder();
-            for (Map.Entry<String, Object> item : infoIds)
-            {
-                Object val = item.getValue() ;
-                if (val != null && !"".equals(val))
-                {
+            for (Map.Entry<String, Object> item : infoIds) {
+                Object val = item.getValue();
+                if (val != null && !"".equals(val)) {
                     String key = item.getKey();
-                    if (urlEncode)
-                    {
+                    if (urlEncode) {
                         val = URLEncoder.encode(((String) val).trim(), "utf-8");
                     }
-                    if (keyToLower)
-                    {
+                    if (keyToLower) {
                         buf.append(key.toLowerCase() + "=" + val);
-                    } else
-                    {
+                    } else {
                         buf.append(key + "=" + val);
                     }
                     buf.append("&");
@@ -115,15 +108,26 @@ public class Pkcs8Util {
 
             }
             buff = buf.toString();
-            if (buff.isEmpty() == false)
-            {
+            if (buff.isEmpty() == false) {
                 buff = buff.substring(0, buff.length() - 1);
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             return null;
         }
         return buff;
+    }
+
+    /**
+     * 生成密文
+     *
+     * @param bean
+     * @return
+     */
+    public static String getCiphe(InitCodeRequestBean bean) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("appId").append(bean.getAppId()).append("appKey").append("49b759add6e84ed6bebc69eb85202061").append("randomSeries").append(bean.getRandomSeries()).append("timestamp").append(bean.getTimestamp());
+        String cipherText = DigestUtils.md5Hex(buffer.toString());
+        return cipherText;
     }
 
 }

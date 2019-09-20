@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Configuration;
 public class ElasticsearchConfiguration implements FactoryBean<RestHighLevelClient>, InitializingBean, DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
 
-    @Value("${spring.data.elasticsearch.host}")
+    @Value("${spring.elasticsearch.host}")
     private String host;
-    @Value("${spring.data.elasticsearch.port}")
+    @Value("${spring.elasticsearch.port}")
     private int port;
 //    @Value("${spring.data.elasticsearch.username}")
 //    private String username;
@@ -60,16 +60,7 @@ public class ElasticsearchConfiguration implements FactoryBean<RestHighLevelClie
     }
 
     protected void buildClient() {
-//        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-//        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-//        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port))
-//                .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
-//                    @Override
-//                    public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-//                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-//                    }
-//                });
-        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port));
+        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "http"));
         restHighLevelClient = new RestHighLevelClient(builder);
     }
 

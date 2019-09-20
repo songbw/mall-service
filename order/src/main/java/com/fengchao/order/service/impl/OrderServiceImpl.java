@@ -479,6 +479,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("status",orderBean.getStatus());
         map.put("merchantId",orderBean.getMerchantId());
         map.put("subStatus",orderBean.getSubStatus());
+        map.put("aoyiId",orderBean.getAoyiId());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
             map.put("payDateStart", orderBean.getPayDateStart() + " 00:00:00");
         }

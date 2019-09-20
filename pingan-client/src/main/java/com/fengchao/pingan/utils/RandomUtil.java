@@ -19,9 +19,12 @@ public class RandomUtil {
         return randomString(str, length);
     }
 
+    public static String getRandomNumber(int length) {
+        String str="0123456789";
+        return randomString(str, length);
+    }
+
     public static void main(String args[]) {
-        StringBuilder sb = new StringBuilder("10MFD21F@@E@5@D5GG2AM2EE26MLF051B84596948");
-        sb.insert(2, "%");
-        System.out.println(sb);
+        System.out.println(getRandomNumber(10));
     }
 }
