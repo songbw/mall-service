@@ -28,4 +28,15 @@ public class ShipRegionsDao {
     public List<ShippingRegionsX> findRegionsByTemplateId(Integer id) {
         return xMapper.findRegionsByTemplateId(id);
     }
+
+    public int deleteShipRegionsByTemplateId(Integer templateId) {
+        return xMapper.deleteByTemplateId(templateId);
+    }
+
+    public int deleteShipRegions(Integer id) {
+        ShippingRegions regions = new ShippingRegions();
+        regions.setStatus(2);
+        regions.setId(id);
+        return mapper.updateByPrimaryKeySelective(regions);
+    }
 }

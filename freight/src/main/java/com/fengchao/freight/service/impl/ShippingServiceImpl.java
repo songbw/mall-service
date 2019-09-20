@@ -61,7 +61,11 @@ public class ShippingServiceImpl implements ShippingService {
 
     @Override
     public int deleteShipTemplate(Integer id) {
-        return shipTemplateDao.deleteShipTemplate(id);
+        int num = shipTemplateDao.deleteShipTemplate(id);
+        if(num == 1){
+            num = shipRegionsDao.deleteShipRegionsByTemplateId(id);
+        }
+        return num;
     }
 
     @Override
@@ -115,6 +119,11 @@ public class ShippingServiceImpl implements ShippingService {
         pageableData.setList(templateList);
         pageableData.setPageInfo(pageVo);
         return pageableData;
+    }
+
+    @Override
+    public int deleteShipRegions(Integer id) {
+        return shipRegionsDao.deleteShipRegions(id);
     }
 
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){

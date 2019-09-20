@@ -44,4 +44,10 @@ public class AdminShippingController {
         result.getData().put("result",shippingService.deleteShipTemplate(id));
         return result;
     }
+
+    @DeleteMapping("deleteRegions")
+    public OperaResult deleteShipRegions(Integer id, OperaResult result){
+        result.getData().put("result",shippingService.deleteShipRegions(id));
+        return result;
+    }
 }
