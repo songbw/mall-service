@@ -2,16 +2,22 @@ package com.fengchao.freight.service.impl;
 
 import com.fengchao.freight.bean.FreeShipRegionsBean;
 import com.fengchao.freight.bean.FreeShipTemplateBean;
+import com.fengchao.freight.bean.page.PageVo;
 import com.fengchao.freight.bean.page.PageableData;
 import com.fengchao.freight.dao.FreeShipRegionsDao;
 import com.fengchao.freight.dao.FreeshipTemplateDao;
 import com.fengchao.freight.model.FreeShippingRegions;
+import com.fengchao.freight.model.FreeShippingRegionsX;
 import com.fengchao.freight.model.FreeShippingTemplate;
+import com.fengchao.freight.model.FreeShippingTemplateX;
 import com.fengchao.freight.service.FreeShippingService;
+import com.fengchao.freight.utils.ConvertUtil;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,12 +64,22 @@ public class FreeShippingServiceImpl implements FreeShippingService {
 
     @Override
     public PageableData<FreeShippingTemplate> findFreeShipTemplate(Integer pageNo, Integer pageSize) {
-        return null;
+        PageableData<FreeShippingTemplate> pageableData = new PageableData<>();
+        PageInfo<FreeShippingTemplate> shipTemplate =  freeshipTemplateDao.findFreeShipTemplate(pageNo, pageSize);
+
+        PageVo pageVo = ConvertUtil.convertToPageVo(shipTemplate);
+        List<FreeShippingTemplate> templateList = shipTemplate.getList();
+        pageableData.setList(templateList);
+        pageableData.setPageInfo(pageVo);
+        return pageableData;
     }
 
     @Override
     public FreeShipTemplateBean findFreeShipTemplateById(Integer id) {
-        return null;
+        FreeShippingTemplateX templateX = freeshipTemplateDao.findFreeShipTemplateById(id);
+        templateX.setRegions(freeShipRegionsDao.findFreeShipRegionsByTemplateId(id));
+        FreeShipTemplateBean templateBean = convertToTemplateBean(templateX);
+        return templateBean;
     }
 
     @Override
@@ -99,6 +115,42 @@ public class FreeShippingServiceImpl implements FreeShippingService {
 
     @Override
     public int deleteFreeShipTemplate(Integer id) {
-        return freeshipTemplateDao.deleteFreeShipTemplate(id);
+        int num = freeshipTemplateDao.deleteFreeShipTemplate(id);
+        if(num == 1){
+            num = freeShipRegionsDao.deleteFreeShipRegionsByTemplateId(id);
+        }
+        return num;
+    }
+
+    @Override
+    public int deleteShipRegions(Integer id) {
+        return freeShipRegionsDao.deleteShipRegions(id);
+    }
+
+    private FreeShipTemplateBean convertToTemplateBean(FreeShippingTemplateX template){
+        FreeShipTemplateBean templateBean = new FreeShipTemplateBean();
+        templateBean.setId(template.getId());
+        templateBean.setIsDefault(template.getIsDefault());
+        templateBean.setMerchantId(template.getMerchantId());
+        templateBean.setMode(template.getMode());
+        templateBean.setName(template.getName());
+        templateBean.setCreateTime(template.getCreateTime());
+        templateBean.setUpdateTime(template.getUpdateTime());
+        templateBean.setStatus(template.getStatus());
+        List<FreeShipRegionsBean> regionsBeanList = new ArrayList<>();
+        List<FreeShippingRegionsX> templateRegions = template.getRegions();
+        if(!templateRegions.isEmpty()){
+            templateRegions.forEach(shippingRegionsX -> {
+                FreeShipRegionsBean regionsBean = new FreeShipRegionsBean();
+                regionsBean.setFullAmount(shippingRegionsX.getFullAmount());
+                regionsBean.setId(shippingRegionsX.getId());
+                regionsBean.setName(shippingRegionsX.getName());
+                regionsBean.setTemplateId(shippingRegionsX.getTemplateId());
+                regionsBean.setProvinces(shippingRegionsX.getProvinces().split(","));
+                regionsBeanList.add(regionsBean);
+            });
+            templateBean.setRegions(regionsBeanList);
+        }
+        return templateBean;
     }
 }

@@ -31,4 +31,6 @@ public interface ShippingRegionsXMapper {
     int updateByPrimaryKey(ShippingRegionsX record);
 
     List<ShippingRegionsX> findRegionsByTemplateId(Integer id);
+
+    int deleteByTemplateId(Integer templateId);
 }

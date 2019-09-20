@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fengchao.freight.mapper.ShippingRegionsXMapper">
-  <resultMap id="BaseResultMap" type="com.fengchao.freight.model.ShippingRegionsX">
+<mapper namespace="com.fengchao.freight.mapper.FreeShippingRegionsXMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.freight.model.FreeShippingRegionsX">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="template_id" jdbcType="INTEGER" property="templateId" />
-    <result column="base_price" jdbcType="INTEGER" property="basePrice" />
-    <result column="base_amount" jdbcType="INTEGER" property="baseAmount" />
-    <result column="cumulative_price" jdbcType="INTEGER" property="cumulativePrice" />
-    <result column="cumulative_unit" jdbcType="INTEGER" property="cumulativeUnit" />
+    <result column="full_amount" jdbcType="INTEGER" property="fullAmount" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="provinces" jdbcType="VARCHAR" property="provinces" />
     <result column="status" jdbcType="INTEGER" property="status" />
@@ -71,16 +68,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, template_id, base_price, base_amount, cumulative_price, cumulative_unit, name, 
-    provinces, status
+    id, template_id, full_amount, name, provinces, status
   </sql>
-  <select id="selectByExample" parameterType="com.fengchao.freight.model.ShippingRegionsExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.fengchao.freight.model.FreeShippingRegionsExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from shipping_regions
+    from free_shipping_regions
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -91,44 +87,33 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from shipping_regions
+    from free_shipping_regions
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from shipping_regions
+    delete from free_shipping_regions
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.fengchao.freight.model.ShippingRegionsExample">
-    delete from shipping_regions
+  <delete id="deleteByExample" parameterType="com.fengchao.freight.model.FreeShippingRegionsExample">
+    delete from free_shipping_regions
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.freight.model.ShippingRegionsX" useGeneratedKeys="true">
-    insert into shipping_regions (template_id, base_price, base_amount, 
-      cumulative_price, cumulative_unit, name, 
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.freight.model.FreeShippingRegionsX" useGeneratedKeys="true">
+    insert into free_shipping_regions (template_id, full_amount, name, 
       provinces, status)
-    values (#{templateId,jdbcType=INTEGER}, #{basePrice,jdbcType=INTEGER}, #{baseAmount,jdbcType=INTEGER}, 
-      #{cumulativePrice,jdbcType=INTEGER}, #{cumulativeUnit,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+    values (#{templateId,jdbcType=INTEGER}, #{fullAmount,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
       #{provinces,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.freight.model.ShippingRegionsX" useGeneratedKeys="true">
-    insert into shipping_regions
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.freight.model.FreeShippingRegionsX" useGeneratedKeys="true">
+    insert into free_shipping_regions
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="templateId != null">
         template_id,
       </if>
-      <if test="basePrice != null">
-        base_price,
-      </if>
-      <if test="baseAmount != null">
-        base_amount,
-      </if>
-      <if test="cumulativePrice != null">
-        cumulative_price,
-      </if>
-      <if test="cumulativeUnit != null">
-        cumulative_unit,
+      <if test="fullAmount != null">
+        full_amount,
       </if>
       <if test="name != null">
         name,
@@ -144,17 +129,8 @@
       <if test="templateId != null">
         #{templateId,jdbcType=INTEGER},
       </if>
-      <if test="basePrice != null">
-        #{basePrice,jdbcType=INTEGER},
-      </if>
-      <if test="baseAmount != null">
-        #{baseAmount,jdbcType=INTEGER},
-      </if>
-      <if test="cumulativePrice != null">
-        #{cumulativePrice,jdbcType=INTEGER},
-      </if>
-      <if test="cumulativeUnit != null">
-        #{cumulativeUnit,jdbcType=INTEGER},
+      <if test="fullAmount != null">
+        #{fullAmount,jdbcType=INTEGER},
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
@@ -167,14 +143,14 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.fengchao.freight.model.ShippingRegionsExample" resultType="java.lang.Long">
-    select count(*) from shipping_regions
+  <select id="countByExample" parameterType="com.fengchao.freight.model.FreeShippingRegionsExample" resultType="java.lang.Long">
+    select count(*) from free_shipping_regions
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update shipping_regions
+    update free_shipping_regions
     <set>
       <if test="record.id != null">
         id = #{record.id,jdbcType=INTEGER},
@@ -182,17 +158,8 @@
       <if test="record.templateId != null">
         template_id = #{record.templateId,jdbcType=INTEGER},
       </if>
-      <if test="record.basePrice != null">
-        base_price = #{record.basePrice,jdbcType=INTEGER},
-      </if>
-      <if test="record.baseAmount != null">
-        base_amount = #{record.baseAmount,jdbcType=INTEGER},
-      </if>
-      <if test="record.cumulativePrice != null">
-        cumulative_price = #{record.cumulativePrice,jdbcType=INTEGER},
-      </if>
-      <if test="record.cumulativeUnit != null">
-        cumulative_unit = #{record.cumulativeUnit,jdbcType=INTEGER},
+      <if test="record.fullAmount != null">
+        full_amount = #{record.fullAmount,jdbcType=INTEGER},
       </if>
       <if test="record.name != null">
         name = #{record.name,jdbcType=VARCHAR},
@@ -209,13 +176,10 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update shipping_regions
+    update free_shipping_regions
     set id = #{record.id,jdbcType=INTEGER},
       template_id = #{record.templateId,jdbcType=INTEGER},
-      base_price = #{record.basePrice,jdbcType=INTEGER},
-      base_amount = #{record.baseAmount,jdbcType=INTEGER},
-      cumulative_price = #{record.cumulativePrice,jdbcType=INTEGER},
-      cumulative_unit = #{record.cumulativeUnit,jdbcType=INTEGER},
+      full_amount = #{record.fullAmount,jdbcType=INTEGER},
       name = #{record.name,jdbcType=VARCHAR},
       provinces = #{record.provinces,jdbcType=VARCHAR},
       status = #{record.status,jdbcType=INTEGER}
@@ -223,23 +187,14 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.freight.model.ShippingRegionsX">
-    update shipping_regions
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.freight.model.FreeShippingRegionsX">
+    update free_shipping_regions
     <set>
       <if test="templateId != null">
         template_id = #{templateId,jdbcType=INTEGER},
       </if>
-      <if test="basePrice != null">
-        base_price = #{basePrice,jdbcType=INTEGER},
-      </if>
-      <if test="baseAmount != null">
-        base_amount = #{baseAmount,jdbcType=INTEGER},
-      </if>
-      <if test="cumulativePrice != null">
-        cumulative_price = #{cumulativePrice,jdbcType=INTEGER},
-      </if>
-      <if test="cumulativeUnit != null">
-        cumulative_unit = #{cumulativeUnit,jdbcType=INTEGER},
+      <if test="fullAmount != null">
+        full_amount = #{fullAmount,jdbcType=INTEGER},
       </if>
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
@@ -253,27 +208,24 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.freight.model.ShippingRegionsX">
-    update shipping_regions
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.freight.model.FreeShippingRegionsX">
+    update free_shipping_regions
     set template_id = #{templateId,jdbcType=INTEGER},
-      base_price = #{basePrice,jdbcType=INTEGER},
-      base_amount = #{baseAmount,jdbcType=INTEGER},
-      cumulative_price = #{cumulativePrice,jdbcType=INTEGER},
-      cumulative_unit = #{cumulativeUnit,jdbcType=INTEGER},
+      full_amount = #{fullAmount,jdbcType=INTEGER},
       name = #{name,jdbcType=VARCHAR},
       provinces = #{provinces,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="findRegionsByTemplateId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByTemplateId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from shipping_regions
+    from free_shipping_regions
     where status = 1 and template_id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByTemplateId" parameterType="java.lang.Integer">
-    update shipping_regions
+    update free_shipping_regions
     set status = 2
     where template_id = #{templateId,jdbcType=INTEGER}
   </delete>

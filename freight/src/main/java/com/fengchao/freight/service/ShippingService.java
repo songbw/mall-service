@@ -14,4 +14,6 @@ public interface ShippingService {
     ShipTemplateBean findShipTemplateById(Integer id);
 
     PageableData<ShippingTemplate> findShipTemplate(Integer pageNo, Integer pageSize);
+
+    int deleteShipRegions(Integer id);
 }

@@ -1,6 +1,7 @@
 package com.fengchao.freight.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class FreeShippingTemplateX {
     private Integer id;
@@ -18,6 +19,8 @@ public class FreeShippingTemplateX {
     private Date updateTime;
 
     private Integer status;
+
+    private List<FreeShippingRegionsX>  regions;
 
     public Integer getId() {
         return id;
@@ -81,5 +84,13 @@ public class FreeShippingTemplateX {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public List<FreeShippingRegionsX> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(List<FreeShippingRegionsX> regions) {
+        this.regions = regions;
     }
 }

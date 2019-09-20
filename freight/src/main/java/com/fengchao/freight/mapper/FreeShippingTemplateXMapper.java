@@ -2,6 +2,7 @@ package com.fengchao.freight.mapper;
 
 import com.fengchao.freight.model.FreeShippingTemplate;
 import com.fengchao.freight.model.FreeShippingTemplateExample;
+import com.fengchao.freight.model.FreeShippingTemplateX;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -13,19 +14,19 @@ public interface FreeShippingTemplateXMapper {
 
     int deleteByPrimaryKey(Integer id);
 
-    int insert(FreeShippingTemplate record);
+    int insert(FreeShippingTemplateX record);
 
-    int insertSelective(FreeShippingTemplate record);
+    int insertSelective(FreeShippingTemplateX record);
 
-    List<FreeShippingTemplate> selectByExample(FreeShippingTemplateExample example);
+    List<FreeShippingTemplateX> selectByExample(FreeShippingTemplateExample example);
 
-    FreeShippingTemplate selectByPrimaryKey(Integer id);
+    FreeShippingTemplateX selectByPrimaryKey(Integer id);
 
-    int updateByExampleSelective(@Param("record") FreeShippingTemplate record, @Param("example") FreeShippingTemplateExample example);
+    int updateByExampleSelective(@Param("record") FreeShippingTemplateX record, @Param("example") FreeShippingTemplateExample example);
 
-    int updateByExample(@Param("record") FreeShippingTemplate record, @Param("example") FreeShippingTemplateExample example);
+    int updateByExample(@Param("record") FreeShippingTemplateX record, @Param("example") FreeShippingTemplateExample example);
 
-    int updateByPrimaryKeySelective(FreeShippingTemplate record);
+    int updateByPrimaryKeySelective(FreeShippingTemplateX record);
 
-    int updateByPrimaryKey(FreeShippingTemplate record);
+    int updateByPrimaryKey(FreeShippingTemplateX record);
 }
