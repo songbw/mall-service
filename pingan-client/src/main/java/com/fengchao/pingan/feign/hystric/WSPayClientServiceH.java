@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.pingan.bean.CommonResult;
 import com.fengchao.pingan.bean.PaymentBean;
+import com.fengchao.pingan.bean.PrePayDTO;
 import com.fengchao.pingan.bean.PrePayResultDTO;
 import com.fengchao.pingan.feign.WSPayClientService;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class WSPayClientServiceH implements WSPayClientService {
     @Override
-    public CommonResult<PrePayResultDTO> payment(PaymentBean paymentBean) {
+    public CommonResult<PrePayResultDTO> payment(PrePayDTO paymentBean) {
         CommonResult result = new CommonResult();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";

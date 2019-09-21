@@ -1,7 +1,3 @@
-spring:
-  profiles:
-    active: dev
----
 server:
   port: 8008
 
@@ -19,7 +15,7 @@ eureka:
 
 spring:
   profiles:
-    active: dev
+    active: test
   application:
     name: pingan-client
   cloud:

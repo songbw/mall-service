@@ -114,9 +114,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResult wsPayClient(PaymentBean paymentBean) {
-        logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(paymentBean));
+        PrePayDTO prePayDTO = new PrePayDTO();
+        prePayDTO.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+        prePayDTO.setTotalFee(paymentBean.getAmount() + "");
+        prePayDTO.setActPayFee(paymentBean.getAmount() + "");
+        prePayDTO.setBody(paymentBean.getGoodsName());
+        prePayDTO.setNotifyUrl(HttpClient.NOTIFY_URL);
+        logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(prePayDTO));
         PaymentResult result = new PaymentResult();
-        CommonResult<PrePayResultDTO> prePayResultDTOCommonResult = payClientService.payment(paymentBean) ;
+        CommonResult<PrePayResultDTO> prePayResultDTOCommonResult = payClientService.payment(prePayDTO) ;
         logger.info("聚合支付返回值： {}", JSONUtil.toJsonString(prePayResultDTOCommonResult));
         if (prePayResultDTOCommonResult.getCode() == 200) {
             PrePayResultDTO prePayResultDTO = prePayResultDTOCommonResult.getData();
