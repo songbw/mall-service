@@ -3,9 +3,11 @@ package com.fengchao.pingan.bean;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class AuthUserBean {
+public class AuthUserBean implements Serializable{
     private int realNameStatus;
     private int marry;
     private String mobileNo;

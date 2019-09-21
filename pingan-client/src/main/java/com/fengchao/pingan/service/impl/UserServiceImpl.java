@@ -1,15 +1,13 @@
 package com.fengchao.pingan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.pingan.bean.*;
 import com.fengchao.pingan.config.PingAnClientConfig;
 import com.fengchao.pingan.exception.PinganClientException;
 import com.fengchao.pingan.service.UserService;
-import com.fengchao.pingan.utils.DateUtils;
-import com.fengchao.pingan.utils.HttpClient;
-import com.fengchao.pingan.utils.Pkcs8Util;
-import com.fengchao.pingan.utils.RandomUtil;
+import com.fengchao.pingan.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +126,9 @@ public class UserServiceImpl implements UserService {
         bean.setCipherText(Pkcs8Util.getCiphe(bean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
-        return  response.readEntity(OperaResponse.class);
+        OperaResponse<AuthCodeBean> result = response.readEntity(OperaResponse.class);
+        logger.info("获取auth code 返回值： {}", JSONUtil.toJsonString(result));
+        return  result ;
     }
 
     @Override
@@ -138,7 +138,9 @@ public class UserServiceImpl implements UserService {
         bean.setAuthCode(authCode);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
-        return  response.readEntity(OperaResponse.class);
+        OperaResponse<AccessToken> result = response.readEntity(OperaResponse.class);
+        logger.info("获取auth access token 返回值： {}", JSONUtil.toJsonString(result));
+        return  result ;
     }
 
     @Override
@@ -148,7 +150,9 @@ public class UserServiceImpl implements UserService {
         bean.setRefreshToken(refreshToken);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
-        return  response.readEntity(OperaResponse.class);
+        OperaResponse<AccessToken> result = response.readEntity(OperaResponse.class);
+        logger.info("refresh Token返回值： {}", JSONUtil.toJsonString(result));
+        return  result ;
     }
 
     @Override
@@ -163,33 +167,50 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public OperaResponse checkRequestCode(String requestCode) {
+        logger.info("校验 RequestCode参数是：{}", requestCode);
         OperaResponse<AuthCodeBean> authCodeBeanOperaResponse = getAuthCode();
 
         if (authCodeBeanOperaResponse.getCode() != 200) {
             return authCodeBeanOperaResponse;
         }
-        AuthCodeBean authCodeBean = authCodeBeanOperaResponse.getData();
+        AuthCodeBean authCodeBean = JSON.parseObject(JSON.toJSONString(authCodeBeanOperaResponse.getData()), AuthCodeBean.class);
         OperaResponse<AccessToken> accessTokenOperaResponse =  getAuthAccessToken(authCodeBean.getAuthCode()) ;
         if (accessTokenOperaResponse.getCode() != 200) {
             return accessTokenOperaResponse;
         }
-        AccessToken accessToken = accessTokenOperaResponse.getData();
+        AccessToken accessToken = JSON.parseObject(JSON.toJSONString(accessTokenOperaResponse.getData()), AccessToken.class);
         CheckRequestCodeRequestBean bean = new CheckRequestCodeRequestBean();
         bean.setRequestCode(requestCode);
         bean.setAccessToken(accessToken.getAccessToken());
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath()+ HttpClient.CHECK_REQUEST_CODE_URL);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
-        return  response.readEntity(OperaResponse.class);
+        OperaResponse result = response.readEntity(OperaResponse.class);
+        logger.info("校验 RequestCode返回值： {}", JSONUtil.toJsonString(result));
+        return  result ;
     }
 
     @Override
     public OperaResponse<AuthUserBean> getAuthUserInfo(String userAccessToken) {
+        logger.info("获取用户信息参数是：{}", userAccessToken);
         AuthUserRequestBean bean = new AuthUserRequestBean();
         bean.setUserAccessToken(userAccessToken);
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath()+ HttpClient.USER_iNFO_URL);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
-        return  response.readEntity(OperaResponse.class);
+        OperaResponse result = response.readEntity(OperaResponse.class);
+        logger.info("获取用户信息返回值： {}", JSONUtil.toJsonString(result));
+        return  result ;
+    }
+
+    @Override
+    public OperaResponse<AuthUserBean> getAuthUserInfoByRequestCode(String requestCode) {
+        OperaResponse requestCodeResponse =  checkRequestCode(requestCode) ;
+        if (requestCodeResponse.getCode() != 200) {
+            return requestCodeResponse;
+        }
+        RequestCodeBean requestCodeBean = JSON.parseObject(JSON.toJSONString(requestCodeResponse.getData()), RequestCodeBean.class);
+        OperaResponse<AuthUserBean> userBeanOperaResponse =  getAuthUserInfo(requestCodeBean.getUserAccessToken()) ;
+        return userBeanOperaResponse;
     }
 }

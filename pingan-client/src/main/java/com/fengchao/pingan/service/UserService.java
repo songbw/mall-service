@@ -55,4 +55,11 @@ public interface UserService {
      * @return
      */
     OperaResponse<AuthUserBean> getAuthUserInfo(String userAccessToken) ;
+
+    /**
+     * 根据request code获取用户信息
+     * @param requestCode
+     * @return
+     */
+    OperaResponse<AuthUserBean> getAuthUserInfoByRequestCode(String requestCode) ;
 }

@@ -82,7 +82,8 @@ public class PinganController {
 
     @GetMapping("checkRequestCode")
     private OperaResponse checkRequestCode(String requestCode) {
-        return userService.checkRequestCode(requestCode) ;
+//        return userService.checkRequestCode(requestCode) ;
+        return userService.getAuthUserInfoByRequestCode(requestCode) ;
     }
 
     @GetMapping("userInfo")
