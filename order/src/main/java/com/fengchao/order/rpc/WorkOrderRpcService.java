@@ -46,7 +46,7 @@ public class WorkOrderRpcService {
         String startTimeStr = DateUtil.dateTimeFormat(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         String endTimeStr = DateUtil.dateTimeFormat(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         OperaResponse<List<String>> operaResponse = workOrderServiceClient.queryRefundedOrderDetailIdList(
-                merchantId == null ? 0 : merchantId.longValue(), startTimeStr, endTimeStr);
+                merchantId == null ? null : merchantId.longValue(), startTimeStr, endTimeStr);
         log.info("获取已退款的子订单id集合 调用workorder rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回
