@@ -4,6 +4,7 @@ import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.VendorsServiceClient;
 import com.fengchao.order.feign.WorkOrderServiceClient;
 import com.fengchao.order.rpc.extmodel.SysCompanyX;
+import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,10 @@ public class WorkOrderRpcService {
         log.info("获取已退款的子订单id集合 调用workorder rpc服务 入参 merchantId:{}, startTime:{}, endTime:{}",
                 merchantId, startTime, endTime);
 
+        String startTimeStr = DateUtil.dateTimeFormat(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        String endTimeStr = DateUtil.dateTimeFormat(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         OperaResponse<List<String>> operaResponse = workOrderServiceClient.queryRefundedOrderDetailIdList(
-                merchantId == null ? 0 : merchantId.longValue(), startTime, endTime);
+                merchantId == null ? null : merchantId.longValue(), startTimeStr, endTimeStr);
         log.info("获取已退款的子订单id集合 调用workorder rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回

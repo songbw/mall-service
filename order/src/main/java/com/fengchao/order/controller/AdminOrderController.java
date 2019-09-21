@@ -207,6 +207,7 @@ public class AdminOrderController {
                 throw new Exception("未找出有效的导出数据!");
             }
 
+            /**
             // 3. 将要导出的ExportOrdersVo以主订单维度形成map key:tradeno
             Map<String, List<ExportOrdersVo>> exportOrdersVoMapIncome = null;
             Map<String, List<ExportOrdersVo>> exportOrdersVoMapOut = null;
@@ -246,8 +247,35 @@ public class AdminOrderController {
 
                 // 组装业务数据
                 createContent(sheetOut, exportOrdersVoMapOut);
+            } **/
+
+            // 3. 合并导出的订单集合
+            List<ExportOrdersVo> mergedExportOrdersVoList = new ArrayList<>();
+            if (exportOrdersVoListIncome != null) {
+                mergedExportOrdersVoList.addAll(exportOrdersVoListIncome);
+            }
+            if (exportOrdersVoListOut != null) {
+                mergedExportOrdersVoList.addAll(exportOrdersVoListOut);
             }
 
+            // 转map
+            Map<String, List<ExportOrdersVo>> exportMap = convertToExportOrdersVoMap(mergedExportOrdersVoList);
+
+            // 4.开始组装excel
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+
+            // 4.1 组装入账
+            if (mergedExportOrdersVoList != null) {
+                // 创建HSSFSheet对象
+                HSSFSheet sheet = workbook.createSheet("对账单");
+
+                // 组装title
+                createTitle(sheet);
+
+                // 组装业务数据
+                createContent(sheet, exportMap);
+            }
 
 
             // 5. 输出文件
