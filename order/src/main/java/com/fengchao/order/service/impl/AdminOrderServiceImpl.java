@@ -149,6 +149,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 3.组装结果
         List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList);
 
+        // patch, 将状态统一为"已退款"
+        if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
+            exportOrdersVoList.stream().forEach(e -> e.setOrderDetailStatus("已完成"));
+        }
+
         log.info("导出订单对账单(入账) 获取导出结果List<ExportOrdersVo>:{}", JSONUtil.toJsonString(exportOrdersVoList));
 
         return exportOrdersVoList;
@@ -199,7 +204,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList);
 
         // patch, 将状态统一为"已退款"
-        exportOrdersVoList.stream().forEach(e -> e.setOrderDetailStatus("已退款"));
+        if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
+            exportOrdersVoList.stream().forEach(e -> e.setOrderDetailStatus("已退款"));
+        }
 
         log.info("导出订单对账单(出账) 获取导出结果List<ExportOrdersVo>:{}", JSONUtil.toJsonString(exportOrdersVoList));
 
