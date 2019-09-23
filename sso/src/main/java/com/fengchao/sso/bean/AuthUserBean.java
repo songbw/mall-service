@@ -1,4 +1,4 @@
-package com.fengchao.pingan.bean;
+package com.fengchao.sso.bean;
 
 import lombok.Getter;
 import lombok.Setter;
