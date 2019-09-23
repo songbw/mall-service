@@ -31,7 +31,15 @@ public class FreeShippingServiceImpl implements FreeShippingService {
 
     @Override
     public int createFreeShipTemplate(FreeShipTemplateBean bean) {
-        int num = 0;
+        int num = 1;
+        List<FreeShippingTemplate> templateByMerchantId = null;
+        if(bean.getMerchantId() != null){
+            templateByMerchantId = freeshipTemplateDao.findFreeShipTemplateByMerchantId(bean.getMerchantId());
+        }
+        if(templateByMerchantId != null && !templateByMerchantId.isEmpty()){
+            num = 2;
+            return num;
+        }
         FreeShippingTemplate template = new FreeShippingTemplate();
         template.setMerchantId(bean.getMerchantId());
         template.setName(bean.getName());
@@ -48,15 +56,13 @@ public class FreeShippingServiceImpl implements FreeShippingService {
                 regions.setName(regionsBean.getName());
                 regions.setProvinces(StringUtils.join(regionsBean.getProvinces(), ","));
                 int regionsNum = freeShipRegionsDao.createFreeShipRegions(regions);
-                if (regionsNum == 1) {
-                    num = 1;
-                }else{
+                if (regionsNum == 0) {
                     num = 0;
                 }
             }
         }
 
-        if(num == 0){
+        if(num == 1){
             num = template.getId();
         }
         return num;
@@ -125,6 +131,32 @@ public class FreeShippingServiceImpl implements FreeShippingService {
     @Override
     public int deleteShipRegions(Integer id) {
         return freeShipRegionsDao.deleteShipRegions(id);
+    }
+
+    @Override
+    public int createShipRegions(FreeShipTemplateBean bean) {
+        int num = 1;
+        List<FreeShipRegionsBean> regionsList = bean.getRegions();
+        if(!regionsList.isEmpty()){
+            for (FreeShipRegionsBean regionsBean : regionsList) {
+                FreeShippingRegions regions = new FreeShippingRegions();
+                regions.setTemplateId(bean.getId());
+                regions.setFullAmount(regionsBean.getFullAmount());
+                regions.setName(regionsBean.getName());
+                regions.setProvinces(StringUtils.join(regionsBean.getProvinces(), ","));
+                int regionsNum = freeShipRegionsDao.createFreeShipRegions(regions);
+                if (regionsNum == 1) {
+                    num = 1;
+                }else{
+                    num = 0;
+                }
+            }
+        }
+
+        if(num == 0){
+            num = bean.getId();
+        }
+        return num;
     }
 
     private FreeShipTemplateBean convertToTemplateBean(FreeShippingTemplateX template){

@@ -56,6 +56,9 @@ public class ShippingServiceImpl implements ShippingService {
                 }
             }
         }
+        if(num == 1){
+            num = template.getId();
+        }
         return num;
     }
 
@@ -79,8 +82,8 @@ public class ShippingServiceImpl implements ShippingService {
         template.setIsDefault(bean.getIsDefault());
         template.setUpdateTime(new Date());
         int templateNum = shipTemplateDao.updateShipTemplate(template);
-        if(templateNum == 1){
-            List<ShipRegionsBean> regionsList = bean.getRegions();
+        List<ShipRegionsBean> regionsList = bean.getRegions();
+        if(templateNum == 1 && !regionsList.isEmpty()){
             for (ShipRegionsBean regionsBean : regionsList) {
                 ShippingRegions regions = new ShippingRegions();
                 regions.setId(regionsBean.getId());
@@ -124,6 +127,30 @@ public class ShippingServiceImpl implements ShippingService {
     @Override
     public int deleteShipRegions(Integer id) {
         return shipRegionsDao.deleteShipRegions(id);
+    }
+
+    @Override
+    public int createShipRegions(ShipTemplateBean bean) {
+        int num = 1;
+        List<ShipRegionsBean> regionsList = bean.getRegions();
+        if(!regionsList.isEmpty()){
+            for (ShipRegionsBean regionsBean : regionsList) {
+                ShippingRegions regions = new ShippingRegions();
+                regions.setId(regionsBean.getId());
+                regions.setTemplateId(bean.getId());
+                regions.setBaseAmount(regionsBean.getBaseAmount());
+                regions.setBasePrice(regionsBean.getBasePrice());
+                regions.setCumulativePrice(regionsBean.getCumulativePrice());
+                regions.setCumulativeUnit(regionsBean.getCumulativeUnit());
+                regions.setName(regionsBean.getName());
+                regions.setProvinces(StringUtils.join(regionsBean.getProvinces(), ","));
+                int regionsNum = shipRegionsDao.createShipRegions(regions);
+                if (regionsNum == 0) {
+                    num = 0;
+                }
+            }
+        }
+        return num;
     }
 
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){

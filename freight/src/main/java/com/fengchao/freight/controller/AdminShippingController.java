@@ -45,6 +45,12 @@ public class AdminShippingController {
         return result;
     }
 
+    @PostMapping("createRegions")
+    public OperaResult createShipRegions(@RequestBody ShipTemplateBean bean, OperaResult result){
+        result.getData().put("result",shippingService.createShipRegions(bean));
+        return result;
+    }
+
     @DeleteMapping("deleteRegions")
     public OperaResult deleteShipRegions(Integer id, OperaResult result){
         result.getData().put("result",shippingService.deleteShipRegions(id));
