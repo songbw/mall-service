@@ -111,6 +111,7 @@ public class UserServiceImpl implements UserService {
         bean.setTimestamp(new Date().getTime() + "");
         bean.setRandomSeries(RandomUtil.getRandomNumber(10));
         bean.setCipherText(Pkcs8Util.getCiphe(bean));
+        logger.info("获取init code 入参： {}", JSONUtil.toJsonString(bean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         OperaResponse<InitCodeBean> result = response.readEntity(OperaResponse.class);
