@@ -19,7 +19,16 @@ public class AdminFreeShippingController {
 
     @PostMapping("create")
     public OperaResult createFreeShipTemplate(@RequestBody FreeShipTemplateBean bean, OperaResult result){
-        result.getData().put("templateId",service.createFreeShipTemplate(bean));
+        int shipTemplate = service.createFreeShipTemplate(bean);
+        if(shipTemplate == 0){
+            result.setCode(500);
+            result.setMsg("创建失败");
+        }else if(shipTemplate == 2){
+            result.setCode(501);
+            result.setMsg("该商户已有包邮模板");
+        }else{
+            result.getData().put("templateId", shipTemplate);
+        }
         return result;
     }
 
@@ -50,6 +59,12 @@ public class AdminFreeShippingController {
     @DeleteMapping("deleteRegions")
     public OperaResult deleteShipRegions(Integer id, OperaResult result){
         result.getData().put("result",service.deleteShipRegions(id));
+        return result;
+    }
+
+    @PostMapping("createRegions")
+    public OperaResult createShipRegions(@RequestBody FreeShipTemplateBean bean, OperaResult result){
+        result.getData().put("result",service.createShipRegions(bean));
         return result;
     }
 }
