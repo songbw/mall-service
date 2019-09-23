@@ -16,4 +16,6 @@ public interface FreeShippingService {
     int deleteFreeShipTemplate(Integer id);
 
     int deleteShipRegions(Integer id);
+
+    int createShipRegions(FreeShipTemplateBean bean);
 }

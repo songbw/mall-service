@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.fengchao.sso.model.Balance">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
     <result column="open_id" jdbcType="VARCHAR" property="openId" />
     <result column="amount" jdbcType="DECIMAL" property="amount" />
     <result column="status" jdbcType="INTEGER" property="status" />
@@ -12,7 +13,7 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, user_id, open_id, amount, status, created_at, updated_at
+    id, user_id, telephone, open_id, amount, status, created_at, updated_at
   </sql>
   <select id="selectForUpdateByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 

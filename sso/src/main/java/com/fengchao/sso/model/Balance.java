@@ -8,6 +8,8 @@ public class Balance {
 
     private Integer userId;
 
+    private String telephone;
+
     private String openId;
 
     private BigDecimal amount;
@@ -32,6 +34,14 @@ public class Balance {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone == null ? null : telephone.trim();
     }
 
     public String getOpenId() {

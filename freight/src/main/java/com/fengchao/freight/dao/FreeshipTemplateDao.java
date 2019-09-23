@@ -50,4 +50,13 @@ public class FreeshipTemplateDao {
         FreeShippingTemplateX freeShippingTemplate = xMapper.selectByPrimaryKey(id);
         return freeShippingTemplate;
     }
+
+    public List<FreeShippingTemplate> findFreeShipTemplateByMerchantId(Integer merchantId) {
+        FreeShippingTemplateExample example = new FreeShippingTemplateExample();
+        FreeShippingTemplateExample.Criteria criteria = example.createCriteria();
+
+        criteria.andMerchantIdEqualTo(merchantId);
+        List<FreeShippingTemplate> shippingTemplates = mapper.selectByExample(example);
+        return shippingTemplates;
+    }
 }
