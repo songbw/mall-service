@@ -1,6 +1,5 @@
 package com.fengchao.freight.mapper;
 
-import com.fengchao.freight.model.ShippingRegions;
 import com.fengchao.freight.model.ShippingRegionsExample;
 import com.fengchao.freight.model.ShippingRegionsX;
 import org.apache.ibatis.annotations.Param;
