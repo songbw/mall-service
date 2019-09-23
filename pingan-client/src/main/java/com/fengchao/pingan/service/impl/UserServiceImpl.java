@@ -113,7 +113,9 @@ public class UserServiceImpl implements UserService {
         bean.setCipherText(Pkcs8Util.getCiphe(bean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
-        return  response.readEntity(OperaResponse.class);
+        OperaResponse<InitCodeBean> result = response.readEntity(OperaResponse.class);
+        logger.info("获取init code 返回值： {}", JSONUtil.toJsonString(result));
+        return  result ;
     }
 
     @Override
