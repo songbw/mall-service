@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.fengchao.sso.model.Balance">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
     <result column="open_id" jdbcType="VARCHAR" property="openId" />
     <result column="amount" jdbcType="DECIMAL" property="amount" />
     <result column="status" jdbcType="INTEGER" property="status" />
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_id, open_id, amount, status, created_at, updated_at
+    id, user_id, telephone, open_id, amount, status, created_at, updated_at
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.sso.model.BalanceExample" resultMap="BaseResultMap">
     select
@@ -102,18 +103,21 @@
     </if>
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.sso.model.Balance" useGeneratedKeys="true">
-    insert into balance (user_id, open_id, amount, 
-      status, created_at, updated_at
-      )
-    values (#{userId,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
-      #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
-      )
+    insert into balance (user_id, telephone, open_id, 
+      amount, status, created_at, 
+      updated_at)
+    values (#{userId,jdbcType=INTEGER}, #{telephone,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, 
+      #{amount,jdbcType=DECIMAL}, #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.sso.model.Balance" useGeneratedKeys="true">
     insert into balance
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userId != null">
         user_id,
+      </if>
+      <if test="telephone != null">
+        telephone,
       </if>
       <if test="openId != null">
         open_id,
@@ -134,6 +138,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="telephone != null">
+        #{telephone,jdbcType=VARCHAR},
       </if>
       <if test="openId != null">
         #{openId,jdbcType=VARCHAR},
@@ -167,6 +174,9 @@
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=INTEGER},
       </if>
+      <if test="record.telephone != null">
+        telephone = #{record.telephone,jdbcType=VARCHAR},
+      </if>
       <if test="record.openId != null">
         open_id = #{record.openId,jdbcType=VARCHAR},
       </if>
@@ -191,6 +201,7 @@
     update balance
     set id = #{record.id,jdbcType=INTEGER},
       user_id = #{record.userId,jdbcType=INTEGER},
+      telephone = #{record.telephone,jdbcType=VARCHAR},
       open_id = #{record.openId,jdbcType=VARCHAR},
       amount = #{record.amount,jdbcType=DECIMAL},
       status = #{record.status,jdbcType=INTEGER},
@@ -205,6 +216,9 @@
     <set>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="telephone != null">
+        telephone = #{telephone,jdbcType=VARCHAR},
       </if>
       <if test="openId != null">
         open_id = #{openId,jdbcType=VARCHAR},
@@ -227,6 +241,7 @@
   <update id="updateByPrimaryKey" parameterType="com.fengchao.sso.model.Balance">
     update balance
     set user_id = #{userId,jdbcType=INTEGER},
+      telephone = #{telephone,jdbcType=VARCHAR},
       open_id = #{openId,jdbcType=VARCHAR},
       amount = #{amount,jdbcType=DECIMAL},
       status = #{status,jdbcType=INTEGER},
