@@ -40,11 +40,11 @@
         <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-<!--        <table tableName="balance">-->
-<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
-<!--        </table>-->
-        <table tableName="balance_detail">
+        <table tableName="balance">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
+<!--        <table tableName="balance_detail">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
     </context>
 </generatorConfiguration>
