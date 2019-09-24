@@ -153,6 +153,11 @@ public class ShippingServiceImpl implements ShippingService {
         return num;
     }
 
+    @Override
+    public List<ShippingTemplate> selectDefaultTemplate() {
+        return shipTemplateDao.selectDefaultTemplate();
+    }
+
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){
         ShipTemplateBean templateBean = new ShipTemplateBean();
         templateBean.setId(template.getId());

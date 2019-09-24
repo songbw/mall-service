@@ -2,11 +2,14 @@ package com.fengchao.freight.controller;
 
 import com.fengchao.freight.bean.OperaResult;
 import com.fengchao.freight.bean.ShipTemplateBean;
+import com.fengchao.freight.model.ShippingTemplate;
 import com.fengchao.freight.service.ShippingService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/adminShip", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -35,6 +38,15 @@ public class AdminShippingController {
 
     @PutMapping("update")
     public OperaResult updateShipTemplate(@RequestBody ShipTemplateBean bean, OperaResult result){
+        if(bean.getIsDefault() != null && bean.getIsDefault()){
+            List<ShippingTemplate> templateList = shippingService.selectDefaultTemplate();
+            if(!templateList.isEmpty()){
+                result.setCode(501);
+                result.setMsg("id = " + templateList.get(0).getId() + "是默认包邮模板");
+                result.getData().put("id",templateList.get(0).getId());
+                return result;
+            }
+        }
         result.getData().put("result",shippingService.updateShipTemplate(bean));
         return result;
     }

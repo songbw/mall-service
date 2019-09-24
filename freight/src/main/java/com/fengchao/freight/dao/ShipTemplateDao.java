@@ -49,4 +49,13 @@ public class ShipTemplateDao {
         List<ShippingTemplate> shippingTemplates = mapper.selectByExample(example);
         return new PageInfo<>(shippingTemplates);
     }
+
+    public List<ShippingTemplate> selectDefaultTemplate() {
+        ShippingTemplateExample example = new ShippingTemplateExample();
+        ShippingTemplateExample.Criteria criteria = example.createCriteria();
+
+        criteria.andIsDefaultEqualTo(true);
+        List<ShippingTemplate> shippingTemplates = mapper.selectByExample(example);
+        return shippingTemplates;
+    }
 }
