@@ -48,7 +48,7 @@ public class FreeShippingServiceImpl implements FreeShippingService {
         template.setCreateTime(new Date());
         int templateNum = freeshipTemplateDao.createFreeShipTemplate(template);
         List<FreeShipRegionsBean> regionsList = bean.getRegions();
-        if(templateNum == 1 && !regionsList.isEmpty()){
+        if(templateNum == 1 && regionsList != null && !regionsList.isEmpty()){
             for (FreeShipRegionsBean regionsBean : regionsList) {
                 FreeShippingRegions regions = new FreeShippingRegions();
                 regions.setTemplateId(template.getId());
@@ -100,7 +100,7 @@ public class FreeShippingServiceImpl implements FreeShippingService {
         template.setUpdateTime(new Date());
         int templateNum = freeshipTemplateDao.updateFreeShipTemplate(template);
         List<FreeShipRegionsBean> regionsList = bean.getRegions();
-        if(templateNum == 1 && !regionsList.isEmpty()){
+        if(templateNum == 1 && regionsList != null && !regionsList.isEmpty()){
             for (FreeShipRegionsBean regionsBean : regionsList) {
                 FreeShippingRegions regions = new FreeShippingRegions();
                 regions.setId(regionsBean.getId());
@@ -137,7 +137,7 @@ public class FreeShippingServiceImpl implements FreeShippingService {
     public int createShipRegions(FreeShipTemplateBean bean) {
         int num = 1;
         List<FreeShipRegionsBean> regionsList = bean.getRegions();
-        if(!regionsList.isEmpty()){
+        if(regionsList != null && !regionsList.isEmpty()){
             for (FreeShipRegionsBean regionsBean : regionsList) {
                 FreeShippingRegions regions = new FreeShippingRegions();
                 regions.setTemplateId(bean.getId());
@@ -171,7 +171,7 @@ public class FreeShippingServiceImpl implements FreeShippingService {
         templateBean.setStatus(template.getStatus());
         List<FreeShipRegionsBean> regionsBeanList = new ArrayList<>();
         List<FreeShippingRegionsX> templateRegions = template.getRegions();
-        if(!templateRegions.isEmpty()){
+        if(templateRegions != null && !templateRegions.isEmpty()){
             templateRegions.forEach(shippingRegionsX -> {
                 FreeShipRegionsBean regionsBean = new FreeShipRegionsBean();
                 regionsBean.setFullAmount(shippingRegionsX.getFullAmount());

@@ -40,7 +40,7 @@ public class ShippingServiceImpl implements ShippingService {
         template.setCreateTime(new Date());
         int templateNum = shipTemplateDao.createShipTemplate(template);
         List<ShipRegionsBean> regionsList = bean.getRegions();
-        if(templateNum == 1 && !regionsList.isEmpty()){
+        if(templateNum == 1 && regionsList != null && !regionsList.isEmpty()){
             for (ShipRegionsBean regionsBean : regionsList) {
                 ShippingRegions regions = new ShippingRegions();
                 regions.setTemplateId(template.getId());
@@ -83,7 +83,7 @@ public class ShippingServiceImpl implements ShippingService {
         template.setUpdateTime(new Date());
         int templateNum = shipTemplateDao.updateShipTemplate(template);
         List<ShipRegionsBean> regionsList = bean.getRegions();
-        if(templateNum == 1 && !regionsList.isEmpty()){
+        if(templateNum == 1 && regionsList != null && !regionsList.isEmpty()){
             for (ShipRegionsBean regionsBean : regionsList) {
                 ShippingRegions regions = new ShippingRegions();
                 regions.setId(regionsBean.getId());
@@ -133,7 +133,7 @@ public class ShippingServiceImpl implements ShippingService {
     public int createShipRegions(ShipTemplateBean bean) {
         int num = 1;
         List<ShipRegionsBean> regionsList = bean.getRegions();
-        if(!regionsList.isEmpty()){
+        if(regionsList != null && !regionsList.isEmpty()){
             for (ShipRegionsBean regionsBean : regionsList) {
                 ShippingRegions regions = new ShippingRegions();
                 regions.setId(regionsBean.getId());
@@ -165,7 +165,7 @@ public class ShippingServiceImpl implements ShippingService {
         templateBean.setStatus(template.getStatus());
         List<ShipRegionsBean> regionsBeanList = new ArrayList<>();
         List<ShippingRegionsX> templateRegions = template.getRegions();
-        if(!templateRegions.isEmpty()){
+        if(templateRegions !=null && !templateRegions.isEmpty()){
             templateRegions.forEach(shippingRegionsX -> {
                 ShipRegionsBean regionsBean = new ShipRegionsBean();
                 regionsBean.setBaseAmount(shippingRegionsX.getBaseAmount());
