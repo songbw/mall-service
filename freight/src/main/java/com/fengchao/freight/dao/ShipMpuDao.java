@@ -6,6 +6,10 @@ import com.fengchao.freight.model.ShippingMpuExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+import static javax.swing.UIManager.get;
+
 @Component
 public class ShipMpuDao {
 
@@ -25,6 +29,12 @@ public class ShipMpuDao {
         ShippingMpuExample.Criteria criteria = example.createCriteria();
 
         criteria.andMpuEqualTo(mpu);
-        return mpuMapper.selectByExample(example).get(0);
+        List<ShippingMpu> shippingMpus = mpuMapper.selectByExample(example);
+
+        if(shippingMpus.isEmpty()){
+            return null;
+        }
+
+        return shippingMpus.get(0);
     }
 }

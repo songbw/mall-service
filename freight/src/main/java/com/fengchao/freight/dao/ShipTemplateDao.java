@@ -71,4 +71,9 @@ public class ShipTemplateDao {
 
         return xMapper.updateByExampleSelective(template, example);
     }
+
+    public List<ShippingTemplateX> findShipTemplateByMpu(Integer id) {
+        List<ShippingTemplateX> shipTemplateByMpu = xMapper.findShipTemplateByMpu(id);
+        return shipTemplateByMpu;
+    }
 }

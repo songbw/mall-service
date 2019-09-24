@@ -167,16 +167,27 @@ public class ShippingServiceImpl implements ShippingService {
     }
 
     @Override
-    public ShipTemplateBean findShipTemplateByMpu(String mpu) {
+    public List<ShipTemplateBean> findShipTemplateByMpu(String mpu) {
+        List<ShipTemplateBean> templateBean = new ArrayList<>();
+        int templateId = 0;
         ShippingMpu shipByMpu = shipMpuDao.findByMpu(mpu);
-
-        ShipTemplateBean templateBean = null;
-        ShippingTemplateX template = shipTemplateDao.findShipTemplateById(shipByMpu.getTemplateId());
-        if(template != null){
-            List<ShippingRegionsX> regionsByTemplateId = shipRegionsDao.findRegionsByTemplateId(shipByMpu.getTemplateId());
-            template.setRegions(regionsByTemplateId);
-            templateBean = convertToTemplateBean(template);
+        if(shipByMpu != null){
+            templateId = shipByMpu.getTemplateId();
         }
+
+        List<ShippingTemplateX> shipTemplateByMpu = shipTemplateDao.findShipTemplateByMpu(templateId);
+        int finalTemplateId = templateId;
+        shipTemplateByMpu.forEach(template -> {
+            if(template != null){
+                List<ShippingRegionsX> regionsByTemplateId = shipRegionsDao.findRegionsByTemplateId(template.getId());
+                template.setRegions(regionsByTemplateId);
+                ShipTemplateBean bean = convertToTemplateBean(template);
+                if(finalTemplateId == template.getId()){
+                    bean.setShipMpuId(shipByMpu.getId());
+                }
+                templateBean.add(bean);
+            }
+        });
         return templateBean;
     }
 

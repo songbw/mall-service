@@ -30,5 +30,5 @@ public interface FreeShippingTemplateXMapper {
 
     int updateByPrimaryKey(FreeShippingTemplateX record);
 
-    FreeShippingTemplateX selectByMerchantId(Integer merchantId);
+    List<FreeShippingTemplateX> selectByMerchantId(Integer merchantId);
 }

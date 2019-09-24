@@ -60,7 +60,7 @@ public class FreeshipTemplateDao {
         return shippingTemplates;
     }
 
-    public FreeShippingTemplateX findTemplateBymerchantId(Integer merchantId) {
+    public List<FreeShippingTemplateX> findTemplateBymerchantId(Integer merchantId) {
         return xMapper.selectByMerchantId(merchantId);
     }
 }

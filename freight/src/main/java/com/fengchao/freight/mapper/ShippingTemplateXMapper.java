@@ -29,4 +29,6 @@ public interface ShippingTemplateXMapper {
     int updateByPrimaryKeySelective(ShippingTemplateX record);
 
     int updateByPrimaryKey(ShippingTemplateX record);
+
+    List<ShippingTemplateX> findShipTemplateByMpu(Integer id);
 }

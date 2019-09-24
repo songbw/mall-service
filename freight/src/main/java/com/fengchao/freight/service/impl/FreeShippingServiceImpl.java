@@ -163,13 +163,15 @@ public class FreeShippingServiceImpl implements FreeShippingService {
     }
 
     @Override
-    public FreeShipTemplateBean findTemplateByMerchantId(Integer merchantId) {
-        FreeShipTemplateBean templateBean = null;
-        FreeShippingTemplateX templateX = freeshipTemplateDao.findTemplateBymerchantId(merchantId);
-        if(templateX != null){
-            templateX.setRegions(freeShipRegionsDao.findFreeShipRegionsByTemplateId(templateX.getId()));
-            templateBean = convertToTemplateBean(templateX);
-        }
+    public List<FreeShipTemplateBean> findTemplateByMerchantId(Integer merchantId) {
+        List<FreeShipTemplateBean> templateBean = new ArrayList<>();
+        List<FreeShippingTemplateX> templateBymerchantId = freeshipTemplateDao.findTemplateBymerchantId(merchantId);
+        templateBymerchantId.forEach(templateX -> {
+            if(templateX != null){
+                templateX.setRegions(freeShipRegionsDao.findFreeShipRegionsByTemplateId(templateX.getId()));
+                templateBean.add(convertToTemplateBean(templateX));
+            }
+        });
         return templateBean;
     }
 
