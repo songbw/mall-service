@@ -4,6 +4,8 @@ import com.fengchao.freight.bean.FreeShipTemplateBean;
 import com.fengchao.freight.bean.page.PageableData;
 import com.fengchao.freight.model.FreeShippingTemplate;
 
+import java.util.List;
+
 public interface FreeShippingService {
     int createFreeShipTemplate(FreeShipTemplateBean bean);
 
@@ -18,4 +20,6 @@ public interface FreeShippingService {
     int deleteShipRegions(Integer id);
 
     int createShipRegions(FreeShipTemplateBean bean);
+
+    List<FreeShipTemplateBean> findTemplateByMerchantId(Integer merchantId);
 }

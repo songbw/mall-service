@@ -29,4 +29,6 @@ public interface FreeShippingTemplateXMapper {
     int updateByPrimaryKeySelective(FreeShippingTemplateX record);
 
     int updateByPrimaryKey(FreeShippingTemplateX record);
+
+    List<FreeShippingTemplateX> selectByMerchantId(Integer merchantId);
 }

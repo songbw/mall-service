@@ -82,9 +82,12 @@ public class FreeShippingServiceImpl implements FreeShippingService {
 
     @Override
     public FreeShipTemplateBean findFreeShipTemplateById(Integer id) {
+        FreeShipTemplateBean templateBean = null;
         FreeShippingTemplateX templateX = freeshipTemplateDao.findFreeShipTemplateById(id);
-        templateX.setRegions(freeShipRegionsDao.findFreeShipRegionsByTemplateId(id));
-        FreeShipTemplateBean templateBean = convertToTemplateBean(templateX);
+        if(templateX != null){
+            templateX.setRegions(freeShipRegionsDao.findFreeShipRegionsByTemplateId(templateX.getId()));
+            templateBean = convertToTemplateBean(templateX);
+        }
         return templateBean;
     }
 
@@ -159,6 +162,19 @@ public class FreeShippingServiceImpl implements FreeShippingService {
         return num;
     }
 
+    @Override
+    public List<FreeShipTemplateBean> findTemplateByMerchantId(Integer merchantId) {
+        List<FreeShipTemplateBean> templateBean = new ArrayList<>();
+        List<FreeShippingTemplateX> templateBymerchantId = freeshipTemplateDao.findTemplateBymerchantId(merchantId);
+        templateBymerchantId.forEach(templateX -> {
+            if(templateX != null){
+                templateX.setRegions(freeShipRegionsDao.findFreeShipRegionsByTemplateId(templateX.getId()));
+                templateBean.add(convertToTemplateBean(templateX));
+            }
+        });
+        return templateBean;
+    }
+
     private FreeShipTemplateBean convertToTemplateBean(FreeShippingTemplateX template){
         FreeShipTemplateBean templateBean = new FreeShipTemplateBean();
         templateBean.setId(template.getId());
@@ -179,6 +195,7 @@ public class FreeShippingServiceImpl implements FreeShippingService {
                 regionsBean.setName(shippingRegionsX.getName());
                 regionsBean.setTemplateId(shippingRegionsX.getTemplateId());
                 regionsBean.setProvinces(shippingRegionsX.getProvinces().split(","));
+                regionsBean.setStatus(shippingRegionsX.getStatus());
                 regionsBeanList.add(regionsBean);
             });
             templateBean.setRegions(regionsBeanList);

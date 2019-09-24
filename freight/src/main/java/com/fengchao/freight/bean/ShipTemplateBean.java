@@ -11,6 +11,7 @@ import java.util.List;
 public class ShipTemplateBean {
 
     private Integer id;
+    private Integer shipMpuId;
     private String name;
     private Integer merchantId;
     private Boolean isDefault;

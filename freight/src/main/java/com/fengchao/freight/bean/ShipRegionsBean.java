@@ -14,4 +14,5 @@ public class ShipRegionsBean {
     private Integer cumulativeUnit;
     private String name;
     private String[] provinces;
+    private Integer status;
 }

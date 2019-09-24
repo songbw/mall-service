@@ -67,4 +67,10 @@ public class AdminFreeShippingController {
         result.getData().put("result",service.createShipRegions(bean));
         return result;
     }
+
+    @GetMapping("findByMerchantId")
+    public OperaResult findTemplateByMerchantId(Integer merchantId, OperaResult result){
+        result.getData().put("result",service.findTemplateByMerchantId(merchantId));
+        return result;
+    }
 }

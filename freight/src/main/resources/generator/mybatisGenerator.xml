@@ -40,7 +40,7 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="free_shipping_regions">
+        <table tableName="shipping_mpu">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
     </context>
