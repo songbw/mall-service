@@ -1,6 +1,7 @@
 package com.fengchao.sso.controller;
 
 import com.fengchao.sso.bean.LoginBean;
+import com.fengchao.sso.bean.OperaResponse;
 import com.fengchao.sso.bean.ThirdLoginBean;
 import com.fengchao.sso.config.SMSConfig;
 import com.fengchao.sso.model.Login;
@@ -194,17 +195,18 @@ public class LoginController {
     }
 
     @GetMapping("/thirdParty/token")
-    public OperaResult thirdPartyToken(String iAppId, String initCode, OperaResult result) {
-        if (StringUtil.isEmpty(initCode)){
+    public OperaResult getThirdOpenId(String iAppId, String requestCode) {
+        OperaResult result = new OperaResult();
+        if (StringUtil.isEmpty(requestCode)){
             result.setCode(100000);
-            result.setMsg("initCode不正确");
+            result.setMsg("requestCode不正确");
             return result;
         }
-        return loginService.findThirdPartyToken(iAppId, initCode) ;
+        return loginService.getPingAnOpenId(iAppId, requestCode) ;
     }
 
     @GetMapping("/thirdParty/token/gat")
-    public OperaResult thirdPartyTokenGAT(String iAppId, String initCode, OperaResult result) {
+    public OperaResult getThirdOpenIdGAT(String iAppId, String initCode, OperaResult result) {
         if (StringUtil.isEmpty(initCode)){
             result.setCode(100000);
             result.setMsg("initCode不正确");

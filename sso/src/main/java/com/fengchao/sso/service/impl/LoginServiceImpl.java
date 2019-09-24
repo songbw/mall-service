@@ -16,9 +16,11 @@ import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.Token;
 import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.ILoginService;
+import com.fengchao.sso.util.JSONUtil;
 import com.fengchao.sso.util.JwtTokenUtil;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RedisDAO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -27,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class LoginServiceImpl implements ILoginService {
 
@@ -190,6 +193,47 @@ public class LoginServiceImpl implements ILoginService {
             userMapper.insertSelective(user);
         }
         result.getData().put("result", accessToken);
+        return result ;
+    }
+
+    @Override
+    public OperaResult getPingAnOpenId(String iAppId, String requestCode) {
+        OperaResult result = new OperaResult();
+        AccessToken accessToken = new AccessToken() ;
+        // 获取平安用户信息
+        OperaResponse<AuthUserBean> authUserBeanOperaResponse = pinganClientService.checkRequestCode(requestCode) ;
+        if (authUserBeanOperaResponse.getCode() != 200) {
+            result.setCode(authUserBeanOperaResponse.getCode());
+            result.setMsg(authUserBeanOperaResponse.getMsg());
+            return result;
+        }
+        AuthUserBean authUserBean = authUserBeanOperaResponse.getData();
+        if (authUserBean ==null || authUserBean.getOpenId() == null || "".equals(authUserBean.getOpenId())) {
+            result.setCode(9000001);
+            result.setMsg("获取openId失败。");
+            return  result;
+        }
+        accessToken.setOpenId(authUserBean.getOpenId());
+        User temp = new User();
+        temp.setOpenId(authUserBean.getOpenId());
+        temp.setiAppId(iAppId);
+        User user = userMapper.selectByOpenId(temp);
+        if (user == null) {
+            user = new User();
+            user.setOpenId(authUserBean.getOpenId());
+            if (!StringUtils.isEmpty(authUserBean.getNickName())) {
+                user.setNickname(authUserBean.getNickName());
+            } else {
+                String nickname = "fc_" + authUserBean.getOpenId().substring(user.getOpenId().length() - 8);
+                user.setNickname(nickname);
+            }
+            user.setTelephone(authUserBean.getMobileNo());
+            user.setCreatedAt(new Date());
+            user.setiAppId(iAppId);
+            userMapper.insertSelective(user);
+        }
+        result.getData().put("result", accessToken);
+        log.info("Third party Token 返回值： {}", JSONUtil.toJsonString(result));
         return result ;
     }
 

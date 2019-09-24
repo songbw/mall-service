@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.order.mapper.OrderBalanceMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.OrderBalance">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="balance_id" jdbcType="INTEGER" property="balanceId" />
+    <result column="sub_order_id" jdbcType="VARCHAR" property="subOrderId" />
+    <result column="dprice" jdbcType="VARCHAR" property="dprice" />
+    <result column="mpu" jdbcType="VARCHAR" property="mpu" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="unit_coin_balance_discount" jdbcType="DECIMAL" property="unitCoinBalanceDiscount" />
+    <result column="sku_coin_balance_discount" jdbcType="DECIMAL" property="skuCoinBalanceDiscount" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, merchant_id, order_id, balance_id, sub_order_id, dprice, mpu, num, unit_coin_balance_discount, 
+    sku_coin_balance_discount, created_at, updated_at
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.order.model.OrderBalanceExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from order_balance
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from order_balance
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from order_balance
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.order.model.OrderBalanceExample">
+    delete from order_balance
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderBalance" useGeneratedKeys="true">
+    insert into order_balance (merchant_id, order_id, balance_id, 
+      sub_order_id, dprice, mpu, 
+      num, unit_coin_balance_discount, sku_coin_balance_discount, 
+      created_at, updated_at)
+    values (#{merchantId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{balanceId,jdbcType=INTEGER}, 
+      #{subOrderId,jdbcType=VARCHAR}, #{dprice,jdbcType=VARCHAR}, #{mpu,jdbcType=VARCHAR}, 
+      #{num,jdbcType=INTEGER}, #{unitCoinBalanceDiscount,jdbcType=DECIMAL}, #{skuCoinBalanceDiscount,jdbcType=DECIMAL}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderBalance" useGeneratedKeys="true">
+    insert into order_balance
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="merchantId != null">
+        merchant_id,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="balanceId != null">
+        balance_id,
+      </if>
+      <if test="subOrderId != null">
+        sub_order_id,
+      </if>
+      <if test="dprice != null">
+        dprice,
+      </if>
+      <if test="mpu != null">
+        mpu,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="unitCoinBalanceDiscount != null">
+        unit_coin_balance_discount,
+      </if>
+      <if test="skuCoinBalanceDiscount != null">
+        sku_coin_balance_discount,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="merchantId != null">
+        #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="balanceId != null">
+        #{balanceId,jdbcType=INTEGER},
+      </if>
+      <if test="subOrderId != null">
+        #{subOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="dprice != null">
+        #{dprice,jdbcType=VARCHAR},
+      </if>
+      <if test="mpu != null">
+        #{mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="unitCoinBalanceDiscount != null">
+        #{unitCoinBalanceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="skuCoinBalanceDiscount != null">
+        #{skuCoinBalanceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.order.model.OrderBalanceExample" resultType="java.lang.Long">
+    select count(*) from order_balance
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update order_balance
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.merchantId != null">
+        merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=INTEGER},
+      </if>
+      <if test="record.balanceId != null">
+        balance_id = #{record.balanceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.subOrderId != null">
+        sub_order_id = #{record.subOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dprice != null">
+        dprice = #{record.dprice,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mpu != null">
+        mpu = #{record.mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="record.num != null">
+        num = #{record.num,jdbcType=INTEGER},
+      </if>
+      <if test="record.unitCoinBalanceDiscount != null">
+        unit_coin_balance_discount = #{record.unitCoinBalanceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.skuCoinBalanceDiscount != null">
+        sku_coin_balance_discount = #{record.skuCoinBalanceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createdAt != null">
+        created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedAt != null">
+        updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update order_balance
+    set id = #{record.id,jdbcType=INTEGER},
+      merchant_id = #{record.merchantId,jdbcType=INTEGER},
+      order_id = #{record.orderId,jdbcType=INTEGER},
+      balance_id = #{record.balanceId,jdbcType=INTEGER},
+      sub_order_id = #{record.subOrderId,jdbcType=VARCHAR},
+      dprice = #{record.dprice,jdbcType=VARCHAR},
+      mpu = #{record.mpu,jdbcType=VARCHAR},
+      num = #{record.num,jdbcType=INTEGER},
+      unit_coin_balance_discount = #{record.unitCoinBalanceDiscount,jdbcType=DECIMAL},
+      sku_coin_balance_discount = #{record.skuCoinBalanceDiscount,jdbcType=DECIMAL},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.OrderBalance">
+    update order_balance
+    <set>
+      <if test="merchantId != null">
+        merchant_id = #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="balanceId != null">
+        balance_id = #{balanceId,jdbcType=INTEGER},
+      </if>
+      <if test="subOrderId != null">
+        sub_order_id = #{subOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="dprice != null">
+        dprice = #{dprice,jdbcType=VARCHAR},
+      </if>
+      <if test="mpu != null">
+        mpu = #{mpu,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="unitCoinBalanceDiscount != null">
+        unit_coin_balance_discount = #{unitCoinBalanceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="skuCoinBalanceDiscount != null">
+        sku_coin_balance_discount = #{skuCoinBalanceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.OrderBalance">
+    update order_balance
+    set merchant_id = #{merchantId,jdbcType=INTEGER},
+      order_id = #{orderId,jdbcType=INTEGER},
+      balance_id = #{balanceId,jdbcType=INTEGER},
+      sub_order_id = #{subOrderId,jdbcType=VARCHAR},
+      dprice = #{dprice,jdbcType=VARCHAR},
+      mpu = #{mpu,jdbcType=VARCHAR},
+      num = #{num,jdbcType=INTEGER},
+      unit_coin_balance_discount = #{unitCoinBalanceDiscount,jdbcType=DECIMAL},
+      sku_coin_balance_discount = #{skuCoinBalanceDiscount,jdbcType=DECIMAL},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
