@@ -74,7 +74,7 @@ public class ShippingServiceImpl implements ShippingService {
     @Override
     public int updateShipTemplate(ShipTemplateBean bean) {
         int num = 1;
-        if(bean.getIsDefault()){
+        if(bean.getIsDefault() != null && bean.getIsDefault()){
             List<ShippingTemplate> templateList = shipTemplateDao.selectDefaultTemplate();
             if(!templateList.isEmpty()){
                 int templatenum = shipTemplateDao.updateTemplateDefault();
