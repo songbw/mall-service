@@ -74,6 +74,16 @@ public class ShippingServiceImpl implements ShippingService {
     @Override
     public int updateShipTemplate(ShipTemplateBean bean) {
         int num = 1;
+        if(bean.getIsDefault()){
+            List<ShippingTemplate> templateList = shipTemplateDao.selectDefaultTemplate();
+            if(!templateList.isEmpty()){
+                int templatenum = shipTemplateDao.updateTemplateDefault();
+                if(templatenum == 0){
+                    num = 0;
+                    return num;
+                }
+            }
+        }
         ShippingTemplate template = new ShippingTemplate();
         template.setId(bean.getId());
         template.setMerchantId(bean.getMerchantId());
@@ -151,11 +161,6 @@ public class ShippingServiceImpl implements ShippingService {
             }
         }
         return num;
-    }
-
-    @Override
-    public List<ShippingTemplate> selectDefaultTemplate() {
-        return shipTemplateDao.selectDefaultTemplate();
     }
 
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){

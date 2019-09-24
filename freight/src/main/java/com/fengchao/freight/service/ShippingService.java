@@ -4,8 +4,6 @@ import com.fengchao.freight.bean.ShipTemplateBean;
 import com.fengchao.freight.bean.page.PageableData;
 import com.fengchao.freight.model.ShippingTemplate;
 
-import java.util.List;
-
 public interface ShippingService {
     int createShipTemplate(ShipTemplateBean bean);
 
@@ -21,5 +19,4 @@ public interface ShippingService {
 
     int createShipRegions(ShipTemplateBean bean);
 
-    List<ShippingTemplate> selectDefaultTemplate();
 }

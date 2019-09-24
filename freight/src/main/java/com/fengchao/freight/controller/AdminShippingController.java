@@ -38,16 +38,13 @@ public class AdminShippingController {
 
     @PutMapping("update")
     public OperaResult updateShipTemplate(@RequestBody ShipTemplateBean bean, OperaResult result){
-        if(bean.getIsDefault() != null && bean.getIsDefault()){
-            List<ShippingTemplate> templateList = shippingService.selectDefaultTemplate();
-            if(!templateList.isEmpty()){
-                result.setCode(501);
-                result.setMsg("id = " + templateList.get(0).getId() + "是默认包邮模板");
-                result.getData().put("id",templateList.get(0).getId());
-                return result;
-            }
+        int num = shippingService.updateShipTemplate(bean);
+        if(num == 0){
+            result.setCode(501);
+            result.setMsg("更新失败");
+        }else{
+            result.getData().put("result", num);
         }
-        result.getData().put("result",shippingService.updateShipTemplate(bean));
         return result;
     }
 
