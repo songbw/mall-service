@@ -4,12 +4,10 @@ import com.fengchao.freight.bean.ShipRegionsBean;
 import com.fengchao.freight.bean.ShipTemplateBean;
 import com.fengchao.freight.bean.page.PageVo;
 import com.fengchao.freight.bean.page.PageableData;
+import com.fengchao.freight.dao.ShipMpuDao;
 import com.fengchao.freight.dao.ShipRegionsDao;
 import com.fengchao.freight.dao.ShipTemplateDao;
-import com.fengchao.freight.model.ShippingRegions;
-import com.fengchao.freight.model.ShippingRegionsX;
-import com.fengchao.freight.model.ShippingTemplate;
-import com.fengchao.freight.model.ShippingTemplateX;
+import com.fengchao.freight.model.*;
 import com.fengchao.freight.service.ShippingService;
 import com.fengchao.freight.utils.ConvertUtil;
 import com.github.pagehelper.PageInfo;
@@ -28,6 +26,8 @@ public class ShippingServiceImpl implements ShippingService {
     private ShipTemplateDao shipTemplateDao;
     @Autowired
     private ShipRegionsDao shipRegionsDao;
+    @Autowired
+    private ShipMpuDao shipMpuDao;
 
     @Override
     public int createShipTemplate(ShipTemplateBean bean) {
@@ -115,10 +115,13 @@ public class ShippingServiceImpl implements ShippingService {
 
     @Override
     public ShipTemplateBean findShipTemplateById(Integer id) {
+        ShipTemplateBean templateBean = null;
         ShippingTemplateX template = shipTemplateDao.findShipTemplateById(id);
-        List<ShippingRegionsX> regionsByTemplateId = shipRegionsDao.findRegionsByTemplateId(id);
-        template.setRegions(regionsByTemplateId);
-        ShipTemplateBean templateBean = convertToTemplateBean(template);
+        if(template != null){
+            List<ShippingRegionsX> regionsByTemplateId = shipRegionsDao.findRegionsByTemplateId(id);
+            template.setRegions(regionsByTemplateId);
+            templateBean = convertToTemplateBean(template);
+        }
         return templateBean;
     }
 
@@ -163,6 +166,20 @@ public class ShippingServiceImpl implements ShippingService {
         return num;
     }
 
+    @Override
+    public ShipTemplateBean findShipTemplateByMpu(String mpu) {
+        ShippingMpu shipByMpu = shipMpuDao.findByMpu(mpu);
+
+        ShipTemplateBean templateBean = null;
+        ShippingTemplateX template = shipTemplateDao.findShipTemplateById(shipByMpu.getTemplateId());
+        if(template != null){
+            List<ShippingRegionsX> regionsByTemplateId = shipRegionsDao.findRegionsByTemplateId(shipByMpu.getTemplateId());
+            template.setRegions(regionsByTemplateId);
+            templateBean = convertToTemplateBean(template);
+        }
+        return templateBean;
+    }
+
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){
         ShipTemplateBean templateBean = new ShipTemplateBean();
         templateBean.setId(template.getId());
@@ -186,6 +203,7 @@ public class ShippingServiceImpl implements ShippingService {
                 regionsBean.setName(shippingRegionsX.getName());
                 regionsBean.setTemplateId(shippingRegionsX.getTemplateId());
                 regionsBean.setProvinces(shippingRegionsX.getProvinces().split(","));
+                regionsBean.setStatus(shippingRegionsX.getStatus());
                 regionsBeanList.add(regionsBean);
             });
             templateBean.setRegions(regionsBeanList);

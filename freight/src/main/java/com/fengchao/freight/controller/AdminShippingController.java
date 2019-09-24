@@ -2,14 +2,11 @@ package com.fengchao.freight.controller;
 
 import com.fengchao.freight.bean.OperaResult;
 import com.fengchao.freight.bean.ShipTemplateBean;
-import com.fengchao.freight.model.ShippingTemplate;
 import com.fengchao.freight.service.ShippingService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/adminShip", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -63,6 +60,12 @@ public class AdminShippingController {
     @DeleteMapping("deleteRegions")
     public OperaResult deleteShipRegions(Integer id, OperaResult result){
         result.getData().put("result",shippingService.deleteShipRegions(id));
+        return result;
+    }
+
+    @GetMapping("findByMpu")
+    public OperaResult findShipTemplateByMpu(String mpu, OperaResult result){
+        result.getData().put("result",shippingService.findShipTemplateByMpu(mpu));
         return result;
     }
 }

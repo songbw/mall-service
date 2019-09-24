@@ -19,4 +19,5 @@ public interface ShippingService {
 
     int createShipRegions(ShipTemplateBean bean);
 
+    ShipTemplateBean findShipTemplateByMpu(String mpu);
 }

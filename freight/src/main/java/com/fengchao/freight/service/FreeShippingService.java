@@ -18,4 +18,6 @@ public interface FreeShippingService {
     int deleteShipRegions(Integer id);
 
     int createShipRegions(FreeShipTemplateBean bean);
+
+    FreeShipTemplateBean findTemplateByMerchantId(Integer merchantId);
 }
