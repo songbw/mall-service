@@ -34,8 +34,6 @@ public class OrderDetail {
 
     private Integer status;
 
-    private Date completeTime;
-
     private Date createdAt;
 
     private Date updatedAt;
@@ -46,11 +44,15 @@ public class OrderDetail {
 
     private String comcode;
 
+    private BigDecimal skuBalanceDiscount;
+
     private Integer skuCouponDiscount;
 
     private String category;
 
     private String remark;
+
+    private Date completeTime;
 
     public Integer getId() {
         return id;
@@ -172,14 +174,6 @@ public class OrderDetail {
         this.status = status;
     }
 
-    public Date getCompleteTime() {
-        return completeTime;
-    }
-
-    public void setCompleteTime(Date completeTime) {
-        this.completeTime = completeTime;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -220,6 +214,14 @@ public class OrderDetail {
         this.comcode = comcode == null ? null : comcode.trim();
     }
 
+    public BigDecimal getSkuBalanceDiscount() {
+        return skuBalanceDiscount;
+    }
+
+    public void setSkuBalanceDiscount(BigDecimal skuBalanceDiscount) {
+        this.skuBalanceDiscount = skuBalanceDiscount;
+    }
+
     public Integer getSkuCouponDiscount() {
         return skuCouponDiscount;
     }
@@ -242,5 +244,13 @@ public class OrderDetail {
 
     public void setRemark(String remark) {
         this.remark = remark == null ? null : remark.trim();
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
     }
 }

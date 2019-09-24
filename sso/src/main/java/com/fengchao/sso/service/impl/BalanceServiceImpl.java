@@ -128,21 +128,6 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("openId 不能为null");
             return response;
         }
-        if (StringUtils.isEmpty(bean.getiAppId())) {
-            response.setCode(900402);
-            response.setMsg("iAppId 不能为null");
-            return response;
-        }
-        if (StringUtils.isEmpty(bean.gettAppId())) {
-            response.setCode(900402);
-            response.setMsg("tAppId 不能为null");
-            return response;
-        }
-        if (StringUtils.isEmpty(bean.getMerchantNo())) {
-            response.setCode(900402);
-            response.setMsg("merchantNo 不能为null");
-            return response;
-        }
         if (StringUtils.isEmpty(bean.getOrderNos())) {
             response.setCode(900401);
             response.setMsg("orderNos 不能为Null");
@@ -175,10 +160,10 @@ public class BalanceServiceImpl implements IBalanceService {
         bean.setCreatedAt(date);
         bean.setUpdatedAt(date);
         bean.setType(0);
-        bean.setStatus(0);
+        bean.setStatus(1);
         bean.setBalanceId(openBalance.getId());
         detailMapper.insertSelective(bean);
-        response.setData(bean.getId());
+        response.setData(bean);
         return response;
     }
 
