@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,15 +44,6 @@ public class BalanceDao {
     public PageInfo<Balance> selectBalanceByPageable(BalanceQueryBean bean) {
         BalanceExample balanceExample = new BalanceExample();
         BalanceExample.Criteria criteria = balanceExample.createCriteria();
-//        if (name != null && (!"".equals(name))) {
-//            criteria.andNameEqualTo(name);
-//        }
-//        if (sex != null && (!"".equals(sex))) {
-//            criteria.andSexEqualTo(sex);
-//        }
-//        if (telephone != null && (!"".equals(telephone))) {
-//            criteria.andTelephoneEqualTo(telephone);
-//        }
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
         List<Balance> balances = mapper.selectByExample(balanceExample);
         PageInfo<Balance> pageInfo = new PageInfo(balances);
@@ -71,12 +63,6 @@ public class BalanceDao {
         if (StringUtils.isEmpty(bean.getOpenId())) {
             criteria.andOpenIdEqualTo(bean.getOpenId());
         }
-//        if (sex != null && (!"".equals(sex))) {
-//            criteria.andSexEqualTo(sex);
-//        }
-//        if (telephone != null && (!"".equals(telephone))) {
-//            criteria.andTelephoneEqualTo(telephone);
-//        }
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
         List<BalanceDetail> balanceDetails = detailMapper.selectByExample(balanceDetailExample);
         PageInfo<BalanceDetail> pageInfo = new PageInfo(balanceDetails);
@@ -98,5 +84,22 @@ public class BalanceDao {
             return balances.get(0) ;
         }
         return null;
+    }
+
+    /**
+     * 根据手机号更新余额表的openId
+     * @param tel
+     * @param openId
+     */
+    public void updateOpenIdByTel(String tel, String openId) {
+        BalanceExample balanceExample = new BalanceExample();
+        BalanceExample.Criteria criteria = balanceExample.createCriteria();
+        criteria.andTelephoneEqualTo(tel) ;
+        Balance balance = new Balance();
+        balance.setOpenId(openId);
+        Date date = new Date();
+        balance.setCreatedAt(date);
+        balance.setUpdatedAt(date);
+        mapper.updateByExample(balance, balanceExample) ;
     }
 }

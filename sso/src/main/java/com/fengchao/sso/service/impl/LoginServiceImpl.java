@@ -3,6 +3,7 @@ package com.fengchao.sso.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.sso.bean.*;
+import com.fengchao.sso.dao.BalanceDao;
 import com.fengchao.sso.feign.EquityService;
 import com.fengchao.sso.feign.GuanaitongClientService;
 import com.fengchao.sso.feign.OrderServiceClient;
@@ -51,6 +52,8 @@ public class LoginServiceImpl implements ILoginService {
     private EquityService equityService;
     @Autowired
     private RedisDAO redisDAO ;
+    @Autowired
+    private BalanceDao balanceDao;
 
     @Override
     public Login selectByPrimaryName(String username) {
@@ -231,6 +234,7 @@ public class LoginServiceImpl implements ILoginService {
             user.setCreatedAt(new Date());
             user.setiAppId(iAppId);
             userMapper.insertSelective(user);
+            balanceDao.updateOpenIdByTel(authUserBean.getMobileNo(), authUserBean.getOpenId());
         }
         result.getData().put("result", accessToken);
         log.info("Third party Token 返回值： {}", JSONUtil.toJsonString(result));
