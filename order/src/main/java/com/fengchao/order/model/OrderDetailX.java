@@ -49,6 +49,8 @@ public class OrderDetailX implements Serializable {
 
     private Float skuCouponDiscount ;
 
+    private BigDecimal skuBalanceDiscount ;
+
     private String category;
 
     private String remark;
@@ -243,5 +245,13 @@ public class OrderDetailX implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public BigDecimal getSkuBalanceDiscount() {
+        return skuBalanceDiscount;
+    }
+
+    public void setSkuBalanceDiscount(BigDecimal skuBalanceDiscount) {
+        this.skuBalanceDiscount = skuBalanceDiscount;
     }
 }
