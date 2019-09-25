@@ -102,4 +102,17 @@ public class BalanceDao {
         balance.setUpdatedAt(date);
         mapper.updateByExample(balance, balanceExample) ;
     }
+
+    /**
+     * 根据orderNo查询明细
+     * @param orderNo
+     * @return
+     */
+    public List<BalanceDetail> selectBalanceDetailByOrderNo(String orderNo) {
+        BalanceDetailExample balanceDetailExample = new BalanceDetailExample();
+        BalanceDetailExample.Criteria criteria = balanceDetailExample.createCriteria();
+        criteria.andOrderNoEqualTo(orderNo);
+        List<BalanceDetail> balanceDetails = detailMapper.selectByExample(balanceDetailExample);
+        return balanceDetails;
+    }
 }

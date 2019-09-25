@@ -1,6 +1,5 @@
 package com.fengchao.sso.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -296,6 +295,66 @@ public class BalanceExample {
             return (Criteria) this;
         }
 
+        public Criteria andAmountIsNull() {
+            addCriterion("amount is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountIsNotNull() {
+            addCriterion("amount is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountEqualTo(Integer value) {
+            addCriterion("amount =", value, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountNotEqualTo(Integer value) {
+            addCriterion("amount <>", value, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountGreaterThan(Integer value) {
+            addCriterion("amount >", value, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("amount >=", value, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountLessThan(Integer value) {
+            addCriterion("amount <", value, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountLessThanOrEqualTo(Integer value) {
+            addCriterion("amount <=", value, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountIn(List<Integer> values) {
+            addCriterion("amount in", values, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountNotIn(List<Integer> values) {
+            addCriterion("amount not in", values, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountBetween(Integer value1, Integer value2) {
+            addCriterion("amount between", value1, value2, "amount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountNotBetween(Integer value1, Integer value2) {
+            addCriterion("amount not between", value1, value2, "amount");
+            return (Criteria) this;
+        }
+
         public Criteria andOpenIdIsNull() {
             addCriterion("open_id is null");
             return (Criteria) this;
@@ -363,66 +422,6 @@ public class BalanceExample {
 
         public Criteria andOpenIdNotBetween(String value1, String value2) {
             addCriterion("open_id not between", value1, value2, "openId");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountIsNull() {
-            addCriterion("amount is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountIsNotNull() {
-            addCriterion("amount is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountEqualTo(BigDecimal value) {
-            addCriterion("amount =", value, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountNotEqualTo(BigDecimal value) {
-            addCriterion("amount <>", value, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountGreaterThan(BigDecimal value) {
-            addCriterion("amount >", value, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountGreaterThanOrEqualTo(BigDecimal value) {
-            addCriterion("amount >=", value, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountLessThan(BigDecimal value) {
-            addCriterion("amount <", value, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountLessThanOrEqualTo(BigDecimal value) {
-            addCriterion("amount <=", value, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountIn(List<BigDecimal> values) {
-            addCriterion("amount in", values, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountNotIn(List<BigDecimal> values) {
-            addCriterion("amount not in", values, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountBetween(BigDecimal value1, BigDecimal value2) {
-            addCriterion("amount between", value1, value2, "amount");
-            return (Criteria) this;
-        }
-
-        public Criteria andAmountNotBetween(BigDecimal value1, BigDecimal value2) {
-            addCriterion("amount not between", value1, value2, "amount");
             return (Criteria) this;
         }
 
