@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static javax.swing.UIManager.get;
-
 @Component
 public class ShipMpuDao {
 
@@ -29,6 +27,7 @@ public class ShipMpuDao {
         ShippingMpuExample.Criteria criteria = example.createCriteria();
 
         criteria.andMpuEqualTo(mpu);
+        criteria.andStatusEqualTo(1);
         List<ShippingMpu> shippingMpus = mpuMapper.selectByExample(example);
 
         if(shippingMpus.isEmpty()){
