@@ -22,7 +22,6 @@
     <result column="logistics_id" jdbcType="VARCHAR" property="logisticsId" />
     <result column="logistics_content" jdbcType="VARCHAR" property="logisticsContent" />
     <result column="comcode" jdbcType="VARCHAR" property="comcode" />
-    <result column="sku_balance_discount" jdbcType="DECIMAL" property="skuBalanceDiscount" />
     <result column="sku_coupon_discount" jdbcType="INTEGER" property="skuCouponDiscount" />
     <result column="category" jdbcType="VARCHAR" property="category" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
@@ -89,8 +88,7 @@
   <sql id="Base_Column_List">
     id, merchant_id, order_id, sub_order_id, mpu, sku_id, num, promotion_id, promotion_discount, 
     sale_price, unit_price, image, model, name, status, created_at, updated_at, logistics_id, 
-    logistics_content, comcode, sku_balance_discount, sku_coupon_discount, category, 
-    remark, complete_time
+    logistics_content, comcode, sku_coupon_discount, category, remark, complete_time
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.order.model.OrderDetailExample" resultMap="BaseResultMap">
     select
@@ -129,18 +127,16 @@
       image, model, name, 
       status, created_at, updated_at, 
       logistics_id, logistics_content, comcode, 
-      sku_balance_discount, sku_coupon_discount, 
-      category, remark, complete_time
-      )
+      sku_coupon_discount, category, remark, 
+      complete_time)
     values (#{merchantId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, 
       #{mpu,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{num,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, 
       #{promotionDiscount,jdbcType=REAL}, #{salePrice,jdbcType=DECIMAL}, #{unitPrice,jdbcType=DECIMAL}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
       #{logisticsId,jdbcType=VARCHAR}, #{logisticsContent,jdbcType=VARCHAR}, #{comcode,jdbcType=VARCHAR}, 
-      #{skuBalanceDiscount,jdbcType=DECIMAL}, #{skuCouponDiscount,jdbcType=INTEGER}, 
-      #{category,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{completeTime,jdbcType=TIMESTAMP}
-      )
+      #{skuCouponDiscount,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{completeTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderDetail" useGeneratedKeys="true">
     insert into order_detail
@@ -201,9 +197,6 @@
       </if>
       <if test="comcode != null">
         comcode,
-      </if>
-      <if test="skuBalanceDiscount != null">
-        sku_balance_discount,
       </if>
       <if test="skuCouponDiscount != null">
         sku_coupon_discount,
@@ -275,9 +268,6 @@
       </if>
       <if test="comcode != null">
         #{comcode,jdbcType=VARCHAR},
-      </if>
-      <if test="skuBalanceDiscount != null">
-        #{skuBalanceDiscount,jdbcType=DECIMAL},
       </if>
       <if test="skuCouponDiscount != null">
         #{skuCouponDiscount,jdbcType=INTEGER},
@@ -362,9 +352,6 @@
       <if test="record.comcode != null">
         comcode = #{record.comcode,jdbcType=VARCHAR},
       </if>
-      <if test="record.skuBalanceDiscount != null">
-        sku_balance_discount = #{record.skuBalanceDiscount,jdbcType=DECIMAL},
-      </if>
       <if test="record.skuCouponDiscount != null">
         sku_coupon_discount = #{record.skuCouponDiscount,jdbcType=INTEGER},
       </if>
@@ -404,7 +391,6 @@
       logistics_id = #{record.logisticsId,jdbcType=VARCHAR},
       logistics_content = #{record.logisticsContent,jdbcType=VARCHAR},
       comcode = #{record.comcode,jdbcType=VARCHAR},
-      sku_balance_discount = #{record.skuBalanceDiscount,jdbcType=DECIMAL},
       sku_coupon_discount = #{record.skuCouponDiscount,jdbcType=INTEGER},
       category = #{record.category,jdbcType=VARCHAR},
       remark = #{record.remark,jdbcType=VARCHAR},
@@ -473,9 +459,6 @@
       <if test="comcode != null">
         comcode = #{comcode,jdbcType=VARCHAR},
       </if>
-      <if test="skuBalanceDiscount != null">
-        sku_balance_discount = #{skuBalanceDiscount,jdbcType=DECIMAL},
-      </if>
       <if test="skuCouponDiscount != null">
         sku_coupon_discount = #{skuCouponDiscount,jdbcType=INTEGER},
       </if>
@@ -512,7 +495,6 @@
       logistics_id = #{logisticsId,jdbcType=VARCHAR},
       logistics_content = #{logisticsContent,jdbcType=VARCHAR},
       comcode = #{comcode,jdbcType=VARCHAR},
-      sku_balance_discount = #{skuBalanceDiscount,jdbcType=DECIMAL},
       sku_coupon_discount = #{skuCouponDiscount,jdbcType=INTEGER},
       category = #{category,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},

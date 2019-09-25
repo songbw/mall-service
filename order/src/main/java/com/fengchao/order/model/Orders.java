@@ -17,10 +17,6 @@ public class Orders {
 
     private String couponCode;
 
-    private Integer balanceId;
-
-    private Float balanceDiscount;
-
     private Float couponDiscount;
 
     private Integer couponId;
@@ -157,22 +153,6 @@ public class Orders {
 
     public void setCouponCode(String couponCode) {
         this.couponCode = couponCode == null ? null : couponCode.trim();
-    }
-
-    public Integer getBalanceId() {
-        return balanceId;
-    }
-
-    public void setBalanceId(Integer balanceId) {
-        this.balanceId = balanceId;
-    }
-
-    public Float getBalanceDiscount() {
-        return balanceDiscount;
-    }
-
-    public void setBalanceDiscount(Float balanceDiscount) {
-        this.balanceDiscount = balanceDiscount;
     }
 
     public Float getCouponDiscount() {

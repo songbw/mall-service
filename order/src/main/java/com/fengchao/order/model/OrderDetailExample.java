@@ -1396,66 +1396,6 @@ public class OrderDetailExample {
             return (Criteria) this;
         }
 
-        public Criteria andSkuBalanceDiscountIsNull() {
-            addCriterion("sku_balance_discount is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountIsNotNull() {
-            addCriterion("sku_balance_discount is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountEqualTo(BigDecimal value) {
-            addCriterion("sku_balance_discount =", value, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountNotEqualTo(BigDecimal value) {
-            addCriterion("sku_balance_discount <>", value, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountGreaterThan(BigDecimal value) {
-            addCriterion("sku_balance_discount >", value, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountGreaterThanOrEqualTo(BigDecimal value) {
-            addCriterion("sku_balance_discount >=", value, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountLessThan(BigDecimal value) {
-            addCriterion("sku_balance_discount <", value, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountLessThanOrEqualTo(BigDecimal value) {
-            addCriterion("sku_balance_discount <=", value, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountIn(List<BigDecimal> values) {
-            addCriterion("sku_balance_discount in", values, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountNotIn(List<BigDecimal> values) {
-            addCriterion("sku_balance_discount not in", values, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountBetween(BigDecimal value1, BigDecimal value2) {
-            addCriterion("sku_balance_discount between", value1, value2, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
-        public Criteria andSkuBalanceDiscountNotBetween(BigDecimal value1, BigDecimal value2) {
-            addCriterion("sku_balance_discount not between", value1, value2, "skuBalanceDiscount");
-            return (Criteria) this;
-        }
-
         public Criteria andSkuCouponDiscountIsNull() {
             addCriterion("sku_coupon_discount is null");
             return (Criteria) this;

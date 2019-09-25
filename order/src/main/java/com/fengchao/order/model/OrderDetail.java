@@ -44,8 +44,6 @@ public class OrderDetail {
 
     private String comcode;
 
-    private BigDecimal skuBalanceDiscount;
-
     private Integer skuCouponDiscount;
 
     private String category;
@@ -212,14 +210,6 @@ public class OrderDetail {
 
     public void setComcode(String comcode) {
         this.comcode = comcode == null ? null : comcode.trim();
-    }
-
-    public BigDecimal getSkuBalanceDiscount() {
-        return skuBalanceDiscount;
-    }
-
-    public void setSkuBalanceDiscount(BigDecimal skuBalanceDiscount) {
-        this.skuBalanceDiscount = skuBalanceDiscount;
     }
 
     public Integer getSkuCouponDiscount() {
