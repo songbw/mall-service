@@ -1,6 +1,5 @@
 package com.fengchao.freight.mapper;
 
-import com.fengchao.freight.model.FreeShippingTemplate;
 import com.fengchao.freight.model.FreeShippingTemplateExample;
 import com.fengchao.freight.model.FreeShippingTemplateX;
 import org.apache.ibatis.annotations.Param;
