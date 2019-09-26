@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/ship", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ShipController {
@@ -15,8 +17,8 @@ public class ShipController {
     private ShippingService shippingService;
 
     @PostMapping ()
-    public OperaResult getMpuShipping(@RequestBody ShipMpuParam bean, OperaResult result){
-        result.getData().put("shipPrice",shippingService.getMpuShipping(bean));
+    public OperaResult getMpuShipping(@RequestBody List<ShipMpuParam> beans, OperaResult result){
+        result.getData().put("shipPrice",shippingService.getMpuShipping(beans));
         return result;
     }
 

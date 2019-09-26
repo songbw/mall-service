@@ -3,7 +3,6 @@ package com.fengchao.freight.dao;
 import com.fengchao.freight.mapper.ShippingRegionsMapper;
 import com.fengchao.freight.mapper.ShippingRegionsXMapper;
 import com.fengchao.freight.model.ShippingRegions;
-import com.fengchao.freight.model.ShippingRegionsExample;
 import com.fengchao.freight.model.ShippingRegionsX;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
