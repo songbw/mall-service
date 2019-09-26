@@ -18,7 +18,7 @@ public class ShipController {
 
     @PostMapping ()
     public OperaResult getMpuShipping(@RequestBody List<ShipMpuParam> beans, OperaResult result){
-        result.getData().put("shipPrice",shippingService.getMpuShipping(beans));
+        result.getData().put("result",shippingService.getMpuShipping(beans));
         return result;
     }
 
