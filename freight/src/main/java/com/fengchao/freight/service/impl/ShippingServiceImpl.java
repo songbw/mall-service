@@ -211,6 +211,19 @@ public class ShippingServiceImpl implements ShippingService {
                     if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
                         status = 1;
                     }
+                }else{
+                    FreeShippingTemplateX templateX = freeshipTemplateDao.fingDefaltShipTemplate();
+                    if(templateX == null){
+                        status = 1;
+                    }else{
+                        FreeShippingRegionsX freeRegions = freeShipRegionsDao.findByProvinceId(bean.getProvinceId(), templateX.getId());
+                        if(freeRegions == null){
+                            freeRegions = freeShipRegionsDao.findDefaltShipRegions(templateX.getId());
+                        }
+                        if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
+                            status = 1;
+                        }
+                    }
                 }
             }
             if(status == 0){

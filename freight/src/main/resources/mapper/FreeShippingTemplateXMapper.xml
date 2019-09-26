@@ -256,4 +256,10 @@
     from free_shipping_template
     where status = 1 and  (merchant_id = #{merchantId,jdbcType=INTEGER} or merchant_id = 0)
   </select>
+  <select id="selectDefaltShipTemplate"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from free_shipping_template
+    where status = 1 and  merchant_id = 0
+  </select>
 </mapper>
