@@ -277,4 +277,18 @@
     set status = 2
     where template_id = #{templateId,jdbcType=INTEGER}
   </delete>
+  <select id="selectByProvinceId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from shipping_regions
+    where status = 1 and template_id = #{templateId,jdbcType=INTEGER}
+    and find_in_set(#{provinceId,jdbcType=VARCHAR}, provinces);
+  </select>
+  <select id="selectDefaltShipRegions" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from shipping_regions
+    where status = 1 and template_id = #{templateId,jdbcType=INTEGER}
+    and provinces = '';
+  </select>
 </mapper>

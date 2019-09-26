@@ -1,5 +1,6 @@
 package com.fengchao.freight.service;
 
+import com.fengchao.freight.bean.ShipMpuParam;
 import com.fengchao.freight.bean.ShipTemplateBean;
 import com.fengchao.freight.bean.page.PageableData;
 import com.fengchao.freight.model.ShippingTemplate;
@@ -22,4 +23,6 @@ public interface ShippingService {
     int createShipRegions(ShipTemplateBean bean);
 
     List<ShipTemplateBean> findShipTemplateByMpu(String mpu);
+
+    float getMpuShipping(ShipMpuParam bean);
 }
