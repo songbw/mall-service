@@ -1,6 +1,5 @@
 package com.fengchao.sso.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class Balance {
@@ -10,9 +9,9 @@ public class Balance {
 
     private String telephone;
 
-    private String openId;
+    private Integer amount;
 
-    private BigDecimal amount;
+    private String openId;
 
     private Integer status;
 
@@ -44,20 +43,20 @@ public class Balance {
         this.telephone = telephone == null ? null : telephone.trim();
     }
 
+    public Integer getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
+
     public String getOpenId() {
         return openId;
     }
 
     public void setOpenId(String openId) {
         this.openId = openId == null ? null : openId.trim();
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
     public Integer getStatus() {

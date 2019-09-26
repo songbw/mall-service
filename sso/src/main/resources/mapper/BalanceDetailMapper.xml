@@ -5,16 +5,13 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="balance_id" jdbcType="INTEGER" property="balanceId" />
     <result column="open_id" jdbcType="VARCHAR" property="openId" />
-    <result column="order_id" jdbcType="INTEGER" property="orderId" />
-    <result column="order_nos" jdbcType="VARCHAR" property="orderNos" />
-    <result column="sale_amount" jdbcType="DECIMAL" property="saleAmount" />
+    <result column="refund_no" jdbcType="VARCHAR" property="refundNo" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="sale_amount" jdbcType="INTEGER" property="saleAmount" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
-    <result column="i_app_id" jdbcType="VARCHAR" property="iAppId" />
-    <result column="t_app_id" jdbcType="VARCHAR" property="tAppId" />
-    <result column="merchant_no" jdbcType="VARCHAR" property="merchantNo" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -75,8 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, balance_id, open_id, order_id, order_nos, sale_amount, type, status, created_at, 
-    updated_at, i_app_id, t_app_id, merchant_no
+    id, balance_id, open_id, refund_no, order_no, sale_amount, type, status, created_at, 
+    updated_at
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.sso.model.BalanceDetailExample" resultMap="BaseResultMap">
     select
@@ -109,15 +106,13 @@
     </if>
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.sso.model.BalanceDetail" useGeneratedKeys="true">
-    insert into balance_detail (balance_id, open_id, order_id, 
-      order_nos, sale_amount, type, 
-      status, created_at, updated_at, 
-      i_app_id, t_app_id, merchant_no
+    insert into balance_detail (balance_id, open_id, refund_no, 
+      order_no, sale_amount, type, 
+      status, created_at, updated_at
       )
-    values (#{balanceId,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, #{orderId,jdbcType=INTEGER}, 
-      #{orderNos,jdbcType=VARCHAR}, #{saleAmount,jdbcType=DECIMAL}, #{type,jdbcType=INTEGER}, 
-      #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
-      #{iAppId,jdbcType=VARCHAR}, #{tAppId,jdbcType=VARCHAR}, #{merchantNo,jdbcType=VARCHAR}
+    values (#{balanceId,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, #{refundNo,jdbcType=VARCHAR}, 
+      #{orderNo,jdbcType=VARCHAR}, #{saleAmount,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.sso.model.BalanceDetail" useGeneratedKeys="true">
@@ -129,11 +124,11 @@
       <if test="openId != null">
         open_id,
       </if>
-      <if test="orderId != null">
-        order_id,
+      <if test="refundNo != null">
+        refund_no,
       </if>
-      <if test="orderNos != null">
-        order_nos,
+      <if test="orderNo != null">
+        order_no,
       </if>
       <if test="saleAmount != null">
         sale_amount,
@@ -150,15 +145,6 @@
       <if test="updatedAt != null">
         updated_at,
       </if>
-      <if test="iAppId != null">
-        i_app_id,
-      </if>
-      <if test="tAppId != null">
-        t_app_id,
-      </if>
-      <if test="merchantNo != null">
-        merchant_no,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="balanceId != null">
@@ -167,14 +153,14 @@
       <if test="openId != null">
         #{openId,jdbcType=VARCHAR},
       </if>
-      <if test="orderId != null">
-        #{orderId,jdbcType=INTEGER},
+      <if test="refundNo != null">
+        #{refundNo,jdbcType=VARCHAR},
       </if>
-      <if test="orderNos != null">
-        #{orderNos,jdbcType=VARCHAR},
+      <if test="orderNo != null">
+        #{orderNo,jdbcType=VARCHAR},
       </if>
       <if test="saleAmount != null">
-        #{saleAmount,jdbcType=DECIMAL},
+        #{saleAmount,jdbcType=INTEGER},
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
@@ -187,15 +173,6 @@
       </if>
       <if test="updatedAt != null">
         #{updatedAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="iAppId != null">
-        #{iAppId,jdbcType=VARCHAR},
-      </if>
-      <if test="tAppId != null">
-        #{tAppId,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantNo != null">
-        #{merchantNo,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -217,14 +194,14 @@
       <if test="record.openId != null">
         open_id = #{record.openId,jdbcType=VARCHAR},
       </if>
-      <if test="record.orderId != null">
-        order_id = #{record.orderId,jdbcType=INTEGER},
+      <if test="record.refundNo != null">
+        refund_no = #{record.refundNo,jdbcType=VARCHAR},
       </if>
-      <if test="record.orderNos != null">
-        order_nos = #{record.orderNos,jdbcType=VARCHAR},
+      <if test="record.orderNo != null">
+        order_no = #{record.orderNo,jdbcType=VARCHAR},
       </if>
       <if test="record.saleAmount != null">
-        sale_amount = #{record.saleAmount,jdbcType=DECIMAL},
+        sale_amount = #{record.saleAmount,jdbcType=INTEGER},
       </if>
       <if test="record.type != null">
         type = #{record.type,jdbcType=INTEGER},
@@ -238,15 +215,6 @@
       <if test="record.updatedAt != null">
         updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.iAppId != null">
-        i_app_id = #{record.iAppId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.tAppId != null">
-        t_app_id = #{record.tAppId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.merchantNo != null">
-        merchant_no = #{record.merchantNo,jdbcType=VARCHAR},
-      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -257,16 +225,13 @@
     set id = #{record.id,jdbcType=INTEGER},
       balance_id = #{record.balanceId,jdbcType=INTEGER},
       open_id = #{record.openId,jdbcType=VARCHAR},
-      order_id = #{record.orderId,jdbcType=INTEGER},
-      order_nos = #{record.orderNos,jdbcType=VARCHAR},
-      sale_amount = #{record.saleAmount,jdbcType=DECIMAL},
+      refund_no = #{record.refundNo,jdbcType=VARCHAR},
+      order_no = #{record.orderNo,jdbcType=VARCHAR},
+      sale_amount = #{record.saleAmount,jdbcType=INTEGER},
       type = #{record.type,jdbcType=INTEGER},
       status = #{record.status,jdbcType=INTEGER},
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
-      i_app_id = #{record.iAppId,jdbcType=VARCHAR},
-      t_app_id = #{record.tAppId,jdbcType=VARCHAR},
-      merchant_no = #{record.merchantNo,jdbcType=VARCHAR}
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -280,14 +245,14 @@
       <if test="openId != null">
         open_id = #{openId,jdbcType=VARCHAR},
       </if>
-      <if test="orderId != null">
-        order_id = #{orderId,jdbcType=INTEGER},
+      <if test="refundNo != null">
+        refund_no = #{refundNo,jdbcType=VARCHAR},
       </if>
-      <if test="orderNos != null">
-        order_nos = #{orderNos,jdbcType=VARCHAR},
+      <if test="orderNo != null">
+        order_no = #{orderNo,jdbcType=VARCHAR},
       </if>
       <if test="saleAmount != null">
-        sale_amount = #{saleAmount,jdbcType=DECIMAL},
+        sale_amount = #{saleAmount,jdbcType=INTEGER},
       </if>
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
@@ -301,15 +266,6 @@
       <if test="updatedAt != null">
         updated_at = #{updatedAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="iAppId != null">
-        i_app_id = #{iAppId,jdbcType=VARCHAR},
-      </if>
-      <if test="tAppId != null">
-        t_app_id = #{tAppId,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantNo != null">
-        merchant_no = #{merchantNo,jdbcType=VARCHAR},
-      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -317,16 +273,13 @@
     update balance_detail
     set balance_id = #{balanceId,jdbcType=INTEGER},
       open_id = #{openId,jdbcType=VARCHAR},
-      order_id = #{orderId,jdbcType=INTEGER},
-      order_nos = #{orderNos,jdbcType=VARCHAR},
-      sale_amount = #{saleAmount,jdbcType=DECIMAL},
+      refund_no = #{refundNo,jdbcType=VARCHAR},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      sale_amount = #{saleAmount,jdbcType=INTEGER},
       type = #{type,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
-      i_app_id = #{iAppId,jdbcType=VARCHAR},
-      t_app_id = #{tAppId,jdbcType=VARCHAR},
-      merchant_no = #{merchantNo,jdbcType=VARCHAR}
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

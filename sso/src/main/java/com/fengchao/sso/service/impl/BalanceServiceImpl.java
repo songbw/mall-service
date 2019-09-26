@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -75,7 +76,7 @@ public class BalanceServiceImpl implements IBalanceService {
         Balance temp = balanceMapper.selectForUpdateByPrimaryKey(bean.getId()) ;
         Date date = new Date();
         temp.setUpdatedAt(date);
-        temp.setAmount(temp.getAmount().add(bean.getAmount()));
+        temp.setAmount(temp.getAmount() + bean.getAmount());
         mapper.updateByPrimaryKeySelective(temp) ;
         // 记录充值初始化记录
         BalanceDetail detail = new BalanceDetail();
@@ -128,12 +129,12 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("openId 不能为null");
             return response;
         }
-        if (StringUtils.isEmpty(bean.getOrderNos())) {
+        if (StringUtils.isEmpty(bean.getOrderNo())) {
             response.setCode(900401);
             response.setMsg("orderNos 不能为Null");
             return response;
         }
-        if (bean.getSaleAmount() == null || bean.getSaleAmount().compareTo(BigDecimal.ZERO) == -1) {
+        if (bean.getSaleAmount() == null || bean.getSaleAmount() < 1) {
             response.setCode(900401);
             response.setMsg("saleAmount 不能小于0");
             return response;
@@ -144,9 +145,15 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("账号不存在");
             return response;
         }
+        List<BalanceDetail> balanceDetails = balanceDao.selectBalanceDetailByOrderNo(bean.getOrderNo()) ;
+        if (balanceDetails != null || balanceDetails.size() > 0) {
+            response.setCode(900404);
+            response.setMsg("支付单号重复。");
+            return response;
+        }
         Balance temp = balanceMapper.selectForUpdateByPrimaryKey(openBalance.getId()) ;
-        BigDecimal amount = temp.getAmount().subtract(bean.getSaleAmount()) ;
-        if (amount.compareTo(BigDecimal.ZERO) == -1) {
+        int amount = temp.getAmount() - bean.getSaleAmount() ;
+        if (amount < 0) {
             response.setCode(900403);
             response.setMsg("余额不足");
             return response;
@@ -175,19 +182,40 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("openId 必须大于0");
             return response;
         }
-        if (StringUtils.isEmpty(bean.getOrderNos())) {
+        if (StringUtils.isEmpty(bean.getOrderNo())) {
             response.setCode(900401);
             response.setMsg("orderNo 不能为Null");
             return response;
         }
-        if (bean.getSaleAmount() == null || bean.getSaleAmount().compareTo(BigDecimal.ZERO) == -1) {
+        if (StringUtils.isEmpty(bean.getRefundNo())) {
+            response.setCode(900401);
+            response.setMsg("refundNo 不能为Null");
+            return response;
+        }
+        if (bean.getSaleAmount() == null || bean.getSaleAmount() < 1) {
             response.setCode(900401);
             response.setMsg("saleAmount 不能小于0");
             return response;
         }
         // TODO 查询明细是否存在
-
-
+        List<BalanceDetail> balanceDetails =  balanceDao.selectBalanceDetailByOrderNo(bean.getOrderNo()) ;
+        if (balanceDetails == null || balanceDetails.size() <= 0) {
+            response.setCode(900402);
+            response.setMsg("orderNo 不存在");
+            return response;
+        }
+        for (BalanceDetail balanceDetail : balanceDetails) {
+            if (balanceDetail.getType() == 0 && balanceDetail.getSaleAmount() < bean.getSaleAmount()) {
+                response.setCode(900403);
+                response.setMsg("支付金额小于退款金额。");
+                return response;
+            }
+            if (bean.getRefundNo().equals(balanceDetail.getRefundNo())) {
+                response.setCode(900404);
+                response.setMsg("退款单号重复。");
+                return response;
+            }
+        }
         Balance openBalance = balanceDao.selectBalanceByOpenId(bean.getOpenId()) ;
         if (openBalance == null) {
             response.setCode(900404);
@@ -195,7 +223,7 @@ public class BalanceServiceImpl implements IBalanceService {
             return response;
         }
         Balance temp = balanceMapper.selectForUpdateByPrimaryKey(openBalance.getId()) ;
-        BigDecimal amount = temp.getAmount().add(bean.getSaleAmount()) ;
+        int amount = temp.getAmount() + bean.getSaleAmount() ;
         Date date = new Date();
         temp.setUpdatedAt(date);
         temp.setAmount(amount);

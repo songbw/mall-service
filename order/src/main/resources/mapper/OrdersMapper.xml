@@ -9,8 +9,6 @@
     <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
     <result column="merchant_no" jdbcType="VARCHAR" property="merchantNo" />
     <result column="coupon_code" jdbcType="VARCHAR" property="couponCode" />
-    <result column="balance_id" jdbcType="INTEGER" property="balanceId" />
-    <result column="balance_discount" jdbcType="REAL" property="balanceDiscount" />
     <result column="coupon_discount" jdbcType="REAL" property="couponDiscount" />
     <result column="coupon_id" jdbcType="INTEGER" property="couponId" />
     <result column="coupon_status" jdbcType="INTEGER" property="couponStatus" />
@@ -112,13 +110,13 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, open_id, trade_no, aoyi_id, merchant_id, merchant_no, coupon_code, balance_id, 
-    balance_discount, coupon_discount, coupon_id, coupon_status, company_cust_no, receiver_name, 
-    telephone, mobile, email, province_name, province_id, city_name, city_id, county_name, 
-    county_id, town_id, address, zip, remark, invoice_state, invoice_type, invoice_title, 
-    invoice_content, payment, serv_Fee, sale_amount, amount, status, type, out_trade_no, 
-    payment_no, payment_at, payment_amount, payee, pay_type, payment_total_fee, payer, 
-    pay_status, pay_order_category, refund_fee, created_at, updated_at
+    id, open_id, trade_no, aoyi_id, merchant_id, merchant_no, coupon_code, coupon_discount, 
+    coupon_id, coupon_status, company_cust_no, receiver_name, telephone, mobile, email, 
+    province_name, province_id, city_name, city_id, county_name, county_id, town_id, 
+    address, zip, remark, invoice_state, invoice_type, invoice_title, invoice_content, 
+    payment, serv_Fee, sale_amount, amount, status, type, out_trade_no, payment_no, payment_at, 
+    payment_amount, payee, pay_type, payment_total_fee, payer, pay_status, pay_order_category, 
+    refund_fee, created_at, updated_at
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.order.model.OrdersExample" resultMap="BaseResultMap">
     select
@@ -153,38 +151,36 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.Orders" useGeneratedKeys="true">
     insert into orders (open_id, trade_no, aoyi_id, 
       merchant_id, merchant_no, coupon_code, 
-      balance_id, balance_discount, coupon_discount, 
-      coupon_id, coupon_status, company_cust_no, 
-      receiver_name, telephone, mobile, 
-      email, province_name, province_id, 
-      city_name, city_id, county_name, 
-      county_id, town_id, address, 
-      zip, remark, invoice_state, 
-      invoice_type, invoice_title, invoice_content, 
-      payment, serv_Fee, sale_amount, 
-      amount, status, type, 
-      out_trade_no, payment_no, payment_at, 
-      payment_amount, payee, pay_type, 
-      payment_total_fee, payer, pay_status, 
-      pay_order_category, refund_fee, created_at, 
-      updated_at)
+      coupon_discount, coupon_id, coupon_status, 
+      company_cust_no, receiver_name, telephone, 
+      mobile, email, province_name, 
+      province_id, city_name, city_id, 
+      county_name, county_id, town_id, 
+      address, zip, remark, 
+      invoice_state, invoice_type, invoice_title, 
+      invoice_content, payment, serv_Fee, 
+      sale_amount, amount, status, 
+      type, out_trade_no, payment_no, 
+      payment_at, payment_amount, payee, 
+      pay_type, payment_total_fee, payer, 
+      pay_status, pay_order_category, refund_fee, 
+      created_at, updated_at)
     values (#{openId,jdbcType=VARCHAR}, #{tradeNo,jdbcType=VARCHAR}, #{aoyiId,jdbcType=VARCHAR}, 
       #{merchantId,jdbcType=INTEGER}, #{merchantNo,jdbcType=VARCHAR}, #{couponCode,jdbcType=VARCHAR}, 
-      #{balanceId,jdbcType=INTEGER}, #{balanceDiscount,jdbcType=REAL}, #{couponDiscount,jdbcType=REAL}, 
-      #{couponId,jdbcType=INTEGER}, #{couponStatus,jdbcType=INTEGER}, #{companyCustNo,jdbcType=VARCHAR}, 
-      #{receiverName,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{provinceName,jdbcType=VARCHAR}, #{provinceId,jdbcType=VARCHAR}, 
-      #{cityName,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, #{countyName,jdbcType=VARCHAR}, 
-      #{countyId,jdbcType=VARCHAR}, #{townId,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{zip,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{invoiceState,jdbcType=VARCHAR}, 
-      #{invoiceType,jdbcType=VARCHAR}, #{invoiceTitle,jdbcType=VARCHAR}, #{invoiceContent,jdbcType=VARCHAR}, 
-      #{payment,jdbcType=VARCHAR}, #{servFee,jdbcType=REAL}, #{saleAmount,jdbcType=REAL}, 
-      #{amount,jdbcType=REAL}, #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
-      #{outTradeNo,jdbcType=VARCHAR}, #{paymentNo,jdbcType=VARCHAR}, #{paymentAt,jdbcType=TIMESTAMP}, 
-      #{paymentAmount,jdbcType=INTEGER}, #{payee,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR}, 
-      #{paymentTotalFee,jdbcType=INTEGER}, #{payer,jdbcType=VARCHAR}, #{payStatus,jdbcType=INTEGER}, 
-      #{payOrderCategory,jdbcType=INTEGER}, #{refundFee,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, 
-      #{updatedAt,jdbcType=TIMESTAMP})
+      #{couponDiscount,jdbcType=REAL}, #{couponId,jdbcType=INTEGER}, #{couponStatus,jdbcType=INTEGER}, 
+      #{companyCustNo,jdbcType=VARCHAR}, #{receiverName,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{provinceName,jdbcType=VARCHAR}, 
+      #{provinceId,jdbcType=VARCHAR}, #{cityName,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, 
+      #{countyName,jdbcType=VARCHAR}, #{countyId,jdbcType=VARCHAR}, #{townId,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{zip,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{invoiceState,jdbcType=VARCHAR}, #{invoiceType,jdbcType=VARCHAR}, #{invoiceTitle,jdbcType=VARCHAR}, 
+      #{invoiceContent,jdbcType=VARCHAR}, #{payment,jdbcType=VARCHAR}, #{servFee,jdbcType=REAL}, 
+      #{saleAmount,jdbcType=REAL}, #{amount,jdbcType=REAL}, #{status,jdbcType=INTEGER}, 
+      #{type,jdbcType=INTEGER}, #{outTradeNo,jdbcType=VARCHAR}, #{paymentNo,jdbcType=VARCHAR}, 
+      #{paymentAt,jdbcType=TIMESTAMP}, #{paymentAmount,jdbcType=INTEGER}, #{payee,jdbcType=VARCHAR}, 
+      #{payType,jdbcType=VARCHAR}, #{paymentTotalFee,jdbcType=INTEGER}, #{payer,jdbcType=VARCHAR}, 
+      #{payStatus,jdbcType=INTEGER}, #{payOrderCategory,jdbcType=INTEGER}, #{refundFee,jdbcType=INTEGER}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.Orders" useGeneratedKeys="true">
     insert into orders
@@ -206,12 +202,6 @@
       </if>
       <if test="couponCode != null">
         coupon_code,
-      </if>
-      <if test="balanceId != null">
-        balance_id,
-      </if>
-      <if test="balanceDiscount != null">
-        balance_discount,
       </if>
       <if test="couponDiscount != null">
         coupon_discount,
@@ -355,12 +345,6 @@
       </if>
       <if test="couponCode != null">
         #{couponCode,jdbcType=VARCHAR},
-      </if>
-      <if test="balanceId != null">
-        #{balanceId,jdbcType=INTEGER},
-      </if>
-      <if test="balanceDiscount != null">
-        #{balanceDiscount,jdbcType=REAL},
       </if>
       <if test="couponDiscount != null">
         #{couponDiscount,jdbcType=REAL},
@@ -517,12 +501,6 @@
       <if test="record.couponCode != null">
         coupon_code = #{record.couponCode,jdbcType=VARCHAR},
       </if>
-      <if test="record.balanceId != null">
-        balance_id = #{record.balanceId,jdbcType=INTEGER},
-      </if>
-      <if test="record.balanceDiscount != null">
-        balance_discount = #{record.balanceDiscount,jdbcType=REAL},
-      </if>
       <if test="record.couponDiscount != null">
         coupon_discount = #{record.couponDiscount,jdbcType=REAL},
       </if>
@@ -660,8 +638,6 @@
       merchant_id = #{record.merchantId,jdbcType=INTEGER},
       merchant_no = #{record.merchantNo,jdbcType=VARCHAR},
       coupon_code = #{record.couponCode,jdbcType=VARCHAR},
-      balance_id = #{record.balanceId,jdbcType=INTEGER},
-      balance_discount = #{record.balanceDiscount,jdbcType=REAL},
       coupon_discount = #{record.couponDiscount,jdbcType=REAL},
       coupon_id = #{record.couponId,jdbcType=INTEGER},
       coupon_status = #{record.couponStatus,jdbcType=INTEGER},
@@ -727,12 +703,6 @@
       </if>
       <if test="couponCode != null">
         coupon_code = #{couponCode,jdbcType=VARCHAR},
-      </if>
-      <if test="balanceId != null">
-        balance_id = #{balanceId,jdbcType=INTEGER},
-      </if>
-      <if test="balanceDiscount != null">
-        balance_discount = #{balanceDiscount,jdbcType=REAL},
       </if>
       <if test="couponDiscount != null">
         coupon_discount = #{couponDiscount,jdbcType=REAL},
@@ -868,8 +838,6 @@
       merchant_id = #{merchantId,jdbcType=INTEGER},
       merchant_no = #{merchantNo,jdbcType=VARCHAR},
       coupon_code = #{couponCode,jdbcType=VARCHAR},
-      balance_id = #{balanceId,jdbcType=INTEGER},
-      balance_discount = #{balanceDiscount,jdbcType=REAL},
       coupon_discount = #{couponDiscount,jdbcType=REAL},
       coupon_id = #{couponId,jdbcType=INTEGER},
       coupon_status = #{couponStatus,jdbcType=INTEGER},

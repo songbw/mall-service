@@ -77,8 +77,6 @@ public class OrderServiceImpl implements OrderService {
     private OrdersDao ordersDao;
     @Autowired
     private BaseService baseService;
-    @Autowired
-    private SSoService sSoService;
 
     @Transactional
     @Override
@@ -172,22 +170,6 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        // 余额支付
-        BalanceUserdBean userdBean = orderBean.getBalance() ;
-        BalanceDetail detail = new BalanceDetail();
-        if (userdBean != null) {
-            detail.setOpenId(orderBean.getOpenId());
-            detail.setOrderNos(orderBean.getTradeNo());
-            detail.setSaleAmount(userdBean.getBalanceUsed());
-            OperaResponse<BalanceDetail> operaResponse = sSoService.consum(detail) ;
-            if (operaResponse.getCode() != 200) {
-                operaResult.setCode(operaResponse.getCode());
-                operaResult.setMsg(operaResponse.getMsg());
-                return operaResult;
-            }
-            detail = operaResponse.getData() ;
-        }
-
 
         List<InventoryMpus> inventories = new ArrayList<>() ;
         // 多商户信息
@@ -213,14 +195,6 @@ public class OrderServiceImpl implements OrderService {
                         bean.setCouponId(coupon.getId());
                         bean.setCouponCode(coupon.getCode());
                         bean.setCouponDiscount(coupon.getDiscount());
-                    }
-                }
-            }
-            if (userdBean != null) {
-                for (BalanceMerchantBean balanceMerchantBean : userdBean.getMerchants()) {
-                    if (balanceMerchantBean != null && balanceMerchantBean.getMerchantNo().equals(orderMerchantBean.getMerchantNo())) {
-                        bean.setBalanceId(detail.getId());
-                        bean.setBalanceDiscount(balanceMerchantBean.getBalanceDiscount());
                     }
                 }
             }
@@ -266,7 +240,6 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setNum(orderSku.getNum());
                 orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
                 orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
-                orderDetail.setSkuBalanceDiscount(orderSku.getSkuBalanceDiscount());
                 // 添加子订单
                 logger.info("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
                 orderDetailDao.insert(orderDetail);

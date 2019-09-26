@@ -35,5 +35,4 @@ public class OrderParamBean implements Serializable {
     private String invoiceState;
     private String invoiceTitle;
     private String invoiceContent;
-    private BalanceUserdBean balance;
 }
