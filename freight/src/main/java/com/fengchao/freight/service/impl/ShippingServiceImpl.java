@@ -1,12 +1,9 @@
 package com.fengchao.freight.service.impl;
 
-import com.fengchao.freight.bean.ShipRegionsBean;
-import com.fengchao.freight.bean.ShipTemplateBean;
+import com.fengchao.freight.bean.*;
 import com.fengchao.freight.bean.page.PageVo;
 import com.fengchao.freight.bean.page.PageableData;
-import com.fengchao.freight.dao.ShipMpuDao;
-import com.fengchao.freight.dao.ShipRegionsDao;
-import com.fengchao.freight.dao.ShipTemplateDao;
+import com.fengchao.freight.dao.*;
 import com.fengchao.freight.model.*;
 import com.fengchao.freight.service.ShippingService;
 import com.fengchao.freight.utils.ConvertUtil;
@@ -28,6 +25,10 @@ public class ShippingServiceImpl implements ShippingService {
     private ShipRegionsDao shipRegionsDao;
     @Autowired
     private ShipMpuDao shipMpuDao;
+    @Autowired
+    private FreeshipTemplateDao freeshipTemplateDao;
+    @Autowired
+    private FreeShipRegionsDao freeShipRegionsDao;
 
     @Override
     public int createShipTemplate(ShipTemplateBean bean) {
@@ -189,6 +190,75 @@ public class ShippingServiceImpl implements ShippingService {
             }
         });
         return templateBean;
+    }
+
+    @Override
+    public List<ShipPriceBean> getMpuShipping(List<ShipMpuParam> beans) {
+        List<ShipPriceBean> priceBeans = new ArrayList<>();
+        for (int j = 0; j < beans.size(); j++){
+            int status = 0;
+            float shipPrice = 0;
+            ShipPriceBean shipPriceBean = new ShipPriceBean();
+            ShipMpuParam bean = beans.get(j);
+            if(bean.getMerchantId() != null){
+                List<FreeShippingTemplate> templateByMerchantId = freeshipTemplateDao.findFreeShipTemplateByMerchantId(bean.getMerchantId());
+                if(!templateByMerchantId.isEmpty()){
+                    FreeShippingTemplate template = templateByMerchantId.get(0);
+                    FreeShippingRegionsX freeRegions = freeShipRegionsDao.findByProvinceId(bean.getProvinceId(), template.getId());
+                    if(freeRegions == null){
+                        freeRegions = freeShipRegionsDao.findDefaltShipRegions(template.getId());
+                    }
+                    if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
+                        status = 1;
+                    }
+                }else{
+                    FreeShippingTemplateX templateX = freeshipTemplateDao.fingDefaltShipTemplate();
+                    if(templateX == null){
+                        status = 1;
+                    }else{
+                        FreeShippingRegionsX freeRegions = freeShipRegionsDao.findByProvinceId(bean.getProvinceId(), templateX.getId());
+                        if(freeRegions == null){
+                            freeRegions = freeShipRegionsDao.findDefaltShipRegions(templateX.getId());
+                        }
+                        if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
+                            status = 1;
+                        }
+                    }
+                }
+            }
+            if(status == 0){
+                int templateId = 0;
+                List<MpuParam> mpuParams = bean.getMpuParams();
+                for (int i = 0; i < mpuParams.size(); i++){
+                    ShippingMpu shipByMpu = shipMpuDao.findByMpu(mpuParams.get(i).getMpu());
+                    if(shipByMpu != null){
+                        ShippingTemplateX shipTemplate = shipTemplateDao.findShipTemplateById(shipByMpu.getTemplateId());
+                        if(shipTemplate != null){
+                            templateId = shipTemplate.getId();
+                        }
+                    }else{
+                        List<ShippingTemplate> templateList = shipTemplateDao.selectDefaultTemplate();
+                        if(!templateList.isEmpty()){
+                            templateId = templateList.get(0).getId();
+                        }
+                    }
+                    ShippingRegionsX shippingRegions = shipRegionsDao.findByProvinceId(bean.getProvinceId(), templateId);
+                    if(shippingRegions == null){
+                        shippingRegions = shipRegionsDao.findDefaltShipRegions(templateId);
+                    }
+                    if(shippingRegions.getBaseAmount() < mpuParams.get(i).getNum()){
+                        shipPrice += mpuParams.get(i).getNum()/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
+                                + shippingRegions.getBasePrice();
+                    }else{
+                        shipPrice += shippingRegions.getBasePrice();
+                    }
+                }
+            }
+            shipPriceBean.setMerchantId(bean.getMerchantId());
+            shipPriceBean.setShipPrice(shipPrice);
+            priceBeans.add(shipPriceBean);
+        }
+        return priceBeans;
     }
 
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){

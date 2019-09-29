@@ -32,4 +32,8 @@ public interface FreeShippingRegionsXMapper {
     List<FreeShippingRegionsX> selectByTemplateId(Integer id);
 
     int deleteByTemplateId(Integer templateId);
+
+    FreeShippingRegionsX selectByProvinceId(@Param("provinceId") String provinceId, @Param("templateId")Integer templateId);
+
+    FreeShippingRegionsX selectDefaltShipRegions(Integer templateId);
 }

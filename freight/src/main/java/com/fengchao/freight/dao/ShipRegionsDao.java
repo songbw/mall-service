@@ -39,4 +39,12 @@ public class ShipRegionsDao {
         regions.setId(id);
         return mapper.updateByPrimaryKeySelective(regions);
     }
+
+    public ShippingRegionsX findByProvinceId(String provinceId, Integer templateId) {
+        return xMapper.selectByProvinceId(provinceId, templateId);
+    }
+
+    public ShippingRegionsX findDefaltShipRegions(int templateId) {
+        return xMapper.selectDefaltShipRegions(templateId);
+    }
 }

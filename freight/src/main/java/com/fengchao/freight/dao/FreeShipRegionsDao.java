@@ -40,4 +40,12 @@ public class FreeShipRegionsDao {
         regions.setStatus(2);
         return mapper.updateByPrimaryKeySelective(regions);
     }
+
+    public FreeShippingRegionsX findByProvinceId(String provinceId, Integer templateId) {
+        return xMapper.selectByProvinceId(provinceId, templateId);
+    }
+
+    public FreeShippingRegionsX findDefaltShipRegions(Integer templateId) {
+        return xMapper.selectDefaltShipRegions(templateId);
+    }
 }
