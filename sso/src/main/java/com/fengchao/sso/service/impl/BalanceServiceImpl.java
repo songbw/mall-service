@@ -122,7 +122,7 @@ public class BalanceServiceImpl implements IBalanceService {
     }
 
     @Override
-    public OperaResponse consum(BalanceDetail bean) {
+    public OperaResponse consume(BalanceDetail bean) {
         OperaResponse response = new OperaResponse();
         if (StringUtils.isEmpty(bean.getOpenId())) {
             response.setCode(900402);

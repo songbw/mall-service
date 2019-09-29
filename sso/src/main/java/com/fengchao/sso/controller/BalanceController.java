@@ -37,9 +37,9 @@ public class BalanceController {
         return service.update(bean);
     }
 
-    @PutMapping("consum")
-    private OperaResponse consum(@RequestBody BalanceDetail bean) {
-        return service.consum(bean);
+    @PutMapping("consume")
+    private OperaResponse consume(@RequestBody BalanceDetail bean) {
+        return service.consume(bean);
     }
 
     @PutMapping("refund")

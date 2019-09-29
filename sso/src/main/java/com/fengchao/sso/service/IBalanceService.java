@@ -20,7 +20,7 @@ public interface IBalanceService {
 
     OperaResponse findDetailList(BalanceDetailQueryBean bean) ;
 
-    OperaResponse consum(BalanceDetail bean) ;
+    OperaResponse consume(BalanceDetail bean) ;
 
     OperaResponse refund(BalanceDetail bean) ;
 
