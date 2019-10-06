@@ -3,6 +3,7 @@ package com.fengchao.pingan.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.pingan.bean.*;
+import com.fengchao.pingan.config.PingAnClientConfig;
 import com.fengchao.pingan.exception.PinganClientException;
 import com.fengchao.pingan.feign.WSPayClientService;
 import com.fengchao.pingan.service.PaymentService;
@@ -12,6 +13,7 @@ import com.fengchao.pingan.utils.Pkcs8Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.client.Entity;
@@ -21,12 +23,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
+@EnableConfigurationProperties({PingAnClientConfig.class})
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
     private static Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
     @Autowired
     private WSPayClientService payClientService;
+    @Autowired
+    private PingAnClientConfig config;
 
     @Override
     public PaymentResult paymentOrder(PaymentBean paymentBean) throws PinganClientException {
@@ -119,7 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
         prePayDTO.setTotalFee(paymentBean.getAmount() + "");
         prePayDTO.setActPayFee(paymentBean.getAmount() + "");
         prePayDTO.setBody(paymentBean.getGoodsName());
-        prePayDTO.setNotifyUrl(HttpClient.NOTIFY_URL);
+        prePayDTO.setNotifyUrl(config.getNotifyUrl());
         logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(prePayDTO));
         PaymentResult result = new PaymentResult();
         CommonResult<PrePayResultDTO> prePayResultDTOCommonResult = payClientService.payment(prePayDTO) ;
