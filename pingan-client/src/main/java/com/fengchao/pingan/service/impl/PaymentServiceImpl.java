@@ -43,7 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
         param.setActPayFee(paymentBean.getAmount());
         param.setBody(paymentBean.getGoodsName());
         param.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-        param.setNotifyUrl(HttpClient.NOTIFY_URL);
+        param.setNotifyUrl(config.getNotifyUrl());
         resquest.setData(param);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(param, Map.class);
@@ -86,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
         RefundParam param = new RefundParam();
         param.setTotalFee(bean.getAmount());
         param.setRefundFee(bean.getAmount());
-        param.setNoticeUrl(HttpClient.NOTIFY_URL);
+        param.setNoticeUrl(config.getNotifyUrl());
         param.setOutRefundNo(bean.getOutRefundNo());
         param.setSourceOutTradeNo(bean.getSourceOutTradeNo());
         param.setSourceOrderNo(bean.getSourceOrderNo());

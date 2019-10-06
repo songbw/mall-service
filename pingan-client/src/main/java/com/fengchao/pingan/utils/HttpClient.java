@@ -21,8 +21,6 @@ public class HttpClient {
     public static final String PAY_REFUND = "/wuxi-pay-web/partner/refundOrder";
     // 发起支付接口地址
     public static final String PAY_ORDER = "/wuxi-pay-web/sdk/fengchao/payOrderByOrderNo";
-    // 回调通知地址
-    public static final String NOTIFY_URL = "http://api.weesharing.com/v2/ssoes/payment/pingan/back";
     public static final String INIT_CODE_URL = "/initCode/getInitCode.do" ;
     public static final String AUTH_CODE_URL = "/authCode/getAuthCode.do" ;
     public static final String ACCESS_TOKEN_URL = "/accessToken/getAccessToken.do" ;

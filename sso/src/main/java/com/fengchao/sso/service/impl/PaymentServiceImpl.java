@@ -13,6 +13,7 @@ import com.fengchao.sso.rpc.OrderRpcService;
 import com.fengchao.sso.service.IPaymentService;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RandomUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @EnableConfigurationProperties({SSOConfiguration.class})
 @Service
 public class PaymentServiceImpl implements IPaymentService {
