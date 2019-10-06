@@ -146,7 +146,7 @@ public class BalanceServiceImpl implements IBalanceService {
             return response;
         }
         List<BalanceDetail> balanceDetails = balanceDao.selectBalanceDetailByOrderNo(bean.getOrderNo()) ;
-        if (balanceDetails != null || balanceDetails.size() > 0) {
+        if (balanceDetails != null && balanceDetails.size() > 0) {
             response.setCode(900404);
             response.setMsg("支付单号重复。");
             return response;
