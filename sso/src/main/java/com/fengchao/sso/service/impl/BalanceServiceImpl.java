@@ -204,17 +204,28 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("orderNo 不存在");
             return response;
         }
+        int paymentAmount = 0;
+        int refundedAount = 0;
         for (BalanceDetail balanceDetail : balanceDetails) {
-            if (balanceDetail.getType() == 0 && balanceDetail.getSaleAmount() < bean.getSaleAmount()) {
-                response.setCode(900403);
-                response.setMsg("支付金额小于退款金额。");
-                return response;
+            // 支付金额
+            if (balanceDetail.getType() == 0) {
+                paymentAmount = balanceDetail.getSaleAmount() ;
+            }
+            // 退款金额
+            if (balanceDetail.getType() == 1) {
+                refundedAount = refundedAount + balanceDetail.getSaleAmount();
             }
             if (bean.getRefundNo().equals(balanceDetail.getRefundNo())) {
                 response.setCode(900404);
                 response.setMsg("退款单号重复。");
                 return response;
             }
+        }
+        // 已支付金额 - 已退款金额之和 >= 本次退款金额
+        if ((paymentAmount - refundedAount) < bean.getSaleAmount()) {
+            response.setCode(900403);
+            response.setMsg("支付金额小于退款金额。");
+            return response;
         }
         Balance openBalance = balanceDao.selectBalanceByOpenId(bean.getOpenId()) ;
         if (openBalance == null) {
