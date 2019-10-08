@@ -1,6 +1,5 @@
 package com.fengchao.order.controller;
 
-import com.fengchao.order.bean.InvoiceInfoQueryBean;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.model.InvoiceInfo;
 import com.fengchao.order.service.InvoiceInfoService;

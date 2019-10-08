@@ -30,7 +30,7 @@ public class SubOrderFinishRunnerJobImpl implements JobRunner {
             if (order != null && order.getStatus() == 0) {
                 orderService.cancel(orderId) ;
                 // 会发送到 LTS (JobTracker上)
-                bizLogger.info("订单取消成功");
+                bizLogger.info("订单完成成功");
             }
         } catch (Exception e) {
             LOGGER.info("Run job failed!", e);
