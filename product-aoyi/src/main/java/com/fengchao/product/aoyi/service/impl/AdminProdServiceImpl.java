@@ -356,6 +356,9 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 2.2.1 查询一级品类名称
             List<AoyiBaseCategory> categorysWithClass1
                     = categoryDao.selectByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL1.getValue()));
+
+            logger.info("导出商品列表 获取一级品类信息集合List<AoyiBaseCategory>:{}", JSONUtil.toJsonString(categorysWithClass1));
+
             // 转map key:categoryId, value:AoyiBaseCategory
             Map<Integer, AoyiBaseCategory> categoryMapWithClass1 =
                     categorysWithClass1.stream().collect(Collectors.toMap(c -> c.getCategoryId(), c -> c));
@@ -368,7 +371,13 @@ public class AdminProdServiceImpl implements AdminProdService {
                 // 获取该二级品类的一级品类
                 AoyiBaseCategory categoryWithClass1 = categoryMapWithClass1.get(categoryWithClass2.getParentId());
 
-                String _categoryName = categoryWithClass1.getCategoryName() + "/" + categoryWithClass2.getCategoryName();
+                String _categoryName = "--";
+                if (categoryWithClass1 == null) {
+                    logger.warn("导出商品列表 二级品类code:{} 没有找到对应的一级品类", categoryWithClass2.getCategoryId());
+                } else {
+                    _categoryName = categoryWithClass1.getCategoryName() + "/" + categoryWithClass2.getCategoryName();
+                }
+
                 categoryWithClass2.setCategoryName(_categoryName);
             }
 
@@ -385,7 +394,13 @@ public class AdminProdServiceImpl implements AdminProdService {
                 // 获取该三级品类的二级品类
                 AoyiBaseCategory categoryWithClass2 = categoryMapWithClass2.get(categoryWithClass3.getParentId());
 
-                String _categoryName = categoryWithClass2.getCategoryName() + "/" + categoryWithClass3.getCategoryName();
+                String _categoryName = "--";
+                if (categoryWithClass2 == null) {
+                    logger.warn("导出商品列表 三级品类code:{} 没有找到对应的二级品类", categoryWithClass3.getCategoryId());
+                } else {
+                    _categoryName = categoryWithClass2.getCategoryName() + "/" + categoryWithClass3.getCategoryName();
+                }
+
                 categoryWithClass3.setCategoryName(_categoryName);
             }
 
