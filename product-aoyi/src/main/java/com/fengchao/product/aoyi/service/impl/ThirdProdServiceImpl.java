@@ -173,15 +173,15 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         // 组装详情图字段，添加图片对应表
         if (bean.getXqImage() != null && bean.getXqImage().size() > 0){
             bean.getXqImage().forEach(xq -> {
-                String ztarray[] = xq.split("XQ");
-                if (StringUtils.isEmpty(bean.getImagesUrl())){
-                    bean.setIntroductionUrl(path + "XQ" + ztarray[1]);
+                String xqarray[] = xq.split("XQ");
+                if (StringUtils.isEmpty(bean.getIntroductionUrl())){
+                    bean.setIntroductionUrl(path + "XQ" + xqarray[1]);
                 } else {
-                    bean.setIntroductionUrl(bean.getImagesUrl() + ":"+ path + "XQ" + ztarray[1]);
+                    bean.setIntroductionUrl(bean.getIntroductionUrl() + ":"+ path + "XQ" + xqarray[1]);
                 }
                 AyFcImages ayFcImages = new AyFcImages();
                 ayFcImages.setAyImage(xq);
-                ayFcImages.setFcImage(path + "XQ" + ztarray[1]);
+                ayFcImages.setFcImage(path + "XQ" + xqarray[1]);
                 ayFcImages.setStatus(0);
                 Date  date1 = new Date();
                 ayFcImages.setCreatedAt(date1);
