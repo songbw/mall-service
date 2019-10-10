@@ -38,8 +38,7 @@ public class ProductDao {
      * @return
      */
     public Integer insert(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
-        int count = aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
-
+        aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
         return aoyiProdIndexWithBLOBs.getId();
     }
 
@@ -129,6 +128,21 @@ public class ProductDao {
     }
 
     /**
+     * 根据SKU获取商品列表
+     * @param mpu
+     * @param merchantId
+     * @return
+     */
+    public List<AoyiProdIndex> findByMpu(String mpu, int merchantId) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuEqualTo(mpu);
+        criteria.andMerchantIdEqualTo(merchantId);
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        return aoyiProdIndices;
+    }
+
+    /**
      * 添加商品数据
      * @param aoyiProdIndexX
      * @return
@@ -175,7 +189,7 @@ public class ProductDao {
      * 根据MPU更新产品信息
      * @param bean
      */
-    public void updateByMpu(AoyiProdIndexX bean) {
+    public void updateByMpu(AoyiProdIndex bean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andMpuEqualTo(bean.getMpu());
@@ -183,8 +197,31 @@ public class ProductDao {
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         BeanUtils.copyProperties(bean, aoyiProdIndex);
         aoyiProdIndex.setUpdatedAt(new Date());
-
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
+    /**
+     * 更新产品信息
+     * @param bean
+     */
+    public int updateAoyiProduct(AoyiProdIndex bean) {
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(bean, aoyiProdIndex);
+        aoyiProdIndexMapper.updateByPrimaryKey(aoyiProdIndex);
+        return aoyiProdIndex.getId() ;
+    }
+
+    /**
+     * 根据MPU添加产品信息
+     * @param bean
+     */
+    public void insertByMpu(AoyiProdIndex bean) {
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(bean, aoyiProdIndex);
+        Date date = new Date();
+        aoyiProdIndex.setUpdatedAt(date);
+        aoyiProdIndex.setCreatedAt(date);
+        aoyiProdIndexMapper.insertSelective(aoyiProdIndex) ;
     }
 
     /**

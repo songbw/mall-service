@@ -41,7 +41,7 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="ay_fc_images" enableInsert="true">
+        <table tableName="aoyi_prod_index" enableInsert="true">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
 

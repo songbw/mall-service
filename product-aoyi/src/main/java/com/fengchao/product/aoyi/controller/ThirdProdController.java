@@ -2,8 +2,8 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
-import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/third/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -42,9 +40,9 @@ public class ThirdProdController {
     }
 
     @PutMapping("mpu")
-    public OperaResult updateByMup(@RequestBody AoyiProdIndexX bean){
-        log.info("根据MPU修改商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
-        return service.updateByMpu(bean);
+    public OperaResult insertOrUpdateByMup(@RequestBody AoyiProdIndex bean){
+        log.info("根据MPU添加或修改商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.insertOrUpdateByMpu(bean);
     }
 
     /**
@@ -113,5 +111,7 @@ public class ThirdProdController {
         service.delete(merchantId, id);
         return result;
     }
+
+
 
 }

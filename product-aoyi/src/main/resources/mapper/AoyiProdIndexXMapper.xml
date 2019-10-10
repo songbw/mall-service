@@ -23,6 +23,8 @@
     <result column="mpu" property="mpu" jdbcType="VARCHAR" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="sync_at" jdbcType="TIMESTAMP" property="syncAt" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" extends="BaseResultMap" >
     <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
@@ -30,7 +32,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price,
-    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams

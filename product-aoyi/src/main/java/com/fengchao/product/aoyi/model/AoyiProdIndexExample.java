@@ -1574,6 +1574,126 @@ public class AoyiProdIndexExample {
             addCriterion("updated_at not between", value1, value2, "updatedAt");
             return (Criteria) this;
         }
+
+        public Criteria andSyncAtIsNull() {
+            addCriterion("sync_at is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtIsNotNull() {
+            addCriterion("sync_at is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtEqualTo(Date value) {
+            addCriterion("sync_at =", value, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtNotEqualTo(Date value) {
+            addCriterion("sync_at <>", value, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtGreaterThan(Date value) {
+            addCriterion("sync_at >", value, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtGreaterThanOrEqualTo(Date value) {
+            addCriterion("sync_at >=", value, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtLessThan(Date value) {
+            addCriterion("sync_at <", value, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtLessThanOrEqualTo(Date value) {
+            addCriterion("sync_at <=", value, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtIn(List<Date> values) {
+            addCriterion("sync_at in", values, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtNotIn(List<Date> values) {
+            addCriterion("sync_at not in", values, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtBetween(Date value1, Date value2) {
+            addCriterion("sync_at between", value1, value2, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andSyncAtNotBetween(Date value1, Date value2) {
+            addCriterion("sync_at not between", value1, value2, "syncAt");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeIsNull() {
+            addCriterion("type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeIsNotNull() {
+            addCriterion("type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeEqualTo(Integer value) {
+            addCriterion("type =", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeNotEqualTo(Integer value) {
+            addCriterion("type <>", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeGreaterThan(Integer value) {
+            addCriterion("type >", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("type >=", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeLessThan(Integer value) {
+            addCriterion("type <", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("type <=", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeIn(List<Integer> values) {
+            addCriterion("type in", values, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeNotIn(List<Integer> values) {
+            addCriterion("type not in", values, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeBetween(Integer value1, Integer value2) {
+            addCriterion("type between", value1, value2, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("type not between", value1, value2, "type");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

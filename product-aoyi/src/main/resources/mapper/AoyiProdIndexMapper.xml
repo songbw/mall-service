@@ -24,6 +24,8 @@
     <result column="mpu" jdbcType="VARCHAR" property="mpu" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="sync_at" jdbcType="TIMESTAMP" property="syncAt" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
     <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
@@ -90,7 +92,7 @@
   <sql id="Base_Column_List">
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
     iprice, sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, 
-    created_at, updated_at
+    created_at, updated_at, sync_at, type
   </sql>
   <sql id="Blob_Column_List">
     introduction, prodParams
@@ -151,7 +153,8 @@
       sprice, images_url, introduction_url, 
       merchant_id, inventory, brand_id, 
       mpu, created_at, updated_at, 
-      introduction, prodParams)
+      sync_at, type, introduction, 
+      prodParams)
     values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, #{saleunit,jdbcType=VARCHAR}, 
@@ -159,7 +162,8 @@
       #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, 
       #{merchantId,jdbcType=INTEGER}, #{inventory,jdbcType=INTEGER}, #{brandId,jdbcType=INTEGER}, 
       #{mpu,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
-      #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR})
+      #{syncAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{introduction,jdbcType=LONGVARCHAR}, 
+      #{prodparams,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
     insert into aoyi_prod_index
@@ -226,6 +230,12 @@
       </if>
       <if test="updatedAt != null">
         updated_at,
+      </if>
+      <if test="syncAt != null">
+        sync_at,
+      </if>
+      <if test="type != null">
+        type,
       </if>
       <if test="introduction != null">
         introduction,
@@ -297,6 +307,12 @@
       </if>
       <if test="updatedAt != null">
         #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="syncAt != null">
+        #{syncAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
       </if>
       <if test="introduction != null">
         #{introduction,jdbcType=LONGVARCHAR},
@@ -381,6 +397,12 @@
       <if test="record.updatedAt != null">
         updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.syncAt != null">
+        sync_at = #{record.syncAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
       <if test="record.introduction != null">
         introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -416,6 +438,8 @@
       mpu = #{record.mpu,jdbcType=VARCHAR},
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
       updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{record.syncAt,jdbcType=TIMESTAMP},
+      type = #{record.type,jdbcType=INTEGER},
       introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       prodParams = #{record.prodparams,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -445,7 +469,9 @@
       brand_id = #{record.brandId,jdbcType=INTEGER},
       mpu = #{record.mpu,jdbcType=VARCHAR},
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{record.syncAt,jdbcType=TIMESTAMP},
+      type = #{record.type,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -516,6 +542,12 @@
       <if test="updatedAt != null">
         updated_at = #{updatedAt,jdbcType=TIMESTAMP},
       </if>
+      <if test="syncAt != null">
+        sync_at = #{syncAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
       <if test="introduction != null">
         introduction = #{introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -548,6 +580,8 @@
       mpu = #{mpu,jdbcType=VARCHAR},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{syncAt,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
       introduction = #{introduction,jdbcType=LONGVARCHAR},
       prodParams = #{prodparams,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
@@ -574,7 +608,9 @@
       brand_id = #{brandId,jdbcType=INTEGER},
       mpu = #{mpu,jdbcType=VARCHAR},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{syncAt,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

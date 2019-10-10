@@ -134,7 +134,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     }
 
     @Override
-    public OperaResult updateByMpu(AoyiProdIndexX bean) {
+    public OperaResult insertOrUpdateByMpu(AoyiProdIndex bean) {
         OperaResult result = new OperaResult();
         // mpu不能为空
         if (StringUtils.isEmpty(bean.getMpu())){
@@ -142,8 +142,14 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             result.setMsg("mpu 不能为空。");
             return result;
         }
-        // 修改商品信息
-        productDao.updateByMpu(bean);
+        List<AoyiProdIndex> aoyiProdIndices = productDao.findByMpu(bean.getMpu(), bean.getMerchantId()) ;
+        if (aoyiProdIndices == null || aoyiProdIndices.size() == 0) {
+            // 添加商品信息
+            productDao.insertByMpu(bean) ;
+        } else {
+            // 修改商品信息
+            productDao.updateByMpu(bean);
+        }
         return result;
     }
 

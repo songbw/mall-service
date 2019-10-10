@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
 public interface ThirdProdService {
@@ -12,7 +13,7 @@ public interface ThirdProdService {
 
     OperaResult update(AoyiProdIndexX bean);
 
-    OperaResult updateByMpu(AoyiProdIndexX bean);
+    OperaResult insertOrUpdateByMpu(AoyiProdIndex bean);
 
     void updatePrice(PriceBean bean);
 
