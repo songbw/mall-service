@@ -39,10 +39,16 @@ public class ThirdProdController {
         return service.update(bean);
     }
 
-    @PutMapping("mpu")
+    @PutMapping("receive")
     public OperaResult insertOrUpdateByMup(@RequestBody AoyiProdIndex bean){
         log.info("根据MPU添加或修改商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
         return service.insertOrUpdateByMpu(bean);
+    }
+
+    @PutMapping("sync")
+    public OperaResponse sync(@RequestBody ThirdSyncBean bean){
+        log.info("同步商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.sync(bean);
     }
 
     /**

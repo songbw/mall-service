@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 public class ThirdSyncBean {
     private String platformId ;
-    private List<Integer> categories ;
+    private List<String> categories ;
     private List<Integer> brands ;
     private List<Integer> merchants ;
     private List<String> mpus ;

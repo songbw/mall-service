@@ -1,9 +1,8 @@
 package com.fengchao.product.aoyi.service.impl;
 
-import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.bean.PriceBean;
-import com.fengchao.product.aoyi.bean.StateBean;
+import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.dao.AyFcImagesDao;
+import com.fengchao.product.aoyi.dao.PlatformDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.BaseService;
@@ -11,7 +10,9 @@ import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.AyFcImages;
+import com.fengchao.product.aoyi.model.Platform;
 import com.fengchao.product.aoyi.service.ThirdProdService;
+import com.fengchao.product.aoyi.utils.HttpClient;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +43,8 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private AyFcImagesDao ayFcImagesDao;
     @Autowired
     private BaseService baseService;
+    @Autowired
+    private PlatformDao platformDao ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -232,6 +241,48 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 }
             });
         }
+    }
+
+    @Override
+    public OperaResponse sync(ThirdSyncBean bean) {
+        OperaResponse response = new OperaResponse();
+        if (StringUtils.isEmpty(bean.getPlatformId())) {
+            response.setCode(2000004);
+            response.setMsg("platformId 不能为null");
+            return response ;
+        }
+        List<AoyiProdIndex> prodIndices = new ArrayList<>() ;
+        if (bean.getBrands().size() > 0) {
+            // TODO 查询品牌对应的商品信息
+            prodIndices.addAll(productDao.selectByBrand(bean.getBrands())) ;
+        }
+        if (bean.getCategories().size() > 0) {
+            // TODO 查询三级类目对应的商品信息
+            prodIndices.addAll(productDao.selectByCategory(bean.getCategories())) ;
+        }
+        if (bean.getMerchants().size() > 0) {
+            // TODO 查询商户ID对应的商品信息
+            prodIndices.addAll(productDao.selectByMerchant(bean.getMerchants())) ;
+        }
+        if (bean.getMpus().size() > 0) {
+            // TODO 查询MPU对应的商品信息
+            prodIndices.addAll(productDao.selectByMpu(bean.getMpus())) ;
+        }
+        // TODO 发送同步数据请求
+        Platform platform = platformDao.selectByAppId(bean.getPlatformId()) ;
+        if (platform == null) {
+            response.setCode(2000005);
+            response.setMsg("platformId 不存在");
+            return response ;
+        }
+        WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/receive");
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        prodIndices.forEach(prodIndex -> {
+            Response response1 = invocationBuilder.post(Entity.entity(prodIndex, MediaType.APPLICATION_JSON));
+            response1.readEntity(OperaResponse.class);
+            // TODO 成功则更新商品表，失败则打印日志
+        });
+        return null;
     }
 
 }

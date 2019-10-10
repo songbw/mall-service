@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.dao;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
+import com.fengchao.product.aoyi.bean.ThirdSyncBean;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
@@ -247,4 +248,57 @@ public class ProductDao {
 
         return pageInfo;
     }
+
+    /**
+     * 根据品牌获取商品列表
+     * @param brands
+     * @return
+     */
+    public List<AoyiProdIndex> selectByBrand(List<Integer> brands) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andBrandIdIn(brands) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 根据类目获取商品列表
+     * @param category
+     * @return
+     */
+    public List<AoyiProdIndex> selectByCategory(List<String> category) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andCategoryIn(category) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 根据商户获取商品列表
+     * @param merchant
+     * @return
+     */
+    public List<AoyiProdIndex> selectByMerchant(List<Integer> merchant) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMerchantIdIn(merchant) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 根据MPU获取商品列表
+     * @param mpus
+     * @return
+     */
+    public List<AoyiProdIndex> selectByMpu(List<String> mpus) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuIn(mpus) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
 }
