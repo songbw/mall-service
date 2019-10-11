@@ -301,4 +301,19 @@ public class ProductDao {
         return aoyiProdIndices;
     }
 
+    /**
+     * 更新同步时间字段
+     * @param id
+     */
+    public void updateSyncAt(int id) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andIdEqualTo(id);
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setSyncAt(new Date());
+
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
 }

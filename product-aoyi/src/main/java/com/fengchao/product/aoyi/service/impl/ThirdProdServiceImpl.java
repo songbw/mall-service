@@ -17,6 +17,7 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -253,22 +254,17 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         }
         List<AoyiProdIndex> prodIndices = new ArrayList<>() ;
         if (bean.getBrands().size() > 0) {
-            // TODO 查询品牌对应的商品信息
             prodIndices.addAll(productDao.selectByBrand(bean.getBrands())) ;
         }
         if (bean.getCategories().size() > 0) {
-            // TODO 查询三级类目对应的商品信息
             prodIndices.addAll(productDao.selectByCategory(bean.getCategories())) ;
         }
         if (bean.getMerchants().size() > 0) {
-            // TODO 查询商户ID对应的商品信息
             prodIndices.addAll(productDao.selectByMerchant(bean.getMerchants())) ;
         }
         if (bean.getMpus().size() > 0) {
-            // TODO 查询MPU对应的商品信息
             prodIndices.addAll(productDao.selectByMpu(bean.getMpus())) ;
         }
-        // TODO 发送同步数据请求
         Platform platform = platformDao.selectByAppId(bean.getPlatformId()) ;
         if (platform == null) {
             response.setCode(2000005);
@@ -276,13 +272,23 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             return response ;
         }
         WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/receive");
+        executeAsyncTask(webTarget, prodIndices) ;
+        return response;
+    }
+
+    @Async
+    public void executeAsyncTask(WebTarget webTarget, List<AoyiProdIndex> prodIndices) {
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         prodIndices.forEach(prodIndex -> {
             Response response1 = invocationBuilder.post(Entity.entity(prodIndex, MediaType.APPLICATION_JSON));
-            response1.readEntity(OperaResponse.class);
+            OperaResult  result = response1.readEntity(OperaResult.class);
             // TODO 成功则更新商品表，失败则打印日志
+            if (result.getCode() == 200) {
+                productDao.updateSyncAt(prodIndex.getId());
+            } else {
+                logger.info("线程" + Thread.currentThread().getName() + " 执行异步任务：" + "同步商品"+ prodIndex.getMpu()+"失败, 失败原因 {}", JSONUtil.toJsonString(result));
+            }
         });
-        return null;
     }
 
 }
