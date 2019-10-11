@@ -220,7 +220,7 @@
         comcode = #{comCode},
         status = #{status}
     where sub_order_id = #{subOrderId,jdbcType=VARCHAR}
-    and order_id = #{orderId,jdbcType=INTEGER}
+    and order_id = #{orderId,jdbcType=INTEGER} and status = 1
   </update>
   <update id="updateBySubOrderId">
     update order_detail

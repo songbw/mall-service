@@ -119,4 +119,6 @@ public interface OrderService {
     Integer subOrderCancel(OrderDetail bean);
 
     OperaResponse logistics(List<Logisticsbean> logisticsbeans) ;
+
+    OrderDetail findById(int id) ;
 }

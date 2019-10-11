@@ -77,6 +77,8 @@ public class OrderServiceImpl implements OrderService {
     private OrdersDao ordersDao;
     @Autowired
     private BaseService baseService;
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
 
     @Transactional
     @Override
@@ -930,6 +932,11 @@ public class OrderServiceImpl implements OrderService {
             return response;
         }
         return response;
+    }
+
+    @Override
+    public OrderDetail findById(int id) {
+        return orderDetailMapper.selectByPrimaryKey(id) ;
     }
 
     // ========================================= private ======================================
