@@ -280,7 +280,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     public void executeAsyncTask(WebTarget webTarget, List<AoyiProdIndex> prodIndices) {
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         prodIndices.forEach(prodIndex -> {
-            Response response1 = invocationBuilder.post(Entity.entity(prodIndex, MediaType.APPLICATION_JSON));
+            Response response1 = invocationBuilder.put(Entity.entity(prodIndex, MediaType.APPLICATION_JSON));
             OperaResult  result = response1.readEntity(OperaResult.class);
             // TODO 成功则更新商品表，失败则打印日志
             if (result.getCode() == 200) {
