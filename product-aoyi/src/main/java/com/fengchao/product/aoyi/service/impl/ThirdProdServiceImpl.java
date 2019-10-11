@@ -253,16 +253,16 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             return response ;
         }
         List<AoyiProdIndex> prodIndices = new ArrayList<>() ;
-        if (bean.getBrands().size() > 0) {
+        if (bean.getBrands() != null && bean.getBrands().size() > 0) {
             prodIndices.addAll(productDao.selectByBrand(bean.getBrands())) ;
         }
-        if (bean.getCategories().size() > 0) {
+        if (bean.getCategories() != null && bean.getCategories().size() > 0) {
             prodIndices.addAll(productDao.selectByCategory(bean.getCategories())) ;
         }
-        if (bean.getMerchants().size() > 0) {
+        if (bean.getMerchants() != null && bean.getMerchants().size() > 0) {
             prodIndices.addAll(productDao.selectByMerchant(bean.getMerchants())) ;
         }
-        if (bean.getMpus().size() > 0) {
+        if (bean.getMpus() != null && bean.getMpus().size() > 0) {
             prodIndices.addAll(productDao.selectByMpu(bean.getMpus())) ;
         }
         Platform platform = platformDao.selectByAppId(bean.getPlatformId()) ;
