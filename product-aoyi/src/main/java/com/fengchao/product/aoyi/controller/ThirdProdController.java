@@ -2,8 +2,12 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.service.BrandService;
+import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/third/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
@@ -19,6 +25,10 @@ public class ThirdProdController {
 
     @Autowired
     private ThirdProdService service;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private BrandService brandService ;
 
     /**
      * 新增商品
@@ -45,10 +55,34 @@ public class ThirdProdController {
         return service.insertOrUpdateByMpu(bean);
     }
 
+    @PutMapping("category/receive")
+    public OperaResponse insertCategory(@RequestBody AoyiBaseCategory bean){
+        log.info("根据ID添加或修改类目 入参 category:{}", JSONUtil.toJsonString(bean));
+        return categoryService.insertOrUpdate(bean);
+    }
+
+    @PutMapping("brand/receive")
+    public OperaResponse insertBrand(@RequestBody AoyiBaseBrand bean){
+        log.info("根据ID添加或修改品牌 入参 AoyiBaseBrand:{}", JSONUtil.toJsonString(bean));
+        return brandService.insertOrUpdate(bean);
+    }
+
     @PutMapping("sync")
     public OperaResponse sync(@RequestBody ThirdSyncBean bean){
         log.info("同步商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
         return service.sync(bean);
+    }
+
+    @PutMapping("category/sync")
+    public OperaResponse categorySync(@RequestBody CategorySyncBean bean){
+        log.info("同步类目 入参 bean:{}", JSONUtil.toJsonString(bean));
+        return service.syncCategory(bean);
+    }
+
+    @PutMapping("brand/sync")
+    public OperaResponse brandSync(@RequestBody ThirdSyncBean bean){
+        log.info("同步类目 入参 bean:{}", JSONUtil.toJsonString(bean));
+        return service.syncBrand(bean);
     }
 
     /**

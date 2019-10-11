@@ -2,15 +2,14 @@ package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.dao.AyFcImagesDao;
+import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.dao.PlatformDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.BaseService;
+import com.fengchao.product.aoyi.mapper.AoyiBaseBrandMapper;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexX;
-import com.fengchao.product.aoyi.model.AyFcImages;
-import com.fengchao.product.aoyi.model.Platform;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
@@ -18,15 +17,10 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +43,10 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private PlatformDao platformDao ;
     @Autowired
     private AsyncTask asyncTask ;
+    @Autowired
+    private CategoryDao categoryDao ;
+    @Autowired
+    private AoyiBaseBrandMapper baseBrandMapper;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -275,7 +273,53 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             return response ;
         }
         WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/receive");
-        asyncTask.executeAsyncTask(productDao, webTarget, prodIndices) ;
+        asyncTask.executeAsyncProductTask(productDao, webTarget, prodIndices) ;
+        return response;
+    }
+
+    @Override
+    public OperaResponse syncCategory(CategorySyncBean bean) {
+        OperaResponse response = new OperaResponse();
+        if (StringUtils.isEmpty(bean.getPlatformId())) {
+            response.setCode(2000004);
+            response.setMsg("platformId 不能为null");
+            return response ;
+        }
+        Platform platform = platformDao.selectByAppId(bean.getPlatformId()) ;
+        if (platform == null) {
+            response.setCode(2000005);
+            response.setMsg("platformId 不存在");
+            return response ;
+        }
+        List<AoyiBaseCategory> categories = new ArrayList<>() ;
+        if (bean.getCategories() != null && bean.getCategories().size() > 0) {
+            categories = categoryDao.selectByCategoryIds(bean.getCategories()) ;
+        }
+        WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/category/receive");
+        asyncTask.executeAsyncCategoryTask(webTarget,categories);
+        return response;
+    }
+
+    @Override
+    public OperaResponse syncBrand(ThirdSyncBean bean) {
+        OperaResponse response = new OperaResponse();
+        if (StringUtils.isEmpty(bean.getPlatformId())) {
+            response.setCode(2000004);
+            response.setMsg("platformId 不能为null");
+            return response ;
+        }
+        Platform platform = platformDao.selectByAppId(bean.getPlatformId()) ;
+        if (platform == null) {
+            response.setCode(2000005);
+            response.setMsg("platformId 不存在");
+            return response ;
+        }
+        List<AoyiBaseBrand> baseBrands = new ArrayList<>() ;
+        if (bean.getBrands() != null && bean.getBrands().size() > 0) {
+            baseBrands = baseBrandMapper.selectByBrandIdList(bean.getBrands()) ;
+        }
+        WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/brand/receive");
+        asyncTask.executeAsyncBrandTask(webTarget,baseBrands);
         return response;
     }
 

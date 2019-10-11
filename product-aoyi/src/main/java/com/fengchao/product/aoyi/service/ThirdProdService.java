@@ -5,6 +5,8 @@ import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
+import java.util.List;
+
 public interface ThirdProdService {
 
     OperaResult add(AoyiProdIndexX bean);
@@ -22,4 +24,8 @@ public interface ThirdProdService {
     void uploadProdImage() ;
 
     OperaResponse sync(ThirdSyncBean bean) ;
+
+    OperaResponse syncCategory(CategorySyncBean bean) ;
+
+    OperaResponse syncBrand(ThirdSyncBean bean) ;
 }

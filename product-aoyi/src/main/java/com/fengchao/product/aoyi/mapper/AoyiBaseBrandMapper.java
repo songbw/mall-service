@@ -26,4 +26,6 @@ public interface AoyiBaseBrandMapper {
     List<AoyiBaseBrand> selectLimit(HashMap map);
 
     List<AoyiBaseBrand>  selectNameList(HashMap map);
+
+    List<AoyiBaseBrand>  selectByBrandIdList(List<Integer> brandIds);
 }
