@@ -935,7 +935,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDetail findById(int id) {
+    public OrderDetail findDetailById(int id) {
         return orderDetailMapper.selectByPrimaryKey(id) ;
     }
 
