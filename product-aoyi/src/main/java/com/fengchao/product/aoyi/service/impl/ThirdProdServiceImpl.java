@@ -12,6 +12,7 @@ import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.AyFcImages;
 import com.fengchao.product.aoyi.model.Platform;
 import com.fengchao.product.aoyi.service.ThirdProdService;
+import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import org.slf4j.Logger;
@@ -46,6 +47,8 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private BaseService baseService;
     @Autowired
     private PlatformDao platformDao ;
+    @Autowired
+    private AsyncTask asyncTask ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -272,23 +275,8 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             return response ;
         }
         WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/receive");
-        executeAsyncTask(webTarget, prodIndices) ;
+        asyncTask.executeAsyncTask(productDao, webTarget, prodIndices) ;
         return response;
-    }
-
-    @Async
-    public void executeAsyncTask(WebTarget webTarget, List<AoyiProdIndex> prodIndices) {
-        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
-        prodIndices.forEach(prodIndex -> {
-            Response response1 = invocationBuilder.put(Entity.entity(prodIndex, MediaType.APPLICATION_JSON));
-            OperaResult  result = response1.readEntity(OperaResult.class);
-            // TODO 成功则更新商品表，失败则打印日志
-            if (result.getCode() == 200) {
-                productDao.updateSyncAt(prodIndex.getId());
-            } else {
-                logger.info("线程" + Thread.currentThread().getName() + " 执行异步任务：" + "同步商品"+ prodIndex.getMpu()+"失败, 失败原因 {}", JSONUtil.toJsonString(result));
-            }
-        });
     }
 
 }
