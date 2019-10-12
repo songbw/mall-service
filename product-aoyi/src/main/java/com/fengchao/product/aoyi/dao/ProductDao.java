@@ -208,7 +208,7 @@ public class ProductDao {
     public int updateAoyiProduct(AoyiProdIndex bean) {
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         BeanUtils.copyProperties(bean, aoyiProdIndex);
-        aoyiProdIndexMapper.updateByPrimaryKey(aoyiProdIndex);
+        aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndex) ;
         return aoyiProdIndex.getId() ;
     }
 
