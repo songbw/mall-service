@@ -67,19 +67,19 @@ public class ThirdProdController {
         return brandService.insertOrUpdate(bean);
     }
 
-    @PutMapping("sync")
+    @PostMapping("sync")
     public OperaResponse sync(@RequestBody ThirdSyncBean bean){
         log.info("同步商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
         return service.sync(bean);
     }
 
-    @PutMapping("category/sync")
+    @PostMapping("category/sync")
     public OperaResponse categorySync(@RequestBody CategorySyncBean bean){
         log.info("同步类目 入参 bean:{}", JSONUtil.toJsonString(bean));
         return service.syncCategory(bean);
     }
 
-    @PutMapping("brand/sync")
+    @PostMapping("brand/sync")
     public OperaResponse brandSync(@RequestBody ThirdSyncBean bean){
         log.info("同步类目 入参 bean:{}", JSONUtil.toJsonString(bean));
         return service.syncBrand(bean);
