@@ -587,7 +587,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
             for (OrderDetailX logist : logistics) {
-                if (logist.getLogisticsId() != null && logist.getComCode() != null) {
+                if (logist != null && logist.getLogisticsId() != null && logist.getComCode() != null) {
                     OperaResponse<JSONObject> response =  baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode()) ;
                     if (response.getCode() == 200) {
                         JSONObject jsonObject = response.getData();
