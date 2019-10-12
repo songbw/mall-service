@@ -80,7 +80,7 @@ public class CategoryDao {
     public Integer insertOrUpdate(AoyiBaseCategory bean) {
         AoyiBaseCategory aoyiBaseCategory = aoyiBaseCategoryMapper.selectByPrimaryKey(bean.getCategoryId()) ;
         if (aoyiBaseCategory != null) {
-            aoyiBaseCategoryMapper.updateByPrimaryKey(bean) ;
+            aoyiBaseCategoryMapper.updateByPrimaryKeySelective(bean) ;
         } else {
             bean.setIdate(new Date());
             aoyiBaseCategoryMapper.insertSelective(bean) ;
