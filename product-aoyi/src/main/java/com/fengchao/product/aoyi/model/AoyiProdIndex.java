@@ -51,6 +51,8 @@ public class AoyiProdIndex {
 
     private Integer type;
 
+    private String compareUrl;
+
     public Integer getId() {
         return id;
     }
@@ -241,5 +243,13 @@ public class AoyiProdIndex {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getCompareUrl() {
+        return compareUrl;
+    }
+
+    public void setCompareUrl(String compareUrl) {
+        this.compareUrl = compareUrl == null ? null : compareUrl.trim();
     }
 }

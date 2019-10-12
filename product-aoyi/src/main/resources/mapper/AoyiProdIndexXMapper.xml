@@ -25,6 +25,7 @@
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
     <result column="sync_at" jdbcType="TIMESTAMP" property="syncAt" />
     <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="compare_url" jdbcType="VARCHAR" property="compareUrl" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" extends="BaseResultMap" >
     <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
@@ -32,7 +33,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price,
-    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams

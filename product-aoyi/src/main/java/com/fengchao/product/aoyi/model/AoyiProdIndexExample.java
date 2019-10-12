@@ -1694,6 +1694,76 @@ public class AoyiProdIndexExample {
             addCriterion("type not between", value1, value2, "type");
             return (Criteria) this;
         }
+
+        public Criteria andCompareUrlIsNull() {
+            addCriterion("compare_url is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlIsNotNull() {
+            addCriterion("compare_url is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlEqualTo(String value) {
+            addCriterion("compare_url =", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlNotEqualTo(String value) {
+            addCriterion("compare_url <>", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlGreaterThan(String value) {
+            addCriterion("compare_url >", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlGreaterThanOrEqualTo(String value) {
+            addCriterion("compare_url >=", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlLessThan(String value) {
+            addCriterion("compare_url <", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlLessThanOrEqualTo(String value) {
+            addCriterion("compare_url <=", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlLike(String value) {
+            addCriterion("compare_url like", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlNotLike(String value) {
+            addCriterion("compare_url not like", value, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlIn(List<String> values) {
+            addCriterion("compare_url in", values, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlNotIn(List<String> values) {
+            addCriterion("compare_url not in", values, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlBetween(String value1, String value2) {
+            addCriterion("compare_url between", value1, value2, "compareUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompareUrlNotBetween(String value1, String value2) {
+            addCriterion("compare_url not between", value1, value2, "compareUrl");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
