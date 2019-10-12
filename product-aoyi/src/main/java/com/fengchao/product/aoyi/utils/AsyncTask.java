@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.utils;
 
+import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
@@ -44,7 +45,7 @@ public class AsyncTask {
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         categories.forEach(category -> {
             Response response1 = invocationBuilder.put(Entity.entity(category, MediaType.APPLICATION_JSON));
-            OperaResult result = response1.readEntity(OperaResult.class);
+            OperaResponse result = response1.readEntity(OperaResponse.class);
             if (result.getCode() != 200) {
                 log.info("线程" + Thread.currentThread().getName() + " 执行异步任务：" + "同步类目"+ category.getCategoryId()+"失败, 失败原因 {}", JSONUtil.toJsonString(result));
             }
@@ -56,7 +57,7 @@ public class AsyncTask {
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         brands.forEach(brand -> {
             Response response1 = invocationBuilder.put(Entity.entity(brand, MediaType.APPLICATION_JSON));
-            OperaResult result = response1.readEntity(OperaResult.class);
+            OperaResponse result = response1.readEntity(OperaResponse.class);
             if (result.getCode() != 200) {
                 log.info("线程" + Thread.currentThread().getName() + " 执行异步任务：" + "同步品牌"+ brand.getBrandId()+"失败, 失败原因 {}", JSONUtil.toJsonString(result));
             }
