@@ -326,10 +326,8 @@
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
-    from aoyi_prod_index p
-    left join prod_extend e on p.mpu = e.mpu
+    <include refid="Base_Column_List" />
+    from aoyi_prod_index
     where state = 1
     <if test="category !=null and category !=''">
       and p.category = #{category}
