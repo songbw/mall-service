@@ -1,6 +1,5 @@
 package com.fengchao.equity.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class VirtualTicketsX {
@@ -26,9 +25,11 @@ public class VirtualTicketsX {
 
     private Integer status;
 
-    private Integer effectiveDays;
+//    private Integer effectiveDays;
+//
+//    private BigDecimal parValue;
 
-    private BigDecimal parValue;
+    private VirtualProd VirtualProd;
 
     public Integer getId() {
         return id;
@@ -118,19 +119,11 @@ public class VirtualTicketsX {
         this.status = status;
     }
 
-    public Integer getEffectiveDays() {
-        return effectiveDays;
+    public com.fengchao.equity.model.VirtualProd getVirtualProd() {
+        return VirtualProd;
     }
 
-    public void setEffectiveDays(Integer effectiveDays) {
-        this.effectiveDays = effectiveDays;
-    }
-
-    public BigDecimal getParValue() {
-        return parValue;
-    }
-
-    public void setParValue(BigDecimal parValue) {
-        this.parValue = parValue;
+    public void setVirtualProd(com.fengchao.equity.model.VirtualProd virtualProd) {
+        VirtualProd = virtualProd;
     }
 }

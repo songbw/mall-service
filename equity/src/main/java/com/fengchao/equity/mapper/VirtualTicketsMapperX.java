@@ -29,4 +29,6 @@ public interface VirtualTicketsMapperX {
     int updateByPrimaryKeySelective(VirtualTickets record);
 
     int updateByPrimaryKey(VirtualTickets record);
+
+    VirtualTicketsX selectByCode(String code);
 }

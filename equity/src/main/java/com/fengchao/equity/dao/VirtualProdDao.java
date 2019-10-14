@@ -2,7 +2,6 @@ package com.fengchao.equity.dao;
 
 import com.fengchao.equity.mapper.VirtualProdMapper;
 import com.fengchao.equity.mapper.VirtualProdMapperX;
-import com.fengchao.equity.mapper.VirtualTicketsMapper;
 import com.fengchao.equity.model.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -18,8 +17,6 @@ public class VirtualProdDao {
     private VirtualProdMapper prodMapper;
     @Autowired
     private VirtualProdMapperX prodMapperX;
-    @Autowired
-    private VirtualTicketsMapper ticketsMapper;
 
 
     public int createVirtualProd(VirtualProd bean) {
@@ -40,18 +37,15 @@ public class VirtualProdDao {
 
     public VirtualProdX findByVirtualProdId(Integer id) {
         VirtualProdX virtualProdX = prodMapperX.selectByPrimaryKey(id);
-
-        VirtualTicketsExample example = new VirtualTicketsExample();
-        VirtualTicketsExample.Criteria criteria = example.createCriteria();
-        criteria.andMpuEqualTo(virtualProdX.getMpu());
-        List<VirtualTickets> virtualTickets = ticketsMapper.selectByExample(example);
-        virtualProdX.setTickets(virtualTickets);
-
         return virtualProdX;
     }
 
     public VirtualProdX findByVirtualProdMpu(String mpu) {
         VirtualProdX virtualProdX = prodMapperX.selectByVirtualProdMpu(mpu);
         return virtualProdX;
+    }
+
+    public int deleteVirtualProd(Integer id) {
+        return prodMapper.deleteByPrimaryKey(id);
     }
 }

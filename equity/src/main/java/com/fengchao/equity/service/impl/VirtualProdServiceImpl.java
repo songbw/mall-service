@@ -3,6 +3,7 @@ package com.fengchao.equity.service.impl;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.VirtualProdDao;
+import com.fengchao.equity.dao.VirtualTicketsDao;
 import com.fengchao.equity.model.VirtualProd;
 import com.fengchao.equity.model.VirtualProdX;
 import com.fengchao.equity.service.VirtualProdService;
@@ -18,6 +19,8 @@ public class VirtualProdServiceImpl implements VirtualProdService {
 
     @Autowired
     private VirtualProdDao prodDao;
+    @Autowired
+    private VirtualTicketsDao ticketsDao;
 
     @Override
     public int createVirtualProd(VirtualProd bean) {
@@ -38,11 +41,26 @@ public class VirtualProdServiceImpl implements VirtualProdService {
 
     @Override
     public VirtualProdX findByVirtualProdId(Integer id) {
-        return prodDao.findByVirtualProdId(id);
+        VirtualProdX virtualProd = prodDao.findByVirtualProdId(id);
+        virtualProd.setTickets(ticketsDao.findVirtualTicketByMpu(virtualProd.getMpu()));
+        return virtualProd;
     }
 
     @Override
     public int updateVirtualProd(VirtualProd bean) {
         return prodDao.updateVirtualProd(bean);
     }
+
+    @Override
+    public VirtualProdX findByVirtualProdMpu(String mpu) {
+        VirtualProdX virtualProdX = prodDao.findByVirtualProdMpu(mpu);
+        virtualProdX.setTickets(ticketsDao.findVirtualTicketByMpu(mpu));
+        return virtualProdX;
+    }
+
+    @Override
+    public int deleteVirtualProd(Integer id) {
+        return prodDao.deleteVirtualProd(id);
+    }
+
 }

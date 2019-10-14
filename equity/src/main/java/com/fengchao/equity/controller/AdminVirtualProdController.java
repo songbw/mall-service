@@ -39,6 +39,18 @@ public class AdminVirtualProdController {
         return result;
     }
 
+    @GetMapping("findByMpu")
+    public OperaResult findByVirtualProdMpu(String mpu, OperaResult result){
+        result.getData().put("result",prodService.findByVirtualProdMpu(mpu));
+        return result;
+    }
+
+    @GetMapping("findByCode")
+    public OperaResult findByVirtualProdcode(@RequestParam("code") String code, OperaResult result){
+        result.getData().put("result",ticketsService.findByVirtualProdcode(code));
+        return result;
+    }
+
     @PutMapping("update")
     public OperaResult updateVirtualProd(@RequestBody VirtualProd bean, OperaResult result){
         int num = prodService.updateVirtualProd(bean);
@@ -46,14 +58,20 @@ public class AdminVirtualProdController {
         return result;
     }
 
-    @PostMapping("consume")
+    @DeleteMapping("delete")
+    public OperaResult deleteVirtualProd(Integer id, OperaResult result){
+        result.getData().put("result",prodService.deleteVirtualProd(id));
+        return result;
+    }
+
+    @PostMapping("consumeCode")
     public OperaResult consume(@RequestBody VirtualTicketsBean bean, OperaResult result){
         int num = ticketsService.consumeTicket(bean);
         result.getData().put("result",num);
         return result;
     }
 
-    @PostMapping("cancel")
+    @PostMapping("cancelCode")
     public OperaResult cancel(@RequestBody VirtualTicketsBean bean, OperaResult result){
         int num = ticketsService.cancelTicket(bean);
         result.getData().put("result",num);

@@ -5,6 +5,7 @@ import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.VirtualProdDao;
 import com.fengchao.equity.dao.VirtualTicketsDao;
+import com.fengchao.equity.model.VirtualProd;
 import com.fengchao.equity.model.VirtualProdX;
 import com.fengchao.equity.model.VirtualTickets;
 import com.fengchao.equity.model.VirtualTicketsX;
@@ -48,9 +49,11 @@ public class VirtualTicketsServiceImpl implements VirtualTicketsService {
         virtualTickets.setCreateTime(now);
         virtualTickets.setStartTime(now);
         Date fetureDate = DataUtils.getFetureDate(now, virtualProd.getEffectiveDays());
-        virtualTickets.setEndTime(fetureDate);
+        if(virtualProd.getEffectiveDays() != -1){
+            virtualTickets.setEndTime(fetureDate);
+        }
         int virtualticket = ticketsDao.createVirtualticket(virtualTickets);
-        if(virtualticket != 0){
+        if(virtualticket != 0 && virtualProd.getEffectiveDays() != -1){
             JobClientUtils.virtualTicketsInvalidTrigger(jobClient, virtualTickets.getId(), fetureDate);
         }
         return virtualTickets.getId();
@@ -73,9 +76,13 @@ public class VirtualTicketsServiceImpl implements VirtualTicketsService {
         PageVo pageVo = ConvertUtil.convertToPageVo(pageInfo);
         List<VirtualTicketsX> virtualProdList = pageInfo.getList();
         virtualProdList.forEach(VirtualTicketsX ->{
+            VirtualProd virtualProd = new VirtualProd();
             VirtualProdX virtualProdX = prodDao.findByVirtualProdMpu(VirtualTicketsX.getMpu());
-            VirtualTicketsX.setParValue(virtualProdX.getParValue());
-            VirtualTicketsX.setEffectiveDays(virtualProdX.getEffectiveDays());
+            virtualProd.setEffectiveDays(virtualProdX.getEffectiveDays());
+            virtualProd.setId(virtualProdX.getId());
+            virtualProd.setMpu(virtualProdX.getMpu());
+            virtualProd.setParValue(virtualProdX.getParValue());
+            VirtualTicketsX.setVirtualProd(virtualProd);
         });
         pageableData.setList(virtualProdList);
         pageableData.setPageInfo(pageVo);
@@ -90,5 +97,20 @@ public class VirtualTicketsServiceImpl implements VirtualTicketsService {
     @Override
     public int ticketsInvalid(int virtualId) {
         return ticketsDao.ticketsInvalid(virtualId);
+    }
+
+    @Override
+    public VirtualTicketsX findByVirtualProdcode(String code) {
+        VirtualTicketsX virtualTickets = ticketsDao.findByVirtualTicketscode(code);
+        if(virtualTickets != null){
+            VirtualProd virtualProd = new VirtualProd();
+            VirtualProdX virtualProdX = prodDao.findByVirtualProdMpu(virtualTickets.getMpu());
+            virtualProd.setEffectiveDays(virtualProdX.getEffectiveDays());
+            virtualProd.setId(virtualProdX.getId());
+            virtualProd.setMpu(virtualProdX.getMpu());
+            virtualProd.setParValue(virtualProdX.getParValue());
+            virtualTickets.setVirtualProd(virtualProd);
+        }
+        return virtualTickets;
     }
 }

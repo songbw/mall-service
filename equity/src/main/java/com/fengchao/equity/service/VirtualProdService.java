@@ -12,4 +12,8 @@ public interface VirtualProdService {
     VirtualProdX findByVirtualProdId(Integer id);
 
     int updateVirtualProd(VirtualProd bean);
+
+    VirtualProdX findByVirtualProdMpu(String mpu);
+
+    int deleteVirtualProd(Integer id);
 }
