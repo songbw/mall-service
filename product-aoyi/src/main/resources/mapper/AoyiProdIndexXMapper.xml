@@ -330,10 +330,10 @@
     from aoyi_prod_index
     where state = 1
     <if test="category !=null and category !=''">
-      and p.category = #{category}
+      and category = #{category}
     </if>
     <if test="brand !=null and brand !=''">
-      and p.brand = #{brand}
+      and brand = #{brand}
     </if>
     <if test="priceOrder !=null and priceOrder !=''">
       order by CAST(price AS DECIMAL) ${priceOrder}
@@ -386,37 +386,37 @@
     from aoyi_prod_index
     where 1 = 1
     <if test="id != null and id !=''">
-      and p.id = #{id}
+      and id = #{id}
     </if>
     <if test="name !=null and name !=''">
       <bind name="pattern1" value="'%' + name + '%'"/>
-      and p.name LIKE #{pattern1}
+      and name LIKE #{pattern1}
     </if>
     <if test="categoryID !=null and categoryID !=''">
       <bind name="pattern2" value="categoryID + '%'"/>
-      and p.category LIKE #{pattern2}
+      and category LIKE #{pattern2}
     </if>
     <if test="skuid !=null and skuid !=''">
-      and p.skuid = #{skuid}
+      and skuid = #{skuid}
     </if>
     <if test="mpu !=null and mpu !=''">
-      and p.mpu = #{mpu}
+      and mpu = #{mpu}
     </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
-      and p.brand LIKE #{pattern4}
+      and brand LIKE #{pattern4}
     </if>
     <if test="state !=null and state !=''">
-      and p.state = #{state}
+      and state = #{state}
     </if>
     <if test="merchantId != null and merchantId !=''">
       and merchant_id = #{merchantId}
     </if>
     <if test="order == 'asc'" >
-      order by p.created_at asc
+      order by created_at asc
     </if>
     <if test="order == 'desc'" >
-      order by p.created_at desc
+      order by created_at desc
     </if>
     limit #{pageNo},#{pageSize}
   </select>
