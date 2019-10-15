@@ -17,4 +17,6 @@ public interface VirtualTicketsService {
     VirtualTickets findVirtualTicketById(int virtualId);
 
     int ticketsInvalid(int virtualId);
+
+    VirtualTicketsX findByVirtualProdcode(String code);
 }

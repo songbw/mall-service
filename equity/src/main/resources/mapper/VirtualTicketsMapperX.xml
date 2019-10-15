@@ -297,4 +297,11 @@
       status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from virtual_tickets
+    where code = #{code,jdbcType=VARCHAR}
+  </select>
 </mapper>

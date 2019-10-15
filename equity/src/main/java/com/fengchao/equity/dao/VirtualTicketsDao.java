@@ -28,7 +28,7 @@ public class VirtualTicketsDao {
 
     public int consumeTicket(VirtualTicketsBean bean) {
         VirtualTickets virtualTickets = new VirtualTickets();
-        virtualTickets.setStatus(2);
+        virtualTickets.setStatus(1);
         virtualTickets.setUpdateTime(new Date());
         VirtualTicketsExample example = new VirtualTicketsExample();
         VirtualTicketsExample.Criteria criteria = example.createCriteria();
@@ -41,7 +41,7 @@ public class VirtualTicketsDao {
 
     public int cancelTicket(VirtualTicketsBean bean) {
         VirtualTickets virtualTickets = new VirtualTickets();
-        virtualTickets.setStatus(4);
+        virtualTickets.setStatus(3);
         virtualTickets.setUpdateTime(new Date());
         VirtualTicketsExample example = new VirtualTicketsExample();
         VirtualTicketsExample.Criteria criteria = example.createCriteria();
@@ -69,11 +69,23 @@ public class VirtualTicketsDao {
 
     public int ticketsInvalid(int virtualId) {
         VirtualTickets virtualTickets = new VirtualTickets();
-        virtualTickets.setStatus(3);
-        virtualTickets.setUpdateTime(new Date());
+        virtualTickets.setStatus(2);
         VirtualTicketsExample example = new VirtualTicketsExample();
         VirtualTicketsExample.Criteria criteria = example.createCriteria();
         criteria.andIdEqualTo(virtualId);
         return ticketsMapper.updateByExampleSelective(virtualTickets, example);
+    }
+
+    public List<VirtualTickets> findVirtualTicketByMpu(String mpu) {
+
+        VirtualTicketsExample example = new VirtualTicketsExample();
+        VirtualTicketsExample.Criteria criteria = example.createCriteria();
+        criteria.andMpuEqualTo(mpu);
+        return ticketsMapper.selectByExample(example);
+    }
+
+    public VirtualTicketsX findByVirtualTicketscode(String code) {
+
+        return ticketsMapperX.selectByCode(code);
     }
 }
