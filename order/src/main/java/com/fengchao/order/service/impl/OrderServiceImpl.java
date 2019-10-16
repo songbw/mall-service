@@ -645,8 +645,9 @@ public class OrderServiceImpl implements OrderService {
             consume(order.getCouponId(), order.getCouponCode()) ;
             order.setCouponStatus(3);
         }
+        int id = orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
         virtualHandle(order);
-        return orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+        return id ;
     }
 
     @Override

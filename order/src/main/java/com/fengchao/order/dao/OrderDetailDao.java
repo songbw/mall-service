@@ -152,16 +152,14 @@ public class OrderDetailDao {
                 List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample1) ;
                 // 更新主订单状态为取消
                 if (orderDetailList == null || orderDetailList.size() == 0) {
-                    OrdersExample ordersExample = new OrdersExample() ;
-                    OrdersExample.Criteria oCriteria = ordersExample.createCriteria();
                     Orders ordersU = new Orders();
+                    ordersU.setId(orderDetail.getOrderId());
                     if (orderDetail.getStatus() == 3) {
                         ordersU.setStatus(2);
                     } else {
                         ordersU.setStatus(3);
                     }
-                    oCriteria.andIdEqualTo(findOrderDetail.getOrderId());
-                    ordersMapper.updateByExampleSelective(ordersU, ordersExample) ;
+                    ordersMapper.updateByPrimaryKeySelective(ordersU) ;
                 }
             }
         }
