@@ -101,7 +101,7 @@ public class AdminProdController {
             }
 
             // 执行新增商品
-            int id = prodService.add(bean);
+            String id = prodService.add(bean);
 
             result.getData().put("result", id);
         } catch (Exception e) {

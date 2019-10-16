@@ -191,7 +191,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public int add(AoyiProdIndex requestProdParams) throws ProductException {
+    public String add(AoyiProdIndex requestProdParams) throws ProductException {
         // 1. 判断sku是否重复
         List<AoyiProdIndex> aoyiProdIndexList =
                 productDao.selectAoyiProdIndexListBySKUAndMerchant(requestProdParams.getSkuid(), requestProdParams.getMerchantId());
@@ -264,12 +264,12 @@ public class AdminProdServiceImpl implements AdminProdService {
             aoyiProdIndexWithBLOBs.setIprice(iprice);
         }
         // 执行插入
-        int result = productDao.insert(aoyiProdIndexWithBLOBs);
+        productDao.insert(aoyiProdIndexWithBLOBs);
 
         skuCode.setSkuValue(atomicInteger.get());
         skuCodeMapper.updateSkuValueByPrimaryKey(skuCode);
 
-        return result;
+        return aoyiProdIndexWithBLOBs.getMpu();
     }
 
     @Override

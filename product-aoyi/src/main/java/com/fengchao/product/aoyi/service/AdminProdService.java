@@ -23,7 +23,7 @@ public interface AdminProdService {
 
     int getProdListToRedis();
 
-    int add(AoyiProdIndex bean) throws ProductException;
+    String add(AoyiProdIndex bean) throws ProductException;
 
     int update(AoyiProdIndex bean) throws ProductException;
 
