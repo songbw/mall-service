@@ -14,6 +14,8 @@ public class ProductInfoBean extends AoyiProdIndex implements Serializable {
 
     private List<CouponBean> coupon = new ArrayList<>();
 
+    private String categoryName ;
+
     public List<PromotionInfoBean> getPromotion() {
         return promotion;
     }
@@ -28,5 +30,13 @@ public class ProductInfoBean extends AoyiProdIndex implements Serializable {
 
     public void setCoupon(List<CouponBean> coupon) {
         this.coupon = coupon;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
