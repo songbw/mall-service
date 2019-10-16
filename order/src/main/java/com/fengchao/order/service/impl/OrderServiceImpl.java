@@ -647,6 +647,7 @@ public class OrderServiceImpl implements OrderService {
         }
         // TODO 获取子订单中的商品是否为虚拟商品，如果是虚拟商品则通知虚拟资产模块
         List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(order.getId()) ;
+        logger.info("根据订单ID：" + order.getId() + " 查询子订单列表，输出结果：{}", JSONUtil.toJsonString(orderDetailList));
         orderDetailList.forEach(orderDetail -> {
             AoyiProdIndex prodIndex = findProduct(orderDetail.getMpu()) ;
             if (prodIndex != null && prodIndex.getType() == 1) {
@@ -970,6 +971,7 @@ public class OrderServiceImpl implements OrderService {
 
     private AoyiProdIndex findProduct(String skuId) {
         OperaResult result = productService.find(skuId);
+        logger.info("根据MPU：" + skuId + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
