@@ -314,6 +314,11 @@ public class OrderServiceImpl implements OrderService {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return  operaResult;
             }
+        } else {
+            logger.info("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
+            operaResult.getData().put("result", orderMerchantBeans) ;
+
+            logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
     }
