@@ -45,7 +45,10 @@ public class VirtualProdDao {
         return virtualProdX;
     }
 
-    public int deleteVirtualProd(Integer id) {
-        return prodMapper.deleteByPrimaryKey(id);
+    public int deleteVirtualProd(String mpu) {
+        VirtualProdExample example = new VirtualProdExample();
+        VirtualProdExample.Criteria criteria = example.createCriteria();
+        criteria.andMpuEqualTo(mpu);
+        return prodMapper.deleteByExample(example);
     }
 }

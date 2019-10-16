@@ -15,5 +15,5 @@ public interface VirtualProdService {
 
     VirtualProdX findByVirtualProdMpu(String mpu);
 
-    int deleteVirtualProd(Integer id);
+    int deleteVirtualProd(String mpu);
 }

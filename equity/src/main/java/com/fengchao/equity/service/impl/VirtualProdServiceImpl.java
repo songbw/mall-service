@@ -59,8 +59,8 @@ public class VirtualProdServiceImpl implements VirtualProdService {
     }
 
     @Override
-    public int deleteVirtualProd(Integer id) {
-        return prodDao.deleteVirtualProd(id);
+    public int deleteVirtualProd(String mpu) {
+        return prodDao.deleteVirtualProd(mpu);
     }
 
 }
