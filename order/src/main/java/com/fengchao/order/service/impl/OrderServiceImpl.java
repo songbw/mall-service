@@ -645,24 +645,7 @@ public class OrderServiceImpl implements OrderService {
             consume(order.getCouponId(), order.getCouponCode()) ;
             order.setCouponStatus(3);
         }
-        // TODO 获取子订单中的商品是否为虚拟商品，如果是虚拟商品则通知虚拟资产模块
-        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(order.getId()) ;
-        logger.info("根据订单ID：" + order.getId() + " 查询子订单列表，输出结果：{}", JSONUtil.toJsonString(orderDetailList));
-        orderDetailList.forEach(orderDetail -> {
-            AoyiProdIndex prodIndex = findProduct(orderDetail.getMpu()) ;
-            if (prodIndex != null && prodIndex.getType() == 1) {
-                VirtualTicketsBean virtualTicketsBean = new VirtualTicketsBean() ;
-                virtualTicketsBean.setOpenId(order.getOpenId());
-                virtualTicketsBean.setOrderId(orderDetail.getId());
-                virtualTicketsBean.setMpu(orderDetail.getMpu());
-                virtualTicketsBean.setNum(orderDetail.getNum());
-                OperaResult operaResult = equityService.createVirtual(virtualTicketsBean) ;
-                if (operaResult.getCode() != 200) {
-                    // TODO 虚拟商品创建失败后如何处理
-                    logger.info("用户虚拟商品添加失败，输入参数：{}", JSONUtil.toJsonString(virtualTicketsBean));
-                }
-            }
-        });
+        virtualHandle(order);
         return orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
     }
 
@@ -951,7 +934,7 @@ public class OrderServiceImpl implements OrderService {
             }
             orderDetailDao.updateBySubOrderId(logistics) ;
             OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
-            JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getOrderId());
+            JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
         }
         if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
             response.setCode(4000002);
@@ -965,6 +948,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDetail findDetailById(int id) {
         return orderDetailMapper.selectByPrimaryKey(id) ;
+    }
+
+    @Override
+    public Integer finishOrderDetail(Integer id) {
+        OrderDetail orderDetail = orderDetailMapper.selectByPrimaryKey(id) ;
+        orderDetail.setStatus(3);
+        orderDetailDao.updateOrderDetailStatus(orderDetail) ;
+        return null;
     }
 
     // ========================================= private ======================================
@@ -1105,6 +1096,34 @@ public class OrderServiceImpl implements OrderService {
         orderDetailBean.setCategory(orderDetail.getCategory()); // 品类
 
         return orderDetailBean;
+    }
+
+    /**
+     * 处理虚拟商品订单
+     * @param order
+     */
+    private void virtualHandle(Order order) {
+        // TODO 获取子订单中的商品是否为虚拟商品，如果是虚拟商品则通知虚拟资产模块
+        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(order.getId()) ;
+        logger.info("根据订单ID：" + order.getId() + " 查询子订单列表，输出结果：{}", JSONUtil.toJsonString(orderDetailList));
+        orderDetailList.forEach(orderDetail -> {
+            AoyiProdIndex prodIndex = findProduct(orderDetail.getMpu()) ;
+            if (prodIndex != null && prodIndex.getType() == 1) {
+                VirtualTicketsBean virtualTicketsBean = new VirtualTicketsBean() ;
+                virtualTicketsBean.setOpenId(order.getOpenId());
+                virtualTicketsBean.setOrderId(orderDetail.getId());
+                virtualTicketsBean.setMpu(orderDetail.getMpu());
+                virtualTicketsBean.setNum(orderDetail.getNum());
+                OperaResult operaResult = equityService.createVirtual(virtualTicketsBean) ;
+                if (operaResult.getCode() != 200) {
+                    // TODO 虚拟商品创建失败后如何处理
+                    logger.info("用户虚拟商品添加失败，输入参数：{}", JSONUtil.toJsonString(virtualTicketsBean));
+                    return;
+                }
+                // 子订单完成
+                finishOrderDetail(orderDetail.getId()) ;
+            }
+        });
     }
 
 

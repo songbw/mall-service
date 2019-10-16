@@ -121,4 +121,6 @@ public interface OrderService {
     OperaResponse logistics(List<Logisticsbean> logisticsbeans) ;
 
     OrderDetail findDetailById(int id) ;
+
+    Integer finishOrderDetail(Integer id);
 }
