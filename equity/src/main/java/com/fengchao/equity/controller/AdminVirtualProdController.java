@@ -59,8 +59,8 @@ public class AdminVirtualProdController {
     }
 
     @DeleteMapping("delete")
-    public OperaResult deleteVirtualProd(Integer id, OperaResult result){
-        result.getData().put("result",prodService.deleteVirtualProd(id));
+    public OperaResult deleteVirtualProd(String mpu, OperaResult result){
+        result.getData().put("result",prodService.deleteVirtualProd(mpu));
         return result;
     }
 
