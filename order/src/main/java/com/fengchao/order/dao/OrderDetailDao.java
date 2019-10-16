@@ -237,4 +237,21 @@ public class OrderDetailDao {
         return orderDetailList;
     }
 
+    /**
+     * 根据主订单id查询子订单集合
+     *
+     * @param ordersId
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByOrdersId(Integer ordersId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdEqualTo(ordersId);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
 }
