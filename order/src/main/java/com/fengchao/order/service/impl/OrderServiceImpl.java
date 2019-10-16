@@ -277,41 +277,43 @@ public class OrderServiceImpl implements OrderService {
                 orderMerchantBeanList.add(orderMerchantBean);
             }
         }
-
-        orderBean.setMerchants(orderMerchantBeanList);
-        OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
-        if ("1001".equals(orderBean.getCompanyCustNo()) || "1002".equals(orderBean.getCompanyCustNo())) { // 关爱通
-            result = aoyiClientService.orderGAT(orderBean);
-        } else { //
-            result = aoyiClientService.order(orderBean);
-        }
-        logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
-
-        if (result.getCode() == 200) {
-            List<SubOrderT> subOrderTS = result.getData();
-            subOrderTS.forEach(subOrderT -> {
-                if (!StringUtils.isEmpty(subOrderT.getAoyiId())){
-                    // 更新aoyiId字段
-                    adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
-                }
-            });
-            logger.info("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
-            operaResult.getData().put("result", orderMerchantBeans) ;
-
-            logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
-        } else {
-            if (coupon != null) {
-                boolean couponRelease = release(coupon.getId(), coupon.getCode());
-                if (!couponRelease) {
-                    // TODO 订单失败,释放优惠券，
-                    logger.info("订单" + bean.getId() + "释放优惠券失败");
-                }
+        // 判断是否调用奥义服务模块
+        if (orderMerchantBeanList != null && orderMerchantBeanList.size() > 0) {
+            orderBean.setMerchants(orderMerchantBeanList);
+            OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
+            if ("1001".equals(orderBean.getCompanyCustNo()) || "1002".equals(orderBean.getCompanyCustNo())) { // 关爱通
+                result = aoyiClientService.orderGAT(orderBean);
+            } else { //
+                result = aoyiClientService.order(orderBean);
             }
-            operaResult.setCode(result.getCode());
-            operaResult.setMsg(result.getMsg());
-            // 异常数据库回滚
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return  operaResult;
+            logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
+
+            if (result.getCode() == 200) {
+                List<SubOrderT> subOrderTS = result.getData();
+                subOrderTS.forEach(subOrderT -> {
+                    if (!StringUtils.isEmpty(subOrderT.getAoyiId())){
+                        // 更新aoyiId字段
+                        adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
+                    }
+                });
+                logger.info("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
+                operaResult.getData().put("result", orderMerchantBeans) ;
+
+                logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
+            } else {
+                if (coupon != null) {
+                    boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                    if (!couponRelease) {
+                        // TODO 订单失败,释放优惠券，
+                        logger.info("订单" + bean.getId() + "释放优惠券失败");
+                    }
+                }
+                operaResult.setCode(result.getCode());
+                operaResult.setMsg(result.getMsg());
+                // 异常数据库回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return  operaResult;
+            }
         }
         return operaResult;
     }
