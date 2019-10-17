@@ -613,7 +613,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) {
         logger.info("findTradeNo 方法入参 appId : " + appId + " merchantNo : " + merchantNo + " tradeNo : " + tradeNo);
-        List<Order> orders = orderMapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
+        List<Order> orders = new ArrayList<>();
+        if (StringUtils.isEmpty(merchantNo)) {
+            orders = orderMapper.selectByTradeNo(appId + "%" + tradeNo);
+        } else {
+            orders = orderMapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
+        }
         logger.info("findTradeNo 方法返回值orders : {}", JSONUtil.toJsonString(orders));
         return orders ;
     }
