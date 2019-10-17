@@ -209,6 +209,7 @@ public class ProductDao {
     public int updateAoyiProduct(AoyiProdIndex bean) {
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         BeanUtils.copyProperties(bean, aoyiProdIndex);
+        aoyiProdIndex.setMerchantId(null);
         aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndex) ;
         return aoyiProdIndex.getId() ;
     }

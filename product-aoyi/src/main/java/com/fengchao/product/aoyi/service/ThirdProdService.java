@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.model.AyFcImages;
 
 import java.util.List;
 
@@ -28,4 +29,6 @@ public interface ThirdProdService {
     OperaResponse syncCategory(CategorySyncBean bean) ;
 
     OperaResponse syncBrand(ThirdSyncBean bean) ;
+
+    OperaResponse updateAyFcImageStatus(Long id, Integer status) ;
 }

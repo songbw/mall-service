@@ -12,4 +12,5 @@ public interface EquityService {
 
     @RequestMapping(value = "/couponUseInfo/collectGiftCoupon", method = RequestMethod.GET)
     OperaResult findCollectGiftCouponByOpenId(@RequestParam("openId") String openId);
+
 }

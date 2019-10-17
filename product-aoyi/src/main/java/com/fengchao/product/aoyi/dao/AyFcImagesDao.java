@@ -55,10 +55,6 @@ public class AyFcImagesDao {
      * @param ayFcImages
      */
     public void updateStatus(AyFcImages ayFcImages) {
-        AyFcImagesExample example = new AyFcImagesExample();
-        AyFcImagesExample.Criteria criteria = example.createCriteria();
-        criteria.andIdEqualTo(ayFcImages.getId());
-        ayFcImages.setUpdatedAt(new Date());
-        mapper.updateByExample(ayFcImages, example);
+        mapper.updateByPrimaryKeySelective(ayFcImages) ;
     }
 }
