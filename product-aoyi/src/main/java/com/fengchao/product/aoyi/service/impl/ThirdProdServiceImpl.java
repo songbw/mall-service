@@ -235,12 +235,12 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         if (ayFcImages != null && ayFcImages.size() > 0) {
             ayFcImages.forEach(image -> {
                 OperaResult result = baseService.downUpload(image);
-                if (result.getCode() == 200) {
-                    image.setStatus(1);
-                    ayFcImagesDao.updateStatus(image);
-                } else {
-                    logger.info("调用base服务失败：{}", JSONUtil.toJsonString(result));
-                }
+//                if (result.getCode() == 200) {
+//                    image.setStatus(1);
+//                    ayFcImagesDao.updateStatus(image);
+//                } else {
+//                    logger.info("调用base服务失败：{}", JSONUtil.toJsonString(result));
+//                }
             });
         }
     }
@@ -320,6 +320,16 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         }
         WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/brand/receive");
         asyncTask.executeAsyncBrandTask(webTarget,baseBrands);
+        return response;
+    }
+
+    @Override
+    public OperaResponse updateAyFcImageStatus(Long id, Integer status) {
+        OperaResponse response = new OperaResponse() ;
+        AyFcImages images = new AyFcImages() ;
+        images.setId(id);
+        images.setStatus(status);
+        ayFcImagesDao.updateStatus(images);
         return response;
     }
 

@@ -152,6 +152,9 @@ public class ThirdProdController {
         return result;
     }
 
-
+    @GetMapping("image/back")
+    public OperaResponse imageBack(Long id,  Integer status) throws ProductException {
+        return service.updateAyFcImageStatus(id, status);
+    }
 
 }

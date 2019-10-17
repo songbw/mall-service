@@ -1,11 +1,13 @@
 package com.fengchao.base.service.impl;
 
 import com.fengchao.base.bean.AyFcImages;
+import com.fengchao.base.feign.ProductService;
 import com.fengchao.base.service.UploadService;
 import com.fengchao.base.utils.CosUtil;
 import com.fengchao.base.utils.JSONUtil;
 import com.fengchao.base.utils.URLConnectionDownloader;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +19,9 @@ import java.util.Date;
 @Slf4j
 @Service
 public class UploadServiceImpl implements UploadService {
+
+    @Autowired
+    private ProductService productService ;
 
     @Override
     public String upload(MultipartFile file) {
@@ -45,6 +50,7 @@ public class UploadServiceImpl implements UploadService {
             e.printStackTrace();
         }
         CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + fileName),img.getPath() + img.getType() + fileName) ;
+        productService.imageBack(img.getId(), 1) ;
     }
 
     private File saveFile(MultipartFile file) {

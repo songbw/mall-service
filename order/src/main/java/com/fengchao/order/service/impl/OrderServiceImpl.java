@@ -655,7 +655,7 @@ public class OrderServiceImpl implements OrderService {
         }
         int id = orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
         // TODO 虚拟商品相关
-//        virtualHandle(order);
+        virtualHandle(order);
         return id ;
     }
 
