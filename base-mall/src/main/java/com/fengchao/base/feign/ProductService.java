@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "product-aoyi", fallback = ProductServiceH.class)
 public interface ProductService {
 
-    @RequestMapping(value = "/prod", method = RequestMethod.GET)
+    @RequestMapping(value = "/third/prod/image/back", method = RequestMethod.GET)
     OperaResponse imageBack(@RequestParam("id") Long id, @RequestParam("status") Integer status);
 
 
