@@ -196,6 +196,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
     private List<Order> findTradeNo(String appId, String merchantNo, String tradeNo) {
         OperaResult result = orderService.findOrderListByTradeNo(appId, merchantNo, tradeNo);
+        log.info("order client findTradeNo 方法返回结果 result : {}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
