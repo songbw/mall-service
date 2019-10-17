@@ -60,13 +60,12 @@ public class BalanceDao {
     public PageInfo<BalanceDetail> selectBalanceDetailByPageable(BalanceDetailQueryBean bean) {
         BalanceDetailExample balanceDetailExample = new BalanceDetailExample();
         BalanceDetailExample.Criteria criteria = balanceDetailExample.createCriteria();
-        if (StringUtils.isEmpty(bean.getOpenId())) {
+        if (!StringUtils.isEmpty(bean.getOpenId())) {
             criteria.andOpenIdEqualTo(bean.getOpenId());
         }
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
         List<BalanceDetail> balanceDetails = detailMapper.selectByExample(balanceDetailExample);
         PageInfo<BalanceDetail> pageInfo = new PageInfo(balanceDetails);
-
         return pageInfo;
     }
 
