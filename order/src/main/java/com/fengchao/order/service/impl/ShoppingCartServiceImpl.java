@@ -75,6 +75,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 //            }
 //        }
         bean.setUpdatedAt(new Date());
+        mapper.updateNumById(bean);
         result.getData().put("result", bean.getId()) ;
         return result;
     }
