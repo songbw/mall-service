@@ -59,6 +59,7 @@ public class BalanceDao {
      */
     public PageInfo<BalanceDetail> selectBalanceDetailByPageable(BalanceDetailQueryBean bean) {
         BalanceDetailExample balanceDetailExample = new BalanceDetailExample();
+        balanceDetailExample.setOrderByClause("id desc");
         BalanceDetailExample.Criteria criteria = balanceDetailExample.createCriteria();
         if (!StringUtils.isEmpty(bean.getOpenId())) {
             criteria.andOpenIdEqualTo(bean.getOpenId());
