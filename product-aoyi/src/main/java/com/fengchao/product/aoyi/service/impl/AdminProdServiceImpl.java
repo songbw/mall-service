@@ -549,4 +549,45 @@ public class AdminProdServiceImpl implements AdminProdService {
         }
         return result;
     }
+
+    @Override
+    public void fix() {
+        List<AoyiProdIndex> aoyiProdIndexList =  productDao.selectFix() ;
+        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+            SkuCode skuCode = skuCodeMapper.selectByMerchantId(aoyiProdIndex.getMerchantId());
+            if (skuCode == null) {
+                // 查询商户信息
+                VendorsProfileBean profileBean = findVendorInfo(aoyiProdIndex.getMerchantId());
+                if (profileBean != null) {
+                    // 获取最新code
+                    SkuCode lastCode = skuCodeMapper.selectLast();
+                    int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
+                    skuCode = new SkuCode();
+                    skuCode.setMerchantId(aoyiProdIndex.getMerchantId());
+                    skuCode.setMerchantName(profileBean.getCompany().getName());
+                    skuCode.setMerchantCode(code + "");
+                    skuCode.setSkuValue(0);
+                    skuCode.setCreatedAt(new Date());
+                    skuCode.setUpdatedAt(new Date());
+                    skuCodeMapper.insertSelective(skuCode);
+                } else {
+                    throw new ProductException(200001, "商户信息为null");
+                }
+            }
+            AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs();
+            BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexWithBLOBs);
+            String merchantCode = skuCode.getMerchantCode();
+            int skuValue = skuCode.getSkuValue();
+            AtomicInteger atomicInteger = new AtomicInteger(skuValue);
+            String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet());
+            aoyiProdIndexWithBLOBs.setMpu(sku);
+            aoyiProdIndexWithBLOBs.setSkuid(sku);
+
+            // 执行插入
+            productDao.updateFix(aoyiProdIndexWithBLOBs);
+
+            skuCode.setSkuValue(atomicInteger.get());
+            skuCodeMapper.updateSkuValueByPrimaryKey(skuCode);
+        });
+    }
 }

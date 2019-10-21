@@ -46,4 +46,6 @@ public interface AdminProdService {
      * @return
      */
     OperaResult inventoryUpdate(InventoryMpus inventory) ;
+
+    void fix();
 }
