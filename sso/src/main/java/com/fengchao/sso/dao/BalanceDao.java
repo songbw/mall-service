@@ -44,10 +44,10 @@ public class BalanceDao {
     public PageInfo<Balance> selectBalanceByPageable(BalanceQueryBean bean) {
         BalanceExample balanceExample = new BalanceExample();
         BalanceExample.Criteria criteria = balanceExample.createCriteria();
+        criteria.andTelephoneEqualTo(bean.getTelephone()) ;
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
         List<Balance> balances = mapper.selectByExample(balanceExample);
         PageInfo<Balance> pageInfo = new PageInfo(balances);
-
         return pageInfo;
     }
 
