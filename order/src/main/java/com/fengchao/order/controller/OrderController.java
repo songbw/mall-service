@@ -335,6 +335,7 @@ public class OrderController {
 
     @PutMapping("/subOrder/cancel")
     private OperaResult subOrderCancel(@RequestBody OrderDetail bean, OperaResult result) {
+        log.info("sub order cancel 入参：{}", JSONUtil.toJsonString(bean));
         if (StringUtils.isEmpty(bean)) {
             result.setCode(4000004);
             result.setMsg("参数不能为空。");
@@ -346,6 +347,7 @@ public class OrderController {
             return result;
         }
         result.getData().put("result", service.subOrderCancel(bean)) ;
+        log.info("sub order cancel 返回值结果：{}", JSONUtil.toJsonString(result));
         return result;
     }
 
