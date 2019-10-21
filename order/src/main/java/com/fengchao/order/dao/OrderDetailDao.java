@@ -138,7 +138,7 @@ public class OrderDetailDao {
         orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
         if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 4 || orderDetail.getStatus() == 5) {
             OrderDetail findOrderDetail = orderDetailMapper.selectByPrimaryKey(orderDetail.getId()) ;
-            Orders orders = ordersMapper.selectByPrimaryKey(orderDetail.getOrderId()) ;
+            Orders orders = ordersMapper.selectByPrimaryKey(findOrderDetail.getOrderId()) ;
             if (orders != null && orders.getStatus() < 2) {
                 //  判断主订单所属子订单是否全部为取消
                 OrderDetailExample orderDetailExample1 = new OrderDetailExample() ;
@@ -153,7 +153,7 @@ public class OrderDetailDao {
                 // 更新主订单状态为取消
                 if (orderDetailList == null || orderDetailList.size() == 0) {
                     Orders ordersU = new Orders();
-                    ordersU.setId(orderDetail.getOrderId());
+                    ordersU.setId(findOrderDetail.getOrderId());
                     if (orderDetail.getStatus() == 3) {
                         ordersU.setStatus(2);
                     } else {
