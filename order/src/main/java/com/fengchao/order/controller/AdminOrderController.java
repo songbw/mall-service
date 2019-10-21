@@ -201,6 +201,7 @@ public class AdminOrderController {
 
             // 2.获取入账订单集合
             List<ExportOrdersVo> exportOrdersVoListIncome = adminOrderService.exportOrdersReconciliationIncome(orderExportReqVo);
+            // 获取出账订单集合
             List<ExportOrdersVo> exportOrdersVoListOut = adminOrderService.exportOrdersReconciliationOut(orderExportReqVo);
 
             if (CollectionUtils.isEmpty(exportOrdersVoListIncome) && CollectionUtils.isEmpty(exportOrdersVoListOut)) {
