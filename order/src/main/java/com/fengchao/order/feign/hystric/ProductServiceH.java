@@ -1,5 +1,6 @@
 package com.fengchao.order.feign.hystric;
 
+import com.fengchao.order.bean.InventoryMpus;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.ProductService;
 import lombok.Setter;
@@ -20,6 +21,11 @@ public class ProductServiceH implements ProductService {
 
     @Override
     public OperaResult findProductListByMpuIdList(List<String> mpuIdList) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResult inventorySub(List<InventoryMpus> inventories) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 }

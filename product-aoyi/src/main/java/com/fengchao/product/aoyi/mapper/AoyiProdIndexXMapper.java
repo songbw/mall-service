@@ -49,4 +49,6 @@ public interface AoyiProdIndexXMapper {
      * @return
      */
     List<AoyiProdIndexX> selectProductListPageable(HashMap map);
+
+    AoyiProdIndexX selectForUpdateByMpu(String mpu);
 }

@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ import java.util.List;
 public interface ProductService {
 
     PageBean findList(ProductQueryBean queryBean) throws ProductException;
+
+    PageInfo<AoyiProdIndex> findListByCategories(ProductQueryBean queryBean) throws ProductException;
 
     OperaResult findPrice(PriceQueryBean queryBean) throws ProductException ;
 
@@ -45,4 +48,19 @@ public interface ProductService {
     OperaResponse search(ProductQueryBean queryBean) ;
 
     List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList);
+
+    /**
+     * 查询自营库存
+     * @param queryBean
+     * @return
+     */
+    OperaResult findInventorySelf(InventorySelfQueryBean queryBean) ;
+
+    /**
+     * 批量减库存
+     * @param inventories
+     * @return
+     */
+    OperaResult inventorySub(List<InventoryMpus> inventories) ;
+
 }

@@ -7,11 +7,15 @@ public class PromotionMpu {
 
     private String mpu;
 
-    private String discount;
-
     private String skuid;
 
+    private String discount;
+
     private Integer scheduleId;
+
+    private String promotionImage;
+
+    private Integer perLimited;
 
     public Integer getId() {
         return id;
@@ -34,7 +38,15 @@ public class PromotionMpu {
     }
 
     public void setMpu(String mpu) {
-        this.mpu = mpu;
+        this.mpu = mpu == null ? null : mpu.trim();
+    }
+
+    public String getSkuid() {
+        return skuid;
+    }
+
+    public void setSkuid(String skuid) {
+        this.skuid = skuid == null ? null : skuid.trim();
     }
 
     public String getDiscount() {
@@ -45,20 +57,27 @@ public class PromotionMpu {
         this.discount = discount == null ? null : discount.trim();
     }
 
-
-    public String getSkuid() {
-        return skuid;
-    }
-
-    public void setSkuid(String skuid) {
-        this.skuid = skuid;
-    }
-
     public Integer getScheduleId() {
         return scheduleId;
     }
 
     public void setScheduleId(Integer scheduleId) {
         this.scheduleId = scheduleId;
+    }
+
+    public String getPromotionImage() {
+        return promotionImage;
+    }
+
+    public void setPromotionImage(String promotionImage) {
+        this.promotionImage = promotionImage == null ? null : promotionImage.trim();
+    }
+
+    public Integer getPerLimited() {
+        return perLimited;
+    }
+
+    public void setPerLimited(Integer perLimited) {
+        this.perLimited = perLimited;
     }
 }

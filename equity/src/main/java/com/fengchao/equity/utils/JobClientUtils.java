@@ -88,4 +88,21 @@ public class JobClientUtils {
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
         jobClient.submitJob(job);
     }
+
+    /**
+     * 虚拟券失效任务
+     * @param id
+     */
+    public static void virtualTicketsInvalidTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+        Job job = new Job();
+        job.setTaskId("virtual_invalid_trigger_" + id);
+        job.setParam("type", "virtualEnd");
+        job.setParam("virtualId", id + "");
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker");
+        job.setNeedFeedback(true);
+        job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
+        job.setTriggerTime(triggerTime.getTime());
+        jobClient.submitJob(job);
+    }
+
 }

@@ -27,7 +27,7 @@ public interface PromotionXMapper {
 
     List<PromotionX>  selectAll();
 
-    List<PromotionInfoBean> selectPromotionInfoByMpu(String skuId);
+    List<PromotionInfoBean> selectPromotionInfoByMpu(String mpu);
 
     int promotionEnd(int promotionId);
 

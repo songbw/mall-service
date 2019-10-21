@@ -18,16 +18,16 @@ import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,6 +72,11 @@ public class ProductServiceImpl implements ProductService {
         }
         pageBean = PageBean.build(pageBean, prodIndices, total, queryBean.getPageNo(), queryBean.getPageSize());
         return pageBean;
+    }
+
+    @Override
+    public PageInfo<AoyiProdIndex> findListByCategories(ProductQueryBean queryBean) throws ProductException {
+        return productDao.selectListByCategories(queryBean);
     }
 
     @Override
@@ -175,12 +180,13 @@ public class ProductServiceImpl implements ProductService {
     public ProductInfoBean findAndPromotion(String mpu) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
         AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
-        BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
-        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getSkuid());
-        infoBean.setPromotion(promotionInfoBeans);
-
-        List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
-        infoBean.setCoupon(couponBeans);
+        if (aoyiProdIndexX != null) {
+            BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu());
+            infoBean.setPromotion(promotionInfoBeans);
+            List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
+            infoBean.setCoupon(couponBeans);
+        }
         return infoBean;
     }
 
@@ -260,6 +266,57 @@ public class ProductServiceImpl implements ProductService {
         List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;
+    }
+
+    @Override
+    public OperaResult findInventorySelf(InventorySelfQueryBean queryBean) {
+        OperaResult result = new OperaResult();
+        log.info("根据mup集合查询库存信息 数据库查询参数:{}", JSONUtil.toJsonString(queryBean));
+        List<String> mpuList = new ArrayList<>() ;
+        queryBean.getInventories().forEach(inventoryMpus -> {
+            mpuList.add(inventoryMpus.getMpu()) ;
+        });
+        List<InventoryMpus> inventories = new ArrayList<>() ;
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuList);
+        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+            for (InventoryMpus inventory: queryBean.getInventories()) {
+                if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){
+                    if (aoyiProdIndex.getInventory() >= inventory.getRemainNum()) {
+                        inventory.setState("1");
+                    }
+                    inventories.add(inventory) ;
+                }
+            }
+        });
+        result.getData().put("result", inventories) ;
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public OperaResult inventorySub(List<InventoryMpus> inventories) {
+        OperaResult result = new OperaResult();
+        for (InventoryMpus inventoryMpus : inventories) {
+            AoyiProdIndexX prodIndexX = mapper.selectForUpdateByMpu(inventoryMpus.getMpu()) ;
+            if (prodIndexX == null) {
+                result.setCode(200010);
+                result.setMsg("商品 " + prodIndexX.getMpu() + " 不存在。");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
+            if (prodIndexX.getInventory() <= 0 || prodIndexX.getInventory() < inventoryMpus.getRemainNum()) {
+                result.setCode(200010);
+                result.setMsg("商品 " + prodIndexX.getName() + " 库存不足。");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
+            AoyiProdIndexX temp = new AoyiProdIndexX();
+            temp.setMpu(prodIndexX.getMpu());
+            temp.setUpdatedAt(new Date());
+            temp.setInventory(prodIndexX.getInventory() - inventoryMpus.getRemainNum());
+            mapper.updateByPrimaryKeySelective(temp) ;
+        }
+        return result;
     }
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {

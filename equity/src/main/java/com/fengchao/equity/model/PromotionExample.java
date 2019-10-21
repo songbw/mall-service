@@ -665,6 +665,66 @@ public class PromotionExample {
             return (Criteria) this;
         }
 
+        public Criteria andAccountTypeIsNull() {
+            addCriterion("account_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeIsNotNull() {
+            addCriterion("account_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeEqualTo(Integer value) {
+            addCriterion("account_type =", value, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeNotEqualTo(Integer value) {
+            addCriterion("account_type <>", value, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeGreaterThan(Integer value) {
+            addCriterion("account_type >", value, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("account_type >=", value, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeLessThan(Integer value) {
+            addCriterion("account_type <", value, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("account_type <=", value, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeIn(List<Integer> values) {
+            addCriterion("account_type in", values, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeNotIn(List<Integer> values) {
+            addCriterion("account_type not in", values, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeBetween(Integer value1, Integer value2) {
+            addCriterion("account_type between", value1, value2, "accountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("account_type not between", value1, value2, "accountType");
+            return (Criteria) this;
+        }
+
         public Criteria andDailyScheduleIsNull() {
             addCriterion("daily_schedule is null");
             return (Criteria) this;

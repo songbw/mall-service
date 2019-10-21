@@ -1,5 +1,6 @@
 package com.fengchao.base.controller;
 
+import com.fengchao.base.bean.AyFcImages;
 import com.fengchao.base.bean.OperaResult;
 import com.fengchao.base.service.UploadService;
 import com.fengchao.base.utils.Config;
@@ -33,6 +34,13 @@ public class UploadController {
         String baseUrl = Config.getString("base.url");
         result.getData().put("baseUrl", baseUrl) ;
         result.getData().put("cdnUrl", cdnUrl) ;
+        return result;
+    }
+
+    @PostMapping("/down/upload")
+    private OperaResult downUpload(@RequestBody AyFcImages images) {
+        OperaResult result = new OperaResult();
+        service.downUpload(images) ;
         return result;
     }
 }

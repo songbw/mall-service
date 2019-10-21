@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.bean;
 
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,57 +8,35 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter
-@Getter
-public class ProductInfoBean implements Serializable {
-
-    private Integer id;
-
-    private String skuid;
-
-    private String brand;
-
-    private String category;
-
-    private String image;
-
-    private String model;
-
-    private String name;
-
-    private String weight;
-
-    private String upc;
-
-    private String saleunit;
-    // 上下架状态 1：已上架；0：已下架
-    private String state;
-
-    private String price;
-
-    private String sprice;
-
-    private String imagesUrl;
-
-    private String introductionUrl;
-
-    private String categoryName;
-
-    private String imageExtend;
-
-    private String imagesUrlExtend;
-
-    private String introductionUrlExtend;
+public class ProductInfoBean extends AoyiProdIndex implements Serializable {
 
     private List<PromotionInfoBean> promotion = new ArrayList<>();
 
     private List<CouponBean> coupon = new ArrayList<>();
 
-    private Integer merchantId ;
+    private String categoryName ;
 
-    private Integer inventory ;
+    public List<PromotionInfoBean> getPromotion() {
+        return promotion;
+    }
 
-    private Integer brandId ;
+    public void setPromotion(List<PromotionInfoBean> promotion) {
+        this.promotion = promotion;
+    }
 
-    private String mpu;
+    public List<CouponBean> getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(List<CouponBean> coupon) {
+        this.coupon = coupon;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 }

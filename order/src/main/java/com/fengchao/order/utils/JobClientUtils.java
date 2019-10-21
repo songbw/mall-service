@@ -38,7 +38,7 @@ public class JobClientUtils {
         job.setTaskTrackerNodeGroup("order_cancel_trade_TaskTracker");
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
-        job.setTriggerTime(DateUtils.addDay(new Date(), 15).getTime());   // 15 天之后执行
+        job.setTriggerTime(DateUtils.addDay(new Date(), 10).getTime());   // 15 天之后执行
         jobClient.submitJob(job);
     }
 }

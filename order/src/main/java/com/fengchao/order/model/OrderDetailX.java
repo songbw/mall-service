@@ -49,7 +49,11 @@ public class OrderDetailX implements Serializable {
 
     private Float skuCouponDiscount ;
 
+    private BigDecimal skuBalanceDiscount ;
+
     private String category;
+
+    private String remark;
 
     public Integer getId() {
         return id;
@@ -233,5 +237,21 @@ public class OrderDetailX implements Serializable {
 
     public void setCheckedPrice(BigDecimal checkedPrice) {
         this.checkedPrice = checkedPrice;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public BigDecimal getSkuBalanceDiscount() {
+        return skuBalanceDiscount;
+    }
+
+    public void setSkuBalanceDiscount(BigDecimal skuBalanceDiscount) {
+        this.skuBalanceDiscount = skuBalanceDiscount;
     }
 }

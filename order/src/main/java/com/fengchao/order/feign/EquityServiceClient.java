@@ -3,6 +3,7 @@ package com.fengchao.order.feign;
 import com.fengchao.order.bean.CouponUseInfoBean;
 import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
+import com.fengchao.order.bean.VirtualTicketsBean;
 import com.fengchao.order.feign.hystric.EquityServiceClientH;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -57,4 +58,15 @@ public interface EquityServiceClient {
      */
     @RequestMapping(value = "/couponUseInfo/findByIdList", method = RequestMethod.GET)
     OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList);
+
+    @RequestMapping(value = "/promotion/mpuList", method = RequestMethod.GET)
+    OperaResult findPromotionByMpuList(@RequestParam("mpuList") List<String> mpuList);
+
+    /**
+     * 生成用户虚拟商品
+     * @param bean
+     * @return
+     */
+    @RequestMapping(value = "/virtual/create", method = RequestMethod.POST)
+    OperaResult createVirtual(@RequestBody VirtualTicketsBean bean);
 }

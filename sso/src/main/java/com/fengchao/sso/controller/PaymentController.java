@@ -27,7 +27,15 @@ public class PaymentController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private OperaResult pingAnPayment(@RequestBody PaymentBean paymentBean, OperaResult result){
-        return service.payment(paymentBean);
+        logger.info("平安支付 入参:{}", JSONUtil.toJsonString(paymentBean));
+        result = service.payment(paymentBean);
+        logger.info("平安支付 返回:{}", result);
+        return result;
+    }
+
+    @PostMapping(value = "/gat",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    private OperaResult gatPayment(@RequestBody PaymentBean paymentBean, OperaResult result){
+        return service.gPayment(paymentBean);
     }
 
     @PostMapping(value = "/pingan/back", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

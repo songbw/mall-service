@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IUserService {
-    User selectById(String id);
+    User selectById(Integer id);
 
     int update(UserBean bean);
 
@@ -21,7 +21,7 @@ public interface IUserService {
 
     User selectUserByOpenId(String openId, String iAppId);
 
-    PageInfo<SUser> selectUser(Integer page, Integer limit);
+    PageInfo<SUser> selectUser(Integer page, Integer limit, String name, String sex, String telephone);
 
     int updateByUsername(UserBean userBean);
 

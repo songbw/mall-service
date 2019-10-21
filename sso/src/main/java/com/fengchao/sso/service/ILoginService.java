@@ -1,6 +1,7 @@
 package com.fengchao.sso.service;
 
 import com.fengchao.sso.bean.LoginBean;
+import com.fengchao.sso.bean.OperaResponse;
 import com.fengchao.sso.bean.ThirdLoginBean;
 import com.fengchao.sso.bean.TokenBean;
 import com.fengchao.sso.model.Login;
@@ -20,4 +21,8 @@ public interface ILoginService {
     TokenBean thirdLogin(ThirdLoginBean loginBean) ;
 
     OperaResult findThirdPartyToken(String iAppId, String initCode);
+
+    OperaResult findThirdPartyTokenGAT(String iAppId, String initCode);
+
+    OperaResult getPingAnOpenId(String iAppId, String requestCode) ;
 }

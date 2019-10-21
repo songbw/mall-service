@@ -1,6 +1,8 @@
 package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
+import com.fengchao.product.aoyi.bean.OperaResponse;
+import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -67,6 +69,18 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("根据categoryid集合查询分类信息 获取List<CategoryBean>:{}", JSONUtil.toJsonString(categoryBeanList));
 
         return categoryBeanList;
+    }
+
+    @Override
+    public OperaResponse insertOrUpdate(AoyiBaseCategory bean) {
+        OperaResponse response = new OperaResponse();
+        response.setData(categoryDao.insertOrUpdate(bean));
+        return response;
+    }
+
+    @Override
+    public List<AoyiBaseCategory> findByIds(List<Integer> categoryIds) {
+        return categoryDao.selectByCategoryIds(categoryIds);
     }
 
     //============================== private =======================

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,14 +53,14 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    public OperaResult getProfileList(Integer pageNo, Integer pageSize, OperaResult result){
+    public OperaResult getProfileList(Integer pageNo, Integer pageSize, String name, String sex, String telephone, OperaResult result){
         if(pageNo == null || pageNo <= 0){
             pageNo = 1;
         }
         if (pageSize == null || pageSize > 200) {
             pageNo = 10;
         }
-        result.getData().put("userList",service.selectUser(pageNo, pageSize));
+        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone));
         return result;
     }
 
@@ -126,6 +127,19 @@ public class UserController {
         log.info("查询用户总数,入参:无");
         result.getData().put("count", service.findUserCount());
         log.info("查询用户总数,返回:{}", JSONUtil.toJsonString(result));
+        return result;
+    }
+
+    @GetMapping("profile")
+    public OperaResult findById(Integer id) {
+        OperaResult result = new OperaResult();
+        if(id == null || id == 0){
+            result.setCode(100000);
+            result.setMsg("Id不能为空");
+            return result;
+        }
+        User user = service.selectById(id);
+        result.getData().put("user",user);
         return result;
     }
 }

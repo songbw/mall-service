@@ -1595,6 +1595,66 @@ public class OrderDetailExample {
             addCriterion("remark not between", value1, value2, "remark");
             return (Criteria) this;
         }
+
+        public Criteria andCompleteTimeIsNull() {
+            addCriterion("complete_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeIsNotNull() {
+            addCriterion("complete_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeEqualTo(Date value) {
+            addCriterion("complete_time =", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeNotEqualTo(Date value) {
+            addCriterion("complete_time <>", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeGreaterThan(Date value) {
+            addCriterion("complete_time >", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("complete_time >=", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeLessThan(Date value) {
+            addCriterion("complete_time <", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeLessThanOrEqualTo(Date value) {
+            addCriterion("complete_time <=", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeIn(List<Date> values) {
+            addCriterion("complete_time in", values, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeNotIn(List<Date> values) {
+            addCriterion("complete_time not in", values, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeBetween(Date value1, Date value2) {
+            addCriterion("complete_time between", value1, value2, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeNotBetween(Date value1, Date value2) {
+            addCriterion("complete_time not between", value1, value2, "completeTime");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

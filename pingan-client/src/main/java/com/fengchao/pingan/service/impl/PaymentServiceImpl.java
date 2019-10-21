@@ -3,12 +3,17 @@ package com.fengchao.pingan.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.pingan.bean.*;
+import com.fengchao.pingan.config.PingAnClientConfig;
 import com.fengchao.pingan.exception.PinganClientException;
+import com.fengchao.pingan.feign.WSPayClientService;
 import com.fengchao.pingan.service.PaymentService;
 import com.fengchao.pingan.utils.HttpClient;
+import com.fengchao.pingan.utils.JSONUtil;
 import com.fengchao.pingan.utils.Pkcs8Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.client.Entity;
@@ -18,10 +23,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
+@EnableConfigurationProperties({PingAnClientConfig.class})
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
     private static Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
+    @Autowired
+    private WSPayClientService payClientService;
+    @Autowired
+    private PingAnClientConfig config;
 
     @Override
     public PaymentResult paymentOrder(PaymentBean paymentBean) throws PinganClientException {
@@ -33,7 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
         param.setActPayFee(paymentBean.getAmount());
         param.setBody(paymentBean.getGoodsName());
         param.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-        param.setNotifyUrl(HttpClient.NOTIFY_URL);
+        param.setNotifyUrl(config.getNotifyUrl());
         resquest.setData(param);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(param, Map.class);
@@ -76,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
         RefundParam param = new RefundParam();
         param.setTotalFee(bean.getAmount());
         param.setRefundFee(bean.getAmount());
-        param.setNoticeUrl(HttpClient.NOTIFY_URL);
+        param.setNoticeUrl(config.getNotifyUrl());
         param.setOutRefundNo(bean.getOutRefundNo());
         param.setSourceOutTradeNo(bean.getSourceOutTradeNo());
         param.setSourceOrderNo(bean.getSourceOrderNo());
@@ -104,6 +114,33 @@ public class PaymentServiceImpl implements PaymentService {
 //            return  response.readEntity(PaymentResult.class);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public PaymentResult wsPayClient(PaymentBean paymentBean) {
+        PrePayDTO prePayDTO = new PrePayDTO();
+        prePayDTO.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+        prePayDTO.setTotalFee(paymentBean.getAmount() + "");
+        prePayDTO.setActPayFee(paymentBean.getAmount() + "");
+        prePayDTO.setBody(paymentBean.getGoodsName());
+        prePayDTO.setNotifyUrl(config.getNotifyUrl());
+        logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(prePayDTO));
+        PaymentResult result = new PaymentResult();
+        CommonResult<PrePayResultDTO> prePayResultDTOCommonResult = payClientService.payment(prePayDTO) ;
+        logger.info("聚合支付返回值： {}", JSONUtil.toJsonString(prePayResultDTOCommonResult));
+        if (prePayResultDTOCommonResult.getCode() == 200) {
+            PrePayResultDTO prePayResultDTO = prePayResultDTOCommonResult.getData();
+            OrderNo orderNo = new OrderNo();
+            orderNo.setOrderNo(prePayResultDTO.getOrderNo());
+            orderNo.setOutTradeNo(prePayResultDTO.getOutTradeNo());
+            result.setReturnCode("200");
+            result.setData(orderNo);
+            return result;
+        } else {
+            result.setReturnCode(prePayResultDTOCommonResult.getCode() + "");
+            result.setMsg(prePayResultDTOCommonResult.getMessage());
+            return result;
         }
     }
 }

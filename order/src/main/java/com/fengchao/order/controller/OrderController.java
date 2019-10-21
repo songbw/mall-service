@@ -332,4 +332,44 @@ public class OrderController {
         result.getData().put("result", service.findOrderListByOpenId(openId)) ;
         return result;
     }
+
+    @PutMapping("/subOrder/cancel")
+    private OperaResult subOrderCancel(@RequestBody OrderDetail bean, OperaResult result) {
+        log.info("sub order cancel 入参：{}", JSONUtil.toJsonString(bean));
+        if (StringUtils.isEmpty(bean)) {
+            result.setCode(4000004);
+            result.setMsg("参数不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(bean.getId())) {
+            result.setCode(4000005);
+            result.setMsg("id不能为空。");
+            return result;
+        }
+        result.getData().put("result", service.subOrderCancel(bean)) ;
+        log.info("sub order cancel 返回值结果：{}", JSONUtil.toJsonString(result));
+        return result;
+    }
+
+    @PutMapping("/subOrder/status")
+    private OperaResult updateSubOrderStatus(@RequestBody OrderDetail bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        if (StringUtils.isEmpty(bean)) {
+            result.setCode(4000004);
+            result.setMsg("参数不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(bean.getId())) {
+            result.setCode(4000005);
+            result.setMsg("id不能为空。");
+            return result;
+        }
+        if (StringUtils.isEmpty(bean.getStatus())) {
+            result.setCode(4000005);
+            result.setMsg("status不能为空。");
+            return result;
+        }
+        bean.setMerchantId(merchantId);
+        result.getData().put("result", service.updateSubOrderStatus(bean)) ;
+        return result;
+    }
 }

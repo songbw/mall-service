@@ -330,6 +330,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             bean.setUserCouponCode("2");
             return bean;
         }
+        if(couponUseInfo.getStatus() != 1){
+            bean.setUserCouponCode("4");
+            return bean;
+        }
         int num= mapper.updateByUserCode(useInfo);
         CouponX coupon = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         if(num == 1){

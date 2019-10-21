@@ -50,4 +50,6 @@ public interface CouponService {
     List<Object> giftCoupon(String openId, String iAppId);
 
     PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize);
+
+    List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId);
 }

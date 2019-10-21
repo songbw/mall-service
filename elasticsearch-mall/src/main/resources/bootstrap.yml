@@ -7,6 +7,7 @@ eureka:
     lease-expiration-duration-in-seconds: 10
     prefer-ip-address: true
     appname: elasticsearch-mall
+    health-check-url-path: /actuator/health
   client:
     registry-fetch-interval-seconds: 5
     service-url:
@@ -23,14 +24,12 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
-      #使用uri时eureka注册信息可以直接写在git仓库中，但这必须要先知道config-server的http://host:port。
-      #      uri: http://localhost:9004
-      #      name: mysql
       profile: ${spring.profiles.active}
       retry:
         max-attempts: 3
         max-interval: 2000
         initial-interval: 2000
+
         request-read-timeout: 10000
   data:
     elasticsearch:

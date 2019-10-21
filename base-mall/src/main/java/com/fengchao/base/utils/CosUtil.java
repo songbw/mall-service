@@ -7,21 +7,24 @@ import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.region.Region;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 
+@Slf4j
 public class CosUtil {
     public static String baseAoyiProdUrl = "http://aoyiprod-1252099010.cossh.myqcloud.com/";
     public static String iWalletUrlT = "https://iwallet-1258175138.cos.ap-beijing.myqcloud.com";
     public static String iWalletBucketName = "iwallet-1258175138";
 
-    private  static COSCredentials cred =  new BasicCOSCredentials("AKIDb6fBh75Ah3FG6lpeqqgLqJdnwxrb6eEl","Ws23sVxFMapz0sZ7UzWzOh9pW9hAXjka") ;
+    private  static COSCredentials cred =  new BasicCOSCredentials("AKIDmMgkY6GO9h16vUQsgEW8WfZGjyzlq8f4","c4OVP5ZqxrY2FCtKUO2QYR3QXP1NVO3T") ;
     private static ClientConfig clientConfig = new ClientConfig(new Region("ap-beijing"));
     private static COSClient cosClient = new COSClient(cred, clientConfig);
 
     public static String upload(String bucketName, File file, String path) {
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, path, file);
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+        log.info("腾讯云COS上传图片返回： {}", JSONUtil.toJsonString(putObjectResult));
         return path;
     }
 

@@ -2,7 +2,6 @@ package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.model.CouponUseInfoX;
-import com.fengchao.equity.model.CouponX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.JSONUtil;
@@ -92,6 +91,9 @@ public class CouponController {
         }else if(couponUseInfoBean.getUserCouponCode().equals("3")){
             result.setCode(40011);
             result.setMsg("领取失败");
+        }else if(couponUseInfoBean.getUserCouponCode().equals("4")){
+            result.setCode(40012);
+            result.setMsg("优惠券已失效");
         }else{
             result.getData().put("couponCode", couponUseInfoBean.getCouponCode());
             result.getData().put("couponCollectNum", couponUseInfoBean.getCouponCollectNum());
@@ -199,6 +201,13 @@ public class CouponController {
 
         log.info("根据id集合获取coupon列表 返回:{}", JSONUtil.toJsonString(result));
 
+        return result;
+    }
+
+    @GetMapping("batchCoupon")
+    public OperaResult findCouponListByIdList(@RequestParam("ids") List<Integer> ids, String openId, OperaResult result){
+        List<CouponBean> couponBeanList = couponService.findCouponListByIdList(ids, openId);
+        result.getData().put("result", couponBeanList);
         return result;
     }
 }

@@ -47,6 +47,12 @@ public class AoyiProdIndex {
 
     private Date updatedAt;
 
+    private Date syncAt;
+
+    private Integer type;
+
+    private String compareUrl;
+
     public Integer getId() {
         return id;
     }
@@ -221,5 +227,29 @@ public class AoyiProdIndex {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Date getSyncAt() {
+        return syncAt;
+    }
+
+    public void setSyncAt(Date syncAt) {
+        this.syncAt = syncAt;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getCompareUrl() {
+        return compareUrl;
+    }
+
+    public void setCompareUrl(String compareUrl) {
+        this.compareUrl = compareUrl == null ? null : compareUrl.trim();
     }
 }

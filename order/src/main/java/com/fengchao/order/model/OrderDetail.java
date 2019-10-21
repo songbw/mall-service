@@ -50,6 +50,8 @@ public class OrderDetail {
 
     private String remark;
 
+    private Date completeTime;
+
     public Integer getId() {
         return id;
     }
@@ -232,5 +234,13 @@ public class OrderDetail {
 
     public void setRemark(String remark) {
         this.remark = remark == null ? null : remark.trim();
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
     }
 }

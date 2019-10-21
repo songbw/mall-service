@@ -7,18 +7,16 @@ import com.fengchao.aggregation.bean.AggregationBean;
 import com.fengchao.aggregation.bean.OperaResult;
 import com.fengchao.aggregation.bean.PageBean;
 import com.fengchao.aggregation.exception.AggregationException;
+import com.fengchao.aggregation.feign.EquityService;
 import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.service.AggregationService;
 import com.fengchao.aggregation.utils.CosUtil;
-import com.fengchao.aggregation.utils.RedisDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
-import static io.lettuce.core.GeoArgs.Unit.m;
 
 @Service
 public class AggregationServiceImpl implements AggregationService {
@@ -28,9 +26,9 @@ public class AggregationServiceImpl implements AggregationService {
     @Autowired
     private AggregationMpuMapper mpuMapper;
     @Autowired
-    private RedisDAO redisDAO;
-    @Autowired
     private ProdService prodService;
+    @Autowired
+    private EquityService equityService;
 
     @Override
     public PageBean findAggregation(Integer offset, Integer limit, String order, Integer merchantId) throws AggregationException {
@@ -64,7 +62,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findAggregationById(Integer id) throws AggregationException {
         Aggregation aggregation = mapper.selectByPrimaryKey(id);
-        Aggregation aggregationByIdtest = findAggregationByIdtest(aggregation.getContent());
+        Aggregation aggregationByIdtest = convertContent(aggregation.getContent());
 //        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
 //        if(AggregationArray == null || AggregationArray.size() < 1 ){
 //            return aggregation;
@@ -118,7 +116,7 @@ public class AggregationServiceImpl implements AggregationService {
         return aggregation;
     }
 
-    public Aggregation findAggregationByIdtest(String content) throws AggregationException {
+    public Aggregation convertContent(String content) throws AggregationException {
         List<String> mpus = new ArrayList<>();
         Aggregation aggregation = new Aggregation();
         JSONArray AggregationArray = JSONObject.parseArray(content);
@@ -150,7 +148,8 @@ public class AggregationServiceImpl implements AggregationService {
         }
         HashSet<String> hashSet = new HashSet<>(mpus);
         mpus.clear();mpus.addAll(hashSet);
-        Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
+        Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
+        Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
             OperaResult result = prodService.findProductListByMpuIdList(mpus);
             if (result.getCode() == 200) {
@@ -158,6 +157,14 @@ public class AggregationServiceImpl implements AggregationService {
                 List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
                 for(AoyiProdIndex prod: aoyiProdIndices){
                     aoyiProdMap.put(prod.getMpu(), prod);
+                }
+            }
+            OperaResult onlinePromotion = equityService.findOnlinePromotion();
+            if (onlinePromotion.getCode() == 200) {
+                Object object = onlinePromotion.getData().get("result");
+                List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
+                for(PromotionMpu mpu: promotionMpus){
+                    promotionMap.put(mpu.getMpu(), mpu);
                 }
             }
         }
@@ -170,18 +177,19 @@ public class AggregationServiceImpl implements AggregationService {
                     String mpu = jsonObject.getString("mpu");
                         if (mpu != null && !mpu.equals("")) {
                             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
-                            String imageUrl = aoyiProdIndex.getImagesUrl();
-                            if (imageUrl != null && (!"".equals(imageUrl))) {
-                                String image = "";
-                                if (imageUrl.indexOf("/") == 0) {
-                                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                                } else {
-                                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                            if(aoyiProdIndex != null){
+                                String imageUrl = aoyiProdIndex.getImagesUrl();
+                                if (imageUrl != null && (!"".equals(imageUrl))) {
+                                    String image = "";
+                                    if (imageUrl.indexOf("/") == 0) {
+                                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                                    } else {
+                                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                                    }
+                                    aoyiProdIndex.setImage(image);
                                 }
-                                aoyiProdIndex.setImage(image);
+                                jsonObject.put("imagePath", aoyiProdIndex.getImage());
                             }
-                            jsonObject.put("imagePath", aoyiProdIndex.getImage());
-                            jsonObject.put("intro", aoyiProdIndex.getBrand() + " " + aoyiProdIndex.getName());
                         }
                 }
             }
@@ -205,9 +213,12 @@ public class AggregationServiceImpl implements AggregationService {
                                     }
                                     aoyiProdIndex.setImage(image);
                                 }
+                                PromotionMpu promotionMpu = promotionMap.get(mpu);
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
-                                jsonObject.put("intro", aoyiProdIndex.getBrand() + " " + aoyiProdIndex.getName());
+                                if(promotionMpu != null){
+                                    jsonObject.put("discount",  promotionMpu.getDiscount());
+                                }
                             }
                         }
                     }
@@ -297,7 +308,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findHomePage() throws AggregationException {
         Aggregation homePage = mapper.findHomePage();
-        Aggregation aggregationByIdtest = findAggregationByIdtest(homePage.getContent());
+        Aggregation aggregationByIdtest = convertContent(homePage.getContent());
 //        JSONArray AggregationArray = JSONObject.parseArray(homePage.getContent());
 //        if(AggregationArray == null || AggregationArray.size() < 1 ){
 //            return homePage;

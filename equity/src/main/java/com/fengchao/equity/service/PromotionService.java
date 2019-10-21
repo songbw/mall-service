@@ -6,6 +6,8 @@ import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.bean.PromotionResult;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Promotion;
+import com.fengchao.equity.model.PromotionMpu;
+import com.fengchao.equity.model.PromotionMpuX;
 import com.fengchao.equity.model.PromotionX;
 
 import java.util.List;
@@ -52,5 +54,9 @@ public interface PromotionService {
 
     PromotionX findCurrentSchedule(Integer num);
 
-    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule);
+    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name);
+
+    List<PromotionMpuX> findOnlineMpu();
+
+    List<PromotionMpuX> findPromotionByMpuList(List<String> mpus);
 }

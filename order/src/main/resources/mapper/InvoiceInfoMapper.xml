@@ -1,140 +1,250 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.order.mapper.InvoiceInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.order.model.InvoiceInfo" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="open_id" property="openId" jdbcType="VARCHAR" />
-    <result column="state" property="state" jdbcType="INTEGER" />
-    <result column="type" property="type" jdbcType="INTEGER" />
-    <result column="title" property="title" jdbcType="VARCHAR" />
-    <result column="content" property="content" jdbcType="VARCHAR" />
-    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
-    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.order.mapper.InvoiceInfoMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.InvoiceInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="title_name" jdbcType="VARCHAR" property="titleName" />
+    <result column="enterprise_number" jdbcType="VARCHAR" property="enterpriseNumber" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, open_id, state, type, title, content, created_at, updated_at
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_id, state, type, title_name, enterprise_number, created_at, updated_at
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.order.model.InvoiceInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from invoice_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from invoice_info
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">
-    select
-    count(id)
-    from invoice_info
-    where open_id = #{openId}
-  </select>
-  <select id="selectLimit"  resultMap="BaseResultMap" parameterType="Map">
-    select
-    <include refid="Base_Column_List" />
-    from invoice_info
-    where open_id = #{openId}
-    order by updated_at desc
-    limit #{pageNo},#{pageSize}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from invoice_info
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.order.model.InvoiceInfo" >
-    insert into invoice_info (open_id, state,
-      type, title, content, 
-      created_at, updated_at)
-    values (#{openId,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER},
-      #{type,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+  <delete id="deleteByExample" parameterType="com.fengchao.order.model.InvoiceInfoExample">
+    delete from invoice_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.InvoiceInfo" useGeneratedKeys="true">
+    insert into invoice_info (user_id, state, type, 
+      title_name, enterprise_number, created_at, 
+      updated_at)
+    values (#{userId,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{titleName,jdbcType=VARCHAR}, #{enterpriseNumber,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.order.model.InvoiceInfo" >
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.InvoiceInfo" useGeneratedKeys="true">
     insert into invoice_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
       </if>
-      <if test="openId != null" >
-        open_id,
-      </if>
-      <if test="state != null" >
+      <if test="state != null">
         state,
       </if>
-      <if test="type != null" >
+      <if test="type != null">
         type,
       </if>
-      <if test="title != null" >
-        title,
+      <if test="titleName != null">
+        title_name,
       </if>
-      <if test="content != null" >
-        content,
+      <if test="enterpriseNumber != null">
+        enterprise_number,
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         created_at,
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         updated_at,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
       </if>
-      <if test="openId != null" >
-        #{openId,jdbcType=VARCHAR},
-      </if>
-      <if test="state != null" >
+      <if test="state != null">
         #{state,jdbcType=INTEGER},
       </if>
-      <if test="type != null" >
-        #{type,jdbcType=INTEGER},
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
       </if>
-      <if test="title != null" >
-        #{title,jdbcType=VARCHAR},
+      <if test="titleName != null">
+        #{titleName,jdbcType=VARCHAR},
       </if>
-      <if test="content != null" >
-        #{content,jdbcType=VARCHAR},
+      <if test="enterpriseNumber != null">
+        #{enterpriseNumber,jdbcType=VARCHAR},
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         #{updatedAt,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.InvoiceInfo" >
+  <select id="countByExample" parameterType="com.fengchao.order.model.InvoiceInfoExample" resultType="java.lang.Long">
+    select count(*) from invoice_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
     update invoice_info
-    <set >
-      <if test="openId != null" >
-        open_id = #{openId,jdbcType=VARCHAR},
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
       </if>
-      <if test="state != null" >
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.state != null">
+        state = #{record.state,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.titleName != null">
+        title_name = #{record.titleName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.enterpriseNumber != null">
+        enterprise_number = #{record.enterpriseNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdAt != null">
+        created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedAt != null">
+        updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update invoice_info
+    set id = #{record.id,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      state = #{record.state,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=VARCHAR},
+      title_name = #{record.titleName,jdbcType=VARCHAR},
+      enterprise_number = #{record.enterpriseNumber,jdbcType=VARCHAR},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.InvoiceInfo">
+    update invoice_info
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
         state = #{state,jdbcType=INTEGER},
       </if>
-      <if test="type != null" >
-        type = #{type,jdbcType=INTEGER},
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
       </if>
-      <if test="title != null" >
-        title = #{title,jdbcType=VARCHAR},
+      <if test="titleName != null">
+        title_name = #{titleName,jdbcType=VARCHAR},
       </if>
-      <if test="content != null" >
-        content = #{content,jdbcType=VARCHAR},
+      <if test="enterpriseNumber != null">
+        enterprise_number = #{enterpriseNumber,jdbcType=VARCHAR},
       </if>
-      <if test="createdAt != null" >
+      <if test="createdAt != null">
         created_at = #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="updatedAt != null" >
+      <if test="updatedAt != null">
         updated_at = #{updatedAt,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.InvoiceInfo" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.InvoiceInfo">
     update invoice_info
-    set open_id = #{openId,jdbcType=VARCHAR},
+    set user_id = #{userId,jdbcType=VARCHAR},
       state = #{state,jdbcType=INTEGER},
-      type = #{type,jdbcType=INTEGER},
-      title = #{title,jdbcType=VARCHAR},
-      content = #{content,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      title_name = #{titleName,jdbcType=VARCHAR},
+      enterprise_number = #{enterpriseNumber,jdbcType=VARCHAR},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}

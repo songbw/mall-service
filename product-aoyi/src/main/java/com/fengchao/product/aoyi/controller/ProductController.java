@@ -30,6 +30,12 @@ public class ProductController {
         return result;
     }
 
+    @PostMapping("/all/categories")
+    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, OperaResult result) throws ProductException {
+        result.getData().put("result", service.findListByCategories(queryBean)) ;
+        return result;
+    }
+
     @GetMapping
     private OperaResult find(String mpu, OperaResult result){
         if (StringUtils.isEmpty(mpu)) {
@@ -127,4 +133,26 @@ public class ProductController {
         }
         return result;
     }
+
+    /**
+     *  自营库存
+     * @param queryBean
+     * @return
+     */
+    @PostMapping("/inventory/self")
+    private OperaResult inventorySelf(@RequestBody InventorySelfQueryBean queryBean) {
+        return service.findInventorySelf(queryBean);
+    }
+
+    /**
+     * 批量减库存
+     * @param inventories
+     * @return
+     */
+    @PutMapping("/inventory/sub")
+    private OperaResult inventorySub(@RequestBody List<InventoryMpus>  inventories) {
+        return service.inventorySub(inventories);
+    }
+
+
 }
