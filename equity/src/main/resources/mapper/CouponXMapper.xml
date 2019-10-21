@@ -201,7 +201,7 @@
     select
     <include refid="Base_Column_List" />
     from coupon
-    where id  in
+    where status in (3, 4) and id  in
     <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
       #{item}
     </foreach>
