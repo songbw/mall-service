@@ -329,6 +329,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         AyFcImages images = new AyFcImages() ;
         images.setId(id);
         images.setStatus(status);
+        images.setUpdatedAt(new Date());
         ayFcImagesDao.updateStatus(images);
         return response;
     }

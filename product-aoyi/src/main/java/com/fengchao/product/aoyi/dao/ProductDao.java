@@ -318,4 +318,21 @@ public class ProductDao {
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
     }
 
+    public List<AoyiProdIndex> selectFix() {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuLike("64%");
+        criteria.andMerchantIdNotEqualTo(1) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    public void updateFix(AoyiProdIndexWithBLOBs aoyiProdIndex) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andIdEqualTo(aoyiProdIndex.getId());
+        aoyiProdIndex.setSyncAt(new Date());
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
 }

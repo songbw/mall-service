@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.model.AoyiBaseBrand;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.BrandService;
 import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ThirdProdService;
@@ -29,6 +30,8 @@ public class ThirdProdController {
     private CategoryService categoryService;
     @Autowired
     private BrandService brandService ;
+    @Autowired
+    private AdminProdService adminProdService ;
 
     /**
      * 新增商品
@@ -155,6 +158,12 @@ public class ThirdProdController {
     @GetMapping("image/back")
     public OperaResponse imageBack(Long id,  Integer status) throws ProductException {
         return service.updateAyFcImageStatus(id, status);
+    }
+
+    @GetMapping("fix")
+    public OperaResponse fix() {
+        adminProdService.fix();
+        return new OperaResponse() ;
     }
 
 }
