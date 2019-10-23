@@ -599,6 +599,8 @@ public class AdminOrderController {
     /**
      * 将需要导出的数据转成主订单维度的map key:tradeno
      *
+     * 由于ExportOrdersVo是子订单维度，所以该转换是一个主订单tradeNo为维度的 子订单集合
+     *
      * @param exportOrdersVoList
      * @return
      */
