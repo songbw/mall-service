@@ -22,4 +22,7 @@ GAT_APP_ID: appId which got from guan ai tong
 GAT_APP_SECRET: appSceret which got from guan ai tong
 GAT_URL_PREFIX: url to access guan ai tong
 
+WECHAT_JSSDK_APP_ID: appId which got from wechat-JSSDK
+WECHAT_JSSDK_APP_SECRET: appSceret which got from wechat-JSSDK
+WECHAT_JSSDK_URL_PREFIX: url to access wechat-JSSDK
 

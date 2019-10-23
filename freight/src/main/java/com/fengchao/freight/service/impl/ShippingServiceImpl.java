@@ -208,9 +208,21 @@ public class ShippingServiceImpl implements ShippingService {
                     if(freeRegions == null){
                         freeRegions = freeShipRegionsDao.findDefaltShipRegions(template.getId());
                     }
-                    if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
-                        status = 1;
+                    if(template.getMode() == 0){
+                        if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
+                            status = 1;
+                        }
+                    }else if(template.getMode() == 1){
+                        List<MpuParam> mpuParams = bean.getMpuParams();
+                        int mpuNum = 0;
+                        for (int i = 0; i < mpuParams.size(); i++){
+                            mpuNum += mpuParams.get(i).getNum();
+                        }
+                        if(freeRegions.getFullAmount() <= mpuNum){
+                            status = 1;
+                        }
                     }
+
                 }else{
                     FreeShippingTemplateX templateX = freeshipTemplateDao.fingDefaltShipTemplate();
                     if(templateX == null){
@@ -220,8 +232,19 @@ public class ShippingServiceImpl implements ShippingService {
                         if(freeRegions == null){
                             freeRegions = freeShipRegionsDao.findDefaltShipRegions(templateX.getId());
                         }
-                        if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
-                            status = 1;
+                        if(templateX.getMode() == 0){
+                            if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
+                                status = 1;
+                            }
+                        }else if(templateX.getMode() == 1){
+                            List<MpuParam> mpuParams = bean.getMpuParams();
+                            int mpuNum = 0;
+                            for (int i = 0; i < mpuParams.size(); i++){
+                                mpuNum += mpuParams.get(i).getNum();
+                            }
+                            if(freeRegions.getFullAmount() <= mpuNum){
+                                status = 1;
+                            }
                         }
                     }
                 }
@@ -246,11 +269,13 @@ public class ShippingServiceImpl implements ShippingService {
                     if(shippingRegions == null){
                         shippingRegions = shipRegionsDao.findDefaltShipRegions(templateId);
                     }
-                    if(shippingRegions.getBaseAmount() < mpuParams.get(i).getNum()){
-                        shipPrice += mpuParams.get(i).getNum()/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
-                                + shippingRegions.getBasePrice();
-                    }else{
-                        shipPrice += shippingRegions.getBasePrice();
+                    if(shippingRegions != null){
+                        if(shippingRegions.getBaseAmount() < mpuParams.get(i).getNum()){
+                            shipPrice += mpuParams.get(i).getNum()/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
+                                    + shippingRegions.getBasePrice();
+                        }else{
+                            shipPrice += shippingRegions.getBasePrice();
+                        }
                     }
                 }
             }

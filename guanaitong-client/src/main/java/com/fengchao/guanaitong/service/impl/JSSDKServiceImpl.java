@@ -1,6 +1,9 @@
 package com.fengchao.guanaitong.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fengchao.guanaitong.bean.JssdkSignBean;
+import com.fengchao.guanaitong.config.GuanAiTongConfig;
 import com.fengchao.guanaitong.service.IJSSDKService;
 import com.fengchao.guanaitong.util.RedisDAO;
 //import com.fengchao.guanaitong.util.RedisUtil;
@@ -41,7 +44,7 @@ public class JSSDKServiceImpl implements IJSSDKService {
 
     @Override
     public String getAccessToken() throws Exception{
-
+        String _func = "getAccessToken";
         String cacheToken = redisDAO.getValue(WeChatJSSDK.JS_SDK_TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
             log.info("get cached JSSDK token: {" + cacheToken + "} ttl=" + redisDAO.ttl(WeChatJSSDK.JS_SDK_TOKEN_KEY) + "s");
@@ -51,17 +54,26 @@ public class JSSDKServiceImpl implements IJSSDKService {
         OkHttpClient client = new OkHttpClient();
 
         JSONObject json;
+        String configUrlPrefix = GuanAiTongConfig.getJSSDKUrlPrefix();
+        String urlPrefix = (null == configUrlPrefix?WeChatJSSDK.JS_SDK_URL_PREFIX:configUrlPrefix);
 
-        HttpUrl.Builder urlBuilder =HttpUrl.parse(WeChatJSSDK.JS_SDK_URL_PREFIX + WeChatJSSDK.JS_SDK_TOKEN_PATH)
+        String configAppId = GuanAiTongConfig.getJSSDKAppId();
+        String appId = (null == configAppId)?WeChatJSSDK.JS_SDK_APPID:configAppId;
+
+        String configAppSecret = GuanAiTongConfig.getJSSDKAppSecret();
+        String appSecret = (null==configAppSecret)?WeChatJSSDK.JS_SDK_APP_SECRET:configAppSecret;
+
+        HttpUrl.Builder urlBuilder =HttpUrl.parse(urlPrefix + WeChatJSSDK.JS_SDK_TOKEN_PATH)
                 .newBuilder()
                 .addQueryParameter("grant_type","client_credential")
-                .addQueryParameter("appid", WeChatJSSDK.JS_SDK_APPID)
-                .addQueryParameter("secret",WeChatJSSDK.JS_SDK_APP_SECRET);
+                .addQueryParameter("appid", appId)
+                .addQueryParameter("secret",appSecret);
 
         Request request = new Request.Builder().get()
                 .url(urlBuilder.build())
                 .build();
 
+        log.info("{} request url={}",_func, request.url().toString());
         Response response;
         try {
             response = client.newCall(request).execute();
@@ -87,12 +99,12 @@ public class JSSDKServiceImpl implements IJSSDKService {
                     return null;
             }
             Integer expires = json.getInteger("expires_in");
-            log.info("access_token:" + token);
-            log.info("expires_in:" + expires.toString());
+            log.info("access_token: {}", token);
+            log.info("expires_in: {}" , expires.toString());
             redisDAO.setValue(WeChatJSSDK.JS_SDK_TOKEN_KEY, token, expires - 5);
             return token;
         } else {
-            log.warn("data in response from guanaitong is null");
+            log.warn("data in response from Wechat-JSSDK is null");
         }
 
         return null;
@@ -100,30 +112,49 @@ public class JSSDKServiceImpl implements IJSSDKService {
     }
 
     @Override
-    public String getJsApiSign(String url) throws Exception {
+    public JssdkSignBean getJsApiSign(String url) throws Exception {
         Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         Long timeStampS = timeStampMs/1000;
         String timeStamp = timeStampS.toString();
-
+        String nonceStr = "Wm3WZYTPz0wzccnW";//getRandom();
         StringBuilder sb = new StringBuilder();
 
+        /*
+        noncestr=Wm3WZYTPz0wzccnW
+jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VMCPGGVi4C3VM0P37wVUCFvkVAy_90u5h9nbSlYy3-Sl-HhTdfl2fzFy1AOcHKP7qg
+timestamp=1414587457
+url=http://mp.weixin.qq.com?params=value
+        * */
+
         sb.append("jsapi_ticket=");
-        sb.append(getApiTicket());
+        sb.append(getApiTicket()/*"sM4AOVdWfPE4DxkXGEs8VMCPGGVi4C3VM0P37wVUCFvkVAy_90u5h9nbSlYy3-Sl-HhTdfl2fzFy1AOcHKP7qg"*/);
         sb.append("&noncestr=");
-        sb.append(getRandom());
+        sb.append(nonceStr);
         sb.append("&timestamp=");
-        sb.append(timeStamp);
+        sb.append(timeStamp/*"1414587457"*/);
         sb.append("&url=");
-        sb.append(url.trim());
+        sb.append(url.trim()/*"http://mp.weixin.qq.com?params=value"*/);
 
         String param = sb.toString();
         log.info("getJsApiSign url, param : {}",param);
         byte[] bytes = param.getBytes();
-        return DigestUtils.sha1Hex(bytes);
+        String resultSign = DigestUtils.sha1Hex(bytes);
+
+        String configAppId = GuanAiTongConfig.getJSSDKAppId();
+        String appId = (null == configAppId)?WeChatJSSDK.JS_SDK_APPID:configAppId;
+
+        JssdkSignBean result = new JssdkSignBean();
+        result.setSignature(resultSign);
+        result.setAppId(appId);
+        result.setTimestamp(timeStamp);
+        result.setNonceStr(nonceStr);
+
+        return result;
     }
 
     @Override
     public String getApiTicket() throws Exception {
+        String _func = "getApiTicket";
         String cacheTicket = redisDAO.getValue(WeChatJSSDK.JS_SDK_TICKET_KEY);
         if (null != cacheTicket && !cacheTicket.isEmpty()) {
             log.info("get cached JSSDK ticket: {" + cacheTicket + "} ttl=" + redisDAO.ttl(WeChatJSSDK.JS_SDK_TICKET_KEY) + "s");
@@ -134,16 +165,18 @@ public class JSSDKServiceImpl implements IJSSDKService {
 
         JSONObject json;
 
-        HttpUrl.Builder urlBuilder =HttpUrl.parse(WeChatJSSDK.JS_SDK_URL_PREFIX + WeChatJSSDK.JS_SDK_GET_TICKET_PATH)
+        String urlPrefix=(null == GuanAiTongConfig.getJSSDKUrlPrefix()?WeChatJSSDK.JS_SDK_URL_PREFIX:GuanAiTongConfig.getJSSDKUrlPrefix());
+
+        HttpUrl.Builder urlBuilder =HttpUrl.parse(urlPrefix + WeChatJSSDK.JS_SDK_GET_TICKET_PATH)
                 .newBuilder()
                 .addQueryParameter("access_token",getAccessToken())
-                .addQueryParameter("type", "wx_card");
-
+                .addQueryParameter("type", "jsapi");
 
         Request request = new Request.Builder().get()
                 .url(urlBuilder.build())
                 .build();
 
+        log.info("{} request url={}",_func, request.url().toString());
         Response response;
         try {
             response = client.newCall(request).execute();
