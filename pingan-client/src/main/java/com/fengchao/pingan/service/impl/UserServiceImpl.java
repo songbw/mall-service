@@ -115,7 +115,10 @@ public class UserServiceImpl implements UserService {
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         OperaResponse<InitCodeBean> result = response.readEntity(OperaResponse.class);
+//        OperaResponse<InitCodeBean> result = null ;
+//        String res = response.readEntity(String.class);
         logger.info("获取init code 返回值： {}", JSONUtil.toJsonString(result));
+//        logger.info("获取init code 返回值： {}", res);
         return  result ;
     }
 

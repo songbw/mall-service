@@ -44,10 +44,12 @@ public class BalanceDao {
     public PageInfo<Balance> selectBalanceByPageable(BalanceQueryBean bean) {
         BalanceExample balanceExample = new BalanceExample();
         BalanceExample.Criteria criteria = balanceExample.createCriteria();
+        if (!StringUtils.isEmpty(bean.getTelephone())) {
+            criteria.andTelephoneEqualTo(bean.getTelephone()) ;
+        }
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
         List<Balance> balances = mapper.selectByExample(balanceExample);
         PageInfo<Balance> pageInfo = new PageInfo(balances);
-
         return pageInfo;
     }
 
@@ -59,14 +61,14 @@ public class BalanceDao {
      */
     public PageInfo<BalanceDetail> selectBalanceDetailByPageable(BalanceDetailQueryBean bean) {
         BalanceDetailExample balanceDetailExample = new BalanceDetailExample();
+        balanceDetailExample.setOrderByClause("id desc");
         BalanceDetailExample.Criteria criteria = balanceDetailExample.createCriteria();
-        if (StringUtils.isEmpty(bean.getOpenId())) {
+        if (!StringUtils.isEmpty(bean.getOpenId())) {
             criteria.andOpenIdEqualTo(bean.getOpenId());
         }
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
         List<BalanceDetail> balanceDetails = detailMapper.selectByExample(balanceDetailExample);
         PageInfo<BalanceDetail> pageInfo = new PageInfo(balanceDetails);
-
         return pageInfo;
     }
 

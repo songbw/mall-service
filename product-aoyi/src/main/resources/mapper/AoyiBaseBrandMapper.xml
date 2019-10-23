@@ -207,4 +207,12 @@
     WHERE brand_name LIKE #{pattern}
     limit #{pageNo},#{pageSize}
   </select>
+  <select id="selectByBrandIdList" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    FROM  aoyi_base_brand where brand_id in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

@@ -65,16 +65,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public OperaResult modifyNum(ShoppingCart bean) {
         OperaResult result = new OperaResult();
         ShoppingCart temp = mapper.selectByPrimaryKey(bean.getId()) ;
-        int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId()) ;
-        if (perLimit != -1) {
-            if (perLimit <= bean.getCount()) {
-                result.setCode(4000001);
-                result.setMsg("商品超过限购数量，无法添加。");
-                result.getData().put("mpu", bean.getMpu()) ;
-                return result;
-            }
-        }
+//        int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId()) ;
+//        if (perLimit != -1) {
+//            if (perLimit <= bean.getCount()) {
+//                result.setCode(4000001);
+//                result.setMsg("商品超过限购数量，无法添加。");
+//                result.getData().put("mpu", bean.getMpu()) ;
+//                return result;
+//            }
+//        }
         bean.setUpdatedAt(new Date());
+        mapper.updateNumById(bean);
         result.getData().put("result", bean.getId()) ;
         return result;
     }

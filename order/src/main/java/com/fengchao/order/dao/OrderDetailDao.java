@@ -136,25 +136,31 @@ public class OrderDetailDao {
         temp.setUpdatedAt(new Date());
         criteria.andIdEqualTo(temp.getId()) ;
         orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
-        if (orderDetail.getStatus() == 4 || orderDetail.getStatus() == 5) {
+        if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 4 || orderDetail.getStatus() == 5) {
             OrderDetail findOrderDetail = orderDetailMapper.selectByPrimaryKey(orderDetail.getId()) ;
-            //  判断主订单所属子订单是否全部为取消
-            OrderDetailExample orderDetailExample1 = new OrderDetailExample() ;
-            OrderDetailExample.Criteria criteria1 = orderDetailExample1.createCriteria();
-            criteria1.andOrderIdEqualTo(findOrderDetail.getOrderId());
-            List<Integer> list = new ArrayList<>();
-            list.add(4) ;
-            list.add(5) ;
-            criteria1.andStatusNotIn(list) ;
-            List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample1) ;
-            // 更新主订单状态为取消
-            if (orderDetailList == null || orderDetailList.size() == 0) {
-                OrdersExample ordersExample = new OrdersExample() ;
-                OrdersExample.Criteria oCriteria = ordersExample.createCriteria();
-                Orders orders = new Orders();
-                orders.setStatus(3);
-                oCriteria.andIdEqualTo(findOrderDetail.getOrderId());
-                ordersMapper.updateByExampleSelective(orders, ordersExample) ;
+            Orders orders = ordersMapper.selectByPrimaryKey(findOrderDetail.getOrderId()) ;
+            if (orders != null && orders.getStatus() < 2) {
+                //  判断主订单所属子订单是否全部为取消
+                OrderDetailExample orderDetailExample1 = new OrderDetailExample() ;
+                OrderDetailExample.Criteria criteria1 = orderDetailExample1.createCriteria();
+                criteria1.andOrderIdEqualTo(findOrderDetail.getOrderId());
+                List<Integer> list = new ArrayList<>();
+                list.add(3) ; // 已完成
+                list.add(4) ; // 已取消
+                list.add(5) ; // 已取消，并申请售后
+                criteria1.andStatusNotIn(list) ;
+                List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample1) ;
+                // 更新主订单状态为取消
+                if (orderDetailList == null || orderDetailList.size() == 0) {
+                    Orders ordersU = new Orders();
+                    ordersU.setId(findOrderDetail.getOrderId());
+                    if (orderDetail.getStatus() == 3) {
+                        ordersU.setStatus(2);
+                    } else {
+                        ordersU.setStatus(3);
+                    }
+                    ordersMapper.updateByPrimaryKeySelective(ordersU) ;
+                }
             }
         }
         return orderDetail.getId() ;
@@ -234,6 +240,23 @@ public class OrderDetailDao {
         criteria.andSubOrderIdIn(subOrderIdList);
 
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+        return orderDetailList;
+    }
+
+    /**
+     * 根据主订单id查询子订单集合
+     *
+     * @param ordersId
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByOrdersId(Integer ordersId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdEqualTo(ordersId);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
         return orderDetailList;
     }
 

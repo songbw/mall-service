@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
 import java.util.List;
@@ -22,9 +23,9 @@ public interface AdminProdService {
 
     int getProdListToRedis();
 
-    int add(AoyiProdIndexX bean) throws ProductException;
+    String add(AoyiProdIndex bean) throws ProductException;
 
-    int update(AoyiProdIndexX bean) throws ProductException;
+    int update(AoyiProdIndex bean) throws ProductException;
 
     void delete(Integer merchantId, Integer id) throws ProductException;
 
@@ -45,4 +46,6 @@ public interface AdminProdService {
      * @return
      */
     OperaResult inventoryUpdate(InventoryMpus inventory) ;
+
+    void fix();
 }

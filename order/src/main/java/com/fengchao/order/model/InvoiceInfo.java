@@ -5,15 +5,15 @@ import java.util.Date;
 public class InvoiceInfo {
     private Integer id;
 
-    private String openId;
+    private String userId;
 
     private Integer state;
 
-    private Integer type;
+    private String type;
 
-    private String title;
+    private String titleName;
 
-    private String content;
+    private String enterpriseNumber;
 
     private Date createdAt;
 
@@ -27,12 +27,12 @@ public class InvoiceInfo {
         this.id = id;
     }
 
-    public String getOpenId() {
-        return openId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setOpenId(String openId) {
-        this.openId = openId == null ? null : openId.trim();
+    public void setUserId(String userId) {
+        this.userId = userId == null ? null : userId.trim();
     }
 
     public Integer getState() {
@@ -43,28 +43,28 @@ public class InvoiceInfo {
         this.state = state;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setType(String type) {
+        this.type = type == null ? null : type.trim();
     }
 
-    public String getTitle() {
-        return title;
+    public String getTitleName() {
+        return titleName;
     }
 
-    public void setTitle(String title) {
-        this.title = title == null ? null : title.trim();
+    public void setTitleName(String titleName) {
+        this.titleName = titleName == null ? null : titleName.trim();
     }
 
-    public String getContent() {
-        return content;
+    public String getEnterpriseNumber() {
+        return enterpriseNumber;
     }
 
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
+    public void setEnterpriseNumber(String enterpriseNumber) {
+        this.enterpriseNumber = enterpriseNumber == null ? null : enterpriseNumber.trim();
     }
 
     public Date getCreatedAt() {

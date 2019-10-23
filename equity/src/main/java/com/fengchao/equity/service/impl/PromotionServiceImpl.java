@@ -450,11 +450,11 @@ public class PromotionServiceImpl implements PromotionService {
                 List<PromotionSchedule> promotionSchedules = scheduleDao.findPromotionSchedule(beans.get(i).getScheduleId());
                 if(!promotionSchedules.isEmpty()){
                     PromotionSchedule promotionSchedule = promotionSchedules.get(0);
-                    if(promotionSchedule.getStartTime().after(now) && promotionSchedule.getEndTime().before(now)){
+                    if(promotionSchedule.getEndTime().before(now)){
+                        beans.remove(i);
+                    }else{
                         beans.get(i).setStartDate(promotionSchedule.getStartTime());
                         beans.get(i).setEndDate(promotionSchedule.getEndTime());
-                    }else{
-                        beans.remove(i);
                     }
                 }
             }

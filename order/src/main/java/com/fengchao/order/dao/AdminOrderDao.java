@@ -137,7 +137,7 @@ public class AdminOrderDao {
         OrdersExample ordersExample = new OrdersExample();
         OrdersExample.Criteria criteria = ordersExample.createCriteria();
         criteria.andPaymentNoEqualTo(paymentNo) ;
-        criteria.andStatusEqualTo(1) ;
+        criteria.andPayStatusEqualTo(5) ;
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample) ;
         return ordersList;
     }

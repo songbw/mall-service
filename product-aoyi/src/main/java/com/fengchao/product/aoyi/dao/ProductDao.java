@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.dao;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
+import com.fengchao.product.aoyi.bean.ThirdSyncBean;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
@@ -38,8 +39,7 @@ public class ProductDao {
      * @return
      */
     public Integer insert(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
-        int count = aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
-
+        aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
         return aoyiProdIndexWithBLOBs.getId();
     }
 
@@ -129,6 +129,21 @@ public class ProductDao {
     }
 
     /**
+     * 根据SKU获取商品列表
+     * @param mpu
+     * @param merchantId
+     * @return
+     */
+    public List<AoyiProdIndex> findByMpu(String mpu, int merchantId) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuEqualTo(mpu);
+        criteria.andMerchantIdEqualTo(merchantId);
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        return aoyiProdIndices;
+    }
+
+    /**
      * 添加商品数据
      * @param aoyiProdIndexX
      * @return
@@ -175,16 +190,41 @@ public class ProductDao {
      * 根据MPU更新产品信息
      * @param bean
      */
-    public void updateByMpu(AoyiProdIndexX bean) {
+    public void updateByMpu(AoyiProdIndex bean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andMpuEqualTo(bean.getMpu());
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         BeanUtils.copyProperties(bean, aoyiProdIndex);
+        aoyiProdIndex.setId(null);
         aoyiProdIndex.setUpdatedAt(new Date());
-
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
+    /**
+     * 更新产品信息
+     * @param bean
+     */
+    public int updateAoyiProduct(AoyiProdIndex bean) {
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(bean, aoyiProdIndex);
+        aoyiProdIndex.setMerchantId(null);
+        aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndex) ;
+        return aoyiProdIndex.getId() ;
+    }
+
+    /**
+     * 根据MPU添加产品信息
+     * @param bean
+     */
+    public void insertByMpu(AoyiProdIndex bean) {
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(bean, aoyiProdIndex);
+        Date date = new Date();
+        aoyiProdIndex.setUpdatedAt(date);
+        aoyiProdIndex.setCreatedAt(date);
+        aoyiProdIndexMapper.insertSelective(aoyiProdIndex) ;
     }
 
     /**
@@ -210,4 +250,89 @@ public class ProductDao {
 
         return pageInfo;
     }
+
+    /**
+     * 根据品牌获取商品列表
+     * @param brands
+     * @return
+     */
+    public List<AoyiProdIndex> selectByBrand(List<Integer> brands) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andBrandIdIn(brands) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 根据类目获取商品列表
+     * @param category
+     * @return
+     */
+    public List<AoyiProdIndex> selectByCategory(List<String> category) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andCategoryIn(category) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 根据商户获取商品列表
+     * @param merchant
+     * @return
+     */
+    public List<AoyiProdIndex> selectByMerchant(List<Integer> merchant) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMerchantIdIn(merchant) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 根据MPU获取商品列表
+     * @param mpus
+     * @return
+     */
+    public List<AoyiProdIndex> selectByMpu(List<String> mpus) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuIn(mpus) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    /**
+     * 更新同步时间字段
+     * @param id
+     */
+    public void updateSyncAt(int id) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andIdEqualTo(id);
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setSyncAt(new Date());
+
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
+    public List<AoyiProdIndex> selectFix() {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuLike("64%");
+        criteria.andMerchantIdNotEqualTo(1) ;
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample) ;
+        return aoyiProdIndices;
+    }
+
+    public void updateFix(AoyiProdIndexWithBLOBs aoyiProdIndex) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andIdEqualTo(aoyiProdIndex.getId());
+        aoyiProdIndex.setSyncAt(new Date());
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
 }

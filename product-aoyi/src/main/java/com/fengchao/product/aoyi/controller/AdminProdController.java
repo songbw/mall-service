@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.DateUtil;
@@ -83,7 +84,7 @@ public class AdminProdController {
      * @throws ProductException
      */
     @PostMapping
-    public OperaResult create(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId,
+    public OperaResult create(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId,
                               OperaResult result) throws ProductException {
         log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
 
@@ -100,7 +101,7 @@ public class AdminProdController {
             }
 
             // 执行新增商品
-            int id = prodService.add(bean);
+            String id = prodService.add(bean);
 
             result.getData().put("result", id);
         } catch (Exception e) {
@@ -116,7 +117,7 @@ public class AdminProdController {
     }
 
     @PutMapping
-    public OperaResult update(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
+    public OperaResult update(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
 //        bean.setMerchantId(merchantId);
         int id = prodService.update(bean);
         result.getData().put("result", id);

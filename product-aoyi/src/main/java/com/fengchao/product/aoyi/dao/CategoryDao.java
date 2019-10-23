@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.model.AoyiBaseCategoryExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,5 +55,36 @@ public class CategoryDao {
         List<AoyiBaseCategory> aoyiBaseCategoryList = aoyiBaseCategoryMapper.selectByExample(aoyiBaseCategoryExample);
 
         return aoyiBaseCategoryList;
+    }
+
+    /**
+     * 根据品类ID列表查询品类集合
+     *
+     * @param categoryIds
+     * @return
+     */
+    public List<AoyiBaseCategory> selectByCategoryIds(List<Integer> categoryIds) {
+        AoyiBaseCategoryExample aoyiBaseCategoryExample = new AoyiBaseCategoryExample();
+        AoyiBaseCategoryExample.Criteria criteria = aoyiBaseCategoryExample.createCriteria();
+        criteria.andCategoryIdIn(categoryIds);
+        List<AoyiBaseCategory> aoyiBaseCategoryList = aoyiBaseCategoryMapper.selectByExample(aoyiBaseCategoryExample);
+        return aoyiBaseCategoryList;
+    }
+
+    /**
+     * 添加或更新类目信息
+     *
+     * @param bean
+     * @return
+     */
+    public Integer insertOrUpdate(AoyiBaseCategory bean) {
+        AoyiBaseCategory aoyiBaseCategory = aoyiBaseCategoryMapper.selectByPrimaryKey(bean.getCategoryId()) ;
+        if (aoyiBaseCategory != null) {
+            aoyiBaseCategoryMapper.updateByPrimaryKeySelective(bean) ;
+        } else {
+            bean.setIdate(new Date());
+            aoyiBaseCategoryMapper.insertSelective(bean) ;
+        }
+        return bean.getCategoryId();
     }
 }

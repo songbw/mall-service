@@ -8,7 +8,7 @@ package com.fengchao.product.aoyi.constants;
  */
 public enum ProductStatusEnum {
 
-    INIT(-1, "初始状态"),
+    INIT(-2, "初始状态"),
     PUT_ON(0, "下架"),
     PUT_OFF(1, "上架"),
     UN_KNOWN(999, "未知");

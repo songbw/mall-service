@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.CouponUseInfoBean;
 import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
+import com.fengchao.order.bean.VirtualTicketsBean;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import lombok.Setter;
@@ -56,6 +57,11 @@ public class EquityServiceClientH implements EquityServiceClient {
 
     @Override
     public OperaResult findPromotionByMpuList(List<String> mpuList) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResult createVirtual(VirtualTicketsBean bean) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 

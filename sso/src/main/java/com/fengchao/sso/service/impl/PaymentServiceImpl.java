@@ -11,6 +11,7 @@ import com.fengchao.sso.feign.OrderServiceClient;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.rpc.OrderRpcService;
 import com.fengchao.sso.service.IPaymentService;
+import com.fengchao.sso.util.JSONUtil;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,9 @@ public class PaymentServiceImpl implements IPaymentService {
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
+        log.info("findTradeNo 返回 orderList: {}", JSONUtil.toJsonString(orderList));
         PaymentResult result1 = getPayment(paymentBean);
+        log.info("getPayment 返回 result1: {}", JSONUtil.toJsonString(result1));
         if ("200".equals(result1.getReturnCode())) {
             result.getData().put("result", result1.getData());
             orderList.forEach(order -> {
@@ -193,6 +196,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
     private List<Order> findTradeNo(String appId, String merchantNo, String tradeNo) {
         OperaResult result = orderService.findOrderListByTradeNo(appId, merchantNo, tradeNo);
+        log.info("order client findTradeNo 方法返回结果 result : {}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");

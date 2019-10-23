@@ -57,6 +57,12 @@ public class AoyiProdIndexX implements Serializable {
 
     private List<String> xqImage;
 
+    private Date syncAt ;
+
+    private Integer type ;
+
+    private String compareUrl ;
+
     public Integer getId() {
         return id;
     }
@@ -263,5 +269,29 @@ public class AoyiProdIndexX implements Serializable {
 
     public void setXqImage(List<String> xqImage) {
         this.xqImage = xqImage;
+    }
+
+    public Date getSyncAt() {
+        return syncAt;
+    }
+
+    public void setSyncAt(Date syncAt) {
+        this.syncAt = syncAt;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getCompareUrl() {
+        return compareUrl;
+    }
+
+    public void setCompareUrl(String compareUrl) {
+        this.compareUrl = compareUrl;
     }
 }

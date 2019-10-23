@@ -191,17 +191,15 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public int add(AoyiProdIndexX requestProdParams) throws ProductException {
+    public String add(AoyiProdIndex requestProdParams) throws ProductException {
         // 1. 判断sku是否重复
         List<AoyiProdIndex> aoyiProdIndexList =
                 productDao.selectAoyiProdIndexListBySKUAndMerchant(requestProdParams.getSkuid(), requestProdParams.getMerchantId());
-
         if (CollectionUtils.isNotEmpty(aoyiProdIndexList)) {
             logger.warn("创建商品 sku:{},merchantId:{} 已存在!", requestProdParams.getSkuid(), requestProdParams.getMerchantId());
 
             throw new ProductException(200001, "重复的sku");
         }
-
         // 2. 处理商户信息，如果SkuCode表中不存在该商户信息，那么为该商户分配(创建)一个merchantCode
         SkuCode skuCode = skuCodeMapper.selectByMerchantId(requestProdParams.getMerchantId());
         if (skuCode == null) {
@@ -220,18 +218,17 @@ public class AdminProdServiceImpl implements AdminProdService {
                 skuCode.setSkuValue(0);
                 skuCode.setCreatedAt(new Date());
                 skuCode.setUpdatedAt(new Date());
-
                 skuCodeMapper.insertSelective(skuCode);
             } else {
                 logger.warn("未获取到商户信息 merchantId:{}信息为:{}", requestProdParams.getMerchantId());
                 throw new ProductException(200001, "商户信息为null");
             }
         }
-
         // 3. 创建商品
         // 转数据库实体
-        AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(requestProdParams);
-
+        AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(requestProdParams, aoyiProdIndexWithBLOBs);
+//        AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(requestProdParams);
         // 设置mpu
         String merchantCode = skuCode.getMerchantCode();
         int skuValue = skuCode.getSkuValue();
@@ -245,7 +242,6 @@ public class AdminProdServiceImpl implements AdminProdService {
 
         // 设置状态
         aoyiProdIndexWithBLOBs.setState(String.valueOf(ProductStatusEnum.INIT.getValue()));
-
         // 设置品牌
         if (requestProdParams.getBrandId() != null && requestProdParams.getBrandId() > 0) {
             AoyiBaseBrand baseBrand = brandMapper.selectByPrimaryKey(requestProdParams.getBrandId());
@@ -253,7 +249,6 @@ public class AdminProdServiceImpl implements AdminProdService {
                 aoyiProdIndexWithBLOBs.setBrandId(0);
             }
         }
-
         // 设置类别
         if (requestProdParams.getCategory() != null && !"".equals(requestProdParams.getCategory())) {
             AoyiBaseCategoryX category = categoryMapper.selectByPrimaryKey(Integer.parseInt(requestProdParams.getCategory()));
@@ -268,22 +263,21 @@ public class AdminProdServiceImpl implements AdminProdService {
             int iprice = bprice.multiply(new BigDecimal(100)).intValue(); // 价格，单位：分
             aoyiProdIndexWithBLOBs.setIprice(iprice);
         }
-
-
         // 执行插入
-        int result = productDao.insert(aoyiProdIndexWithBLOBs);
+        productDao.insert(aoyiProdIndexWithBLOBs);
 
         skuCode.setSkuValue(atomicInteger.get());
         skuCodeMapper.updateSkuValueByPrimaryKey(skuCode);
 
-        return result;
+        return aoyiProdIndexWithBLOBs.getMpu();
     }
 
     @Override
-    public int update(AoyiProdIndexX bean) throws ProductException {
+    public int update(AoyiProdIndex bean) throws ProductException {
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());
-            aoyiProdIndexXMapper.updateByPrimaryKeySelective(bean);
+            productDao.updateAoyiProduct(bean) ;
+//            aoyiProdIndexXMapper.updateByPrimaryKeySelective(bean);
         } else {
             throw new ProductException(200002, "id为null或等于0");
         }
@@ -554,5 +548,46 @@ public class AdminProdServiceImpl implements AdminProdService {
             result.getData().put("id", prodIndexX.getId()) ;
         }
         return result;
+    }
+
+    @Override
+    public void fix() {
+        List<AoyiProdIndex> aoyiProdIndexList =  productDao.selectFix() ;
+        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+            SkuCode skuCode = skuCodeMapper.selectByMerchantId(aoyiProdIndex.getMerchantId());
+            if (skuCode == null) {
+                // 查询商户信息
+                VendorsProfileBean profileBean = findVendorInfo(aoyiProdIndex.getMerchantId());
+                if (profileBean != null) {
+                    // 获取最新code
+                    SkuCode lastCode = skuCodeMapper.selectLast();
+                    int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
+                    skuCode = new SkuCode();
+                    skuCode.setMerchantId(aoyiProdIndex.getMerchantId());
+                    skuCode.setMerchantName(profileBean.getCompany().getName());
+                    skuCode.setMerchantCode(code + "");
+                    skuCode.setSkuValue(0);
+                    skuCode.setCreatedAt(new Date());
+                    skuCode.setUpdatedAt(new Date());
+                    skuCodeMapper.insertSelective(skuCode);
+                } else {
+                    throw new ProductException(200001, "商户信息为null");
+                }
+            }
+            AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs();
+            BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexWithBLOBs);
+            String merchantCode = skuCode.getMerchantCode();
+            int skuValue = skuCode.getSkuValue();
+            AtomicInteger atomicInteger = new AtomicInteger(skuValue);
+            String sku = merchantCode + String.format("%06d", atomicInteger.incrementAndGet());
+            aoyiProdIndexWithBLOBs.setMpu(sku);
+            aoyiProdIndexWithBLOBs.setSkuid(sku);
+
+            // 执行插入
+            productDao.updateFix(aoyiProdIndexWithBLOBs);
+
+            skuCode.setSkuValue(atomicInteger.get());
+            skuCodeMapper.updateSkuValueByPrimaryKey(skuCode);
+        });
     }
 }

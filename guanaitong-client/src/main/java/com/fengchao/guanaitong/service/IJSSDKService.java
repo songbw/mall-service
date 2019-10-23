@@ -1,5 +1,6 @@
 package com.fengchao.guanaitong.service;
 
+import com.fengchao.guanaitong.bean.JssdkSignBean;
 import com.netflix.discovery.converters.jackson.EurekaXmlJacksonCodec;
 
 public interface IJSSDKService {
@@ -7,5 +8,5 @@ public interface IJSSDKService {
 
     String getApiTicket() throws Exception;
 
-    String getJsApiSign(String url) throws Exception;
+    JssdkSignBean getJsApiSign(String url) throws Exception;
 }
