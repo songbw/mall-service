@@ -269,11 +269,13 @@ public class ShippingServiceImpl implements ShippingService {
                     if(shippingRegions == null){
                         shippingRegions = shipRegionsDao.findDefaltShipRegions(templateId);
                     }
-                    if(shippingRegions.getBaseAmount() < mpuParams.get(i).getNum()){
-                        shipPrice += mpuParams.get(i).getNum()/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
-                                + shippingRegions.getBasePrice();
-                    }else{
-                        shipPrice += shippingRegions.getBasePrice();
+                    if(shippingRegions != null){
+                        if(shippingRegions.getBaseAmount() < mpuParams.get(i).getNum()){
+                            shipPrice += mpuParams.get(i).getNum()/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
+                                    + shippingRegions.getBasePrice();
+                        }else{
+                            shipPrice += shippingRegions.getBasePrice();
+                        }
                     }
                 }
             }
