@@ -242,6 +242,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setMerchantId(orderSku.getMerchantId());
                 orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
                 orderDetail.setUnitPrice(orderSku.getUnitPrice());
+                orderDetail.setCheckedPrice(orderSku.getCheckedPrice());
                 orderDetail.setNum(orderSku.getNum());
                 orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
                 orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
@@ -274,6 +275,12 @@ public class OrderServiceImpl implements OrderService {
         List<OrderMerchantBean> orderMerchantBeanList = new ArrayList<>(); // aoyi的商品数据
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
+                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
+                orderMerchantBean.getSkus().forEach(orderDetailX -> {
+                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+                    aoyiOrderDetail.add(orderDetailX) ;
+                });
+                orderMerchantBean.setSkus(aoyiOrderDetail);
                 orderMerchantBeanList.add(orderMerchantBean);
             }
         }

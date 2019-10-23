@@ -52,6 +52,8 @@ public class OrderDetail {
 
     private Date completeTime;
 
+    private BigDecimal checkedPrice;
+
     public Integer getId() {
         return id;
     }
@@ -242,5 +244,13 @@ public class OrderDetail {
 
     public void setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
+    }
+
+    public BigDecimal getCheckedPrice() {
+        return checkedPrice;
+    }
+
+    public void setCheckedPrice(BigDecimal checkedPrice) {
+        this.checkedPrice = checkedPrice;
     }
 }

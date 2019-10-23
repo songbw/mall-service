@@ -1655,6 +1655,66 @@ public class OrderDetailExample {
             addCriterion("complete_time not between", value1, value2, "completeTime");
             return (Criteria) this;
         }
+
+        public Criteria andCheckedPriceIsNull() {
+            addCriterion("checked_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceIsNotNull() {
+            addCriterion("checked_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceEqualTo(BigDecimal value) {
+            addCriterion("checked_price =", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceNotEqualTo(BigDecimal value) {
+            addCriterion("checked_price <>", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceGreaterThan(BigDecimal value) {
+            addCriterion("checked_price >", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceGreaterThanOrEqualTo(BigDecimal value) {
+            addCriterion("checked_price >=", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceLessThan(BigDecimal value) {
+            addCriterion("checked_price <", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceLessThanOrEqualTo(BigDecimal value) {
+            addCriterion("checked_price <=", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceIn(List<BigDecimal> values) {
+            addCriterion("checked_price in", values, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceNotIn(List<BigDecimal> values) {
+            addCriterion("checked_price not in", values, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("checked_price between", value1, value2, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceNotBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("checked_price not between", value1, value2, "checkedPrice");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
