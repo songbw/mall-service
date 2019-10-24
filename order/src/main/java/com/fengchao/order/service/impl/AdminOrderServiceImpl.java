@@ -4,6 +4,7 @@ import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.constants.OrderPayMethodTypeEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
@@ -453,13 +454,33 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
                         for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
                             String payType = orderPayMethodInfoBean.getPayType();
+                            Integer payStatus = orderPayMethodInfoBean.getStatus();
 
-                            if ()
+                            // 处理显示的价格
+                            String _fen = orderPayMethodInfoBean.getActPayFee(); // 花费
+                            String _fee = StringUtils.isBlank(_fen) ?
+                                    "0" : new BigDecimal(_fen).divide(new BigDecimal(100)).toPlainString(); // 转元
+
+                            if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                _fee = _fee + "(异常)";
+                            }
+
+                            if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
+                                exportOrdersVo.setBalanceFee(_fee);
+                            } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
+                                String huiminFee = exportOrdersVo.getHuiminCardFee(); // 单位 元
+                                huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
+
+                                exportOrdersVo.setHuiminCardFee(huiminFee);
+                            } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
+                                exportOrdersVo.setWoaFee(_fee);
+                            } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
+                                exportOrdersVo.setQuickPayFee(_fee);
+                            }
                         }
                     }
 
-
-
+                    //////////
                     exportOrdersVoList.add(exportOrdersVo);
                 } // 遍历子订单 end
             } // end if 子订单不为空

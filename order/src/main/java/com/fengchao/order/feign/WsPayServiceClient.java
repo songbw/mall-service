@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * http://192.168.200.122:8016/swagger-ui.html#/pay-controller 入参: a9f4a94c7ca24245a64888841aafc07b,130832f46d8240078a11d7b97150f2ac
  */
-@FeignClient(value = "wspay", fallbackFactory = WspayServiceClientFallbackFactory.class)
+@FeignClient(value = "aggpay", fallbackFactory = WspayServiceClientFallbackFactory.class)
 public interface WsPayServiceClient {
 
     @RequestMapping(value = "/wspay/batch/query/pay", method = RequestMethod.GET)

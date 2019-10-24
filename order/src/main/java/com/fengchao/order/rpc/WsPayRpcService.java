@@ -56,8 +56,7 @@ public class WsPayRpcService {
             log.warn("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 错误!");
         }
 
-        log.info("WsPayRpcService#queryBatchPayMethod 调用wspay rpc服务 返回:{}",
-                JSONUtil.toJsonString(orderPayMethodInfoMap));
+        log.info("WsPayRpcService#queryBatchPayMethod 调用wspay rpc服务 返回:{}", JSONUtil.toJsonString(orderPayMethodInfoMap));
 
         return orderPayMethodInfoMap;
     }
