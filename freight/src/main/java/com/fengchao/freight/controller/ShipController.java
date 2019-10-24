@@ -22,4 +22,9 @@ public class ShipController {
         return result;
     }
 
+    @PostMapping("template")
+    public OperaResult getMpuTemplate(@RequestBody ShipMpuParam bean, OperaResult result){
+        result.getData().put("result",shippingService.getMpuTemplate(bean));
+        return result;
+    }
 }

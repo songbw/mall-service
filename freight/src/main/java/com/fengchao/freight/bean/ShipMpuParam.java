@@ -12,4 +12,5 @@ public class ShipMpuParam {
     private String provinceId;
     private List<MpuParam> mpuParams;
     private Float totalPrice;
+    private String mpu;
 }
