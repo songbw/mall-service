@@ -295,6 +295,7 @@ public class ProductServiceImpl implements ProductService {
             }
         });
         result.getData().put("result", inventories) ;
+        log.info("根据mup集合查询库存信息 数据库查询返回结果:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
