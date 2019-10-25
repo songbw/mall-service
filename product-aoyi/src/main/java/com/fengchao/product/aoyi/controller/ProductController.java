@@ -126,7 +126,7 @@ public class ProductController {
         log.info("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
         try {
             // 查询
-            List<ProductInfoBean> productInfoBeanList = service.queryProductListByMpuIdList(mpuIdList);
+            List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList);
 
             result.getData().put("result", productInfoBeanList);
         } catch (Exception e) {
