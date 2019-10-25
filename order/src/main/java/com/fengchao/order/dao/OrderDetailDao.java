@@ -133,7 +133,9 @@ public class OrderDetailDao {
         OrderDetail temp = new OrderDetail() ;
         temp.setId(orderDetail.getId());
         temp.setStatus(orderDetail.getStatus());
-        temp.setUpdatedAt(new Date());
+        Date date = new Date() ;
+        temp.setUpdatedAt(date);
+        temp.setCompleteTime(date);
         criteria.andIdEqualTo(temp.getId()) ;
         orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
         if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 4 || orderDetail.getStatus() == 5) {
