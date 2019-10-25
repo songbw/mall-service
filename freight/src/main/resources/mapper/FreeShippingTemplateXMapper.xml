@@ -254,7 +254,7 @@
     select
     <include refid="Base_Column_List" />
     from free_shipping_template
-    where status = 1 and  (merchant_id = #{merchantId,jdbcType=INTEGER} or merchant_id = 0)
+    where status = 1 and  merchant_id = #{merchantId,jdbcType=INTEGER}
   </select>
   <select id="selectDefaltShipTemplate"  resultMap="BaseResultMap">
     select

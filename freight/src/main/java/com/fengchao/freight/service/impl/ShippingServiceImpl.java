@@ -201,37 +201,18 @@ public class ShippingServiceImpl implements ShippingService {
             ShipPriceBean shipPriceBean = new ShipPriceBean();
             ShipMpuParam bean = beans.get(j);
             if(bean.getMerchantId() != null){
-                List<FreeShippingTemplate> templateByMerchantId = freeshipTemplateDao.findFreeShipTemplateByMerchantId(bean.getMerchantId());
-                if(!templateByMerchantId.isEmpty()){
-                    FreeShippingTemplate template = templateByMerchantId.get(0);
-                    FreeShippingRegionsX freeRegions = freeShipRegionsDao.findByProvinceId(bean.getProvinceId(), template.getId());
+                FreeShippingTemplateX templateX = freeshipTemplateDao.findTemplateBymerchantId(bean.getMerchantId());
+                if(templateX == null){
+                    templateX = freeshipTemplateDao.fingDefaltShipTemplate();
+                }
+
+                if(templateX != null){
+                    FreeShippingRegionsX freeRegions = freeShipRegionsDao.findByProvinceId(bean.getProvinceId(), templateX.getId());
                     if(freeRegions == null){
-                        freeRegions = freeShipRegionsDao.findDefaltShipRegions(template.getId());
-                    }
-                    if(template.getMode() == 0){
-                        if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
-                            status = 1;
-                        }
-                    }else if(template.getMode() == 1){
-                        List<MpuParam> mpuParams = bean.getMpuParams();
-                        int mpuNum = 0;
-                        for (int i = 0; i < mpuParams.size(); i++){
-                            mpuNum += mpuParams.get(i).getNum();
-                        }
-                        if(freeRegions.getFullAmount() <= mpuNum){
-                            status = 1;
-                        }
+                        freeRegions = freeShipRegionsDao.findDefaltShipRegions(templateX.getId());
                     }
 
-                }else{
-                    FreeShippingTemplateX templateX = freeshipTemplateDao.fingDefaltShipTemplate();
-                    if(templateX == null){
-                        status = 1;
-                    }else{
-                        FreeShippingRegionsX freeRegions = freeShipRegionsDao.findByProvinceId(bean.getProvinceId(), templateX.getId());
-                        if(freeRegions == null){
-                            freeRegions = freeShipRegionsDao.findDefaltShipRegions(templateX.getId());
-                        }
+                    if(freeRegions != null){
                         if(templateX.getMode() == 0){
                             if(freeRegions.getFullAmount() <= bean.getTotalPrice()){
                                 status = 1;
@@ -247,6 +228,8 @@ public class ShippingServiceImpl implements ShippingService {
                             }
                         }
                     }
+                }else{
+                    status = 1;
                 }
             }
             if(status == 0){
@@ -271,7 +254,7 @@ public class ShippingServiceImpl implements ShippingService {
                     }
                     if(shippingRegions != null){
                         if(shippingRegions.getBaseAmount() < mpuParams.get(i).getNum()){
-                            shipPrice += mpuParams.get(i).getNum()/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
+                            shipPrice += (mpuParams.get(i).getNum() - shippingRegions.getBaseAmount())/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
                                     + shippingRegions.getBasePrice();
                         }else{
                             shipPrice += shippingRegions.getBasePrice();
@@ -284,6 +267,44 @@ public class ShippingServiceImpl implements ShippingService {
             priceBeans.add(shipPriceBean);
         }
         return priceBeans;
+    }
+
+    @Override
+    public TemplateBean getMpuTemplate(ShipMpuParam bean) {
+        TemplateBean templateBean = new TemplateBean();
+        List<FreeShippingRegionsX> freeShippingRegionsS = new ArrayList<>();
+        List<ShippingRegionsX> shippingRegionsS = new ArrayList<>();
+         FreeShippingTemplateX templateX = freeshipTemplateDao.findTemplateBymerchantId(bean.getMerchantId());
+        if(templateX == null){
+            templateX = freeshipTemplateDao.fingDefaltShipTemplate();
+        }
+        if(templateX != null){
+            FreeShippingRegionsX regions = freeShipRegionsDao.findByProvinceId(bean.getProvinceId(), templateX.getId());
+            if(regions == null){
+                regions = freeShipRegionsDao.findDefaltShipRegions( templateX.getId());
+            }
+            freeShippingRegionsS.add(regions);
+            templateX.setRegions(freeShippingRegionsS);
+        }else{
+            return templateBean;
+        }
+
+        ShippingMpu shipByMpu = shipMpuDao.findByMpu(bean.getMpu());
+        ShippingTemplateX shipTemplate = null;
+        if(shipByMpu != null){
+            shipTemplate = shipTemplateDao.findShipTemplateById(shipByMpu.getTemplateId());
+            if(shipTemplate != null){
+                ShippingRegionsX regionsX = shipRegionsDao.findByProvinceId(bean.getProvinceId(), shipTemplate.getId());
+                if(regionsX == null){
+                    regionsX = shipRegionsDao.findDefaltShipRegions(shipTemplate.getId());
+                }
+                shippingRegionsS.add(regionsX);
+                shipTemplate.setRegions(shippingRegionsS);
+            }
+        }
+        templateBean.setFreeShippingTemplate(templateX);
+        templateBean.setShippingTemplate(shipTemplate);
+        return templateBean;
     }
 
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){

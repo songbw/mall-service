@@ -4,21 +4,21 @@ import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.constants.OrderPayMethodTypeEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
-import com.fengchao.order.rpc.ProductRpcService;
-import com.fengchao.order.rpc.VendorsRpcService;
-import com.fengchao.order.rpc.WorkOrderRpcService;
+import com.fengchao.order.rpc.*;
 import com.fengchao.order.rpc.extmodel.*;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
-import com.fengchao.order.rpc.EquityRpcService;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 @Service
 public class AdminOrderServiceImpl implements AdminOrderService {
 
+    private static final Integer LIST_PARTITION_SIZE = 100;
+
     private AdminOrderDao adminOrderDao;
 
     private EquityRpcService equityRpcService;
@@ -48,6 +50,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     private WorkOrderRpcService workOrderRpcService;
 
+    private WsPayRpcService wsPayRpcService;
+
     @Autowired
     public AdminOrderServiceImpl(AdminOrderDao adminOrderDao,
                                  EquityRpcService equityRpcService,
@@ -55,7 +59,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                  VendorsRpcService vendorsRpcService,
                                  OrderDetailDao orderDetailDao,
                                  OrdersDao ordersDao,
-                                 WorkOrderRpcService workOrderRpcService) {
+                                 WorkOrderRpcService workOrderRpcService,
+                                 WsPayRpcService wsPayRpcService) {
         this.adminOrderDao = adminOrderDao;
         this.equityRpcService = equityRpcService;
         this.productRpcService = productRpcService;
@@ -63,6 +68,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         this.orderDetailDao = orderDetailDao;
         this.ordersDao = ordersDao;
         this.workOrderRpcService = workOrderRpcService;
+        this.wsPayRpcService = wsPayRpcService;
     }
 
     /**
@@ -123,7 +129,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
      */
     @Override
     public List<ExportOrdersVo> exportOrdersReconciliationIncome(OrderExportReqVo orderExportReqVo) throws Exception {
-        // 1. 通过工单系统获取"已退款"状态的订单(出账的订单)
+        // 1. 查询"已完成" "已取消，申请售后"状态的订单(入账的订单)
         // 执行查询
         Date startDate = orderExportReqVo.getPayStartDate();
         Date endDate = orderExportReqVo.getPayEndDate();
@@ -160,7 +166,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     /**
-     * 导出订单入账对账单 - 获取导出的vo : List<ExportOrdersVo>
+     * 导出订单出账对账单 - 获取导出的vo : List<ExportOrdersVo>
      *
      * 1.获取"已完成","已退款"状态的子订单
      * 2.拼装导出数据
@@ -170,7 +176,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
      */
     @Override
     public List<ExportOrdersVo> exportOrdersReconciliationOut(OrderExportReqVo orderExportReqVo) throws Exception {
-        // 1. 获取"已退款"状态的子订单(入账的订单)
+        // 1. 获取"已退款"状态的子订单(出账的订单)
         // 执行查询
         Date startDate = orderExportReqVo.getPayStartDate();
         Date endDate = orderExportReqVo.getPayEndDate();
@@ -268,13 +274,19 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     private List<ExportOrdersVo> assembleExportOrderData(List<Orders> ordersList, List<OrderDetail> orderDetailList) {
         // x. 获取组装结果的其他相关数据 - 获取导出需要的coupon信息列表 - 获取coupon的id集合
         Set<Integer> couponUseInfoIdSet = new HashSet<>();
+        // x. 获取组装结果的其他相关数据 - 获取导出需要的支付方式信息 - 获取coupon的id集合
+        List<String> paymentNoList = new ArrayList<>();
         for (Orders orders : ordersList) {
             if (orders.getCouponId() != null) {
                 couponUseInfoIdSet.add(orders.getCouponId());
             }
+
+            if (StringUtils.isNotBlank(orders.getPaymentNo())) {
+                paymentNoList.add(orders.getPaymentNo());
+            }
         }
 
-        // 2.1 将获取到的子订单转成map key：主订单id  value：List<OrderDtailBo>
+        // 2. 将获取到的子订单转成map key：主订单id  value：List<OrderDtailBo>
         Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
         // x. 获取组装结果的其他相关数据 - 获取导出需要的promotion信息列表 - 获取promotion id集合
         Set<Integer> promotionIdSet = new HashSet<>();
@@ -337,6 +349,18 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
         // 转map
         Map<Long, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
+
+        // 4.5 获取主订单的支付方式信息
+        List<List<String>> paymentNoPatitionLists = Lists.partition(paymentNoList, LIST_PARTITION_SIZE);
+
+        // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
+        Map<String, List<OrderPayMethodInfoBean>> paymentMethodInfoMap = new HashMap<>();
+        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
+            Map<String, List<OrderPayMethodInfoBean>> _map = wsPayRpcService.queryBatchPayMethod(queryPaymentNoList);
+
+            paymentMethodInfoMap.putAll(_map);
+        }
+
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
@@ -421,9 +445,47 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
 
+                    // 支付方式 TODO: 四种支付方式的字符是什么？
+                    List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = paymentMethodInfoMap.get(ordersBo.getPaymentNo());
+                    exportOrdersVo.setBalanceFee("0"); // 余额支付金额 单位 元
+                    exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元
+                    exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
+                    exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
+                    if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
+                        for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
+                            String payType = orderPayMethodInfoBean.getPayType();
+                            Integer payStatus = orderPayMethodInfoBean.getStatus();
+
+                            // 处理显示的价格
+                            String _fen = orderPayMethodInfoBean.getActPayFee(); // 花费
+                            String _fee = StringUtils.isBlank(_fen) ?
+                                    "0" : new BigDecimal(_fen).divide(new BigDecimal(100)).toPlainString(); // 转元
+
+                            if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                _fee = _fee + "(异常)";
+                            }
+
+                            if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
+                                exportOrdersVo.setBalanceFee(_fee);
+                            } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
+                                String huiminFee = exportOrdersVo.getHuiminCardFee(); // 单位 元
+                                huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
+
+                                exportOrdersVo.setHuiminCardFee(huiminFee);
+                            } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
+                                exportOrdersVo.setWoaFee(_fee);
+                            } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
+                                exportOrdersVo.setQuickPayFee(_fee);
+                            }
+                        }
+                    }
+
+                    //////////
                     exportOrdersVoList.add(exportOrdersVo);
                 } // 遍历子订单 end
-            }
+            } // end if 子订单不为空
+
+
 
         } // 遍历主订单 end
 

@@ -179,4 +179,24 @@ public class ExportOrdersVo {
      */
     private String orderDetailStatus;
 
+    /**
+     * 余额支付金额 单位 元
+     */
+    private String balanceFee;
+
+    /**
+     * 惠民卡支付金额 单位 元
+     */
+    private String huiminCardFee;
+
+    /**
+     * 联机账户支付 单位 元
+     */
+    private String woaFee;
+
+    /**
+     * 快捷支付 单位 元
+     */
+    private String quickPayFee;
+
 }
