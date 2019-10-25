@@ -112,13 +112,19 @@ public class ProductServiceImpl implements ProductService {
             inventorySkus.setSkuId(sku.getSkuId());
             ilist.add(inventorySkus);
             inventory.setSkuIds(ilist);
-            OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
-            InventoryBean inventoryBean = operaResponse.getData();
-            if (inventoryBean != null) {
-                inventoryBean.setSkuId(sku.getSkuId());
-                inventoryBean.setRemainNum(sku.getRemainNum());
-                inventoryBeans.add(inventoryBean);
+            InventoryBean inventoryBean = new InventoryBean() ;
+            AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId()) ;
+            if (aoyiProdIndexX != null && "1".equals(aoyiProdIndexX.getState())) {
+                OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
+                inventoryBean = operaResponse.getData();
+                if (inventoryBean != null) {
+                    inventoryBean.setSkuId(sku.getSkuId());
+                    inventoryBean.setRemainNum(sku.getRemainNum());
+                } else {
+                    inventoryBean = new InventoryBean() ;
+                }
             }
+            inventoryBeans.add(inventoryBean);
         }
         operaResult.getData().put("result", inventoryBeans) ;
         return operaResult;
@@ -281,7 +287,7 @@ public class ProductServiceImpl implements ProductService {
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
             for (InventoryMpus inventory: queryBean.getInventories()) {
                 if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){
-                    if (aoyiProdIndex.getInventory() >= inventory.getRemainNum()) {
+                    if (aoyiProdIndex.getInventory() >= inventory.getRemainNum() && "1".equals(aoyiProdIndex.getState())) {
                         inventory.setState("1");
                     }
                     inventories.add(inventory) ;
