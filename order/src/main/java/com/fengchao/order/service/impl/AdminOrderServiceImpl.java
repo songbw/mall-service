@@ -420,7 +420,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     Integer purchasePrice = null; // 进货价格
                     if (productInfoBean != null) {
                         String _sprice = productInfoBean.getSprice();
-                        if (_sprice != null) {
+                        if (StringUtils.isNotBlank(_sprice)) {
                             BigDecimal bigDecimal = new BigDecimal(_sprice);
                             purchasePrice = bigDecimal.multiply(new BigDecimal(100)).intValue();
                         }
