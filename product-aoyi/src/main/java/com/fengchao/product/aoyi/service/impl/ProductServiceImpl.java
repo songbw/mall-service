@@ -238,6 +238,16 @@ public class ProductServiceImpl implements ProductService {
         return productInfoBeanList;
     }
 
+    @DataSource(DataSourceNames.TWO)
+    @Override
+    public List<AoyiProdIndex> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
+        // 1. 查询商品信息
+        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        return aoyiProdIndexList;
+    }
+
     @Override
     public OperaResult findPriceGAT(PriceQueryBean queryBean) throws ProductException {
         OperaResult operaResult = new OperaResult();

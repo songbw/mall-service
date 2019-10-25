@@ -121,7 +121,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCarts.forEach(shoppingCart -> {
             mpus.add(shoppingCart.getMpu()) ;
         });
-        OperaResult result = productService.findProductListByMpuIdList(mpus);
+        OperaResult result = productService.selectProductListByMpuIdList(mpus);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData();
             Object object = data.get("result");
