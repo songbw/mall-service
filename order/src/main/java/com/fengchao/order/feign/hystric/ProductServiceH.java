@@ -25,6 +25,11 @@ public class ProductServiceH implements ProductService {
     }
 
     @Override
+    public OperaResult selectProductListByMpuIdList(List<String> mpuIdList) {
+        return null;
+    }
+
+    @Override
     public OperaResult inventorySub(List<InventoryMpus> inventories) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
