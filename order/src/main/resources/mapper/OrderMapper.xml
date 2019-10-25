@@ -108,6 +108,12 @@
     <if test="payDateEnd != null" >
         <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
     </if>
+    <if test="completeDateStart != null" >
+      <![CDATA[ and complete_time >= #{completeDateStart,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="completeDateEnd != null" >
+      <![CDATA[ and complete_time <= #{completeDateEnd,jdbcType=TIMESTAMP}]]>
+    </if>
     <if test="subStatus != null">
       and order_detail.status = #{subStatus}
     </if>
@@ -184,6 +190,12 @@
     </if>
     <if test="payDateEnd != null" >
       <![CDATA[ and payment_at <= #{payDateEnd,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="completeDateStart != null" >
+      <![CDATA[ and complete_time >= #{completeDateStart,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="completeDateEnd != null" >
+      <![CDATA[ and complete_time <= #{completeDateEnd,jdbcType=TIMESTAMP}]]>
     </if>
     <if test="subStatus != null">
       and order_detail.status = #{subStatus}
