@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -130,12 +132,17 @@ public class OrderDetailDao {
     public Integer updateOrderDetailStatus(OrderDetail orderDetail) {
         OrderDetailExample orderDetailExample = new OrderDetailExample() ;
         OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        OrderDetail checkCompleteTime = orderDetailMapper.selectByPrimaryKey(orderDetail.getId()) ;
         OrderDetail temp = new OrderDetail() ;
         temp.setId(orderDetail.getId());
         temp.setStatus(orderDetail.getStatus());
         Date date = new Date() ;
         temp.setUpdatedAt(date);
-        temp.setCompleteTime(date);
+        if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 5) {
+            if (checkCompleteTime != null && checkCompleteTime.getCompleteTime() != null && checkCompleteTime.getCompleteTime().getTime() > -28800000) {
+                temp.setCompleteTime(date);
+            }
+        }
         criteria.andIdEqualTo(temp.getId()) ;
         orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
         if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 4 || orderDetail.getStatus() == 5) {
