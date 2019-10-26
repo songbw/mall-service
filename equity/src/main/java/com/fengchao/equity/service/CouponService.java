@@ -52,4 +52,6 @@ public interface CouponService {
     PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize);
 
     List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId);
+
+    List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdBean> beans);
 }

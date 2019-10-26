@@ -210,4 +210,11 @@ public class CouponController {
         result.getData().put("result", couponBeanList);
         return result;
     }
+
+    @PostMapping("mpus")
+    public OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdBean> beans, OperaResult result){
+        List<CouponAndPromBean> mpuList = couponService.findCouponListByMpuList(beans);
+        result.getData().put("result", mpuList);
+        return result;
+    }
 }

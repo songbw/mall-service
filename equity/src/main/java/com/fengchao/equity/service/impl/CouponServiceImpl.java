@@ -8,6 +8,7 @@ import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.CouponDao;
+import com.fengchao.equity.dao.PromotionScheduleDao;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.*;
@@ -39,11 +40,14 @@ public class CouponServiceImpl implements CouponService {
     private ProdService productService;
     @Autowired
     private JobClient jobClient;
-
     @Autowired
     private CouponDao couponDao;
     @Autowired
     private SSOService ssoService;
+    @Autowired
+    private PromotionXMapper promotionXMapper;
+    @Autowired
+    private PromotionScheduleDao scheduleDao;
 
     @Override
     public int createCoupon(CouponBean bean) {
@@ -503,6 +507,40 @@ public class CouponServiceImpl implements CouponService {
             couponBeanList.add(couponBean);
         }
         return couponBeanList;
+    }
+
+    @Override
+    public List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdBean> prodBeans) {
+        List<CouponAndPromBean> couponAndPromBeans = new ArrayList<>();
+        for(int m = 0; m < prodBeans.size(); m++){
+            CouponAndPromBean couponAndPromBean = new CouponAndPromBean();
+            AoyiProdBean bean = prodBeans.get(m);
+            Date now = new Date();
+            List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(bean.getMpu());
+            for (int i = 0; i < beans.size(); i++){
+                if(beans.get(i).getDailySchedule() != null && beans.get(i).getDailySchedule()){
+                    List<PromotionSchedule> promotionSchedules = scheduleDao.findPromotionSchedule(beans.get(i).getScheduleId());
+                    if(!promotionSchedules.isEmpty()){
+                        PromotionSchedule promotionSchedule = promotionSchedules.get(0);
+                        if(promotionSchedule.getEndTime().before(now)){
+                            beans.remove(i);
+                        }else{
+                            beans.get(i).setStartDate(promotionSchedule.getStartTime());
+                            beans.get(i).setEndDate(promotionSchedule.getEndTime());
+                        }
+                    }
+                }
+                couponAndPromBean.setPromotions(beans);
+            }
+
+            List<CouponBean> couponBeans =  new ArrayList<>();
+            mapper.selectCouponByMpu(bean).forEach(coupon -> {
+                couponBeans.add(couponToBean(coupon));
+            });
+            couponAndPromBean.setCoupons(couponBeans);
+            couponAndPromBeans.add(couponAndPromBean);
+        }
+        return couponAndPromBeans;
     }
 
     //============================== private =========================
