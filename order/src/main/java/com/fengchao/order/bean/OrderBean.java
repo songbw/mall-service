@@ -38,4 +38,6 @@ public class OrderBean implements Serializable {
     private String payDateEnd;
     private Integer merchantId;
     private Integer subStatus;
+    private String completeDateStart;
+    private String completeDateEnd;
 }

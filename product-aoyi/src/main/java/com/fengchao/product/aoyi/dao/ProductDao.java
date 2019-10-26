@@ -144,6 +144,22 @@ public class ProductDao {
     }
 
     /**
+     * 根据SKU获取商品列表
+     * @param mpu
+     * @return
+     */
+    public AoyiProdIndex selectByMpu(String mpu) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuEqualTo(mpu);
+        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        if (aoyiProdIndices != null && aoyiProdIndices.size() > 0) {
+            return aoyiProdIndices.get(0) ;
+        }
+        return null;
+    }
+
+    /**
      * 添加商品数据
      * @param aoyiProdIndexX
      * @return

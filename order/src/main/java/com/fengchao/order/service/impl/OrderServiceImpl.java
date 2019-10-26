@@ -496,6 +496,12 @@ public class OrderServiceImpl implements OrderService {
         if(orderBean.getPayDateEnd() != null && !orderBean.getPayDateEnd().equals("")){
             map.put("payDateEnd", orderBean.getPayDateEnd() + " 23:59:59");
         }
+        if(orderBean.getCompleteDateStart() != null && !orderBean.getCompleteDateStart().equals("")){
+            map.put("completeDateStart", orderBean.getCompleteDateStart() + " 00:00:00");
+        }
+        if(orderBean.getCompleteDateEnd() != null && !orderBean.getCompleteDateEnd().equals("")){
+            map.put("completeDateEnd", orderBean.getCompleteDateEnd() + " 23:59:59");
+        }
 
         logger.info("查询订单 数据库查询入参:{}", JSONUtil.toJsonString(map));
 

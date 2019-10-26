@@ -113,6 +113,34 @@ public class ProductController {
         return result;
     }
 
+    /**
+     * 根据mpuid集合查询product列表
+     *
+     * @param mpuIdList
+     * @param result
+     * @return
+     * @throws ProductException
+     */
+    @GetMapping("/mpuIds")
+    private OperaResult selectByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
+        log.info("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        try {
+            // 查询
+            List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList);
+
+            result.getData().put("result", productInfoBeanList);
+        } catch (Exception e) {
+            log.error("根据mup集合查询产品信息 异常:{}", e.getMessage(), e);
+
+            result.setCode(500);
+            result.setMsg("根据mup集合查询产品信息 异常");
+        }
+
+        log.info("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
+
+        return result;
+    }
+
     @PostMapping("/priceGAT")
     private OperaResult priceGAT(@RequestBody PriceQueryBean queryBean, OperaResult result) throws ProductException {
         return service.findPriceGAT(queryBean);

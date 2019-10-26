@@ -327,7 +327,7 @@ public class AdminProdController {
         titleCell10.setCellValue("进货价格(元)");
 
         HSSFCell titleCell11 = titleRow.createCell(11);
-        titleCell11.setCellValue("库存");
+        titleCell11.setCellValue("商品库存");
     }
 
     /**

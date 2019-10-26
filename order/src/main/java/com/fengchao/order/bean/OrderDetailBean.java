@@ -88,4 +88,5 @@ public class OrderDetailBean implements Serializable {
     private Integer skuCouponDiscount ;
     private String comcode ;
     private Integer subId;
+    private Date completeTime;
 }

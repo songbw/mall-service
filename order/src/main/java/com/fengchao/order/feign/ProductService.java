@@ -25,6 +25,14 @@ public interface ProductService {
      */
     @RequestMapping(value = "/prod/findByMpuIdList", method = RequestMethod.GET)
     OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList);
+    /**
+     * 根据mpu集合查询产品信息
+     *
+     * @param mpuIdList
+     * @return
+     */
+    @RequestMapping(value = "/prod/mpuIds", method = RequestMethod.GET)
+    OperaResult selectProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList);
 
     /**
      * 批量扣库存

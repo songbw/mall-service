@@ -112,13 +112,19 @@ public class ProductServiceImpl implements ProductService {
             inventorySkus.setSkuId(sku.getSkuId());
             ilist.add(inventorySkus);
             inventory.setSkuIds(ilist);
-            OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
-            InventoryBean inventoryBean = operaResponse.getData();
-            if (inventoryBean != null) {
-                inventoryBean.setSkuId(sku.getSkuId());
-                inventoryBean.setRemainNum(sku.getRemainNum());
-                inventoryBeans.add(inventoryBean);
+            InventoryBean inventoryBean = new InventoryBean() ;
+            AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId()) ;
+            if (aoyiProdIndexX != null && "1".equals(aoyiProdIndexX.getState())) {
+                OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
+                inventoryBean = operaResponse.getData();
+                if (inventoryBean != null) {
+                    inventoryBean.setSkuId(sku.getSkuId());
+                    inventoryBean.setRemainNum(sku.getRemainNum());
+                } else {
+                    inventoryBean = new InventoryBean() ;
+                }
             }
+            inventoryBeans.add(inventoryBean);
         }
         operaResult.getData().put("result", inventoryBeans) ;
         return operaResult;
@@ -232,6 +238,16 @@ public class ProductServiceImpl implements ProductService {
         return productInfoBeanList;
     }
 
+    @DataSource(DataSourceNames.TWO)
+    @Override
+    public List<AoyiProdIndex> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
+        // 1. 查询商品信息
+        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        return aoyiProdIndexList;
+    }
+
     @Override
     public OperaResult findPriceGAT(PriceQueryBean queryBean) throws ProductException {
         OperaResult operaResult = new OperaResult();
@@ -281,7 +297,7 @@ public class ProductServiceImpl implements ProductService {
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
             for (InventoryMpus inventory: queryBean.getInventories()) {
                 if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){
-                    if (aoyiProdIndex.getInventory() >= inventory.getRemainNum()) {
+                    if (aoyiProdIndex.getInventory() != null && aoyiProdIndex.getInventory() >= inventory.getRemainNum() && "1".equals(aoyiProdIndex.getState())) {
                         inventory.setState("1");
                     }
                     inventories.add(inventory) ;
@@ -289,6 +305,7 @@ public class ProductServiceImpl implements ProductService {
             }
         });
         result.getData().put("result", inventories) ;
+        log.info("根据mup集合查询库存信息 数据库查询返回结果:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
