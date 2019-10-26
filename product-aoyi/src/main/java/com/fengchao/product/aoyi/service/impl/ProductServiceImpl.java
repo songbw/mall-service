@@ -118,12 +118,12 @@ public class ProductServiceImpl implements ProductService {
                 OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
                 inventoryBean = operaResponse.getData();
                 if (inventoryBean != null) {
-                    inventoryBean.setSkuId(sku.getSkuId());
                     inventoryBean.setRemainNum(sku.getRemainNum());
                 } else {
                     inventoryBean = new InventoryBean() ;
                 }
             }
+            inventoryBean.setSkuId(sku.getSkuId());
             inventoryBeans.add(inventoryBean);
         }
         operaResult.getData().put("result", inventoryBeans) ;
