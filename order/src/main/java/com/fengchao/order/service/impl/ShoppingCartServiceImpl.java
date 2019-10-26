@@ -107,6 +107,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 aoyiProdIndices.forEach(aoyiProdIndex -> {
                     if (shoppingCart.getMpu().equals(aoyiProdIndex.getMpu())) {
                         BeanUtils.copyProperties(aoyiProdIndex, shoppingCartBean);
+                        shoppingCartBean.setId(shoppingCart.getId());
                     }
                 });
                 shoppingCarts.add(shoppingCartBean) ;
