@@ -297,7 +297,7 @@ public class ProductServiceImpl implements ProductService {
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
             for (InventoryMpus inventory: queryBean.getInventories()) {
                 if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){
-                    if (aoyiProdIndex.getInventory() >= inventory.getRemainNum() && "1".equals(aoyiProdIndex.getState())) {
+                    if (aoyiProdIndex.getInventory() != null && aoyiProdIndex.getInventory() >= inventory.getRemainNum() && "1".equals(aoyiProdIndex.getState())) {
                         inventory.setState("1");
                     }
                     inventories.add(inventory) ;
