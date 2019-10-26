@@ -163,8 +163,19 @@ public class AdminOrderDao {
     public void updateOrderDetailStatus(OrderDetail orderDetail) {
         OrderDetailExample orderDetailExample = new OrderDetailExample() ;
         OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        OrderDetail checkCompleteTime = orderDetailMapper.selectByPrimaryKey(orderDetail.getId()) ;
+        OrderDetail temp = new OrderDetail() ;
+        temp.setId(orderDetail.getId());
+        temp.setStatus(orderDetail.getStatus());
+        Date date = new Date() ;
+        temp.setUpdatedAt(date);
+        if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 5) {
+            if (checkCompleteTime != null && checkCompleteTime.getCompleteTime() != null && checkCompleteTime.getCompleteTime().getTime() == -28800000) {
+                temp.setCompleteTime(date);
+            }
+        }
         criteria.andOrderIdEqualTo(orderDetail.getOrderId()) ;
-        orderDetailMapper.updateByExampleSelective(orderDetail, orderDetailExample) ;
+        orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
     }
 
     /**
