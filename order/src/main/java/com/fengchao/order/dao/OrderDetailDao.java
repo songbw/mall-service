@@ -139,7 +139,7 @@ public class OrderDetailDao {
         Date date = new Date() ;
         temp.setUpdatedAt(date);
         if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 5) {
-            if (checkCompleteTime != null && checkCompleteTime.getCompleteTime() != null && checkCompleteTime.getCompleteTime().getTime() > -28800000) {
+            if (checkCompleteTime != null && checkCompleteTime.getCompleteTime() != null && checkCompleteTime.getCompleteTime().getTime() == -28800000) {
                 temp.setCompleteTime(date);
             }
         }
