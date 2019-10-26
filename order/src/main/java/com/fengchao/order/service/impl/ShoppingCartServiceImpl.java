@@ -2,10 +2,7 @@ package com.fengchao.order.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.order.bean.OperaResult;
-import com.fengchao.order.bean.PageBean;
-import com.fengchao.order.bean.ShoppingCartBean;
-import com.fengchao.order.bean.ShoppingCartQueryBean;
+import com.fengchao.order.bean.*;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
@@ -13,12 +10,15 @@ import com.fengchao.order.mapper.ShoppingCartMapper;
 import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.model.ShoppingCart;
 import com.fengchao.order.service.ShoppingCartService;
+import com.fengchao.order.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
@@ -96,9 +96,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         map.put("openId", queryBean.getOpenId()) ;
         List<ShoppingCartBean> shoppingCarts = new ArrayList<>();
         total = mapper.selectLimitCount(map);
+        Map<String, Object> data = new HashMap<>() ;
         if (total > 0) {
             List<ShoppingCart> shoppingCartList = mapper.selectLimit(map) ;
             List<AoyiProdIndex> aoyiProdIndices = findProductByMpuList(shoppingCartList) ;
+            List<CouponAndPromBean>  couponAndPromBeans =  findCouponListByMpuList(aoyiProdIndices) ;
             shoppingCartList.forEach(shoppingCart -> {
                 int perLimit = findPromotionBySku(shoppingCart.getMpu(), shoppingCart.getOpenId()) ;
                 shoppingCart.setPerLimited(perLimit);
@@ -112,9 +114,32 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 });
                 shoppingCarts.add(shoppingCartBean) ;
             });
+            data.put("cart", shoppingCarts);
+            data.put("couponProm", couponAndPromBeans) ;
         }
-        pageBean = PageBean.build(pageBean, shoppingCarts, total, queryBean.getPageNo(), queryBean.getPageSize());
+        pageBean = PageBean.build(pageBean, data, total, queryBean.getPageNo(), queryBean.getPageSize());
         return pageBean;
+    }
+
+    private List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdIndex> beans) {
+        List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
+        beans.forEach(aoyiProdIndex -> {
+            AoyiProdIndex prodIndex = new AoyiProdIndex() ;
+            prodIndex.setCategory(aoyiProdIndex.getCategory());
+            prodIndex.setMpu(aoyiProdIndex.getMpu());
+            aoyiProdIndices.add(prodIndex) ;
+        });
+        OperaResult result = equityService.findCouponListByMpuList(aoyiProdIndices) ;
+        if (result != null && result.getCode() == 200) {
+            Map<String, Object> data = result.getData();
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<CouponAndPromBean>  couponAndPromBeans = JSONObject.parseArray(jsonString, CouponAndPromBean.class);
+            return couponAndPromBeans;
+        } else {
+            log.error("批量查询优惠券和活动失败，返回结果： {}", JSONUtil.toJsonString(result));
+        }
+        return null ;
     }
 
     private List<AoyiProdIndex> findProductByMpuList(List<ShoppingCart> shoppingCarts) {

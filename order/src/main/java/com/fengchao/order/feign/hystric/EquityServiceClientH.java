@@ -7,6 +7,7 @@ import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.bean.VirtualTicketsBean;
 import com.fengchao.order.feign.EquityServiceClient;
+import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -62,6 +63,11 @@ public class EquityServiceClientH implements EquityServiceClient {
 
     @Override
     public OperaResult createVirtual(VirtualTicketsBean bean) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResult findCouponListByMpuList(List<AoyiProdIndex> beans) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 

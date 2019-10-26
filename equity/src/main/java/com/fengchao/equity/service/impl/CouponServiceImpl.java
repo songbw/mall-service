@@ -538,6 +538,7 @@ public class CouponServiceImpl implements CouponService {
                 couponBeans.add(couponToBean(coupon));
             });
             couponAndPromBean.setCoupons(couponBeans);
+            couponAndPromBean.setMpu(bean.getMpu());
             couponAndPromBeans.add(couponAndPromBean);
         }
         return couponAndPromBeans;
