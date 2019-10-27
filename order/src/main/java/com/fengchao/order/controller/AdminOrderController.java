@@ -606,7 +606,7 @@ public class AdminOrderController {
                 // 进货价 单位：元
                 HSSFCell cell25 = currentRow.createCell(25);
                 cell25.setCellValue("无");
-                if (exportOrdersVo.getPurchasePrice() >= 0) {
+                if (exportOrdersVo.getPurchasePrice() != null && exportOrdersVo.getPurchasePrice() >= 0) {
                     String _price = new BigDecimal(exportOrdersVo.getPurchasePrice()).divide(new BigDecimal(100)).toString();
                     cell25.setCellValue(_price);
                 }
