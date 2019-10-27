@@ -460,6 +460,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer updateStatus(Order bean) {
+        logger.info("更新订单状态 入参:{}", JSONUtil.toJsonString(bean));
+
         bean.setUpdatedAt(new Date());
         // 更新子订单状态
         if (bean.getStatus() == 2) {
