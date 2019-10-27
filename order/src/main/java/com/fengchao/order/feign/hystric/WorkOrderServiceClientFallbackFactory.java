@@ -4,6 +4,7 @@ import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.VendorsServiceClient;
 import com.fengchao.order.feign.WorkOrderServiceClient;
 import com.fengchao.order.rpc.extmodel.SysCompanyX;
+import com.fengchao.order.rpc.extmodel.WorkOrder;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,13 @@ public class WorkOrderServiceClientFallbackFactory implements FallbackFactory<Wo
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
 
+            @Override
+            public OperaResponse<List<WorkOrder>> queryRefundedOrderDetailList(Long merchantId, String startTime, String endTime) {
+                return HystrixDefaultFallback.fallbackResponse(throwable);
+            }
         };
+
+
     }
 
 }

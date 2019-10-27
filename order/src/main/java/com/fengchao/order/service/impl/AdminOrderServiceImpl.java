@@ -111,7 +111,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         log.info("导出订单 查询数据库结果List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
 
         // 4.获取组装结果的其他相关数据
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null);
 
         log.info("导出订单 获取导出结果List<ExportOrdersVo>:{}", JSONUtil.toJsonString(exportOrdersVoList));
 
@@ -153,7 +153,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         log.info("导出订单对账单(入账) 查询主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
         // 3.组装结果
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null);
 
         // patch, 将状态统一为"已退款"
         if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
@@ -185,11 +185,23 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Date startDateTime = DateUtil.parseDateTime(_start + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         Date endDateTime = DateUtil.parseDateTime(_end + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
-        // 1.1 获取已退款的子订单No集合
-        List<String> orderDetailNoList = workOrderRpcService.queryRefundedOrderDetailIdList(orderExportReqVo.getMerchantId(), startDateTime, endDateTime);
-        if (CollectionUtils.isEmpty(orderDetailNoList)) {
+        // 1.1 获取已退款的子订单信息集合
+        List<WorkOrder> workOrderList =
+                workOrderRpcService.queryRefundedOrderDetailList(orderExportReqVo.getMerchantId(), startDateTime, endDateTime);
+        if (CollectionUtils.isEmpty(workOrderList)) {
             return Collections.emptyList();
         }
+
+        // 1.1.1 获取子订单id集合
+        // 1.1.2 获取子订单退款金额map , key: 子订单id， value: 退款金额
+        List<String> orderDetailNoList = new ArrayList<>();
+        Map<String, Float> orderDetailRefundAmountMap = new HashMap<>();
+        for (WorkOrder workOrder : workOrderList) {
+            orderDetailNoList.add(workOrder.getOrderId());
+            orderDetailRefundAmountMap.put(workOrder.getOrderId(), workOrder.getRefundAmount()); // 单位元
+        }
+
+        log.info("导出订单对账单(出账) 获取子订单的退款金额map:{}", JSONUtil.toJsonString(orderDetailRefundAmountMap));
 
         // 1.2 根据子订单No查询子订单信息
         List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailListBySubOrderIds(orderDetailNoList);
@@ -206,8 +218,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList);
         log.info("导出订单对账单(出账) 查询已退款的主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
-        // 3.组装结果
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList);
+        // 3.组装结果!!!
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, orderDetailRefundAmountMap);
 
         // patch, 将状态统一为"已退款"
         if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
@@ -269,9 +281,12 @@ public class AdminOrderServiceImpl implements AdminOrderService {
      *
      * @param ordersList
      * @param orderDetailList
+     * @param orderDetailRefundAmountMap 子订单的退款金额map , key: 子订单id， value: 退款金额
      * @return
      */
-    private List<ExportOrdersVo> assembleExportOrderData(List<Orders> ordersList, List<OrderDetail> orderDetailList) {
+    private List<ExportOrdersVo> assembleExportOrderData(List<Orders> ordersList,
+                                                         List<OrderDetail> orderDetailList,
+                                                         Map<String, Float> orderDetailRefundAmountMap) {
         // x. 获取组装结果的其他相关数据 - 获取导出需要的coupon信息列表 - 获取coupon的id集合
         Set<Integer> couponUseInfoIdSet = new HashSet<>();
         // x. 获取组装结果的其他相关数据 - 获取导出需要的支付方式信息 - 获取coupon的id集合
@@ -295,6 +310,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         for (OrderDetail orderDetail : orderDetailList) {
             // 转bo
             OrderDetailBo orderDetailBo = convertToOrderDetailBo(orderDetail);
+            // 设置退款金额
+            if (orderDetailRefundAmountMap != null) {
+                Float refundAmount = orderDetailRefundAmountMap.get(orderDetail.getSubOrderId());
+                if (refundAmount != null) {
+                    orderDetailBo.setRefundAmount(new BigDecimal(refundAmount).toPlainString());
+                }
+            }
+
             // 放入map
             if (orderDetailBoMap.get(orderDetail.getOrderId()) == null) {
                 orderDetailBoMap.put(orderDetail.getOrderId(), new ArrayList<>());
@@ -445,7 +468,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
 
-                    // 支付方式 TODO: 四种支付方式的字符是什么？
+                    // 退款金额 单位元
+                    exportOrdersVo.setOrderDetailRefundAmount("-");
+                    if (orderDetailBo.getRefundAmount() != null) {
+                        exportOrdersVo.setOrderDetailRefundAmount(orderDetailBo.getRefundAmount());
+                    }
+
+                    // 支付方式
                     List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = paymentMethodInfoMap.get(ordersBo.getPaymentNo());
                     exportOrdersVo.setBalanceFee("0"); // 余额支付金额 单位 元
                     exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元

@@ -433,19 +433,22 @@ public class AdminOrderController {
         titleCell25.setCellValue("进货价 单位：元");
 
         HSSFCell titleCell26 = titleRow.createCell(26);
-        titleCell26.setCellValue("收件人名");
+        titleCell26.setCellValue("退款金额 单位：元");
 
         HSSFCell titleCell27 = titleRow.createCell(27);
-        titleCell27.setCellValue("省");
+        titleCell27.setCellValue("收件人名");
 
         HSSFCell titleCell28 = titleRow.createCell(28);
-        titleCell28.setCellValue("市");
+        titleCell28.setCellValue("省");
 
         HSSFCell titleCell29 = titleRow.createCell(29);
-        titleCell29.setCellValue("区");
+        titleCell29.setCellValue("市");
 
         HSSFCell titleCell30 = titleRow.createCell(30);
-        titleCell30.setCellValue("详细地址");
+        titleCell30.setCellValue("区");
+
+        HSSFCell titleCell31 = titleRow.createCell(31);
+        titleCell31.setCellValue("详细地址");
     }
 
     /**
@@ -608,25 +611,33 @@ public class AdminOrderController {
                     cell25.setCellValue(_price);
                 }
 
-                // 收件人名
+                // 退款金额 单位：元
                 HSSFCell cell26 = currentRow.createCell(26);
-                cell26.setCellValue(exportOrdersVo.getBuyerName());
+                cell26.setCellValue("无");
+                if (StringUtils.isNotBlank(exportOrdersVo.getOrderDetailRefundAmount())) {
+                    String _price = new BigDecimal(exportOrdersVo.getOrderDetailRefundAmount()).multiply(new BigDecimal(-1)).toString();
+                    cell26.setCellValue(_price);
+                }
+
+                // 收件人名
+                HSSFCell cell27 = currentRow.createCell(27);
+                cell27.setCellValue(exportOrdersVo.getBuyerName());
 
                 // 省
-                HSSFCell cell27 = currentRow.createCell(27);
-                cell27.setCellValue(exportOrdersVo.getProvinceName());
+                HSSFCell cell28 = currentRow.createCell(28);
+                cell28.setCellValue(exportOrdersVo.getProvinceName());
 
                 // 市
-                HSSFCell cell28 = currentRow.createCell(28);
-                cell28.setCellValue(exportOrdersVo.getCityName());
+                HSSFCell cell29 = currentRow.createCell(29);
+                cell29.setCellValue(exportOrdersVo.getCityName());
 
                 // 区
-                HSSFCell cell29 = currentRow.createCell(29);
-                cell29.setCellValue(exportOrdersVo.getCountyName());
+                HSSFCell cell30 = currentRow.createCell(30);
+                cell30.setCellValue(exportOrdersVo.getCountyName());
 
                 // 详细地址
-                HSSFCell cell30 = currentRow.createCell(30);
-                cell30.setCellValue(exportOrdersVo.getAddress());
+                HSSFCell cell31 = currentRow.createCell(31);
+                cell31.setCellValue(exportOrdersVo.getAddress());
 
                 //
                 currentRowNum++;
