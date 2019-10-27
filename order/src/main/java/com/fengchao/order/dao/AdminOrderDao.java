@@ -196,7 +196,7 @@ public class AdminOrderDao {
      */
     public void updateOrderDetailStatusForReceived(OrderDetail orderDetail) {
         // 查询需要更新的订单详情记录
-        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(orderDetail.getId());
+        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(orderDetail.getOrderId());
 
         List<String> needUpdateOrderDetailSubOrderIdList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(orderDetailList)) { //
