@@ -480,6 +480,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
                     exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
                     if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
+
+                        boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
+
                         for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
                             String payType = orderPayMethodInfoBean.getPayType();
                             Integer payStatus = orderPayMethodInfoBean.getStatus();
@@ -489,23 +492,43 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             String _fee = StringUtils.isBlank(_fen) ?
                                     "0" : new BigDecimal(_fen).divide(new BigDecimal(100)).toPlainString(); // 转元
 
-                            if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                _fee = _fee + "(异常)";
-                            }
-
                             if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
                                 exportOrdersVo.setBalanceFee(_fee);
+
+                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                    exportOrdersVo.setBalanceFee(exportOrdersVo.getBalanceFee() + "(异常)");
+                                }
                             } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
                                 String huiminFee = exportOrdersVo.getHuiminCardFee(); // 单位 元
+
                                 huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
 
                                 exportOrdersVo.setHuiminCardFee(huiminFee);
+
+                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                    checkHuiminCardUnNormalPayStatus = false;
+                                }
                             } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
                                 exportOrdersVo.setWoaFee(_fee);
+
+                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                    exportOrdersVo.setWoaFee(exportOrdersVo.getWoaFee() + "(异常)");
+                                }
                             } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
                                 exportOrdersVo.setQuickPayFee(_fee);
+
+                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                    exportOrdersVo.setQuickPayFee(exportOrdersVo.getQuickPayFee() + "(异常)");
+                                }
                             }
                         }
+
+                        if (!checkHuiminCardUnNormalPayStatus) {
+                            if (!"0".equals(exportOrdersVo.getHuiminCardFee())) {
+                                exportOrdersVo.setHuiminCardFee(exportOrdersVo.getHuiminCardFee() + "(异常)");
+                            }
+                        }
+
                     }
 
                     //////////
