@@ -487,6 +487,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             String payType = orderPayMethodInfoBean.getPayType();
                             Integer payStatus = orderPayMethodInfoBean.getStatus();
 
+                            if (payStatus == null || payStatus == 0) {
+                                continue;
+                            }
+
                             // 处理显示的价格
                             String _fen = orderPayMethodInfoBean.getActPayFee(); // 花费
                             String _fee = StringUtils.isBlank(_fen) ?
