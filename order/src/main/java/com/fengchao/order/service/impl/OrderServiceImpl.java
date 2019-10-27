@@ -469,7 +469,9 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setOrderId(bean.getId());
             orderDetail.setStatus(3);
 
-            adminOrderDao.updateOrderDetailStatus(orderDetail);
+            // adminOrderDao.updateOrderDetailStatus(orderDetail);
+
+            adminOrderDao.updateOrderDetailStatusForReceived(orderDetail);
         }
         orderMapper.updateStatusById(bean) ;
         return bean.getId();
