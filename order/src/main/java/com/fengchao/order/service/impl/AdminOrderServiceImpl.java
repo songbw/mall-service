@@ -469,7 +469,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
 
                     // 退款金额 单位元
-                    exportOrdersVo.setOrderDetailRefundAmount("-");
                     if (orderDetailBo.getRefundAmount() != null) {
                         exportOrdersVo.setOrderDetailRefundAmount(orderDetailBo.getRefundAmount());
                     }
