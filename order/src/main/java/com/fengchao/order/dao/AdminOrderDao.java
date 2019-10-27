@@ -6,6 +6,7 @@ import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.OrderDetailExample;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.model.OrdersExample;
+import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,9 +171,12 @@ public class AdminOrderDao {
         Date date = new Date() ;
         temp.setUpdatedAt(date);
         if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 5) {
+            log.info("===============checkCompleteTime={}", JSONUtil.toJsonString(checkCompleteTime));
             if (checkCompleteTime != null
                     && checkCompleteTime.getCompleteTime() != null
                     && checkCompleteTime.getCompleteTime().getTime() == -28800000) {
+
+                log.info("===============###");
                 temp.setCompleteTime(date);
             }
         }
