@@ -198,7 +198,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Map<String, Float> orderDetailRefundAmountMap = new HashMap<>();
         for (WorkOrder workOrder : workOrderList) {
             orderDetailNoList.add(workOrder.getOrderId());
-            orderDetailRefundAmountMap.put(workOrder.getOrderId(), workOrder.getRefundAmount()); // 单位元
+            orderDetailRefundAmountMap.put(workOrder.getOrderId(), workOrder.getGuanaitongRefundAmount()); // 单位元
         }
 
         log.info("导出订单对账单(出账) 获取子订单的退款金额map:{}", JSONUtil.toJsonString(orderDetailRefundAmountMap));
