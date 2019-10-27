@@ -615,7 +615,9 @@ public class AdminOrderController {
                 HSSFCell cell26 = currentRow.createCell(26);
                 cell26.setCellValue("无");
                 if (StringUtils.isNotBlank(exportOrdersVo.getOrderDetailRefundAmount())) {
-                    String _price = new BigDecimal(exportOrdersVo.getOrderDetailRefundAmount()).multiply(new BigDecimal(-1)).toString();
+                    log.info("==========================={}", JSONUtil.toJsonString(exportOrdersVo));
+                    BigDecimal _priceBigDecimal = new BigDecimal(exportOrdersVo.getOrderDetailRefundAmount()).multiply(new BigDecimal(-1));
+                    String _price = _priceBigDecimal.toString();
                     cell26.setCellValue(_price);
                 }
 
