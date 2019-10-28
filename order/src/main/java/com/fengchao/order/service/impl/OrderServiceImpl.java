@@ -170,6 +170,9 @@ public class OrderServiceImpl implements OrderService {
             if (!couponConsume) {
                 // TODO 优惠券预占失败的话，订单失败
                 logger.info("订单" + bean.getId() + "优惠券核销失败");
+                operaResult.setCode(400601);
+                operaResult.setMsg("优惠券核销失败。");
+                return operaResult;
             } else {
                 bean.setCouponStatus(2);
             }

@@ -27,8 +27,8 @@ public class VendorsServiceClientFallbackFactory implements FallbackFactory<Vend
             }
 
             @Override
-            public OperaResult vendorInfo(int id) {
-                OperaResult result = new OperaResult();
+            public OperaResponse vendorInfo(int id) {
+                OperaResponse result = new OperaResponse();
                 result.setCode(404);
                 result.setMsg("多商户服务失败 " + id);
                 return result;
