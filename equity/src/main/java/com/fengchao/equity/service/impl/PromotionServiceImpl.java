@@ -300,6 +300,7 @@ public class PromotionServiceImpl implements PromotionService {
             }
         }
 
+        List<PromotionMpuX> finalPromotionMpus = promotionMpus;
         promotionMpus.forEach(promotionMpuX ->{
             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
             if(aoyiProdIndex != null){
@@ -321,8 +322,9 @@ public class PromotionServiceImpl implements PromotionService {
                 }
                 promotionMpuX.setImage(aoyiProdIndex.getImage());
             }
+            finalPromotionMpus.remove(promotionMpuX);
         });
-        promotion.setPromotionSkus(promotionMpus);
+        promotion.setPromotionSkus(finalPromotionMpus);
 
         List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
         promotion.setPromotionSchedules(scheduleAll);
@@ -442,11 +444,6 @@ public class PromotionServiceImpl implements PromotionService {
         List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
         promotion.setPromotionSchedules(scheduleAll);
         return promotion;
-    }
-
-    @Override
-    public List<PromotionInfoBean> findPromotionInfoByMpu(String mpu) {
-        return promotionXMapper.selectPromotionInfoByMpu(mpu);
     }
 
     @Override
@@ -650,6 +647,51 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionX findPromotionToJob(int id) {
         PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
         return promotion;
+    }
+
+    @Override
+    public List<PromotionInfoBean> verifyPromotionInfo(List<PromotionMpuBean> beans) {
+        Date now = new Date();
+        List<PromotionInfoBean> promotions = new ArrayList<>();
+        for(int i = 0; i < beans.size(); i++) {
+            PromotionMpuBean bean = beans.get(i);
+            PromotionInfoBean promotionInfoBean = new PromotionInfoBean();
+            PromotionX promotionX = promotionXMapper.selectByPrimaryKey(bean.getId());
+            PromotionMpuX promotionMpuX = mpuXMapper.selectByPrimaryIdAndMpu(bean.getMpu(), bean.getId());
+            promotionInfoBean.setId(bean.getId());
+            promotionInfoBean.setMpu(bean.getMpu());
+            if(promotionMpuX != null){
+                promotionInfoBean.setStartDate(promotionX.getStartDate());
+                promotionInfoBean.setEndDate(promotionX.getEndDate());
+                promotionInfoBean.setCreatedDate(promotionX.getCreatedDate());
+                promotionInfoBean.setDailySchedule(promotionX.getDailySchedule());
+                promotionInfoBean.setName(promotionX.getName());
+                promotionInfoBean.setStatus(promotionX.getStatus());
+                promotionInfoBean.setSkuid(promotionMpuX.getSkuid());
+                promotionInfoBean.setScheduleId(promotionMpuX.getScheduleId());
+                if(promotionX.getStatus() != 5){
+                    if(promotionX.getDailySchedule() != null && promotionX.getDailySchedule()){
+                        List<PromotionSchedule> promotionSchedules = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
+                        if(!promotionSchedules.isEmpty()){
+                            PromotionSchedule promotionSchedule = promotionSchedules.get(0);
+                            if(promotionSchedule.getStartTime().before(now) && promotionSchedule.getEndTime().after(now)){
+                                promotionInfoBean.setStatus(4);
+                            }else{
+                                promotionInfoBean.setStatus(5);
+                            }
+                        }
+                    }else{
+                        if(promotionX.getStartDate().before(now) && promotionX.getEndDate().after(now)){
+                            promotionInfoBean.setStatus(4);
+                        }else{
+                            promotionInfoBean.setStatus(5);
+                        }
+                    }
+                }
+            }
+            promotions.add(promotionInfoBean);
+        }
+        return promotions;
     }
 
     // ====================================== private ==========================

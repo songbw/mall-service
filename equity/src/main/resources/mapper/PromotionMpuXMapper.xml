@@ -150,7 +150,7 @@
      where promotion_id = #{promotionId,jdbcType=INTEGER}
     and schedule_id = #{scheduleId,jdbcType=INTEGER}
   </select>
-  <select id="selectPromotionByMpuList"  resultType="com.fengchao.equity.bean.PromotionInfoBean" parameterType="java.util.List" >
+  <select id="selectPromotionByMpuList" resultType="com.fengchao.equity.model.PromotionMpuX" parameterType="java.util.List" >
     select
     p.id,
     ps.mpu,
@@ -160,5 +160,13 @@
     <foreach item="item" index="index" collection="mpus" open="(" separator="," close=")">
       #{item}
     </foreach>
+  </select>
+
+  <select id="selectByPrimaryIdAndMpu" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from promotion_mpu
+    where promotion_id = #{promotionId,jdbcType=INTEGER}
+    and mpu = #{mpu,jdbcType=VARCHAR}
   </select>
 </mapper>

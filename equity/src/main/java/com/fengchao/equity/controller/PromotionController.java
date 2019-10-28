@@ -2,6 +2,7 @@ package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.OperaResponse;
 import com.fengchao.equity.bean.PromotionBean;
+import com.fengchao.equity.bean.PromotionMpuBean;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.bean.OperaResult;
@@ -76,6 +77,12 @@ public class PromotionController {
     @GetMapping("mpuList")
     public OperaResult findPromotionByMpuList(@RequestParam("mpuList")List<String> Mpus, OperaResult result){
         result.getData().put("result", service.findPromotionByMpuList(Mpus));
+        return result;
+    }
+
+    @PostMapping("verify")
+    public OperaResult verifyPromotionInfo(@RequestBody List<PromotionMpuBean> beans, OperaResult result){
+        result.getData().put("result", service.verifyPromotionInfo(beans));
         return result;
     }
 }

@@ -63,4 +63,9 @@ public class VirtualProdServiceImpl implements VirtualProdService {
         return prodDao.deleteVirtualProd(mpu);
     }
 
+    @Override
+    public VirtualProdX findVirtualProdInfoByMpu(String mpu) {
+        return prodDao.findByVirtualProdMpu(mpu);
+    }
+
 }

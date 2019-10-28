@@ -1,9 +1,6 @@
 package com.fengchao.equity.service;
 
-import com.fengchao.equity.bean.PageBean;
-import com.fengchao.equity.bean.PromotionBean;
-import com.fengchao.equity.bean.PromotionInfoBean;
-import com.fengchao.equity.bean.PromotionResult;
+import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionMpu;
@@ -36,8 +33,6 @@ public interface PromotionService {
 
     PromotionX findPromotionToUser(Integer id, Boolean detail);
 
-    List<PromotionInfoBean> findPromotionInfoByMpu(String mpu);
-
     List<PromotionInfoBean> findPromotionByMpu(String mpu);
 
     int end(int promotionId);
@@ -61,4 +56,6 @@ public interface PromotionService {
     List<PromotionMpuX> findPromotionByMpuList(List<String> mpus);
 
     PromotionX findPromotionToJob(int promotionId);
+
+    List<PromotionInfoBean> verifyPromotionInfo(List<PromotionMpuBean> beans);
 }

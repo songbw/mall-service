@@ -4,6 +4,7 @@ import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.VirtualTicketsBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.VirtualTicketsX;
+import com.fengchao.equity.service.VirtualProdService;
 import com.fengchao.equity.service.VirtualTicketsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/virtual", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class VirtualProdController {
 
+    @Autowired
+    private VirtualProdService prodService;
     @Autowired
     private VirtualTicketsService ticketsService;
 
@@ -33,6 +36,12 @@ public class VirtualProdController {
     public OperaResult consume(@RequestBody VirtualTicketsBean bean, OperaResult result){
         int num = ticketsService.consumeTicket(bean);
         result.getData().put("result", num);
+        return result;
+    }
+
+    @GetMapping("mpu")
+    public OperaResult findByVirtualProdMpu(String mpu, OperaResult result){
+        result.getData().put("result",prodService.findVirtualProdInfoByMpu(mpu));
         return result;
     }
 
