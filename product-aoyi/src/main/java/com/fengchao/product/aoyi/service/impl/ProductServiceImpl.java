@@ -316,6 +316,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public OperaResult inventorySub(List<InventoryMpus> inventories) {
+        log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
         OperaResult result = new OperaResult();
         for (InventoryMpus inventoryMpus : inventories) {
             AoyiProdIndexX prodIndexX = mapper.selectForUpdateByMpu(inventoryMpus.getMpu()) ;
@@ -337,6 +338,7 @@ public class ProductServiceImpl implements ProductService {
             temp.setInventory(prodIndexX.getInventory() - inventoryMpus.getRemainNum());
             mapper.updateByPrimaryKeySelective(temp) ;
         }
+        log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
         return result;
     }
 
