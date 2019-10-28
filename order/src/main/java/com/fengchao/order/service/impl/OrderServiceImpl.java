@@ -182,6 +182,7 @@ public class OrderServiceImpl implements OrderService {
         List<InventoryMpus> inventories = new ArrayList<>() ;
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
+        // 验证活动
         OperaResult promotionResult = promotionVerify(orderMerchantBeans) ;
         if (promotionResult.getCode() != 200) {
             return promotionResult ;
@@ -357,9 +358,9 @@ public class OrderServiceImpl implements OrderService {
             String jsonString = JSON.toJSONString(object);
             List<PromotionInfoBean>  promotionInfoBeans = JSONObject.parseArray(jsonString, PromotionInfoBean.class);
             for (PromotionInfoBean promotionInfoBean : promotionInfoBeans) {
-                if (promotionInfoBean.getStatus() != 4) {
+                if (promotionInfoBean.getStatus() != null && promotionInfoBean.getStatus() != 4) {
                     result.setCode(400602);
-                    result.setMsg("活动已失效。");
+                    result.setMsg("订单中存在无效活动的商品。");
                     return result;
                 }
             }
