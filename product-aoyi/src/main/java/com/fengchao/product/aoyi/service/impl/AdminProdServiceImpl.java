@@ -203,22 +203,27 @@ public class AdminProdServiceImpl implements AdminProdService {
         // 2. 处理商户信息，如果SkuCode表中不存在该商户信息，那么为该商户分配(创建)一个merchantCode
         SkuCode skuCode = skuCodeMapper.selectByMerchantId(requestProdParams.getMerchantId());
         if (skuCode == null) {
-            // 查询商户信息
-            VendorsProfileBean profileBean = findVendorInfo(requestProdParams.getMerchantId());
-            if (profileBean != null) {
-                // 获取最新code
-                SkuCode lastCode = skuCodeMapper.selectLast();
-                // logger.info(aoyiProdIndexX.getMerchantId() + "");
-                int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
-                // 添加商户信息
-                skuCode = new SkuCode();
-                skuCode.setMerchantId(requestProdParams.getMerchantId());
-                skuCode.setMerchantName(profileBean.getCompany().getName());
-                skuCode.setMerchantCode(code + "");
-                skuCode.setSkuValue(0);
-                skuCode.setCreatedAt(new Date());
-                skuCode.setUpdatedAt(new Date());
-                skuCodeMapper.insertSelective(skuCode);
+            OperaResponse<SysCompany> vendorResponse = vendorsService.vendorInfo(requestProdParams.getMerchantId());
+            if (vendorResponse.getCode() == 200) {
+                SysCompany profileBean = vendorResponse.getData() ;
+                if (profileBean != null) {
+                    // 获取最新code
+                    SkuCode lastCode = skuCodeMapper.selectLast();
+                    // logger.info(aoyiProdIndexX.getMerchantId() + "");
+                    int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
+                    // 添加商户信息
+                    skuCode = new SkuCode();
+                    skuCode.setMerchantId(requestProdParams.getMerchantId());
+                    skuCode.setMerchantName(profileBean.getName());
+                    skuCode.setMerchantCode(code + "");
+                    skuCode.setSkuValue(0);
+                    skuCode.setCreatedAt(new Date());
+                    skuCode.setUpdatedAt(new Date());
+                    skuCodeMapper.insertSelective(skuCode);
+                } else {
+                    logger.warn("未获取到商户信息 merchantId:{}信息为:{}", requestProdParams.getMerchantId());
+                    throw new ProductException(200001, "vendor 服务失败 " + vendorResponse.getMsg());
+                }
             } else {
                 logger.warn("未获取到商户信息 merchantId:{}信息为:{}", requestProdParams.getMerchantId());
                 throw new ProductException(200001, "商户信息为null");
@@ -467,18 +472,6 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     // =============================== private ======================================================
 
-    private VendorsProfileBean findVendorInfo(int id) {
-        OperaResult result = vendorsService.vendorInfo(id) ;
-        logger.info("vendor info : " + JSON.toJSONString(result));
-        if (result.getCode() == 200) {
-            Object object = result.getData() ;
-            String jsonString = JSON.toJSONString(object);
-            VendorsProfileBean profileBean = JSONObject.parseObject(jsonString, VendorsProfileBean.class);
-            return profileBean;
-        }
-        return null;
-    }
-
     /**
      * 转数据库实体 AoyiProdIndex
      *
@@ -556,21 +549,29 @@ public class AdminProdServiceImpl implements AdminProdService {
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
             SkuCode skuCode = skuCodeMapper.selectByMerchantId(aoyiProdIndex.getMerchantId());
             if (skuCode == null) {
-                // 查询商户信息
-                VendorsProfileBean profileBean = findVendorInfo(aoyiProdIndex.getMerchantId());
-                if (profileBean != null) {
-                    // 获取最新code
-                    SkuCode lastCode = skuCodeMapper.selectLast();
-                    int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
-                    skuCode = new SkuCode();
-                    skuCode.setMerchantId(aoyiProdIndex.getMerchantId());
-                    skuCode.setMerchantName(profileBean.getCompany().getName());
-                    skuCode.setMerchantCode(code + "");
-                    skuCode.setSkuValue(0);
-                    skuCode.setCreatedAt(new Date());
-                    skuCode.setUpdatedAt(new Date());
-                    skuCodeMapper.insertSelective(skuCode);
+                OperaResponse<SysCompany> vendorResponse = vendorsService.vendorInfo(aoyiProdIndex.getMerchantId());
+                if (vendorResponse.getCode() == 200) {
+                    SysCompany profileBean = vendorResponse.getData() ;
+                    if (profileBean != null) {
+                        // 获取最新code
+                        SkuCode lastCode = skuCodeMapper.selectLast();
+                        // logger.info(aoyiProdIndexX.getMerchantId() + "");
+                        int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
+                        // 添加商户信息
+                        skuCode = new SkuCode();
+                        skuCode.setMerchantId(aoyiProdIndex.getMerchantId());
+                        skuCode.setMerchantName(profileBean.getName());
+                        skuCode.setMerchantCode(code + "");
+                        skuCode.setSkuValue(0);
+                        skuCode.setCreatedAt(new Date());
+                        skuCode.setUpdatedAt(new Date());
+                        skuCodeMapper.insertSelective(skuCode);
+                    } else {
+                        logger.warn("未获取到商户信息 merchantId:{}信息为:{}", aoyiProdIndex.getMerchantId());
+                        throw new ProductException(200001, "vendor 服务失败 " + vendorResponse.getMsg());
+                    }
                 } else {
+                    logger.warn("未获取到商户信息 merchantId:{}信息为:{}", aoyiProdIndex.getMerchantId());
                     throw new ProductException(200001, "商户信息为null");
                 }
             }

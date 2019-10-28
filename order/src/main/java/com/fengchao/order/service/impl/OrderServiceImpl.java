@@ -983,7 +983,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDetail orderDetail = orderDetailMapper.selectByPrimaryKey(id) ;
         orderDetail.setStatus(3);
         orderDetailDao.updateOrderDetailStatus(orderDetail) ;
-        return null;
+        return id;
     }
 
     // ========================================= private ======================================
