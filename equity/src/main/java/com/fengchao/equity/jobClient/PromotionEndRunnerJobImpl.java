@@ -26,7 +26,7 @@ public class PromotionEndRunnerJobImpl implements JobRunner {
             String id = jobContext.getJob().getParam("promotionId") ;
             PromotionService promotionService = BeanContext.getApplicationContext().getBean(PromotionService.class);
             int promotionId = Integer.parseInt(id) ;
-            PromotionX promotion = promotionService.findPromotionById(promotionId);
+            PromotionX promotion = promotionService.findPromotionToJob(promotionId);
             if (promotion != null && promotion.getStatus() == 4) {
                 promotionService.end(promotionId) ;
                 // 会发送到 LTS (JobTracker上)

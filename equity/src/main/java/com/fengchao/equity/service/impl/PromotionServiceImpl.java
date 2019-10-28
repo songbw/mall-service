@@ -293,30 +293,34 @@ public class PromotionServiceImpl implements PromotionService {
                 Object object = result.getData().get("result");
                 List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
                 for(AoyiProdIndex prod: aoyiProdIndices){
-                    aoyiProdMap.put(prod.getMpu(), prod);
+                    if(prod != null){
+                        aoyiProdMap.put(prod.getMpu(), prod);
+                    }
                 }
             }
         }
 
         promotionMpus.forEach(promotionMpuX ->{
             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-            promotionMpuX.setBrand(aoyiProdIndex.getBrand());
-            promotionMpuX.setModel(aoyiProdIndex.getModel());
-            promotionMpuX.setName(aoyiProdIndex.getName());
-            promotionMpuX.setSprice(aoyiProdIndex.getSprice());
-            promotionMpuX.setPrice(aoyiProdIndex.getPrice());
-            promotionMpuX.setState(aoyiProdIndex.getState());
-            String imageUrl = aoyiProdIndex.getImagesUrl();
-            if (imageUrl != null && (!"".equals(imageUrl))) {
-                String image = "";
-                if (imageUrl.indexOf("/") == 0) {
-                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                } else {
-                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+            if(aoyiProdIndex != null){
+                promotionMpuX.setBrand(aoyiProdIndex.getBrand());
+                promotionMpuX.setModel(aoyiProdIndex.getModel());
+                promotionMpuX.setName(aoyiProdIndex.getName());
+                promotionMpuX.setSprice(aoyiProdIndex.getSprice());
+                promotionMpuX.setPrice(aoyiProdIndex.getPrice());
+                promotionMpuX.setState(aoyiProdIndex.getState());
+                String imageUrl = aoyiProdIndex.getImagesUrl();
+                if (imageUrl != null && (!"".equals(imageUrl))) {
+                    String image = "";
+                    if (imageUrl.indexOf("/") == 0) {
+                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                    } else {
+                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                    }
+                    aoyiProdIndex.setImage(image);
                 }
-                aoyiProdIndex.setImage(image);
+                promotionMpuX.setImage(aoyiProdIndex.getImage());
             }
-            promotionMpuX.setImage(aoyiProdIndex.getImage());
         });
         promotion.setPromotionSkus(promotionMpus);
 
@@ -402,27 +406,31 @@ public class PromotionServiceImpl implements PromotionService {
                 Object object = result.getData().get("result");
                 List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
                 for(AoyiProdIndex prod: aoyiProdIndices){
-                    aoyiProdMap.put(prod.getMpu(), prod);
+                    if(prod != null){
+                        aoyiProdMap.put(prod.getMpu(), prod);
+                    }
                 }
                 promotionMpus.forEach(promotionMpuX ->{
                     AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-                    promotionMpuX.setBrand(aoyiProdIndex.getBrand());
-                    promotionMpuX.setModel(aoyiProdIndex.getModel());
-                    promotionMpuX.setName(aoyiProdIndex.getName());
-                    promotionMpuX.setSprice(aoyiProdIndex.getSprice());
-                    promotionMpuX.setPrice(aoyiProdIndex.getPrice());
-                    promotionMpuX.setState(aoyiProdIndex.getState());
-                    String imageUrl = aoyiProdIndex.getImagesUrl();
-                    if (imageUrl != null && (!"".equals(imageUrl))) {
-                        String image = "";
-                        if (imageUrl.indexOf("/") == 0) {
-                            image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                        } else {
-                            image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                    if(aoyiProdIndex != null){
+                        promotionMpuX.setBrand(aoyiProdIndex.getBrand());
+                        promotionMpuX.setModel(aoyiProdIndex.getModel());
+                        promotionMpuX.setName(aoyiProdIndex.getName());
+                        promotionMpuX.setSprice(aoyiProdIndex.getSprice());
+                        promotionMpuX.setPrice(aoyiProdIndex.getPrice());
+                        promotionMpuX.setState(aoyiProdIndex.getState());
+                        String imageUrl = aoyiProdIndex.getImagesUrl();
+                        if (imageUrl != null && (!"".equals(imageUrl))) {
+                            String image = "";
+                            if (imageUrl.indexOf("/") == 0) {
+                                image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                            } else {
+                                image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                            }
+                            aoyiProdIndex.setImage(image);
                         }
-                        aoyiProdIndex.setImage(image);
+                        promotionMpuX.setImage(aoyiProdIndex.getImage());
                     }
-                    promotionMpuX.setImage(aoyiProdIndex.getImage());
 //                if(promotionMpuX.getScheduleId() != null){
 //                    PromotionSchedule schedule = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
 //                    promotionMpuX.setSchedule(schedule);
@@ -636,6 +644,12 @@ public class PromotionServiceImpl implements PromotionService {
     public List<PromotionMpuX> findPromotionByMpuList(List<String> mpus) {
         List<PromotionMpuX> promotionMpuXList = mpuXMapper.selectPromotionByMpuList(mpus);
         return promotionMpuXList;
+    }
+
+    @Override
+    public PromotionX findPromotionToJob(int id) {
+        PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
+        return promotion;
     }
 
     // ====================================== private ==========================
