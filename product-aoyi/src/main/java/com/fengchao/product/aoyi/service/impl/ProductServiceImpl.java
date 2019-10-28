@@ -336,6 +336,7 @@ public class ProductServiceImpl implements ProductService {
             temp.setMpu(prodIndexX.getMpu());
             temp.setUpdatedAt(new Date());
             temp.setInventory(prodIndexX.getInventory() - inventoryMpus.getRemainNum());
+            log.info("扣减库存 数据库，入参{}", JSONUtil.toJsonString(temp));
             mapper.updateByPrimaryKeySelective(temp) ;
         }
         log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
