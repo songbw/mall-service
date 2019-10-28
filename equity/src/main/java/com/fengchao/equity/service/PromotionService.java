@@ -59,4 +59,6 @@ public interface PromotionService {
     List<PromotionMpuX> findOnlineMpu();
 
     List<PromotionMpuX> findPromotionByMpuList(List<String> mpus);
+
+    PromotionX findPromotionToJob(int promotionId);
 }
