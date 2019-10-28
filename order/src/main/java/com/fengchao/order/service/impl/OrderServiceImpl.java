@@ -166,12 +166,15 @@ public class OrderServiceImpl implements OrderService {
         if (coupon != null) {
             orderCouponMerchants = coupon.getMerchants();
             // 预占优惠券
-            boolean couponConsume = occupy(coupon.getId(), coupon.getCode()) ;
-            if (!couponConsume) {
+            CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
+            couponUseInfoBean.setUserCouponCode(coupon.getCode());
+            couponUseInfoBean.setId(coupon.getId());
+            OperaResult occupyResult = equityService.occupy(couponUseInfoBean);
+            if (occupyResult.getCode() != 200) {
                 // TODO 优惠券预占失败的话，订单失败
-                logger.info("订单" + bean.getId() + "优惠券核销失败");
+                logger.info("订单" + bean.getId() + "优惠券预占失败");
                 operaResult.setCode(400601);
-                operaResult.setMsg("优惠券核销失败。");
+                operaResult.setMsg(occupyResult.getMsg());
                 return operaResult;
             } else {
                 bean.setCouponStatus(2);
