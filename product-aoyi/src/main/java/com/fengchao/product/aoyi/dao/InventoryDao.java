@@ -34,7 +34,7 @@ public class InventoryDao {
 
     public OperaResult inventorySub(InventoryMpus inventoryMpus) {
         OperaResult result = new OperaResult() ;
-        try{
+//        try{
             Map<String,Object> selectParam=new HashMap<>();
             selectParam.put("mpu", inventoryMpus.getMpu());
             List<AoyiProdIndex> records = sqlSession.selectList("inventoryForUpdate", selectParam);
@@ -57,10 +57,11 @@ public class InventoryDao {
                 updateParam.put("mpu", inventoryMpus.getMpu());
                 sqlSession.update("batchUpdate", updateParam);
             }
-        }finally{
-            sqlSession.commit(true);
-            sqlSession.close();
-        }
+//        }
+//        finally{
+//            sqlSession.commit(true);
+//            sqlSession.close();
+//        }
         return result ;
     }
 }
