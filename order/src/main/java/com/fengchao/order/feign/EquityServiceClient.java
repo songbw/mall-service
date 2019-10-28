@@ -1,9 +1,6 @@
 package com.fengchao.order.feign;
 
-import com.fengchao.order.bean.CouponUseInfoBean;
-import com.fengchao.order.bean.OperaResponse;
-import com.fengchao.order.bean.OperaResult;
-import com.fengchao.order.bean.VirtualTicketsBean;
+import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.hystric.EquityServiceClientH;
 import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
@@ -78,4 +75,12 @@ public interface EquityServiceClient {
      */
     @RequestMapping(value = "/coupon/mpus", method = RequestMethod.POST)
     OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdIndex> beans);
+
+    /**
+     * 根据MPU批量获取活动和优惠券信息
+     * @param beans
+     * @return
+     */
+    @RequestMapping(value = "/promotion/verify", method = RequestMethod.POST)
+    OperaResult promotionVerify(@RequestBody List<PromotionVerifyBean> beans);
 }

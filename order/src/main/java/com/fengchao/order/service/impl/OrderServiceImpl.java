@@ -182,6 +182,10 @@ public class OrderServiceImpl implements OrderService {
         List<InventoryMpus> inventories = new ArrayList<>() ;
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
+        OperaResult promotionResult = promotionVerify(orderMerchantBeans) ;
+        if (promotionResult.getCode() != 200) {
+            return promotionResult ;
+        }
         // 验证商品是否超过限购数量
 //        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
 //        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
@@ -331,6 +335,36 @@ public class OrderServiceImpl implements OrderService {
             logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
+    }
+
+    private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans) {
+        List<PromotionVerifyBean> promotionVerifyBeans = new ArrayList<>() ;
+        orderMerchantBeans.forEach(orderMerchantBean -> {
+            List<OrderDetailX> orderDetailXES = orderMerchantBean.getSkus();
+            orderDetailXES.forEach(orderDetailX -> {
+                PromotionVerifyBean promotionVerifyBean = new PromotionVerifyBean() ;
+                promotionVerifyBean.setId(orderDetailX.getPromotionId());
+                promotionVerifyBean.setMpu(orderDetailX.getMpu());
+                promotionVerifyBeans.add(promotionVerifyBean) ;
+            });
+        });
+        logger.info("promotion verify 入参：{}", JSONUtil.toJsonString(promotionVerifyBeans));
+        OperaResult result = equityService.promotionVerify(promotionVerifyBeans) ;
+        logger.info("promotion verify 返回值：{}", JSONUtil.toJsonString(result));
+        if (result != null && result.getCode() == 200) {
+            Map<String, Object> data = result.getData();
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionInfoBean>  promotionInfoBeans = JSONObject.parseArray(jsonString, PromotionInfoBean.class);
+            for (PromotionInfoBean promotionInfoBean : promotionInfoBeans) {
+                if (promotionInfoBean.getStatus() != 4) {
+                    result.setCode(400602);
+                    result.setMsg("活动已失效。");
+                    return result;
+                }
+            }
+        }
+        return result;
     }
 
     /**
