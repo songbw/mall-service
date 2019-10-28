@@ -300,7 +300,6 @@ public class PromotionServiceImpl implements PromotionService {
             }
         }
 
-        List<PromotionMpuX> finalPromotionMpus = promotionMpus;
         promotionMpus.forEach(promotionMpuX ->{
             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
             if(aoyiProdIndex != null){
@@ -322,9 +321,8 @@ public class PromotionServiceImpl implements PromotionService {
                 }
                 promotionMpuX.setImage(aoyiProdIndex.getImage());
             }
-            finalPromotionMpus.remove(promotionMpuX);
         });
-        promotion.setPromotionSkus(finalPromotionMpus);
+        promotion.setPromotionSkus(promotionMpus);
 
         List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
         promotion.setPromotionSchedules(scheduleAll);
