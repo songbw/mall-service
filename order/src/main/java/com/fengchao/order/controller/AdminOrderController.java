@@ -616,7 +616,7 @@ public class AdminOrderController {
                 cell26.setCellValue("无");
                 if (StringUtils.isNotBlank(exportOrdersVo.getOrderDetailRefundAmount())) {
                     BigDecimal _priceBigDecimal = new BigDecimal(exportOrdersVo.getOrderDetailRefundAmount()).multiply(new BigDecimal(-1));
-                    String _price = _priceBigDecimal.toString();
+                    String _price = _priceBigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).toString();
                     cell26.setCellValue(_price);
                 }
 
