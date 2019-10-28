@@ -243,7 +243,11 @@ public class ProductServiceImpl implements ProductService {
     public List<AoyiProdIndex> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
         // 1. 查询商品信息
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
-        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
+        productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
+            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            aoyiProdIndexList.add(aoyiProdIndex);
+        });
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;
     }

@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.utils;
 
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 
 public class ProductHandle {
@@ -17,5 +18,21 @@ public class ProductHandle {
             }
         }
         return aoyiProdIndexX;
+    }
+
+    public static AoyiProdIndex updateImageExample(AoyiProdIndex aoyiProdIndex) {
+        if (aoyiProdIndex.getImage() == null || "".equals(aoyiProdIndex.getImage())) {
+            String imageUrl = aoyiProdIndex.getImagesUrl();
+            if (imageUrl != null && (!"".equals(imageUrl))) {
+                String image = "";
+                if (imageUrl.indexOf("/") == 0) {
+                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                } else {
+                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                }
+                aoyiProdIndex.setImage(image);
+            }
+        }
+        return aoyiProdIndex;
     }
 }
