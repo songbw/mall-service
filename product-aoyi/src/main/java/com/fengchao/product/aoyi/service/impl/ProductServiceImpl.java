@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.dao.InventoryDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -20,6 +21,7 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -46,6 +48,8 @@ public class ProductServiceImpl implements ProductService {
     private CategoryService categoryService;
     @Autowired
     private ESService esService;
+    @Autowired
+    private InventoryDao inventoryDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -319,25 +323,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
         OperaResult result = new OperaResult();
         for (InventoryMpus inventoryMpus : inventories) {
-            AoyiProdIndexX prodIndexX = mapper.selectForUpdateByMpu(inventoryMpus.getMpu()) ;
-            if (prodIndexX == null) {
-                result.setCode(200010);
-                result.setMsg("商品 " + prodIndexX.getMpu() + " 不存在。");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return result;
-            }
-            if (prodIndexX.getInventory() <= 0 || prodIndexX.getInventory() < inventoryMpus.getRemainNum()) {
-                result.setCode(200010);
-                result.setMsg("商品 " + prodIndexX.getName() + " 库存不足。");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return result;
-            }
-            AoyiProdIndexX temp = new AoyiProdIndexX();
-            temp.setMpu(prodIndexX.getMpu());
-            temp.setUpdatedAt(new Date());
-            temp.setInventory(prodIndexX.getInventory() - inventoryMpus.getRemainNum());
-            log.info("扣减库存 数据库，入参{}", JSONUtil.toJsonString(temp));
-            mapper.updateByPrimaryKeySelective(temp) ;
+            result = inventoryDao.inventorySub(inventoryMpus) ;
         }
         log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
         return result;
