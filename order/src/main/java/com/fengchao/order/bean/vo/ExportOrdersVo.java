@@ -199,4 +199,9 @@ public class ExportOrdersVo {
      */
     private String quickPayFee;
 
+    /**
+     * 子订单退款金额 单位 元
+     */
+    private String orderDetailRefundAmount;
+
 }

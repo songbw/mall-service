@@ -4,6 +4,7 @@ import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.VendorsServiceClient;
 import com.fengchao.order.feign.WorkOrderServiceClient;
 import com.fengchao.order.rpc.extmodel.SysCompanyX;
+import com.fengchao.order.rpc.extmodel.WorkOrder;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -60,5 +61,38 @@ public class WorkOrderRpcService {
                 JSONUtil.toJsonString(orderDetailNoList));
 
         return orderDetailNoList;
+    }
+
+    /**
+     * 获取已退款的子订单信息集合
+     *
+     * @return
+     */
+    public List<WorkOrder> queryRefundedOrderDetailList(Integer merchantId, Date startTime, Date endTime) {
+        // 返回值
+        List<WorkOrder> workOrderList = new ArrayList<>();
+
+        // 执行rpc调用
+        log.info("获取已退款的子订单信息集合 调用workorder rpc服务 入参 merchantId:{}, startTime:{}, endTime:{}",
+                merchantId, startTime, endTime);
+
+        String startTimeStr = DateUtil.dateTimeFormat(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        String endTimeStr = DateUtil.dateTimeFormat(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+
+        OperaResponse<List<WorkOrder>> operaResponse = workOrderServiceClient.queryRefundedOrderDetailList(
+                merchantId == null ? null : merchantId.longValue(), startTimeStr, endTimeStr);
+        log.info("获取已退款的子订单信息集合 调用workorder rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        // 处理返回
+        if (operaResponse.getCode() == 200) {
+            workOrderList = operaResponse.getData();
+        } else {
+            log.warn("获取已退款的子订单信息集合 调用workorder rpc服务 错误!");
+        }
+
+        log.info("WorkOrderRpcService#queryRefundedOrderDetailList 调用workorder rpc服务 返回:{}",
+                JSONUtil.toJsonString(workOrderList));
+
+        return workOrderList;
     }
 }

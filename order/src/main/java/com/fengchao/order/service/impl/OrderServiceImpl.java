@@ -460,13 +460,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer updateStatus(Order bean) {
+        logger.info("更新订单状态 入参:{}", JSONUtil.toJsonString(bean));
+
         bean.setUpdatedAt(new Date());
         // 更新子订单状态
         if (bean.getStatus() == 2) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(bean.getId());
             orderDetail.setStatus(3);
-            adminOrderDao.updateOrderDetailStatus(orderDetail);
+
+            // adminOrderDao.updateOrderDetailStatus(orderDetail);
+
+            adminOrderDao.updateOrderDetailStatusForReceived(orderDetail);
         }
         orderMapper.updateStatusById(bean) ;
         return bean.getId();
@@ -978,7 +983,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDetail orderDetail = orderDetailMapper.selectByPrimaryKey(id) ;
         orderDetail.setStatus(3);
         orderDetailDao.updateOrderDetailStatus(orderDetail) ;
-        return null;
+        return id;
     }
 
     // ========================================= private ======================================

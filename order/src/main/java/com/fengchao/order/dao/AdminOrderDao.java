@@ -6,11 +6,14 @@ import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.OrderDetailExample;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.model.OrdersExample;
+import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,11 +29,15 @@ public class AdminOrderDao {
 
     private OrderDetailMapper orderDetailMapper;
 
+    private OrderDetailDao orderDetailDao;
+
     @Autowired
     public AdminOrderDao(OrdersMapper ordersMapper,
-                         OrderDetailMapper orderDetailMapper) {
+                         OrderDetailMapper orderDetailMapper,
+                         OrderDetailDao orderDetailDao) {
         this.ordersMapper = ordersMapper;
         this.orderDetailMapper = orderDetailMapper;
+        this.orderDetailDao = orderDetailDao;
     }
 
     /**
@@ -156,6 +163,7 @@ public class AdminOrderDao {
         return ordersList;
     }
 
+
     /**
      * 更新子订单状态
      * @param orderDetail
@@ -163,8 +171,62 @@ public class AdminOrderDao {
     public void updateOrderDetailStatus(OrderDetail orderDetail) {
         OrderDetailExample orderDetailExample = new OrderDetailExample() ;
         OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        OrderDetail checkCompleteTime = orderDetailMapper.selectByPrimaryKey(orderDetail.getId()) ;
+        OrderDetail temp = new OrderDetail() ;
+        temp.setId(orderDetail.getId());
+        temp.setStatus(orderDetail.getStatus());
+        Date date = new Date() ;
+        temp.setUpdatedAt(date);
+        if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 5) {
+            if (checkCompleteTime != null
+                    && checkCompleteTime.getCompleteTime() != null
+                    && checkCompleteTime.getCompleteTime().getTime() == -28800000) {
+
+                temp.setCompleteTime(date);
+            }
+        }
         criteria.andOrderIdEqualTo(orderDetail.getOrderId()) ;
-        orderDetailMapper.updateByExampleSelective(orderDetail, orderDetailExample) ;
+        orderDetailMapper.updateByExampleSelective(temp, orderDetailExample) ;
+    }
+
+    /**
+     * 更新子订单状态 - 收货完成时触发
+     *
+     * @param orderDetail
+     */
+    public void updateOrderDetailStatusForReceived(OrderDetail orderDetail) {
+        // 查询需要更新的订单详情记录
+        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(orderDetail.getOrderId());
+
+        List<String> needUpdateOrderDetailSubOrderIdList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(orderDetailList)) { //
+            for (OrderDetail _orderDetail : orderDetailList) {
+                Date completeTime = _orderDetail.getCompleteTime();
+
+                if (orderDetail.getStatus() == 3 || orderDetail.getStatus() == 5) {
+                    if (completeTime != null && completeTime.getTime() == -28800000) {
+                        needUpdateOrderDetailSubOrderIdList.add(_orderDetail.getSubOrderId());
+                    }
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(needUpdateOrderDetailSubOrderIdList)) {
+            // 更新
+            OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+            OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+            criteria.andSubOrderIdIn(needUpdateOrderDetailSubOrderIdList);
+
+
+            OrderDetail updateRecord = new OrderDetail();
+            updateRecord.setStatus(orderDetail.getStatus());
+
+            Date nowDate = new Date();
+            updateRecord.setUpdatedAt(new Date());
+            updateRecord.setCompleteTime(nowDate);
+
+            orderDetailMapper.updateByExampleSelective(updateRecord, orderDetailExample) ;
+        }
     }
 
     /**
