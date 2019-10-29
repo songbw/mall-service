@@ -329,6 +329,9 @@ public class ProductServiceImpl implements ProductService {
             } catch (SQLException e) {
                 log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
                 log.info(e.getMessage());
+                result.setCode(2000000);
+                result.setMsg("扣减库存失败。");
+                return result;
             }
         }
         log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
