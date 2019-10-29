@@ -32,7 +32,6 @@ public class InventoryDao {
     public OperaResult inventorySub(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
         try{
-
             List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
                 result.setCode(200010);
@@ -48,7 +47,7 @@ public class InventoryDao {
                 return result;
             }
             if(records!=null && records.size()>0){
-                prodIndex.setInventory(prodIndex.getInventory() - 1);
+                prodIndex.setInventory(prodIndex.getInventory() - inventoryMpus.getRemainNum());
                 sqlSession.update("batchUpdate", prodIndex);
             }
         } catch (Exception e) {
