@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -448,6 +449,19 @@ public class OrderServiceImpl implements OrderService {
                     // TODO 释放优惠券
                     release(order.getCouponId(), order.getCouponCode()) ;
                 }
+            }
+            // 获取子订单列表，然后将数量和MPU添加
+            List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(id) ;
+            List<InventoryMpus> inventoryMpuses = new ArrayList<>() ;
+            orderDetailList.forEach(orderDetail1 -> {
+                InventoryMpus inventoryMpus = new InventoryMpus() ;
+                inventoryMpus.setMpu(orderDetail.getMpu());
+                inventoryMpus.setRemainNum(orderDetail.getNum());
+                inventoryMpuses.add(inventoryMpus) ;
+            });
+            OperaResult result = productService.inventoryAdd(inventoryMpuses) ;
+            if (result.getCode() != 200) {
+                logger.info("取消订单，返还库存操作失败，返还参数：{}", JSONUtil.toJsonString(inventoryMpuses), "返回结果：{}", JSONUtil.toJsonString(result));
             }
         }
         return id;

@@ -59,4 +59,29 @@ public class InventoryDao {
         }
         return result ;
     }
+
+    public OperaResult inventoryAdd(InventoryMpus inventoryMpus) throws SQLException {
+        OperaResult result = new OperaResult() ;
+        try{
+            List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
+            if (records == null || records.size() <= 0) {
+                result.setCode(200010);
+                result.setMsg("商品 " + inventoryMpus.getMpu() + " 不存在。");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
+            AoyiProdIndexX prodIndex = records.get(0) ;
+            if(records!=null && records.size()>0){
+                prodIndex.setInventory(prodIndex.getInventory() + inventoryMpus.getRemainNum());
+                sqlSession.update("batchUpdate", prodIndex);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            sqlSession.getConnection().commit();
+            sqlSession.close();
+        }
+        return result ;
+    }
 }

@@ -335,6 +335,23 @@ public class ProductServiceImpl implements ProductService {
         return result;
     }
 
+    @Transactional
+    @Override
+    public OperaResult inventoryAdd(List<InventoryMpus> inventories) {
+        log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
+        OperaResult result = new OperaResult();
+        for (InventoryMpus inventoryMpus : inventories) {
+            try {
+                result = inventoryDao.inventoryAdd(inventoryMpus) ;
+            } catch (SQLException e) {
+                log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
+                e.printStackTrace();
+            }
+        }
+        log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
+        return result;
+    }
+
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
         OperaResult result = equityService.selectCouponBySku(bean);
         log.info(JSON.toJSONString(result));

@@ -65,4 +65,6 @@ public interface ProductService {
      */
     OperaResult inventorySub(List<InventoryMpus> inventories) ;
 
+    OperaResult inventoryAdd(List<InventoryMpus> inventories) ;
+
 }

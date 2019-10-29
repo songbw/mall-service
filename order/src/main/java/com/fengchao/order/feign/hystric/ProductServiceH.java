@@ -33,4 +33,9 @@ public class ProductServiceH implements ProductService {
     public OperaResult inventorySub(List<InventoryMpus> inventories) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
+
+    @Override
+    public OperaResult inventoryAdd(List<InventoryMpus> inventories) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
 }
