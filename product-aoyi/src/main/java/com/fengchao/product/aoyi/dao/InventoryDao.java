@@ -53,7 +53,7 @@ public class InventoryDao {
         }
         finally{
             sqlSession.getConnection().commit();
-            sqlSession.getConnection().close();
+//            sqlSession.getConnection().close();
         }
         return result ;
     }
@@ -78,7 +78,7 @@ public class InventoryDao {
         }
         finally{
             sqlSession.getConnection().commit();
-            sqlSession.getConnection().close();
+//            sqlSession.getConnection().close();
         }
         return result ;
     }
