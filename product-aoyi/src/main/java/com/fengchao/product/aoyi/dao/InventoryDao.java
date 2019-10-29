@@ -2,7 +2,6 @@ package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.bean.InventoryMpus;
 import com.fengchao.product.aoyi.bean.OperaResult;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,9 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author songbw
@@ -55,7 +52,7 @@ public class InventoryDao {
         }
         finally{
             sqlSession.getConnection().commit();
-            sqlSession.close();
+            sqlSession.getConnection().close();
         }
         return result ;
     }
@@ -80,7 +77,7 @@ public class InventoryDao {
         }
         finally{
             sqlSession.getConnection().commit();
-            sqlSession.close();
+            sqlSession.getConnection().close();
         }
         return result ;
     }
