@@ -328,7 +328,7 @@ public class ProductServiceImpl implements ProductService {
                 result = inventoryDao.inventorySub(inventoryMpus) ;
             } catch (SQLException e) {
                 log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
-                e.printStackTrace();
+                log.info(e.getMessage());
             }
         }
         log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
