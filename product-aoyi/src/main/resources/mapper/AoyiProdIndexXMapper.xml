@@ -530,4 +530,8 @@
     from aoyi_prod_index
     where mpu = #{mpu} and <![CDATA[merchant_id <> 2]]>  for update
   </select>
+
+  <update id="batchUpdate" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX">
+    update aoyi_prod_index set inventory = #{inventory}, updated_at = now() where mpu = #{mpu}
+  </update>
 </mapper>

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -323,7 +324,12 @@ public class ProductServiceImpl implements ProductService {
         log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
         OperaResult result = new OperaResult();
         for (InventoryMpus inventoryMpus : inventories) {
-            result = inventoryDao.inventorySub(inventoryMpus) ;
+            try {
+                result = inventoryDao.inventorySub(inventoryMpus) ;
+            } catch (SQLException e) {
+                log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
+                e.printStackTrace();
+            }
         }
         log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
         return result;

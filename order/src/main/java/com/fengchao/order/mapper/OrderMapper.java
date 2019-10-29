@@ -79,5 +79,5 @@ public interface OrderMapper {
 
     AoyiProdIndex selectForUpdateByMpu(String mpu);
 
-    int batchUpdate(HashMap map);
+
 }

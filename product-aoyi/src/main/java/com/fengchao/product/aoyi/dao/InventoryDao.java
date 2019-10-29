@@ -3,10 +3,13 @@ package com.fengchao.product.aoyi.dao;
 import com.fengchao.product.aoyi.bean.InventoryMpus;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,28 +23,24 @@ public class InventoryDao {
 
     private final SqlSession sqlSession;
 
-    private String inventoryForUpdate = "select mpu, inventory from aoyi_prod_index where mpu = ? and merchant_id <> 2  for update" ;
 
-    private String batchUpdate = "update aoyi_prod_index set inventory = ? where mpu = ?" ;
-
-
-    public InventoryDao(SqlSession sqlSession) {
-        this.sqlSession = sqlSession;
+    public InventoryDao(SqlSessionFactory sqlSessionFactory) throws SQLException {
+        sqlSession = sqlSessionFactory.openSession();
+        sqlSession.getConnection().setAutoCommit(false);
     }
 
-    public OperaResult inventorySub(InventoryMpus inventoryMpus) {
+    public OperaResult inventorySub(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
-//        try{
-            Map<String,Object> selectParam=new HashMap<>();
-            selectParam.put("mpu", inventoryMpus.getMpu());
-            List<AoyiProdIndex> records = sqlSession.selectList("inventoryForUpdate", selectParam);
+        try{
+
+            List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
                 result.setCode(200010);
                 result.setMsg("商品 " + inventoryMpus.getMpu() + " 不存在。");
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return result;
             }
-            AoyiProdIndex prodIndex = records.get(0) ;
+            AoyiProdIndexX prodIndex = records.get(0) ;
             if (prodIndex.getInventory() <= 0 || prodIndex.getInventory() < inventoryMpus.getRemainNum()) {
                 result.setCode(200010);
                 result.setMsg("商品 " + prodIndex.getName() + " 库存不足。");
@@ -49,16 +48,16 @@ public class InventoryDao {
                 return result;
             }
             if(records!=null && records.size()>0){
-                Map<String,Object> updateParam=new HashMap<>();
-                updateParam.put("inventory", records);
-                updateParam.put("mpu", inventoryMpus.getMpu());
-                sqlSession.update("batchUpdate", updateParam);
+                prodIndex.setInventory(prodIndex.getInventory() - 1);
+                sqlSession.update("batchUpdate", prodIndex);
             }
-//        }
-//        finally{
-//            sqlSession.commit(true);
-//            sqlSession.close();
-//        }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            sqlSession.getConnection().commit();
+            sqlSession.close();
+        }
         return result ;
     }
 }

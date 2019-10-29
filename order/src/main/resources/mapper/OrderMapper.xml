@@ -586,7 +586,5 @@
     pay_order_category = #{payOrderCategory}
     where id = #{id}
   </update>
-  <update id="batchUpdate" parameterType="HashMap">
-    update aoyi_prod_index set inventory = #{inventory}, updated_at = now() where mpu = #{mpu}
-  </update>
+
 </mapper>
