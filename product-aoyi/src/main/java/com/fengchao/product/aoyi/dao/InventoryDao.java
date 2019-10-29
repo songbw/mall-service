@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -18,12 +19,12 @@ import java.util.List;
 @Component
 public class InventoryDao {
 
-    private final SqlSession sqlSession;
+    private SqlSession sqlSession;
 
-
+    @Autowired
     public InventoryDao(SqlSessionFactory sqlSessionFactory) throws SQLException {
-        sqlSession = sqlSessionFactory.openSession();
-        sqlSession.getConnection().setAutoCommit(false);
+        this.sqlSession = sqlSessionFactory.openSession();
+        this.sqlSession.getConnection().setAutoCommit(false);
     }
 
     public OperaResult inventorySub(InventoryMpus inventoryMpus) throws SQLException {
