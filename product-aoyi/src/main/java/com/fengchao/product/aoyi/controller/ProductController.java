@@ -182,5 +182,15 @@ public class ProductController {
         return service.inventorySub(inventories);
     }
 
+    /**
+     * 批量增加库存
+     * @param inventories
+     * @return
+     */
+    @PutMapping("/inventory/add")
+    private OperaResult inventoryAdd(@RequestBody List<InventoryMpus>  inventories) {
+        return service.inventoryAdd(inventories);
+    }
+
 
 }

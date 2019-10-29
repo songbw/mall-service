@@ -51,4 +51,6 @@ public interface AoyiProdIndexXMapper {
     List<AoyiProdIndexX> selectProductListPageable(HashMap map);
 
     AoyiProdIndexX selectForUpdateByMpu(String mpu);
+
+    int batchUpdate(AoyiProdIndexX prodIndex);
 }

@@ -45,8 +45,9 @@ public class ReceiverServiceImpl implements ReceiverService {
     @Override
     public Integer modify(Receiver bean) {
         bean.setUpdatedAt(new Date());
-        if (bean.getStatus() == 1) {
-            setStatusZore(bean.getOpenId());
+        Receiver temp = mapper.selectByPrimaryKey(bean.getId()) ;
+        if (temp != null && bean.getStatus() == 1) {
+            setStatusZore(temp.getOpenId());
         }
         return mapper.updateByPrimaryKeySelective(bean);
     }
@@ -106,6 +107,7 @@ public class ReceiverServiceImpl implements ReceiverService {
     @Override
     public Integer setDefault(Receiver bean) {
         bean = mapper.selectByPrimaryKey(bean.getId());
+        // 根据ID获取OPENID信息
         bean.setUpdatedAt(new Date());
         bean.setStatus(0);
         mapper.updateStatusByOpenId(bean);

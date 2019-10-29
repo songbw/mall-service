@@ -42,4 +42,12 @@ public interface ProductService {
     @RequestMapping(value = "/prod/inventory/sub", method = RequestMethod.PUT)
     OperaResult inventorySub(@RequestBody List<InventoryMpus> inventories);
 
+    /**
+     * 批量添加库存
+     * @param inventories
+     * @return
+     */
+    @RequestMapping(value = "/prod/inventory/add", method = RequestMethod.PUT)
+    OperaResult inventoryAdd(@RequestBody List<InventoryMpus> inventories);
+
 }

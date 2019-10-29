@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.dao.InventoryDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -20,6 +21,7 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,6 +49,8 @@ public class ProductServiceImpl implements ProductService {
     private CategoryService categoryService;
     @Autowired
     private ESService esService;
+    @Autowired
+    private InventoryDao inventoryDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -319,25 +324,32 @@ public class ProductServiceImpl implements ProductService {
         log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
         OperaResult result = new OperaResult();
         for (InventoryMpus inventoryMpus : inventories) {
-            AoyiProdIndexX prodIndexX = mapper.selectForUpdateByMpu(inventoryMpus.getMpu()) ;
-            if (prodIndexX == null) {
-                result.setCode(200010);
-                result.setMsg("商品 " + prodIndexX.getMpu() + " 不存在。");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            try {
+                result = inventoryDao.inventorySub(inventoryMpus) ;
+            } catch (SQLException e) {
+                log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
+                log.info(e.getMessage());
+                result.setCode(2000000);
+                result.setMsg("扣减库存失败。");
                 return result;
             }
-            if (prodIndexX.getInventory() <= 0 || prodIndexX.getInventory() < inventoryMpus.getRemainNum()) {
-                result.setCode(200010);
-                result.setMsg("商品 " + prodIndexX.getName() + " 库存不足。");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return result;
+        }
+        log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public OperaResult inventoryAdd(List<InventoryMpus> inventories) {
+        log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
+        OperaResult result = new OperaResult();
+        for (InventoryMpus inventoryMpus : inventories) {
+            try {
+                result = inventoryDao.inventoryAdd(inventoryMpus) ;
+            } catch (SQLException e) {
+                log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
+                e.printStackTrace();
             }
-            AoyiProdIndexX temp = new AoyiProdIndexX();
-            temp.setMpu(prodIndexX.getMpu());
-            temp.setUpdatedAt(new Date());
-            temp.setInventory(prodIndexX.getInventory() - inventoryMpus.getRemainNum());
-            log.info("扣减库存 数据库，入参{}", JSONUtil.toJsonString(temp));
-            mapper.updateByPrimaryKeySelective(temp) ;
         }
         log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
         return result;
