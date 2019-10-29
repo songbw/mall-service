@@ -230,7 +230,10 @@
     FROM orders o LEFT JOIN order_detail od ON o.id = od.order_id
     WHERE o.pay_status = 5 and <![CDATA[o.payment_at >= #{dayStart,jdbcType=TIMESTAMP}]]> <![CDATA[ and o.payment_at <= #{dayEnd,jdbcType=TIMESTAMP}]]> and od.category is not NULL;
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    <select id="selectForUpdateByMpu" resultType="com.fengchao.order.model.AoyiProdIndex">
+      select mpu, inventory from aoyi_prod_index where mpu = '99000128' and <![CDATA[merchant_id <> 2]]>  for update
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from orders
     where id = #{id,jdbcType=INTEGER}
   </delete>
@@ -582,5 +585,8 @@
     pay_status = #{payStatus},
     pay_order_category = #{payOrderCategory}
     where id = #{id}
+  </update>
+  <update id="batchUpdate" parameterType="HashMap">
+    update aoyi_prod_index set inventory = #{inventory}, updated_at = now() where mpu = #{mpu}
   </update>
 </mapper>

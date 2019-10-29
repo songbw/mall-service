@@ -4,10 +4,12 @@ import com.fengchao.order.bean.CategoryPaymentBean;
 import com.fengchao.order.bean.MerchantPaymentBean;
 import com.fengchao.order.bean.OrderDetailBean;
 import com.fengchao.order.bean.PromotionPaymentBean;
+import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.model.Order;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface OrderMapper {
     int deleteByPrimaryKey(Integer id);
@@ -74,4 +76,8 @@ public interface OrderMapper {
     List<MerchantPaymentBean> selectDayMerchantPaymentCount(HashMap map) ;
 
     List<CategoryPaymentBean> selectDayCategoryPaymentList(HashMap map) ;
+
+    AoyiProdIndex selectForUpdateByMpu(String mpu);
+
+    int batchUpdate(HashMap map);
 }
