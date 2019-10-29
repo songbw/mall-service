@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public class InventoryDao {
 
-    private SqlSession sqlSession;
+    private final SqlSession sqlSession;
 
     @Autowired
     public InventoryDao(SqlSessionFactory sqlSessionFactory) throws SQLException {
