@@ -12,6 +12,7 @@ import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.*;
+import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     private CouponUseInfoDao couponUseInfoDao;
     @Autowired
     private CouponDao couponDao;
+    @Autowired
+    private JobClient jobClient;
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
@@ -391,7 +394,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         useInfo.setId(bean.getId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(2);
-        return mapper.updateStatusByUserCode(useInfo);
+        int num = mapper.updateStatusByUserCode(useInfo);
+        if(num == 1){
+            JobClientUtils.couponReleaseTrigger(jobClient, bean.getId());
+        }
+        return num;
     }
 
     @Override
@@ -546,6 +553,28 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         return coupons;
+    }
+
+    @Override
+    public CouponUseInfo findBycouponUserId(int couponUserId) {
+        return couponUseInfoDao.findBycouponUserId(couponUserId);
+    }
+
+    @Override
+    public int triggerRelease(int couponUserId) {
+        CouponUseInfoX useInfo = new CouponUseInfoX();
+        CouponUseInfo couponUseInfo = couponUseInfoDao.findBycouponUserId(couponUserId);
+        if(couponUseInfo != null){
+            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            Date date = new Date();
+            if(couponX.getEffectiveEndDate().before(date)){
+                useInfo.setStatus(4);
+            }else{
+                useInfo.setStatus(1);
+            }
+        }
+        useInfo.setId(couponUserId);
+        return mapper.updateByPrimaryKeySelective(useInfo);
     }
 
     // ========================= private =====================================
