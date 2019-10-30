@@ -455,8 +455,8 @@ public class OrderServiceImpl implements OrderService {
             List<InventoryMpus> inventoryMpuses = new ArrayList<>() ;
             orderDetailList.forEach(orderDetail1 -> {
                 InventoryMpus inventoryMpus = new InventoryMpus() ;
-                inventoryMpus.setMpu(orderDetail.getMpu());
-                inventoryMpus.setRemainNum(orderDetail.getNum());
+                inventoryMpus.setMpu(orderDetail1.getMpu());
+                inventoryMpus.setRemainNum(orderDetail1.getNum());
                 inventoryMpuses.add(inventoryMpus) ;
             });
             OperaResult result = productService.inventoryAdd(inventoryMpuses) ;
