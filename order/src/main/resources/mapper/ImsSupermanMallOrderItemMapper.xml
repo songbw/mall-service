@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.order.mapper.ImsSupermanMallOrderItemMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.ImsSupermanMallOrderItem">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="orderid" jdbcType="INTEGER" property="orderid" />
+    <result column="itemid" jdbcType="INTEGER" property="itemid" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="cover" jdbcType="VARCHAR" property="cover" />
+    <result column="total" jdbcType="INTEGER" property="total" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="special" jdbcType="TINYINT" property="special" />
+    <result column="skuid" jdbcType="INTEGER" property="skuid" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="iscomment" jdbcType="TINYINT" property="iscomment" />
+    <result column="barcode" jdbcType="VARCHAR" property="barcode" />
+    <result column="service_type" jdbcType="TINYINT" property="serviceType" />
+    <result column="partner3_commission" jdbcType="DECIMAL" property="partner3Commission" />
+    <result column="partner2_commission" jdbcType="DECIMAL" property="partner2Commission" />
+    <result column="partner1_commission" jdbcType="DECIMAL" property="partner1Commission" />
+    <result column="tax" jdbcType="VARCHAR" property="tax" />
+    <result column="tax_price" jdbcType="DECIMAL" property="taxPrice" />
+    <result column="naked_price" jdbcType="DECIMAL" property="nakedPrice" />
+    <result column="jd_order_id" jdbcType="VARCHAR" property="jdOrderId" />
+    <result column="c_jd_order_id" jdbcType="VARCHAR" property="cJdOrderId" />
+    <result column="jd_confim" jdbcType="BIT" property="jdConfim" />
+    <result column="is_confim" jdbcType="BIT" property="isConfim" />
+    <result column="finish_time" jdbcType="INTEGER" property="finishTime" />
+    <result column="source" jdbcType="BIT" property="source" />
+    <result column="third_sku_id" jdbcType="INTEGER" property="thirdSkuId" />
+    <result column="third_package_id" jdbcType="VARCHAR" property="thirdPackageId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.order.model.ImsSupermanMallOrderItemWithBLOBs">
+    <result column="sku" jdbcType="LONGVARCHAR" property="sku" />
+    <result column="extend" jdbcType="LONGVARCHAR" property="extend" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, orderid, itemid, type, title, number, cover, total, price, special, skuid, unit, 
+    iscomment, barcode, service_type, partner3_commission, partner2_commission, partner1_commission, 
+    tax, tax_price, naked_price, jd_order_id, c_jd_order_id, jd_confim, is_confim, finish_time, 
+    source, third_sku_id, third_package_id
+  </sql>
+  <sql id="Blob_Column_List">
+    sku, extend
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ims_superman_mall_order_item
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from ims_superman_mall_order_item
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ims_superman_mall_order_item
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ims_superman_mall_order_item
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemExample">
+    delete from ims_superman_mall_order_item
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemWithBLOBs" useGeneratedKeys="true">
+    insert into ims_superman_mall_order_item (orderid, itemid, type, 
+      title, number, cover, 
+      total, price, special, 
+      skuid, unit, iscomment, 
+      barcode, service_type, partner3_commission, 
+      partner2_commission, partner1_commission, 
+      tax, tax_price, naked_price, 
+      jd_order_id, c_jd_order_id, jd_confim, 
+      is_confim, finish_time, source, 
+      third_sku_id, third_package_id, sku, 
+      extend)
+    values (#{orderid,jdbcType=INTEGER}, #{itemid,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, 
+      #{title,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, #{cover,jdbcType=VARCHAR}, 
+      #{total,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL}, #{special,jdbcType=TINYINT}, 
+      #{skuid,jdbcType=INTEGER}, #{unit,jdbcType=VARCHAR}, #{iscomment,jdbcType=TINYINT}, 
+      #{barcode,jdbcType=VARCHAR}, #{serviceType,jdbcType=TINYINT}, #{partner3Commission,jdbcType=DECIMAL}, 
+      #{partner2Commission,jdbcType=DECIMAL}, #{partner1Commission,jdbcType=DECIMAL}, 
+      #{tax,jdbcType=VARCHAR}, #{taxPrice,jdbcType=DECIMAL}, #{nakedPrice,jdbcType=DECIMAL}, 
+      #{jdOrderId,jdbcType=VARCHAR}, #{cJdOrderId,jdbcType=VARCHAR}, #{jdConfim,jdbcType=BIT}, 
+      #{isConfim,jdbcType=BIT}, #{finishTime,jdbcType=INTEGER}, #{source,jdbcType=BIT}, 
+      #{thirdSkuId,jdbcType=INTEGER}, #{thirdPackageId,jdbcType=VARCHAR}, #{sku,jdbcType=LONGVARCHAR}, 
+      #{extend,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemWithBLOBs" useGeneratedKeys="true">
+    insert into ims_superman_mall_order_item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        orderid,
+      </if>
+      <if test="itemid != null">
+        itemid,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="number != null">
+        number,
+      </if>
+      <if test="cover != null">
+        cover,
+      </if>
+      <if test="total != null">
+        total,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="special != null">
+        special,
+      </if>
+      <if test="skuid != null">
+        skuid,
+      </if>
+      <if test="unit != null">
+        unit,
+      </if>
+      <if test="iscomment != null">
+        iscomment,
+      </if>
+      <if test="barcode != null">
+        barcode,
+      </if>
+      <if test="serviceType != null">
+        service_type,
+      </if>
+      <if test="partner3Commission != null">
+        partner3_commission,
+      </if>
+      <if test="partner2Commission != null">
+        partner2_commission,
+      </if>
+      <if test="partner1Commission != null">
+        partner1_commission,
+      </if>
+      <if test="tax != null">
+        tax,
+      </if>
+      <if test="taxPrice != null">
+        tax_price,
+      </if>
+      <if test="nakedPrice != null">
+        naked_price,
+      </if>
+      <if test="jdOrderId != null">
+        jd_order_id,
+      </if>
+      <if test="cJdOrderId != null">
+        c_jd_order_id,
+      </if>
+      <if test="jdConfim != null">
+        jd_confim,
+      </if>
+      <if test="isConfim != null">
+        is_confim,
+      </if>
+      <if test="finishTime != null">
+        finish_time,
+      </if>
+      <if test="source != null">
+        source,
+      </if>
+      <if test="thirdSkuId != null">
+        third_sku_id,
+      </if>
+      <if test="thirdPackageId != null">
+        third_package_id,
+      </if>
+      <if test="sku != null">
+        sku,
+      </if>
+      <if test="extend != null">
+        extend,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        #{orderid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="cover != null">
+        #{cover,jdbcType=VARCHAR},
+      </if>
+      <if test="total != null">
+        #{total,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="special != null">
+        #{special,jdbcType=TINYINT},
+      </if>
+      <if test="skuid != null">
+        #{skuid,jdbcType=INTEGER},
+      </if>
+      <if test="unit != null">
+        #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="iscomment != null">
+        #{iscomment,jdbcType=TINYINT},
+      </if>
+      <if test="barcode != null">
+        #{barcode,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceType != null">
+        #{serviceType,jdbcType=TINYINT},
+      </if>
+      <if test="partner3Commission != null">
+        #{partner3Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner2Commission != null">
+        #{partner2Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner1Commission != null">
+        #{partner1Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="tax != null">
+        #{tax,jdbcType=VARCHAR},
+      </if>
+      <if test="taxPrice != null">
+        #{taxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="nakedPrice != null">
+        #{nakedPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="jdOrderId != null">
+        #{jdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="cJdOrderId != null">
+        #{cJdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="jdConfim != null">
+        #{jdConfim,jdbcType=BIT},
+      </if>
+      <if test="isConfim != null">
+        #{isConfim,jdbcType=BIT},
+      </if>
+      <if test="finishTime != null">
+        #{finishTime,jdbcType=INTEGER},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=BIT},
+      </if>
+      <if test="thirdSkuId != null">
+        #{thirdSkuId,jdbcType=INTEGER},
+      </if>
+      <if test="thirdPackageId != null">
+        #{thirdPackageId,jdbcType=VARCHAR},
+      </if>
+      <if test="sku != null">
+        #{sku,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="extend != null">
+        #{extend,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemExample" resultType="java.lang.Long">
+    select count(*) from ims_superman_mall_order_item
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update ims_superman_mall_order_item
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderid != null">
+        orderid = #{record.orderid,jdbcType=INTEGER},
+      </if>
+      <if test="record.itemid != null">
+        itemid = #{record.itemid,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=TINYINT},
+      </if>
+      <if test="record.title != null">
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.number != null">
+        number = #{record.number,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cover != null">
+        cover = #{record.cover,jdbcType=VARCHAR},
+      </if>
+      <if test="record.total != null">
+        total = #{record.total,jdbcType=INTEGER},
+      </if>
+      <if test="record.price != null">
+        price = #{record.price,jdbcType=DECIMAL},
+      </if>
+      <if test="record.special != null">
+        special = #{record.special,jdbcType=TINYINT},
+      </if>
+      <if test="record.skuid != null">
+        skuid = #{record.skuid,jdbcType=INTEGER},
+      </if>
+      <if test="record.unit != null">
+        unit = #{record.unit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.iscomment != null">
+        iscomment = #{record.iscomment,jdbcType=TINYINT},
+      </if>
+      <if test="record.barcode != null">
+        barcode = #{record.barcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.serviceType != null">
+        service_type = #{record.serviceType,jdbcType=TINYINT},
+      </if>
+      <if test="record.partner3Commission != null">
+        partner3_commission = #{record.partner3Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="record.partner2Commission != null">
+        partner2_commission = #{record.partner2Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="record.partner1Commission != null">
+        partner1_commission = #{record.partner1Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tax != null">
+        tax = #{record.tax,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taxPrice != null">
+        tax_price = #{record.taxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.nakedPrice != null">
+        naked_price = #{record.nakedPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.jdOrderId != null">
+        jd_order_id = #{record.jdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cJdOrderId != null">
+        c_jd_order_id = #{record.cJdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jdConfim != null">
+        jd_confim = #{record.jdConfim,jdbcType=BIT},
+      </if>
+      <if test="record.isConfim != null">
+        is_confim = #{record.isConfim,jdbcType=BIT},
+      </if>
+      <if test="record.finishTime != null">
+        finish_time = #{record.finishTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.source != null">
+        source = #{record.source,jdbcType=BIT},
+      </if>
+      <if test="record.thirdSkuId != null">
+        third_sku_id = #{record.thirdSkuId,jdbcType=INTEGER},
+      </if>
+      <if test="record.thirdPackageId != null">
+        third_package_id = #{record.thirdPackageId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sku != null">
+        sku = #{record.sku,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.extend != null">
+        extend = #{record.extend,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update ims_superman_mall_order_item
+    set id = #{record.id,jdbcType=INTEGER},
+      orderid = #{record.orderid,jdbcType=INTEGER},
+      itemid = #{record.itemid,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=TINYINT},
+      title = #{record.title,jdbcType=VARCHAR},
+      number = #{record.number,jdbcType=VARCHAR},
+      cover = #{record.cover,jdbcType=VARCHAR},
+      total = #{record.total,jdbcType=INTEGER},
+      price = #{record.price,jdbcType=DECIMAL},
+      special = #{record.special,jdbcType=TINYINT},
+      skuid = #{record.skuid,jdbcType=INTEGER},
+      unit = #{record.unit,jdbcType=VARCHAR},
+      iscomment = #{record.iscomment,jdbcType=TINYINT},
+      barcode = #{record.barcode,jdbcType=VARCHAR},
+      service_type = #{record.serviceType,jdbcType=TINYINT},
+      partner3_commission = #{record.partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{record.partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{record.partner1Commission,jdbcType=DECIMAL},
+      tax = #{record.tax,jdbcType=VARCHAR},
+      tax_price = #{record.taxPrice,jdbcType=DECIMAL},
+      naked_price = #{record.nakedPrice,jdbcType=DECIMAL},
+      jd_order_id = #{record.jdOrderId,jdbcType=VARCHAR},
+      c_jd_order_id = #{record.cJdOrderId,jdbcType=VARCHAR},
+      jd_confim = #{record.jdConfim,jdbcType=BIT},
+      is_confim = #{record.isConfim,jdbcType=BIT},
+      finish_time = #{record.finishTime,jdbcType=INTEGER},
+      source = #{record.source,jdbcType=BIT},
+      third_sku_id = #{record.thirdSkuId,jdbcType=INTEGER},
+      third_package_id = #{record.thirdPackageId,jdbcType=VARCHAR},
+      sku = #{record.sku,jdbcType=LONGVARCHAR},
+      extend = #{record.extend,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update ims_superman_mall_order_item
+    set id = #{record.id,jdbcType=INTEGER},
+      orderid = #{record.orderid,jdbcType=INTEGER},
+      itemid = #{record.itemid,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=TINYINT},
+      title = #{record.title,jdbcType=VARCHAR},
+      number = #{record.number,jdbcType=VARCHAR},
+      cover = #{record.cover,jdbcType=VARCHAR},
+      total = #{record.total,jdbcType=INTEGER},
+      price = #{record.price,jdbcType=DECIMAL},
+      special = #{record.special,jdbcType=TINYINT},
+      skuid = #{record.skuid,jdbcType=INTEGER},
+      unit = #{record.unit,jdbcType=VARCHAR},
+      iscomment = #{record.iscomment,jdbcType=TINYINT},
+      barcode = #{record.barcode,jdbcType=VARCHAR},
+      service_type = #{record.serviceType,jdbcType=TINYINT},
+      partner3_commission = #{record.partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{record.partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{record.partner1Commission,jdbcType=DECIMAL},
+      tax = #{record.tax,jdbcType=VARCHAR},
+      tax_price = #{record.taxPrice,jdbcType=DECIMAL},
+      naked_price = #{record.nakedPrice,jdbcType=DECIMAL},
+      jd_order_id = #{record.jdOrderId,jdbcType=VARCHAR},
+      c_jd_order_id = #{record.cJdOrderId,jdbcType=VARCHAR},
+      jd_confim = #{record.jdConfim,jdbcType=BIT},
+      is_confim = #{record.isConfim,jdbcType=BIT},
+      finish_time = #{record.finishTime,jdbcType=INTEGER},
+      source = #{record.source,jdbcType=BIT},
+      third_sku_id = #{record.thirdSkuId,jdbcType=INTEGER},
+      third_package_id = #{record.thirdPackageId,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemWithBLOBs">
+    update ims_superman_mall_order_item
+    <set>
+      <if test="orderid != null">
+        orderid = #{orderid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null">
+        itemid = #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="cover != null">
+        cover = #{cover,jdbcType=VARCHAR},
+      </if>
+      <if test="total != null">
+        total = #{total,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="special != null">
+        special = #{special,jdbcType=TINYINT},
+      </if>
+      <if test="skuid != null">
+        skuid = #{skuid,jdbcType=INTEGER},
+      </if>
+      <if test="unit != null">
+        unit = #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="iscomment != null">
+        iscomment = #{iscomment,jdbcType=TINYINT},
+      </if>
+      <if test="barcode != null">
+        barcode = #{barcode,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceType != null">
+        service_type = #{serviceType,jdbcType=TINYINT},
+      </if>
+      <if test="partner3Commission != null">
+        partner3_commission = #{partner3Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner2Commission != null">
+        partner2_commission = #{partner2Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner1Commission != null">
+        partner1_commission = #{partner1Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="tax != null">
+        tax = #{tax,jdbcType=VARCHAR},
+      </if>
+      <if test="taxPrice != null">
+        tax_price = #{taxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="nakedPrice != null">
+        naked_price = #{nakedPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="jdOrderId != null">
+        jd_order_id = #{jdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="cJdOrderId != null">
+        c_jd_order_id = #{cJdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="jdConfim != null">
+        jd_confim = #{jdConfim,jdbcType=BIT},
+      </if>
+      <if test="isConfim != null">
+        is_confim = #{isConfim,jdbcType=BIT},
+      </if>
+      <if test="finishTime != null">
+        finish_time = #{finishTime,jdbcType=INTEGER},
+      </if>
+      <if test="source != null">
+        source = #{source,jdbcType=BIT},
+      </if>
+      <if test="thirdSkuId != null">
+        third_sku_id = #{thirdSkuId,jdbcType=INTEGER},
+      </if>
+      <if test="thirdPackageId != null">
+        third_package_id = #{thirdPackageId,jdbcType=VARCHAR},
+      </if>
+      <if test="sku != null">
+        sku = #{sku,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="extend != null">
+        extend = #{extend,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItemWithBLOBs">
+    update ims_superman_mall_order_item
+    set orderid = #{orderid,jdbcType=INTEGER},
+      itemid = #{itemid,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT},
+      title = #{title,jdbcType=VARCHAR},
+      number = #{number,jdbcType=VARCHAR},
+      cover = #{cover,jdbcType=VARCHAR},
+      total = #{total,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      special = #{special,jdbcType=TINYINT},
+      skuid = #{skuid,jdbcType=INTEGER},
+      unit = #{unit,jdbcType=VARCHAR},
+      iscomment = #{iscomment,jdbcType=TINYINT},
+      barcode = #{barcode,jdbcType=VARCHAR},
+      service_type = #{serviceType,jdbcType=TINYINT},
+      partner3_commission = #{partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{partner1Commission,jdbcType=DECIMAL},
+      tax = #{tax,jdbcType=VARCHAR},
+      tax_price = #{taxPrice,jdbcType=DECIMAL},
+      naked_price = #{nakedPrice,jdbcType=DECIMAL},
+      jd_order_id = #{jdOrderId,jdbcType=VARCHAR},
+      c_jd_order_id = #{cJdOrderId,jdbcType=VARCHAR},
+      jd_confim = #{jdConfim,jdbcType=BIT},
+      is_confim = #{isConfim,jdbcType=BIT},
+      finish_time = #{finishTime,jdbcType=INTEGER},
+      source = #{source,jdbcType=BIT},
+      third_sku_id = #{thirdSkuId,jdbcType=INTEGER},
+      third_package_id = #{thirdPackageId,jdbcType=VARCHAR},
+      sku = #{sku,jdbcType=LONGVARCHAR},
+      extend = #{extend,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.ImsSupermanMallOrderItem">
+    update ims_superman_mall_order_item
+    set orderid = #{orderid,jdbcType=INTEGER},
+      itemid = #{itemid,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT},
+      title = #{title,jdbcType=VARCHAR},
+      number = #{number,jdbcType=VARCHAR},
+      cover = #{cover,jdbcType=VARCHAR},
+      total = #{total,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      special = #{special,jdbcType=TINYINT},
+      skuid = #{skuid,jdbcType=INTEGER},
+      unit = #{unit,jdbcType=VARCHAR},
+      iscomment = #{iscomment,jdbcType=TINYINT},
+      barcode = #{barcode,jdbcType=VARCHAR},
+      service_type = #{serviceType,jdbcType=TINYINT},
+      partner3_commission = #{partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{partner1Commission,jdbcType=DECIMAL},
+      tax = #{tax,jdbcType=VARCHAR},
+      tax_price = #{taxPrice,jdbcType=DECIMAL},
+      naked_price = #{nakedPrice,jdbcType=DECIMAL},
+      jd_order_id = #{jdOrderId,jdbcType=VARCHAR},
+      c_jd_order_id = #{cJdOrderId,jdbcType=VARCHAR},
+      jd_confim = #{jdConfim,jdbcType=BIT},
+      is_confim = #{isConfim,jdbcType=BIT},
+      finish_time = #{finishTime,jdbcType=INTEGER},
+      source = #{source,jdbcType=BIT},
+      third_sku_id = #{thirdSkuId,jdbcType=INTEGER},
+      third_package_id = #{thirdPackageId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

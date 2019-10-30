@@ -1,0 +1,1404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.order.mapper.ImsSupermanMallOrderMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.order.model.ImsSupermanMallOrder">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="uniacid" jdbcType="INTEGER" property="uniacid" />
+    <result column="shopid" jdbcType="INTEGER" property="shopid" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="ordersn" jdbcType="VARCHAR" property="ordersn" />
+    <result column="partner3_id" jdbcType="INTEGER" property="partner3Id" />
+    <result column="partner2_id" jdbcType="INTEGER" property="partner2Id" />
+    <result column="partner1_id" jdbcType="INTEGER" property="partner1Id" />
+    <result column="total" jdbcType="INTEGER" property="total" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="pay_credit" jdbcType="DECIMAL" property="payCredit" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="payment_no" jdbcType="VARCHAR" property="paymentNo" />
+    <result column="pay_time" jdbcType="INTEGER" property="payTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="admin_remark" jdbcType="VARCHAR" property="adminRemark" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="zipcode" jdbcType="VARCHAR" property="zipcode" />
+    <result column="express_title" jdbcType="VARCHAR" property="expressTitle" />
+    <result column="express_alias" jdbcType="VARCHAR" property="expressAlias" />
+    <result column="express_no" jdbcType="VARCHAR" property="expressNo" />
+    <result column="express_fee" jdbcType="DECIMAL" property="expressFee" />
+    <result column="credit_type" jdbcType="VARCHAR" property="creditType" />
+    <result column="reward_credit" jdbcType="DECIMAL" property="rewardCredit" />
+    <result column="cash_credit" jdbcType="DECIMAL" property="cashCredit" />
+    <result column="dispatch_type" jdbcType="TINYINT" property="dispatchType" />
+    <result column="custom_delivery" jdbcType="VARCHAR" property="customDelivery" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="commission_status" jdbcType="TINYINT" property="commissionStatus" />
+    <result column="checkout" jdbcType="TINYINT" property="checkout" />
+    <result column="wxpay_service_provider" jdbcType="TINYINT" property="wxpayServiceProvider" />
+    <result column="payu_rid" jdbcType="INTEGER" property="payuRid" />
+    <result column="settlement_status" jdbcType="TINYINT" property="settlementStatus" />
+    <result column="partner3_commission" jdbcType="DECIMAL" property="partner3Commission" />
+    <result column="partner2_commission" jdbcType="DECIMAL" property="partner2Commission" />
+    <result column="partner1_commission" jdbcType="DECIMAL" property="partner1Commission" />
+    <result column="createtime" jdbcType="INTEGER" property="createtime" />
+    <result column="updatetime" jdbcType="INTEGER" property="updatetime" />
+    <result column="jd_order_id" jdbcType="VARCHAR" property="jdOrderId" />
+    <result column="from_jd" jdbcType="INTEGER" property="fromJd" />
+    <result column="jd_address" jdbcType="VARCHAR" property="jdAddress" />
+    <result column="jd_address_desc" jdbcType="VARCHAR" property="jdAddressDesc" />
+    <result column="freight" jdbcType="DECIMAL" property="freight" />
+    <result column="jd_total_price" jdbcType="DECIMAL" property="jdTotalPrice" />
+    <result column="jd_total_tax" jdbcType="DECIMAL" property="jdTotalTax" />
+    <result column="jd_confim" jdbcType="BIT" property="jdConfim" />
+    <result column="confim_time" jdbcType="INTEGER" property="confimTime" />
+    <result column="is_splite" jdbcType="BIT" property="isSplite" />
+    <result column="source" jdbcType="BIT" property="source" />
+    <result column="third_no" jdbcType="VARCHAR" property="thirdNo" />
+    <result column="third_address" jdbcType="VARCHAR" property="thirdAddress" />
+    <result column="third_real_price" jdbcType="DECIMAL" property="thirdRealPrice" />
+    <result column="third_exp_fee" jdbcType="DECIMAL" property="thirdExpFee" />
+    <result column="third_package_id" jdbcType="VARCHAR" property="thirdPackageId" />
+    <result column="third_api1" jdbcType="BIT" property="thirdApi1" />
+    <result column="third_api3" jdbcType="BIT" property="thirdApi3" />
+    <result column="third_api_4" jdbcType="BIT" property="thirdApi4" />
+    <result column="third_update_date" jdbcType="TIMESTAMP" property="thirdUpdateDate" />
+    <result column="exp_create_time" jdbcType="VARCHAR" property="expCreateTime" />
+    <result column="creditrefund" jdbcType="DECIMAL" property="creditrefund" />
+    <result column="cardrefund" jdbcType="DECIMAL" property="cardrefund" />
+    <result column="onlinerefund" jdbcType="DECIMAL" property="onlinerefund" />
+    <result column="wechatrefund" jdbcType="DECIMAL" property="wechatrefund" />
+    <result column="alipayrefund" jdbcType="DECIMAL" property="alipayrefund" />
+    <result column="isrefund" jdbcType="INTEGER" property="isrefund" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.order.model.ImsSupermanMallOrder">
+    <result column="extend" jdbcType="LONGVARCHAR" property="extend" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, pid, uniacid, shopid, uid, ordersn, partner3_id, partner2_id, partner1_id, total, 
+    price, pay_credit, pay_type, payment_no, pay_time, remark, admin_remark, username, 
+    mobile, address, zipcode, express_title, express_alias, express_no, express_fee, 
+    credit_type, reward_credit, cash_credit, dispatch_type, custom_delivery, status, 
+    type, commission_status, checkout, wxpay_service_provider, payu_rid, settlement_status, 
+    partner3_commission, partner2_commission, partner1_commission, createtime, updatetime, 
+    jd_order_id, from_jd, jd_address, jd_address_desc, freight, jd_total_price, jd_total_tax, 
+    jd_confim, confim_time, is_splite, source, third_no, third_address, third_real_price, 
+    third_exp_fee, third_package_id, third_api1, third_api3, third_api_4, third_update_date, 
+    exp_create_time, creditrefund, cardrefund, onlinerefund, wechatrefund, alipayrefund, 
+    isrefund
+  </sql>
+  <sql id="Blob_Column_List">
+    extend
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.fengchao.order.model.ImsSupermanMallOrderExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ims_superman_mall_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.fengchao.order.model.ImsSupermanMallOrderExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from ims_superman_mall_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ims_superman_mall_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ims_superman_mall_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.order.model.ImsSupermanMallOrderExample">
+    delete from ims_superman_mall_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.ImsSupermanMallOrder" useGeneratedKeys="true">
+    insert into ims_superman_mall_order (pid, uniacid, shopid, 
+      uid, ordersn, partner3_id, 
+      partner2_id, partner1_id, total, 
+      price, pay_credit, pay_type, 
+      payment_no, pay_time, remark, 
+      admin_remark, username, mobile, 
+      address, zipcode, express_title, 
+      express_alias, express_no, express_fee, 
+      credit_type, reward_credit, cash_credit, 
+      dispatch_type, custom_delivery, status, 
+      type, commission_status, checkout, 
+      wxpay_service_provider, payu_rid, settlement_status, 
+      partner3_commission, partner2_commission, 
+      partner1_commission, createtime, updatetime, 
+      jd_order_id, from_jd, jd_address, 
+      jd_address_desc, freight, jd_total_price, 
+      jd_total_tax, jd_confim, confim_time, 
+      is_splite, source, third_no, 
+      third_address, third_real_price, third_exp_fee, 
+      third_package_id, third_api1, third_api3, 
+      third_api_4, third_update_date, exp_create_time, 
+      creditrefund, cardrefund, onlinerefund, 
+      wechatrefund, alipayrefund, isrefund, 
+      extend)
+    values (#{pid,jdbcType=INTEGER}, #{uniacid,jdbcType=INTEGER}, #{shopid,jdbcType=INTEGER}, 
+      #{uid,jdbcType=INTEGER}, #{ordersn,jdbcType=VARCHAR}, #{partner3Id,jdbcType=INTEGER}, 
+      #{partner2Id,jdbcType=INTEGER}, #{partner1Id,jdbcType=INTEGER}, #{total,jdbcType=INTEGER}, 
+      #{price,jdbcType=DECIMAL}, #{payCredit,jdbcType=DECIMAL}, #{payType,jdbcType=TINYINT}, 
+      #{paymentNo,jdbcType=VARCHAR}, #{payTime,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
+      #{adminRemark,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{zipcode,jdbcType=VARCHAR}, #{expressTitle,jdbcType=VARCHAR}, 
+      #{expressAlias,jdbcType=VARCHAR}, #{expressNo,jdbcType=VARCHAR}, #{expressFee,jdbcType=DECIMAL}, 
+      #{creditType,jdbcType=VARCHAR}, #{rewardCredit,jdbcType=DECIMAL}, #{cashCredit,jdbcType=DECIMAL}, 
+      #{dispatchType,jdbcType=TINYINT}, #{customDelivery,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{type,jdbcType=TINYINT}, #{commissionStatus,jdbcType=TINYINT}, #{checkout,jdbcType=TINYINT}, 
+      #{wxpayServiceProvider,jdbcType=TINYINT}, #{payuRid,jdbcType=INTEGER}, #{settlementStatus,jdbcType=TINYINT}, 
+      #{partner3Commission,jdbcType=DECIMAL}, #{partner2Commission,jdbcType=DECIMAL}, 
+      #{partner1Commission,jdbcType=DECIMAL}, #{createtime,jdbcType=INTEGER}, #{updatetime,jdbcType=INTEGER}, 
+      #{jdOrderId,jdbcType=VARCHAR}, #{fromJd,jdbcType=INTEGER}, #{jdAddress,jdbcType=VARCHAR}, 
+      #{jdAddressDesc,jdbcType=VARCHAR}, #{freight,jdbcType=DECIMAL}, #{jdTotalPrice,jdbcType=DECIMAL}, 
+      #{jdTotalTax,jdbcType=DECIMAL}, #{jdConfim,jdbcType=BIT}, #{confimTime,jdbcType=INTEGER}, 
+      #{isSplite,jdbcType=BIT}, #{source,jdbcType=BIT}, #{thirdNo,jdbcType=VARCHAR}, 
+      #{thirdAddress,jdbcType=VARCHAR}, #{thirdRealPrice,jdbcType=DECIMAL}, #{thirdExpFee,jdbcType=DECIMAL}, 
+      #{thirdPackageId,jdbcType=VARCHAR}, #{thirdApi1,jdbcType=BIT}, #{thirdApi3,jdbcType=BIT}, 
+      #{thirdApi4,jdbcType=BIT}, #{thirdUpdateDate,jdbcType=TIMESTAMP}, #{expCreateTime,jdbcType=VARCHAR}, 
+      #{creditrefund,jdbcType=DECIMAL}, #{cardrefund,jdbcType=DECIMAL}, #{onlinerefund,jdbcType=DECIMAL}, 
+      #{wechatrefund,jdbcType=DECIMAL}, #{alipayrefund,jdbcType=DECIMAL}, #{isrefund,jdbcType=INTEGER}, 
+      #{extend,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.ImsSupermanMallOrder" useGeneratedKeys="true">
+    insert into ims_superman_mall_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="uniacid != null">
+        uniacid,
+      </if>
+      <if test="shopid != null">
+        shopid,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="ordersn != null">
+        ordersn,
+      </if>
+      <if test="partner3Id != null">
+        partner3_id,
+      </if>
+      <if test="partner2Id != null">
+        partner2_id,
+      </if>
+      <if test="partner1Id != null">
+        partner1_id,
+      </if>
+      <if test="total != null">
+        total,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="payCredit != null">
+        pay_credit,
+      </if>
+      <if test="payType != null">
+        pay_type,
+      </if>
+      <if test="paymentNo != null">
+        payment_no,
+      </if>
+      <if test="payTime != null">
+        pay_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="adminRemark != null">
+        admin_remark,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="zipcode != null">
+        zipcode,
+      </if>
+      <if test="expressTitle != null">
+        express_title,
+      </if>
+      <if test="expressAlias != null">
+        express_alias,
+      </if>
+      <if test="expressNo != null">
+        express_no,
+      </if>
+      <if test="expressFee != null">
+        express_fee,
+      </if>
+      <if test="creditType != null">
+        credit_type,
+      </if>
+      <if test="rewardCredit != null">
+        reward_credit,
+      </if>
+      <if test="cashCredit != null">
+        cash_credit,
+      </if>
+      <if test="dispatchType != null">
+        dispatch_type,
+      </if>
+      <if test="customDelivery != null">
+        custom_delivery,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="commissionStatus != null">
+        commission_status,
+      </if>
+      <if test="checkout != null">
+        checkout,
+      </if>
+      <if test="wxpayServiceProvider != null">
+        wxpay_service_provider,
+      </if>
+      <if test="payuRid != null">
+        payu_rid,
+      </if>
+      <if test="settlementStatus != null">
+        settlement_status,
+      </if>
+      <if test="partner3Commission != null">
+        partner3_commission,
+      </if>
+      <if test="partner2Commission != null">
+        partner2_commission,
+      </if>
+      <if test="partner1Commission != null">
+        partner1_commission,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+      <if test="updatetime != null">
+        updatetime,
+      </if>
+      <if test="jdOrderId != null">
+        jd_order_id,
+      </if>
+      <if test="fromJd != null">
+        from_jd,
+      </if>
+      <if test="jdAddress != null">
+        jd_address,
+      </if>
+      <if test="jdAddressDesc != null">
+        jd_address_desc,
+      </if>
+      <if test="freight != null">
+        freight,
+      </if>
+      <if test="jdTotalPrice != null">
+        jd_total_price,
+      </if>
+      <if test="jdTotalTax != null">
+        jd_total_tax,
+      </if>
+      <if test="jdConfim != null">
+        jd_confim,
+      </if>
+      <if test="confimTime != null">
+        confim_time,
+      </if>
+      <if test="isSplite != null">
+        is_splite,
+      </if>
+      <if test="source != null">
+        source,
+      </if>
+      <if test="thirdNo != null">
+        third_no,
+      </if>
+      <if test="thirdAddress != null">
+        third_address,
+      </if>
+      <if test="thirdRealPrice != null">
+        third_real_price,
+      </if>
+      <if test="thirdExpFee != null">
+        third_exp_fee,
+      </if>
+      <if test="thirdPackageId != null">
+        third_package_id,
+      </if>
+      <if test="thirdApi1 != null">
+        third_api1,
+      </if>
+      <if test="thirdApi3 != null">
+        third_api3,
+      </if>
+      <if test="thirdApi4 != null">
+        third_api_4,
+      </if>
+      <if test="thirdUpdateDate != null">
+        third_update_date,
+      </if>
+      <if test="expCreateTime != null">
+        exp_create_time,
+      </if>
+      <if test="creditrefund != null">
+        creditrefund,
+      </if>
+      <if test="cardrefund != null">
+        cardrefund,
+      </if>
+      <if test="onlinerefund != null">
+        onlinerefund,
+      </if>
+      <if test="wechatrefund != null">
+        wechatrefund,
+      </if>
+      <if test="alipayrefund != null">
+        alipayrefund,
+      </if>
+      <if test="isrefund != null">
+        isrefund,
+      </if>
+      <if test="extend != null">
+        extend,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="pid != null">
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="uniacid != null">
+        #{uniacid,jdbcType=INTEGER},
+      </if>
+      <if test="shopid != null">
+        #{shopid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="ordersn != null">
+        #{ordersn,jdbcType=VARCHAR},
+      </if>
+      <if test="partner3Id != null">
+        #{partner3Id,jdbcType=INTEGER},
+      </if>
+      <if test="partner2Id != null">
+        #{partner2Id,jdbcType=INTEGER},
+      </if>
+      <if test="partner1Id != null">
+        #{partner1Id,jdbcType=INTEGER},
+      </if>
+      <if test="total != null">
+        #{total,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="payCredit != null">
+        #{payCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null">
+        #{payType,jdbcType=TINYINT},
+      </if>
+      <if test="paymentNo != null">
+        #{paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null">
+        #{payTime,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="adminRemark != null">
+        #{adminRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null">
+        #{zipcode,jdbcType=VARCHAR},
+      </if>
+      <if test="expressTitle != null">
+        #{expressTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="expressAlias != null">
+        #{expressAlias,jdbcType=VARCHAR},
+      </if>
+      <if test="expressNo != null">
+        #{expressNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expressFee != null">
+        #{expressFee,jdbcType=DECIMAL},
+      </if>
+      <if test="creditType != null">
+        #{creditType,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardCredit != null">
+        #{rewardCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="cashCredit != null">
+        #{cashCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="dispatchType != null">
+        #{dispatchType,jdbcType=TINYINT},
+      </if>
+      <if test="customDelivery != null">
+        #{customDelivery,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="commissionStatus != null">
+        #{commissionStatus,jdbcType=TINYINT},
+      </if>
+      <if test="checkout != null">
+        #{checkout,jdbcType=TINYINT},
+      </if>
+      <if test="wxpayServiceProvider != null">
+        #{wxpayServiceProvider,jdbcType=TINYINT},
+      </if>
+      <if test="payuRid != null">
+        #{payuRid,jdbcType=INTEGER},
+      </if>
+      <if test="settlementStatus != null">
+        #{settlementStatus,jdbcType=TINYINT},
+      </if>
+      <if test="partner3Commission != null">
+        #{partner3Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner2Commission != null">
+        #{partner2Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner1Commission != null">
+        #{partner1Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=INTEGER},
+      </if>
+      <if test="jdOrderId != null">
+        #{jdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="fromJd != null">
+        #{fromJd,jdbcType=INTEGER},
+      </if>
+      <if test="jdAddress != null">
+        #{jdAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="jdAddressDesc != null">
+        #{jdAddressDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="freight != null">
+        #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="jdTotalPrice != null">
+        #{jdTotalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="jdTotalTax != null">
+        #{jdTotalTax,jdbcType=DECIMAL},
+      </if>
+      <if test="jdConfim != null">
+        #{jdConfim,jdbcType=BIT},
+      </if>
+      <if test="confimTime != null">
+        #{confimTime,jdbcType=INTEGER},
+      </if>
+      <if test="isSplite != null">
+        #{isSplite,jdbcType=BIT},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=BIT},
+      </if>
+      <if test="thirdNo != null">
+        #{thirdNo,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdAddress != null">
+        #{thirdAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdRealPrice != null">
+        #{thirdRealPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdExpFee != null">
+        #{thirdExpFee,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdPackageId != null">
+        #{thirdPackageId,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdApi1 != null">
+        #{thirdApi1,jdbcType=BIT},
+      </if>
+      <if test="thirdApi3 != null">
+        #{thirdApi3,jdbcType=BIT},
+      </if>
+      <if test="thirdApi4 != null">
+        #{thirdApi4,jdbcType=BIT},
+      </if>
+      <if test="thirdUpdateDate != null">
+        #{thirdUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expCreateTime != null">
+        #{expCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="creditrefund != null">
+        #{creditrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="cardrefund != null">
+        #{cardrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="onlinerefund != null">
+        #{onlinerefund,jdbcType=DECIMAL},
+      </if>
+      <if test="wechatrefund != null">
+        #{wechatrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="alipayrefund != null">
+        #{alipayrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="isrefund != null">
+        #{isrefund,jdbcType=INTEGER},
+      </if>
+      <if test="extend != null">
+        #{extend,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.order.model.ImsSupermanMallOrderExample" resultType="java.lang.Long">
+    select count(*) from ims_superman_mall_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update ims_superman_mall_order
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.pid != null">
+        pid = #{record.pid,jdbcType=INTEGER},
+      </if>
+      <if test="record.uniacid != null">
+        uniacid = #{record.uniacid,jdbcType=INTEGER},
+      </if>
+      <if test="record.shopid != null">
+        shopid = #{record.shopid,jdbcType=INTEGER},
+      </if>
+      <if test="record.uid != null">
+        uid = #{record.uid,jdbcType=INTEGER},
+      </if>
+      <if test="record.ordersn != null">
+        ordersn = #{record.ordersn,jdbcType=VARCHAR},
+      </if>
+      <if test="record.partner3Id != null">
+        partner3_id = #{record.partner3Id,jdbcType=INTEGER},
+      </if>
+      <if test="record.partner2Id != null">
+        partner2_id = #{record.partner2Id,jdbcType=INTEGER},
+      </if>
+      <if test="record.partner1Id != null">
+        partner1_id = #{record.partner1Id,jdbcType=INTEGER},
+      </if>
+      <if test="record.total != null">
+        total = #{record.total,jdbcType=INTEGER},
+      </if>
+      <if test="record.price != null">
+        price = #{record.price,jdbcType=DECIMAL},
+      </if>
+      <if test="record.payCredit != null">
+        pay_credit = #{record.payCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.payType != null">
+        pay_type = #{record.payType,jdbcType=TINYINT},
+      </if>
+      <if test="record.paymentNo != null">
+        payment_no = #{record.paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payTime != null">
+        pay_time = #{record.payTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adminRemark != null">
+        admin_remark = #{record.adminRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null">
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobile != null">
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.address != null">
+        address = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zipcode != null">
+        zipcode = #{record.zipcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expressTitle != null">
+        express_title = #{record.expressTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expressAlias != null">
+        express_alias = #{record.expressAlias,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expressNo != null">
+        express_no = #{record.expressNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expressFee != null">
+        express_fee = #{record.expressFee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.creditType != null">
+        credit_type = #{record.creditType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rewardCredit != null">
+        reward_credit = #{record.rewardCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.cashCredit != null">
+        cash_credit = #{record.cashCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.dispatchType != null">
+        dispatch_type = #{record.dispatchType,jdbcType=TINYINT},
+      </if>
+      <if test="record.customDelivery != null">
+        custom_delivery = #{record.customDelivery,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=TINYINT},
+      </if>
+      <if test="record.commissionStatus != null">
+        commission_status = #{record.commissionStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.checkout != null">
+        checkout = #{record.checkout,jdbcType=TINYINT},
+      </if>
+      <if test="record.wxpayServiceProvider != null">
+        wxpay_service_provider = #{record.wxpayServiceProvider,jdbcType=TINYINT},
+      </if>
+      <if test="record.payuRid != null">
+        payu_rid = #{record.payuRid,jdbcType=INTEGER},
+      </if>
+      <if test="record.settlementStatus != null">
+        settlement_status = #{record.settlementStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.partner3Commission != null">
+        partner3_commission = #{record.partner3Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="record.partner2Commission != null">
+        partner2_commission = #{record.partner2Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="record.partner1Commission != null">
+        partner1_commission = #{record.partner1Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createtime != null">
+        createtime = #{record.createtime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updatetime != null">
+        updatetime = #{record.updatetime,jdbcType=INTEGER},
+      </if>
+      <if test="record.jdOrderId != null">
+        jd_order_id = #{record.jdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fromJd != null">
+        from_jd = #{record.fromJd,jdbcType=INTEGER},
+      </if>
+      <if test="record.jdAddress != null">
+        jd_address = #{record.jdAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jdAddressDesc != null">
+        jd_address_desc = #{record.jdAddressDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.freight != null">
+        freight = #{record.freight,jdbcType=DECIMAL},
+      </if>
+      <if test="record.jdTotalPrice != null">
+        jd_total_price = #{record.jdTotalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.jdTotalTax != null">
+        jd_total_tax = #{record.jdTotalTax,jdbcType=DECIMAL},
+      </if>
+      <if test="record.jdConfim != null">
+        jd_confim = #{record.jdConfim,jdbcType=BIT},
+      </if>
+      <if test="record.confimTime != null">
+        confim_time = #{record.confimTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.isSplite != null">
+        is_splite = #{record.isSplite,jdbcType=BIT},
+      </if>
+      <if test="record.source != null">
+        source = #{record.source,jdbcType=BIT},
+      </if>
+      <if test="record.thirdNo != null">
+        third_no = #{record.thirdNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.thirdAddress != null">
+        third_address = #{record.thirdAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.thirdRealPrice != null">
+        third_real_price = #{record.thirdRealPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.thirdExpFee != null">
+        third_exp_fee = #{record.thirdExpFee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.thirdPackageId != null">
+        third_package_id = #{record.thirdPackageId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.thirdApi1 != null">
+        third_api1 = #{record.thirdApi1,jdbcType=BIT},
+      </if>
+      <if test="record.thirdApi3 != null">
+        third_api3 = #{record.thirdApi3,jdbcType=BIT},
+      </if>
+      <if test="record.thirdApi4 != null">
+        third_api_4 = #{record.thirdApi4,jdbcType=BIT},
+      </if>
+      <if test="record.thirdUpdateDate != null">
+        third_update_date = #{record.thirdUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.expCreateTime != null">
+        exp_create_time = #{record.expCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creditrefund != null">
+        creditrefund = #{record.creditrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="record.cardrefund != null">
+        cardrefund = #{record.cardrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="record.onlinerefund != null">
+        onlinerefund = #{record.onlinerefund,jdbcType=DECIMAL},
+      </if>
+      <if test="record.wechatrefund != null">
+        wechatrefund = #{record.wechatrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="record.alipayrefund != null">
+        alipayrefund = #{record.alipayrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="record.isrefund != null">
+        isrefund = #{record.isrefund,jdbcType=INTEGER},
+      </if>
+      <if test="record.extend != null">
+        extend = #{record.extend,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update ims_superman_mall_order
+    set id = #{record.id,jdbcType=INTEGER},
+      pid = #{record.pid,jdbcType=INTEGER},
+      uniacid = #{record.uniacid,jdbcType=INTEGER},
+      shopid = #{record.shopid,jdbcType=INTEGER},
+      uid = #{record.uid,jdbcType=INTEGER},
+      ordersn = #{record.ordersn,jdbcType=VARCHAR},
+      partner3_id = #{record.partner3Id,jdbcType=INTEGER},
+      partner2_id = #{record.partner2Id,jdbcType=INTEGER},
+      partner1_id = #{record.partner1Id,jdbcType=INTEGER},
+      total = #{record.total,jdbcType=INTEGER},
+      price = #{record.price,jdbcType=DECIMAL},
+      pay_credit = #{record.payCredit,jdbcType=DECIMAL},
+      pay_type = #{record.payType,jdbcType=TINYINT},
+      payment_no = #{record.paymentNo,jdbcType=VARCHAR},
+      pay_time = #{record.payTime,jdbcType=INTEGER},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      admin_remark = #{record.adminRemark,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      address = #{record.address,jdbcType=VARCHAR},
+      zipcode = #{record.zipcode,jdbcType=VARCHAR},
+      express_title = #{record.expressTitle,jdbcType=VARCHAR},
+      express_alias = #{record.expressAlias,jdbcType=VARCHAR},
+      express_no = #{record.expressNo,jdbcType=VARCHAR},
+      express_fee = #{record.expressFee,jdbcType=DECIMAL},
+      credit_type = #{record.creditType,jdbcType=VARCHAR},
+      reward_credit = #{record.rewardCredit,jdbcType=DECIMAL},
+      cash_credit = #{record.cashCredit,jdbcType=DECIMAL},
+      dispatch_type = #{record.dispatchType,jdbcType=TINYINT},
+      custom_delivery = #{record.customDelivery,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      type = #{record.type,jdbcType=TINYINT},
+      commission_status = #{record.commissionStatus,jdbcType=TINYINT},
+      checkout = #{record.checkout,jdbcType=TINYINT},
+      wxpay_service_provider = #{record.wxpayServiceProvider,jdbcType=TINYINT},
+      payu_rid = #{record.payuRid,jdbcType=INTEGER},
+      settlement_status = #{record.settlementStatus,jdbcType=TINYINT},
+      partner3_commission = #{record.partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{record.partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{record.partner1Commission,jdbcType=DECIMAL},
+      createtime = #{record.createtime,jdbcType=INTEGER},
+      updatetime = #{record.updatetime,jdbcType=INTEGER},
+      jd_order_id = #{record.jdOrderId,jdbcType=VARCHAR},
+      from_jd = #{record.fromJd,jdbcType=INTEGER},
+      jd_address = #{record.jdAddress,jdbcType=VARCHAR},
+      jd_address_desc = #{record.jdAddressDesc,jdbcType=VARCHAR},
+      freight = #{record.freight,jdbcType=DECIMAL},
+      jd_total_price = #{record.jdTotalPrice,jdbcType=DECIMAL},
+      jd_total_tax = #{record.jdTotalTax,jdbcType=DECIMAL},
+      jd_confim = #{record.jdConfim,jdbcType=BIT},
+      confim_time = #{record.confimTime,jdbcType=INTEGER},
+      is_splite = #{record.isSplite,jdbcType=BIT},
+      source = #{record.source,jdbcType=BIT},
+      third_no = #{record.thirdNo,jdbcType=VARCHAR},
+      third_address = #{record.thirdAddress,jdbcType=VARCHAR},
+      third_real_price = #{record.thirdRealPrice,jdbcType=DECIMAL},
+      third_exp_fee = #{record.thirdExpFee,jdbcType=DECIMAL},
+      third_package_id = #{record.thirdPackageId,jdbcType=VARCHAR},
+      third_api1 = #{record.thirdApi1,jdbcType=BIT},
+      third_api3 = #{record.thirdApi3,jdbcType=BIT},
+      third_api_4 = #{record.thirdApi4,jdbcType=BIT},
+      third_update_date = #{record.thirdUpdateDate,jdbcType=TIMESTAMP},
+      exp_create_time = #{record.expCreateTime,jdbcType=VARCHAR},
+      creditrefund = #{record.creditrefund,jdbcType=DECIMAL},
+      cardrefund = #{record.cardrefund,jdbcType=DECIMAL},
+      onlinerefund = #{record.onlinerefund,jdbcType=DECIMAL},
+      wechatrefund = #{record.wechatrefund,jdbcType=DECIMAL},
+      alipayrefund = #{record.alipayrefund,jdbcType=DECIMAL},
+      isrefund = #{record.isrefund,jdbcType=INTEGER},
+      extend = #{record.extend,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update ims_superman_mall_order
+    set id = #{record.id,jdbcType=INTEGER},
+      pid = #{record.pid,jdbcType=INTEGER},
+      uniacid = #{record.uniacid,jdbcType=INTEGER},
+      shopid = #{record.shopid,jdbcType=INTEGER},
+      uid = #{record.uid,jdbcType=INTEGER},
+      ordersn = #{record.ordersn,jdbcType=VARCHAR},
+      partner3_id = #{record.partner3Id,jdbcType=INTEGER},
+      partner2_id = #{record.partner2Id,jdbcType=INTEGER},
+      partner1_id = #{record.partner1Id,jdbcType=INTEGER},
+      total = #{record.total,jdbcType=INTEGER},
+      price = #{record.price,jdbcType=DECIMAL},
+      pay_credit = #{record.payCredit,jdbcType=DECIMAL},
+      pay_type = #{record.payType,jdbcType=TINYINT},
+      payment_no = #{record.paymentNo,jdbcType=VARCHAR},
+      pay_time = #{record.payTime,jdbcType=INTEGER},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      admin_remark = #{record.adminRemark,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      address = #{record.address,jdbcType=VARCHAR},
+      zipcode = #{record.zipcode,jdbcType=VARCHAR},
+      express_title = #{record.expressTitle,jdbcType=VARCHAR},
+      express_alias = #{record.expressAlias,jdbcType=VARCHAR},
+      express_no = #{record.expressNo,jdbcType=VARCHAR},
+      express_fee = #{record.expressFee,jdbcType=DECIMAL},
+      credit_type = #{record.creditType,jdbcType=VARCHAR},
+      reward_credit = #{record.rewardCredit,jdbcType=DECIMAL},
+      cash_credit = #{record.cashCredit,jdbcType=DECIMAL},
+      dispatch_type = #{record.dispatchType,jdbcType=TINYINT},
+      custom_delivery = #{record.customDelivery,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      type = #{record.type,jdbcType=TINYINT},
+      commission_status = #{record.commissionStatus,jdbcType=TINYINT},
+      checkout = #{record.checkout,jdbcType=TINYINT},
+      wxpay_service_provider = #{record.wxpayServiceProvider,jdbcType=TINYINT},
+      payu_rid = #{record.payuRid,jdbcType=INTEGER},
+      settlement_status = #{record.settlementStatus,jdbcType=TINYINT},
+      partner3_commission = #{record.partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{record.partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{record.partner1Commission,jdbcType=DECIMAL},
+      createtime = #{record.createtime,jdbcType=INTEGER},
+      updatetime = #{record.updatetime,jdbcType=INTEGER},
+      jd_order_id = #{record.jdOrderId,jdbcType=VARCHAR},
+      from_jd = #{record.fromJd,jdbcType=INTEGER},
+      jd_address = #{record.jdAddress,jdbcType=VARCHAR},
+      jd_address_desc = #{record.jdAddressDesc,jdbcType=VARCHAR},
+      freight = #{record.freight,jdbcType=DECIMAL},
+      jd_total_price = #{record.jdTotalPrice,jdbcType=DECIMAL},
+      jd_total_tax = #{record.jdTotalTax,jdbcType=DECIMAL},
+      jd_confim = #{record.jdConfim,jdbcType=BIT},
+      confim_time = #{record.confimTime,jdbcType=INTEGER},
+      is_splite = #{record.isSplite,jdbcType=BIT},
+      source = #{record.source,jdbcType=BIT},
+      third_no = #{record.thirdNo,jdbcType=VARCHAR},
+      third_address = #{record.thirdAddress,jdbcType=VARCHAR},
+      third_real_price = #{record.thirdRealPrice,jdbcType=DECIMAL},
+      third_exp_fee = #{record.thirdExpFee,jdbcType=DECIMAL},
+      third_package_id = #{record.thirdPackageId,jdbcType=VARCHAR},
+      third_api1 = #{record.thirdApi1,jdbcType=BIT},
+      third_api3 = #{record.thirdApi3,jdbcType=BIT},
+      third_api_4 = #{record.thirdApi4,jdbcType=BIT},
+      third_update_date = #{record.thirdUpdateDate,jdbcType=TIMESTAMP},
+      exp_create_time = #{record.expCreateTime,jdbcType=VARCHAR},
+      creditrefund = #{record.creditrefund,jdbcType=DECIMAL},
+      cardrefund = #{record.cardrefund,jdbcType=DECIMAL},
+      onlinerefund = #{record.onlinerefund,jdbcType=DECIMAL},
+      wechatrefund = #{record.wechatrefund,jdbcType=DECIMAL},
+      alipayrefund = #{record.alipayrefund,jdbcType=DECIMAL},
+      isrefund = #{record.isrefund,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.order.model.ImsSupermanMallOrder">
+    update ims_superman_mall_order
+    <set>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="uniacid != null">
+        uniacid = #{uniacid,jdbcType=INTEGER},
+      </if>
+      <if test="shopid != null">
+        shopid = #{shopid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="ordersn != null">
+        ordersn = #{ordersn,jdbcType=VARCHAR},
+      </if>
+      <if test="partner3Id != null">
+        partner3_id = #{partner3Id,jdbcType=INTEGER},
+      </if>
+      <if test="partner2Id != null">
+        partner2_id = #{partner2Id,jdbcType=INTEGER},
+      </if>
+      <if test="partner1Id != null">
+        partner1_id = #{partner1Id,jdbcType=INTEGER},
+      </if>
+      <if test="total != null">
+        total = #{total,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="payCredit != null">
+        pay_credit = #{payCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null">
+        pay_type = #{payType,jdbcType=TINYINT},
+      </if>
+      <if test="paymentNo != null">
+        payment_no = #{paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null">
+        pay_time = #{payTime,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="adminRemark != null">
+        admin_remark = #{adminRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null">
+        zipcode = #{zipcode,jdbcType=VARCHAR},
+      </if>
+      <if test="expressTitle != null">
+        express_title = #{expressTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="expressAlias != null">
+        express_alias = #{expressAlias,jdbcType=VARCHAR},
+      </if>
+      <if test="expressNo != null">
+        express_no = #{expressNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expressFee != null">
+        express_fee = #{expressFee,jdbcType=DECIMAL},
+      </if>
+      <if test="creditType != null">
+        credit_type = #{creditType,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardCredit != null">
+        reward_credit = #{rewardCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="cashCredit != null">
+        cash_credit = #{cashCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="dispatchType != null">
+        dispatch_type = #{dispatchType,jdbcType=TINYINT},
+      </if>
+      <if test="customDelivery != null">
+        custom_delivery = #{customDelivery,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="commissionStatus != null">
+        commission_status = #{commissionStatus,jdbcType=TINYINT},
+      </if>
+      <if test="checkout != null">
+        checkout = #{checkout,jdbcType=TINYINT},
+      </if>
+      <if test="wxpayServiceProvider != null">
+        wxpay_service_provider = #{wxpayServiceProvider,jdbcType=TINYINT},
+      </if>
+      <if test="payuRid != null">
+        payu_rid = #{payuRid,jdbcType=INTEGER},
+      </if>
+      <if test="settlementStatus != null">
+        settlement_status = #{settlementStatus,jdbcType=TINYINT},
+      </if>
+      <if test="partner3Commission != null">
+        partner3_commission = #{partner3Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner2Commission != null">
+        partner2_commission = #{partner2Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="partner1Commission != null">
+        partner1_commission = #{partner1Commission,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null">
+        updatetime = #{updatetime,jdbcType=INTEGER},
+      </if>
+      <if test="jdOrderId != null">
+        jd_order_id = #{jdOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="fromJd != null">
+        from_jd = #{fromJd,jdbcType=INTEGER},
+      </if>
+      <if test="jdAddress != null">
+        jd_address = #{jdAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="jdAddressDesc != null">
+        jd_address_desc = #{jdAddressDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="freight != null">
+        freight = #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="jdTotalPrice != null">
+        jd_total_price = #{jdTotalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="jdTotalTax != null">
+        jd_total_tax = #{jdTotalTax,jdbcType=DECIMAL},
+      </if>
+      <if test="jdConfim != null">
+        jd_confim = #{jdConfim,jdbcType=BIT},
+      </if>
+      <if test="confimTime != null">
+        confim_time = #{confimTime,jdbcType=INTEGER},
+      </if>
+      <if test="isSplite != null">
+        is_splite = #{isSplite,jdbcType=BIT},
+      </if>
+      <if test="source != null">
+        source = #{source,jdbcType=BIT},
+      </if>
+      <if test="thirdNo != null">
+        third_no = #{thirdNo,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdAddress != null">
+        third_address = #{thirdAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdRealPrice != null">
+        third_real_price = #{thirdRealPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdExpFee != null">
+        third_exp_fee = #{thirdExpFee,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdPackageId != null">
+        third_package_id = #{thirdPackageId,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdApi1 != null">
+        third_api1 = #{thirdApi1,jdbcType=BIT},
+      </if>
+      <if test="thirdApi3 != null">
+        third_api3 = #{thirdApi3,jdbcType=BIT},
+      </if>
+      <if test="thirdApi4 != null">
+        third_api_4 = #{thirdApi4,jdbcType=BIT},
+      </if>
+      <if test="thirdUpdateDate != null">
+        third_update_date = #{thirdUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expCreateTime != null">
+        exp_create_time = #{expCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="creditrefund != null">
+        creditrefund = #{creditrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="cardrefund != null">
+        cardrefund = #{cardrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="onlinerefund != null">
+        onlinerefund = #{onlinerefund,jdbcType=DECIMAL},
+      </if>
+      <if test="wechatrefund != null">
+        wechatrefund = #{wechatrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="alipayrefund != null">
+        alipayrefund = #{alipayrefund,jdbcType=DECIMAL},
+      </if>
+      <if test="isrefund != null">
+        isrefund = #{isrefund,jdbcType=INTEGER},
+      </if>
+      <if test="extend != null">
+        extend = #{extend,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.order.model.ImsSupermanMallOrder">
+    update ims_superman_mall_order
+    set pid = #{pid,jdbcType=INTEGER},
+      uniacid = #{uniacid,jdbcType=INTEGER},
+      shopid = #{shopid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      ordersn = #{ordersn,jdbcType=VARCHAR},
+      partner3_id = #{partner3Id,jdbcType=INTEGER},
+      partner2_id = #{partner2Id,jdbcType=INTEGER},
+      partner1_id = #{partner1Id,jdbcType=INTEGER},
+      total = #{total,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      pay_credit = #{payCredit,jdbcType=DECIMAL},
+      pay_type = #{payType,jdbcType=TINYINT},
+      payment_no = #{paymentNo,jdbcType=VARCHAR},
+      pay_time = #{payTime,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      admin_remark = #{adminRemark,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zipcode = #{zipcode,jdbcType=VARCHAR},
+      express_title = #{expressTitle,jdbcType=VARCHAR},
+      express_alias = #{expressAlias,jdbcType=VARCHAR},
+      express_no = #{expressNo,jdbcType=VARCHAR},
+      express_fee = #{expressFee,jdbcType=DECIMAL},
+      credit_type = #{creditType,jdbcType=VARCHAR},
+      reward_credit = #{rewardCredit,jdbcType=DECIMAL},
+      cash_credit = #{cashCredit,jdbcType=DECIMAL},
+      dispatch_type = #{dispatchType,jdbcType=TINYINT},
+      custom_delivery = #{customDelivery,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      type = #{type,jdbcType=TINYINT},
+      commission_status = #{commissionStatus,jdbcType=TINYINT},
+      checkout = #{checkout,jdbcType=TINYINT},
+      wxpay_service_provider = #{wxpayServiceProvider,jdbcType=TINYINT},
+      payu_rid = #{payuRid,jdbcType=INTEGER},
+      settlement_status = #{settlementStatus,jdbcType=TINYINT},
+      partner3_commission = #{partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{partner1Commission,jdbcType=DECIMAL},
+      createtime = #{createtime,jdbcType=INTEGER},
+      updatetime = #{updatetime,jdbcType=INTEGER},
+      jd_order_id = #{jdOrderId,jdbcType=VARCHAR},
+      from_jd = #{fromJd,jdbcType=INTEGER},
+      jd_address = #{jdAddress,jdbcType=VARCHAR},
+      jd_address_desc = #{jdAddressDesc,jdbcType=VARCHAR},
+      freight = #{freight,jdbcType=DECIMAL},
+      jd_total_price = #{jdTotalPrice,jdbcType=DECIMAL},
+      jd_total_tax = #{jdTotalTax,jdbcType=DECIMAL},
+      jd_confim = #{jdConfim,jdbcType=BIT},
+      confim_time = #{confimTime,jdbcType=INTEGER},
+      is_splite = #{isSplite,jdbcType=BIT},
+      source = #{source,jdbcType=BIT},
+      third_no = #{thirdNo,jdbcType=VARCHAR},
+      third_address = #{thirdAddress,jdbcType=VARCHAR},
+      third_real_price = #{thirdRealPrice,jdbcType=DECIMAL},
+      third_exp_fee = #{thirdExpFee,jdbcType=DECIMAL},
+      third_package_id = #{thirdPackageId,jdbcType=VARCHAR},
+      third_api1 = #{thirdApi1,jdbcType=BIT},
+      third_api3 = #{thirdApi3,jdbcType=BIT},
+      third_api_4 = #{thirdApi4,jdbcType=BIT},
+      third_update_date = #{thirdUpdateDate,jdbcType=TIMESTAMP},
+      exp_create_time = #{expCreateTime,jdbcType=VARCHAR},
+      creditrefund = #{creditrefund,jdbcType=DECIMAL},
+      cardrefund = #{cardrefund,jdbcType=DECIMAL},
+      onlinerefund = #{onlinerefund,jdbcType=DECIMAL},
+      wechatrefund = #{wechatrefund,jdbcType=DECIMAL},
+      alipayrefund = #{alipayrefund,jdbcType=DECIMAL},
+      isrefund = #{isrefund,jdbcType=INTEGER},
+      extend = #{extend,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.ImsSupermanMallOrder">
+    update ims_superman_mall_order
+    set pid = #{pid,jdbcType=INTEGER},
+      uniacid = #{uniacid,jdbcType=INTEGER},
+      shopid = #{shopid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      ordersn = #{ordersn,jdbcType=VARCHAR},
+      partner3_id = #{partner3Id,jdbcType=INTEGER},
+      partner2_id = #{partner2Id,jdbcType=INTEGER},
+      partner1_id = #{partner1Id,jdbcType=INTEGER},
+      total = #{total,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      pay_credit = #{payCredit,jdbcType=DECIMAL},
+      pay_type = #{payType,jdbcType=TINYINT},
+      payment_no = #{paymentNo,jdbcType=VARCHAR},
+      pay_time = #{payTime,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      admin_remark = #{adminRemark,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zipcode = #{zipcode,jdbcType=VARCHAR},
+      express_title = #{expressTitle,jdbcType=VARCHAR},
+      express_alias = #{expressAlias,jdbcType=VARCHAR},
+      express_no = #{expressNo,jdbcType=VARCHAR},
+      express_fee = #{expressFee,jdbcType=DECIMAL},
+      credit_type = #{creditType,jdbcType=VARCHAR},
+      reward_credit = #{rewardCredit,jdbcType=DECIMAL},
+      cash_credit = #{cashCredit,jdbcType=DECIMAL},
+      dispatch_type = #{dispatchType,jdbcType=TINYINT},
+      custom_delivery = #{customDelivery,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      type = #{type,jdbcType=TINYINT},
+      commission_status = #{commissionStatus,jdbcType=TINYINT},
+      checkout = #{checkout,jdbcType=TINYINT},
+      wxpay_service_provider = #{wxpayServiceProvider,jdbcType=TINYINT},
+      payu_rid = #{payuRid,jdbcType=INTEGER},
+      settlement_status = #{settlementStatus,jdbcType=TINYINT},
+      partner3_commission = #{partner3Commission,jdbcType=DECIMAL},
+      partner2_commission = #{partner2Commission,jdbcType=DECIMAL},
+      partner1_commission = #{partner1Commission,jdbcType=DECIMAL},
+      createtime = #{createtime,jdbcType=INTEGER},
+      updatetime = #{updatetime,jdbcType=INTEGER},
+      jd_order_id = #{jdOrderId,jdbcType=VARCHAR},
+      from_jd = #{fromJd,jdbcType=INTEGER},
+      jd_address = #{jdAddress,jdbcType=VARCHAR},
+      jd_address_desc = #{jdAddressDesc,jdbcType=VARCHAR},
+      freight = #{freight,jdbcType=DECIMAL},
+      jd_total_price = #{jdTotalPrice,jdbcType=DECIMAL},
+      jd_total_tax = #{jdTotalTax,jdbcType=DECIMAL},
+      jd_confim = #{jdConfim,jdbcType=BIT},
+      confim_time = #{confimTime,jdbcType=INTEGER},
+      is_splite = #{isSplite,jdbcType=BIT},
+      source = #{source,jdbcType=BIT},
+      third_no = #{thirdNo,jdbcType=VARCHAR},
+      third_address = #{thirdAddress,jdbcType=VARCHAR},
+      third_real_price = #{thirdRealPrice,jdbcType=DECIMAL},
+      third_exp_fee = #{thirdExpFee,jdbcType=DECIMAL},
+      third_package_id = #{thirdPackageId,jdbcType=VARCHAR},
+      third_api1 = #{thirdApi1,jdbcType=BIT},
+      third_api3 = #{thirdApi3,jdbcType=BIT},
+      third_api_4 = #{thirdApi4,jdbcType=BIT},
+      third_update_date = #{thirdUpdateDate,jdbcType=TIMESTAMP},
+      exp_create_time = #{expCreateTime,jdbcType=VARCHAR},
+      creditrefund = #{creditrefund,jdbcType=DECIMAL},
+      cardrefund = #{cardrefund,jdbcType=DECIMAL},
+      onlinerefund = #{onlinerefund,jdbcType=DECIMAL},
+      wechatrefund = #{wechatrefund,jdbcType=DECIMAL},
+      alipayrefund = #{alipayrefund,jdbcType=DECIMAL},
+      isrefund = #{isrefund,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
