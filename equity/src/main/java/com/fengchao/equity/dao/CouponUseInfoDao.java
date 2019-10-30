@@ -38,4 +38,8 @@ public class CouponUseInfoDao {
 
         return couponUseInfoList;
     }
+
+    public CouponUseInfo findBycouponUserId(int id) {
+        return couponUseInfoMapper.selectByPrimaryKey(id);
+    }
 }

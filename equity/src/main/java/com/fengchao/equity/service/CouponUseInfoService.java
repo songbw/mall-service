@@ -2,6 +2,7 @@ package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.model.Coupon;
+import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoX;
 import java.util.List;
 
@@ -43,4 +44,8 @@ public interface CouponUseInfoService {
     int verifyCoupon(CouponUseInfoBean bean);
 
     List<Coupon> getCollectGiftCoupon(String openId);
+
+    CouponUseInfo findBycouponUserId(int couponUserId);
+
+    int triggerRelease(int couponUserId);
 }
