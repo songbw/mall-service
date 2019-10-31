@@ -3,8 +3,10 @@ package com.fengchao.product.aoyi.dao;
 import com.fengchao.product.aoyi.bean.InventoryMpus;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -15,12 +17,15 @@ import java.util.List;
  * @author songbw
  * @date 2019/10/28 19:11
  */
+@Slf4j
 @Component
 public class InventoryDao {
 
     private final SqlSession sqlSession;
 
+    @Autowired
     public InventoryDao(SqlSessionFactory sqlSessionFactory) throws SQLException {
+        log.info("inventory dao 我被初始化了");
         this.sqlSession = sqlSessionFactory.openSession();
         this.sqlSession.getConnection().setAutoCommit(false);
     }
