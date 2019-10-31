@@ -301,6 +301,7 @@
     update coupon_use_info
     set user_open_id = #{userOpenId,jdbcType=VARCHAR},
       collected_time = #{collectedTime,jdbcType=TIMESTAMP},
+      consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
       status = 3
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
   </update>

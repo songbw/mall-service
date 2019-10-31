@@ -327,7 +327,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX useInfo =new CouponUseInfoX();
         useInfo.setUserOpenId(bean.getUserOpenId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setConsumedTime(new Date());
+        Date date = new Date();
+        useInfo.setCollectedTime(date);
+        useInfo.setConsumedTime(date);
         CouponUseInfoX couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             bean.setUserCouponCode("2");
