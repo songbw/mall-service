@@ -323,9 +323,14 @@ public class OrderServiceImpl implements OrderService {
                 if (coupon != null) {
                     boolean couponRelease = release(coupon.getId(), coupon.getCode());
                     if (!couponRelease) {
-                        // TODO 订单失败,释放优惠券，
+                        // 订单失败,释放优惠券，
                         logger.info("订单" + bean.getId() + "释放优惠券失败");
                     }
+                }
+                // 回滚库存
+                if (inventories != null && inventories.size() > 0) {
+                    OperaResult inventoryAddResult = productService.inventoryAdd(inventories) ;
+                    logger.info("回滚库存，入参：{}", JSONUtil.toJsonString(inventories), " 返回结果：{}", JSONUtil.toJsonString(inventoryAddResult));
                 }
                 operaResult.setCode(result.getCode());
                 operaResult.setMsg(result.getMsg());
