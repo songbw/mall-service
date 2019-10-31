@@ -327,7 +327,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX useInfo =new CouponUseInfoX();
         useInfo.setUserOpenId(bean.getUserOpenId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setCollectedTime(new Date());
+        useInfo.setConsumedTime(new Date());
         CouponUseInfoX couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             bean.setUserCouponCode("2");
@@ -337,7 +337,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             bean.setUserCouponCode("4");
             return bean;
         }
-        int num= mapper.updateByUserCode(useInfo);
+        int num= mapper.updateStatusByUserCode(useInfo);
         CouponX coupon = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
         if(num == 1){
             coupon.setReleaseNum(coupon.getReleaseNum() + 1);
