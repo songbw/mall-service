@@ -323,9 +323,15 @@ public class OrderServiceImpl implements OrderService {
                 if (coupon != null) {
                     boolean couponRelease = release(coupon.getId(), coupon.getCode());
                     if (!couponRelease) {
-                        // TODO 订单失败,释放优惠券，
+                        // 订单失败,释放优惠券，
                         logger.info("订单" + bean.getId() + "释放优惠券失败");
                     }
+                }
+                // 回滚库存
+                if (inventories != null && inventories.size() > 0) {
+                    logger.info("回滚库存，入参：{}", JSONUtil.toJsonString(inventories));
+                    OperaResult inventoryAddResult = productService.inventoryAdd(inventories) ;
+                    logger.info("回滚库存, 返回结果：{}", JSONUtil.toJsonString(inventoryAddResult));
                 }
                 operaResult.setCode(result.getCode());
                 operaResult.setMsg(result.getMsg());
@@ -459,9 +465,10 @@ public class OrderServiceImpl implements OrderService {
                 inventoryMpus.setRemainNum(orderDetail1.getNum());
                 inventoryMpuses.add(inventoryMpus) ;
             });
+            logger.info("取消订单，返还库存操作失败，返还参数：{}", JSONUtil.toJsonString(inventoryMpuses));
             OperaResult result = productService.inventoryAdd(inventoryMpuses) ;
             if (result.getCode() != 200) {
-                logger.info("取消订单，返还库存操作失败，返还参数：{}", JSONUtil.toJsonString(inventoryMpuses), "返回结果：{}", JSONUtil.toJsonString(result));
+                logger.info("取消订单，返还库存操作失败， 返回结果：{}", JSONUtil.toJsonString(result));
             }
         }
         return id;
