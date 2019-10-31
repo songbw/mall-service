@@ -22,18 +22,18 @@ import java.util.List;
 @Component
 public class InventoryDao {
 
-//    private final SqlSession sqlSession;
+    private final SqlSession sqlSession;
 
     public InventoryDao(SqlSessionFactory sqlSessionFactory) throws SQLException {
         log.info("inventory dao 我被初始化了");
-//        this.sqlSession = sqlSessionFactory.openSession();
-//        this.sqlSession.getConnection().setAutoCommit(false);
+        this.sqlSession = sqlSessionFactory.openSession();
+        this.sqlSession.getConnection().setAutoCommit(false);
     }
 
     public OperaResult inventorySub(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
-        SqlSession sqlSession = MyBatisUtil.getSession();
-        sqlSession.getConnection().setAutoCommit(false);
+//        SqlSession sqlSession = MyBatisUtil.getSession();
+//        sqlSession.getConnection().setAutoCommit(false);
         try {
             List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
@@ -57,15 +57,15 @@ public class InventoryDao {
         }catch (Exception e) {
             e.printStackTrace();
         } finally {
-            MyBatisUtil.closeSession(sqlSession);
+            sqlSession.close();
         }
         return result ;
     }
 
     public OperaResult inventoryAdd(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
-        SqlSession sqlSession = MyBatisUtil.getSession();
-        sqlSession.getConnection().setAutoCommit(false);
+//        SqlSession sqlSession = MyBatisUtil.getSession();
+//        sqlSession.getConnection().setAutoCommit(false);
         try {
             List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
@@ -83,7 +83,7 @@ public class InventoryDao {
         }catch (Exception e) {
             e.printStackTrace();
         } finally {
-            MyBatisUtil.closeSession(sqlSession);
+            sqlSession.close();
         }
         return result ;
     }
