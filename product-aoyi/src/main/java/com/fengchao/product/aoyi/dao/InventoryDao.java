@@ -32,8 +32,6 @@ public class InventoryDao {
 
     public OperaResult inventorySub(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
-//        SqlSession sqlSession = MyBatisUtil.getSession();
-//        sqlSession.getConnection().setAutoCommit(false);
         try {
             List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
@@ -64,8 +62,6 @@ public class InventoryDao {
 
     public OperaResult inventoryAdd(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
-//        SqlSession sqlSession = MyBatisUtil.getSession();
-//        sqlSession.getConnection().setAutoCommit(false);
         try {
             List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
