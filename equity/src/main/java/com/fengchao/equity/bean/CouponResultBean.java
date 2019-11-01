@@ -15,5 +15,7 @@ public class CouponResultBean {
     private Integer releaseNum;
     private Date releaseStartDate;
     private Date releaseEndDate;
+    private Integer couponType;
+    private Integer collectType;
     private Integer status;
 }

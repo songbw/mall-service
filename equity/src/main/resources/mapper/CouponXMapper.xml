@@ -85,7 +85,7 @@
   <select id="selectLimit" resultType="com.fengchao.equity.bean.CouponResultBean" parameterType="Map">
     select
     id, name,  supplier_merchant_id supplierMerchantId, supplier_merchant_name supplierMerchantName, release_total releaseTotal, release_num releaseNum, release_start_date releaseStartDate,
-    release_end_date releaseEndDate, status
+    release_end_date releaseEndDate, collect_type collectType, coupon_type couponType, status
     from coupon where 1=1
     <if test="status != null" >
       and status = #{status,jdbcType=INTEGER}

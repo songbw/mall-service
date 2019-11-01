@@ -112,6 +112,9 @@ public class AdminCouponController {
         }else if(num == 1003){
             result.setCode(10013);
             result.setMsg("不能多次分配");
+        }else if(num == 1004){
+            result.setCode(10014);
+            result.setMsg("未在发布有效期内");
         }else{
             result.getData().put("result", num);
         }
