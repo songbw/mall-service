@@ -62,7 +62,7 @@
     </if>
 
   </select>
-  <select id="selectCollectCount" resultType="java.lang.Integer" parameterType="Map">
+  <select id="selectCollectCount" resultType="java.lang.Integer">
   select
   count(id)
   from coupon_use_info
@@ -300,9 +300,7 @@
   <update id="updateByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
     update coupon_use_info
     set user_open_id = #{userOpenId,jdbcType=VARCHAR},
-      collected_time = #{collectedTime,jdbcType=TIMESTAMP},
-      consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
-      status = 3
+      collected_time = #{collectedTime,jdbcType=TIMESTAMP}
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
   </update>
   <update id="updateStatusByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfoX" >

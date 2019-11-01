@@ -145,8 +145,7 @@ public class CouponServiceImpl implements CouponService {
         if (total > 0) {
             List<CouponX> coupons = mapper.selectActiveCouponLimit(map);
             coupons.forEach(coupon -> {
-                map.put("couponId",coupon.getId());
-                int num = useInfoMapper.selectCollectCount(map);
+                int num = useInfoMapper.selectCollectCount(coupon.getId(), bean.getUserOpenId());
                 coupon.setUserCollectNum(num);
                 couponBeans.add(couponToBean(coupon));
             });
@@ -470,12 +469,9 @@ public class CouponServiceImpl implements CouponService {
             }
         }
 
-        HashMap map = new HashMap();
-        map.put("userOpenId", openId);
         List<CouponX> coupons = mapper.selectGiftCoupon();
         coupons.forEach(couponX -> {
-            map.put("couponId",couponX.getId());
-            int num = useInfoMapper.selectCollectCount(map);
+            int num = useInfoMapper.selectCollectCount(couponX.getId(), openId);
             couponX.setUserCollectNum(num);
             couponBeans.add(couponToBean(couponX));
         });
@@ -497,11 +493,8 @@ public class CouponServiceImpl implements CouponService {
     public List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId) {
         List<CouponX> couponList = mapper.selectCouponListByIdList(ids);
         List<CouponBean> couponBeanList = new ArrayList<>();
-        HashMap map = new HashMap();
-        map.put("userOpenId", openId);
         for (CouponX coupon : couponList) {
-            map.put("couponId",coupon.getId());
-            int num = useInfoMapper.selectCollectCount(map);
+            int num = useInfoMapper.selectCollectCount(coupon.getId(), openId);
             coupon.setUserCollectNum(num);
             CouponBean couponBean = couponToBean(coupon);
             couponBeanList.add(couponBean);

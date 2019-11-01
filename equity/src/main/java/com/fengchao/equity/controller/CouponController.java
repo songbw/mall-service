@@ -35,13 +35,13 @@ public class CouponController {
         CouponUseInfoBean couponUseInfoBean = useInfoService.collectCoupon(bean);
         if(couponUseInfoBean.getUserCouponCode().equals("0")){
             result.setCode(40010);
-            result.setMsg("优惠卷不存在");
+            result.setMsg("优惠券不存在");
         }else if(couponUseInfoBean.getUserCouponCode().equals("1")){
             result.setCode(40011);
-            result.setMsg("优惠卷已抢完");
+            result.setMsg("优惠券已抢完");
         }else if(couponUseInfoBean.getUserCouponCode().equals("2")){
             result.setCode(40012);
-            result.setMsg("领取优惠卷已达上限");
+            result.setMsg("领取优惠券已达上限");
         }else if(couponUseInfoBean.getUserCouponCode().equals("3")){
             result.setCode(40013);
             result.setMsg("领取失败");
@@ -90,10 +90,13 @@ public class CouponController {
             result.setMsg("优惠券不存在");
         }else if(couponUseInfoBean.getUserCouponCode().equals("3")){
             result.setCode(40011);
-            result.setMsg("领取失败");
+            result.setMsg("兑换优惠券已达上限");
         }else if(couponUseInfoBean.getUserCouponCode().equals("4")){
             result.setCode(40012);
             result.setMsg("优惠券已失效");
+        }else if(couponUseInfoBean.getUserCouponCode().equals("5")){
+            result.setCode(40012);
+            result.setMsg("兑换失败");
         }else{
             result.getData().put("couponCode", couponUseInfoBean.getCouponCode());
             result.getData().put("couponCollectNum", couponUseInfoBean.getCouponCollectNum());
