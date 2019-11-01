@@ -6,5 +6,5 @@ import lombok.Data;
 public class InventorySkus {
     private String skuId;
     private String num;
-    private String price;
+    private String prodPrice;
 }

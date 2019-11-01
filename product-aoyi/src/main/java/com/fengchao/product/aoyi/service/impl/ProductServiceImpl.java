@@ -115,6 +115,7 @@ public class ProductServiceImpl implements ProductService {
             InventorySkus inventorySkus = new InventorySkus();
             inventorySkus.setNum(sku.getRemainNum());
             inventorySkus.setSkuId(sku.getSkuId());
+            inventorySkus.setProdPrice(sku.getPrice());
             ilist.add(inventorySkus);
             inventory.setSkuIds(ilist);
             InventoryBean inventoryBean = new InventoryBean() ;
