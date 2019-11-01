@@ -281,9 +281,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         num = mapper.insertbatchCode(useInfos);
-        if(num == 1){
-            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), coupon.getEffectiveEndDate());
-        }
+//        if(num == 1){
+//            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), coupon.getEffectiveEndDate());
+//        }
         return num;
     }
 
