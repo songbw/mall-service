@@ -24,7 +24,7 @@ public interface CouponUseInfoXMapper {
 
     List<CouponUseInfoX> selectLimit(HashMap map);
 
-    int selectCollectCount(HashMap map);
+    int selectCollectCount(@Param("couponId")Integer couponId, @Param("userOpenId")String userOpenId);
 
     int selectCollectCouponNum(CouponUseInfoBean couponUseInfoBean);
 

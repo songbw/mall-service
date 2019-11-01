@@ -90,10 +90,13 @@ public class CouponController {
             result.setMsg("优惠券不存在");
         }else if(couponUseInfoBean.getUserCouponCode().equals("3")){
             result.setCode(40011);
-            result.setMsg("领取失败");
+            result.setMsg("兑换优惠卷已达上限");
         }else if(couponUseInfoBean.getUserCouponCode().equals("4")){
             result.setCode(40012);
             result.setMsg("优惠券已失效");
+        }else if(couponUseInfoBean.getUserCouponCode().equals("5")){
+            result.setCode(40012);
+            result.setMsg("兑换失败");
         }else{
             result.getData().put("couponCode", couponUseInfoBean.getCouponCode());
             result.getData().put("couponCollectNum", couponUseInfoBean.getCouponCollectNum());
