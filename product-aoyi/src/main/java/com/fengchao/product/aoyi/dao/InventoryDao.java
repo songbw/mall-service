@@ -7,6 +7,8 @@ import com.fengchao.product.aoyi.utils.MyBatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -22,16 +24,25 @@ import java.util.List;
 @Component
 public class InventoryDao {
 
-    private final SqlSession sqlSession;
+    @Autowired
+    private MyBatisUtil batisUtil ;
 
-    public InventoryDao(SqlSessionFactory sqlSessionFactory) throws SQLException {
-        log.info("inventory dao 我被初始化了");
-        this.sqlSession = sqlSessionFactory.openSession();
-        this.sqlSession.getConnection().setAutoCommit(false);
-    }
+//    private SqlSession sqlSession;
+
+//    public InventoryDao(SqlSessionFactory sqlSessionFactory) throws SQLException {
+//        log.info("inventory dao 我被初始化了");
+//        this.sqlSession = sqlSessionFactory.openSession();
+//        this.sqlSession.getConnection().setAutoCommit(false);
+//    }
+
+//    private SqlSession getSqlSession() {
+//        sqlSession = new SqlSessionTemplate().getSqlSessionFactory().openSession();
+//        return sqlSession;
+//    }
 
     public OperaResult inventorySub(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
+        SqlSession sqlSession = batisUtil.getSession() ;
         try {
             List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
@@ -53,15 +64,17 @@ public class InventoryDao {
             }
             sqlSession.getConnection().commit();
         }catch (Exception e) {
+            log.info("我出错了");
             e.printStackTrace();
         } finally {
-            sqlSession.close();
+            batisUtil.closeSession(sqlSession);
         }
         return result ;
     }
 
     public OperaResult inventoryAdd(InventoryMpus inventoryMpus) throws SQLException {
         OperaResult result = new OperaResult() ;
+        SqlSession sqlSession = batisUtil.getSession() ;
         try {
             List<AoyiProdIndexX> records = sqlSession.selectList("selectForUpdateByMpu", inventoryMpus.getMpu());
             if (records == null || records.size() <= 0) {
@@ -79,7 +92,7 @@ public class InventoryDao {
         }catch (Exception e) {
             e.printStackTrace();
         } finally {
-            sqlSession.close();
+            batisUtil.closeSession(sqlSession);
         }
         return result ;
     }

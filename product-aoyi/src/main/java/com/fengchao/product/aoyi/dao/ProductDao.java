@@ -9,12 +9,14 @@ import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -260,7 +262,11 @@ public class ProductDao {
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
             criteria.andCategoryIn(queryBean.getCategories());
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
-        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>() ;
+        aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample).forEach(aoyiProdIndex -> {
+            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            aoyiProdIndexList.add(aoyiProdIndex) ;
+        });
 
         PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);
 
