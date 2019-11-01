@@ -263,6 +263,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return num;
         }
 
+        if(coupon.getStatus() == 5){
+            num = 1005;
+            return num;
+        }
+
         HashMap map = new HashMap<>();
         map.put("id", bean.getCouponId());
         int CollectCount = mapper.selectCount(map);

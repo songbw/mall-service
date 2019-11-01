@@ -115,6 +115,9 @@ public class AdminCouponController {
         }else if(num == 1004){
             result.setCode(10014);
             result.setMsg("未在发布有效期内");
+        }else if(num == 1005){
+            result.setCode(10015);
+            result.setMsg("优惠券已下线");
         }else{
             result.getData().put("result", num);
         }
