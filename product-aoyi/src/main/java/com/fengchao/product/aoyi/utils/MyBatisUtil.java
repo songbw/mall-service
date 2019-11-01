@@ -4,6 +4,10 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.io.InputStream;
 
@@ -11,26 +15,32 @@ import java.io.InputStream;
  * @author songbw
  * @date 2019/10/31 13:34
  */
+@Repository
 public class MyBatisUtil {
 
-    private static final String configFile = "mybatis-config.xml";
+//    private static final String configFile = "mybatis-config.xml";
+
+    @Autowired
+    private SqlSessionTemplate template;
 
     /**
      * 创建连接
      */
-    public static SqlSession getSession() {
+    public SqlSession getSession() {
         SqlSession session = null;
         try {
-            InputStream is = Resources.getResourceAsStream(configFile);
-            SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(is);
+//            InputStream is = Resources.getResourceAsStream(configFile);
+//            SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(is);
+            SqlSessionFactory factory = template.getSqlSessionFactory();
             session = factory.openSession();
+            session.getConnection().setAutoCommit(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return session;
     }
 
-    public static void closeSession(SqlSession session) {
+    public void closeSession(SqlSession session) {
         session.close();
     }
 }
