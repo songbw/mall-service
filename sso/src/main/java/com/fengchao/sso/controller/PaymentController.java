@@ -29,7 +29,7 @@ public class PaymentController {
     private OperaResult pingAnPayment(@RequestBody PaymentBean paymentBean, OperaResult result){
         logger.info("平安支付 入参:{}", JSONUtil.toJsonString(paymentBean));
         result = service.payment(paymentBean);
-        logger.info("平安支付 返回:{}", result);
+        logger.info("平安支付 返回:{}", JSONUtil.toJsonString(result));
         return result;
     }
 

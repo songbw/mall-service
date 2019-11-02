@@ -465,7 +465,7 @@ public class OrderServiceImpl implements OrderService {
                 inventoryMpus.setRemainNum(orderDetail1.getNum());
                 inventoryMpuses.add(inventoryMpus) ;
             });
-            logger.info("取消订单，返还库存操作失败，返还参数：{}", JSONUtil.toJsonString(inventoryMpuses));
+            logger.info("取消订单，返还库存操作，返还参数：{}", JSONUtil.toJsonString(inventoryMpuses));
             OperaResult result = productService.inventoryAdd(inventoryMpuses) ;
             if (result.getCode() != 200) {
                 logger.info("取消订单，返还库存操作失败， 返回结果：{}", JSONUtil.toJsonString(result));
