@@ -90,8 +90,9 @@ public class LoginServiceImpl implements ILoginService {
 
     @Override
     public TokenBean thirdLogin(ThirdLoginBean loginBean) {
+        log.info("第三方登录，入参：{}", JSONUtil.toJsonString(loginBean));
         String token = JwtTokenUtil.generateToken(loginBean);
-
+        log.info("第三方登录，token ：{}", token);
         TokenBean bean = new TokenBean();
         bean.setToken(token);
         bean.setOpenId(loginBean.getOpenId());
@@ -151,6 +152,7 @@ public class LoginServiceImpl implements ILoginService {
             }
         }
         redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
+        log.info("第三方登录，返回结果 ：{}", JSONUtil.toJsonString(bean));
         return bean;
     }
 
