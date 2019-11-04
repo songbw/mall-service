@@ -124,8 +124,8 @@ public class AdminProdController {
         return result;
     }
 
-    @PutMapping
-    public OperaResponse updateBatch(@RequestBody List<AoyiProdIndex> bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
+    @PutMapping("price/state")
+    public OperaResponse updateBatchPriceAndState(@RequestBody List<AoyiProdIndex> bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
         return prodService.updateBatchPriceAndState(bean);
     }
 
