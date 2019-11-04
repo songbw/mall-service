@@ -15,6 +15,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -354,6 +355,24 @@ public class ProductDao {
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andIdEqualTo(aoyiProdIndex.getId());
         aoyiProdIndex.setSyncAt(new Date());
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
+    /**
+     * 更新商品价格和状态
+     * @param bean
+     */
+    public void updatePriceAndState(AoyiProdIndex bean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuEqualTo(bean.getMpu());
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setPrice(bean.getPrice());
+        if (StringUtils.isEmpty(bean.getState())) {
+            aoyiProdIndex.setState(bean.getState());
+        }
+        aoyiProdIndex.setUpdatedAt(new Date());
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
     }
 

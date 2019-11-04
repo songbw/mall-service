@@ -290,6 +290,30 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
+    public OperaResponse updateBatchPriceAndState(List<AoyiProdIndex> bean) throws ProductException {
+        OperaResponse operaResponse = new OperaResponse() ;
+        if (bean == null || bean.size() > 0) {
+            operaResponse.setData(200003); ;
+            operaResponse.setMsg("批量更新列表不能为空");
+            return operaResponse ;
+        }
+        List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
+        bean.forEach(aoyiProdIndex -> {
+            if (StringUtils.isEmpty(aoyiProdIndex.getMpu()) || StringUtils.isEmpty(aoyiProdIndex.getPrice()) || StringUtils.isEmpty(aoyiProdIndex.getState())) {
+                aoyiProdIndices.add(aoyiProdIndex) ;
+            } else {
+                productDao.updatePriceAndState(aoyiProdIndex);
+            }
+        });
+        if (aoyiProdIndices.size() > 0) {
+            operaResponse.setData(200004); ;
+            operaResponse.setMsg("存在未更新成功的数据。");
+            operaResponse.setData(aoyiProdIndices);
+        }
+        return operaResponse;
+    }
+
+    @Override
     public void delete(Integer merchantId, Integer id) throws ProductException {
         if (id > 0) {
             aoyiProdIndexXMapper.deleteByPrimaryKey(id);

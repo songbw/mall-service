@@ -27,6 +27,8 @@ public interface AdminProdService {
 
     int update(AoyiProdIndex bean) throws ProductException;
 
+    OperaResponse updateBatchPriceAndState(List<AoyiProdIndex> bean) throws ProductException;
+
     void delete(Integer merchantId, Integer id) throws ProductException;
 
     PageBean findProdAll(QueryProdBean bean);

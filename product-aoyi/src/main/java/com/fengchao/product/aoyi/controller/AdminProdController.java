@@ -124,6 +124,11 @@ public class AdminProdController {
         return result;
     }
 
+    @PutMapping
+    public OperaResponse updateBatch(@RequestBody List<AoyiProdIndex> bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
+        return prodService.updateBatchPriceAndState(bean);
+    }
+
     @DeleteMapping
     public OperaResult delete(@RequestHeader("merchant") Integer merchantId, Integer id, OperaResult result) throws ProductException {
         prodService.delete(merchantId, id);
