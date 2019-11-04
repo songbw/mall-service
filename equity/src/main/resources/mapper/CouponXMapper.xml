@@ -85,7 +85,7 @@
   <select id="selectLimit" resultType="com.fengchao.equity.bean.CouponResultBean" parameterType="Map">
     select
     id, name,  supplier_merchant_id supplierMerchantId, supplier_merchant_name supplierMerchantName, release_total releaseTotal, release_num releaseNum, release_start_date releaseStartDate,
-    release_end_date releaseEndDate, status
+    release_end_date releaseEndDate, collect_type collectType, coupon_type couponType, status
     from coupon where 1=1
     <if test="status != null" >
       and status = #{status,jdbcType=INTEGER}
@@ -117,7 +117,7 @@
     <include refid="Base_Column_List" />
     from coupon
     left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
-    where status = 4 and customer_type = 0
+    where status = 4 and customer_type = 0 and collect_type != 4
     <if test="categoryName != null" >
       <bind name="patternName" value="'%' + categoryName + '%'" />
       and aoyi_base_category.category_name LIKE #{patternName}
@@ -139,7 +139,7 @@
     count(id)
     from coupon
     left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
-    where status = 4 and customer_type = 0
+    where status = 4 and customer_type = 0 and collect_type != 4
     <if test="categoryName != null" >
       <bind name="patternName" value="'%' + categoryName + '%'" />
       and aoyi_base_category.category_name LIKE #{patternName}
@@ -181,7 +181,7 @@
         and scenario_type = 3
       </if>
     </trim>
-    and status = 4
+    and status = 4 and collect_type != 4
   </select>
   <select id="selectGrantCoupon" resultMap="BaseResultMap">
     select

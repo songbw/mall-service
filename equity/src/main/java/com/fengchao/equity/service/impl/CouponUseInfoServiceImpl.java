@@ -97,7 +97,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             }
         }else{
             DecimalFormat df=new DecimalFormat("0000");
-            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + (int)((Math.random()*9+1)*100000) + (int)((Math.random()*9+1)*100000);
+            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCollectedTime(new Date());
             couponUseInfo.setUserCouponCode(userCouponCode);
             num = mapper.insertSelective(couponUseInfo);
@@ -252,8 +252,19 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return num;
         }
 
+        Date date = new Date();
+        if(coupon.getReleaseStartDate().after(date) || coupon.getReleaseEndDate().before(date)){
+            num = 1004;
+            return num;
+        }
+
         if(coupon.getCollectType() == null || coupon.getCollectType() != 4){
             num = 1002;
+            return num;
+        }
+
+        if(coupon.getStatus() == 5){
+            num = 1005;
             return num;
         }
 
@@ -267,7 +278,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
         for (int i=0; i < coupon.getReleaseTotal(); i++){
             CouponUseInfoX couponUseInfo = new CouponUseInfoX();
-            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + (int)((Math.random()*9+1)*100000) + (int)((Math.random()*9+1)*100000);
+            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserCouponCode(userCouponCode);
             couponUseInfo.setCouponId(bean.getCouponId());
@@ -275,6 +286,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         num = mapper.insertbatchCode(useInfos);
+//        if(num == 1){
+//            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), coupon.getEffectiveEndDate());
+//        }
         return num;
     }
 
@@ -339,6 +353,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 bean.setUserCouponCode("3");
                 return bean;
             }
+        }
+        if(coupon.getStatus() == 5){
+            bean.setUserCouponCode("6");
+            return bean;
         }
         int num= mapper.updateByUserCode(useInfo);
         if(num == 1){
