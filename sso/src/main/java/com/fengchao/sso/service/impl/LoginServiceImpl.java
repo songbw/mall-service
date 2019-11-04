@@ -118,6 +118,7 @@ public class LoginServiceImpl implements ILoginService {
                     bean.setNewUser(true);
                 }else{
                     redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
+                    log.info("第三方登录，返回结果 ：{}", JSONUtil.toJsonString(bean));
                     return bean;
                 }
             }
