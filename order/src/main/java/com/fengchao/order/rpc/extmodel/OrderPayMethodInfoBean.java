@@ -72,4 +72,9 @@ public class OrderPayMethodInfoBean {
      * 支付限制
      */
     private String limitPay;
+
+    /**
+     * 卡号或OpenID
+     */
+    private String cardNo;
 }

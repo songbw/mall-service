@@ -2,6 +2,7 @@ package com.fengchao.order.service.impl;
 
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
+import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.constants.OrderPayMethodTypeEnum;
@@ -231,6 +232,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         return exportOrdersVoList;
     }
 
+    @Override
+    public List<OrderPayMethodInfoBean> exportCandRBill(BillExportReqVo billExportReqVo, String tradeType) {
+        billExportReqVo.setTradeType(tradeType);
+        billExportReqVo.setPageNum(1);
+        List<OrderPayMethodInfoBean> payMethodInfoBeans = wsPayRpcService.queryPayCandRList(billExportReqVo);
+        return payMethodInfoBeans;
+    }
 
 
     @Override
