@@ -538,7 +538,7 @@
   <select id="selectProductPriceListPageable"
           resultType="com.fengchao.product.aoyi.bean.vo.ProductExportResVo"  parameterType="Map">
     select
-    sprice costPrice, sprice * 1.10 floorPrice, price sellPrice,state, mpu,skuId sku, name productName, brand
+    sprice costPrice, FORMAT((sprice * #{floorPriceRate}), 2) floorPrice, price sellPrice,state, mpu,skuId sku, name productName, brand
     FROM aoyi_prod_index
     WHERE state = 1 AND  sprice * #{floorPriceRate} <![CDATA[ > ]]> price
     limit #{offset}, #{pageSize}
