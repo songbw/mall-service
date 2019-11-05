@@ -516,10 +516,10 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 3.1 分页查询商品表-批量查询，避免一次返回数据太多，并且还要利用返回的数据批量查询其他表，这样也避免查询时的入参太大
             // TODO 获取记录数
             int totalCount = aoyiProdIndexXMapper.selectPriceCount(sqlParamMap);
-            if (totalCount > 50000) { // 如果导出的记录数大于5w则终止导出,excel表的上线是65535
-                logger.error("导出商品价格列表 导出数据过大");
-                throw new ExportProuctOverRangeException();
-            }
+//            if (totalCount > 50000) { // 如果导出的记录数大于5w则终止导出,excel表的上线是65535
+//                logger.error("导出商品价格列表 导出数据过大");
+//                throw new ExportProuctOverRangeException();
+//            }
             // 遍历查询
             if (totalCount > 0) {
                 PageBean pageBean = new PageBean();
