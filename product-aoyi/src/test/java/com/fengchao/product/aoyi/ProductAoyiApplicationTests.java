@@ -11,6 +11,7 @@ import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.SkuCode;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
+import com.fengchao.product.aoyi.service.AdminProdService;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,10 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(SpringRunner.class)
@@ -37,17 +36,30 @@ public class ProductAoyiApplicationTests {
 	private VendorsServiceClient vendorsService;
 	@Autowired
 	private AoyiProdIndexXMapper indexXMapper ;
+	@Autowired
+	private AdminProdService prodService;
 
 	@Ignore
 	@Test
 	public void contextLoads() {
-		HashMap map = new HashMap<>() ;
-		map.put("floorPriceRate", 1.10) ;
-		map.put("offset", 0);
-		map.put("pageSize", 500);
-		int count = indexXMapper.selectPriceCount(map) ;
-		List<ProductExportResVo> productExportResVos = indexXMapper.selectProductPriceListPageable(map) ;
-		System.out.println(count);
+//		HashMap map = new HashMap<>() ;
+//		map.put("floorPriceRate", 1.10) ;
+//		map.put("offset", 0);
+//		map.put("pageSize", 500);
+//		int count = indexXMapper.selectPriceCount(map) ;
+//		List<ProductExportResVo> productExportResVos = indexXMapper.selectProductPriceListPageable(map) ;
+//		System.out.println(count);
+		int floorPriceRate = 110;
+		DecimalFormat df = new DecimalFormat("0.00");
+		String s = df.format((float)floorPriceRate/100);
+		float param = Float.valueOf(s.trim()).floatValue();
+		List<ProductExportResVo> productExportResVoList = new ArrayList<>() ;
+		try {
+			productExportResVoList =  prodService.exportProductPriceList(param) ;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(productExportResVoList);
 	}
 
 	@Ignore

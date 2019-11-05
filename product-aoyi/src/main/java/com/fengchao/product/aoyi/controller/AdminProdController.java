@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -316,7 +317,9 @@ public class AdminProdController {
 
         log.info("导出商品价格列表 入参:{}", JSONUtil.toJsonString(floorPriceRate));
         try {
-            float param = floorPriceRate / 100 ;
+            DecimalFormat df = new DecimalFormat("0.00");
+            String s = df.format((float)floorPriceRate/100);
+            float param = Float.valueOf(s.trim()).floatValue();
             log.info("导出商品价格列表 入参:{}", JSONUtil.toJsonString(param));
             // 1.根据条件获取订单集合
             List<ProductExportResVo> productExportResVoList = prodService.exportProductPriceList(param);
