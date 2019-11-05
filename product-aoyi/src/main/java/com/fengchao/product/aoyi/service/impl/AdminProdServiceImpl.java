@@ -292,7 +292,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public OperaResponse updateBatchPriceAndState(List<AoyiProdIndex> bean) throws ProductException {
         OperaResponse operaResponse = new OperaResponse() ;
-        if (bean == null || bean.size() > 0) {
+        if (bean == null || bean.size() <= 0) {
             operaResponse.setData(200003); ;
             operaResponse.setMsg("批量更新列表不能为空");
             return operaResponse ;
