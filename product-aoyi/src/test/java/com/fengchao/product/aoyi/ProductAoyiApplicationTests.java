@@ -55,7 +55,7 @@ public class ProductAoyiApplicationTests {
 		float param = Float.valueOf(s.trim()).floatValue();
 		List<ProductExportResVo> productExportResVoList = new ArrayList<>() ;
 		try {
-			productExportResVoList =  prodService.exportProductPriceList(param) ;
+//			productExportResVoList =  prodService.exportProductPriceList(param) ;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
