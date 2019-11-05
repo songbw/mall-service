@@ -291,6 +291,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @Override
     public OperaResponse updateBatchPriceAndState(List<AoyiProdIndex> bean) throws ProductException {
+        logger.info("批量更新价格状态，入参：{}", JSONUtil.toJsonString(bean));
         OperaResponse operaResponse = new OperaResponse() ;
         if (bean == null || bean.size() <= 0) {
             operaResponse.setData(200003); ;
@@ -310,6 +311,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             operaResponse.setMsg("存在未更新成功的数据。");
             operaResponse.setData(aoyiProdIndices);
         }
+        logger.info("批量更新价格状态，返回结果：{}", JSONUtil.toJsonString(operaResponse));
         return operaResponse;
     }
 
