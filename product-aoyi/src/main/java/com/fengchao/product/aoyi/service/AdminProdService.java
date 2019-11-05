@@ -49,7 +49,7 @@ public interface AdminProdService {
      * @return
      * @throws Exception
      */
-    List<ProductExportResVo> exportProductPriceList(float floorPriceRate) throws Exception;
+    PageBean exportProductPriceList(float floorPriceRate, int pageNo, int pageSize) throws Exception;
 
     /**
      * 修改库存

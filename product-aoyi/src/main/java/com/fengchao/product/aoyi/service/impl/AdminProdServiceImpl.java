@@ -497,7 +497,8 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public List<ProductExportResVo> exportProductPriceList(float floorPriceRate) throws Exception {
+    public PageBean exportProductPriceList(float floorPriceRate, int pageNo, int pageSize) throws Exception {
+        PageBean pageBean = new PageBean();
         // 0. 返回值
         List<ProductExportResVo> productExportResVoList = new ArrayList<>();
 
@@ -524,37 +525,49 @@ public class AdminProdServiceImpl implements AdminProdService {
 //            }
             // 遍历查询
             if (totalCount > 0) {
-                PageBean pageBean = new PageBean();
-                int pageSize = 500;
                 int totalPage = pageBean.getPages(totalCount, pageSize); // 总页数
+                pageBean.setPageNo(pageNo);
+                pageBean.setPages(totalPage);
+                pageBean.setPageSize(pageSize);
+                pageBean.setTotal(totalCount);
+                int offset = (pageNo - 1) * pageSize ;
+                sqlParamMap.put("offset", offset);
+                sqlParamMap.put("pageSize", pageSize);
 
-                for (int currentPage = 1; currentPage <= totalPage; currentPage++) {
-                    int offset = pageBean.getOffset(currentPage, pageSize);
+                // TODO 执行数据查询
+                List<ProductExportResVo> aoyiProdIndexXList = aoyiProdIndexXMapper.selectProductPriceListPageable(sqlParamMap);
+                aoyiProdIndexXList.forEach(productExportResVo -> {
+                    productExportResVoList.add(productExportResVo);
+                });
+                pageBean.setList(productExportResVoList);
 
-                    sqlParamMap.put("offset", offset);
-                    sqlParamMap.put("pageSize", 500);
-
-                    // TODO 执行数据查询
-                    List<ProductExportResVo> aoyiProdIndexXList = aoyiProdIndexXMapper.selectProductPriceListPageable(sqlParamMap);
-                    aoyiProdIndexXList.forEach(productExportResVo -> {
-                        productExportResVoList.add(productExportResVo);
-                    });
-
-                    // 转exportVo
-//                    for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
-//                        ProductExportResVo productExportResVo = convertToProductExportResVo(aoyiProdIndexX);
+//                for (int currentPage = 1; currentPage <= totalPage; currentPage++) {
+//                    int offset = pageBean.getOffset(currentPage, pageSize);
 //
-//                        // 处理商品供应商名称
-//                        SysCompany sysCompany = sysCompanyMap.get(aoyiProdIndexX.getMerchantId().longValue());
-//                        productExportResVo.setMerchantName(sysCompany == null ? "/" : sysCompany.getName());
+//                    sqlParamMap.put("offset", offset);
+//                    sqlParamMap.put("pageSize", pageSize);
 //
-//                        //
+//                    // TODO 执行数据查询
+//                    List<ProductExportResVo> aoyiProdIndexXList = aoyiProdIndexXMapper.selectProductPriceListPageable(sqlParamMap);
+//                    aoyiProdIndexXList.forEach(productExportResVo -> {
 //                        productExportResVoList.add(productExportResVo);
+//                    });
 //
-//                        aoyiProdIndexX = null; // 释放
-//                    }
-
-                }
+//                    // 转exportVo
+////                    for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
+////                        ProductExportResVo productExportResVo = convertToProductExportResVo(aoyiProdIndexX);
+////
+////                        // 处理商品供应商名称
+////                        SysCompany sysCompany = sysCompanyMap.get(aoyiProdIndexX.getMerchantId().longValue());
+////                        productExportResVo.setMerchantName(sysCompany == null ? "/" : sysCompany.getName());
+////
+////                        //
+////                        productExportResVoList.add(productExportResVo);
+////
+////                        aoyiProdIndexX = null; // 释放
+////                    }
+//
+//                }
             }
         } catch (ExportProuctOverRangeException e) {
             logger.error("导出商品价格列表 异常了:{}", e.getMessage(), e);
@@ -568,7 +581,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
         logger.info("导出商品价格列表 导出数据列表个数List<ProductExportResVo> size:{}", productExportResVoList.size());
 
-        return productExportResVoList;
+        return pageBean;
     }
 
     // =============================== private ======================================================

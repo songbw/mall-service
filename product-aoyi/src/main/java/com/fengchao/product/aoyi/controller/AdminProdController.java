@@ -308,7 +308,7 @@ public class AdminProdController {
      * @param response
      */
     @GetMapping(value = "/export/price")
-    public void exportProductPrice(int floorPriceRate,
+    public void exportProductPrice(int floorPriceRate,int pageNo, int pageSize,
                             @RequestHeader(name = "merchant", required = false, defaultValue = "0") Integer merchantHeader, // FIXME :
                             HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
@@ -322,7 +322,8 @@ public class AdminProdController {
             float param = Float.valueOf(s.trim()).floatValue();
             log.info("导出商品价格列表 入参:{}", JSONUtil.toJsonString(param));
             // 1.根据条件获取订单集合
-            List<ProductExportResVo> productExportResVoList = prodService.exportProductPriceList(param);
+            PageBean pageBean = prodService.exportProductPriceList(param, pageNo, pageSize);
+            List<ProductExportResVo> productExportResVoList = (List<ProductExportResVo>) pageBean.getList();
 
             log.info("导出商品价格列表 获取导出记录{}条", productExportResVoList.size());
             if (CollectionUtils.isEmpty(productExportResVoList)) {
