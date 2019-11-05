@@ -43,6 +43,15 @@ public interface AdminProdService {
     List<ProductExportResVo> exportProductList(SerachBean bean) throws Exception;
 
     /**
+     * 获取商品价格导出数据
+     *
+     * @param floorPriceRate
+     * @return
+     * @throws Exception
+     */
+    List<ProductExportResVo> exportProductPriceList(float floorPriceRate) throws Exception;
+
+    /**
      * 修改库存
      * @param inventory
      * @return

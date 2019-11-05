@@ -24,6 +24,11 @@ public class ProductExportResVo {
     private String sku;
 
     /**
+     * 商品MPU
+     */
+    private String mpu;
+
+    /**
      * 商品状态
      */
     private String state;
@@ -72,5 +77,10 @@ public class ProductExportResVo {
      * 库存
      */
     private String inventory;
+
+    /**
+     * 最低价格(元)  成本价格 * xxx%
+     */
+    private String floorPrice;
 
 }

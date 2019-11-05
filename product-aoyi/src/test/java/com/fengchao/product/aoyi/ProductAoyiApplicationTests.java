@@ -1,9 +1,11 @@
 package com.fengchao.product.aoyi;
 
 import com.fengchao.product.aoyi.bean.OperaResponse;
+import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
+import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.mapper.SkuCodeXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
@@ -18,7 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(SpringRunner.class)
@@ -31,10 +35,19 @@ public class ProductAoyiApplicationTests {
 	private SkuCodeXMapper skuCodeMapper;
 	@Autowired
 	private VendorsServiceClient vendorsService;
+	@Autowired
+	private AoyiProdIndexXMapper indexXMapper ;
 
 	@Ignore
 	@Test
 	public void contextLoads() {
+		HashMap map = new HashMap<>() ;
+		map.put("floorPriceRate", 1.10) ;
+		map.put("offset", 0);
+		map.put("pageSize", 500);
+		int count = indexXMapper.selectPriceCount(map) ;
+		List<ProductExportResVo> productExportResVos = indexXMapper.selectProductPriceListPageable(map) ;
+		System.out.println(count);
 	}
 
 	@Ignore

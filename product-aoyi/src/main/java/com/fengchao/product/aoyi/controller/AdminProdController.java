@@ -288,6 +288,138 @@ public class AdminProdController {
         }
     }
 
+    /**
+     * 按照条件导出订单
+     * 参考：https://blog.csdn.net/ethan_10/article/details/80335350
+     *
+     * <p>
+     * 导出title：
+     * 商品SKU
+     * 商品MPU
+     * 销售价格(元)
+     * 进货价格(元) sprice
+     * 最低价格(元) sprice * floorPriceRate/100
+     *
+     * 测试: http://localhost:8002/adminProd/export
+     *      http://localhost:8002/adminProd/export?query=海尔
+     *
+     * @param floorPriceRate 导出条件
+     * @param response
+     */
+    @GetMapping(value = "/export/price")
+    public void exportProductPrice(int floorPriceRate,
+                            @RequestHeader(name = "merchant", required = false, defaultValue = "0") Integer merchantHeader, // FIXME :
+                            HttpServletResponse response) throws Exception {
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
+
+        log.info("导出商品价格列表 入参:{}", JSONUtil.toJsonString(floorPriceRate));
+        try {
+            float param = floorPriceRate / 100 ;
+            log.info("导出商品价格列表 入参:{}", JSONUtil.toJsonString(param));
+            // 1.根据条件获取订单集合
+            List<ProductExportResVo> productExportResVoList = prodService.exportProductPriceList(param);
+
+            log.info("导出商品价格列表 获取导出记录{}条", productExportResVoList.size());
+            if (CollectionUtils.isEmpty(productExportResVoList)) {
+                throw new Exception("未找出有效的导出数据!");
+            }
+
+            // 2.开始组装excel
+            // 2.0 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("商品列表");
+
+            // 2.1 组装title
+            createTitlePrice(sheet);
+
+            // 2.2 组装业务数据
+            createContentPrice(sheet, productExportResVoList);
+
+
+            // 2.3 文件名
+            String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
+            String fileName = "exportproductprice_" + date + ".xls";
+
+            // 3. 输出文件
+            try {
+                response.setContentType("application/octet-stream");
+                response.setHeader("content-type", "application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出商品价格列表文件 出错了:{}", e.getMessage(), e);
+
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
+            log.info("export product price file finish");
+        } catch (ExportProuctOverRangeException e) {
+            log.error("导出文件异常了:{}", e.getMessage(), e);
+
+            response.setStatus(416);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "416");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出商品价格列表文件 错误了:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } catch (Exception e) {
+            log.error("导出文件异常:{}", e.getMessage(), e);
+
+            response.setStatus(400);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "400");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出商品价格列表文件 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+
+            if (workbook != null) {
+                workbook.close();
+            }
+        }
+    }
+
     // ================================================= private ===========================================
 
     /**
@@ -333,6 +465,39 @@ public class AdminProdController {
 
         HSSFCell titleCell11 = titleRow.createCell(11);
         titleCell11.setCellValue("商品库存");
+    }
+
+    /**
+     * 创建价格title
+     *
+     * @param sheet
+     */
+    private void createTitlePrice(HSSFSheet sheet) {
+        HSSFRow titleRow = sheet.createRow(0);
+
+        HSSFCell titleCell0 = titleRow.createCell(0);
+        titleCell0.setCellValue("商品MPU");
+
+        HSSFCell titleCell1 = titleRow.createCell(1);
+        titleCell1.setCellValue("商品SKU");
+
+        HSSFCell titleCell2 = titleRow.createCell(2);
+        titleCell2.setCellValue("商品状态");
+
+        HSSFCell titleCell3 = titleRow.createCell(3);
+        titleCell3.setCellValue("销售价格(元)");
+
+        HSSFCell titleCell4 = titleRow.createCell(4);
+        titleCell4.setCellValue("进货价格(元)");
+
+        HSSFCell titleCell5 = titleRow.createCell(5);
+        titleCell5.setCellValue("销售底价(元)");
+
+        HSSFCell titleCell6 = titleRow.createCell(6);
+        titleCell6.setCellValue("商品名称");
+
+        HSSFCell titleCell7 = titleRow.createCell(7);
+        titleCell7.setCellValue("商品品牌");
     }
 
     /**
@@ -400,6 +565,61 @@ public class AdminProdController {
             //
             if (currentRowNum % 100 == 0) {
                 log.info("导出商品列表 第{}行, 共{}行", currentRowNum, totalRowNum);
+            }
+            currentRowNum++;
+            productExportResVo = null; // 释放
+        }
+    }
+
+    /**
+     * 组装业务数据
+     *
+     * @param sheet
+     * @param productExportResVoList 需要导出的数据集合
+     */
+    private void createContentPrice(HSSFSheet sheet, List<ProductExportResVo> productExportResVoList) {
+
+        int currentRowNum = 1; // 行号
+        int totalRowNum = productExportResVoList.size(); // 总行数
+        for (ProductExportResVo productExportResVo : productExportResVoList) {
+            // 新增一行
+            HSSFRow hssfRow = sheet.createRow(currentRowNum);
+
+            // 商品MPU
+            HSSFCell titleCell0 = hssfRow.createCell(0);
+            titleCell0.setCellValue(productExportResVo.getMpu());
+
+            // 商品SKU
+            HSSFCell titleCell1 = hssfRow.createCell(1);
+            titleCell1.setCellValue(productExportResVo.getSku());
+
+            // 商品状态
+            HSSFCell titleCell2 = hssfRow.createCell(2);
+            titleCell2.setCellValue(productExportResVo.getState());
+
+            // 销售价格(元)
+            HSSFCell titleCell3 = hssfRow.createCell(3);
+            titleCell3.setCellValue(productExportResVo.getSellPrice());
+
+            // 进货价格(元)
+            HSSFCell titleCell4 = hssfRow.createCell(4);
+            titleCell4.setCellValue(productExportResVo.getCostPrice());
+
+            // 最低价格
+            HSSFCell titleCell5 = hssfRow.createCell(5);
+            titleCell5.setCellValue(productExportResVo.getFloorPrice());
+
+            // 商品名称
+            HSSFCell titleCell6 = hssfRow.createCell(6);
+            titleCell6.setCellValue(productExportResVo.getProductName());
+
+            // 商品品牌
+            HSSFCell titleCell7 = hssfRow.createCell(7);
+            titleCell7.setCellValue(productExportResVo.getBrand());
+
+            //
+            if (currentRowNum % 100 == 0) {
+                log.info("导出商品价格列表 第{}行, 共{}行", currentRowNum, totalRowNum);
             }
             currentRowNum++;
             productExportResVo = null; // 释放

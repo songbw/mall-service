@@ -530,6 +530,19 @@
     from aoyi_prod_index
     where mpu = #{mpu} and <![CDATA[merchant_id <> 2]]>  for update
   </select>
+  <select id="selectPriceCount"  resultType="java.lang.Integer" parameterType="Map">
+    select count(id)
+    FROM aoyi_prod_index
+    WHERE state = 1 AND  sprice * #{floorPriceRate} <![CDATA[ > ]]> price
+  </select>
+  <select id="selectProductPriceListPageable"
+          resultType="com.fengchao.product.aoyi.bean.vo.ProductExportResVo"  parameterType="Map">
+    select
+    sprice costPrice, sprice * 1.10 floorPrice, price sellPrice,state, mpu,skuId sku, name productName, brand
+    FROM aoyi_prod_index
+    WHERE state = 1 AND  sprice * #{floorPriceRate} <![CDATA[ > ]]> price
+    limit #{offset}, #{pageSize}
+  </select>
 
   <update id="batchUpdate" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX">
     update aoyi_prod_index set inventory = #{inventory}, updated_at = now() where mpu = #{mpu}

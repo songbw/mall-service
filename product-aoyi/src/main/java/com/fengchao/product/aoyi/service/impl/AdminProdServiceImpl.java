@@ -494,6 +494,81 @@ public class AdminProdServiceImpl implements AdminProdService {
         return productExportResVoList;
     }
 
+    @Override
+    public List<ProductExportResVo> exportProductPriceList(float floorPriceRate) throws Exception {
+        // 0. 返回值
+        List<ProductExportResVo> productExportResVoList = new ArrayList<>();
+
+        try {
+            // 1.组装数据库查询参数
+            HashMap sqlParamMap = new HashMap();
+            sqlParamMap.put("floorPriceRate", floorPriceRate);
+
+            logger.info("导出商品价格列表 查询条件为:{}", JSONUtil.toJsonString(sqlParamMap));
+
+            // 2. 查询导出需要的相关数据
+            // 2.1 查询所有商户信息
+            List<SysCompany> sysCompanyList = vendorsRpcService.queryAllMerchantList();
+            // 转map key:id, value:SysCompany
+            Map<Long, SysCompany> sysCompanyMap = sysCompanyList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
+
+            // 3.查询导出数据
+            // 3.1 分页查询商品表-批量查询，避免一次返回数据太多，并且还要利用返回的数据批量查询其他表，这样也避免查询时的入参太大
+            // TODO 获取记录数
+            int totalCount = aoyiProdIndexXMapper.selectPriceCount(sqlParamMap);
+            if (totalCount > 50000) { // 如果导出的记录数大于5w则终止导出,excel表的上线是65535
+                logger.error("导出商品价格列表 导出数据过大");
+                throw new ExportProuctOverRangeException();
+            }
+            // 遍历查询
+            if (totalCount > 0) {
+                PageBean pageBean = new PageBean();
+                int pageSize = 500;
+                int totalPage = pageBean.getPages(totalCount, pageSize); // 总页数
+
+                for (int currentPage = 1; currentPage <= totalPage; currentPage++) {
+                    int offset = pageBean.getOffset(currentPage, pageSize);
+
+                    sqlParamMap.put("offset", offset);
+                    sqlParamMap.put("pageSize", 500);
+
+                    // TODO 执行数据查询
+                    List<ProductExportResVo> aoyiProdIndexXList = aoyiProdIndexXMapper.selectProductPriceListPageable(sqlParamMap);
+                    aoyiProdIndexXList.forEach(productExportResVo -> {
+                        productExportResVoList.add(productExportResVo);
+                    });
+
+                    // 转exportVo
+//                    for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
+//                        ProductExportResVo productExportResVo = convertToProductExportResVo(aoyiProdIndexX);
+//
+//                        // 处理商品供应商名称
+//                        SysCompany sysCompany = sysCompanyMap.get(aoyiProdIndexX.getMerchantId().longValue());
+//                        productExportResVo.setMerchantName(sysCompany == null ? "/" : sysCompany.getName());
+//
+//                        //
+//                        productExportResVoList.add(productExportResVo);
+//
+//                        aoyiProdIndexX = null; // 释放
+//                    }
+
+                }
+            }
+        } catch (ExportProuctOverRangeException e) {
+            logger.error("导出商品价格列表 异常了:{}", e.getMessage(), e);
+
+            throw e;
+        } catch (Exception e) {
+            logger.error("导出商品价格列表 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+
+        logger.info("导出商品价格列表 导出数据列表个数List<ProductExportResVo> size:{}", productExportResVoList.size());
+
+        return productExportResVoList;
+    }
+
     // =============================== private ======================================================
 
     /**
