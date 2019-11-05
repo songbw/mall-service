@@ -1,8 +1,9 @@
 package com.fengchao.order.controller;
 
+import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
-import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
@@ -15,14 +16,14 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -339,6 +340,254 @@ public class AdminOrderController {
                 workbook.close();
             }
         }
+    }
+
+    /**
+     * 导出交易流水单，
+     * 1.导出入账订单,入账订单的状态为:"已完成" & "已退款"
+     * 2.导出出账订单,出账订单的状态是:"已退款"
+     *
+     * <p>
+     * 导出title同订单导出接口
+     * <p>
+     * 测试: http://localhost:8004/adminorder/export/reconciliation?merchantId=2&payStartDate=2019-01-10&payEndDate=2019-09-10
+     *
+     * @param billExportReqVo 导出条件
+     * @param response
+     */
+    @PostMapping(value = "/export/bill")
+    public void exportOrderBill(@RequestBody BillExportReqVo billExportReqVo, HttpServletResponse response) throws Exception {
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
+
+        try {
+            log.info("导出交易流水单 入参:{}", JSONUtil.toJsonString(billExportReqVo));
+
+            // 1.校验参数
+            if (billExportReqVo.getStartDate() == null) {
+                throw new Exception("参数不合法, 查询开始时间为空");
+            }
+            if (billExportReqVo.getEndDate() == null) {
+                throw new Exception("参数不合法, 查询结束时间为空");
+            }
+            if (billExportReqVo.getPayType() == null) {
+                throw new Exception("参数不合法, 查询结束时间为空");
+            }
+
+            Date startDateTime = DateUtil.parseDateTime(billExportReqVo.getStartDate() + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDateTime = DateUtil.parseDateTime(billExportReqVo.getEndDate() + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            String startDate = DateUtil.dateTimeFormat(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            String endDate = DateUtil.dateTimeFormat(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+
+            billExportReqVo.setStartDate(startDate);
+            billExportReqVo.setEndDate(endDate);
+
+            // 2.获取入账订单集合
+            List<OrderPayMethodInfoBean> exportConsume = adminOrderService.exportCandRBill(billExportReqVo, "consume");
+            // 获取出账订单集合
+            List<OrderPayMethodInfoBean> exportRefund = adminOrderService.exportCandRBill(billExportReqVo, "refund");
+
+            if (CollectionUtils.isEmpty(exportConsume) && CollectionUtils.isEmpty(exportRefund)) {
+                throw new Exception("未找出有效的导出数据!");
+            }
+
+            /**
+             // 3. 将要导出的ExportOrdersVo以主订单维度形成map key:tradeno
+             Map<String, List<ExportOrdersVo>> exportOrdersVoMapIncome = null;
+             Map<String, List<ExportOrdersVo>> exportOrdersVoMapOut = null;
+
+             // 3.1 处理入账
+             if (CollectionUtils.isNotEmpty(exportOrdersVoListIncome)) {
+             exportOrdersVoMapIncome = convertToExportOrdersVoMap(exportOrdersVoListIncome);
+             }
+             // 3.2 处理出账
+             if (CollectionUtils.isNotEmpty(exportOrdersVoListOut)) {
+             exportOrdersVoMapOut = convertToExportOrdersVoMap(exportOrdersVoListOut);
+             }
+
+             // 4.开始组装excel
+             // 创建HSSFWorkbook对象
+             workbook = new HSSFWorkbook();
+
+             // 4.1 组装入账
+             if (exportOrdersVoMapIncome != null) {
+             // 创建HSSFSheet对象
+             HSSFSheet sheetIncome = workbook.createSheet("对账单");
+
+             // 组装title
+             createTitle(sheetIncome);
+
+             // 组装业务数据
+             createContent(sheetIncome, exportOrdersVoMapIncome);
+             }
+
+             // 4.2 组装出账
+             if (exportOrdersVoMapOut != null) {
+             // 创建HSSFSheet对象
+             HSSFSheet sheetOut = workbook.createSheet("出账");
+
+             // 组装title
+             createTitle(sheetOut);
+
+             // 组装业务数据
+             createContent(sheetOut, exportOrdersVoMapOut);
+             } **/
+
+            // 3. 合并导出的订单集合
+//            List<ExportOrdersVo> mergedExportOrdersVoList = new ArrayList<>();
+//            if (exportOrdersVoListIncome != null) {
+//                mergedExportOrdersVoList.addAll(exportOrdersVoListIncome);
+//            }
+//            if (exportOrdersVoListOut != null) {
+//                mergedExportOrdersVoList.addAll(exportOrdersVoListOut);
+//            }
+//
+//            // 转map
+//            Map<String, List<ExportOrdersVo>> exportMap = convertToExportOrdersVoMap(mergedExportOrdersVoList);
+
+            // 4.开始组装excel
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+
+            // 4.1 组装入账
+            if (exportRefund != null) {
+                // 创建HSSFSheet对象
+                HSSFSheet sheet1 = workbook.createSheet("完成交易单");
+                HSSFSheet sheet2 = workbook.createSheet("退款交易单");
+                // 组装title
+                createBillTitle(sheet1);
+                createBillTitle(sheet2);
+
+                // 组装业务数据
+                createBillContent(sheet1, exportConsume, "consume");
+                createBillContent(sheet2, exportRefund, "refund");
+            }
+
+
+            // 5. 输出文件
+            ///////// 文件名
+            String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
+            String fileName = billExportReqVo.getPayType() +  "_bill_" + date + ".xls";
+
+            //
+            try {
+//                response.setHeader("content-type", "application/octet-stream");
+//                response.setContentType("application/octet-stream");
+//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = new FileOutputStream("D:\\" + fileName);
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出交易流水单 出错了:{}", e.getMessage(), e);
+
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
+            log.info("导出交易流水单 export file finish");
+        } catch (Exception e) {
+            log.error("导出交易流水单异常:{}", e.getMessage(), e);
+
+//            response.setHeader("content-type", "application/json;charset=UTF-8");
+//            response.setContentType("application/json");
+            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setStatus(400);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "400");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出交易流水单 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+
+            if (workbook != null) {
+                workbook.close();
+            }
+        }
+    }
+
+    private void createBillContent(HSSFSheet sheet, List<OrderPayMethodInfoBean> exportConsume, String tradeType) {
+        int currentRowNum = 1; // 行号
+        for (int index = 0; index < exportConsume.size(); index++) {
+            OrderPayMethodInfoBean payMethodInfoBean = exportConsume.get(index);
+
+            // 新增一行
+            HSSFRow currentRow = sheet.createRow(currentRowNum);
+
+            // -- 主订单
+            HSSFCell cell0 = currentRow.createCell(0); // 支付单号
+            HSSFCell cell1 = currentRow.createCell(1); // 卡号
+            HSSFCell cell2 = currentRow.createCell(2); // 交易类型
+            HSSFCell cell3 = currentRow.createCell(3); // 交易时间
+            HSSFCell cell4 = currentRow.createCell(4); // 交易金额
+            HSSFCell cell5 = currentRow.createCell(5); // 交易状态
+
+            cell0.setCellValue(payMethodInfoBean.getOrderNo()); // 主订单号
+            cell1.setCellValue(payMethodInfoBean.getCardNo()); // 实际支付价格 单位:元
+             // 交易类型
+            if(tradeType.equals("consume")){
+                cell2.setCellValue("已完成");
+            }else if(tradeType.equals("refund")){
+                cell2.setCellValue("已退款");
+            }
+
+            cell3.setCellValue(payMethodInfoBean.getTradeDate()); // 优惠券码
+            cell4.setCellValue(new BigDecimal(payMethodInfoBean.getActPayFee()).divide(new BigDecimal(100)).setScale(2).toString()); // 券来源
+            Integer status = payMethodInfoBean.getStatus();
+            if(status == 0){
+                cell5.setCellValue("新创建");
+            }else if(status == 1){
+                cell5.setCellValue("成功");
+            }else if(status == 2){
+                cell5.setCellValue("失败");
+            }
+            // 状态
+            currentRowNum ++;
+        }
+    }
+
+    private void createBillTitle(HSSFSheet sheet) {
+        HSSFRow titleRow = sheet.createRow(0);
+
+        // ---主订单
+        HSSFCell titleCell0 = titleRow.createCell(0);
+        titleCell0.setCellValue("支付单号"); // 支付单号
+
+        HSSFCell titleCell1 = titleRow.createCell(1);
+        titleCell1.setCellValue("卡号"); // 卡号
+
+        HSSFCell titleCell2 = titleRow.createCell(2);
+        titleCell2.setCellValue("交易类型"); // 交易类型
+
+        HSSFCell titleCell3 = titleRow.createCell(3);
+        titleCell3.setCellValue("交易时间"); // 主订单
+
+        HSSFCell titleCell4 = titleRow.createCell(4);
+        titleCell4.setCellValue("交易金额"); // 主订单
+
+        HSSFCell titleCell5 = titleRow.createCell(5);
+        titleCell5.setCellValue("交易状态"); // 主订单
     }
 
     // ================================ private ===============================
