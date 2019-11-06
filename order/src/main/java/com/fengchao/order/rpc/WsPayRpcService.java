@@ -85,7 +85,7 @@ public class WsPayRpcService {
                 Date orderDateEnd = null;
                 String tradeDate = "";
                 try {
-                    if(OrderPayMethodInfoBean.getTradeDate() != null){
+                    if(OrderPayMethodInfoBean.getTradeDate() != null && !OrderPayMethodInfoBean.getTradeDate().equals("")){
                         orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
                         tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                     }
@@ -103,7 +103,7 @@ public class WsPayRpcService {
                         Date orderDateEnd = null;
                         String tradeDate = "";
                         try {
-                            if(OrderPayMethodInfoBean.getTradeDate() != null){
+                            if(OrderPayMethodInfoBean.getTradeDate() != null && !OrderPayMethodInfoBean.getTradeDate().equals("")){
                                 orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
                                 tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                             }
