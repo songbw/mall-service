@@ -559,8 +559,8 @@ public class AdminOrderController {
                 cell5.setCellValue("新创建");
             }else if(status == 1){
                 cell5.setCellValue("成功");
-            }else if(status == 2){
-                cell5.setCellValue("失败");
+            }else if(status == 3){
+                cell5.setCellValue("超时");
             }
             // 状态
             currentRowNum ++;
@@ -577,8 +577,10 @@ public class AdminOrderController {
         HSSFCell titleCell1 = titleRow.createCell(1);
         if(billExportReqVo.getPayType().equals("balance")){
             titleCell1.setCellValue("openID"); // 卡号
-        }else{
-            titleCell1.setCellValue("卡号"); // 卡号
+        }else if(billExportReqVo.getPayType().equals("card")){
+            titleCell1.setCellValue("惠民优选卡号"); // 卡号
+        }else if(billExportReqVo.getPayType().equals("woa")){
+            titleCell1.setCellValue("联机账户卡号"); // 卡号
         }
 
         HSSFCell titleCell2 = titleRow.createCell(2);
