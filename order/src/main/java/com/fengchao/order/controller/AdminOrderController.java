@@ -559,6 +559,8 @@ public class AdminOrderController {
                 cell5.setCellValue("新创建");
             }else if(status == 1){
                 cell5.setCellValue("成功");
+            }else if(status == 2){
+                cell5.setCellValue("失败");
             }else if(status == 3){
                 cell5.setCellValue("超时");
             }
