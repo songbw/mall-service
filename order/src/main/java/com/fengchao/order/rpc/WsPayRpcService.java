@@ -83,12 +83,15 @@ public class WsPayRpcService {
             PayInfoBean data = response.getData();
             data.getList().forEach(OrderPayMethodInfoBean ->{
                 Date orderDateEnd = null;
+                String tradeDate = "";
                 try {
-                    orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate());
+                    if(OrderPayMethodInfoBean.getTradeDate() != null){
+                        orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
+                        tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                String tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                 OrderPayMethodInfoBean.setTradeDate(tradeDate);
                 payInfos.add(OrderPayMethodInfoBean);
             });
@@ -98,12 +101,15 @@ public class WsPayRpcService {
                     response = wsPayServiceClient.queryConsumeRefundUsing(billExportReqVo);
                     response.getData().getList().forEach(OrderPayMethodInfoBean ->{
                         Date orderDateEnd = null;
+                        String tradeDate = "";
                         try {
-                            orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate());
+                            if(OrderPayMethodInfoBean.getTradeDate() != null){
+                                orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
+                                tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
+                            }
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-                        String tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                         OrderPayMethodInfoBean.setTradeDate(tradeDate);
                         payInfos.add(OrderPayMethodInfoBean);
                     });
