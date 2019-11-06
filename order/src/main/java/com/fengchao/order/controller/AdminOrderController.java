@@ -456,8 +456,8 @@ public class AdminOrderController {
                 HSSFSheet sheet1 = workbook.createSheet("完成交易单");
                 HSSFSheet sheet2 = workbook.createSheet("退款交易单");
                 // 组装title
-                createBillTitle(sheet1);
-                createBillTitle(sheet2);
+                createBillTitle(sheet1, billExportReqVo);
+                createBillTitle(sheet2, billExportReqVo);
 
                 // 组装业务数据
                 createBillContent(sheet1, exportConsume, "consume");
@@ -567,7 +567,7 @@ public class AdminOrderController {
         }
     }
 
-    private void createBillTitle(HSSFSheet sheet) {
+    private void createBillTitle(HSSFSheet sheet, BillExportReqVo billExportReqVo) {
         HSSFRow titleRow = sheet.createRow(0);
 
         // ---主订单
@@ -575,7 +575,11 @@ public class AdminOrderController {
         titleCell0.setCellValue("支付单号"); // 支付单号
 
         HSSFCell titleCell1 = titleRow.createCell(1);
-        titleCell1.setCellValue("卡号"); // 卡号
+        if(billExportReqVo.getPayType().equals("balance")){
+            titleCell1.setCellValue("openID"); // 卡号
+        }else{
+            titleCell1.setCellValue("卡号"); // 卡号
+        }
 
         HSSFCell titleCell2 = titleRow.createCell(2);
         titleCell2.setCellValue("交易类型"); // 交易类型
