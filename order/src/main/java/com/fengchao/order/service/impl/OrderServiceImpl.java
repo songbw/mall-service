@@ -192,10 +192,10 @@ public class OrderServiceImpl implements OrderService {
             return promotionResult ;
         }
         // 验证商品是否超过限购数量
-//        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
-//        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
-//            return verifyLimitResult ;
-//        }
+        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
+        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
+            return verifyLimitResult ;
+        }
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             bean.setTradeNo(orderMerchantBean.getTradeNo() + orderBean.getTradeNo());
