@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -472,11 +471,11 @@ public class AdminOrderController {
 
             //
             try {
-                response.setHeader("content-type", "application/octet-stream");
-                response.setContentType("application/octet-stream");
-                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+//                response.setHeader("content-type", "application/octet-stream");
+//                response.setContentType("application/octet-stream");
+//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-                outputStream = response.getOutputStream();
+                outputStream = new FileOutputStream("D://"+fileName);
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -564,6 +563,11 @@ public class AdminOrderController {
             }else if(status == 3){
                 cell5.setCellValue("超时");
             }
+
+            if(payMethodInfoBean.getPayType().equals("balance")){
+                HSSFCell cell6 = currentRow.createCell(6); // 交易状态
+                cell6.setCellValue(payMethodInfoBean.getPayer());
+            }
             // 状态
             currentRowNum ++;
         }
@@ -596,6 +600,11 @@ public class AdminOrderController {
 
         HSSFCell titleCell5 = titleRow.createCell(5);
         titleCell5.setCellValue("交易状态"); // 主订单
+
+        if(billExportReqVo.getPayType().equals("balance")){
+            HSSFCell titleCell6 = titleRow.createCell(6);
+            titleCell6.setCellValue("手机号"); // 主订单
+        }
     }
 
     // ================================ private ===============================

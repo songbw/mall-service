@@ -124,4 +124,32 @@ public class WsPayRpcService {
 
         return payInfos;
     }
+
+    public Map<String,List<OrderPayMethodInfoBean>> queryBatchRefundMethod(List<String> refundNoList) {
+        log.info("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 入参:{}", JSONUtil.toJsonString(refundNoList));
+
+        // 返回值
+        Map<String, List<OrderPayMethodInfoBean>> orderPayMethodInfoMap = new HashMap<>();
+
+        if (CollectionUtils.isEmpty(refundNoList)) {
+            log.warn("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 入参为空");
+            return Collections.emptyMap();
+        }
+
+        // 执行rpc调用
+        OperaResponse<Map<String, List<OrderPayMethodInfoBean>>> operaResponse = wsPayServiceClient.queryBatchRefundMethod(refundNoList);
+
+        log.info("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        // 处理返回
+        if (operaResponse.getCode() == 200) {
+            orderPayMethodInfoMap = operaResponse.getData();
+        } else {
+            log.warn("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 错误!");
+        }
+
+        log.info("WsPayRpcService#queryBatchPayMethod 调用wspay rpc服务 返回:{}", JSONUtil.toJsonString(orderPayMethodInfoMap));
+
+        return orderPayMethodInfoMap;
+    }
 }

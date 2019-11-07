@@ -204,4 +204,29 @@ public class ExportOrdersVo {
      */
     private String orderDetailRefundAmount;
 
+    /**
+     * 余额退款金额 单位 元
+     */
+    private String balanceRefund;
+
+    /**
+     * 惠民卡退款金额 单位 元
+     */
+    private String huiminCardRefund;
+
+    /**
+     * 联机账户退款 单位 元
+     */
+    private String woaRefund;
+
+    /**
+     * 快捷退款 单位 元
+     */
+    private String quickPayRefund;
+
+    /**
+     * 收件人手机号
+     */
+    private String mobile;
+
 }

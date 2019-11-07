@@ -392,6 +392,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             paymentMethodInfoMap.putAll(_map);
         }
 
+        // 退款方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
+        Map<String, List<OrderPayMethodInfoBean>> refundMethodInfoMap = new HashMap<>();
+        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
+            Map<String, List<OrderPayMethodInfoBean>> _map = wsPayRpcService.queryBatchRefundMethod(queryPaymentNoList);
+
+            refundMethodInfoMap.putAll(_map);
+        }
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
@@ -475,7 +482,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
                     exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
-
+                    exportOrdersVo.setMobile(ordersBo.getMobile());
                     // 退款金额 单位元
                     if (orderDetailBo.getRefundAmount() != null) {
                         exportOrdersVo.setOrderDetailRefundAmount(orderDetailBo.getRefundAmount());
