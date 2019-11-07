@@ -15,6 +15,9 @@
   <sql id="Base_Column_List">
     id, user_id, telephone, open_id, amount, status, created_at, updated_at
   </sql>
+  <update id="batchUpdate" parameterType="com.fengchao.sso.model.Balance">
+    update balance set amount = #{amount}, updated_at = now() where id = #{id}
+  </update>
   <select id="selectForUpdateByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
