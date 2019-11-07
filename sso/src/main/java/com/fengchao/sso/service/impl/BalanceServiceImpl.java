@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -127,6 +128,7 @@ public class BalanceServiceImpl implements IBalanceService {
         return response;
     }
 
+    @Transactional
     @Override
     public OperaResponse consume(BalanceDetail bean) {
         OperaResponse response = new OperaResponse();
@@ -183,6 +185,7 @@ public class BalanceServiceImpl implements IBalanceService {
         return response;
     }
 
+    @Transactional
     @Override
     public OperaResponse refund(BalanceDetail bean) {
         OperaResponse response = new OperaResponse();

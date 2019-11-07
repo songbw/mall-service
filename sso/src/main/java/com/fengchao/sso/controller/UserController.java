@@ -35,6 +35,7 @@ public class UserController {
 
     @PutMapping
     private OperaResult update(@RequestBody UserBean bean, OperaResult result){
+        bean.setTelephone(null);
         int id = service.update(bean);
         result.getData().put("result", id);
         return result;
