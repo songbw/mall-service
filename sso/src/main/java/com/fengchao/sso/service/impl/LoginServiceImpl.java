@@ -98,6 +98,10 @@ public class LoginServiceImpl implements ILoginService {
         bean.setOpenId(loginBean.getOpenId());
         bean.setThirdToken(loginBean.getAccessToken());
         bean.setExpireDate(JwtTokenUtil.EXPIRATIONTIME);
+        bean.setNewUser(true);
+        // 验证是否为新用户
+        TokenBean verifyBean =  verifyNewUser(loginBean) ;
+        bean.setNewUser(verifyBean.isNewUser());
 
         Token tokenBean = new Token();
         tokenBean.setToken(bean.getToken());
@@ -108,32 +112,6 @@ public class LoginServiceImpl implements ILoginService {
         if (temp != null) {
             tokenBean.setUpdatedAt(new Date());
             tokenMapper.updateByPrimaryKey(tokenBean);
-            OperaResult orderResult = orderService.findOrderListByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
-            if (orderResult.getCode() == 200) {
-                Map<String, Object> data = orderResult.getData() ;
-                Object object = data.get("result");
-                String jsonString = JSON.toJSONString(object);
-                List<Order> orders = JSONObject.parseArray(jsonString, Order.class) ;
-                if(orders.isEmpty()){
-                    bean.setNewUser(true);
-                }else{
-                    redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
-                    log.info("第三方登录，返回结果 ：{}", JSONUtil.toJsonString(bean));
-                    return bean;
-                }
-            }
-            OperaResult couponResult = equityService.findCollectGiftCouponByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
-            if (couponResult.getCode() == 200) {
-                Map<String, Object> data = couponResult.getData() ;
-                Object object = data.get("result");
-                String jsonString = JSON.toJSONString(object);
-                List<Coupon> coupons = JSONObject.parseArray(jsonString, Coupon.class) ;
-                if(coupons.isEmpty() && bean.isNewUser()){
-                    bean.setNewUser(true);
-                }else{
-                    bean.setNewUser(false);
-                }
-            }
         } else {
             tokenBean.setCreatedAt(new Date());
             tokenMapper.insertSelective(tokenBean);
@@ -154,6 +132,36 @@ public class LoginServiceImpl implements ILoginService {
         }
         redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
         log.info("第三方登录，返回结果 ：{}", JSONUtil.toJsonString(bean));
+        return bean;
+    }
+
+    private TokenBean verifyNewUser(ThirdLoginBean loginBean) {
+        TokenBean bean = new TokenBean() ;
+        bean.setNewUser(true);
+        // 查询订单
+        OperaResult orderResult = orderService.findOrderListByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
+        if (orderResult.getCode() == 200) {
+            Map<String, Object> data = orderResult.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<Order> orders = JSONObject.parseArray(jsonString, Order.class) ;
+            if(orders != null && orders.size() > 0){
+                bean.setNewUser(false);
+                return bean;
+            }
+        }
+        // 查询优惠券
+        OperaResult couponResult = equityService.findCollectGiftCouponByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
+        if (couponResult.getCode() == 200) {
+            Map<String, Object> data = couponResult.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<Coupon> coupons = JSONObject.parseArray(jsonString, Coupon.class) ;
+            if(coupons != null && coupons.size() > 0){
+                bean.setNewUser(false);
+                return bean ;
+            }
+        }
         return bean;
     }
 
