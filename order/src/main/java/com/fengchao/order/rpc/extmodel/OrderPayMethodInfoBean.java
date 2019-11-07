@@ -77,4 +77,9 @@ public class OrderPayMethodInfoBean {
      * 卡号或OpenID
      */
     private String cardNo;
+
+    /**
+     * 手机号
+     */
+    private String payer;
 }

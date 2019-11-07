@@ -35,6 +35,11 @@ public class WspayServiceClientFallbackFactory implements FallbackFactory<WsPayS
             public OperaResponse<PayInfoBean> queryConsumeRefundUsing(BillExportReqVo billExportReqVo) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
+
+            @Override
+            public OperaResponse<Map<String, List<OrderPayMethodInfoBean>>> queryBatchRefundMethod(List<String> orderNoList) {
+                return HystrixDefaultFallback.fallbackResponse(throwable);
+            }
         };
     }
 

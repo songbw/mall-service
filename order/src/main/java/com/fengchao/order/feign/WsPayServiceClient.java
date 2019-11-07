@@ -29,4 +29,6 @@ public interface WsPayServiceClient {
     @RequestMapping(value = "/wspay/query/candr", method = RequestMethod.POST)
     OperaResponse<PayInfoBean> queryConsumeRefundUsing(@RequestBody BillExportReqVo billExportReqVo);
 
+    @RequestMapping(value = "/wspay/batch/query/refund", method = RequestMethod.GET)
+    OperaResponse<Map<String,List<OrderPayMethodInfoBean>>> queryBatchRefundMethod(@RequestParam(value = "orderNo") List<String> orderNoList);
 }
