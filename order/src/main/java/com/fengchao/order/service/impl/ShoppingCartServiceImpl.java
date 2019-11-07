@@ -8,6 +8,7 @@ import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.ShoppingCartMapper;
 import com.fengchao.order.model.AoyiProdIndex;
+import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.ShoppingCart;
 import com.fengchao.order.service.ShoppingCartService;
 import com.fengchao.order.utils.JSONUtil;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -68,17 +70,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public OperaResult modifyNum(ShoppingCart bean) {
+        log.info("修改购物车商品数量，入参：{}", JSONUtil.toJsonString(bean));
         OperaResult result = new OperaResult();
         ShoppingCart temp = mapper.selectByPrimaryKey(bean.getId()) ;
-//        int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId()) ;
-//        if (perLimit != -1) {
-//            if (perLimit <= bean.getCount()) {
-//                result.setCode(4000001);
-//                result.setMsg("商品超过限购数量，无法添加。");
-//                result.getData().put("mpu", bean.getMpu()) ;
-//                return result;
-//            }
-//        }
+        int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId()) ;
+        if (perLimit != -1) {
+            if (perLimit <= bean.getCount()) {
+                result.setCode(4000001);
+                result.setMsg("商品超过限购数量，无法添加。");
+                result.getData().put("mpu", bean.getMpu()) ;
+                return result;
+            }
+        }
         bean.setUpdatedAt(new Date());
         mapper.updateNumById(bean);
         result.getData().put("result", bean.getId()) ;
@@ -159,31 +162,31 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private int findPromotionBySku(String mpu, String openId) {
-//        AtomicInteger perLimit = new AtomicInteger(0);
-//        List<String> mpus = new ArrayList<>() ;
-//        mpus.add(mpu) ;
-//        OperaResult result = equityService.findPromotionByMpuList(mpus);
-//        if (result.getCode() == 200) {
-//            Map<String, Object> data = result.getData() ;
-//            Object object = data.get("result");
-//            String jsonString = JSON.toJSONString(object);
-//            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
-//            if (subOrderTS != null && subOrderTS.size() > 0) {
-//                PromotionMpuX promotionInfoBean = subOrderTS.get(0) ;
-//                if (promotionInfoBean.getPerLimited() == -1) {
-//                    return -1;
-//                } else {
-//                    List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOpenIdAndMpuAndPromotionId(openId, mpu, promotionInfoBean.getId()) ;
-//                    if (orderDetailList != null && orderDetailList.size() > 0) {
-//                        orderDetailList.forEach(orderDetail -> {
-//                            perLimit.set(perLimit.get() + orderDetail.getNum());
-//                        });
-//                    }
-//                    return promotionInfoBean.getPerLimited() - perLimit.get();
-//                }
-//            }
-//            return -1;
-//        }
+        AtomicInteger perLimit = new AtomicInteger(0);
+        List<String> mpus = new ArrayList<>() ;
+        mpus.add(mpu) ;
+        OperaResult result = equityService.findPromotionByMpuList(mpus);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
+            if (subOrderTS != null && subOrderTS.size() > 0) {
+                PromotionMpuX promotionInfoBean = subOrderTS.get(0) ;
+                if (promotionInfoBean.getPerLimited() == -1) {
+                    return -1;
+                } else {
+                    List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOpenIdAndMpuAndPromotionId(openId, mpu, promotionInfoBean.getId()) ;
+                    if (orderDetailList != null && orderDetailList.size() > 0) {
+                        orderDetailList.forEach(orderDetail -> {
+                            perLimit.set(perLimit.get() + orderDetail.getNum());
+                        });
+                    }
+                    return promotionInfoBean.getPerLimited() - perLimit.get();
+                }
+            }
+            return -1;
+        }
         return -1;
     }
 }

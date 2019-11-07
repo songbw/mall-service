@@ -1,8 +1,8 @@
-package com.fengchao.sso.model;
+package com.fengchao.sso.bean;
 
 import java.util.Date;
 
-public class BalanceDetail {
+public class BalanceDetailBean {
     private Integer id;
 
     private Integer balanceId;
