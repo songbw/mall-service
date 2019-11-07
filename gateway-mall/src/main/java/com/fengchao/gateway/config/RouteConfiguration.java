@@ -36,6 +36,12 @@ public class RouteConfiguration {
                 headers.add("Access-Control-Allow-Headers", ALLOWED_HEADERS);
                 headers.add("Access-Control-Expose-Headers", ALLOWED_Expose);
                 headers.add("Access-Control-Allow-Credentials", "true");
+                headers.add("X-Content-Type-Options", "nosniff");
+                headers.add("X-XSS-Protection", "1; mode=block");
+                headers.add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+                headers.add("Pragma", "no-cache");
+                headers.add("Expires", "0");
+                headers.add("X-Frame-Options", "DENY");
                 if (request.getMethod() == HttpMethod.OPTIONS) {
                     response.setStatusCode(HttpStatus.OK);
                     return Mono.empty();

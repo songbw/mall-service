@@ -369,7 +369,7 @@ public class ProductDao {
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         aoyiProdIndex.setPrice(bean.getPrice());
-        if (StringUtils.isEmpty(bean.getState())) {
+        if (!StringUtils.isEmpty(bean.getState())) {
             aoyiProdIndex.setState(bean.getState());
         }
         aoyiProdIndex.setUpdatedAt(new Date());
