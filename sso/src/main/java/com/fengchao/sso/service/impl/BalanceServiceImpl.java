@@ -4,6 +4,7 @@ import com.fengchao.sso.bean.BalanceDetailBean;
 import com.fengchao.sso.bean.BalanceDetailQueryBean;
 import com.fengchao.sso.bean.BalanceQueryBean;
 import com.fengchao.sso.bean.OperaResponse;
+import com.fengchao.sso.dao.BalanceConsumeAndRefundDao;
 import com.fengchao.sso.dao.BalanceDao;
 import com.fengchao.sso.mapper.BalanceDetailMapper;
 import com.fengchao.sso.mapper.BalanceMapper;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +36,8 @@ public class BalanceServiceImpl implements IBalanceService {
     private BalanceDetailMapper detailMapper;
     @Autowired
     private BalanceXMapper balanceMapper;
+    @Autowired
+    private BalanceConsumeAndRefundDao balanceConsumeAndRefundDao;
 
     @Override
     public OperaResponse add(Balance bean) {
@@ -153,17 +157,17 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("支付单号重复。");
             return response;
         }
-        Balance temp = balanceMapper.selectForUpdateByPrimaryKey(openBalance.getId()) ;
-        int amount = temp.getAmount() - bean.getSaleAmount() ;
-        if (amount < 0) {
-            response.setCode(900403);
-            response.setMsg("余额不足");
-            return response;
-        }
         Date date = new Date();
-        temp.setUpdatedAt(date);
-        temp.setAmount(amount);
-        mapper.updateByPrimaryKeySelective(temp) ;
+        OperaResponse consumeResult = new OperaResponse();
+        openBalance.setAmount(bean.getSaleAmount());
+        try {
+            consumeResult = balanceConsumeAndRefundDao.balanceConsume(openBalance) ;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (consumeResult.getCode() != 200) {
+            return consumeResult ;
+        }
         // 记录充值初始化记录
         BalanceDetail detail = new BalanceDetail();
         bean.setCreatedAt(date);
@@ -174,7 +178,7 @@ public class BalanceServiceImpl implements IBalanceService {
         detailMapper.insertSelective(bean);
         BalanceDetailBean detailBean = new BalanceDetailBean();
         BeanUtils.copyProperties(bean, detailBean);
-        detailBean.setTelephone(temp.getTelephone());
+        detailBean.setTelephone(openBalance.getTelephone());
         response.setData(detailBean);
         return response;
     }
@@ -238,23 +242,28 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("账号不存在");
             return response;
         }
-        Balance temp = balanceMapper.selectForUpdateByPrimaryKey(openBalance.getId()) ;
-        int amount = temp.getAmount() + bean.getSaleAmount() ;
+        openBalance.setAmount(bean.getSaleAmount());
         Date date = new Date();
-        temp.setUpdatedAt(date);
-        temp.setAmount(amount);
-        mapper.updateByPrimaryKeySelective(temp) ;
+        OperaResponse refundResult = new OperaResponse();
+        try {
+            refundResult = balanceConsumeAndRefundDao.balanceRefund(openBalance) ;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (refundResult.getCode() != 200) {
+            return refundResult ;
+        }
         // 记录充值初始化记录
         BalanceDetail detail = new BalanceDetail();
         bean.setCreatedAt(date);
         bean.setUpdatedAt(date);
         bean.setType(1);
         bean.setStatus(1);
-        bean.setBalanceId(temp.getId());
+        bean.setBalanceId(openBalance.getId());
         detailMapper.insertSelective(bean);
         BalanceDetailBean detailBean = new BalanceDetailBean();
         BeanUtils.copyProperties(bean, detailBean);
-        detailBean.setTelephone(temp.getTelephone());
+        detailBean.setTelephone(openBalance.getTelephone());
         response.setData(detailBean);
         return response;
     }
