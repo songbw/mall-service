@@ -1,5 +1,6 @@
 package com.fengchao.sso.service.impl;
 
+import com.fengchao.sso.bean.BalanceDetailBean;
 import com.fengchao.sso.bean.BalanceDetailQueryBean;
 import com.fengchao.sso.bean.BalanceQueryBean;
 import com.fengchao.sso.bean.OperaResponse;
@@ -12,6 +13,7 @@ import com.fengchao.sso.model.BalanceDetail;
 import com.fengchao.sso.service.IBalanceService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -170,7 +172,10 @@ public class BalanceServiceImpl implements IBalanceService {
         bean.setStatus(1);
         bean.setBalanceId(openBalance.getId());
         detailMapper.insertSelective(bean);
-        response.setData(bean);
+        BalanceDetailBean detailBean = new BalanceDetailBean();
+        BeanUtils.copyProperties(bean, detailBean);
+        detailBean.setTelephone(temp.getTelephone());
+        response.setData(detailBean);
         return response;
     }
 
@@ -247,7 +252,10 @@ public class BalanceServiceImpl implements IBalanceService {
         bean.setStatus(1);
         bean.setBalanceId(temp.getId());
         detailMapper.insertSelective(bean);
-        response.setData(bean.getId());
+        BalanceDetailBean detailBean = new BalanceDetailBean();
+        BeanUtils.copyProperties(bean, detailBean);
+        detailBean.setTelephone(temp.getTelephone());
+        response.setData(detailBean);
         return response;
     }
 
