@@ -393,9 +393,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
 
         // 退款方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
-        Map<String, List<OrderPayMethodInfoBean>> refundMethodInfoMap = new HashMap<>();
+        Map<String, List<RefundMethodInfoBean>> refundMethodInfoMap = new HashMap<>();
         for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
-            Map<String, List<OrderPayMethodInfoBean>> _map = wsPayRpcService.queryBatchRefundMethod(queryPaymentNoList);
+            Map<String, List<RefundMethodInfoBean>> _map = wsPayRpcService.queryBatchRefundMethod(queryPaymentNoList);
 
             refundMethodInfoMap.putAll(_map);
         }
@@ -550,8 +550,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                     }
 
-                    // 支付方式
-                    List<OrderPayMethodInfoBean> refundMethodInfoList = refundMethodInfoMap.get(ordersBo.getPaymentNo());
+                    // 退款方式
+                    List<RefundMethodInfoBean> refundMethodInfoList = refundMethodInfoMap.get(ordersBo.getPaymentNo());
                     exportOrdersVo.setBalanceRefund("0"); // 余额支付金额 单位 元
                     exportOrdersVo.setHuiminCardRefund("0"); // 惠民卡支付金额 单位 元
                     exportOrdersVo.setWoaRefund("0"); // 联机账户支付 单位 元
@@ -560,7 +560,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                         boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
 
-                        for (OrderPayMethodInfoBean refundMethodInfoBean : refundMethodInfoList) {
+                        for (RefundMethodInfoBean refundMethodInfoBean : refundMethodInfoList) {
                             String payType = refundMethodInfoBean.getPayType();
                             Integer payStatus = refundMethodInfoBean.getStatus();
 
@@ -569,7 +569,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             }
 
                             // 处理显示的价格
-                            String _fen = refundMethodInfoBean.getActPayFee(); // 花费
+                            String _fen = refundMethodInfoBean.getRefundFee(); // 花费
                             String _fee = StringUtils.isBlank(_fen) ?
                                     "0" : new BigDecimal(_fen).divide(new BigDecimal(100)).toPlainString(); // 转元
 

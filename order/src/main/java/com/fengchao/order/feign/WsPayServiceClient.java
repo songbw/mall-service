@@ -5,6 +5,7 @@ import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.feign.hystric.WspayServiceClientFallbackFactory;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.rpc.extmodel.PayInfoBean;
+import com.fengchao.order.rpc.extmodel.RefundMethodInfoBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +31,5 @@ public interface WsPayServiceClient {
     OperaResponse<PayInfoBean> queryConsumeRefundUsing(@RequestBody BillExportReqVo billExportReqVo);
 
     @RequestMapping(value = "/wspay/batch/query/refund", method = RequestMethod.GET)
-    OperaResponse<Map<String,List<OrderPayMethodInfoBean>>> queryBatchRefundMethod(@RequestParam(value = "orderNo") List<String> orderNoList);
+    OperaResponse<Map<String,List<RefundMethodInfoBean>>> queryBatchRefundMethod(@RequestParam(value = "orderNo") List<String> orderNoList);
 }

@@ -6,6 +6,7 @@ import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.feign.WsPayServiceClient;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.rpc.extmodel.PayInfoBean;
+import com.fengchao.order.rpc.extmodel.RefundMethodInfoBean;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,7 @@ public class WspayServiceClientFallbackFactory implements FallbackFactory<WsPayS
             }
 
             @Override
-            public OperaResponse<Map<String, List<OrderPayMethodInfoBean>>> queryBatchRefundMethod(List<String> orderNoList) {
+            public OperaResponse<Map<String, List<RefundMethodInfoBean>>> queryBatchRefundMethod(List<String> orderNoList) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
         };
