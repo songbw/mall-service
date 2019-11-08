@@ -13,6 +13,7 @@ import com.fengchao.order.model.ShoppingCart;
 import com.fengchao.order.service.ShoppingCartService;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public OperaResult add(ShoppingCart bean) {
         OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(bean.getOpenId())) {
+            result.setCode(4000002);
+            result.setMsg("openId不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(bean.getMpu())) {
+            result.setCode(4000002);
+            result.setMsg("mpu不能为空");
+            return result ;
+        }
+        // 验证MPU是否存在
+        AoyiProdIndex aoyiProdIndex = findProductByMpu(bean.getMpu()) ;
+        if (aoyiProdIndex == null | aoyiProdIndex.getMpu() == null) {
+            result.setCode(4000002);
+            result.setMsg(bean.getMpu() + " 商品不存在");
+            return result ;
+        }
         ShoppingCart temp = mapper.selectByOpenIdAndSku(bean) ;
         int perLimit = findPromotionBySku(bean.getMpu(), bean.getOpenId()) ;
         if (perLimit != -1) {
@@ -63,6 +81,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
     }
 
+    private AoyiProdIndex findProductByMpu(String mpu) {
+        OperaResult productResult = productService.find(mpu) ;
+        if (productResult.getCode() == 200) {
+            Map<String, Object> data = productResult.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            if (StringUtils.isEmpty(jsonString)) {
+                return null;
+            }
+            AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
+            return aoyiProdIndex;
+        }
+        return null;
+    }
+
     @Override
     public Integer delete(Integer id) {
         return mapper.updateIsDelById(id);
@@ -72,6 +105,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public OperaResult modifyNum(ShoppingCart bean) {
         log.info("修改购物车商品数量，入参：{}", JSONUtil.toJsonString(bean));
         OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(bean.getMpu())) {
+            result.setCode(4000002);
+            result.setMsg("mpu不能为空");
+            return result ;
+        }
         ShoppingCart temp = mapper.selectByPrimaryKey(bean.getId()) ;
         int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId()) ;
         if (perLimit != -1) {

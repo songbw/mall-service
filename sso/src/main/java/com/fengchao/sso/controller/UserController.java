@@ -10,6 +10,7 @@ import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +36,26 @@ public class UserController {
 
     @PutMapping
     private OperaResult update(@RequestBody UserBean bean, OperaResult result){
-        int id = service.update(bean);
-        result.getData().put("result", id);
-        return result;
+        if (bean == null) {
+            result.setCode(1000002);
+            result.setMsg("对象不能为null");
+            return result ;
+        }
+        if (StringUtils.isEmpty(bean.getSex())) {
+            result.setCode(1000003);
+            result.setMsg("性别不能为空");
+            return result ;
+        }
+        if ("男".equals(bean.getSex()) || "女".equals(bean.getSex())) {
+            bean.setTelephone(null);
+            int id = service.update(bean);
+            result.getData().put("result", id);
+            return result;
+        } else {
+            result.setCode(1000004);
+            result.setMsg("性别不正确");
+            return result ;
+        }
     }
 
     @GetMapping

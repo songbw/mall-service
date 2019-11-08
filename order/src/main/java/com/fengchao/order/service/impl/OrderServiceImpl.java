@@ -672,8 +672,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public JSONArray getLogist(String merchantNo, String orderId) {
+    public OperaResult getLogist(String merchantNo, String orderId) {
+        OperaResult result = new OperaResult();
         JSONArray jsonArray = new JSONArray();
+        List<Orders> orders = ordersDao.selectOrdersByTradeNo(orderId);
+        if (orders == null || orders.size() == 0) {
+            result.setCode(4000001);
+            result.setMsg("订单号不存在");
+            return result ;
+        }
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
             for (OrderDetailX logist : logistics) {
@@ -687,7 +694,8 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         logger.info("物流查询结果： {}", JSONUtils.toJSONString(jsonArray));
-        return jsonArray;
+        result.getData().put("result", jsonArray) ;
+        return result;
     }
 
     @Override

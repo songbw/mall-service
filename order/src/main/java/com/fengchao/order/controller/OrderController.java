@@ -120,8 +120,7 @@ public class OrderController {
 
     @GetMapping("/logistics")
     private OperaResult getLogistics(String orderId, String merchantNo, OperaResult result) {
-        result.getData().put("result", service.getLogist(merchantNo, orderId)) ;
-        return result;
+        return service.getLogist(merchantNo, orderId);
     }
 
     @GetMapping("/tradeNo")

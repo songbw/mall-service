@@ -26,4 +26,11 @@ public class SsoApplicationTests {
 		TokenBean tokenBean = loginService.thirdLogin(thirdLoginBean) ;
 	}
 
+	@Ignore
+	@Test
+	public void stringTest() {
+		String sex = "其他" ;
+		System.out.println(sex.length());
+	}
+
 }
