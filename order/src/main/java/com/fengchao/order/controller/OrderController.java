@@ -46,6 +46,11 @@ public class OrderController {
 
     @DeleteMapping
     private OperaResult delete(Integer id, OperaResult result) {
+        if (id == null) {
+            result.setCode(4000001);
+            result.setMsg("id不能为空");
+            return result;
+        }
         result.getData().put("result", service.delete(id)) ;
         return result;
     }
