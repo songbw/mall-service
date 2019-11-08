@@ -37,7 +37,7 @@ public interface OrderService {
 
     Integer uploadLogistics(Logisticsbean bean);
 
-    JSONArray getLogist(String merchantNo, String orderId) ;
+    OperaResult getLogist(String merchantNo, String orderId) ;
 
     List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) ;
 

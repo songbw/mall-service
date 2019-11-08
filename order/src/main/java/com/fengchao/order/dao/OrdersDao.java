@@ -116,4 +116,20 @@ public class OrdersDao {
 
         return pageInfo;
     }
+
+    /**
+     * 根据tradeNo集合查询
+     *
+     * @param tradeNo
+     * @return
+     */
+    public List<Orders> selectOrdersByTradeNo(String tradeNo) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andTradeNoEqualTo(tradeNo);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
 }
