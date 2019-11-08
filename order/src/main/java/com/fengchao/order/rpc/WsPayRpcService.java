@@ -6,6 +6,7 @@ import com.fengchao.order.feign.WorkOrderServiceClient;
 import com.fengchao.order.feign.WsPayServiceClient;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.rpc.extmodel.PayInfoBean;
+import com.fengchao.order.rpc.extmodel.RefundMethodInfoBean;
 import com.fengchao.order.rpc.extmodel.WorkOrder;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
@@ -125,21 +126,21 @@ public class WsPayRpcService {
         return payInfos;
     }
 
-    public Map<String,List<OrderPayMethodInfoBean>> queryBatchRefundMethod(List<String> refundNoList) {
-        log.info("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 入参:{}", JSONUtil.toJsonString(refundNoList));
+    public Map<String,List<RefundMethodInfoBean>> queryBatchRefundMethod(List<String> refundNoList) {
+        log.info("根据paymentNo集合批量获取订单退款方式的信息 调用wspay rpc服务 入参:{}", JSONUtil.toJsonString(refundNoList));
 
         // 返回值
-        Map<String, List<OrderPayMethodInfoBean>> orderPayMethodInfoMap = new HashMap<>();
+        Map<String, List<RefundMethodInfoBean>> orderPayMethodInfoMap = new HashMap<>();
 
         if (CollectionUtils.isEmpty(refundNoList)) {
-            log.warn("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 入参为空");
+            log.warn("根据paymentNo集合批量获取订单退款方式的信息 调用wspay rpc服务 入参为空");
             return Collections.emptyMap();
         }
 
         // 执行rpc调用
-        OperaResponse<Map<String, List<OrderPayMethodInfoBean>>> operaResponse = wsPayServiceClient.queryBatchRefundMethod(refundNoList);
+        OperaResponse<Map<String, List<RefundMethodInfoBean>>> operaResponse = wsPayServiceClient.queryBatchRefundMethod(refundNoList);
 
-        log.info("根据paymentNo集合批量获取订单支付方式的信息 调用wspay rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+        log.info("根据paymentNo集合批量获取订单退款方式的信息 调用wspay rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回
         if (operaResponse.getCode() == 200) {
