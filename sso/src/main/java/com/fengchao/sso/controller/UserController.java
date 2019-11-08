@@ -36,15 +36,26 @@ public class UserController {
 
     @PutMapping
     private OperaResult update(@RequestBody UserBean bean, OperaResult result){
-        if (bean != null && (!StringUtils.isEmpty(bean.getSex()) && bean.getSex().length() > 2)) {
-            result.setCode(1000001);
-            result.setMsg("性别不能大于两个字符串");
+        if (bean == null) {
+            result.setCode(1000002);
+            result.setMsg("对象不能为null");
             return result ;
         }
-        bean.setTelephone(null);
-        int id = service.update(bean);
-        result.getData().put("result", id);
-        return result;
+        if (StringUtils.isEmpty(bean.getSex())) {
+            result.setCode(1000003);
+            result.setMsg("性别不能为空");
+            return result ;
+        }
+        if ("男".equals(bean.getSex()) || "女".equals(bean.getSex())) {
+            bean.setTelephone(null);
+            int id = service.update(bean);
+            result.getData().put("result", id);
+            return result;
+        } else {
+            result.setCode(1000004);
+            result.setMsg("性别不正确");
+            return result ;
+        }
     }
 
     @GetMapping
