@@ -44,9 +44,8 @@ public class RouteConfiguration {
                 ServerHttpResponse response = ctx.getResponse();
                 HttpHeaders headers = response.getHeaders();
                 List<String> allowDomain = gatewayConfig.getOrigins();
-                Set allowedOrigins= new HashSet(Arrays.asList(allowDomain));
                 List<String> origins = headers.get("Origin") ;
-                if (origins != null && allowedOrigins.contains(origins.get(0))) {
+                if (origins != null && allowDomain.contains(origins.get(0))) {
                     log.info("Access-Control-Allow-Origin ", origins.get(0));
                     headers.add("Access-Control-Allow-Origin", origins.get(0));
                     headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
