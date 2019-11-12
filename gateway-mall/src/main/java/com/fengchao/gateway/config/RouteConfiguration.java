@@ -43,23 +43,35 @@ public class RouteConfiguration {
             if (CorsUtils.isCorsRequest(request)) {
                 ServerHttpResponse response = ctx.getResponse();
                 HttpHeaders headers = response.getHeaders();
-                List<String> allowDomain = gatewayConfig.getOrigins();
-                List<String> origins = headers.get("Origin") ;
-                if (origins != null && allowDomain.contains(origins.get(0))) {
-                    log.info("Access-Control-Allow-Origin ", origins.get(0));
-                    headers.add("Access-Control-Allow-Origin", origins.get(0));
-                    headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
-                    headers.add("Access-Control-Max-Age", MAX_AGE);
-                    headers.add("Access-Control-Allow-Headers", ALLOWED_HEADERS);
-                    headers.add("Access-Control-Expose-Headers", ALLOWED_Expose);
-                    headers.add("Access-Control-Allow-Credentials", "true");
-                    headers.add("X-Content-Type-Options", "nosniff");
-                    headers.add("X-XSS-Protection", "1; mode=block");
-                    headers.add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
-                    headers.add("Pragma", "no-cache");
-                    headers.add("Expires", "0");
-                    headers.add("X-Frame-Options", "DENY");
-                }
+//                List<String> allowDomain = gatewayConfig.getOrigins();
+//                List<String> origins = headers.get("Origin") ;
+//                if (origins != null && allowDomain.contains(origins.get(0))) {
+//                    log.info("Access-Control-Allow-Origin ", origins.get(0));
+//                    headers.add("Access-Control-Allow-Origin", origins.get(0));
+//                    headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
+//                    headers.add("Access-Control-Max-Age", MAX_AGE);
+//                    headers.add("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+//                    headers.add("Access-Control-Expose-Headers", ALLOWED_Expose);
+//                    headers.add("Access-Control-Allow-Credentials", "true");
+//                    headers.add("X-Content-Type-Options", "nosniff");
+//                    headers.add("X-XSS-Protection", "1; mode=block");
+//                    headers.add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+//                    headers.add("Pragma", "no-cache");
+//                    headers.add("Expires", "0");
+//                    headers.add("X-Frame-Options", "DENY");
+//                }
+                headers.add("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+                headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
+                headers.add("Access-Control-Max-Age", MAX_AGE);
+                headers.add("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+                headers.add("Access-Control-Expose-Headers", ALLOWED_Expose);
+                headers.add("Access-Control-Allow-Credentials", "true");
+                headers.add("X-Content-Type-Options", "nosniff");
+                headers.add("X-XSS-Protection", "1; mode=block");
+                headers.add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+                headers.add("Pragma", "no-cache");
+                headers.add("Expires", "0");
+                headers.add("X-Frame-Options", "DENY");
                 if (request.getMethod() == HttpMethod.OPTIONS) {
                     response.setStatusCode(HttpStatus.OK);
                     return Mono.empty();
