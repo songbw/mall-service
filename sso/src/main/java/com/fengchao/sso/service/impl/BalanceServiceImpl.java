@@ -284,4 +284,34 @@ public class BalanceServiceImpl implements IBalanceService {
         response.setData(bean.getId());
         return response;
     }
+
+    @Override
+    public OperaResponse init(Balance bean) {
+        OperaResponse response = new OperaResponse();
+        if (StringUtils.isEmpty(bean.getTelephone())) {
+            response.setCode(900401);
+            response.setMsg("手机号 不能为Null");
+            return response;
+        }
+        if (bean.getAmount() != null) {
+            response.setCode(900402);
+            response.setMsg("amount 不能为Null");
+            return response;
+        }
+        Date date = new Date();
+        bean.setCreatedAt(date);
+        bean.setUpdatedAt(date);
+        int id = mapper.insertSelective(bean) ;
+        // 记录初始化记录
+        BalanceDetail detail = new BalanceDetail();
+        detail.setCreatedAt(date);
+        detail.setUpdatedAt(date);
+        detail.setType(-1);
+        detail.setStatus(1);
+        detail.setSaleAmount(bean.getAmount());
+        detail.setBalanceId(id);
+        detailMapper.insertSelective(detail);
+        response.setData(id);
+        return response;
+    }
 }
