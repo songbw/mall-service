@@ -26,5 +26,6 @@ public interface IBalanceService {
 
     OperaResponse updateDetailStatus(BalanceDetail bean) ;
 
+    OperaResponse init(Balance bean) ;
 
 }

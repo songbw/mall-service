@@ -57,4 +57,9 @@ public class BalanceController {
         return service.updateDetailStatus(bean);
     }
 
+    @PostMapping("init")
+    private OperaResponse init(@RequestBody Balance bean) {
+        return service.add(bean);
+    }
+
 }
