@@ -70,7 +70,8 @@ public class ShippingServiceImpl implements ShippingService {
     public int deleteShipTemplate(Integer id) {
         int num = shipTemplateDao.deleteShipTemplate(id);
         if(num == 1){
-            num = shipRegionsDao.deleteShipRegionsByTemplateId(id);
+            shipRegionsDao.deleteShipRegionsByTemplateId(id);
+            num = shipMpuDao.deleteShipMpu(id);
         }
         return num;
     }
