@@ -36,4 +36,15 @@ public class ShipMpuDao {
 
         return shippingMpus.get(0);
     }
+
+    public int deleteShipMpu(Integer id) {
+        ShippingMpu shippingMpu = new ShippingMpu();
+        shippingMpu.setStatus(2);
+
+        ShippingMpuExample example = new ShippingMpuExample();
+        ShippingMpuExample.Criteria criteria = example.createCriteria();
+
+        criteria.andTemplateIdEqualTo(id);
+        return mpuMapper.updateByExampleSelective(shippingMpu,example);
+    }
 }

@@ -7,7 +7,9 @@ import com.fengchao.freight.dao.*;
 import com.fengchao.freight.model.*;
 import com.fengchao.freight.service.ShippingService;
 import com.fengchao.freight.utils.ConvertUtil;
+import com.fengchao.freight.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ShippingServiceImpl implements ShippingService {
 
     @Autowired
@@ -67,7 +70,8 @@ public class ShippingServiceImpl implements ShippingService {
     public int deleteShipTemplate(Integer id) {
         int num = shipTemplateDao.deleteShipTemplate(id);
         if(num == 1){
-            num = shipRegionsDao.deleteShipRegionsByTemplateId(id);
+            shipRegionsDao.deleteShipRegionsByTemplateId(id);
+            num = shipMpuDao.deleteShipMpu(id);
         }
         return num;
     }
@@ -266,6 +270,7 @@ public class ShippingServiceImpl implements ShippingService {
             shipPriceBean.setShipPrice(shipPrice);
             priceBeans.add(shipPriceBean);
         }
+        log.info("导出商品 入参:{}", JSONUtil.toJsonString(priceBeans));
         return priceBeans;
     }
 

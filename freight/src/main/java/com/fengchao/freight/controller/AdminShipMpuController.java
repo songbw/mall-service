@@ -16,6 +16,11 @@ public class AdminShipMpuController {
 
     @PostMapping("create")
     public OperaResult createShipMpu(@RequestBody ShipMpuBean bean, OperaResult result){
+        if(bean.getMpu() == null){
+            result.setCode(500);
+            result.setMsg("mpu参数无效");
+            return result;
+        }
         result.getData().put("id",service.createShipMpu(bean));
         return result;
     }
