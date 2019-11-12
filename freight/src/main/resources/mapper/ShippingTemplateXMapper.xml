@@ -256,4 +256,11 @@
     from shipping_template
     where status = 1 and (id = #{id,jdbcType=INTEGER} or is_default = true)
   </select>
+
+  <select id="selectDefaultTemplate"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from shipping_template
+    where status = 1 and is_default = true
+  </select>
 </mapper>

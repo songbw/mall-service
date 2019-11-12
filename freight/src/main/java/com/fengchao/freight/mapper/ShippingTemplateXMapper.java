@@ -31,4 +31,6 @@ public interface ShippingTemplateXMapper {
     int updateByPrimaryKey(ShippingTemplateX record);
 
     List<ShippingTemplateX> findShipTemplateByMpu(Integer id);
+
+    ShippingTemplateX selectDefaultTemplate();
 }

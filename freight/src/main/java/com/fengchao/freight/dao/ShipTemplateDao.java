@@ -50,14 +50,9 @@ public class ShipTemplateDao {
         return new PageInfo<>(shippingTemplates);
     }
 
-    public List<ShippingTemplate> selectDefaultTemplate() {
-        ShippingTemplateExample example = new ShippingTemplateExample();
-        ShippingTemplateExample.Criteria criteria = example.createCriteria();
-
-        criteria.andIsDefaultEqualTo(true);
-        criteria.andStatusEqualTo(1);
-        List<ShippingTemplate> shippingTemplates = mapper.selectByExample(example);
-        return shippingTemplates;
+    public ShippingTemplateX selectDefaultTemplate() {
+        ShippingTemplateX shippingTemplateX = xMapper.selectDefaultTemplate();
+        return shippingTemplateX;
     }
 
     public int updateTemplateDefault() {
