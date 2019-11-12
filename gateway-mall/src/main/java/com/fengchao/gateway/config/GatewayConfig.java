@@ -10,11 +10,21 @@ public class GatewayConfig implements Serializable {
 
     private List<String> noAuthorization;
 
+    private List<String> origins ;
+
     public List<String> getNoAuthorization() {
         return noAuthorization;
     }
 
     public void setNoAuthorization(List<String> noAuthorization) {
         this.noAuthorization = noAuthorization;
+    }
+
+    public List<String> getOrigins() {
+        return origins;
+    }
+
+    public void setOrigins(List<String> origins) {
+        this.origins = origins;
     }
 }
