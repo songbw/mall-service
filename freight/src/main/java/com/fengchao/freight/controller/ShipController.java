@@ -1,5 +1,6 @@
 package com.fengchao.freight.controller;
 
+import com.fengchao.freight.bean.CarriageBean;
 import com.fengchao.freight.bean.OperaResult;
 import com.fengchao.freight.bean.ShipMpuParam;
 import com.fengchao.freight.service.ShippingService;
@@ -36,9 +37,9 @@ public class ShipController {
      * 包邮按照平台包邮计算运费
      */
     @PostMapping ("carriage")
-    public OperaResult getMpuCarriage(@RequestBody ShipMpuParam beans, OperaResult result){
-        log.info("导出商品 入参:{}", JSONUtil.toJsonString(beans));
-        result.getData().put("result",shippingService.getMpuCarriage(beans));
+    public OperaResult getMpuCarriage(@RequestBody CarriageBean bean, OperaResult result){
+        log.info("导出商品 入参:{}", JSONUtil.toJsonString(bean));
+        result.getData().put("result",shippingService.getMpuCarriage(bean));
         return result;
     }
 }
