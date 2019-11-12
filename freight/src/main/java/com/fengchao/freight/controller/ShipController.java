@@ -31,4 +31,14 @@ public class ShipController {
         result.getData().put("result",shippingService.getMpuTemplate(bean));
         return result;
     }
+
+    /**
+     * 包邮按照平台包邮计算运费
+     */
+    @PostMapping ("carriage")
+    public OperaResult getMpuCarriage(@RequestBody ShipMpuParam beans, OperaResult result){
+        log.info("导出商品 入参:{}", JSONUtil.toJsonString(beans));
+        result.getData().put("result",shippingService.getMpuCarriage(beans));
+        return result;
+    }
 }
