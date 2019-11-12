@@ -7,5 +7,6 @@ import lombok.Setter;
 @Getter
 public class ShipPriceBean {
     private Integer merchantId;
+    private String merchantCode;
     private Float shipPrice;
 }

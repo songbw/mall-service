@@ -28,5 +28,5 @@ public interface ShippingService {
 
     TemplateBean getMpuTemplate(ShipMpuParam bean);
 
-    List<CarriagePriceBean> getMpuCarriage(CarriageBean bean);
+    CarriagePriceBean getMpuCarriage(CarriageBean bean);
 }

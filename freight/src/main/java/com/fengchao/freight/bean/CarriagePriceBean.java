@@ -3,11 +3,12 @@ package com.fengchao.freight.bean;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 public class CarriagePriceBean {
-    private Integer merchantId;
-    private String merchantCode;
-    private Float shipPrice;
+    private List<ShipPriceBean> priceBeans;
+    private Float totalPrice;
 
 }
