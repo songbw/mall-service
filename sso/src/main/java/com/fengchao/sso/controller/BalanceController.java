@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/balance", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class BalanceController {
@@ -59,8 +61,8 @@ public class BalanceController {
     }
 
     @PostMapping("init")
-    private OperaResponse init(@RequestBody BalanceBean bean, @RequestHeader("username") String username) {
-        bean.setUsername(username);
+    private OperaResponse init(@RequestBody List<BalanceBean> bean, @RequestHeader("username") String username) {
+//        bean.setUsername(username);
         return service.init(bean);
     }
 

@@ -7,6 +7,8 @@ import com.fengchao.sso.bean.OperaResponse;
 import com.fengchao.sso.model.Balance;
 import com.fengchao.sso.model.BalanceDetail;
 
+import java.util.List;
+
 public interface IBalanceService {
 
     OperaResponse add(Balance bean) ;
@@ -27,6 +29,6 @@ public interface IBalanceService {
 
     OperaResponse updateDetailStatus(BalanceDetail bean) ;
 
-    OperaResponse init(BalanceBean bean) ;
+    OperaResponse init(List<BalanceBean> bean) ;
 
 }

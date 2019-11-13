@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -287,36 +288,38 @@ public class BalanceServiceImpl implements IBalanceService {
     }
 
     @Override
-    public OperaResponse init(BalanceBean bean) {
+    public OperaResponse init(List<BalanceBean> beans) {
         OperaResponse response = new OperaResponse();
-        if (StringUtils.isEmpty(bean.getTelephone())) {
-            response.setCode(900401);
-            response.setMsg("手机号 不能为Null");
-            return response;
+        List<String> tels = new ArrayList<>() ;
+        beans.forEach(bean -> {
+            if (StringUtils.isEmpty(bean.getTelephone()) || bean.getAmount() == null) {
+                response.setCode(900401);
+                response.setMsg("批量初始化出错列表");
+                tels.add(bean.getTelephone()) ;
+            } else {
+                Date date = new Date();
+                Balance balance = new Balance();
+                balance.setCreatedAt(date);
+                balance.setUpdatedAt(date);
+                balance.setTelephone(bean.getTelephone());
+                balance.setAmount(bean.getAmount());
+                int id = mapper.insertSelective(balance) ;
+                // 记录初始化记录
+                BalanceDetail detail = new BalanceDetail();
+                detail.setCreatedAt(date);
+                detail.setUpdatedAt(date);
+                detail.setType(-1);
+                detail.setStatus(1);
+                detail.setSaleAmount(bean.getAmount());
+                detail.setBalanceId(id);
+                detail.setOperator(bean.getUsername());
+                detailMapper.insertSelective(detail);
+
+            }
+        });
+        if (tels != null && tels.size() > 0) {
+            response.setData(tels);
         }
-        if (bean.getAmount() == null) {
-            response.setCode(900402);
-            response.setMsg("amount 不能为Null");
-            return response;
-        }
-        Date date = new Date();
-        Balance balance = new Balance();
-        balance.setCreatedAt(date);
-        balance.setUpdatedAt(date);
-        balance.setTelephone(bean.getTelephone());
-        balance.setAmount(bean.getAmount());
-        int id = mapper.insertSelective(balance) ;
-        // 记录初始化记录
-        BalanceDetail detail = new BalanceDetail();
-        detail.setCreatedAt(date);
-        detail.setUpdatedAt(date);
-        detail.setType(-1);
-        detail.setStatus(1);
-        detail.setSaleAmount(bean.getAmount());
-        detail.setBalanceId(id);
-        detail.setOperator(bean.getUsername());
-        detailMapper.insertSelective(detail);
-        response.setData(id);
         return response;
     }
 }
