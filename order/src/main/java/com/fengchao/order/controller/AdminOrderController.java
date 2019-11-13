@@ -1583,10 +1583,12 @@ public class AdminOrderController {
                     }
 
                 }
-                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 0, 0));
-                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 1, 1));
-                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 2, 2));
-                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 3, 3));
+                if(startLineNum != endLineNum){
+                    sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 0, 0));
+                    sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 1, 1));
+                    sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 2, 2));
+                    sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 3, 3));
+                }
             }
     }
 
