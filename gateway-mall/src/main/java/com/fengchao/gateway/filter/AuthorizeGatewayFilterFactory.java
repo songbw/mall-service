@@ -103,7 +103,8 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 return response.setComplete();
             }
             if ("Bearer".equals(type)) {
-                headers.add("username", jwtValue);
+                exchange.getRequest().getHeaders().add("username", jwtValue);
+//                headers.add("username", jwtValue);
             }
             return chain.filter(exchange);
         };
