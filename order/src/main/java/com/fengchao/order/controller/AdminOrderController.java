@@ -1393,17 +1393,18 @@ public class AdminOrderController {
             // 子订单
             List<ExportOrdersVo> exportOrdersVoList = exportOrdersVoMap.get(paymentNo);
 
-                Map<String, List<ExportOrdersVo>> stringListMap = convertToExportOrdersVoMap(exportOrdersVoList);
+            Map<String, List<ExportOrdersVo>> stringListMap = convertToExportOrdersVoMap(exportOrdersVoList);
                 Set<String> tradeNoSet = stringListMap.keySet();
                 // 该子订单记录集合在excel中的起始行
                 int startLineNum = currentRowNum;
+                int endLineNum = currentRowNum;
 
                 Set<String> tradeFlag = new HashSet<>();
-                for (String tradeNo : tradeNoSet) {
+                for (String tradeNo : tradeNoSet) { // 遍历主订单
                     List<ExportOrdersVo> ordersVos = stringListMap.get(tradeNo);
                     int tradeNoCount = ordersVos.size();
 
-                    for (int num = 0; num < tradeNoCount; num++) {
+                    for (int num = 0; num < tradeNoCount; num++) { // 遍历子订单
                         HSSFRow currentRow = sheet.createRow(currentRowNum);
                         ExportOrdersVo ordersVo = ordersVos.get(num);
                         // -- 主订单
@@ -1449,11 +1450,8 @@ public class AdminOrderController {
                                 int startNum = currentRowNum - tradeNoCount + 1;
                                 // 该子订单记录集合在excel中的结束行
                                 int endNum = currentRowNum;
+                                endLineNum = endNum;
 
-                                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endNum, 0, 0));
-                                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endNum, 1, 1));
-                                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endNum, 2, 2));
-                                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endNum, 3, 3));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 4, 4));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 5, 5));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 6, 6));
@@ -1583,8 +1581,12 @@ public class AdminOrderController {
                         //
                         currentRowNum++;
                     }
-                }
 
+                }
+                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 0, 0));
+                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 1, 1));
+                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 2, 2));
+                sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 3, 3));
             }
     }
 
