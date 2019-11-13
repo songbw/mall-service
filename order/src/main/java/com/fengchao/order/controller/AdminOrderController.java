@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -114,12 +113,11 @@ public class AdminOrderController {
 
             // 3. 输出文件
             try {
-//                response.setHeader("content-type", "application/octet-stream");
-//                response.setContentType("application/octet-stream");
-//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-//
-//                outputStream = response.getOutputStream();
-                outputStream = new FileOutputStream("D://" + fileName);
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -287,12 +285,11 @@ public class AdminOrderController {
 
             //
             try {
-//                response.setHeader("content-type", "application/octet-stream");
-//                response.setContentType("application/octet-stream");
-//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-//
-//                outputStream = response.getOutputStream();
-                outputStream = new FileOutputStream("D://" + fileName);
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -390,12 +387,11 @@ public class AdminOrderController {
 
             // 3. 输出文件
             try {
-//                response.setHeader("content-type", "application/octet-stream");
-//                response.setContentType("application/octet-stream");
-//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-//                outputStream = response.getOutputStream();
-                outputStream = new FileOutputStream("D://" + fileName);
+                outputStream = response.getOutputStream();
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
