@@ -42,7 +42,7 @@ public class RouteConfiguration {
                 ServerHttpResponse response = ctx.getResponse();
                 HttpHeaders headers = response.getHeaders();
                 List<String> allowDomain = gatewayConfig.getOrigins();
-            String origin = request.getHeaders().getOrigin();
+                String origin = request.getHeaders().getOrigin();
                 if (allowDomain.contains(origin)) {
                     log.info("Access-Control-Allow-Origin " + origin);
                     headers.add("Access-Control-Allow-Origin", origin);

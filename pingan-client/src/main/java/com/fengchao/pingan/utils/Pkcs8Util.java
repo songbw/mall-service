@@ -123,7 +123,7 @@ public class Pkcs8Util {
      * @param bean
      * @return
      */
-    public static String getCiphe(InitCodeRequestBean bean) {
+    public static String getCiphe(InitCodeRequestBean bean, String appKey) {
         StringBuffer buffer = new StringBuffer();
         buffer.append("appId").append(bean.getAppId()).append("appKey").append("49b759add6e84ed6bebc69eb85202061").append("randomSeries").append(bean.getRandomSeries()).append("timestamp").append(bean.getTimestamp());
         String cipherText = DigestUtils.md5Hex(buffer.toString());

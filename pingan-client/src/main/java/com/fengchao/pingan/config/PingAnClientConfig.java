@@ -9,6 +9,10 @@ public class PingAnClientConfig {
 
     private String notifyUrl ;
 
+    private String appId;
+
+    private String appKey ;
+
     public String getAuthBasePath() {
         return authBasePath;
     }
@@ -23,5 +27,21 @@ public class PingAnClientConfig {
 
     public void setNotifyUrl(String notifyUrl) {
         this.notifyUrl = notifyUrl;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
     }
 }

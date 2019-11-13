@@ -107,10 +107,10 @@ public class UserServiceImpl implements UserService {
     public OperaResponse<InitCodeBean> getInitCode() {
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath() + HttpClient.INIT_CODE_URL);
         InitCodeRequestBean bean = new InitCodeRequestBean();
-        bean.setAppId("ea70244ca3604a4ebc1c2fd8e48756d5");
+        bean.setAppId(config.getAppId());
         bean.setTimestamp(new Date().getTime() + "");
         bean.setRandomSeries(RandomUtil.getRandomNumber(10));
-        bean.setCipherText(Pkcs8Util.getCiphe(bean));
+        bean.setCipherText(Pkcs8Util.getCiphe(bean, config.getAppKey()));
         logger.info("获取init code 入参： {}", JSONUtil.toJsonString(bean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
@@ -126,10 +126,10 @@ public class UserServiceImpl implements UserService {
     public OperaResponse<AuthCodeBean> getAuthCode() {
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath()+ HttpClient.AUTH_CODE_URL);
         InitCodeRequestBean bean = new InitCodeRequestBean();
-        bean.setAppId("ea70244ca3604a4ebc1c2fd8e48756d5");
+        bean.setAppId(config.getAppId());
         bean.setTimestamp(new Date().getTime() + "");
         bean.setRandomSeries(RandomUtil.getRandomNumber(10));
-        bean.setCipherText(Pkcs8Util.getCiphe(bean));
+        bean.setCipherText(Pkcs8Util.getCiphe(bean, config.getAppKey()));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         OperaResponse<AuthCodeBean> result = response.readEntity(OperaResponse.class);
