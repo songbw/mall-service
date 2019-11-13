@@ -1,5 +1,6 @@
 package com.fengchao.freight.service.impl;
 
+import com.fengchao.freight.bean.CarriageBean;
 import com.fengchao.freight.bean.*;
 import com.fengchao.freight.bean.page.PageVo;
 import com.fengchao.freight.bean.page.PageableData;
@@ -319,8 +320,9 @@ public class ShippingServiceImpl implements ShippingService {
     }
 
     @Override
-    public List<CarriagePriceBean> getMpuCarriage(ShipMpuParam bean) {
-        List<CarriagePriceBean> carriagePriceBeans = new ArrayList<>();
+    public CarriagePriceBean getMpuCarriage(CarriageBean bean) {
+        List<ShipPriceBean> shipPriceBeans = new ArrayList<>();
+        CarriagePriceBean carriagePriceBean = new CarriagePriceBean();
         FreeShippingTemplateX template = freeshipTemplateDao.fingDefaltShipTemplate();
         int status = 0;
         if(template != null) {
@@ -333,10 +335,14 @@ public class ShippingServiceImpl implements ShippingService {
                             status = 1;
                         }
                     }else if(template.getMode() == 1){
-                        List<MpuParam> mpuParams = bean.getMpuParams();
+
                         int mpuNum = 0;
-                        for (int i = 0; i < mpuParams.size(); i++){
-                            mpuNum += mpuParams.get(i).getNum();
+                        List<ShipMerchantInfo> merchantInfos = bean.getMerchantInfos();
+                        for (int i = 0; i < merchantInfos.size(); i++){
+                            List<MpuParam> mpuParams = merchantInfos.get(i).getMpuParams();
+                            for (int j = 0; j < mpuParams.size(); j++){
+                                mpuNum += mpuParams.get(j).getNum();
+                            }
                         }
                         if(freeRegions.getFullAmount() <= mpuNum){
                             status = 1;
@@ -347,45 +353,54 @@ public class ShippingServiceImpl implements ShippingService {
         }
         if(status == 0){
             int templateId = 0;
-            List<MpuParam> mpuParams = bean.getMpuParams();
-            for (int i = 0; i < mpuParams.size(); i++){
-                CarriagePriceBean carriagePriceBean = new CarriagePriceBean();
-                carriagePriceBean.setMpu(mpuParams.get(i).getMpu());
-                ShippingMpu shipByMpu = shipMpuDao.findByMpu(mpuParams.get(i).getMpu());
-                if(shipByMpu != null){
-                    ShippingTemplateX shipTemplate = shipTemplateDao.findShipTemplateById(shipByMpu.getTemplateId());
-                    if(shipTemplate != null){
-                        templateId = shipTemplate.getId();
-                    }
-                }else{
-                    ShippingTemplateX shippingTemplateX = shipTemplateDao.selectDefaultTemplate();
-                    if(shippingTemplateX != null){
-                        templateId = shippingTemplateX.getId();
-                    }
-                }
-                ShippingRegionsX shippingRegions = shipRegionsDao.findByProvinceId(bean.getProvinceId(), templateId);
-                if(shippingRegions == null){
-                    shippingRegions = shipRegionsDao.findDefaltShipRegions(templateId);
-                }
-                if(shippingRegions != null){
-                    if(shippingRegions.getBaseAmount() < mpuParams.get(i).getNum()){
-                        float shipPrice = (mpuParams.get(i).getNum() - shippingRegions.getBaseAmount())/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
-                                + shippingRegions.getBasePrice();
-                        carriagePriceBean.setShipPrice(shipPrice);
+            float totalPrice = 0;
+//            List<MpuParam> mpuParams = bean.getMpuParams();
+            List<ShipMerchantInfo> merchantInfos = bean.getMerchantInfos();
+            for (int i = 0; i < merchantInfos.size(); i++){
+                ShipPriceBean shipPriceBean = new ShipPriceBean();
+                ShipMerchantInfo merchantInfo = merchantInfos.get(i);
+                shipPriceBean.setMerchantCode(merchantInfo.getMerchantCode());
+                shipPriceBean.setMerchantId(merchantInfo.getMerchantId());
+                List<MpuParam> mpuParams = merchantInfo.getMpuParams();
+                float shipPrice = 0;
+                for (int j = 0; j < mpuParams.size(); j++){
+                    ShippingMpu shipByMpu = shipMpuDao.findByMpu(mpuParams.get(j).getMpu());
+                    if(shipByMpu != null){
+                        ShippingTemplateX shipTemplate = shipTemplateDao.findShipTemplateById(shipByMpu.getTemplateId());
+                        if(shipTemplate != null){
+                            templateId = shipTemplate.getId();
+                        }
                     }else{
-                        float shipPrice = shippingRegions.getBasePrice();
-                        carriagePriceBean.setShipPrice(shipPrice);
+                        ShippingTemplateX shippingTemplateX = shipTemplateDao.selectDefaultTemplate();
+                        if(shippingTemplateX != null){
+                            templateId = shippingTemplateX.getId();
+                        }
+                    }
+                    ShippingRegionsX shippingRegions = shipRegionsDao.findByProvinceId(bean.getProvinceId(), templateId);
+                    if(shippingRegions == null){
+                        shippingRegions = shipRegionsDao.findDefaltShipRegions(templateId);
+                    }
+                    if(shippingRegions != null){
+                        if(shippingRegions.getBaseAmount() < mpuParams.get(j).getNum()){
+                            shipPrice += (mpuParams.get(j).getNum() - shippingRegions.getBaseAmount())/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
+                                    + shippingRegions.getBasePrice();
+                            shipPriceBean.setShipPrice(shipPrice);
+                        }else{
+                            shipPrice += shippingRegions.getBasePrice();
+                            shipPriceBean.setShipPrice(shipPrice);
+                        }
                     }
                 }
-                carriagePriceBeans.add(carriagePriceBean);
+                totalPrice += shipPrice;
+                shipPriceBean.setShipPrice(shipPrice);
+                shipPriceBeans.add(shipPriceBean);
             }
+            carriagePriceBean.setTotalPrice(totalPrice);
+            carriagePriceBean.setPriceBeans(shipPriceBeans);
         }else{
-            float shipPrice = 0;
-            CarriagePriceBean carriagePriceBean = new CarriagePriceBean();
-            carriagePriceBean.setShipPrice(shipPrice);
-            carriagePriceBeans.add(carriagePriceBean);
+            carriagePriceBean.setTotalPrice((float) 0);
         }
-        return carriagePriceBeans;
+        return carriagePriceBean;
     }
 
     private ShipTemplateBean convertToTemplateBean(ShippingTemplateX template){

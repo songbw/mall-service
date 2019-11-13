@@ -7,8 +7,8 @@ import java.util.List;
 
 @Setter
 @Getter
-public class CarriagePriceBean {
-    private List<ShipPriceBean> priceBeans;
+public class CarriageBean {
+    private String provinceId;
+    private List<ShipMerchantInfo> merchantInfos;
     private Float totalPrice;
-
 }

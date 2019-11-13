@@ -1,5 +1,6 @@
 package com.fengchao.freight.service;
 
+import com.fengchao.freight.bean.CarriageBean;
 import com.fengchao.freight.bean.*;
 import com.fengchao.freight.bean.page.PageableData;
 import com.fengchao.freight.model.ShippingTemplate;
@@ -27,5 +28,5 @@ public interface ShippingService {
 
     TemplateBean getMpuTemplate(ShipMpuParam bean);
 
-    List<CarriagePriceBean> getMpuCarriage(ShipMpuParam beans);
+    CarriagePriceBean getMpuCarriage(CarriageBean bean);
 }
