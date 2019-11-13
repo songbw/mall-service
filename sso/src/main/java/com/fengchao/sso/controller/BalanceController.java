@@ -1,5 +1,6 @@
 package com.fengchao.sso.controller;
 
+import com.fengchao.sso.bean.BalanceBean;
 import com.fengchao.sso.bean.BalanceDetailQueryBean;
 import com.fengchao.sso.bean.BalanceQueryBean;
 import com.fengchao.sso.bean.OperaResponse;
@@ -33,7 +34,7 @@ public class BalanceController {
     }
 
     @PutMapping
-    private OperaResponse update(@RequestBody Balance bean) {
+    private OperaResponse update(@RequestBody BalanceBean bean) {
         return service.update(bean);
     }
 
@@ -58,8 +59,9 @@ public class BalanceController {
     }
 
     @PostMapping("init")
-    private OperaResponse init(@RequestBody Balance bean) {
-        return service.add(bean);
+    private OperaResponse init(@RequestBody BalanceBean bean, @RequestHeader("username") String username) {
+        bean.setUsername(username);
+        return service.init(bean);
     }
 
 }

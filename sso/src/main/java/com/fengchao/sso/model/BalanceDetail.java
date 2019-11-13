@@ -23,7 +23,7 @@ public class BalanceDetail {
 
     private Date updatedAt;
 
-    private String telephone ;
+    private String operator;
 
     public Integer getId() {
         return id;
@@ -105,11 +105,11 @@ public class BalanceDetail {
         this.updatedAt = updatedAt;
     }
 
-    public String getTelephone() {
-        return telephone;
+    public String getOperator() {
+        return operator;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setOperator(String operator) {
+        this.operator = operator == null ? null : operator.trim();
     }
 }

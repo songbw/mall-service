@@ -1,9 +1,6 @@
 package com.fengchao.sso.service.impl;
 
-import com.fengchao.sso.bean.BalanceDetailBean;
-import com.fengchao.sso.bean.BalanceDetailQueryBean;
-import com.fengchao.sso.bean.BalanceQueryBean;
-import com.fengchao.sso.bean.OperaResponse;
+import com.fengchao.sso.bean.*;
 import com.fengchao.sso.dao.BalanceConsumeAndRefundDao;
 import com.fengchao.sso.dao.BalanceDao;
 import com.fengchao.sso.mapper.BalanceDetailMapper;
@@ -12,6 +9,7 @@ import com.fengchao.sso.mapper.BalanceXMapper;
 import com.fengchao.sso.model.Balance;
 import com.fengchao.sso.model.BalanceDetail;
 import com.fengchao.sso.service.IBalanceService;
+import com.fengchao.sso.util.RedisDAO;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +37,8 @@ public class BalanceServiceImpl implements IBalanceService {
     private BalanceXMapper balanceMapper;
     @Autowired
     private BalanceConsumeAndRefundDao balanceConsumeAndRefundDao;
+    @Autowired
+    private RedisDAO redisDAO;
 
     @Override
     public OperaResponse add(Balance bean) {
@@ -73,7 +73,7 @@ public class BalanceServiceImpl implements IBalanceService {
     }
 
     @Override
-    public OperaResponse update(Balance bean) {
+    public OperaResponse update(BalanceBean bean) {
         OperaResponse response = new OperaResponse();
         if (bean.getId() == null || bean.getId() <= 0) {
             response.setCode(900402);
@@ -94,6 +94,7 @@ public class BalanceServiceImpl implements IBalanceService {
         detail.setStatus(1);
         detail.setSaleAmount(bean.getAmount());
         detail.setBalanceId(bean.getId());
+        detail.setOperator(bean.getUsername());
         detailMapper.insertSelective(detail);
         response.setData(bean.getId());
         return response;
@@ -286,22 +287,25 @@ public class BalanceServiceImpl implements IBalanceService {
     }
 
     @Override
-    public OperaResponse init(Balance bean) {
+    public OperaResponse init(BalanceBean bean) {
         OperaResponse response = new OperaResponse();
         if (StringUtils.isEmpty(bean.getTelephone())) {
             response.setCode(900401);
             response.setMsg("手机号 不能为Null");
             return response;
         }
-        if (bean.getAmount() != null) {
+        if (bean.getAmount() == null) {
             response.setCode(900402);
             response.setMsg("amount 不能为Null");
             return response;
         }
         Date date = new Date();
-        bean.setCreatedAt(date);
-        bean.setUpdatedAt(date);
-        int id = mapper.insertSelective(bean) ;
+        Balance balance = new Balance();
+        balance.setCreatedAt(date);
+        balance.setUpdatedAt(date);
+        balance.setTelephone(bean.getTelephone());
+        balance.setAmount(bean.getAmount());
+        int id = mapper.insertSelective(balance) ;
         // 记录初始化记录
         BalanceDetail detail = new BalanceDetail();
         detail.setCreatedAt(date);
@@ -310,6 +314,7 @@ public class BalanceServiceImpl implements IBalanceService {
         detail.setStatus(1);
         detail.setSaleAmount(bean.getAmount());
         detail.setBalanceId(id);
+        detail.setOperator(bean.getUsername());
         detailMapper.insertSelective(detail);
         response.setData(id);
         return response;

@@ -102,6 +102,9 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
+            if ("Bearer".equals(type)) {
+                headers.add("username", jwtValue);
+            }
             return chain.filter(exchange);
         };
     }

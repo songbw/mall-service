@@ -1,5 +1,6 @@
 package com.fengchao.sso.service;
 
+import com.fengchao.sso.bean.BalanceBean;
 import com.fengchao.sso.bean.BalanceDetailQueryBean;
 import com.fengchao.sso.bean.BalanceQueryBean;
 import com.fengchao.sso.bean.OperaResponse;
@@ -10,7 +11,7 @@ public interface IBalanceService {
 
     OperaResponse add(Balance bean) ;
 
-    OperaResponse update(Balance bean) ;
+    OperaResponse update(BalanceBean bean) ;
 
     OperaResponse findByOpenId(String openId) ;
 
@@ -26,6 +27,6 @@ public interface IBalanceService {
 
     OperaResponse updateDetailStatus(BalanceDetail bean) ;
 
-    OperaResponse init(Balance bean) ;
+    OperaResponse init(BalanceBean bean) ;
 
 }
