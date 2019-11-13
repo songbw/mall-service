@@ -1583,7 +1583,7 @@ public class AdminOrderController {
                     }
 
                 }
-                if(startLineNum != endLineNum){
+                if(startLineNum < endLineNum){
                     sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 0, 0));
                     sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 1, 1));
                     sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 2, 2));
