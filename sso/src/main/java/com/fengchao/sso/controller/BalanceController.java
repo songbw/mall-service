@@ -61,8 +61,7 @@ public class BalanceController {
     }
 
     @PostMapping("init")
-    private OperaResponse init(@RequestBody List<BalanceBean> bean, @RequestHeader("username") String username) {
-//        bean.setUsername(username);
+    private OperaResponse init(@RequestBody List<BalanceBean> bean) {
         return service.init(bean);
     }
 

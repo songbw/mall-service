@@ -117,4 +117,20 @@ public class BalanceDao {
         List<BalanceDetail> balanceDetails = detailMapper.selectByExample(balanceDetailExample);
         return balanceDetails;
     }
+
+    /**
+     * 根据tel查询余额
+     * @param tel
+     * @return
+     */
+    public Balance selectBalanceByTel(String tel) {
+        BalanceExample balanceExample = new BalanceExample();
+        BalanceExample.Criteria criteria = balanceExample.createCriteria();
+        criteria.andTelephoneEqualTo(tel) ;
+        List<Balance> balances = mapper.selectByExample(balanceExample);
+        if (balances != null && balances.size() > 0) {
+            return balances.get(0) ;
+        }
+        return null;
+    }
 }

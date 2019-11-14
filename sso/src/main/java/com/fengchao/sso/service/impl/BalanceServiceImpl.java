@@ -298,12 +298,20 @@ public class BalanceServiceImpl implements IBalanceService {
                 tels.add(bean.getTelephone()) ;
             } else {
                 Date date = new Date();
-                Balance balance = new Balance();
-                balance.setCreatedAt(date);
-                balance.setUpdatedAt(date);
-                balance.setTelephone(bean.getTelephone());
-                balance.setAmount(bean.getAmount());
-                int id = mapper.insertSelective(balance) ;
+                Balance balance = balanceDao.selectBalanceByTel(bean.getTelephone()) ;
+                if (balance == null) {
+                    balance = new Balance();
+                    balance.setCreatedAt(date);
+                    balance.setUpdatedAt(date);
+                    balance.setTelephone(bean.getTelephone());
+                    balance.setAmount(bean.getAmount());
+                    mapper.insertSelective(balance) ;
+                } else {
+                    balance.setUpdatedAt(date);
+                    balance.setTelephone(bean.getTelephone());
+                    balance.setAmount(bean.getAmount());
+                    mapper.updateByPrimaryKeySelective(balance) ;
+                }
                 // 记录初始化记录
                 BalanceDetail detail = new BalanceDetail();
                 detail.setCreatedAt(date);
@@ -311,7 +319,7 @@ public class BalanceServiceImpl implements IBalanceService {
                 detail.setType(-1);
                 detail.setStatus(1);
                 detail.setSaleAmount(bean.getAmount());
-                detail.setBalanceId(id);
+                detail.setBalanceId(balance.getId());
                 detail.setOperator(bean.getUsername());
                 detailMapper.insertSelective(detail);
 
