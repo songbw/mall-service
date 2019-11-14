@@ -7,6 +7,7 @@ import com.fengchao.sso.bean.OperaResponse;
 import com.fengchao.sso.model.Balance;
 import com.fengchao.sso.model.BalanceDetail;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface IBalanceService {
@@ -30,5 +31,9 @@ public interface IBalanceService {
     OperaResponse updateDetailStatus(BalanceDetail bean) ;
 
     OperaResponse init(List<BalanceBean> bean) ;
+
+    void exportSum(BalanceQueryBean queryBean, HttpServletResponse response) ;
+
+    void exportRecharge(BalanceQueryBean queryBean, HttpServletResponse response) ;
 
 }

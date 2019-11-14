@@ -9,20 +9,32 @@ import com.fengchao.sso.mapper.BalanceXMapper;
 import com.fengchao.sso.model.Balance;
 import com.fengchao.sso.model.BalanceDetail;
 import com.fengchao.sso.service.IBalanceService;
+import com.fengchao.sso.util.DateUtil;
 import com.fengchao.sso.util.RedisDAO;
 import com.github.pagehelper.PageInfo;
+import io.micrometer.core.instrument.util.StringEscapeUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -211,7 +223,7 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setMsg("saleAmount 不能小于0");
             return response;
         }
-        // TODO 查询明细是否存在
+        // 查询明细是否存在
         List<BalanceDetail> balanceDetails =  balanceDao.selectBalanceDetailByOrderNo(bean.getOrderNo()) ;
         if (balanceDetails == null || balanceDetails.size() <= 0) {
             response.setCode(900402);
@@ -329,5 +341,195 @@ public class BalanceServiceImpl implements IBalanceService {
             response.setData(tels);
         }
         return response;
+    }
+
+    @Override
+    public void exportSum(BalanceQueryBean queryBean, HttpServletResponse response) {
+        //  查询余额信息
+        List<BalanceSumBean> balanceSumBeans = new ArrayList<>() ;
+        log.info("开始");
+        List<BalanceSumBean> initBalances = balanceMapper.selectInitAmount(queryBean) ;
+        log.info("init");
+        initBalances.forEach(sumBean -> {
+            //  根据ID查询充值总额
+            queryBean.setType(2);
+            Integer chargeSum = balanceMapper.selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt(queryBean) ;
+            if (chargeSum != null) {
+                sumBean.setChargeAmount(chargeSum);
+            }
+            //  根据ID查询支付总额
+            queryBean.setType(0);
+            Integer paymentSum  = balanceMapper.selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt(queryBean) ;
+            if (paymentSum != null) {
+                sumBean.setPaymentAmount(paymentSum);
+            }
+            //  根据ID查询退款总额
+            queryBean.setType(1);
+            Integer refundSum = balanceMapper.selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt(queryBean) ;
+            if (refundSum != null) {
+                sumBean.setRefundAmount(refundSum);
+            }
+            balanceSumBeans.add(sumBean) ;
+        });
+        // TODO 导出数据
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
+        workbook = new HSSFWorkbook();
+        // 创建HSSFSheet对象
+        HSSFSheet sheet = workbook.createSheet("总表");
+        HSSFSheet sheetCharge = workbook.createSheet("余额的充值记录");
+        List<String> sumNames = new ArrayList<>() ;
+        sumNames.add("会员电话") ;
+        sumNames.add("OPEN ID") ;
+        sumNames.add("总余额（最新时点）") ;
+        sumNames.add("初始余额") ;
+        sumNames.add("充值总额") ;
+        sumNames.add("支付总额") ;
+        sumNames.add("退款总额") ;
+        createTitle(sheet, sumNames);
+        createContentSum(sheet, balanceSumBeans);
+
+        queryBean.setType(2);
+        List<BalanceSumBean> balanceDetails = balanceMapper.selectChargeList(queryBean) ;
+        List<String> chargeNames = new ArrayList<>() ;
+        chargeNames.add("会员电话") ;
+        chargeNames.add("OPEN ID") ;
+        chargeNames.add("充值金额") ;
+        chargeNames.add("充值时间") ;
+        chargeNames.add("充值操作人") ;
+        createTitle(sheetCharge, chargeNames);
+        createContentCharge(sheetCharge, balanceDetails);
+        // 2.3 文件名
+        String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
+        String fileName = null;
+        try {
+            fileName = new String("余额对账报表".getBytes(), "ISO8859-1") + queryBean.getStart() +" - "+ queryBean.getEnd()+ ".xls";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        // 3. 输出文件
+        try {
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+//            response.setHeader("content-type", "application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+            outputStream = response.getOutputStream();
+            workbook.write(outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            log.error("导出商品价格列表文件 出错了:{}", e.getMessage(), e);
+
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 创建余额报表总表title
+     *
+     * @param sheet
+     */
+    private void createTitle(HSSFSheet sheet, List<String> cellNames) {
+        HSSFRow titleRow = sheet.createRow(0);
+        for (int i = 0; i < cellNames.size(); i++) {
+            titleRow.createCell(i).setCellValue(cellNames.get(i));
+        }
+    }
+
+    /**
+     * 组装业务数据
+     *
+     * @param sheet
+     * @param balanceSumBeans 需要导出的数据集合
+     */
+    private void createContentSum(HSSFSheet sheet, List<BalanceSumBean> balanceSumBeans) {
+
+        int currentRowNum = 1; // 行号
+        int totalRowNum = balanceSumBeans.size(); // 总行数
+        DecimalFormat df = new DecimalFormat("0.00");
+        for (BalanceSumBean balanceSum : balanceSumBeans) {
+            // 新增一行
+            HSSFRow hssfRow = sheet.createRow(currentRowNum);
+
+            HSSFCell titleCell0 = hssfRow.createCell(0);
+            titleCell0.setCellValue(balanceSum.getTelephone());
+
+            HSSFCell titleCell1 = hssfRow.createCell(1);
+            titleCell1.setCellValue(balanceSum.getOpenId());
+
+            HSSFCell titleCell2 = hssfRow.createCell(2);
+            titleCell2.setCellValue(df.format((float)balanceSum.getAmount() / 100));
+
+            HSSFCell titleCell3 = hssfRow.createCell(3);
+            titleCell3.setCellValue(df.format((float)balanceSum.getInitAmount() / 100));
+
+            HSSFCell titleCell4 = hssfRow.createCell(4);
+            titleCell4.setCellValue(df.format((float)balanceSum.getChargeAmount() / 100));
+
+            HSSFCell titleCell5 = hssfRow.createCell(5);
+            titleCell5.setCellValue(df.format((float)balanceSum.getPaymentAmount() / 100));
+
+            HSSFCell titleCell6 = hssfRow.createCell(6);
+            titleCell6.setCellValue(df.format((float)balanceSum.getRefundAmount() / 100));
+
+            if (currentRowNum % 100 == 0) {
+                log.info("导出余额列表 第{}行, 共{}行", currentRowNum, totalRowNum);
+            }
+            currentRowNum++;
+            balanceSumBeans = null; // 释放
+        }
+    }
+
+    /**
+     * 组装业务数据
+     *
+     * @param sheet
+     * @param balanceDetails 需要导出的数据集合
+     */
+    private void createContentCharge(HSSFSheet sheet, List<BalanceSumBean> balanceDetails) {
+
+        int currentRowNum = 1; // 行号
+        int totalRowNum = balanceDetails.size(); // 总行数
+        DecimalFormat df = new DecimalFormat("0.00");
+        for (BalanceSumBean balanceDetail : balanceDetails) {
+            // 新增一行
+            HSSFRow hssfRow = sheet.createRow(currentRowNum);
+
+            HSSFCell titleCell0 = hssfRow.createCell(0);
+            titleCell0.setCellValue(balanceDetail.getTelephone());
+
+            HSSFCell titleCell1 = hssfRow.createCell(1);
+            titleCell1.setCellValue(balanceDetail.getOpenId());
+
+            HSSFCell titleCell2 = hssfRow.createCell(2);
+            titleCell2.setCellValue(df.format((float)balanceDetail.getInitAmount() / 100));
+
+            HSSFCell titleCell3 = hssfRow.createCell(3);
+            titleCell3.setCellValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(balanceDetail.getCreatedAt()));
+
+            HSSFCell titleCell4 = hssfRow.createCell(4);
+            titleCell4.setCellValue(balanceDetail.getOperator());
+
+            if (currentRowNum % 100 == 0) {
+                log.info("导出余额充值列表 第{}行, 共{}行", currentRowNum, totalRowNum);
+            }
+            currentRowNum++;
+            balanceDetails = null; // 释放
+        }
+    }
+
+    @Override
+    public void exportRecharge(BalanceQueryBean queryBean, HttpServletResponse response) {
+        queryBean.setType(2);
+        List<BalanceDetail> balanceDetails = balanceDao.selectBalanceDetailByTypeAndDate(queryBean) ;
+        // TODO 导出数据
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -132,5 +134,62 @@ public class BalanceDao {
             return balances.get(0) ;
         }
         return null;
+    }
+
+    /**
+     * 根据类型和时间段查询明细
+     * @param queryBean
+     * @return
+     */
+    public List<BalanceDetail> selectBalanceDetailByTypeAndDate(BalanceQueryBean queryBean) {
+        BalanceDetailExample balanceDetailExample = new BalanceDetailExample();
+        BalanceDetailExample.Criteria criteria = balanceDetailExample.createCriteria();
+        criteria.andTypeEqualTo(queryBean.getType());
+        try {
+            Date start = new SimpleDateFormat("yyyy-MM-dd").parse(queryBean.getStart());
+            Date end = new SimpleDateFormat("yyyy-MM-dd").parse(queryBean.getEnd());
+            criteria.andUpdatedAtBetween(start, end) ;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        List<BalanceDetail> balanceDetails = detailMapper.selectByExample(balanceDetailExample);
+        return balanceDetails;
+    }
+
+    /**
+     * 根据余额ID和类型和时间段查询明细
+     * @param queryBean
+     * @return
+     */
+    public List<BalanceDetail> selectBalanceDetailByBalanceIdAndTypeAndDate(BalanceQueryBean queryBean) {
+        BalanceDetailExample balanceDetailExample = new BalanceDetailExample();
+        BalanceDetailExample.Criteria criteria = balanceDetailExample.createCriteria();
+        criteria.andBalanceIdEqualTo(queryBean.getBalanceId()) ;
+        criteria.andTypeEqualTo(queryBean.getType());
+        try {
+            Date start = new SimpleDateFormat("yyyy-MM-dd").parse(queryBean.getStart());
+            Date end = new SimpleDateFormat("yyyy-MM-dd").parse(queryBean.getEnd());
+            criteria.andUpdatedAtBetween(start, end) ;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        List<BalanceDetail> balanceDetails = detailMapper.selectByExample(balanceDetailExample);
+        return balanceDetails;
+    }
+
+    /**
+     * 查询余额列表
+     *
+     * @param bean
+     * @return
+     */
+    public List<Balance> selectBalanceList(BalanceQueryBean bean) {
+        BalanceExample balanceExample = new BalanceExample();
+        BalanceExample.Criteria criteria = balanceExample.createCriteria();
+        if (!StringUtils.isEmpty(bean.getTelephone())) {
+            criteria.andTelephoneEqualTo(bean.getTelephone()) ;
+        }
+        List<Balance> balances = mapper.selectByExample(balanceExample);
+        return balances;
     }
 }

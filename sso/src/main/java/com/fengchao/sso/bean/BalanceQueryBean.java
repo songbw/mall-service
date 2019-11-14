@@ -10,4 +10,8 @@ import lombok.Setter;
 @Getter
 public class BalanceQueryBean extends QueryBean {
     private String telephone ;
+    private String start;
+    private String end ;
+    private Integer Type ;
+    private Integer balanceId;
 }

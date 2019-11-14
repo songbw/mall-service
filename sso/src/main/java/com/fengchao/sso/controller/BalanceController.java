@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -63,6 +64,18 @@ public class BalanceController {
     @PostMapping("init")
     private OperaResponse init(@RequestBody List<BalanceBean> bean) {
         return service.init(bean);
+    }
+
+    @GetMapping("export/sum")
+    private void sum(BalanceQueryBean queryBean, HttpServletResponse response) {
+        // TODO 导出excel
+        service.exportSum(queryBean, response);
+    }
+
+    @GetMapping("export/recharge")
+    private void recharge(BalanceQueryBean queryBean, HttpServletResponse response) {
+        // TODO 导出excel
+        service.exportRecharge(queryBean, response);
     }
 
 }

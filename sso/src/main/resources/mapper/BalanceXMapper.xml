@@ -24,5 +24,18 @@
     from balance
     where id = #{id,jdbcType=INTEGER} for update
   </select>
+  <select id="selectInitAmount" resultType="com.fengchao.sso.bean.BalanceSumBean" parameterType="com.fengchao.sso.bean.BalanceQueryBean">
+    select b.id id, b.telephone telephone, b.amount amount, b.open_id openId, db.sale_amount initAmount from balance b left JOIN balance_detail db on b.id = db.balance_id
+    where type = -1
+  </select>
+  <select id="selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt" resultType="java.lang.Integer" parameterType="com.fengchao.sso.bean.BalanceQueryBean">
+    select sum(sale_amount)
+    from balance_detail
+    where type = #{type} and balance_id = #{balanceId} and created_at between #{start} and #{end}
+  </select>
+  <select id="selectChargeList" resultType="com.fengchao.sso.bean.BalanceSumBean" parameterType="com.fengchao.sso.bean.BalanceQueryBean">
+    select b.telephone telephone, b.open_id openId, db.sale_amount initAmount, db.created_at createdAt, db.operator operator from balance b left JOIN balance_detail db on b.id = db.balance_id
+    where type = 2
+  </select>
 
 </mapper>
