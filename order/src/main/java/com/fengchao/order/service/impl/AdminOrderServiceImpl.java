@@ -508,19 +508,19 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             0 : orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()); // sku 实际支付价格 分
                     exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
                     exportOrdersVo.setCouponPrice(ordersBo.getCouponDiscount() == null ?
-                            0 : new BigDecimal(ordersBo.getCouponDiscount()).multiply(new BigDecimal(100)).intValue()); // 主订单 券支付金额
+                            0 : new BigDecimal(ordersBo.getCouponDiscount().toString()).multiply(new BigDecimal(100)).intValue()); // 主订单 券支付金额
                     exportOrdersVo.setSkuCouponDiscount(orderDetailBo.getSkuCouponDiscount() == null ?
                             0 :orderDetailBo.getSkuCouponDiscount()); // 子订单 sku的优惠券支付金额 分
 
                     exportOrdersVo.setPayPrice(ordersBo.getSaleAmount() == null ?
-                            0 : new BigDecimal(ordersBo.getSaleAmount()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
+                            0 : new BigDecimal(ordersBo.getSaleAmount().toString()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
                     // exportOrdersVo.setShareBenefitPercent(); // 平台分润比!!!
 
                     exportOrdersVo.setBuyerName(ordersBo.getReceiverName()); // 收件人名
                     exportOrdersVo.setProvinceName(ordersBo.getProvinceName()); // 省
                     exportOrdersVo.setCityName(ordersBo.getCityName()); // 市
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
-                    exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
+                    exportOrdersVo.setExpressFee(ordersBo.getServFee().toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
                     exportOrdersVo.setMobile(ordersBo.getMobile());
                     // 退款金额 单位元
