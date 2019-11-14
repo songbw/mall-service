@@ -620,7 +620,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     exportOrdersVo.setBalanceRefund(_fee);
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                        exportOrdersVo.setBalanceRefund(exportOrdersVo.getBalanceFee() + "(异常)");
+                                        exportOrdersVo.setBalanceRefund(exportOrdersVo.getBalanceFee() + "(超时)");
                                     }
                                 } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
                                     String huiminRefund = exportOrdersVo.getHuiminCardRefund(); // 单位 元
@@ -636,20 +636,20 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     exportOrdersVo.setWoaRefund(_fee);
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                        exportOrdersVo.setWoaRefund(exportOrdersVo.getWoaRefund() + "(异常)");
+                                        exportOrdersVo.setWoaRefund(exportOrdersVo.getWoaRefund() + "(超时)");
                                     }
                                 } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
                                     exportOrdersVo.setQuickPayRefund(_fee);
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                        exportOrdersVo.setQuickPayRefund(exportOrdersVo.getQuickPayRefund() + "(异常)");
+                                        exportOrdersVo.setQuickPayRefund(exportOrdersVo.getQuickPayRefund() + "(超时)");
                                     }
                                 }
                             }
 
                             if (!checkHuiminCardUnNormalPayStatus) {
                                 if (!"0".equals(exportOrdersVo.getHuiminCardRefund())) {
-                                    exportOrdersVo.setHuiminCardRefund(exportOrdersVo.getHuiminCardRefund() + "(异常)");
+                                    exportOrdersVo.setHuiminCardRefund(exportOrdersVo.getHuiminCardRefund() + "(超时)");
                                 }
                             }
 
