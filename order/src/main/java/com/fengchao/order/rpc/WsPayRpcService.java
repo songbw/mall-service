@@ -126,19 +126,19 @@ public class WsPayRpcService {
         return payInfos;
     }
 
-    public Map<String,List<RefundMethodInfoBean>> queryBatchRefundMethod(List<String> refundNoList) {
-        log.info("根据paymentNo集合批量获取订单退款方式的信息 调用wspay rpc服务 入参:{}", JSONUtil.toJsonString(refundNoList));
+    public Map<String,List<RefundMethodInfoBean>> queryBatchRefundMethod(List<String> outRefundNos) {
+        log.info("根据paymentNo集合批量获取订单退款方式的信息 调用wspay rpc服务 入参:{}", JSONUtil.toJsonString(outRefundNos));
 
         // 返回值
         Map<String, List<RefundMethodInfoBean>> orderPayMethodInfoMap = new HashMap<>();
 
-        if (CollectionUtils.isEmpty(refundNoList)) {
+        if (CollectionUtils.isEmpty(outRefundNos)) {
             log.warn("根据paymentNo集合批量获取订单退款方式的信息 调用wspay rpc服务 入参为空");
             return Collections.emptyMap();
         }
 
         // 执行rpc调用
-        OperaResponse<Map<String, List<RefundMethodInfoBean>>> operaResponse = wsPayServiceClient.queryBatchRefundMethod(refundNoList);
+        OperaResponse<Map<String, List<RefundMethodInfoBean>>> operaResponse = wsPayServiceClient.queryBatchRefundMethod(outRefundNos);
 
         log.info("根据paymentNo集合批量获取订单退款方式的信息 调用wspay rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 

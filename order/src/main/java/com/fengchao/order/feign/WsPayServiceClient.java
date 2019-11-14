@@ -31,5 +31,5 @@ public interface WsPayServiceClient {
     OperaResponse<PayInfoBean> queryConsumeRefundUsing(@RequestBody BillExportReqVo billExportReqVo);
 
     @RequestMapping(value = "/wspay/batch/query/refund", method = RequestMethod.GET)
-    OperaResponse<Map<String,List<RefundMethodInfoBean>>> queryBatchRefundMethod(@RequestParam(value = "orderNo") List<String> orderNoList);
+    OperaResponse<Map<String,List<RefundMethodInfoBean>>> queryBatchRefundMethod(@RequestParam(value = "outRefundNos") List<String> outRefundNos);
 }

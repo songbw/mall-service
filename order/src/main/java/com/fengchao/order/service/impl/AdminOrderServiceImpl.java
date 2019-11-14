@@ -229,9 +229,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 1.1.2 获取子订单退款金额map , key: 子订单id， value: 退款金额
         List<String> orderDetailNoList = new ArrayList<>();
         Map<String, Float> orderDetailRefundAmountMap = new HashMap<>();
+        // 1.1.3 获取主订单的退款方式信息
+        List<String> refundNoList = new ArrayList<>();
         for (WorkOrder workOrder : workOrderList) {
             orderDetailNoList.add(workOrder.getOrderId());
             orderDetailRefundAmountMap.put(workOrder.getOrderId(), workOrder.getGuanaitongRefundAmount()); // 单位元
+            if (StringUtils.isNotBlank(workOrder.getGuanaitongTradeNo())) {
+                refundNoList.add(workOrder.getGuanaitongTradeNo());
+            }
         }
 
         log.info("导出订单对账单(出账) 获取子订单的退款金额map:{}", JSONUtil.toJsonString(orderDetailRefundAmountMap));
@@ -251,24 +256,24 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList);
         log.info("导出订单对账单(出账) 查询已退款的主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
-        // 4.5 获取主订单的支付方式信息
-        List<String> paymentNoList = new ArrayList<>();
-        for (Orders orders : ordersList) {
-            if (StringUtils.isNotBlank(orders.getPaymentNo())) {
-                paymentNoList.add(orders.getPaymentNo());
-            }
-        }
-        List<List<String>> paymentNoPatitionLists = Lists.partition(paymentNoList, LIST_PARTITION_SIZE);
+        List<List<String>> refundNoPatitionLists = Lists.partition(refundNoList, LIST_PARTITION_SIZE);
         // 退款方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
         Map<String, List<RefundMethodInfoBean>> refundMethodInfoMap = new HashMap<>();
-        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
-            Map<String, List<RefundMethodInfoBean>> _map = wsPayRpcService.queryBatchRefundMethod(queryPaymentNoList);
-
+        for (List<String> queryRefundNoList : refundNoPatitionLists) {
+            Map<String, List<RefundMethodInfoBean>> _map = wsPayRpcService.queryBatchRefundMethod(queryRefundNoList);
             refundMethodInfoMap.putAll(_map);
         }
 
+        Map<String, List<RefundMethodInfoBean>> refundNoOrderInfoMap = new HashMap<>();
+        for (WorkOrder workOrder : workOrderList) {
+            List<RefundMethodInfoBean> refundMethodInfoBeans = refundMethodInfoMap.get(workOrder.getGuanaitongTradeNo());
+            if(CollectionUtils.isNotEmpty(refundMethodInfoBeans)){
+                refundNoOrderInfoMap.put(workOrder.getOrderId(), refundMethodInfoBeans);
+            }
+        }
+
         // 3.组装结果!!!
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, orderDetailRefundAmountMap,null, refundMethodInfoMap);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, orderDetailRefundAmountMap,null, refundNoOrderInfoMap);
 
         // patch, 将状态统一为"已退款"
         if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
@@ -589,11 +594,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                     // 退款方式
                     if(refundMethodInfoMap != null){
-                        List<RefundMethodInfoBean> refundMethodInfoList = refundMethodInfoMap.get(ordersBo.getPaymentNo());
-                        exportOrdersVo.setBalanceFee("0"); // 余额支付金额 单位 元
-                        exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元
-                        exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
-                        exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
+                        List<RefundMethodInfoBean> refundMethodInfoList = refundMethodInfoMap.get(orderDetailBo.getSubOrderId());
+                        exportOrdersVo.setBalanceRefund("0"); // 余额支付金额 单位 元
+                        exportOrdersVo.setHuiminCardRefund("0"); // 惠民卡支付金额 单位 元
+                        exportOrdersVo.setWoaRefund("0"); // 联机账户支付 单位 元
+                        exportOrdersVo.setQuickPayRefund("0"); // 快捷支付 单位 元
                         if (CollectionUtils.isNotEmpty(refundMethodInfoList)) {
 
                             boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
@@ -601,7 +606,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             for (RefundMethodInfoBean refundMethodInfoBean : refundMethodInfoList) {
                                 String payType = refundMethodInfoBean.getPayType();
                                 Integer payStatus = refundMethodInfoBean.getStatus();
-
+                                exportOrdersVo.setRefundNo(refundMethodInfoBean.getOutRefundNo());
                                 if (payStatus == null || payStatus == 0) {
                                     continue;
                                 }
@@ -612,39 +617,39 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                         "0" : new BigDecimal(_fen).divide(new BigDecimal(-100)).toPlainString(); // 转元
 
                                 if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
-                                    exportOrdersVo.setBalanceFee(_fee);
+                                    exportOrdersVo.setBalanceRefund(_fee);
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                        exportOrdersVo.setBalanceFee(exportOrdersVo.getBalanceFee() + "(异常)");
+                                        exportOrdersVo.setBalanceRefund(exportOrdersVo.getBalanceFee() + "(异常)");
                                     }
                                 } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
-                                    String huiminFee = exportOrdersVo.getHuiminCardFee(); // 单位 元
+                                    String huiminRefund = exportOrdersVo.getHuiminCardRefund(); // 单位 元
 
-                                    huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
+                                    huiminRefund = new BigDecimal(huiminRefund).add(new BigDecimal(_fee)).toPlainString();
 
-                                    exportOrdersVo.setHuiminCardFee(huiminFee);
+                                    exportOrdersVo.setHuiminCardRefund(huiminRefund);
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         checkHuiminCardUnNormalPayStatus = false;
                                     }
                                 } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
-                                    exportOrdersVo.setWoaFee(_fee);
+                                    exportOrdersVo.setWoaRefund(_fee);
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                        exportOrdersVo.setWoaFee(exportOrdersVo.getWoaFee() + "(异常)");
+                                        exportOrdersVo.setWoaRefund(exportOrdersVo.getWoaRefund() + "(异常)");
                                     }
                                 } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
-                                    exportOrdersVo.setQuickPayFee(_fee);
+                                    exportOrdersVo.setQuickPayRefund(_fee);
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                        exportOrdersVo.setQuickPayFee(exportOrdersVo.getQuickPayFee() + "(异常)");
+                                        exportOrdersVo.setQuickPayRefund(exportOrdersVo.getQuickPayRefund() + "(异常)");
                                     }
                                 }
                             }
 
                             if (!checkHuiminCardUnNormalPayStatus) {
-                                if (!"0".equals(exportOrdersVo.getHuiminCardFee())) {
-                                    exportOrdersVo.setHuiminCardFee(exportOrdersVo.getHuiminCardFee() + "(异常)");
+                                if (!"0".equals(exportOrdersVo.getHuiminCardRefund())) {
+                                    exportOrdersVo.setHuiminCardRefund(exportOrdersVo.getHuiminCardRefund() + "(异常)");
                                 }
                             }
 

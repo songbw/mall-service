@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -559,11 +560,12 @@ public class AdminOrderController {
 
             //
             try {
-                response.setHeader("content-type", "application/octet-stream");
-                response.setContentType("application/octet-stream");
-                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-                outputStream = response.getOutputStream();
+//                response.setHeader("content-type", "application/octet-stream");
+//                response.setContentType("application/octet-stream");
+//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+//
+//                outputStream = response.getOutputStream();
+                outputStream = new FileOutputStream("D://" + fileName);
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -1335,23 +1337,43 @@ public class AdminOrderController {
         HSSFCell titleCell26 = titleRow.createCell(26);
         titleCell26.setCellValue("进货价 单位：元");
 
+        //退款号
         HSSFCell titleCell27 = titleRow.createCell(27);
-        titleCell27.setCellValue("收件人名");
+        titleCell27.setCellValue("退款号");
 
+        //余额退款
         HSSFCell titleCell28 = titleRow.createCell(28);
-        titleCell28.setCellValue("省");
+        titleCell28.setCellValue("余额退款 单位：元");
 
+        //惠民卡退款
         HSSFCell titleCell29 = titleRow.createCell(29);
-        titleCell29.setCellValue("市");
+        titleCell29.setCellValue("惠民卡退款 单位：元");
 
+        //联机账户退款
         HSSFCell titleCell30 = titleRow.createCell(30);
-        titleCell30.setCellValue("区");
+        titleCell30.setCellValue("联机账户退款 单位：元");
 
+        //快捷支付退款
         HSSFCell titleCell31 = titleRow.createCell(31);
-        titleCell31.setCellValue("详细地址");
+        titleCell31.setCellValue("快捷支付退款 单位：元");
 
         HSSFCell titleCell32 = titleRow.createCell(32);
-        titleCell32.setCellValue("收件人手机号");
+        titleCell32.setCellValue("收件人名");
+
+        HSSFCell titleCell33 = titleRow.createCell(33);
+        titleCell33.setCellValue("省");
+
+        HSSFCell titleCell34 = titleRow.createCell(34);
+        titleCell34.setCellValue("市");
+
+        HSSFCell titleCell35 = titleRow.createCell(35);
+        titleCell35.setCellValue("区");
+
+        HSSFCell titleCell36 = titleRow.createCell(36);
+        titleCell36.setCellValue("详细地址");
+
+        HSSFCell titleCell37 = titleRow.createCell(37);
+        titleCell37.setCellValue("收件人手机号");
     }
 
     /**
@@ -1554,29 +1576,50 @@ public class AdminOrderController {
 //                    cell26.setCellValue(_price);
 //                }
 
-                        // 收件人名
+                            //退款号
                         HSSFCell cell27 = currentRow.createCell(27);
-                        cell27.setCellValue(ordersVo.getBuyerName());
+                        cell27.setCellValue(ordersVo.getBalanceRefund());
+
+                        //余额退款
+                        HSSFCell cell28 = currentRow.createCell(28);
+                        cell28.setCellValue(ordersVo.getBalanceRefund());
+
+                        //惠民卡退款
+                        HSSFCell cell29 = currentRow.createCell(29);
+                        cell29.setCellValue(ordersVo.getHuiminCardRefund());
+
+                        //联机账户退款
+                        HSSFCell cell30 = currentRow.createCell(30);
+                        cell30.setCellValue(ordersVo.getWoaRefund());
+
+                        //快捷支付退款
+                        HSSFCell cell31 = currentRow.createCell(31);
+                        cell31.setCellValue(ordersVo.getQuickPayRefund());
+
+
+                        // 收件人名
+                        HSSFCell cell32 = currentRow.createCell(32);
+                        cell32.setCellValue(ordersVo.getBuyerName());
 
                         // 省
-                        HSSFCell cell28 = currentRow.createCell(28);
-                        cell28.setCellValue(ordersVo.getProvinceName());
+                        HSSFCell cell33 = currentRow.createCell(33);
+                        cell33.setCellValue(ordersVo.getProvinceName());
 
                         // 市
-                        HSSFCell cell29 = currentRow.createCell(29);
-                        cell29.setCellValue(ordersVo.getCityName());
+                        HSSFCell cell34 = currentRow.createCell(34);
+                        cell34.setCellValue(ordersVo.getCityName());
 
                         // 区
-                        HSSFCell cell30 = currentRow.createCell(30);
-                        cell30.setCellValue(ordersVo.getCountyName());
+                        HSSFCell cell35 = currentRow.createCell(35);
+                        cell35.setCellValue(ordersVo.getCountyName());
 
                         // 详细地址
-                        HSSFCell cell31 = currentRow.createCell(31);
-                        cell31.setCellValue(ordersVo.getAddress());
+                        HSSFCell cell36 = currentRow.createCell(36);
+                        cell36.setCellValue(ordersVo.getAddress());
 
                         // 收件人手机号
-                        HSSFCell cell32 = currentRow.createCell(32);
-                        cell32.setCellValue(ordersVo.getMobile());
+                        HSSFCell cell37 = currentRow.createCell(37);
+                        cell37.setCellValue(ordersVo.getMobile());
 
                         //
                         currentRowNum++;

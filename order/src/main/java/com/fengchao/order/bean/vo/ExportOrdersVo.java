@@ -234,4 +234,9 @@ public class ExportOrdersVo {
      */
     private String paymentNo;
 
+    /**
+     * 退款单号号
+     */
+    private String refundNo;
+
 }
