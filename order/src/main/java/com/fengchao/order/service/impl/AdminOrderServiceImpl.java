@@ -111,8 +111,24 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 adminOrderDao.selectExportOrderDetail(ordersIdList, orderExportReqVo.getSubOrderId(), orderExportReqVo.getMerchantId());
         log.info("导出订单 查询数据库结果List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
 
+        // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
+        List<String> paymentNoList = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            if (StringUtils.isNotBlank(orders.getPaymentNo())) {
+                paymentNoList.add(orders.getPaymentNo());
+            }
+        }
+        List<List<String>> paymentNoPatitionLists = Lists.partition(paymentNoList, LIST_PARTITION_SIZE);
+
+        Map<String, List<OrderPayMethodInfoBean>> paymentMethodInfoMap = new HashMap<>();
+        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
+            Map<String, List<OrderPayMethodInfoBean>> _map = wsPayRpcService.queryBatchPayMethod(queryPaymentNoList);
+
+            paymentMethodInfoMap.putAll(_map);
+        }
+
         // 4.获取组装结果的其他相关数据
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null, paymentMethodInfoMap , null);
 
         log.info("导出订单 获取导出结果List<ExportOrdersVo>:{}", JSONUtil.toJsonString(exportOrdersVoList));
 
@@ -153,8 +169,24 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList);
         log.info("导出订单对账单(入账) 查询主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
+        // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
+        List<String> paymentNoList = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            if (StringUtils.isNotBlank(orders.getPaymentNo())) {
+                paymentNoList.add(orders.getPaymentNo());
+            }
+        }
+        List<List<String>> paymentNoPatitionLists = Lists.partition(paymentNoList, LIST_PARTITION_SIZE);
+
+        Map<String, List<OrderPayMethodInfoBean>> paymentMethodInfoMap = new HashMap<>();
+        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
+            Map<String, List<OrderPayMethodInfoBean>> _map = wsPayRpcService.queryBatchPayMethod(queryPaymentNoList);
+
+            paymentMethodInfoMap.putAll(_map);
+        }
+
         // 3.组装结果
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null, paymentMethodInfoMap, null);
 
         // patch, 将状态统一为"已退款"
         if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
@@ -219,8 +251,24 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList);
         log.info("导出订单对账单(出账) 查询已退款的主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
+        // 4.5 获取主订单的支付方式信息
+        List<String> paymentNoList = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            if (StringUtils.isNotBlank(orders.getPaymentNo())) {
+                paymentNoList.add(orders.getPaymentNo());
+            }
+        }
+        List<List<String>> paymentNoPatitionLists = Lists.partition(paymentNoList, LIST_PARTITION_SIZE);
+        // 退款方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
+        Map<String, List<RefundMethodInfoBean>> refundMethodInfoMap = new HashMap<>();
+        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
+            Map<String, List<RefundMethodInfoBean>> _map = wsPayRpcService.queryBatchRefundMethod(queryPaymentNoList);
+
+            refundMethodInfoMap.putAll(_map);
+        }
+
         // 3.组装结果!!!
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, orderDetailRefundAmountMap);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, orderDetailRefundAmountMap,null, refundMethodInfoMap);
 
         // patch, 将状态统一为"已退款"
         if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
@@ -294,7 +342,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
      */
     private List<ExportOrdersVo> assembleExportOrderData(List<Orders> ordersList,
                                                          List<OrderDetail> orderDetailList,
-                                                         Map<String, Float> orderDetailRefundAmountMap) {
+                                                         Map<String, Float> orderDetailRefundAmountMap,
+                                                         Map<String, List<OrderPayMethodInfoBean>> paymentMethodInfoMap,
+                                                         Map<String, List<RefundMethodInfoBean>> refundMethodInfoMap) {
         // x. 获取组装结果的其他相关数据 - 获取导出需要的coupon信息列表 - 获取coupon的id集合
         Set<Integer> couponUseInfoIdSet = new HashSet<>();
         // x. 获取组装结果的其他相关数据 - 获取导出需要的支付方式信息 - 获取coupon的id集合
@@ -381,24 +431,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 转map
         Map<Long, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
 
-        // 4.5 获取主订单的支付方式信息
-        List<List<String>> paymentNoPatitionLists = Lists.partition(paymentNoList, LIST_PARTITION_SIZE);
 
-        // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
-        Map<String, List<OrderPayMethodInfoBean>> paymentMethodInfoMap = new HashMap<>();
-        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
-            Map<String, List<OrderPayMethodInfoBean>> _map = wsPayRpcService.queryBatchPayMethod(queryPaymentNoList);
 
-            paymentMethodInfoMap.putAll(_map);
-        }
-
-        // 退款方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
-        Map<String, List<RefundMethodInfoBean>> refundMethodInfoMap = new HashMap<>();
-        for (List<String> queryPaymentNoList : paymentNoPatitionLists) {
-            Map<String, List<RefundMethodInfoBean>> _map = wsPayRpcService.queryBatchRefundMethod(queryPaymentNoList);
-
-            refundMethodInfoMap.putAll(_map);
-        }
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
         List<ExportOrdersVo> exportOrdersVoList = new ArrayList<>();
@@ -419,6 +453,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                     exportOrdersVo.setOpenId(ordersBo.getOpenId()); // 用户id
                     exportOrdersVo.setTradeNo(ordersBo.getTradeNo()); // 主订单编号
+                    exportOrdersVo.setPaymentNo(ordersBo.getPaymentNo());
                     exportOrdersVo.setSubOrderId(orderDetailBo.getSubOrderId()); // 子订单编号
                     exportOrdersVo.setOrderDetailStatus(orderDetailBo.getOrderDetailStatus()); // 子订单状态
                     exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
@@ -489,127 +524,131 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     }
 
                     // 支付方式
-                    List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = paymentMethodInfoMap.get(ordersBo.getPaymentNo());
-                    exportOrdersVo.setBalanceFee("0"); // 余额支付金额 单位 元
-                    exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元
-                    exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
-                    exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
-                    if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
+                    if(paymentMethodInfoMap != null){
+                        List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = paymentMethodInfoMap.get(ordersBo.getPaymentNo());
+                        exportOrdersVo.setBalanceFee("0"); // 余额支付金额 单位 元
+                        exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元
+                        exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
+                        exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
+                        if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
 
-                        boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
+                            boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
 
-                        for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
-                            String payType = orderPayMethodInfoBean.getPayType();
-                            Integer payStatus = orderPayMethodInfoBean.getStatus();
+                            for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
+                                String payType = orderPayMethodInfoBean.getPayType();
+                                Integer payStatus = orderPayMethodInfoBean.getStatus();
 
-                            if (payStatus == null || payStatus == 0) {
-                                continue;
+                                if (payStatus == null || payStatus == 0) {
+                                    continue;
+                                }
+
+                                // 处理显示的价格
+                                String _fen = orderPayMethodInfoBean.getActPayFee(); // 花费
+                                String _fee = StringUtils.isBlank(_fen) ?
+                                        "0" : new BigDecimal(_fen).divide(new BigDecimal(100)).toPlainString(); // 转元
+
+                                if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setBalanceFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setBalanceFee(exportOrdersVo.getBalanceFee() + "(异常)");
+                                    }
+                                } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
+                                    String huiminFee = exportOrdersVo.getHuiminCardFee(); // 单位 元
+
+                                    huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
+
+                                    exportOrdersVo.setHuiminCardFee(huiminFee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        checkHuiminCardUnNormalPayStatus = false;
+                                    }
+                                } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setWoaFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setWoaFee(exportOrdersVo.getWoaFee() + "(异常)");
+                                    }
+                                } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setQuickPayFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setQuickPayFee(exportOrdersVo.getQuickPayFee() + "(异常)");
+                                    }
+                                }
                             }
 
-                            // 处理显示的价格
-                            String _fen = orderPayMethodInfoBean.getActPayFee(); // 花费
-                            String _fee = StringUtils.isBlank(_fen) ?
-                                    "0" : new BigDecimal(_fen).divide(new BigDecimal(100)).toPlainString(); // 转元
-
-                            if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
-                                exportOrdersVo.setBalanceFee(_fee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    exportOrdersVo.setBalanceFee(exportOrdersVo.getBalanceFee() + "(异常)");
-                                }
-                            } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
-                                String huiminFee = exportOrdersVo.getHuiminCardFee(); // 单位 元
-
-                                huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
-
-                                exportOrdersVo.setHuiminCardFee(huiminFee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    checkHuiminCardUnNormalPayStatus = false;
-                                }
-                            } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
-                                exportOrdersVo.setWoaFee(_fee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    exportOrdersVo.setWoaFee(exportOrdersVo.getWoaFee() + "(异常)");
-                                }
-                            } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
-                                exportOrdersVo.setQuickPayFee(_fee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    exportOrdersVo.setQuickPayFee(exportOrdersVo.getQuickPayFee() + "(异常)");
+                            if (!checkHuiminCardUnNormalPayStatus) {
+                                if (!"0".equals(exportOrdersVo.getHuiminCardFee())) {
+                                    exportOrdersVo.setHuiminCardFee(exportOrdersVo.getHuiminCardFee() + "(异常)");
                                 }
                             }
+
                         }
-
-                        if (!checkHuiminCardUnNormalPayStatus) {
-                            if (!"0".equals(exportOrdersVo.getHuiminCardFee())) {
-                                exportOrdersVo.setHuiminCardFee(exportOrdersVo.getHuiminCardFee() + "(异常)");
-                            }
-                        }
-
                     }
 
                     // 退款方式
-                    List<RefundMethodInfoBean> refundMethodInfoList = refundMethodInfoMap.get(ordersBo.getPaymentNo());
-                    exportOrdersVo.setBalanceRefund("0"); // 余额支付金额 单位 元
-                    exportOrdersVo.setHuiminCardRefund("0"); // 惠民卡支付金额 单位 元
-                    exportOrdersVo.setWoaRefund("0"); // 联机账户支付 单位 元
-                    exportOrdersVo.setQuickPayRefund("0"); // 快捷支付 单位 元
-                    if (CollectionUtils.isNotEmpty(refundMethodInfoList)) {
+                    if(refundMethodInfoMap != null){
+                        List<RefundMethodInfoBean> refundMethodInfoList = refundMethodInfoMap.get(ordersBo.getPaymentNo());
+                        exportOrdersVo.setBalanceFee("0"); // 余额支付金额 单位 元
+                        exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元
+                        exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
+                        exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
+                        if (CollectionUtils.isNotEmpty(refundMethodInfoList)) {
 
-                        boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
+                            boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
 
-                        for (RefundMethodInfoBean refundMethodInfoBean : refundMethodInfoList) {
-                            String payType = refundMethodInfoBean.getPayType();
-                            Integer payStatus = refundMethodInfoBean.getStatus();
+                            for (RefundMethodInfoBean refundMethodInfoBean : refundMethodInfoList) {
+                                String payType = refundMethodInfoBean.getPayType();
+                                Integer payStatus = refundMethodInfoBean.getStatus();
 
-                            if (payStatus == null || payStatus == 0) {
-                                continue;
+                                if (payStatus == null || payStatus == 0) {
+                                    continue;
+                                }
+
+                                // 处理显示的价格
+                                String _fen = refundMethodInfoBean.getRefundFee(); // 花费
+                                String _fee = StringUtils.isBlank(_fen) ?
+                                        "0" : new BigDecimal(_fen).divide(new BigDecimal(-100)).toPlainString(); // 转元
+
+                                if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setBalanceFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setBalanceFee(exportOrdersVo.getBalanceFee() + "(异常)");
+                                    }
+                                } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
+                                    String huiminFee = exportOrdersVo.getHuiminCardFee(); // 单位 元
+
+                                    huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
+
+                                    exportOrdersVo.setHuiminCardFee(huiminFee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        checkHuiminCardUnNormalPayStatus = false;
+                                    }
+                                } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setWoaFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setWoaFee(exportOrdersVo.getWoaFee() + "(异常)");
+                                    }
+                                } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setQuickPayFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setQuickPayFee(exportOrdersVo.getQuickPayFee() + "(异常)");
+                                    }
+                                }
                             }
 
-                            // 处理显示的价格
-                            String _fen = refundMethodInfoBean.getRefundFee(); // 花费
-                            String _fee = StringUtils.isBlank(_fen) ?
-                                    "0" : new BigDecimal(_fen).divide(new BigDecimal(100)).toPlainString(); // 转元
-
-                            if (OrderPayMethodTypeEnum.BALANCE.getValue().equalsIgnoreCase(payType)) {
-                                exportOrdersVo.setBalanceRefund(_fee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    exportOrdersVo.setBalanceRefund(exportOrdersVo.getBalanceRefund() + "(异常)");
-                                }
-                            } else if (OrderPayMethodTypeEnum.HUIMIN_CARD.getValue().equalsIgnoreCase(payType)) {
-                                String huiminFee = exportOrdersVo.getHuiminCardRefund(); // 单位 元
-
-                                huiminFee = new BigDecimal(huiminFee).add(new BigDecimal(_fee)).toPlainString();
-
-                                exportOrdersVo.setHuiminCardRefund(huiminFee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    checkHuiminCardUnNormalPayStatus = false;
-                                }
-                            } else if (OrderPayMethodTypeEnum.WOA.getValue().equalsIgnoreCase(payType)) {
-                                exportOrdersVo.setWoaRefund(_fee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    exportOrdersVo.setWoaRefund(exportOrdersVo.getWoaRefund() + "(异常)");
-                                }
-                            } else if (OrderPayMethodTypeEnum.BANK.getValue().equalsIgnoreCase(payType)) {
-                                exportOrdersVo.setQuickPayRefund(_fee);
-
-                                if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
-                                    exportOrdersVo.setQuickPayRefund(exportOrdersVo.getQuickPayRefund() + "(异常)");
+                            if (!checkHuiminCardUnNormalPayStatus) {
+                                if (!"0".equals(exportOrdersVo.getHuiminCardFee())) {
+                                    exportOrdersVo.setHuiminCardFee(exportOrdersVo.getHuiminCardFee() + "(异常)");
                                 }
                             }
+
                         }
-
-                        if (!checkHuiminCardUnNormalPayStatus) {
-                            if (!"0".equals(exportOrdersVo.getHuiminCardFee())) {
-                                exportOrdersVo.setHuiminCardFee(exportOrdersVo.getHuiminCardFee() + "(异常)");
-                            }
-                        }
-
                     }
                     //////////
                     exportOrdersVoList.add(exportOrdersVo);

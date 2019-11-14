@@ -13,7 +13,7 @@ import java.util.Date;
  * 字段不限于：
  *      // 用户id，主订单编号，子订单编号， 订单支付时间， 订单生成时间，品类， 品牌（通过mpu获取），
  *     // sku， mpu， 商品名称， 购买数量 ， 活动 ， 券码， 券来源（券商户），进货价， 销售价，  券支付金额， 订单支付金额，
- *     // 平台分润比， 收件人名， 省 ， 市， 区
+ *     // 平台分润比， 收件人名， 省 ， 市， 区, 收件人手机号
  */
 @Getter
 @Setter
@@ -228,5 +228,10 @@ public class ExportOrdersVo {
      * 收件人手机号
      */
     private String mobile;
+
+    /**
+     * 支付订单号
+     */
+    private String paymentNo;
 
 }
