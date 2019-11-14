@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -366,13 +365,25 @@ public class AdminOrderController {
 
             // 1.根据条件获取订单集合
             List<ExportOrdersVo> exportOrdersVoList = adminOrderService.exportOrders(orderExportReqVo);
-//                    adminOrderService.exportOrdersMock();
-            if (CollectionUtils.isEmpty(exportOrdersVoList)) {
+            // 获取出账订单集合
+            List<ExportOrdersVo> exportOrdersVoListOut = adminOrderService.exportOrdersReconciliationOut(orderExportReqVo);
+
+            //                    adminOrderService.exportOrdersMock();
+            if (CollectionUtils.isEmpty(exportOrdersVoList) && CollectionUtils.isEmpty(exportOrdersVoListOut)) {
                 throw new Exception("未找出有效的导出数据!");
             }
 
+            // 合并导出的订单集合
+            List<ExportOrdersVo> mergedExportOrdersVoList = new ArrayList<>();
+            if (exportOrdersVoList != null) {
+                mergedExportOrdersVoList.addAll(exportOrdersVoList);
+            }
+            if (exportOrdersVoListOut != null) {
+                mergedExportOrdersVoList.addAll(exportOrdersVoListOut);
+            }
+
             // 将要导出的ExportOrdersVo以主订单维度形成map
-            Map<String, List<ExportOrdersVo>> exportOrdersVoMap = convertToExportOrdersVoMapByPay(exportOrdersVoList);
+            Map<String, List<ExportOrdersVo>> exportOrdersVoMap = convertToExportOrdersVoMapByPay(mergedExportOrdersVoList);
 
             // 2.开始组装excel
             // 2.1 组装title
@@ -1577,7 +1588,7 @@ public class AdminOrderController {
 
                             //退款号
                         HSSFCell cell27 = currentRow.createCell(27);
-                        cell27.setCellValue(ordersVo.getBalanceRefund());
+                        cell27.setCellValue(ordersVo.getRefundNo());
 
                         //余额退款
                         HSSFCell cell28 = currentRow.createCell(28);
