@@ -341,7 +341,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             bean.setUserCouponCode("2");
             return bean;
         }
-        if(couponUseInfo.getStatus() != 1){
+        if(couponUseInfo.getUserOpenId() != null){
             bean.setUserCouponCode("4");
             return bean;
         }
