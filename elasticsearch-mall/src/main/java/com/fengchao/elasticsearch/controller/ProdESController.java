@@ -35,4 +35,10 @@ public class ProdESController {
         operaResponse.setData(service.queryByCategoryPrefix(queryBean));
         return operaResponse;
     }
+
+    @DeleteMapping("/detail")
+    public OperaResult detailDelete(Integer id, OperaResult result) {
+        result.getData().put("result", service.delete(id)) ;
+        return result;
+    }
 }
