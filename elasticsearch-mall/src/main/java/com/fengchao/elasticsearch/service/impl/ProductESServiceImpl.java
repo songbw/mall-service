@@ -6,6 +6,8 @@ import com.fengchao.elasticsearch.domain.*;
 import com.fengchao.elasticsearch.service.ProductESService;
 import com.fengchao.elasticsearch.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -20,6 +22,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,5 +162,17 @@ public class ProductESServiceImpl implements ProductESService {
             e.printStackTrace();
         }
         return new PageBean();
+    }
+
+    @Override
+    public int delete(int id) {
+        DeleteRequest request = new DeleteRequest(esConfig.getEsIndex(), "zhsc", id + "") ;
+        try {
+            DeleteResponse deleteResponse = restHighLevelClient.delete(request, RequestOptions.DEFAULT) ;
+            deleteResponse.status();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

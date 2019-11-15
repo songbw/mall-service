@@ -21,4 +21,6 @@ public interface ProductESService {
     int allCount();
 
     PageBean queryByCategoryPrefix(ProductQueryBean queryBean);
+
+    int delete(int id) ;
 }
