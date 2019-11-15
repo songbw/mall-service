@@ -235,8 +235,14 @@ public class ExportOrdersVo {
     private String paymentNo;
 
     /**
-     * 退款单号号
+     * 退款单号
      */
     private String refundNo;
+
+    /**
+     * 奥弋ID
+     */
+    private String aoyiID;
+
 
 }
