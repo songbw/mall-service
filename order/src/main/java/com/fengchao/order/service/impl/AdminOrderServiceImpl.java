@@ -361,6 +361,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setOrderDetailStatus(orderDetailBo.getOrderDetailStatus()); // 子订单状态
                     exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
                     exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
+                    exportOrdersVo.setAoyiId(ordersBo.getAoyiId()); // 苏宁订单号
 
                     ProductInfoBean productInfoBean = productInfoBeanMap.get(orderDetailBo.getMpu());
                     exportOrdersVo.setCategory(productInfoBean == null ? "" : productInfoBean.getCategoryName()); // 品类
@@ -420,6 +421,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
                     exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
+                    exportOrdersVo.setRemark(orderDetailBo.getRemark());
 
                     exportOrdersVoList.add(exportOrdersVo);
                 } // 遍历子订单 end
@@ -473,6 +475,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orderDetailBo.setLogisticsContent(orderDetail.getLogisticsContent());
         orderDetailBo.setComcode(orderDetail.getComcode());
         orderDetailBo.setSkuCouponDiscount(orderDetail.getSkuCouponDiscount());
+        orderDetailBo.setRemark(orderDetail.getRemark());
 
         return orderDetailBo;
     }

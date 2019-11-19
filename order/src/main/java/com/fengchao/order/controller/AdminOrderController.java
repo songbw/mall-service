@@ -372,10 +372,10 @@ public class AdminOrderController {
         HSSFCell titleCell6 = titleRow.createCell(6);
         titleCell6.setCellValue("运费 单位:元"); // 主订单
 
-        // ---子订单
         HSSFCell titleCell7 = titleRow.createCell(7);
-        titleCell7.setCellValue("用户id");
+        titleCell7.setCellValue("苏宁单号");
 
+        // ---子订单
         HSSFCell titleCell8 = titleRow.createCell(8);
         titleCell8.setCellValue("子订单编号");
 
@@ -429,6 +429,12 @@ public class AdminOrderController {
 
         HSSFCell titleCell25 = titleRow.createCell(25);
         titleCell25.setCellValue("详细地址");
+
+        HSSFCell titleCell26 = titleRow.createCell(26);
+        titleCell26.setCellValue("用户id");
+
+        HSSFCell titleCell27 = titleRow.createCell(27);
+        titleCell27.setCellValue("子订单备注");
     }
 
     /**
@@ -464,6 +470,7 @@ public class AdminOrderController {
                 HSSFCell cell4 = currentRow.createCell(4); // 券来源
                 HSSFCell cell5 = currentRow.createCell(5); // 余额支付
                 HSSFCell cell6 = currentRow.createCell(6); // 运费 单位:元
+                HSSFCell cell7 = currentRow.createCell(7); // 苏宁订单号
                 if (checkFlag.add(tradeNo)) {
                     cell0.setCellValue(tradeNo); // 主订单号
                     cell1.setCellValue(new BigDecimal(exportOrdersVo.getPayPrice()).divide(new BigDecimal(100)).toString()); // 实际支付价格 单位:元
@@ -472,6 +479,7 @@ public class AdminOrderController {
                     cell4.setCellValue(StringUtils.isBlank(exportOrdersVo.getCouponSupplier()) ? "-" : exportOrdersVo.getCouponSupplier()); // 券来源
                     cell5.setCellValue("暂无"); // 余额支付
                     cell6.setCellValue(exportOrdersVo.getExpressFee()); // 运费 单位:元
+                    cell7.setCellValue(exportOrdersVo.getAoyiId()); // 苏宁订单号
                 } else {
                     // 主订单号
                     //cell0.setCellValue("");
@@ -495,14 +503,11 @@ public class AdminOrderController {
                         sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 4, 4));
                         sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 5, 5));
                         sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 6, 6));
+                        sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 7, 7));
                     }
                 }
 
                 // -- 子订单
-                // 用户id
-                HSSFCell cell7 = currentRow.createCell(7);
-                cell7.setCellValue(exportOrdersVo.getOpenId());
-
                 // 子订单编号，
                 HSSFCell cell8 = currentRow.createCell(8);
                 cell8.setCellValue(exportOrdersVo.getSubOrderId());
@@ -588,6 +593,14 @@ public class AdminOrderController {
                 // 详细地址
                 HSSFCell cell25 = currentRow.createCell(25);
                 cell25.setCellValue(exportOrdersVo.getAddress());
+
+                // 用户id
+                HSSFCell cell26 = currentRow.createCell(26);
+                cell26.setCellValue(exportOrdersVo.getOpenId());
+
+                // 用户id
+                HSSFCell cell27 = currentRow.createCell(27);
+                cell27.setCellValue(exportOrdersVo.getRemark());
 
                 //
                 currentRowNum++;

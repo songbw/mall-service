@@ -155,6 +155,11 @@ public class ExportOrdersVo {
     private String expressFee;
 
     /**
+     * 苏宁订单号
+     */
+    private String aoyiId;
+
+    /**
      * 详细地址
      */
     private String address;
@@ -178,5 +183,10 @@ public class ExportOrdersVo {
      * 0：待付款；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
      */
     private String orderDetailStatus;
+
+    /**
+     * 子订单备注
+     */
+    private String remark;
 
 }
