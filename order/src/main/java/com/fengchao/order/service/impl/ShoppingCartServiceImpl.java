@@ -162,6 +162,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return pageBean;
     }
 
+    @Override
+    public OperaResponse count(String openId) {
+        OperaResponse response = new OperaResponse() ;
+        int count = mapper.selectNumCount(openId) ;
+        response.setData(count);
+        return response;
+    }
+
     private List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdIndex> beans) {
         List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
         beans.forEach(aoyiProdIndex -> {

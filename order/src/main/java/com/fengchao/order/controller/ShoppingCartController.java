@@ -1,5 +1,6 @@
 package com.fengchao.order.controller;
 
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.bean.ShoppingCartQueryBean;
 import com.fengchao.order.model.ShoppingCart;
@@ -36,6 +37,11 @@ public class ShoppingCartController {
     @PutMapping("/num")
     private OperaResult modifyNum(@RequestBody ShoppingCart bean) {
         return service.modifyNum(bean);
+    }
+
+    @GetMapping("/count")
+    private OperaResponse count(String openId) {
+        return service.count(openId) ;
     }
 
 }

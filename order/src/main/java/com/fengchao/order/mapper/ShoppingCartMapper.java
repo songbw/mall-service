@@ -33,4 +33,6 @@ public interface ShoppingCartMapper {
     int selectLimitCount(HashMap map) ;
 
     List<ShoppingCart> selectByOpenId(String openId) ;
+
+    int selectNumCount(String openId) ;
 }

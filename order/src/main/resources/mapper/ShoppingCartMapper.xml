@@ -47,6 +47,9 @@
     from shopping_cart
     where open_id = #{openId}
   </select>
+  <select id="selectNumCount" resultType="java.lang.Integer">
+    SELECT SUM(count) FROM shopping_cart WHERE open_id = #{openId};
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from shopping_cart
     where id = #{id,jdbcType=INTEGER}
