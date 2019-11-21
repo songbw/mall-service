@@ -87,14 +87,16 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             num = mapper.insertSelective(couponUseInfo);
             couponUseInfoBean.setUserCouponCode(user_coupon_code);
         }else if(coupon.getCollectType() == 4){
-            List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
-            if(couponUseInfos != null){
-                CouponUseInfoX useInfo = couponUseInfos.get(0);
-                useInfo.setUserOpenId(bean.getUserOpenId());
-                useInfo.setCollectedTime(new Date());
-                num= mapper.updateByPrimaryKeySelective(useInfo);
-                couponUseInfoBean.setUserCouponCode(useInfo.getUserCouponCode());
-            }
+//            List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
+//            if(couponUseInfos != null){
+//                CouponUseInfoX useInfo = couponUseInfos.get(0);
+//                useInfo.setUserOpenId(bean.getUserOpenId());
+//                useInfo.setCollectedTime(new Date());
+//                num= mapper.updateByPrimaryKeySelective(useInfo);
+//                couponUseInfoBean.setUserCouponCode(useInfo.getUserCouponCode());
+//            }
+            couponUseInfoBean.setUserCouponCode("3");
+            return couponUseInfoBean;
         }else{
             DecimalFormat df=new DecimalFormat("0000");
             String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
