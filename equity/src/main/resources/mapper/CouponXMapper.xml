@@ -181,7 +181,7 @@
         and scenario_type = 3
       </if>
     </trim>
-    and status = 4 and collect_type != 4
+    and status = 4
   </select>
   <select id="selectGrantCoupon" resultMap="BaseResultMap">
     select
