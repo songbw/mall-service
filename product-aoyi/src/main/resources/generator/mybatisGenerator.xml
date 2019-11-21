@@ -41,7 +41,10 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="platform" enableInsert="true">
+<!--        <table tableName="platform" enableInsert="true">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
+        <table tableName="aoyi_prod_index" enableInsert="true">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
 
