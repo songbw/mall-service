@@ -66,6 +66,7 @@ public class PlatformServiceImpl implements PlatformService {
             response.setMsg("id不能为空或0。");
             return response ;
         }
+        bean.setAppId(null);
         Date date = new Date();
         bean.setUpdatedAt(date);
         mapper.updateByPrimaryKeySelective(bean) ;
