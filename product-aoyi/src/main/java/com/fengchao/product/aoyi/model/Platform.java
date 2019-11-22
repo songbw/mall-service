@@ -15,6 +15,8 @@ public class Platform {
 
     private Date updatedAt;
 
+    private Integer status;
+
     public Integer getId() {
         return id;
     }
@@ -61,5 +63,13 @@ public class Platform {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }
