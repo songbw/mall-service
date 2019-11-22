@@ -1764,6 +1764,146 @@ public class AoyiProdIndexExample {
             addCriterion("compare_url not between", value1, value2, "compareUrl");
             return (Criteria) this;
         }
+
+        public Criteria andSubTitleIsNull() {
+            addCriterion("sub_title is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleIsNotNull() {
+            addCriterion("sub_title is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleEqualTo(String value) {
+            addCriterion("sub_title =", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleNotEqualTo(String value) {
+            addCriterion("sub_title <>", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleGreaterThan(String value) {
+            addCriterion("sub_title >", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleGreaterThanOrEqualTo(String value) {
+            addCriterion("sub_title >=", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleLessThan(String value) {
+            addCriterion("sub_title <", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleLessThanOrEqualTo(String value) {
+            addCriterion("sub_title <=", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleLike(String value) {
+            addCriterion("sub_title like", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleNotLike(String value) {
+            addCriterion("sub_title not like", value, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleIn(List<String> values) {
+            addCriterion("sub_title in", values, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleNotIn(List<String> values) {
+            addCriterion("sub_title not in", values, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleBetween(String value1, String value2) {
+            addCriterion("sub_title between", value1, value2, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubTitleNotBetween(String value1, String value2) {
+            addCriterion("sub_title not between", value1, value2, "subTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceIsNull() {
+            addCriterion("compare_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceIsNotNull() {
+            addCriterion("compare_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceEqualTo(String value) {
+            addCriterion("compare_price =", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceNotEqualTo(String value) {
+            addCriterion("compare_price <>", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceGreaterThan(String value) {
+            addCriterion("compare_price >", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceGreaterThanOrEqualTo(String value) {
+            addCriterion("compare_price >=", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceLessThan(String value) {
+            addCriterion("compare_price <", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceLessThanOrEqualTo(String value) {
+            addCriterion("compare_price <=", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceLike(String value) {
+            addCriterion("compare_price like", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceNotLike(String value) {
+            addCriterion("compare_price not like", value, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceIn(List<String> values) {
+            addCriterion("compare_price in", values, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceNotIn(List<String> values) {
+            addCriterion("compare_price not in", values, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceBetween(String value1, String value2) {
+            addCriterion("compare_price between", value1, value2, "comparePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andComparePriceNotBetween(String value1, String value2) {
+            addCriterion("compare_price not between", value1, value2, "comparePrice");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

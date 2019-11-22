@@ -53,6 +53,10 @@ public class AoyiProdIndex {
 
     private String compareUrl;
 
+    private String subTitle;
+
+    private String comparePrice;
+
     public Integer getId() {
         return id;
     }
@@ -251,5 +255,21 @@ public class AoyiProdIndex {
 
     public void setCompareUrl(String compareUrl) {
         this.compareUrl = compareUrl == null ? null : compareUrl.trim();
+    }
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle == null ? null : subTitle.trim();
+    }
+
+    public String getComparePrice() {
+        return comparePrice;
+    }
+
+    public void setComparePrice(String comparePrice) {
+        this.comparePrice = comparePrice == null ? null : comparePrice.trim();
     }
 }
