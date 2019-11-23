@@ -10,6 +10,7 @@ import com.fengchao.sso.model.BalanceDetailExample;
 import com.fengchao.sso.model.BalanceExample;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -96,15 +97,22 @@ public class BalanceDao {
      * @param openId
      */
     public void updateOpenIdByTel(String tel, String openId) {
+        log.info("updateOpenIdByTel 入参 is {}, {}", tel, openId);
         BalanceExample balanceExample = new BalanceExample();
         BalanceExample.Criteria criteria = balanceExample.createCriteria();
-        criteria.andTelephoneEqualTo(tel) ;
-        Balance balance = new Balance();
-        balance.setOpenId(openId);
-        Date date = new Date();
-        balance.setCreatedAt(date);
-        balance.setUpdatedAt(date);
-        mapper.updateByExample(balance, balanceExample) ;
+        if (!StringUtil.isEmpty(tel)) {
+            criteria.andTelephoneEqualTo(tel) ;
+            Balance balance = selectBalanceByTel(tel) ;
+            if (balance != null) {
+                balance.setOpenId(openId);
+                Date date = new Date();
+                balance.setUpdatedAt(date);
+                int id = mapper.updateByExample(balance, balanceExample) ;
+                log.info("updateOpenIdByTel return is {}", id);
+            } else {
+                log.info("updateOpenIdByTel 余额信息为null");
+            }
+        }
     }
 
     /**
