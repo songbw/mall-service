@@ -352,6 +352,7 @@ public class BalanceServiceImpl implements IBalanceService {
         log.info("init");
         initBalances.forEach(sumBean -> {
             //  根据ID查询充值总额
+            queryBean.setBalanceId(sumBean.getId());
             queryBean.setType(2);
             Integer chargeSum = balanceMapper.selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt(queryBean) ;
             if (chargeSum != null) {

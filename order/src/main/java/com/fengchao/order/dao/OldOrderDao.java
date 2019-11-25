@@ -1,12 +1,10 @@
 package com.fengchao.order.dao;
 
 import com.fengchao.order.bean.OldOrderQueryBean;
+import com.fengchao.order.mapper.ImsMcMembersMapper;
 import com.fengchao.order.mapper.ImsSupermanMallOrderItemMapper;
 import com.fengchao.order.mapper.ImsSupermanMallOrderMapper;
-import com.fengchao.order.model.ImsSupermanMallOrder;
-import com.fengchao.order.model.ImsSupermanMallOrderExample;
-import com.fengchao.order.model.ImsSupermanMallOrderItem;
-import com.fengchao.order.model.ImsSupermanMallOrderItemExample;
+import com.fengchao.order.model.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +24,13 @@ public class OldOrderDao {
 
     private ImsSupermanMallOrderMapper imsSupermanMallOrderMapper ;
     private ImsSupermanMallOrderItemMapper imsSupermanMallOrderItemMapper ;
+    private ImsMcMembersMapper imsMcMembersMapper ;
 
     @Autowired
-    public OldOrderDao(ImsSupermanMallOrderMapper imsSupermanMallOrderMapper, ImsSupermanMallOrderItemMapper imsSupermanMallOrderItemMapper) {
+    public OldOrderDao(ImsSupermanMallOrderMapper imsSupermanMallOrderMapper, ImsSupermanMallOrderItemMapper imsSupermanMallOrderItemMapper, ImsMcMembersMapper imsMcMembersMapper) {
         this.imsSupermanMallOrderMapper = imsSupermanMallOrderMapper;
         this.imsSupermanMallOrderItemMapper = imsSupermanMallOrderItemMapper;
+        this.imsMcMembersMapper = imsMcMembersMapper ;
     }
 
     /**
@@ -41,21 +41,25 @@ public class OldOrderDao {
      */
     public PageInfo<ImsSupermanMallOrder> selectAllPageable(OldOrderQueryBean queryBean) {
         ImsSupermanMallOrderExample imsSupermanMallOrderExample = new ImsSupermanMallOrderExample();
-
         ImsSupermanMallOrderExample.Criteria criteria = imsSupermanMallOrderExample.createCriteria();
-        criteria.andMobileEqualTo(queryBean.getMobile());
-
+        imsSupermanMallOrderExample.setOrderByClause("id desc");
+        criteria.andUidEqualTo(queryBean.getUid());
+        List<Byte> bytes = new ArrayList<>();
+        bytes.add((byte) -3) ;
+        bytes.add((byte) -2) ;
+        bytes.add((byte) -1) ;
+        criteria.andStatusNotIn(bytes) ;
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
-
-        List<ImsSupermanMallOrder> ordersList = new ArrayList<>() ;
-        imsSupermanMallOrderMapper.selectByExample(imsSupermanMallOrderExample).forEach(imsSupermanMallOrder -> {
+        List<ImsSupermanMallOrder> ordersList = imsSupermanMallOrderMapper.selectByExample(imsSupermanMallOrderExample);
+        PageInfo<ImsSupermanMallOrder> pageInfo = new PageInfo(ordersList);
+        List<ImsSupermanMallOrder> orders = new ArrayList<>() ;
+        pageInfo.getList().forEach(imsSupermanMallOrder -> {
             List<ImsSupermanMallOrderItem> items = new ArrayList<>() ;
             items = selectItemByOrderId(imsSupermanMallOrder.getId()) ;
             imsSupermanMallOrder.setItemList(items);
-            ordersList.add(imsSupermanMallOrder) ;
+            orders.add(imsSupermanMallOrder) ;
         });
-        PageInfo<ImsSupermanMallOrder> pageInfo = new PageInfo(ordersList);
-
+        pageInfo.setList(orders);
         return pageInfo;
     }
 
@@ -65,5 +69,16 @@ public class OldOrderDao {
         criteria.andOrderidEqualTo(orderId) ;
         List<ImsSupermanMallOrderItem> items = imsSupermanMallOrderItemMapper.selectByExample(imsSupermanMallOrderItemExample) ;
         return items ;
+    }
+
+    public ImsMcMembers selectMembersByMobile(String mobile) {
+        ImsMcMembersExample example = new ImsMcMembersExample() ;
+        ImsMcMembersExample.Criteria criteria = example.createCriteria() ;
+        criteria.andMobileEqualTo(mobile) ;
+        List<ImsMcMembers> items = imsMcMembersMapper.selectByExample(example) ;
+        if (items != null && items.size() > 0) {
+            return items.get(0) ;
+        }
+        return null;
     }
 }
