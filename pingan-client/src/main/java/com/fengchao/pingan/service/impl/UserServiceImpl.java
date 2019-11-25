@@ -141,6 +141,7 @@ public class UserServiceImpl implements UserService {
     public OperaResponse<AccessToken> getAuthAccessToken(String authCode) {
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath()+ HttpClient.ACCESS_TOKEN_URL);
         AccessTokenRequestBean bean = new AccessTokenRequestBean();
+        bean.setAppId(config.getAppId());
         bean.setAuthCode(authCode);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
@@ -153,6 +154,7 @@ public class UserServiceImpl implements UserService {
     public OperaResponse<AccessToken> getRefreshToken(String refreshToken) {
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath()+ HttpClient.REFRESH_TOKEN_URL);
         RefreshTokenRequestBean bean = new RefreshTokenRequestBean();
+        bean.setAppId(config.getAppId());
         bean.setRefreshToken(refreshToken);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
@@ -165,6 +167,7 @@ public class UserServiceImpl implements UserService {
     public OperaResponse<CheckTokenBean> checkToken(String accessToken) {
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath()+ HttpClient.CHECK_TOKEN_URL);
         CheckTokenRequestBean bean = new CheckTokenRequestBean();
+        bean.setAppId(config.getAppId());
         bean.setAccessToken(accessToken);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
@@ -186,6 +189,7 @@ public class UserServiceImpl implements UserService {
         }
         AccessToken accessToken = JSON.parseObject(JSON.toJSONString(accessTokenOperaResponse.getData()), AccessToken.class);
         CheckRequestCodeRequestBean bean = new CheckRequestCodeRequestBean();
+        bean.setAppId(config.getAppId());
         bean.setRequestCode(requestCode);
         bean.setAccessToken(accessToken.getAccessToken());
         WebTarget webTarget = HttpClient.createClient().target(config.getAuthBasePath()+ HttpClient.CHECK_REQUEST_CODE_URL);

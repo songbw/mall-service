@@ -128,6 +128,11 @@ public class OrderController {
         return service.getLogist(merchantNo, orderId);
     }
 
+    @GetMapping("/sub/logistics")
+    private OperaResult getSubOrderLogistics(String subOrderId, String merchantNo, OperaResult result) {
+        return service.getSubOrderLogist(merchantNo, subOrderId);
+    }
+
     @GetMapping("/tradeNo")
     private OperaResult findOrderListByTradeNo(String appId, String merchantNo, String tradeNo, OperaResult result) {
         result.getData().put("result", service.findTradeNo(appId, merchantNo, tradeNo)) ;

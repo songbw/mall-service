@@ -39,6 +39,8 @@ public interface OrderService {
 
     OperaResult getLogist(String merchantNo, String orderId) ;
 
+    OperaResult getSubOrderLogist(String merchantNo, String subOrderId) ;
+
     List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) ;
 
     List<Order> findOutTradeNo(String outTradeNo) ;

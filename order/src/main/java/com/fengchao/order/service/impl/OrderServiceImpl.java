@@ -699,6 +699,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OperaResult getSubOrderLogist(String merchantNo, String subOrderId) {
+        OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(subOrderId)) {
+            result.setCode(4000001);
+            result.setMsg("子订单号不能为空");
+            return result ;
+        }
+        OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(subOrderId);
+        if (orderDetail == null) {
+            result.setCode(4000001);
+            result.setMsg("子订单号不存在。");
+            return result ;
+        }
+        if (orderDetail.getLogisticsId() != null && orderDetail.getComcode() != null) {
+            OperaResponse<JSONObject> response =  baseService.kuaidi100(orderDetail.getLogisticsId(), orderDetail.getComcode()) ;
+            if (response.getCode() == 200) {
+                JSONObject jsonObject = response.getData();
+                logger.info("子订单物流查询结果： {}", JSONUtils.toJSONString(jsonObject));
+                result.getData().put("result", jsonObject) ;
+                return result;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) {
         logger.info("findTradeNo 方法入参 appId : " + appId + " merchantNo : " + merchantNo + " tradeNo : " + tradeNo);
         List<Order> orders = new ArrayList<>();
