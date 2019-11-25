@@ -1491,6 +1491,8 @@ public class AdminOrderController {
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 8, 8));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 9, 9));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 10, 10));
+                            }else{
+                                endLineNum = currentRowNum;
                             }
                         }
 
