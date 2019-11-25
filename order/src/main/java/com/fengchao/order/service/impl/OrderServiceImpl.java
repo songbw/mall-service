@@ -703,16 +703,22 @@ public class OrderServiceImpl implements OrderService {
         OperaResult result = new OperaResult();
         if (StringUtils.isEmpty(subOrderId)) {
             result.setCode(4000001);
-            result.setMsg("子订单号不存在");
+            result.setMsg("子订单号不能为空");
             return result ;
         }
         OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(subOrderId);
-        if (orderDetail != null && orderDetail.getLogisticsId() != null && orderDetail.getComcode() != null) {
+        if (orderDetail == null) {
+            result.setCode(4000001);
+            result.setMsg("子订单号不存在。");
+            return result ;
+        }
+        if (orderDetail.getLogisticsId() != null && orderDetail.getComcode() != null) {
             OperaResponse<JSONObject> response =  baseService.kuaidi100(orderDetail.getLogisticsId(), orderDetail.getComcode()) ;
             if (response.getCode() == 200) {
                 JSONObject jsonObject = response.getData();
                 logger.info("子订单物流查询结果： {}", JSONUtils.toJSONString(jsonObject));
                 result.getData().put("result", jsonObject) ;
+                return result;
             }
         }
         return null;
