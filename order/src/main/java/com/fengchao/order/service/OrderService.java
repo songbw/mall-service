@@ -1,6 +1,5 @@
 package com.fengchao.order.service;
 
-import com.alibaba.fastjson.JSONArray;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
@@ -24,6 +23,8 @@ public interface OrderService {
     Integer delete(Integer id) ;
 
     PageBean findList(OrderQueryBean queryBean) ;
+
+    PageBean findListV2(OrderQueryBean queryBean) ;
 
     Integer updateStatus(Order bean);
 
@@ -125,4 +126,6 @@ public interface OrderService {
     OrderDetail findDetailById(int id) ;
 
     Integer finishOrderDetail(Integer id);
+
+    List<UnPaidBean> unpaid(String openId) ;
 }

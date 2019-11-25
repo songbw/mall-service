@@ -381,4 +381,11 @@ public class OrderController {
         result.getData().put("result", service.updateSubOrderStatus(bean)) ;
         return result;
     }
+
+    @PostMapping("/all/v2")
+    private OperaResult findListV2(@RequestBody OrderQueryBean queryBean, OperaResult result) {
+        result.getData().put("result", service.findListV2(queryBean)) ;
+        result.getData().put("unpaid", service.unpaid(queryBean.getOpenId())) ;
+        return result;
+    }
 }

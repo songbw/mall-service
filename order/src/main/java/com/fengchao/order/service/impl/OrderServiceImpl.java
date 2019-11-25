@@ -33,10 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -512,6 +512,31 @@ public class OrderServiceImpl implements OrderService {
         total = orderMapper.selectLimitCount(map);
         if (total > 0) {
             orders = orderMapper.selectLimit(map);
+            orders.forEach(order -> {
+                order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+            });
+        }
+        pageBean = PageBean.build(pageBean, orders, total, queryBean.getPageNo(), queryBean.getPageSize());
+        return pageBean;
+    }
+
+    @DataSource(DataSourceNames.TWO)
+    @Override
+    public PageBean findListV2(OrderQueryBean queryBean) {
+        PageBean pageBean = new PageBean();
+        int total = 0;
+        int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
+        HashMap map = new HashMap();
+        map.put("pageNo", offset);
+        map.put("pageSize", queryBean.getPageSize());
+        map.put("openId", queryBean.getOpenId()) ;
+        if (queryBean.getStatus() != null && queryBean.getStatus() != -1) {
+            map.put("status", queryBean.getStatus()) ;
+        }
+        List<Order> orders = new ArrayList<>();
+        total = orderMapper.selectLimitCountV2(map);
+        if (total > 0) {
+            orders = orderMapper.selectLimitV2(map);
             orders.forEach(order -> {
                 order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
             });
@@ -1080,6 +1105,49 @@ public class OrderServiceImpl implements OrderService {
         orderDetail.setStatus(3);
         orderDetailDao.updateOrderDetailStatus(orderDetail) ;
         return id;
+    }
+
+    @Override
+    public List<UnPaidBean> unpaid(String openId) {
+        HashMap map = new HashMap();
+        map.put("openId", openId) ;
+        map.put("status", 0) ;
+        List<UnPaidBean> unPaidBeans = new ArrayList<>() ;
+        List<Order>  orders = orderMapper.selectByOpenIdAndStatus(map);
+        orders.forEach(order -> {
+            order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+        });
+        Map<String, List<Order>> orderMap = orders.stream().collect(Collectors.groupingBy(order -> fetchGroupKey(order))) ;
+        for (String key : orderMap.keySet()) {
+            UnPaidBean unPaidBean = new UnPaidBean() ;
+            List<Order> orderList = orderMap.get(key);
+            if (orderList != null && orderList.size() > 0) {
+                Order order = orderList.get(0) ;
+                OrderCouponBean orderCouponBean = new OrderCouponBean() ;
+                orderCouponBean.setId(order.getCouponId());
+                orderCouponBean.setCode(order.getCouponCode());
+                orderCouponBean.setDiscount(orderCouponBean.getDiscount());
+                unPaidBean.setCoupon(orderCouponBean);
+                AtomicReference<Float> saleAmount = new AtomicReference<>(0.00f);
+                AtomicReference<Float> servFee= new AtomicReference<>(0.00f);
+                orderList.forEach(order1 -> {
+                    saleAmount.set(saleAmount.get() + order1.getSaleAmount());
+                    servFee.set(servFee.get() + order1.getServFee());
+                });
+                unPaidBean.setSaleAmount(saleAmount.get());
+                unPaidBean.setServFee(servFee.get());
+                unPaidBean.setOrderNos(key);
+            }
+            unPaidBean.setOrdersList(orderList);
+            unPaidBeans.add(unPaidBean) ;
+        }
+        return unPaidBeans;
+    }
+
+    private String fetchGroupKey(Order order) {
+        String tradeNo = order.getTradeNo();
+        String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());
+        return key;
     }
 
     // ========================================= private ======================================

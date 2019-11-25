@@ -55,7 +55,9 @@ public class PaymentServiceImpl implements IPaymentService {
                 order.setPaymentNo(result1.getData().getOrderNo());
                 order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                 order.setUpdatedAt(new Date());
-                updatePaymentNo(order);
+                if (order.getPayStatus() != 5) {
+                    updatePaymentNo(order);
+                }
             });
         } else if ("订单号重复".equals(result1.getMsg())) {
             List<Order> orders = findOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
@@ -105,7 +107,9 @@ public class PaymentServiceImpl implements IPaymentService {
             order.setPaymentNo(outer_trade_no);
             order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
             order.setUpdatedAt(new Date());
-            updatePaymentNo(order);
+            if (order.getPayStatus() != 5) {
+                updatePaymentNo(order);
+            }
         });
         UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
         urlEncodeBean.setUrlEncode(guanaitongUrl);
