@@ -1,6 +1,7 @@
 package com.fengchao.order.service;
 
 import com.fengchao.order.bean.OldOrderQueryBean;
+import com.fengchao.order.bean.OperaResponse;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -9,5 +10,5 @@ import com.github.pagehelper.PageInfo;
  */
 public interface OldOrderService {
 
-    PageInfo findList(OldOrderQueryBean queryBean) ;
+    OperaResponse findList(OldOrderQueryBean queryBean) ;
 }

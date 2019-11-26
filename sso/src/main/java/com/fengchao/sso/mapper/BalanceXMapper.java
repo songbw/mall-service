@@ -14,7 +14,7 @@ public interface BalanceXMapper {
 
     List<BalanceSumBean> selectInitAmount(BalanceQueryBean queryBean) ;
 
-    Integer selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt(BalanceQueryBean queryBean) ;
+    int selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt(BalanceQueryBean queryBean) ;
 
     List<BalanceSumBean> selectChargeList(BalanceQueryBean queryBean) ;
 }
