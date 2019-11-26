@@ -572,12 +572,11 @@ public class AdminOrderController {
 
             //
             try {
-//                response.setHeader("content-type", "application/octet-stream");
-//                response.setContentType("application/octet-stream");
-//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-//
-//                outputStream = response.getOutputStream();
-                outputStream = new FileOutputStream("D://" + fileName);
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -1385,7 +1384,10 @@ public class AdminOrderController {
         titleCell36.setCellValue("详细地址");
 
         HSSFCell titleCell37 = titleRow.createCell(37);
-        titleCell37.setCellValue("收件人手机号");
+        titleCell37.setCellValue("备注信息");
+
+        HSSFCell titleCell38 = titleRow.createCell(38);
+        titleCell38.setCellValue("收件人手机号");
     }
 
     /**
@@ -1627,9 +1629,13 @@ public class AdminOrderController {
                         HSSFCell cell36 = currentRow.createCell(36);
                         cell36.setCellValue(ordersVo.getAddress());
 
-                        // 收件人手机号
+                        // 备注
                         HSSFCell cell37 = currentRow.createCell(37);
-                        cell37.setCellValue(ordersVo.getMobile());
+                        cell37.setCellValue(ordersVo.getRemark());
+
+                        // 收件人手机号
+                        HSSFCell cell38 = currentRow.createCell(38);
+                        cell38.setCellValue(ordersVo.getMobile());
 
                         //
                         currentRowNum++;
