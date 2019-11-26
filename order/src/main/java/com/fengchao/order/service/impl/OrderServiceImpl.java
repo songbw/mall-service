@@ -724,6 +724,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OperaResult getWorkOrderLogist(String logisticNo, String code, String merchantNo) {
+        OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(logisticNo)) {
+            result.setCode(4000001);
+            result.setMsg("物流单号不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(code)) {
+            result.setCode(4000001);
+            result.setMsg("物流编码不能为空");
+            return result ;
+        }
+        OperaResponse<JSONObject> response =  baseService.kuaidi100(logisticNo, code) ;
+        if (response.getCode() == 200) {
+            JSONObject jsonObject = response.getData();
+            logger.info("子订单物流查询结果： {}", JSONUtils.toJSONString(jsonObject));
+            result.getData().put("result", jsonObject) ;
+            return result;
+        }
+        return result;
+    }
+
+    @Override
     public OperaResult getSubOrderLogist(String merchantNo, String subOrderId) {
         OperaResult result = new OperaResult();
         if (StringUtils.isEmpty(subOrderId)) {
