@@ -524,7 +524,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
                     exportOrdersVo.setExpressFee(ordersBo.getServFee().toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
+                    exportOrdersVo.setAoyiID(ordersBo.getAoyiId());
                     exportOrdersVo.setMobile(ordersBo.getMobile());
+                    exportOrdersVo.setRemark(ordersBo.getRemark());
                     // 退款金额 单位元
                     if (orderDetailBo.getRefundAmount() != null) {
                         exportOrdersVo.setOrderDetailRefundAmount(orderDetailBo.getRefundAmount());
