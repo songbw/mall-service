@@ -1484,7 +1484,6 @@ public class AdminOrderController {
                                 int endNum = currentRowNum;
                                 endLineNum = endNum;
 
-                                sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 4, 4));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 5, 5));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 6, 6));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 7, 7));
@@ -1551,7 +1550,7 @@ public class AdminOrderController {
                         HSSFCell cell22 = currentRow.createCell(22);
                         cell22.setCellValue(ordersVo.getQuantity());
 
-                        // 活动 ，
+                        // 结算类型
                         HSSFCell cell23 = currentRow.createCell(23);
                         cell23.setCellValue(ordersVo.getSettlementType());
 
@@ -1643,6 +1642,7 @@ public class AdminOrderController {
                     sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 1, 1));
                     sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 2, 2));
                     sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 3, 3));
+                    sheet.addMergedRegion(new CellRangeAddress(startLineNum, endLineNum, 4, 4));
                 }
             }
     }
