@@ -393,4 +393,9 @@ public class OrderController {
     private OperaResponse unpaidCancel(String appId, String openId, String orderNos) {
         return service.unpaidCancel(appId, openId, orderNos) ;
     }
+
+    @GetMapping("/workorder/logistics")
+    private OperaResult getWorkOrderLogistics(String logisticId, String code, String merchantNo) {
+        return service.getWorkOrderLogist(logisticId, code, merchantNo);
+    }
 }
