@@ -489,6 +489,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         } else if (settlement == 2) {
                             exportOrdersVo.setSettlementType("精品类结算");
                         }
+                    }else{
+                        exportOrdersVo.setSettlementType("普通类结算");
                     }
                     exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
                     exportOrdersVo.setCouponId(ordersBo.getCouponId() == null ? null : ordersBo.getCouponId().longValue()); // 券码id
