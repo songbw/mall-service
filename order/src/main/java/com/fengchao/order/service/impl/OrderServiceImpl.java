@@ -1128,7 +1128,7 @@ public class OrderServiceImpl implements OrderService {
                 OrderCouponBean orderCouponBean = new OrderCouponBean() ;
                 orderCouponBean.setId(order.getCouponId());
                 orderCouponBean.setCode(order.getCouponCode());
-                orderCouponBean.setDiscount(orderCouponBean.getDiscount());
+                orderCouponBean.setDiscount(order.getCouponDiscount());
                 unPaidBean.setCoupon(orderCouponBean);
                 AtomicReference<Float> saleAmount = new AtomicReference<>(0.00f);
                 AtomicReference<Float> servFee= new AtomicReference<>(0.00f);
