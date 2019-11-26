@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -571,11 +572,12 @@ public class AdminOrderController {
 
             //
             try {
-                response.setHeader("content-type", "application/octet-stream");
-                response.setContentType("application/octet-stream");
-                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-                outputStream = response.getOutputStream();
+//                response.setHeader("content-type", "application/octet-stream");
+//                response.setContentType("application/octet-stream");
+//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+//
+//                outputStream = response.getOutputStream();
+                outputStream = new FileOutputStream("D://" + fileName);
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -1429,7 +1431,7 @@ public class AdminOrderController {
                 Set<String> tradeNoSet = stringListMap.keySet();
                 // 该子订单记录集合在excel中的起始行
                 int startLineNum = currentRowNum;
-                int endLineNum = currentRowNum;
+                int endLineNum = currentRowNum + exportOrdersVoList.size() - 1;
 
                 Set<String> tradeFlag = new HashSet<>();
                 for (String tradeNo : tradeNoSet) { // 遍历主订单
@@ -1482,7 +1484,6 @@ public class AdminOrderController {
                                 int startNum = currentRowNum - tradeNoCount + 1;
                                 // 该子订单记录集合在excel中的结束行
                                 int endNum = currentRowNum;
-                                endLineNum = endNum;
 
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 5, 5));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 6, 6));
@@ -1490,8 +1491,6 @@ public class AdminOrderController {
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 8, 8));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 9, 9));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 10, 10));
-                            }else{
-                                endLineNum = currentRowNum;
                             }
                         }
 
