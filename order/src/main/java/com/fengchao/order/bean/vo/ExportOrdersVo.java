@@ -244,4 +244,9 @@ public class ExportOrdersVo {
      */
     private String remark;
 
+    /**
+     * 奥弋订单号
+     */
+    private String aoyiID;
+
 }
