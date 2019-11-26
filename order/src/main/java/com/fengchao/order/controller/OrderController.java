@@ -388,4 +388,9 @@ public class OrderController {
         result.getData().put("unpaid", service.unpaid(queryBean.getOpenId())) ;
         return result;
     }
+
+    @GetMapping("/unpaid/cancel")
+    private OperaResponse unpaidCancel(String appId, String openId, String orderNos) {
+        return service.unpaidCancel(appId, openId, orderNos) ;
+    }
 }

@@ -128,4 +128,6 @@ public interface OrderService {
     Integer finishOrderDetail(Integer id);
 
     List<UnPaidBean> unpaid(String openId) ;
+
+    OperaResponse unpaidCancel(String appId, String openId, String orderNos);
 }

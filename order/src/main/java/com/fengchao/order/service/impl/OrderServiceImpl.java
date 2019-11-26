@@ -1081,9 +1081,11 @@ public class OrderServiceImpl implements OrderService {
                 logisticsbeanList.add(logistics);
                 continue;
             }
-            orderDetailDao.updateBySubOrderId(logistics) ;
             OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
-            JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+            if (orderDetail.getStatus() == 1) {
+                orderDetailDao.updateBySubOrderId(logistics) ;
+                JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+            }
         }
         if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
             response.setCode(4000002);
@@ -1142,6 +1144,33 @@ public class OrderServiceImpl implements OrderService {
             unPaidBeans.add(unPaidBean) ;
         }
         return unPaidBeans;
+    }
+
+    @Override
+    public OperaResponse unpaidCancel(String appId, String openId, String orderNos) {
+        OperaResponse response = new OperaResponse() ;
+
+        if (StringUtils.isEmpty(appId)) {
+            response.setCode(400001);
+            response.setMsg("appId不能位空。");
+            return response ;
+        }
+        if (StringUtils.isEmpty(openId)) {
+            response.setCode(400001);
+            response.setMsg("openId不能位空。");
+            return response ;
+        }
+        if (StringUtils.isEmpty(orderNos)) {
+            response.setCode(400001);
+            response.setMsg("orderNos不能位空。");
+            return response ;
+        }
+        List<Order> orderList = orderMapper.selectByTradeNo(appId + "%" + openId + orderNos) ;
+        orderList.forEach(order -> {
+            cancel(order.getId()) ;
+        });
+        response.setData(orderNos);
+        return response;
     }
 
     private String fetchGroupKey(Order order) {
