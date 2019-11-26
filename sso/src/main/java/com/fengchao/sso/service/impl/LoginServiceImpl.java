@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.dao.BalanceDao;
-import com.fengchao.sso.feign.EquityService;
-import com.fengchao.sso.feign.GuanaitongClientService;
-import com.fengchao.sso.feign.OrderServiceClient;
-import com.fengchao.sso.feign.PinganClientService;
+import com.fengchao.sso.feign.*;
 import com.fengchao.sso.mapper.LoginMapper;
 import com.fengchao.sso.mapper.TokenMapper;
 import com.fengchao.sso.mapper.UserMapper;
@@ -17,10 +14,7 @@ import com.fengchao.sso.model.Login;
 import com.fengchao.sso.model.Token;
 import com.fengchao.sso.model.User;
 import com.fengchao.sso.service.ILoginService;
-import com.fengchao.sso.util.JSONUtil;
-import com.fengchao.sso.util.JwtTokenUtil;
-import com.fengchao.sso.util.OperaResult;
-import com.fengchao.sso.util.RedisDAO;
+import com.fengchao.sso.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +48,8 @@ public class LoginServiceImpl implements ILoginService {
     private RedisDAO redisDAO ;
     @Autowired
     private BalanceDao balanceDao;
+    @Autowired
+    private ProductService productService ;
 
     @Override
     public Login selectByPrimaryName(String username) {
@@ -250,6 +246,43 @@ public class LoginServiceImpl implements ILoginService {
         result.getData().put("result", accessToken);
         log.info("Third party Token 返回值： {}", JSONUtil.toJsonString(result));
         return result ;
+    }
+
+    @Override
+    public OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) {
+        OperaResponse response = new OperaResponse() ;
+        if (StringUtils.isEmpty(appId)) {
+            response.setCode(900001);
+            response.setMsg("appId不能为空");
+            return response ;
+        }
+        if (StringUtils.isEmpty(code)) {
+            response.setCode(900001);
+            response.setMsg("code不能为空");
+            return response ;
+        }
+        Platform platform = productService.findPlatformByAppId(appId).getData() ;
+        if (platform == null) {
+            response.setCode(900002);
+            response.setMsg("appId不存在");
+            return response ;
+        }
+        String bean = HttpClient.get(platform.getWxAppId(), platform.getWxAppSecret(), code, String.class) ;
+        log.info(bean);
+        JSONObject jsonObject = JSON.parseObject(bean) ;
+        if (bean == null) {
+            response.setCode(900003);
+            response.setMsg("获取微信openId失败");
+            return response ;
+        }
+        String openId = jsonObject.getString("openid") ;
+        if (StringUtils.isEmpty(openId)) {
+            response.setCode(900003);
+            response.setMsg("获取微信openId失败");
+            return response ;
+        }
+        response.setData(openId);
+        return response;
     }
 
     private AccessToken getPingAnToken(String initCode) {

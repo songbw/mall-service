@@ -214,5 +214,10 @@ public class LoginController {
         }
         return loginService.findThirdPartyTokenGAT(iAppId, initCode) ;
     }
+
+    @GetMapping("wx")
+    public OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) {
+        return loginService.getWXOpenIdByAppIdAndCode(appId, code) ;
+    }
 }
 

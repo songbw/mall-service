@@ -494,6 +494,206 @@ public class PlatformExample {
             addCriterion("updated_at not between", value1, value2, "updatedAt");
             return (Criteria) this;
         }
+
+        public Criteria andStatusIsNull() {
+            addCriterion("status is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNotNull() {
+            addCriterion("status is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusEqualTo(Integer value) {
+            addCriterion("status =", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotEqualTo(Integer value) {
+            addCriterion("status <>", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThan(Integer value) {
+            addCriterion("status >", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThanOrEqualTo(Integer value) {
+            addCriterion("status >=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThan(Integer value) {
+            addCriterion("status <", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThanOrEqualTo(Integer value) {
+            addCriterion("status <=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIn(List<Integer> values) {
+            addCriterion("status in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotIn(List<Integer> values) {
+            addCriterion("status not in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusBetween(Integer value1, Integer value2) {
+            addCriterion("status between", value1, value2, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotBetween(Integer value1, Integer value2) {
+            addCriterion("status not between", value1, value2, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdIsNull() {
+            addCriterion("wx_app_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdIsNotNull() {
+            addCriterion("wx_app_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdEqualTo(String value) {
+            addCriterion("wx_app_id =", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdNotEqualTo(String value) {
+            addCriterion("wx_app_id <>", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdGreaterThan(String value) {
+            addCriterion("wx_app_id >", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdGreaterThanOrEqualTo(String value) {
+            addCriterion("wx_app_id >=", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdLessThan(String value) {
+            addCriterion("wx_app_id <", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdLessThanOrEqualTo(String value) {
+            addCriterion("wx_app_id <=", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdLike(String value) {
+            addCriterion("wx_app_id like", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdNotLike(String value) {
+            addCriterion("wx_app_id not like", value, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdIn(List<String> values) {
+            addCriterion("wx_app_id in", values, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdNotIn(List<String> values) {
+            addCriterion("wx_app_id not in", values, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdBetween(String value1, String value2) {
+            addCriterion("wx_app_id between", value1, value2, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppIdNotBetween(String value1, String value2) {
+            addCriterion("wx_app_id not between", value1, value2, "wxAppId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretIsNull() {
+            addCriterion("wx_app_secret is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretIsNotNull() {
+            addCriterion("wx_app_secret is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretEqualTo(String value) {
+            addCriterion("wx_app_secret =", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretNotEqualTo(String value) {
+            addCriterion("wx_app_secret <>", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretGreaterThan(String value) {
+            addCriterion("wx_app_secret >", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretGreaterThanOrEqualTo(String value) {
+            addCriterion("wx_app_secret >=", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretLessThan(String value) {
+            addCriterion("wx_app_secret <", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretLessThanOrEqualTo(String value) {
+            addCriterion("wx_app_secret <=", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretLike(String value) {
+            addCriterion("wx_app_secret like", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretNotLike(String value) {
+            addCriterion("wx_app_secret not like", value, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretIn(List<String> values) {
+            addCriterion("wx_app_secret in", values, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretNotIn(List<String> values) {
+            addCriterion("wx_app_secret not in", values, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretBetween(String value1, String value2) {
+            addCriterion("wx_app_secret between", value1, value2, "wxAppSecret");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxAppSecretNotBetween(String value1, String value2) {
+            addCriterion("wx_app_secret not between", value1, value2, "wxAppSecret");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

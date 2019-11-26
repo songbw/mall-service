@@ -25,4 +25,6 @@ public interface ILoginService {
     OperaResult findThirdPartyTokenGAT(String iAppId, String initCode);
 
     OperaResult getPingAnOpenId(String iAppId, String requestCode) ;
+
+    OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) ;
 }
