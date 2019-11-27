@@ -526,7 +526,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
                     exportOrdersVo.setAoyiID(ordersBo.getAoyiId());
                     exportOrdersVo.setMobile(ordersBo.getMobile());
-                    exportOrdersVo.setRemark(ordersBo.getRemark());
+                    exportOrdersVo.setRemark(orderDetailBo.getRemark());
                     // 退款金额 单位元
                     if (orderDetailBo.getRefundAmount() != null) {
                         exportOrdersVo.setOrderDetailRefundAmount(orderDetailBo.getRefundAmount());
@@ -714,6 +714,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orderDetailBo.setLogisticsContent(orderDetail.getLogisticsContent());
         orderDetailBo.setComcode(orderDetail.getComcode());
         orderDetailBo.setSkuCouponDiscount(orderDetail.getSkuCouponDiscount());
+        orderDetailBo.setRemark(orderDetail.getRemark());
 
         return orderDetailBo;
     }
