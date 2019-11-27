@@ -35,6 +35,8 @@ public class SUser {
 
     private String iAppId;
 
+    private String wxOpenId;
+
     public Integer getId() {
         return id;
     }
@@ -161,5 +163,13 @@ public class SUser {
 
     public void setiAppId(String iAppId) {
         this.iAppId = iAppId == null ? null : iAppId.trim();
+    }
+
+    public String getWxOpenId() {
+        return wxOpenId;
+    }
+
+    public void setWxOpenId(String wxOpenId) {
+        this.wxOpenId = wxOpenId == null ? null : wxOpenId.trim();
     }
 }

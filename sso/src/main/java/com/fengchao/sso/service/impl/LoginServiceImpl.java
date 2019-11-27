@@ -4,17 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.dao.BalanceDao;
+import com.fengchao.sso.dao.UserDao;
 import com.fengchao.sso.feign.*;
 import com.fengchao.sso.mapper.LoginMapper;
 import com.fengchao.sso.mapper.TokenMapper;
 import com.fengchao.sso.mapper.UserMapper;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
-import com.fengchao.sso.model.Coupon;
-import com.fengchao.sso.model.Login;
-import com.fengchao.sso.model.Token;
-import com.fengchao.sso.model.User;
+import com.fengchao.sso.model.*;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.*;
+import com.github.pagehelper.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +49,10 @@ public class LoginServiceImpl implements ILoginService {
     private BalanceDao balanceDao;
     @Autowired
     private ProductService productService ;
+    @Autowired
+    private BaseService baseService ;
+    @Autowired
+    private UserDao userDao ;
 
     @Override
     public Login selectByPrimaryName(String username) {
@@ -283,6 +286,81 @@ public class LoginServiceImpl implements ILoginService {
         }
         response.setData(openId);
         return response;
+    }
+
+    @Override
+    public OperaResponse verifyCode(String telephone, String type) {
+        OperaResponse result = new OperaResponse() ;
+        if(StringUtil.isEmpty(telephone)){
+            result.setCode(100000);
+            result.setMsg("电话号码不正确");
+            return result;
+        }
+        SMSPostBean smsPostBean = new SMSPostBean() ;
+        smsPostBean.setPhone(telephone);
+        String code = baseService.send(smsPostBean).getData() ;
+        redisDAO.setKey(type + ":sso:" + telephone, code, 5 * 60 * 1000);
+        return result;
+    }
+
+    @Override
+    public OperaResponse bandWXOpenId(BandWXBean bandWXBean) {
+        OperaResponse result = new OperaResponse() ;
+        if(StringUtil.isEmpty(bandWXBean.getTelephone())){
+            result.setCode(100000);
+            result.setMsg("电话号码不能为空");
+            return result;
+        }
+        if(StringUtil.isEmpty(bandWXBean.getOpenId())){
+            result.setCode(100000);
+            result.setMsg("openId不能为空");
+            return result;
+        }
+        if(StringUtil.isEmpty(bandWXBean.getCode())){
+            result.setCode(100000);
+            result.setMsg("验证码不能为空");
+            return result;
+        }
+        if(StringUtil.isEmpty(bandWXBean.getAppId())){
+            result.setCode(100000);
+            result.setMsg("appId不正确");
+            return result;
+        }
+        String code = redisDAO.getValue("wx:sso:" + bandWXBean.getTelephone()) ;
+        if (bandWXBean.getCode().equals(code)) {
+            // 绑定openId 查询手机号是否存在，绑定公众号
+            SUser user = userDao.selectUserByTel(bandWXBean.getAppId(), bandWXBean.getTelephone()) ;
+            if (user == null) {
+                result.setCode(900100);
+                result.setMsg("电话号码不正确或此用户不存在");
+                return result;
+            }
+            SUser updateUser = userDao.updateWXOpenIdByTel(bandWXBean.getAppId(), bandWXBean.getTelephone(), bandWXBean.getOpenId()) ;
+            result.setData(updateUser);
+        } else {
+            result.setCode(100000);
+            result.setMsg("验证码不正确");
+            return result;
+        }
+        return result;
+    }
+
+    @Override
+    public OperaResponse wxBandVerify(String appId, String openId) {
+        OperaResponse result = new OperaResponse() ;
+        if(StringUtil.isEmpty(openId)){
+            result.setCode(100000);
+            result.setMsg("openId不能为空");
+            return result;
+        }
+        if(StringUtil.isEmpty(appId)){
+            result.setCode(100000);
+            result.setMsg("appId不正确");
+            return result;
+        }
+        SUser user = userDao.selectUserByWxOpenId(appId, openId) ;
+        result.setData(user);
+        return result;
     }
 
     private AccessToken getPingAnToken(String initCode) {

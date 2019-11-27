@@ -18,6 +18,7 @@
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
     <result column="head_img" jdbcType="VARCHAR" property="headImg" />
     <result column="i_app_id" jdbcType="VARCHAR" property="iAppId" />
+    <result column="wx_open_id" jdbcType="VARCHAR" property="wxOpenId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -79,7 +80,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, open_id, name, sex, birth, age, idcard, status, portrait, login_id, nickname, 
-    telephone, created_at, updated_at, head_img, i_app_id
+    telephone, created_at, updated_at, head_img, i_app_id, wx_open_id
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.sso.model.SUserExample" resultMap="BaseResultMap">
     select
@@ -116,12 +117,14 @@
       birth, age, idcard, status, 
       portrait, login_id, nickname, 
       telephone, created_at, updated_at, 
-      head_img, i_app_id)
+      head_img, i_app_id, wx_open_id
+      )
     values (#{openId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sex,jdbcType=CHAR}, 
       #{birth,jdbcType=DATE}, #{age,jdbcType=INTEGER}, #{idcard,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
       #{portrait,jdbcType=VARCHAR}, #{loginId,jdbcType=INTEGER}, #{nickname,jdbcType=VARCHAR}, 
       #{telephone,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
-      #{headImg,jdbcType=VARCHAR}, #{iAppId,jdbcType=VARCHAR})
+      #{headImg,jdbcType=VARCHAR}, #{iAppId,jdbcType=VARCHAR}, #{wxOpenId,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.sso.model.SUser" useGeneratedKeys="true">
     insert into s_user
@@ -171,6 +174,9 @@
       <if test="iAppId != null">
         i_app_id,
       </if>
+      <if test="wxOpenId != null">
+        wx_open_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="openId != null">
@@ -217,6 +223,9 @@
       </if>
       <if test="iAppId != null">
         #{iAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="wxOpenId != null">
+        #{wxOpenId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -277,6 +286,9 @@
       <if test="record.iAppId != null">
         i_app_id = #{record.iAppId,jdbcType=VARCHAR},
       </if>
+      <if test="record.wxOpenId != null">
+        wx_open_id = #{record.wxOpenId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -299,7 +311,8 @@
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
       updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
       head_img = #{record.headImg,jdbcType=VARCHAR},
-      i_app_id = #{record.iAppId,jdbcType=VARCHAR}
+      i_app_id = #{record.iAppId,jdbcType=VARCHAR},
+      wx_open_id = #{record.wxOpenId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -352,6 +365,9 @@
       <if test="iAppId != null">
         i_app_id = #{iAppId,jdbcType=VARCHAR},
       </if>
+      <if test="wxOpenId != null">
+        wx_open_id = #{wxOpenId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -371,7 +387,8 @@
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP},
       head_img = #{headImg,jdbcType=VARCHAR},
-      i_app_id = #{iAppId,jdbcType=VARCHAR}
+      i_app_id = #{iAppId,jdbcType=VARCHAR},
+      wx_open_id = #{wxOpenId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -1,9 +1,8 @@
 package com.fengchao.sso.controller;
 
-import com.fengchao.sso.bean.LoginBean;
-import com.fengchao.sso.bean.OperaResponse;
-import com.fengchao.sso.bean.ThirdLoginBean;
+import com.fengchao.sso.bean.*;
 import com.fengchao.sso.config.SMSConfig;
+import com.fengchao.sso.feign.BaseService;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.*;
@@ -24,9 +23,10 @@ public class LoginController {
     private ILoginService loginService;
     @Autowired
     private RedisDAO redisDAO;
-
     @Autowired
     private SMSUtil smsUtil;
+    @Autowired
+    private BaseService baseService ;
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @PostMapping("/register")
@@ -218,6 +218,21 @@ public class LoginController {
     @GetMapping("wx")
     public OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) {
         return loginService.getWXOpenIdByAppIdAndCode(appId, code) ;
+    }
+
+    @GetMapping("/code")
+    public OperaResponse verifyCode(String telephone, String type) {
+        return loginService.verifyCode(telephone, type);
+    }
+
+    @PutMapping("/wx/band")
+    public OperaResponse wxBand(@RequestBody BandWXBean bandWXBean) {
+        return loginService.bandWXOpenId(bandWXBean);
+    }
+
+    @GetMapping("/wx/band/verify")
+    public OperaResponse wxBandVerify(String appId, String openId) {
+        return loginService.wxBandVerify(appId, openId);
     }
 }
 
