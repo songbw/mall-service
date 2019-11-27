@@ -1541,7 +1541,7 @@ public class AdminOrderController {
                         }
 
                         // 订单生成时间，
-                        HSSFCell cell15 = currentRow.createCell(14);
+                        HSSFCell cell15 = currentRow.createCell(15);
                         cell15.setCellValue("");
                         if (ordersVo.getCreateTime() != null) {
                             cell15.setCellValue(DateUtil.dateTimeFormat(ordersVo.getCreateTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
