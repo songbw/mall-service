@@ -8,6 +8,9 @@
     <result column="gateway_url" jdbcType="VARCHAR" property="gatewayUrl" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="wx_app_id" jdbcType="VARCHAR" property="wxAppId" />
+    <result column="wx_app_secret" jdbcType="VARCHAR" property="wxAppSecret" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -68,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, app_id, gateway_url, created_at, updated_at
+    id, name, app_id, gateway_url, created_at, updated_at, status, wx_app_id, wx_app_secret
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.PlatformExample" resultMap="BaseResultMap">
     select
@@ -102,9 +105,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.Platform" useGeneratedKeys="true">
     insert into platform (name, app_id, gateway_url, 
-      created_at, updated_at)
+      created_at, updated_at, status, 
+      wx_app_id, wx_app_secret)
     values (#{name,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{gatewayUrl,jdbcType=VARCHAR}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{wxAppId,jdbcType=VARCHAR}, #{wxAppSecret,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.Platform" useGeneratedKeys="true">
     insert into platform
@@ -124,6 +129,15 @@
       <if test="updatedAt != null">
         updated_at,
       </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="wxAppId != null">
+        wx_app_id,
+      </if>
+      <if test="wxAppSecret != null">
+        wx_app_secret,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -140,6 +154,15 @@
       </if>
       <if test="updatedAt != null">
         #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="wxAppId != null">
+        #{wxAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="wxAppSecret != null">
+        #{wxAppSecret,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -170,6 +193,15 @@
       <if test="record.updatedAt != null">
         updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.wxAppId != null">
+        wx_app_id = #{record.wxAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wxAppSecret != null">
+        wx_app_secret = #{record.wxAppSecret,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -182,7 +214,10 @@
       app_id = #{record.appId,jdbcType=VARCHAR},
       gateway_url = #{record.gatewayUrl,jdbcType=VARCHAR},
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=INTEGER},
+      wx_app_id = #{record.wxAppId,jdbcType=VARCHAR},
+      wx_app_secret = #{record.wxAppSecret,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -205,6 +240,15 @@
       <if test="updatedAt != null">
         updated_at = #{updatedAt,jdbcType=TIMESTAMP},
       </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="wxAppId != null">
+        wx_app_id = #{wxAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="wxAppSecret != null">
+        wx_app_secret = #{wxAppSecret,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -214,7 +258,10 @@
       app_id = #{appId,jdbcType=VARCHAR},
       gateway_url = #{gatewayUrl,jdbcType=VARCHAR},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      wx_app_id = #{wxAppId,jdbcType=VARCHAR},
+      wx_app_secret = #{wxAppSecret,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

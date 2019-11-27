@@ -1,4 +1,4 @@
-package com.fengchao.product.aoyi.model;
+package com.fengchao.sso.bean;
 
 import java.util.Date;
 
