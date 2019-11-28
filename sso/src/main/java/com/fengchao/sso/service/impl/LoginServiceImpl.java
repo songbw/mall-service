@@ -336,7 +336,8 @@ public class LoginServiceImpl implements ILoginService {
                 return result;
             }
             SUser updateUser = userDao.updateWXOpenIdByTel(bandWXBean.getAppId(), bandWXBean.getTelephone(), bandWXBean.getOpenId()) ;
-            result.setData(updateUser);
+            user.setWxOpenId(updateUser.getWxOpenId());
+            result.setData(user);
         } else {
             result.setCode(100000);
             result.setMsg("验证码不正确");
