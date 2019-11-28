@@ -225,14 +225,14 @@ public class LoginController {
         return loginService.verifyCode(telephone, type);
     }
 
-    @PutMapping("/wx/band")
-    public OperaResponse wxBand(@RequestBody BandWXBean bandWXBean) {
-        return loginService.bandWXOpenId(bandWXBean);
+    @PutMapping("/wx/bind")
+    public OperaResponse wxBind(@RequestBody BindWXBean bindWXBean) {
+        return loginService.bindWXOpenId(bindWXBean);
     }
 
-    @GetMapping("/wx/band/verify")
-    public OperaResponse wxBandVerify(String appId, String openId) {
-        return loginService.wxBandVerify(appId, openId);
+    @GetMapping("/wx/bind/verify")
+    public OperaResponse wxBindVerify(String appId, String openId) {
+        return loginService.wxBindVerify(appId, openId);
     }
 }
 

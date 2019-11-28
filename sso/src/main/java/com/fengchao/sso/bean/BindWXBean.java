@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class BandWXBean {
+public class BindWXBean {
     private String telephone ;
     private String openId ;
     private String code ;

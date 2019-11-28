@@ -2,7 +2,6 @@ package com.fengchao.sso.service;
 
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.model.Login;
-import com.fengchao.sso.model.Token;
 import com.fengchao.sso.util.OperaResult;
 
 public interface ILoginService {
@@ -27,8 +26,8 @@ public interface ILoginService {
 
     OperaResponse verifyCode(String telephone, String type) ;
 
-    OperaResponse bandWXOpenId(BandWXBean bandWXBean) ;
+    OperaResponse bindWXOpenId(BindWXBean bandWXBean) ;
 
-    OperaResponse wxBandVerify(String appId, String openId) ;
+    OperaResponse wxBindVerify(String appId, String openId) ;
 
 }

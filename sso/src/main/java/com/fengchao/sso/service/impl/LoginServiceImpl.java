@@ -304,7 +304,7 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public OperaResponse bandWXOpenId(BandWXBean bandWXBean) {
+    public OperaResponse bindWXOpenId(BindWXBean bandWXBean) {
         OperaResponse result = new OperaResponse() ;
         if(StringUtil.isEmpty(bandWXBean.getTelephone())){
             result.setCode(100000);
@@ -346,7 +346,7 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public OperaResponse wxBandVerify(String appId, String openId) {
+    public OperaResponse wxBindVerify(String appId, String openId) {
         OperaResponse result = new OperaResponse() ;
         if(StringUtil.isEmpty(openId)){
             result.setCode(100000);
