@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.aggregation.bean.AggregationBean;
 import com.fengchao.aggregation.bean.OperaResult;
 import com.fengchao.aggregation.bean.PageBean;
+import com.fengchao.aggregation.bean.QueryBean;
 import com.fengchao.aggregation.exception.AggregationException;
 import com.fengchao.aggregation.feign.EquityService;
 import com.fengchao.aggregation.feign.ProdService;
@@ -31,14 +32,14 @@ public class AggregationServiceImpl implements AggregationService {
     private EquityService equityService;
 
     @Override
-    public PageBean findAggregation(Integer offset, Integer limit, String order, Integer merchantId) throws AggregationException {
+    public PageBean findAggregation(QueryBean bean, Integer merchantId) throws AggregationException {
         PageBean pageBean = new PageBean();
         int total = 0;
-        int pageNo = PageBean.getOffset(offset, limit);
+        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
-        map.put("pageSize",limit);
-        map.put("order",order);
+        map.put("pageSize",bean.getLimit());
+        map.put("order",bean.getOrder());
         if(merchantId != 0){
             map.put("merchantId",merchantId);
         }
@@ -47,14 +48,15 @@ public class AggregationServiceImpl implements AggregationService {
         if (total > 0) {
             brands = mapper.selectLimit(map);
         }
-        pageBean = PageBean.build(pageBean, brands, total, offset, limit);
+        pageBean = PageBean.build(pageBean, brands, total, bean.getOffset(), bean.getLimit());
         return pageBean;
     }
 
     @Override
     public int createAggregation(Aggregation bean) throws AggregationException {
-        if(bean.getStatus() != null && bean.getStatus() == 1 && bean.getHomePage()){
-            mapper.updateStatus();
+        Aggregation aggregation = mapper.selectHomePageByAppId(bean.getAppId());
+        if(aggregation != null && bean.getHomePage()){
+            mapper.updateStatus(bean.getAppId());
         }
         return mapper.insertSelective(bean);
     }
@@ -238,7 +240,7 @@ public class AggregationServiceImpl implements AggregationService {
         }else if((bean.getStatus() != null && bean.getStatus() == 1 && bean.getHomePage() != null && bean.getHomePage()) ||
                 (bean.getHomePage() != null && bean.getHomePage() && bean.getStatus() == null && aggregation.getStatus() == 1) ||
                 (bean.getHomePage() == null && bean.getStatus() != null && bean.getStatus() == 1 && aggregation.getHomePage())){
-            mapper.updateStatus();
+            mapper.updateStatus(aggregation.getAppId());
         }
         return mapper.updateByPrimaryKeySelective(bean);
     }
@@ -275,7 +277,10 @@ public class AggregationServiceImpl implements AggregationService {
 
     @Override
     public int deleteAggregation(Integer id) throws AggregationException{
-        return mapper.deleteByPrimaryKey(id);
+        Aggregation aggregation = new Aggregation();
+        aggregation.setStatus(3);
+        aggregation.setId(id);
+        return mapper.updateByPrimaryKeySelective(aggregation);
     }
 
     @Override
@@ -288,6 +293,7 @@ public class AggregationServiceImpl implements AggregationService {
         map.put("pageSize",bean.getLimit());
         map.put("name",bean.getName());
         map.put("status",bean.getStatus());
+        map.put("appId",bean.getAppId());
         if(bean.getHomePage() != null && !"".equals(bean.getHomePage())){
             map.put("homePage",Boolean.valueOf(bean.getHomePage()));
         }
@@ -306,8 +312,8 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public Aggregation findHomePage() throws AggregationException {
-        Aggregation homePage = mapper.findHomePage();
+    public Aggregation findHomePage(String appId) throws AggregationException {
+        Aggregation homePage = mapper.findHomePage(appId);
         Aggregation aggregationByIdtest = convertContent(homePage.getContent());
 //        JSONArray AggregationArray = JSONObject.parseArray(homePage.getContent());
 //        if(AggregationArray == null || AggregationArray.size() < 1 ){
