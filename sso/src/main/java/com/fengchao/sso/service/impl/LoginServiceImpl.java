@@ -278,13 +278,13 @@ public class LoginServiceImpl implements ILoginService {
             response.setMsg("获取微信openId失败");
             return response ;
         }
-        String openId = jsonObject.getString("openid") ;
-        if (StringUtils.isEmpty(openId)) {
-            response.setCode(900003);
-            response.setMsg("获取微信openId失败");
-            return response ;
-        }
-        response.setData(openId);
+//        String openId = jsonObject.getString("openid") ;
+//        if (StringUtils.isEmpty(openId)) {
+//            response.setCode(900003);
+//            response.setMsg("获取微信openId失败");
+//            return response ;
+//        }
+        response.setData(jsonObject);
         return response;
     }
 
