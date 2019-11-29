@@ -1,6 +1,7 @@
 package com.fengchao.aggregation.mapper;
 
 import com.fengchao.aggregation.model.Aggregation;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public interface AggregationMapper {
 
     int updateStatus(String appId);
 
-    Aggregation findHomePage(String appId);
+    Aggregation findHomePage(@Param("appId") String appId);
 
     List<Aggregation> selectByGroupId(Integer id);
 
