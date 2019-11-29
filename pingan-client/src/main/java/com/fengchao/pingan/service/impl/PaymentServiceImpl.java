@@ -80,6 +80,28 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public OperaResponse<CreatePaymentOrderBean> createPaymentOrder(CreatePaymentOrderRequestBean paymentBean) {
+        logger.info("ping an url is "+ config.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
+        PaymentParamBean<CreatePaymentOrderRequestBean> paramBean = new PaymentParamBean<CreatePaymentOrderRequestBean>() ;
+        paramBean.setAppId(config.getPayAppId());
+        paymentBean.setMerchantNo(config.getPayMerchantNo());
+        WebTarget webTarget = HttpClient.createClient().target(config.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
+        String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
+        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        paramBean.setSign(sign);
+        paramBean.setMessage(paymentBean);
+        logger.info("请求平安 create payment order 参数： {}",JSONUtil.toJsonString(paramBean));
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(paramBean, MediaType.APPLICATION_JSON));
+        OperaResponse<CreatePaymentOrderBean> result = response.readEntity(OperaResponse.class);
+        result.setMsg(result.getMessage());
+        logger.info("获取create payment order 返回值： {}", JSONUtil.toJsonString(result));
+        return result ;
+    }
+
+    @Override
     public PaymentResult payRefund(RefundBean bean) throws PinganClientException {
         WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_PATH + HttpClient.PAY_REFUND);
         ZfResquest resquest = new ZfResquest();
@@ -142,5 +164,66 @@ public class PaymentServiceImpl implements PaymentService {
             result.setMsg(prePayResultDTOCommonResult.getMessage());
             return result;
         }
+    }
+
+    @Override
+    public OperaResponse<QueryPaymentOrderBean> queryPaymentOrder(QueryPaymentOrderRequestBean paymentBean) {
+        logger.info("query payment order url is "+ config.getPayBasePath() + HttpClient.QUERY_PAYMENT_ORDER);
+        PaymentParamBean<QueryPaymentOrderRequestBean> paramBean = new PaymentParamBean<QueryPaymentOrderRequestBean>() ;
+        paramBean.setAppId(config.getPayAppId());
+        paymentBean.setMerchantNo(config.getPayMerchantNo());
+        WebTarget webTarget = HttpClient.createClient().target(config.getPayBasePath() + HttpClient.QUERY_PAYMENT_ORDER);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
+        String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
+        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        paramBean.setSign(sign);
+        paramBean.setMessage(paymentBean);
+        logger.info("请求平安 query payment order 参数： {}", JSONUtil.toJsonString(paramBean));
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(paramBean, MediaType.APPLICATION_JSON));
+        OperaResponse<QueryPaymentOrderBean> result = response.readEntity(OperaResponse.class);
+        result.setMsg(result.getMessage());
+        logger.info("获取 query payment order 返回值： {}", JSONUtil.toJsonString(result));
+        return result ;
+    }
+
+    @Override
+    public OperaResponse<OrderRefundBean> orderRefund(OrderRefundRequestBean paymentBean) {
+        logger.info("order refund url is "+ config.getPayBasePath() + HttpClient.ORDER_REFUND);
+        PaymentParamBean<OrderRefundRequestBean> paramBean = new PaymentParamBean<OrderRefundRequestBean>() ;
+        paramBean.setAppId(config.getPayAppId());
+
+        paymentBean.setMerchantNo(config.getPayMerchantNo());
+        WebTarget webTarget = HttpClient.createClient().target(config.getPayBasePath() + HttpClient.ORDER_REFUND);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
+        String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
+        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        paramBean.setSign(sign);
+        paramBean.setMessage(paymentBean);
+        logger.info("请求平安 order refund 参数： {}", JSONUtil.toJsonString(paramBean));
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(paramBean, MediaType.APPLICATION_JSON));
+        OperaResponse<OrderRefundBean> result = response.readEntity(OperaResponse.class);
+        result.setMsg(result.getMessage());
+        logger.info("获取 order refund 返回值： {}", JSONUtil.toJsonString(result));
+        return result ;
+    }
+
+    @Override
+    public String backNotify(BackNotifyRequestBean paymentBean) {
+        logger.info("平安支付回调 back notify 参数： {}", JSONUtil.toJsonString(paymentBean));
+        String backSign = paymentBean.getSign() ;
+        paymentBean.setSign(null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
+        String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
+        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        if (backSign.equals(sign)) {
+            // TODO 聚合支付服务
+            return "{\"code\": \"SUCCESS\"}" ;
+        }
+        return "{\"code\": \"false\"}" ;
     }
 }

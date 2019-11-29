@@ -91,4 +91,24 @@ public class PinganController {
         return userService.getAuthUserInfo(userAccessToken) ;
     }
 
+    @PostMapping("payment/create")
+    private OperaResponse paymentOrder(@RequestBody CreatePaymentOrderRequestBean paymentBean) {
+        return paymentService.createPaymentOrder(paymentBean);
+    }
+
+    @PostMapping("payment/refund")
+    private OperaResponse orderRefund(@RequestBody OrderRefundRequestBean paymentBean) {
+        return paymentService.orderRefund(paymentBean);
+    }
+
+    @PostMapping("payment/query")
+    private OperaResponse queryPaymentOrder(@RequestBody QueryPaymentOrderRequestBean paymentBean) {
+        return paymentService.queryPaymentOrder(paymentBean);
+    }
+
+    @PostMapping("payment/back")
+    private String paymentBack(@RequestBody BackNotifyRequestBean paymentBean) {
+        return paymentService.backNotify(paymentBean);
+    }
+
 }
