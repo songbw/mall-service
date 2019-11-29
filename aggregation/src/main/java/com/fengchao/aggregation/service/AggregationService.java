@@ -2,10 +2,11 @@ package com.fengchao.aggregation.service;
 
 import com.fengchao.aggregation.bean.AggregationBean;
 import com.fengchao.aggregation.bean.PageBean;
+import com.fengchao.aggregation.bean.QueryBean;
 import com.fengchao.aggregation.model.Aggregation;
 
 public interface AggregationService {
-    PageBean findAggregation(Integer offset, Integer limit, String order, Integer merchantId);
+    PageBean findAggregation(QueryBean bean, Integer merchantId);
 
     int createAggregation(Aggregation bean);
 
@@ -19,7 +20,7 @@ public interface AggregationService {
 
     PageBean serachAggregation(AggregationBean bean);
 
-    Aggregation findHomePage();
+    Aggregation findHomePage(String appId);
 
     Aggregation findAdminAggregationById(Integer id);
 }

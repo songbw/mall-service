@@ -1,6 +1,7 @@
 package com.fengchao.aggregation.service.impl;
 
 import com.fengchao.aggregation.bean.PageBean;
+import com.fengchao.aggregation.bean.QueryBean;
 import com.fengchao.aggregation.exception.AggregationException;
 import com.fengchao.aggregation.mapper.AggregationGroupMapper;
 import com.fengchao.aggregation.mapper.AggregationMapper;
@@ -28,13 +29,14 @@ public class AggregationGroupServiceImpl implements AggregationGroupService {
     }
 
     @Override
-    public PageBean findGroup(Integer offset, Integer limit, Integer merchantId) throws AggregationException {
+    public PageBean findGroup(QueryBean bean, Integer merchantId) throws AggregationException {
         PageBean pageBean = new PageBean();
         int total = 0;
-        int pageNo = PageBean.getOffset(offset, limit);
+        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
-        map.put("pageSize",limit);
+        map.put("pageSize",bean.getLimit());
+        map.put("appId",bean.getAppId());
         if(merchantId != 0){
             map.put("merchantId",merchantId);
         }
@@ -43,7 +45,7 @@ public class AggregationGroupServiceImpl implements AggregationGroupService {
         if (total > 0) {
             groups = mapper.selectLimit(map);
         }
-        pageBean = PageBean.build(pageBean, groups, total, offset, limit);
+        pageBean = PageBean.build(pageBean, groups, total, bean.getOffset(), bean.getLimit());
         return pageBean;
     }
 

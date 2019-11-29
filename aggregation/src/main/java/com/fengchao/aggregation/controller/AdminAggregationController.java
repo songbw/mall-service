@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.aggregation.bean.AggregationBean;
 import com.fengchao.aggregation.bean.OperaResult;
 import com.fengchao.aggregation.bean.PageBean;
+import com.fengchao.aggregation.bean.QueryBean;
 import com.fengchao.aggregation.model.Aggregation;
 import com.fengchao.aggregation.model.AggregationGroup;
 import com.fengchao.aggregation.service.AggregationGroupService;
@@ -30,8 +31,8 @@ public class AdminAggregationController {
     }
 
     @GetMapping("find")
-    public OperaResult findAggregation(Integer offset,Integer limit, String order, @RequestHeader("merchant") Integer merchantId, OperaResult result){
-        result.getData().put("result", aggregationService.findAggregation(offset, limit, order, merchantId));
+    public OperaResult findAggregation(QueryBean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        result.getData().put("result", aggregationService.findAggregation(bean, merchantId));
         return result;
     }
 
@@ -84,8 +85,8 @@ public class AdminAggregationController {
     }
 
     @GetMapping("findGroup")
-    public OperaResult findGroup(Integer offset,Integer limit, @RequestHeader("merchant") Integer merchantId, OperaResult result){
-        result.getData().put("result", groupService.findGroup(offset, limit, merchantId));
+    public OperaResult findGroup(QueryBean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        result.getData().put("result", groupService.findGroup(bean, merchantId));
         return result;
     }
 

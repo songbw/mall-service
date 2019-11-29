@@ -24,9 +24,11 @@ public interface AggregationMapper {
 
     int updateContent(Aggregation record);
 
-    void updateStatus();
+    int updateStatus(String appId);
 
-    Aggregation findHomePage();
+    Aggregation findHomePage(String appId);
 
     List<Aggregation> selectByGroupId(Integer id);
+
+    Aggregation selectHomePageByAppId(String appId);
 }

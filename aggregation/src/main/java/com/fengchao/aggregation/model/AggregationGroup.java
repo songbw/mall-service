@@ -7,6 +7,8 @@ public class AggregationGroup {
 
     private Integer merchantId;
 
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -29,5 +31,13 @@ public class AggregationGroup {
 
     public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

@@ -15,8 +15,8 @@ public class AggregationController {
     private AggregationService aggregationService;
 
     @GetMapping("findHomePage")
-    public OperaResult findHomePage(OperaResult result){
-        result.getData().put("result", aggregationService.findHomePage());
+    public OperaResult findHomePage(String appId, OperaResult result){
+        result.getData().put("result", aggregationService.findHomePage(appId));
         return result;
     }
 
