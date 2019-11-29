@@ -4,6 +4,7 @@ import com.fengchao.pingan.bean.CreatePaymentOrderRequestBean;
 import com.fengchao.pingan.bean.OrderRefundRequestBean;
 import com.fengchao.pingan.bean.QueryPaymentOrderRequestBean;
 import com.fengchao.pingan.service.PaymentService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ public class PinganApplicationTests {
 	@Autowired
 	private PaymentService paymentService ;
 
+	@Ignore
 	@Test
 	public void contextLoads() {
 //		CreatePaymentOrderRequestBean paymentBean = new CreatePaymentOrderRequestBean() ;

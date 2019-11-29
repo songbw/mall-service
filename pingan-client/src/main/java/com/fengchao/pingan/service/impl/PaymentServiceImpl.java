@@ -85,6 +85,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentParamBean<CreatePaymentOrderRequestBean> paramBean = new PaymentParamBean<CreatePaymentOrderRequestBean>() ;
         paramBean.setAppId(config.getPayAppId());
         paymentBean.setMerchantNo(config.getPayMerchantNo());
+        paymentBean.setNotifyUrl(config.getNotifyUrl());
         WebTarget webTarget = HttpClient.createClient().target(config.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
