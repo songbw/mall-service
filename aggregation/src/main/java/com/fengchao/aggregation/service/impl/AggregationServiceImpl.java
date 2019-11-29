@@ -40,6 +40,7 @@ public class AggregationServiceImpl implements AggregationService {
         map.put("pageNo", pageNo);
         map.put("pageSize",bean.getLimit());
         map.put("order",bean.getOrder());
+        map.put("appId",bean.getAppId());
         if(merchantId != 0){
             map.put("merchantId",merchantId);
         }
