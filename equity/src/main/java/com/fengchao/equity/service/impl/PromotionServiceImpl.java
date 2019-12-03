@@ -99,9 +99,9 @@ public class PromotionServiceImpl implements PromotionService {
         }
         Date now = new Date();
         //处理已发布状态
-        AtomicInteger result = new AtomicInteger();
+        Integer result = 0;
         AtomicInteger resultPromotionId = new AtomicInteger();
-        AtomicReference<Sets.SetView<String>> resultMpus = new AtomicReference<Sets.SetView<String>>();
+        Set<String> resultMpus = new HashSet<>();
         if(bean.getStatus() != null && bean.getStatus() == 2){
             List<Promotion> promotions = promotionDao.selectActivePromotion();
 //            Promotion overduePromotion = promotionDao.selectOverduePromotion().get(0);
@@ -118,11 +118,14 @@ public class PromotionServiceImpl implements PromotionService {
                     }
                 }
                 List<PromotionSchedule> schedules = scheduleDao.findByPromotionId(promotionX.getId());
-                schedules.forEach(schedule ->{
-                    promotions.forEach(promotion->{
+                for (int schedulesNum = 0; schedulesNum < schedules.size(); schedulesNum++){
+                    PromotionSchedule schedule = schedules.get(schedulesNum);
+                    for (int promotionsNum = 0; promotionsNum < promotions.size(); promotionsNum++){
+                        Promotion promotion = promotions.get(promotionsNum);
                         if(promotion.getDailySchedule() != null && promotion.getDailySchedule()){
                             List<PromotionSchedule> promotionSchedules = scheduleDao.findByPromotionId(promotion.getId());
-                            promotionSchedules.forEach(promotionSchedule ->{
+                            for (int promotionSchedulesNum = 0; promotionSchedulesNum < promotionSchedules.size(); promotionSchedulesNum++){
+                                PromotionSchedule promotionSchedule = promotionSchedules.get(promotionSchedulesNum);
                                 boolean istrue = DataUtils.isContainDate(schedule.getStartTime(), schedule.getEndTime(),
                                         promotionSchedule.getStartTime(), promotionSchedule.getEndTime());
                                 if(istrue){
@@ -130,12 +133,11 @@ public class PromotionServiceImpl implements PromotionService {
                                     List<String> daliyMpuList = mpuXMapper.selectDaliyMpuList(schedule.getPromotionId(), schedule.getId());
                                     Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
                                     if(!intersection.isEmpty()){
-                                        result.set(2);
-                                        resultMpus.set(intersection);
-                                        return;
+                                        result = 2;
+                                        resultMpus.addAll(intersection);
                                     }
                                 }
-                            });
+                            }
                         }else{
                             boolean istrue = DataUtils.isContainDate(schedule.getStartTime(), schedule.getEndTime(),
                                     promotion.getStartDate(), promotion.getEndDate());
@@ -144,19 +146,20 @@ public class PromotionServiceImpl implements PromotionService {
                                 List<String> daliyMpuList = mpuXMapper.selectDaliyMpuList(schedule.getPromotionId(), schedule.getId());
                                 Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
                                 if(!intersection.isEmpty()){
-                                    result.set(2);
-                                    resultMpus.set(intersection);
-                                    return;
+                                    result = 2;
+                                    resultMpus.addAll(intersection);
                                 }
                             }
                         }
-                    });
-                });
+                    }
+                }
             }else{
-                promotions.forEach(promotion->{
+                for (int promotionsNum = 0; promotionsNum < promotions.size(); promotionsNum++){
+                    Promotion promotion = promotions.get(promotionsNum);
                     if(promotion.getDailySchedule() != null && promotion.getDailySchedule()){
                         List<PromotionSchedule> promotionSchedules = scheduleDao.findByPromotionId(promotion.getId());
-                        promotionSchedules.forEach(promotionSchedule ->{
+                        for (int promotionSchedulesNum = 0; promotionSchedulesNum < promotionSchedules.size(); promotionSchedulesNum++){
+                            PromotionSchedule promotionSchedule = promotionSchedules.get(promotionSchedulesNum);
                             boolean istrue = DataUtils.isContainDate(promotionX.getStartDate(), promotionX.getEndDate(),
                                     promotionSchedule.getStartTime(), promotionSchedule.getEndTime());
                             if(istrue){
@@ -164,34 +167,30 @@ public class PromotionServiceImpl implements PromotionService {
                                 List<String> daliyMpuList = mpuXMapper.selectMpuList(promotionX.getId());
                                 Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
                                 if(!intersection.isEmpty()){
-                                    result.set(2);
-                                    resultMpus.set(intersection);
-                                    return;
+                                    result = 2;
+                                    resultMpus.addAll(intersection);
                                 }
                             }
-                        });
+                        }
                     }else{
                         boolean istrue = DataUtils.isContainDate(promotionX.getStartDate(), promotionX.getEndDate(),
                                 promotion.getStartDate(), promotion.getEndDate());
                         if(istrue){
                             List<String> mpuList = mpuXMapper.selectMpuList(promotion.getId());
                             List<String> daliyMpuList = mpuXMapper.selectMpuList(promotionX.getId());
-//                            boolean b = daliyMpuList.retainAll(mpuList);
                             Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
                             if(!intersection.isEmpty()){
-                                result.set(2);
-                                resultMpus.set(intersection);
-                                return;
+                                result = 2;
+                                resultMpus.addAll(intersection);
                             }
                         }
                     }
-                });
+                }
             }
 
-            int num = result.get();
-            if(num != 0){
-                promotionResult.setNum(num);
-                promotionResult.setMpus(resultMpus.get());
+            if(result != 0){
+                promotionResult.setNum(result);
+                promotionResult.setMpus(resultMpus);
                 promotionResult.setPromotionId(resultPromotionId.get());
                 return promotionResult;
             }
@@ -227,9 +226,8 @@ public class PromotionServiceImpl implements PromotionService {
             bean.setStatus(5);
         }
 
-        int num = result.get();
-        if(num != 2){
-            num = promotionXMapper.updateByPrimaryKeySelective(bean);
+        if(result != 2){
+            int num = promotionXMapper.updateByPrimaryKeySelective(bean);
             promotionResult.setNum(num);
         }
         return promotionResult;
