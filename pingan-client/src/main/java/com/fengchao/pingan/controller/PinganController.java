@@ -4,10 +4,13 @@ import com.fengchao.pingan.bean.*;
 import com.fengchao.pingan.feign.WSPayClientService;
 import com.fengchao.pingan.service.PaymentService;
 import com.fengchao.pingan.service.UserService;
+import com.fengchao.pingan.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/pingan", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class PinganController {
@@ -93,6 +96,7 @@ public class PinganController {
 
     @PostMapping("payment/create")
     private OperaResponse paymentOrder(@RequestBody CreatePaymentOrderRequestBean paymentBean) {
+        log.info("请求 payment/create 入口参数： {}", JSONUtil.toJsonString(paymentBean));
         return paymentService.createPaymentOrder(paymentBean);
     }
 
