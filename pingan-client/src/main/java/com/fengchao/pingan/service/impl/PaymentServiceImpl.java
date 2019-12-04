@@ -233,7 +233,15 @@ public class PaymentServiceImpl implements PaymentService {
         String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
         if (backSign.equals(sign)) {
             // TODO 聚合支付服务
-            return "{\"code\": \"SUCCESS\"}" ;
+            AggPayBackBean aggPayBackBean = new AggPayBackBean() ;
+            aggPayBackBean.setTradeNo(paymentBean.getOrderNo());
+            aggPayBackBean.setOrderNo(paymentBean.getMchOrderNo());
+            aggPayBackBean.setPayFee(paymentBean.getAmount() + "");
+            aggPayBackBean.setTradeDate(paymentBean.getTimeEnd());
+            CommonResult<String> aggPayBackResult = payClientService.aggPayBack(aggPayBackBean) ;
+            if (aggPayBackResult.getCode() == 200) {
+                return "{\"code\": \"SUCCESS\"}" ;
+            }
         }
         return "{\"code\": \"false\"}" ;
     }
