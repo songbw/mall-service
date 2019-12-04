@@ -1,5 +1,7 @@
 package com.fengchao.pingan.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.pingan.bean.*;
@@ -96,10 +98,17 @@ public class PaymentServiceImpl implements PaymentService {
         logger.info("请求平安 create payment order 参数： {}",JSONUtil.toJsonString(paramBean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(paramBean, MediaType.APPLICATION_JSON));
-        OperaResponse<CreatePaymentOrderBean> result = response.readEntity(OperaResponse.class);
+        OperaResponse result = response.readEntity(OperaResponse.class);
         result.setMsg(result.getMessage());
-        result.getData().setMerchantNo(config.getPayMerchantNo());
-        logger.info("获取create payment order 返回值： {}", JSONUtil.toJsonString(result));
+        logger.info("获取平安create payment order 返回值： {}", JSONUtil.toJsonString(result));
+        if (result.getCode() == 200) {
+            JSONObject jsonObject = (JSONObject) JSON.toJSON(result.getData());
+            CreatePaymentOrderBean createPaymentOrderBean = new CreatePaymentOrderBean() ;
+            createPaymentOrderBean.setMerchantNo(config.getPayMerchantNo());
+            createPaymentOrderBean.setOrderNo(jsonObject.getString("orderNo"));
+            result.setData(createPaymentOrderBean);
+        }
+        logger.info("payment/create 返回值： {}", JSONUtil.toJsonString(result));
         return result ;
     }
 
