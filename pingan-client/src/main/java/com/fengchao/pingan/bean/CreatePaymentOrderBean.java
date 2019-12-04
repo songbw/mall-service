@@ -9,4 +9,5 @@ import java.io.Serializable;
 @Setter
 public class CreatePaymentOrderBean implements Serializable{
     private String orderNo ;
+    private String merchantNo ;
 }

@@ -98,6 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
         Response response = invocationBuilder.post(Entity.entity(paramBean, MediaType.APPLICATION_JSON));
         OperaResponse<CreatePaymentOrderBean> result = response.readEntity(OperaResponse.class);
         result.setMsg(result.getMessage());
+        result.getData().setMerchantNo(config.getPayMerchantNo());
         logger.info("获取create payment order 返回值： {}", JSONUtil.toJsonString(result));
         return result ;
     }

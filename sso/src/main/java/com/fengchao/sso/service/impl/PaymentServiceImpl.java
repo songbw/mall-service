@@ -45,6 +45,7 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
+        // TODO 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
         log.info("findTradeNo 返回 orderList: {}", JSONUtil.toJsonString(orderList));
         PaymentResult result1 = getPayment(paymentBean);
@@ -79,6 +80,7 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public OperaResult gPayment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
+        // TODO 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
         // 关爱通支付
         GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
