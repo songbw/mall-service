@@ -201,6 +201,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public OperaResponse<OrderRefundBean> orderRefund(OrderRefundRequestBean paymentBean) {
+        logger.info("退款 入口参数： {}", JSONUtil.toJsonString(paymentBean));
         logger.info("order refund url is "+ config.getPayBasePath() + HttpClient.ORDER_REFUND);
         PaymentParamBean<OrderRefundRequestBean> paramBean = new PaymentParamBean<OrderRefundRequestBean>() ;
         paramBean.setAppId(config.getPayAppId());
@@ -216,7 +217,7 @@ public class PaymentServiceImpl implements PaymentService {
         logger.info("请求平安 order refund 参数： {}", JSONUtil.toJsonString(paramBean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(paramBean, MediaType.APPLICATION_JSON));
-        OperaResponse<OrderRefundBean> result = response.readEntity(OperaResponse.class);
+        OperaResponse result = response.readEntity(OperaResponse.class);
         result.setMsg(result.getMessage());
         logger.info("获取 order refund 返回值： {}", JSONUtil.toJsonString(result));
         return result ;
