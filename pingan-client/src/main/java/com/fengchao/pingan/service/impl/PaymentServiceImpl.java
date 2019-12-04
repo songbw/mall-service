@@ -232,7 +232,7 @@ public class PaymentServiceImpl implements PaymentService {
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
         String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
         if (backSign.equals(sign)) {
-            // TODO 聚合支付服务
+            // 聚合支付服务
             AggPayBackBean aggPayBackBean = new AggPayBackBean() ;
             aggPayBackBean.setTradeNo(paymentBean.getOrderNo());
             aggPayBackBean.setOrderNo(paymentBean.getMchOrderNo());
