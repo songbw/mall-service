@@ -182,11 +182,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 List<OrderDetail> unDeliveryOrderDetailList = orderDetailDao.selectOrderDetailsInSupplierAndStatus(sysCompanyX.getId().intValue(), 1);
                 totalUnDeliveryOrderCount = totalUnDeliveryOrderCount + unDeliveryOrderDetailList.size();
 
-                if (CollectionUtils.isNotEmpty(unDeliveryOrderDetailList)) {
-                    // 4. 统计待发货子订单数量
-                    Long unDeliveryOrderCount = Long.valueOf(unDeliveryOrderDetailList.size());
-                    dailyExportOrderStatisticVo.setUnDeliveryOrderCount(unDeliveryOrderCount);
+                // 4. 统计待发货子订单数量
+                Long unDeliveryOrderCount = Long.valueOf(unDeliveryOrderDetailList.size());
+                dailyExportOrderStatisticVo.setUnDeliveryOrderCount(unDeliveryOrderCount);
 
+                if (CollectionUtils.isNotEmpty(unDeliveryOrderDetailList)) {
                     // 5. 待发货的订单中，最早的自订单号
                     String unDeliveryEarliestOrderNo = unDeliveryOrderDetailList.get(0).getSubOrderId();
                     dailyExportOrderStatisticVo.setUnDeliveryEarliestOrderNo(unDeliveryEarliestOrderNo);
@@ -200,13 +200,17 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 dailyExportOrderStatisticVoList.add(dailyExportOrderStatisticVo);
             }
 
+            dailyExportOrderStatisticVoList.sort((o1, o2) ->
+                o2.getUnDeliveryOrderCount().intValue() - o1.getUnDeliveryOrderCount().intValue());
+            // dailyExportOrderStatisticVoList.sort(Comparator.comparing(DailyExportOrderStatisticVo::getUnDeliveryOrderCount));
+
+
             log.info("每日统计 获取导出的data数据:{}", JSONUtil.toJsonString(dailyExportOrderStatisticVoList));
 
             // 查询从0点到目前时间的新增订单
             String startTime = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD) + " 00:00:00";
             Date startTimeDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             List<OrderDetail> increasedOrderDetailList = orderDetailDao.selectOrderDetailsByPeriod(startTimeDate, new Date());
-
 
             // 处理返回结果
             resultMap.put("statisticTime", DateUtil.nowDate(DateUtil.DATE_YYYYMMDDHHMMSS));
