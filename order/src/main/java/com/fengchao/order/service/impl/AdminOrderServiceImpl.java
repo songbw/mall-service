@@ -1,8 +1,10 @@
 package com.fengchao.order.service.impl;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.BillExportReqVo;
+import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.constants.OrderPayMethodTypeEnum;
@@ -20,6 +22,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -134,6 +137,94 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
         return exportOrdersVoList;
     }
+
+
+
+    /**
+     * 导出每日统计
+     *
+     * @return
+     */
+    @Override
+    public Map<String, Object> exportDailyOrderStatistic() throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        try {
+            List<DailyExportOrderStatisticVo> dailyExportOrderStatisticVoList = new ArrayList<>();
+
+            // 获取所有供应商
+            List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
+
+            log.info("每日统计 获取商户列表:{}", JSONUtil.toJsonString(sysCompanyXList));
+
+
+            //
+            long totalCompletedOrderCount = 0; // 总计 已完成子订单数量
+            long totalDeliveredOrderCount = 0; // 总计 已发货子订单数量
+            long totalUnDeliveryOrderCount = 0; // 总计 未发货子订单数量
+            for (SysCompanyX sysCompanyX : sysCompanyXList) { // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+                DailyExportOrderStatisticVo dailyExportOrderStatisticVo = new DailyExportOrderStatisticVo();
+
+                // 1. 供应商名称
+                dailyExportOrderStatisticVo.setSupplierName(sysCompanyX.getName());
+
+                // 2. 统计已完成子订单个数
+                Long completedOrderCount = orderDetailDao.selectCountInSupplierAndStatus(sysCompanyX.getId().intValue(), 3);
+                dailyExportOrderStatisticVo.setCompletedOrderCount(completedOrderCount);
+                totalCompletedOrderCount = totalCompletedOrderCount + completedOrderCount;
+
+                // 3. 统计已发货子订单数量
+                Long deliveredOrderCount = orderDetailDao.selectCountInSupplierAndStatus(sysCompanyX.getId().intValue(), 2);
+                dailyExportOrderStatisticVo.setDeliveredOrderCount(deliveredOrderCount);
+                totalDeliveredOrderCount = totalDeliveredOrderCount + deliveredOrderCount;
+
+                // x.获取代发货的子订单
+                List<OrderDetail> unDeliveryOrderDetailList = orderDetailDao.selectOrderDetailsInSupplierAndStatus(sysCompanyX.getId().intValue(), 1);
+                totalUnDeliveryOrderCount = totalUnDeliveryOrderCount + unDeliveryOrderDetailList.size();
+
+                if (CollectionUtils.isNotEmpty(unDeliveryOrderDetailList)) {
+                    // 4. 统计待发货子订单数量
+                    Long unDeliveryOrderCount = Long.valueOf(unDeliveryOrderDetailList.size());
+                    dailyExportOrderStatisticVo.setUnDeliveryOrderCount(unDeliveryOrderCount);
+
+                    // 5. 待发货的订单中，最早的自订单号
+                    String unDeliveryEarliestOrderNo = unDeliveryOrderDetailList.get(0).getSubOrderId();
+                    dailyExportOrderStatisticVo.setUnDeliveryEarliestOrderNo(unDeliveryEarliestOrderNo);
+
+                    // 6. 待发货的订单中，最早的自订单交易时间
+                    String unDeliveryEarliestOrderTime =
+                            DateUtil.dateTimeFormat(unDeliveryOrderDetailList.get(0).getCreatedAt(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                    dailyExportOrderStatisticVo.setUnDeliveryEarliestOrderTime(unDeliveryEarliestOrderTime);
+                }
+
+                dailyExportOrderStatisticVoList.add(dailyExportOrderStatisticVo);
+            }
+
+            log.info("每日统计 获取导出的data数据:{}", JSONUtil.toJsonString(dailyExportOrderStatisticVoList));
+
+            // 查询从0点到目前时间的新增订单
+            String startTime = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD) + " 00:00:00";
+            Date startTimeDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            List<OrderDetail> increasedOrderDetailList = orderDetailDao.selectOrderDetailsByPeriod(startTimeDate, new Date());
+
+
+            // 处理返回结果
+            resultMap.put("statisticTime", DateUtil.nowDate(DateUtil.DATE_YYYYMMDDHHMMSS));
+            resultMap.put("data", dailyExportOrderStatisticVoList);
+            resultMap.put("increasedCount", increasedOrderDetailList.size());
+            resultMap.put("totalCompletedOrderCount", totalCompletedOrderCount); // 总计 已完成子订单数量
+            resultMap.put("totalDeliveredOrderCount", totalDeliveredOrderCount); // 总计 已发货子订单数量
+            resultMap.put("totalUnDeliveryOrderCount", totalUnDeliveryOrderCount); // 总计 未发货子订单数量
+
+            log.info("每日统计 统计数据:{}", JSONUtil.toJsonString(resultMap));
+            return resultMap;
+        } catch (Exception e) {
+            log.error("每日统计 异常:{}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+
 
     /**
      * 导出订单入账对账单 - 获取导出的vo : List<ExportOrdersVo>

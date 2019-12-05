@@ -1,12 +1,14 @@
 package com.fengchao.order.service;
 
 import com.fengchao.order.bean.vo.BillExportReqVo;
+import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author tom
@@ -21,6 +23,14 @@ public interface AdminOrderService {
      * @return
      */
     List<ExportOrdersVo> exportOrders(OrderExportReqVo orderExportReqVo) throws Exception;
+
+    /**
+     * 导出每日统计
+     *
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> exportDailyOrderStatistic() throws Exception;
 
     /**
      * 注意这是个mock
