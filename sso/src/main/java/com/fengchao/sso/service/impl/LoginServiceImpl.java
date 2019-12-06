@@ -227,6 +227,7 @@ public class LoginServiceImpl implements ILoginService {
             return  result;
         }
         accessToken.setOpenId(authUserBean.getOpenId());
+        accessToken.setPayId(authUserBean.getPayId());
         User temp = new User();
         temp.setOpenId(authUserBean.getOpenId());
         temp.setiAppId(iAppId);
