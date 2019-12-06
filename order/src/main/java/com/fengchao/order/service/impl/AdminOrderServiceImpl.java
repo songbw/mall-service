@@ -3,6 +3,7 @@ package com.fengchao.order.service.impl;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.BillExportReqVo;
+import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.constants.OrderPayMethodTypeEnum;

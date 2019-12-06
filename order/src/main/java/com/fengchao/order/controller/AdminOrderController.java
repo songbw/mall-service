@@ -1,6 +1,7 @@
 package com.fengchao.order.controller;
 
 import com.fengchao.order.bean.vo.BillExportReqVo;
+import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
