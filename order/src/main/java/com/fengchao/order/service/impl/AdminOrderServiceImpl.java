@@ -358,6 +358,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             long totalCompletedOrderCount = 0; // 总计 已完成子订单数量
             long totalDeliveredOrderCount = 0; // 总计 已发货子订单数量
             long totalUnDeliveryOrderCount = 0; // 总计 未发货子订单数量
+            long totalApplyRefundOrderCount = 0; // 总计 售后子订单数量
+            long totalOrderDetailCount = 0; // 总计 所有子订单数量
             for (SysCompanyX sysCompanyX : sysCompanyXList) { // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
                 DailyExportOrderStatisticVo dailyExportOrderStatisticVo = new DailyExportOrderStatisticVo();
 
@@ -383,16 +385,33 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 dailyExportOrderStatisticVo.setUnDeliveryOrderCount(unDeliveryOrderCount);
 
                 if (CollectionUtils.isNotEmpty(unDeliveryOrderDetailList)) {
-                    // 5. 待发货的订单中，最早的自订单号
+                    // 5. 待发货的订单中，最早的子订单号
                     String unDeliveryEarliestOrderNo = unDeliveryOrderDetailList.get(0).getSubOrderId();
                     dailyExportOrderStatisticVo.setUnDeliveryEarliestOrderNo(unDeliveryEarliestOrderNo);
 
-                    // 6. 待发货的订单中，最早的自订单交易时间
+                    // 6. 待发货的订单中，最早的子订单交易时间
                     String unDeliveryEarliestOrderTime =
                             DateUtil.dateTimeFormat(unDeliveryOrderDetailList.get(0).getCreatedAt(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
                     dailyExportOrderStatisticVo.setUnDeliveryEarliestOrderTime(unDeliveryEarliestOrderTime);
                 }
 
+                // 7. 统计申请售后的子点单数量
+                Long applyRefundCount = orderDetailDao.selectCountInSupplierAndStatus(sysCompanyX.getId().intValue(), 5);
+                dailyExportOrderStatisticVo.setApplyRefundCount(applyRefundCount);
+                totalApplyRefundOrderCount = totalApplyRefundOrderCount + applyRefundCount;
+
+                // 8. 统计所有订单数量
+                List<Integer> statusList = new ArrayList<>(); // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+                statusList.add(0);
+                statusList.add(1);
+                statusList.add(2);
+                statusList.add(3);
+                statusList.add(5);
+                Long orderDetailCount = orderDetailDao.selectCountInSupplierAndStatusList(sysCompanyX.getId().intValue(), statusList);
+                dailyExportOrderStatisticVo.setOrderDetailCount(orderDetailCount);
+                totalOrderDetailCount = totalOrderDetailCount + orderDetailCount;
+
+                //// !!
                 dailyExportOrderStatisticVoList.add(dailyExportOrderStatisticVo);
             }
 
@@ -415,6 +434,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             resultMap.put("totalCompletedOrderCount", totalCompletedOrderCount); // 总计 已完成子订单数量
             resultMap.put("totalDeliveredOrderCount", totalDeliveredOrderCount); // 总计 已发货子订单数量
             resultMap.put("totalUnDeliveryOrderCount", totalUnDeliveryOrderCount); // 总计 未发货子订单数量
+            resultMap.put("totalApplyRefundOrderCount", totalApplyRefundOrderCount); // 总计 售后子订单数量
+            resultMap.put("totalOrderDetailCount", totalOrderDetailCount); // 总计 所有子订单数量
 
             log.info("每日统计 统计数据:{}", JSONUtil.toJsonString(resultMap));
             return resultMap;

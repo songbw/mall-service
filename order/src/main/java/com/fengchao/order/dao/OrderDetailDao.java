@@ -288,6 +288,28 @@ public class OrderDetailDao {
         return count;
     }
 
+    /**
+     * 查询供应商维度下的 根据状态集合为条件 的订单数量
+     *
+     * @param merchantId
+     * @param statusList 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+     * @return
+     */
+    public Long selectCountInSupplierAndStatusList(Integer merchantId, List<Integer> statusList) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        if (merchantId != null) {
+            criteria.andMerchantIdEqualTo(merchantId);
+        }
+        criteria.andStatusIn(statusList);
+
+        Long count = orderDetailMapper.countByExample(orderDetailExample);
+
+        return count;
+    }
+
 
     /**
      * 查询供应商维度下的不同状态的子订单

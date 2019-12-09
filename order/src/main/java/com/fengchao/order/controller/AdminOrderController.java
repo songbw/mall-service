@@ -925,12 +925,6 @@ public class AdminOrderController {
             log.info("每日统计 入参: 无");
 
             // 1.根据条件获统计数据
-            // resultMap.put("statisticTime", DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
-            // resultMap.put("data", JSONUtil.toJsonString(dailyExportOrderStatisticVoList));
-            // resultMap.put("increasedCount", increasedOrderDetailList.size());
-            // resultMap.put("totalCompletedOrderCount", totalCompletedOrderCount); // 总计 已完成子订单数量
-            // resultMap.put("totalDeliveredOrderCount", totalDeliveredOrderCount); // 总计 已发货子订单数量
-            // resultMap.put("totalUnDeliveryOrderCount", totalUnDeliveryOrderCount); // 总计 未发货子订单数量
             Map<String, Object> statisticMap = adminOrderService.exportDailyOrderStatistic();
             List<DailyExportOrderStatisticVo> dailyExportOrderStatisticVoList = (List) statisticMap.get("data");
             String statisticTime = (String) statisticMap.get("statisticTime");
@@ -938,6 +932,8 @@ public class AdminOrderController {
             Long totalCompletedOrderCount = (Long) statisticMap.get("totalCompletedOrderCount"); // 总计 已完成子订单数量
             Long totalDeliveredOrderCount = (Long) statisticMap.get("totalDeliveredOrderCount"); // 总计 已发货子订单数量
             Long totalUnDeliveryOrderCount = (Long) statisticMap.get("totalUnDeliveryOrderCount"); // 总计 未发货子订单数量
+            Long totalApplyRefundOrderCount = (Long) statisticMap.get("totalApplyRefundOrderCount"); // 总计 售后子订单数量
+            Long totalOrderDetailCount = (Long) statisticMap.get("totalOrderDetailCount"); // 总计 所有子订单数量
 
             // 创建HSSFWorkbook对象
             workbook = new HSSFWorkbook();
@@ -957,8 +953,10 @@ public class AdminOrderController {
             preTitleRow1.createCell(4).setCellValue("");
             preTitleRow1.createCell(5).setCellValue("");
             preTitleRow1.createCell(6).setCellValue("");
+            preTitleRow1.createCell(7).setCellValue("");
+            preTitleRow1.createCell(8).setCellValue("");
 
-            sheet.addMergedRegion(new CellRangeAddress(indexRow, indexRow, 0, 6));
+            sheet.addMergedRegion(new CellRangeAddress(indexRow, indexRow, 0, 8));
             indexRow = indexRow + 1;
 
 
@@ -972,6 +970,8 @@ public class AdminOrderController {
             preTitleRow2.createCell(4).setCellValue("");
             preTitleRow2.createCell(5).setCellValue("");
             preTitleRow2.createCell(6).setCellValue("");
+            preTitleRow2.createCell(7).setCellValue("");
+            preTitleRow2.createCell(8).setCellValue("");
 
 
             // TITLE
@@ -998,6 +998,12 @@ public class AdminOrderController {
 
             HSSFCell titleCell6 = titleRow.createCell(6);
             titleCell6.setCellValue("交易时间");
+
+            HSSFCell titleCell7 = titleRow.createCell(7);
+            titleCell7.setCellValue("售后数量");
+
+            HSSFCell titleCell8 = titleRow.createCell(8);
+            titleCell8.setCellValue("订单数量");
 
             // CONTENT
             int snum = 1;
@@ -1028,6 +1034,12 @@ public class AdminOrderController {
                 HSSFCell cell6 = currentRow.createCell(6); // 交易时间
                 cell6.setCellValue(dailyExportOrderStatisticVo.getUnDeliveryEarliestOrderTime() == null ?
                         "--" : dailyExportOrderStatisticVo.getUnDeliveryEarliestOrderTime());
+
+                HSSFCell cell7 = currentRow.createCell(7); // 售后数量
+                cell7.setCellValue(dailyExportOrderStatisticVo.getApplyRefundCount());
+
+                HSSFCell cell8 = currentRow.createCell(8); // 订单数量
+                cell8.setCellValue(dailyExportOrderStatisticVo.getOrderDetailCount());
             }
 
             // 最后一行
@@ -1052,6 +1064,12 @@ public class AdminOrderController {
 
             HSSFCell cell6 = lastRow.createCell(6); // 交易时间
             cell6.setCellValue("");
+
+            HSSFCell cell7 = lastRow.createCell(7); // 售后数量
+            cell7.setCellValue(totalApplyRefundOrderCount);
+
+            HSSFCell cell8 = lastRow.createCell(8); // 订单数量
+            cell8.setCellValue(totalOrderDetailCount);
 
 
             ///////// 文件名

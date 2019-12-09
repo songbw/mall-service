@@ -39,4 +39,14 @@ public class DailyExportOrderStatisticVo {
      * 未发货子订单中, 最早时间的子订单交易时间
      */
     private String unDeliveryEarliestOrderTime;
+
+    /**
+     * 售后的自订单数量
+     */
+    private Long applyRefundCount;
+
+    /**
+     * 自订单数量
+     */
+    private Long orderDetailCount;
 }
