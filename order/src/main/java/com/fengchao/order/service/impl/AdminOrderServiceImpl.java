@@ -362,6 +362,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
                     exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
                     exportOrdersVo.setAoyiId(ordersBo.getAoyiId()); // 苏宁订单号
+                    exportOrdersVo.setPaymentNo(ordersBo.getPaymentNo());  // 支付订单号
 
                     ProductInfoBean productInfoBean = productInfoBeanMap.get(orderDetailBo.getMpu());
                     exportOrdersVo.setCategory(productInfoBean == null ? "" : productInfoBean.getCategoryName()); // 品类

@@ -435,6 +435,9 @@ public class AdminOrderController {
 
         HSSFCell titleCell27 = titleRow.createCell(27);
         titleCell27.setCellValue("子订单备注");
+
+        HSSFCell titleCell28 = titleRow.createCell(28);
+        titleCell28.setCellValue("支付单号");
     }
 
     /**
@@ -601,6 +604,10 @@ public class AdminOrderController {
                 // 用户id
                 HSSFCell cell27 = currentRow.createCell(27);
                 cell27.setCellValue(exportOrdersVo.getRemark());
+
+                // 支付单号
+                HSSFCell cell28 = currentRow.createCell(28);
+                cell28.setCellValue(exportOrdersVo.getPaymentNo());
 
                 //
                 currentRowNum++;

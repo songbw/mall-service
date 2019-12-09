@@ -160,6 +160,11 @@ public class ExportOrdersVo {
     private String aoyiId;
 
     /**
+     * 支付订单号
+     */
+    private String paymentNo;
+
+    /**
      * 详细地址
      */
     private String address;
