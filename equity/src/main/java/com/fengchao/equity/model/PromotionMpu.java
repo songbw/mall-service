@@ -17,6 +17,8 @@ public class PromotionMpu {
 
     private Integer perLimited;
 
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -79,5 +81,13 @@ public class PromotionMpu {
 
     public void setPerLimited(Integer perLimited) {
         this.perLimited = perLimited;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 }

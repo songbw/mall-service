@@ -18,4 +18,5 @@ public class CouponResultBean {
     private Integer couponType;
     private Integer collectType;
     private Integer status;
+    private String appId;
 }

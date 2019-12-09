@@ -13,6 +13,7 @@
     <result column="promotion_type_id" jdbcType="BIGINT" property="promotionTypeId" />
     <result column="account_type" jdbcType="INTEGER" property="accountType" />
     <result column="daily_schedule" jdbcType="BIT" property="dailySchedule" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -74,7 +75,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, name, tag, discount_type, status, start_date, end_date, created_date, promotion_type_id, 
-    account_type, daily_schedule
+    account_type, daily_schedule, app_id
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionExample" resultMap="BaseResultMap">
     select
@@ -110,11 +111,11 @@
     insert into promotion (name, tag, discount_type, 
       status, start_date, end_date, 
       created_date, promotion_type_id, account_type, 
-      daily_schedule)
+      daily_schedule, app_id)
     values (#{name,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{discountType,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
       #{createdDate,jdbcType=TIMESTAMP}, #{promotionTypeId,jdbcType=BIGINT}, #{accountType,jdbcType=INTEGER}, 
-      #{dailySchedule,jdbcType=BIT})
+      #{dailySchedule,jdbcType=BIT}, #{appId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Promotion" useGeneratedKeys="true">
     insert into promotion
@@ -149,6 +150,9 @@
       <if test="dailySchedule != null">
         daily_schedule,
       </if>
+      <if test="appId != null">
+        app_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -180,6 +184,9 @@
       </if>
       <if test="dailySchedule != null">
         #{dailySchedule,jdbcType=BIT},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -225,6 +232,9 @@
       <if test="record.dailySchedule != null">
         daily_schedule = #{record.dailySchedule,jdbcType=BIT},
       </if>
+      <if test="record.appId != null">
+        app_id = #{record.appId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -242,7 +252,8 @@
       created_date = #{record.createdDate,jdbcType=TIMESTAMP},
       promotion_type_id = #{record.promotionTypeId,jdbcType=BIGINT},
       account_type = #{record.accountType,jdbcType=INTEGER},
-      daily_schedule = #{record.dailySchedule,jdbcType=BIT}
+      daily_schedule = #{record.dailySchedule,jdbcType=BIT},
+      app_id = #{record.appId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -280,6 +291,9 @@
       <if test="dailySchedule != null">
         daily_schedule = #{dailySchedule,jdbcType=BIT},
       </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -294,7 +308,8 @@
       created_date = #{createdDate,jdbcType=TIMESTAMP},
       promotion_type_id = #{promotionTypeId,jdbcType=BIGINT},
       account_type = #{accountType,jdbcType=INTEGER},
-      daily_schedule = #{dailySchedule,jdbcType=BIT}
+      daily_schedule = #{dailySchedule,jdbcType=BIT},
+      app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

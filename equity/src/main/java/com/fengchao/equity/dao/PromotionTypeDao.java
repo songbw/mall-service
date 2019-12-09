@@ -24,10 +24,12 @@ public class PromotionTypeDao {
         this.promotionTypeMapper = promotionTypeMapper;
     }
 
-    public PageInfo<PromotionType> selectPromotionType(int page , int size){
+    public PageInfo<PromotionType> selectPromotionType(int page, int size, String appId){
 
         PromotionTypeExample example = new PromotionTypeExample();
         example.createCriteria().andIstatusEqualTo((short)1);
+        example.createCriteria().andAppIdEqualTo(appId);
+
         PageHelper.startPage(page, size);
         List<PromotionType> types =  promotionTypeMapper.selectByExample(example);
         return new PageInfo<>(types);

@@ -13,6 +13,8 @@ public class PromotionTags {
 
     private Integer isStatus;
 
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -51,5 +53,13 @@ public class PromotionTags {
 
     public void setIsStatus(Integer isStatus) {
         this.isStatus = isStatus;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 }

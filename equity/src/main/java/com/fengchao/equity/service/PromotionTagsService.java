@@ -6,7 +6,7 @@ import com.fengchao.equity.model.PromotionTags;
 public interface PromotionTagsService {
     int createPromotionTags(PromotionTags bean);
 
-    PageableData<PromotionTags> findPromotionTags(Integer pageNo, Integer pageSize);
+    PageableData<PromotionTags> findPromotionTags(Integer pageNo, Integer pageSize, String appId);
 
     int updatePromotionTags(PromotionTags bean);
 

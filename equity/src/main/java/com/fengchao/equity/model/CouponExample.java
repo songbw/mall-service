@@ -1605,286 +1605,6 @@ public class CouponExample {
             return (Criteria) this;
         }
 
-        public Criteria andCouponMpusIsNull() {
-            addCriterion("coupon_mpus is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusIsNotNull() {
-            addCriterion("coupon_mpus is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusEqualTo(String value) {
-            addCriterion("coupon_mpus =", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusNotEqualTo(String value) {
-            addCriterion("coupon_mpus <>", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusGreaterThan(String value) {
-            addCriterion("coupon_mpus >", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusGreaterThanOrEqualTo(String value) {
-            addCriterion("coupon_mpus >=", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusLessThan(String value) {
-            addCriterion("coupon_mpus <", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusLessThanOrEqualTo(String value) {
-            addCriterion("coupon_mpus <=", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusLike(String value) {
-            addCriterion("coupon_mpus like", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusNotLike(String value) {
-            addCriterion("coupon_mpus not like", value, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusIn(List<String> values) {
-            addCriterion("coupon_mpus in", values, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusNotIn(List<String> values) {
-            addCriterion("coupon_mpus not in", values, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusBetween(String value1, String value2) {
-            addCriterion("coupon_mpus between", value1, value2, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponMpusNotBetween(String value1, String value2) {
-            addCriterion("coupon_mpus not between", value1, value2, "couponMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusIsNull() {
-            addCriterion("coupon_skus is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusIsNotNull() {
-            addCriterion("coupon_skus is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusEqualTo(String value) {
-            addCriterion("coupon_skus =", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusNotEqualTo(String value) {
-            addCriterion("coupon_skus <>", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusGreaterThan(String value) {
-            addCriterion("coupon_skus >", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusGreaterThanOrEqualTo(String value) {
-            addCriterion("coupon_skus >=", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusLessThan(String value) {
-            addCriterion("coupon_skus <", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusLessThanOrEqualTo(String value) {
-            addCriterion("coupon_skus <=", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusLike(String value) {
-            addCriterion("coupon_skus like", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusNotLike(String value) {
-            addCriterion("coupon_skus not like", value, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusIn(List<String> values) {
-            addCriterion("coupon_skus in", values, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusNotIn(List<String> values) {
-            addCriterion("coupon_skus not in", values, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusBetween(String value1, String value2) {
-            addCriterion("coupon_skus between", value1, value2, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCouponSkusNotBetween(String value1, String value2) {
-            addCriterion("coupon_skus not between", value1, value2, "couponSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusIsNull() {
-            addCriterion("exclude_mpus is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusIsNotNull() {
-            addCriterion("exclude_mpus is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusEqualTo(String value) {
-            addCriterion("exclude_mpus =", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusNotEqualTo(String value) {
-            addCriterion("exclude_mpus <>", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusGreaterThan(String value) {
-            addCriterion("exclude_mpus >", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusGreaterThanOrEqualTo(String value) {
-            addCriterion("exclude_mpus >=", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusLessThan(String value) {
-            addCriterion("exclude_mpus <", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusLessThanOrEqualTo(String value) {
-            addCriterion("exclude_mpus <=", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusLike(String value) {
-            addCriterion("exclude_mpus like", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusNotLike(String value) {
-            addCriterion("exclude_mpus not like", value, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusIn(List<String> values) {
-            addCriterion("exclude_mpus in", values, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusNotIn(List<String> values) {
-            addCriterion("exclude_mpus not in", values, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusBetween(String value1, String value2) {
-            addCriterion("exclude_mpus between", value1, value2, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeMpusNotBetween(String value1, String value2) {
-            addCriterion("exclude_mpus not between", value1, value2, "excludeMpus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusIsNull() {
-            addCriterion("exclude_skus is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusIsNotNull() {
-            addCriterion("exclude_skus is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusEqualTo(String value) {
-            addCriterion("exclude_skus =", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusNotEqualTo(String value) {
-            addCriterion("exclude_skus <>", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusGreaterThan(String value) {
-            addCriterion("exclude_skus >", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusGreaterThanOrEqualTo(String value) {
-            addCriterion("exclude_skus >=", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusLessThan(String value) {
-            addCriterion("exclude_skus <", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusLessThanOrEqualTo(String value) {
-            addCriterion("exclude_skus <=", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusLike(String value) {
-            addCriterion("exclude_skus like", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusNotLike(String value) {
-            addCriterion("exclude_skus not like", value, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusIn(List<String> values) {
-            addCriterion("exclude_skus in", values, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusNotIn(List<String> values) {
-            addCriterion("exclude_skus not in", values, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusBetween(String value1, String value2) {
-            addCriterion("exclude_skus between", value1, value2, "excludeSkus");
-            return (Criteria) this;
-        }
-
-        public Criteria andExcludeSkusNotBetween(String value1, String value2) {
-            addCriterion("exclude_skus not between", value1, value2, "excludeSkus");
-            return (Criteria) this;
-        }
-
         public Criteria andCategoriesIsNull() {
             addCriterion("categories is null");
             return (Criteria) this;
@@ -2402,6 +2122,76 @@ public class CouponExample {
 
         public Criteria andCouponRulesNotBetween(String value1, String value2) {
             addCriterion("coupon_rules not between", value1, value2, "couponRules");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdIsNull() {
+            addCriterion("app_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdIsNotNull() {
+            addCriterion("app_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdEqualTo(String value) {
+            addCriterion("app_id =", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdNotEqualTo(String value) {
+            addCriterion("app_id <>", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdGreaterThan(String value) {
+            addCriterion("app_id >", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdGreaterThanOrEqualTo(String value) {
+            addCriterion("app_id >=", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdLessThan(String value) {
+            addCriterion("app_id <", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdLessThanOrEqualTo(String value) {
+            addCriterion("app_id <=", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdLike(String value) {
+            addCriterion("app_id like", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdNotLike(String value) {
+            addCriterion("app_id not like", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdIn(List<String> values) {
+            addCriterion("app_id in", values, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdNotIn(List<String> values) {
+            addCriterion("app_id not in", values, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdBetween(String value1, String value2) {
+            addCriterion("app_id between", value1, value2, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdNotBetween(String value1, String value2) {
+            addCriterion("app_id not between", value1, value2, "appId");
             return (Criteria) this;
         }
     }

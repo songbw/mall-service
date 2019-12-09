@@ -10,4 +10,5 @@ import java.util.List;
 public class PromotionInitialScheduleBean {
 
     private List<String> initialSchedules;
+    private String appId;
 }

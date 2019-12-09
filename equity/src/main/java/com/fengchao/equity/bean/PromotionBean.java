@@ -32,5 +32,7 @@ public class PromotionBean extends QueryBean {
      */
     private Integer accountType;
 
+    private String appId;
+
 }
 

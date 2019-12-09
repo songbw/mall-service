@@ -7,7 +7,7 @@ import com.fengchao.equity.model.CouponTags;
 public interface CouponTagsService {
     int createTags(CouponTags bean);
 
-    PageBean findTags(Integer offset, Integer limit);
+    PageBean findTags(Integer offset, Integer limit, String appId);
 
     int updateTags(CouponTags bean);
 

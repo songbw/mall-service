@@ -25,7 +25,7 @@ public class PromotionTypeController {
     @PostMapping("findPage")
     public OperaResult findPromotionTypesByPage(QueryProdBean params){
         OperaResult result = new OperaResult();
-        result.getData().put("result", service.getPromotionTypes(params.getPageNo(), params.getPageSize()));
+        result.getData().put("result", service.getPromotionTypes(params.getPageNo(), params.getPageSize(), params.getAppId()));
         return result;
     }
 

@@ -7,6 +7,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_status" jdbcType="INTEGER" property="isStatus" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -67,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, create_time, update_time, is_status
+    id, name, create_time, update_time, is_status, app_id
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionTagsExample" resultMap="BaseResultMap">
     select
@@ -101,9 +102,9 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionTags" useGeneratedKeys="true">
     insert into promotion_tags (name, create_time, update_time, 
-      is_status)
+      is_status, app_id)
     values (#{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{isStatus,jdbcType=INTEGER})
+      #{isStatus,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionTags" useGeneratedKeys="true">
     insert into promotion_tags
@@ -120,6 +121,9 @@
       <if test="isStatus != null">
         is_status,
       </if>
+      <if test="appId != null">
+        app_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -133,6 +137,9 @@
       </if>
       <if test="isStatus != null">
         #{isStatus,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -160,6 +167,9 @@
       <if test="record.isStatus != null">
         is_status = #{record.isStatus,jdbcType=INTEGER},
       </if>
+      <if test="record.appId != null">
+        app_id = #{record.appId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -171,7 +181,8 @@
       name = #{record.name,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      is_status = #{record.isStatus,jdbcType=INTEGER}
+      is_status = #{record.isStatus,jdbcType=INTEGER},
+      app_id = #{record.appId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -191,6 +202,9 @@
       <if test="isStatus != null">
         is_status = #{isStatus,jdbcType=INTEGER},
       </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -199,7 +213,8 @@
     set name = #{name,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_status = #{isStatus,jdbcType=INTEGER}
+      is_status = #{isStatus,jdbcType=INTEGER},
+      app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

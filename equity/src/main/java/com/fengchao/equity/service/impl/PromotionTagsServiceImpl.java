@@ -26,9 +26,9 @@ public class PromotionTagsServiceImpl implements PromotionTagsService {
     }
 
     @Override
-    public PageableData<PromotionTags> findPromotionTags(Integer pageNo, Integer pageSize) {
+    public PageableData<PromotionTags> findPromotionTags(Integer pageNo, Integer pageSize, String appId) {
         PageableData<PromotionTags> pageableData = new PageableData<>();
-        PageInfo<PromotionTags> pageInfo = tagsDao.findPromotionTags(pageNo, pageSize);
+        PageInfo<PromotionTags> pageInfo = tagsDao.findPromotionTags(pageNo, pageSize, appId);
 
         PageVo pageVo = ConvertUtil.convertToPageVo(pageInfo);
         List<PromotionTags> groupInfoList = pageInfo.getList();

@@ -1,6 +1,7 @@
 package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.bean.QueryProdBean;
 import com.fengchao.equity.model.PromotionTags;
 import com.fengchao.equity.service.PromotionTagsService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,8 @@ public class PromotionTagsController {
     }
 
     @GetMapping("find")
-    public OperaResult findPromotionTags(Integer pageNo, Integer pageSize, OperaResult result){
-        result.getData().put("result", service.findPromotionTags(pageNo, pageSize));
+    public OperaResult findPromotionTags(QueryProdBean bean, OperaResult result){
+        result.getData().put("result", service.findPromotionTags(bean.getPageNo(), bean.getPageSize(), bean.getAppId()));
         return result;
     }
 

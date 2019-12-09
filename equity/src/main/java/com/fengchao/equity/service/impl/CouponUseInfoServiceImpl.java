@@ -49,7 +49,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
 
-        CouponX coupon = couponXMapper.selectByCodeKey(bean.getCode());
+        CouponX coupon = couponXMapper.selectByCodeKey(bean.getCode(), bean.getAppId());
         if(coupon == null){
             couponUseInfoBean.setUserCouponCode("0");
             return couponUseInfoBean;
@@ -71,6 +71,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponUseInfo.setCouponId(coupon.getId());
         couponUseInfo.setCode(bean.getCode());
         couponUseInfo.setUserOpenId(bean.getUserOpenId());
+        couponUseInfo.setAppId(bean.getAppId());
         int num = 0;
         if(coupon.getSupplierMerchantId().equals("3")){
             OperaResult toushiResult = collectThirdCoupon(bean.getUserOpenId(), bean.getCode());
@@ -567,9 +568,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     }
 
     @Override
-    public List<Coupon> getCollectGiftCoupon(String openId) {
+    public List<Coupon> getCollectGiftCoupon(String openId, String appId) {
         List<Coupon> coupons = new ArrayList<>();
-        List<Integer> couponIds = mapper.selectGiftCouponIds(openId);
+        List<Integer> couponIds = mapper.selectGiftCouponIds(openId, appId);
         if(!couponIds.isEmpty()){
             coupons = couponDao.selectGiftCouponListByIdList(couponIds);
         }

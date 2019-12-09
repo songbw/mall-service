@@ -29,8 +29,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,13 +71,14 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PageBean findPromotion(Integer offset, Integer limit) {
+    public PageBean findPromotion(Integer offset, Integer limit, String appId) {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize", limit);
+        map.put("appId", appId);
         List<PromotionX> promotions = new ArrayList<>();
         total = promotionXMapper.selectCount(map);
         if (total > 0) {
@@ -103,11 +102,11 @@ public class PromotionServiceImpl implements PromotionService {
         AtomicInteger resultPromotionId = new AtomicInteger();
         Set<String> resultMpus = new HashSet<>();
         if(bean.getStatus() != null && bean.getStatus() == 2){
-            List<Promotion> promotions = promotionDao.selectActivePromotion();
+            List<Promotion> promotions = promotionDao.selectActivePromotion(promotionX.getAppId());
 //            Promotion overduePromotion = promotionDao.selectOverduePromotion().get(0);
 //            promotions.add(overduePromotion);
             if(promotionX.getDailySchedule()!=null && promotionX.getDailySchedule()){
-                List<PromotionX> promotionXES = promotionXMapper.selectSchedulePromotion();
+                List<PromotionX> promotionXES = promotionXMapper.selectSchedulePromotion(promotionX.getAppId());
                 for (int i=0; i < promotionXES.size(); i++){
                     PromotionX daliyPromotion = promotionXES.get(i);
                     boolean isDayTrue = DataUtils.isSameDay(promotionX.getStartDate(), daliyPromotion.getStartDate());
@@ -247,6 +246,7 @@ public class PromotionServiceImpl implements PromotionService {
         map.put("promotionTypeId",bean.getPromotionTypeId());
         map.put("discountType",bean.getDiscountType());
         map.put("accountType",bean.getAccountType());
+        map.put("appId",bean.getAppId());
         if(StringUtils.isNotEmpty(bean.getDailySchedule())){
             map.put("dailySchedule",Boolean.valueOf(bean.getDailySchedule()));
         }
@@ -346,6 +346,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
             promotionMpu.setPromotionImage(promotionMpuX.getPromotionImage());
             promotionMpu.setPerLimited(promotionMpuX.getPerLimited());
+            promotionMpu.setAppId(promotionMpuX.getAppId());
             num[0] = promotionMpuMapper.insertSelective(promotionMpu);
         };
         return num[0];
@@ -365,6 +366,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setScheduleId(promotionMpuX.getScheduleId());
             promotionMpu.setPromotionImage(promotionMpuX.getPromotionImage());
             promotionMpu.setPerLimited(promotionMpuX.getPerLimited());
+            promotionMpu.setAppId(promotionMpuX.getAppId());
             num[0] = promotionMpuMapper.updateByPrimaryKeySelective(promotionMpu);
         });
         return num[0];
@@ -387,7 +389,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PromotionX findPromotionToUser(Integer id, Boolean detail) {
+    public PromotionX findPromotionToUser(Integer id, Boolean detail, String appId) {
 
         PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
         if(promotion == null){
@@ -443,9 +445,9 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<PromotionInfoBean> findPromotionByMpu(String mpu) {
+    public List<PromotionInfoBean> findPromotionByMpu(String mpu, String appId) {
         Date now = new Date();
-        List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(mpu);
+        List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(mpu, appId);
         for (int i = 0; i < beans.size(); i++){
             if(beans.get(i).getDailySchedule() != null && beans.get(i).getDailySchedule()){
                 List<PromotionSchedule> promotionSchedules = scheduleDao.findPromotionSchedule(beans.get(i).getScheduleId());
@@ -527,12 +529,12 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PromotionX findCurrentSchedule(Integer num) {
+    public PromotionX findCurrentSchedule(Integer num, String appId) {
         if(num == null){
             num = 16;
         }
 
-        List<PromotionX> promotions = promotionXMapper.selectDaliyPromotion();
+        List<PromotionX> promotions = promotionXMapper.selectDaliyPromotion(appId);
         if(promotions.isEmpty()){
             return null;
         }else{
@@ -599,10 +601,10 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name) {
+    public PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name, String appId) {
         PageableData<Promotion> pageableData = new PageableData<>();
         PageHelper.startPage(pageNo, pageSize);
-        List<Promotion> promotions = promotionDao.searchActivePromotion(dailySchedule, name);
+        List<Promotion> promotions = promotionDao.searchActivePromotion(dailySchedule, name, appId);
         PageInfo<Promotion> promotionPageInfo = new PageInfo<>(promotions);
         PageVo pageVo = ConvertUtil.convertToPageVo(promotionPageInfo);
         List<Promotion> groupInfoList = promotionPageInfo.getList();
@@ -612,9 +614,9 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<PromotionMpuX> findOnlineMpu() {
+    public List<PromotionMpuX> findOnlineMpu(String appId) {
         List<PromotionMpuX> mpus = new ArrayList();
-        List<Promotion> onlineMpu = promotionDao.findOnlineMpu();
+        List<Promotion> onlineMpu = promotionDao.findOnlineMpu(appId);
         Date now = new Date();
         onlineMpu.forEach(promotion -> {
             if(promotion.getDailySchedule()){
@@ -638,8 +640,8 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<PromotionMpuX> findPromotionByMpuList(List<String> mpus) {
-        List<PromotionMpuX> promotionMpuXList = mpuXMapper.selectPromotionByMpuList(mpus);
+    public List<PromotionMpuX> findPromotionByMpuList(List<String> mpus, String appId) {
+        List<PromotionMpuX> promotionMpuXList = mpuXMapper.selectPromotionByMpuList(mpus, appId);
         return promotionMpuXList;
     }
 

@@ -53,8 +53,8 @@ public class CouponController {
     }
 
     @GetMapping("activeCategories")
-    public OperaResult activeCategories(OperaResult result){
-        result.getData().put("result", couponService.activeCategories());
+    public OperaResult activeCategories(String appId, OperaResult result){
+        result.getData().put("result", couponService.activeCategories(appId));
         return result;
     }
 
@@ -218,8 +218,8 @@ public class CouponController {
     }
 
     @PostMapping("mpus")
-    public OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdBean> beans, OperaResult result){
-        List<CouponAndPromBean> mpuList = couponService.findCouponListByMpuList(beans);
+    public OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdBean> beans, String appId, OperaResult result){
+        List<CouponAndPromBean> mpuList = couponService.findCouponListByMpuList(beans, appId);
         result.getData().put("result", mpuList);
         return result;
     }

@@ -62,13 +62,14 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public PageBean findCoupon(Integer offset, Integer limit) {
+    public PageBean findCoupon(Integer offset, Integer limit, String appId) {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
+        map.put("appId",appId);
         List<CouponResultBean> coupons = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
@@ -136,6 +137,7 @@ public class CouponServiceImpl implements CouponService {
         map.put("collect_type", 1);
         map.put("pageNo", pageNo);
         map.put("pageSize",bean.getLimit());
+        map.put("appId", bean.getAppId());
         if(bean.getTagName() != null && !"".equals(bean.getTagName())){
             CouponTags tags = tagsMapper.selectByName(bean.getTagName());
             map.put("tagId", tags.getId());
@@ -155,7 +157,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CategoryCouponBean activeCategories() {
+    public CategoryCouponBean activeCategories(String appId) {
         CategoryCouponBean categoryCouponBean = new CategoryCouponBean();
         List<String> tags = mapper.selectTags();
         List<CouponTags> tagList = null;
@@ -255,6 +257,7 @@ public class CouponServiceImpl implements CouponService {
         map.put("releaseEndDate",bean.getReleaseEndDate());
         map.put("couponType", bean.getCouponType());
         map.put("scenarioType",bean.getScenarioType());
+        map.put("appId",bean.getAppId());
         List<CouponResultBean> coupons = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
@@ -279,6 +282,7 @@ public class CouponServiceImpl implements CouponService {
         coupon.setEffectiveStartDate(bean.getEffectiveStartDate());
         coupon.setEffectiveEndDate(bean.getEffectiveEndDate());
         coupon.setDescription(bean.getDescription());
+        coupon.setAppId(bean.getAppId());
         if(bean.getExcludeDates()!= null && !"".equals(bean.getExcludeDates())){
             List<Object> excludeDates = bean.getExcludeDates();
             JSONArray json = new JSONArray();
@@ -479,9 +483,9 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize) {
+    public PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId) {
         PageableData<Coupon> pageableData = new PageableData<>();
-        PageInfo<Coupon> releaseCoupon = couponDao.findReleaseCoupon(pageNo, pageSize);
+        PageInfo<Coupon> releaseCoupon = couponDao.findReleaseCoupon(pageNo, pageSize, appId);
         PageVo pageVo = ConvertUtil.convertToPageVo(releaseCoupon);
         List<Coupon> groupInfoList = releaseCoupon.getList();
         pageableData.setList(groupInfoList);
@@ -503,13 +507,13 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdBean> prodBeans) {
+    public List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdBean> prodBeans, String appId) {
         List<CouponAndPromBean> couponAndPromBeans = new ArrayList<>();
         for(int m = 0; m < prodBeans.size(); m++){
             CouponAndPromBean couponAndPromBean = new CouponAndPromBean();
             AoyiProdBean bean = prodBeans.get(m);
             Date now = new Date();
-            List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(bean.getMpu());
+            List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(bean.getMpu(), appId);
             for (int i = 0; i < beans.size(); i++){
                 if(beans.get(i).getDailySchedule() != null && beans.get(i).getDailySchedule()){
                     List<PromotionSchedule> promotionSchedules = scheduleDao.findPromotionSchedule(beans.get(i).getScheduleId());

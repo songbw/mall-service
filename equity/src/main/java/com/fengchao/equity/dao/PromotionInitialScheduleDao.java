@@ -13,9 +13,11 @@ public class PromotionInitialScheduleDao {
     @Autowired
     private PromotionInitialScheduleMapper mapper;
 
-    public List<PromotionInitialSchedule> findInitialSchedule(){
+    public List<PromotionInitialSchedule> findInitialSchedule(String appId){
         PromotionInitialScheduleExample example = new PromotionInitialScheduleExample();
         PromotionInitialScheduleExample.Criteria criteria = example.createCriteria();
+        criteria.andAppIdEqualTo(appId);
+
         List<PromotionInitialSchedule> schedules = mapper.selectByExample(example);
         return schedules;
     }
@@ -25,8 +27,12 @@ public class PromotionInitialScheduleDao {
         return insert;
     }
 
-    public int deleteInitialSchedule() {
-        int num = mapper.deleteByPrimaryKey();
+    public int deleteInitialSchedule(String appId) {
+        PromotionInitialScheduleExample example = new PromotionInitialScheduleExample();
+        PromotionInitialScheduleExample.Criteria criteria = example.createCriteria();
+        criteria.andAppIdEqualTo(appId);
+
+        int num = mapper.deleteByExample(example);
         return num;
     }
 }

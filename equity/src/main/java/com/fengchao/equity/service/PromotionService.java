@@ -14,7 +14,7 @@ public interface PromotionService {
 
     int createPromotion(PromotionX bean);
 
-    PageBean findPromotion(Integer offset, Integer limit);
+    PageBean findPromotion(Integer offset, Integer limit, String appId);
 
     PromotionResult updatePromotion(PromotionX bean);
 
@@ -30,9 +30,9 @@ public interface PromotionService {
 
     int deleteContent(PromotionX bean);
 
-    PromotionX findPromotionToUser(Integer id, Boolean detail);
+    PromotionX findPromotionToUser(Integer id, Boolean detail, String appId);
 
-    List<PromotionInfoBean> findPromotionByMpu(String mpu);
+    List<PromotionInfoBean> findPromotionByMpu(String mpu, String appId);
 
     int end(int promotionId);
 
@@ -46,13 +46,13 @@ public interface PromotionService {
      */
     List<PromotionBean> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception;
 
-    PromotionX findCurrentSchedule(Integer num);
+    PromotionX findCurrentSchedule(Integer num, String appId);
 
-    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name);
+    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name, String appId);
 
-    List<PromotionMpuX> findOnlineMpu();
+    List<PromotionMpuX> findOnlineMpu(String appId);
 
-    List<PromotionMpuX> findPromotionByMpuList(List<String> mpus);
+    List<PromotionMpuX> findPromotionByMpuList(List<String> mpus, String appId);
 
     PromotionX findPromotionToJob(int promotionId);
 

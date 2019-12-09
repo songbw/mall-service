@@ -77,10 +77,10 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
     }
 
     @Override
-    public PromotionInitialScheduleBean findInitialSchedule() {
+    public PromotionInitialScheduleBean findInitialSchedule(String appId) {
         PromotionInitialScheduleBean bean = new PromotionInitialScheduleBean();
         List<String> schedules = new ArrayList<>();
-        List<PromotionInitialSchedule> initialSchedule = initialScheduleDao.findInitialSchedule();
+        List<PromotionInitialSchedule> initialSchedule = initialScheduleDao.findInitialSchedule(appId);
         initialSchedule.forEach(schedule -> {
             schedules.add(schedule.getInitialSchedule());
         });
@@ -90,16 +90,19 @@ public class PromotionScheduleServiceImpl implements PromotionScheduleService {
 
     @Override
     public int createInitialSchedule(PromotionInitialScheduleBean bean) {
-        List<PromotionInitialSchedule> promotionSchedule = initialScheduleDao.findInitialSchedule();
+        List<PromotionInitialSchedule> promotionSchedule = initialScheduleDao.findInitialSchedule(bean.getAppId());
         if(!promotionSchedule.isEmpty()){
-            int num = initialScheduleDao.deleteInitialSchedule();
+            int num = initialScheduleDao.deleteInitialSchedule(bean.getAppId());
             if(num == 0){
                 return num;
             }
         }
+        Date date = new Date();
         bean.getInitialSchedules().forEach(schedule -> {
             PromotionInitialSchedule initialSchedule = new PromotionInitialSchedule();
             initialSchedule.setInitialSchedule(schedule);
+            initialSchedule.setAppId(bean.getAppId());
+            initialSchedule.setCreateTime(date);
             initialScheduleDao.createInitialSchedule(initialSchedule);
         });
         return 1;

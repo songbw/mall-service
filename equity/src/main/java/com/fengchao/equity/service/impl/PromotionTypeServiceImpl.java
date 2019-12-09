@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,12 +24,12 @@ public class PromotionTypeServiceImpl implements PromotionTypeService {
     private PromotionTypeDao promotionTypeDao;
 
     @Override
-    public PageableData<PromotionType> getPromotionTypes(int page, int size) {
+    public PageableData<PromotionType> getPromotionTypes(int page, int size, String appId) {
 
         PageableData<PromotionType> pageableData = new PageableData<>();
         log.info("getPromotionTypes page, size==> " , page, size);
         // 执行查询
-        PageInfo<PromotionType> pageInfo =  promotionTypeDao.selectPromotionType(page, size);
+        PageInfo<PromotionType> pageInfo =  promotionTypeDao.selectPromotionType(page, size, appId);
 
         // 2.处理结果
         PageVo pageVo = ConvertUtil.convertToPageVo(pageInfo);

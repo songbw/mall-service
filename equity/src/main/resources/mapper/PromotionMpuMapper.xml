@@ -10,6 +10,7 @@
     <result column="schedule_id" jdbcType="INTEGER" property="scheduleId" />
     <result column="promotion_image" jdbcType="VARCHAR" property="promotionImage" />
     <result column="per_limited" jdbcType="INTEGER" property="perLimited" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +71,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, promotion_id, mpu, skuId, discount, schedule_id, promotion_image, per_limited
+    id, promotion_id, mpu, skuId, discount, schedule_id, promotion_image, per_limited, 
+    app_id
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionMpuExample" resultMap="BaseResultMap">
     select
@@ -105,10 +107,10 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionMpu" useGeneratedKeys="true">
     insert into promotion_mpu (promotion_id, mpu, skuId, 
       discount, schedule_id, promotion_image, 
-      per_limited)
+      per_limited, app_id)
     values (#{promotionId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, #{skuid,jdbcType=VARCHAR}, 
       #{discount,jdbcType=VARCHAR}, #{scheduleId,jdbcType=INTEGER}, #{promotionImage,jdbcType=VARCHAR}, 
-      #{perLimited,jdbcType=INTEGER})
+      #{perLimited,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionMpu" useGeneratedKeys="true">
     insert into promotion_mpu
@@ -134,6 +136,9 @@
       <if test="perLimited != null">
         per_limited,
       </if>
+      <if test="appId != null">
+        app_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="promotionId != null">
@@ -156,6 +161,9 @@
       </if>
       <if test="perLimited != null">
         #{perLimited,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -192,6 +200,9 @@
       <if test="record.perLimited != null">
         per_limited = #{record.perLimited,jdbcType=INTEGER},
       </if>
+      <if test="record.appId != null">
+        app_id = #{record.appId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -206,7 +217,8 @@
       discount = #{record.discount,jdbcType=VARCHAR},
       schedule_id = #{record.scheduleId,jdbcType=INTEGER},
       promotion_image = #{record.promotionImage,jdbcType=VARCHAR},
-      per_limited = #{record.perLimited,jdbcType=INTEGER}
+      per_limited = #{record.perLimited,jdbcType=INTEGER},
+      app_id = #{record.appId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -235,8 +247,11 @@
       <if test="perLimited != null">
         per_limited = #{perLimited,jdbcType=INTEGER},
       </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
     </set>
-    where promotion_id = #{promotionId,jdbcType=INTEGER} and mpu = #{mpu,jdbcType=VARCHAR}
+    where  promotion_id = #{promotionId,jdbcType=INTEGER} and mpu = #{mpu,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionMpu">
     update promotion_mpu
@@ -246,7 +261,8 @@
       discount = #{discount,jdbcType=VARCHAR},
       schedule_id = #{scheduleId,jdbcType=INTEGER},
       promotion_image = #{promotionImage,jdbcType=VARCHAR},
-      per_limited = #{perLimited,jdbcType=INTEGER}
+      per_limited = #{perLimited,jdbcType=INTEGER},
+      app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

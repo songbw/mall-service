@@ -34,6 +34,7 @@ public class CouponBean {
     private String imageUrl;
     private Date createDate;
     private Integer userCollectNum;
+    private String appId;
     private Rules rules;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String price;

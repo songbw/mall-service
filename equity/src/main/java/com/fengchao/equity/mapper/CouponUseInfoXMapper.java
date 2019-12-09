@@ -46,5 +46,5 @@ public interface CouponUseInfoXMapper {
 
     int updateStatusByToushiCode(CouponUseInfoX couponUseInfo);
 
-    List<Integer> selectGiftCouponIds(String openId);
+    List<Integer> selectGiftCouponIds(String openId, String appId);
 }

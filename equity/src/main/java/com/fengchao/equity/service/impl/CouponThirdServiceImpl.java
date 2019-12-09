@@ -426,7 +426,7 @@ public class CouponThirdServiceImpl implements CouponThirdService {
             e.printStackTrace();
         }
 
-        CouponX couponX = couponXMapper.selectByCodeKey(data.getEquity_code());
+        CouponX couponX = couponXMapper.selectByCodeKey(data.getEquity_code(), null);
         if(couponX == null){
             result.setCode(7000005);
             result.setMsg("该优惠券权益不存在");

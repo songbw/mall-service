@@ -36,11 +36,12 @@ public class PromotionTagsDao {
         return mapper.updateByPrimaryKeySelective(bean);
     }
 
-    public PageInfo<PromotionTags> findPromotionTags(Integer pageNo, Integer pageSize) {
+    public PageInfo<PromotionTags> findPromotionTags(Integer pageNo, Integer pageSize, String appId) {
         PromotionTagsExample example = new PromotionTagsExample();
         PromotionTagsExample.Criteria criteria = example.createCriteria();
-
         criteria.andIsStatusEqualTo(1);
+        criteria.andAppIdEqualTo(appId);
+
         PageHelper.startPage(pageNo, pageSize);
         List<PromotionTags> promotionTags = mapper.selectByExample(example);
         return new PageInfo<>(promotionTags);

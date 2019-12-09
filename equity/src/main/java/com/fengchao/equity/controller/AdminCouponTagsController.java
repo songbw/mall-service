@@ -24,7 +24,7 @@ public class AdminCouponTagsController {
 
     @GetMapping("tags")
     public OperaResult findTags(QueryBean bean, OperaResult result){
-        result.getData().put("result", couponTagsService.findTags(bean.getOffset(), bean.getLimit()));
+        result.getData().put("result", couponTagsService.findTags(bean.getOffset(), bean.getLimit(), bean.getAppId()));
         return result;
     }
 

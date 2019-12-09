@@ -40,7 +40,7 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="virtual_tickets">
+        <table tableName="promotion_mpu">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
     </context>

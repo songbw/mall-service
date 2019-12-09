@@ -10,9 +10,11 @@
     <result column="schedule_id" jdbcType="INTEGER" property="scheduleId" />
     <result column="promotion_image" jdbcType="VARCHAR" property="promotionImage" />
     <result column="per_limited" jdbcType="INTEGER" property="perLimited" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, promotion_id, mpu, skuId, discount, schedule_id, promotion_image, per_limited
+    id, promotion_id, mpu, skuId, discount, schedule_id, promotion_image, per_limited,
+    app_id
   </sql>
   <select id="selectByPrimaryMpu" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
@@ -31,10 +33,10 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionMpu" useGeneratedKeys="true">
      insert into promotion_mpu (promotion_id, mpu, skuId,
       discount, schedule_id, promotion_image,
-      per_limited)
+      per_limited, app_id)
     values (#{promotionId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, #{skuid,jdbcType=VARCHAR},
       #{discount,jdbcType=VARCHAR}, #{scheduleId,jdbcType=INTEGER}, #{promotionImage,jdbcType=VARCHAR},
-      #{perLimited,jdbcType=INTEGER})
+      #{perLimited,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionMpu" useGeneratedKeys="true">
     insert into promotion_mpu
@@ -60,6 +62,9 @@
       <if test="perLimited != null">
         per_limited,
       </if>
+      <if test="appId != null">
+        app_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="promotionId != null">
@@ -83,31 +88,37 @@
       <if test="perLimited != null">
         #{perLimited,jdbcType=INTEGER},
       </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.PromotionMpu" >
     update promotion_mpu
-    <set >
-      <if test="promotionId != null" >
+    <set>
+      <if test="promotionId != null">
         promotion_id = #{promotionId,jdbcType=INTEGER},
       </if>
-      <if test="mpu != null" >
+      <if test="mpu != null">
         mpu = #{mpu,jdbcType=VARCHAR},
       </if>
-      <if test="skuid != null" >
+      <if test="skuid != null">
         skuId = #{skuid,jdbcType=VARCHAR},
       </if>
-      <if test="discount != null" >
+      <if test="discount != null">
         discount = #{discount,jdbcType=VARCHAR},
       </if>
-      <if test="scheduleId != null" >
+      <if test="scheduleId != null">
         schedule_id = #{scheduleId,jdbcType=INTEGER},
       </if>
       <if test="promotionImage != null">
         promotion_image = #{promotionImage,jdbcType=VARCHAR},
       </if>
-      <if test="record.perLimited != null">
-        per_limited = #{record.perLimited,jdbcType=INTEGER},
+      <if test="perLimited != null">
+        per_limited = #{perLimited,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
       </if>
     </set>
     where mpu = #{mpu,jdbcType=VARCHAR}
@@ -121,9 +132,11 @@
       discount = #{discount,jdbcType=VARCHAR},
       schedule_id = #{scheduleId,jdbcType=INTEGER},
       promotion_image = #{record.promotionImage,jdbcType=VARCHAR},
+      app_id = #{appId,jdbcType=VARCHAR},
       per_limited = #{record.perLimited,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
   <select id="selectMpuList"  resultType="java.lang.String" parameterType="java.lang.Integer" >
     select
     distinct mpu
@@ -156,7 +169,9 @@
     ps.mpu,
     ps.per_limited perLimited
     from promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
-    WHERE p.status = 4 and ps.mpu in
+    WHERE p.status = 4
+    and app_id = #{appId,jdbcType=VARCHAR}
+    and ps.mpu in
     <foreach item="item" index="index" collection="mpus" open="(" separator="," close=")">
       #{item}
     </foreach>
