@@ -298,7 +298,7 @@ public class OrderDetailDao {
      */
     public List<OrderDetail> selectOrderDetailsInSupplierAndStatus(Integer merchantId, Integer status) {
         OrderDetailExample orderDetailExample = new OrderDetailExample();
-        orderDetailExample.setOrderByClause("id desc");
+        orderDetailExample.setOrderByClause("id");
 
         OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
         criteria.andMerchantIdEqualTo(merchantId);
