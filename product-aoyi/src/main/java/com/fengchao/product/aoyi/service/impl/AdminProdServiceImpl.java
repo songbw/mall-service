@@ -21,6 +21,7 @@ import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
 //import com.fengchao.product.aoyi.utils.RedisUtil;
+import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import org.apache.commons.collections4.CollectionUtils;
@@ -638,6 +639,10 @@ public class AdminProdServiceImpl implements AdminProdService {
         productExportResVo.setSellPrice(aoyiProdIndexX.getPrice()); // 销售价格(元)
         productExportResVo.setCostPrice(aoyiProdIndexX.getSprice()); // 进货价格(元)  成本价格
         productExportResVo.setInventory(aoyiProdIndexX.getInventory() == null ? "无" : String.valueOf(aoyiProdIndexX.getInventory())); // 库存
+
+        // 创建时间
+        productExportResVo.setCreateTime(aoyiProdIndexX.getCreatedAt() == null ?
+                "--" : DateUtil.dateTimeFormat(aoyiProdIndexX.getCreatedAt(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
 
         return productExportResVo;
     }
