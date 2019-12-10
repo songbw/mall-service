@@ -59,7 +59,7 @@ public class PinganController {
     }
 
     @GetMapping("initCode")
-    private OperaResponse getInitCode(String appId) {
+    private OperaResponse getInitCode(@RequestHeader("appId") String appId) {
         return userService.getInitCode(appId) ;
     }
 
