@@ -2,14 +2,16 @@ package com.fengchao.equity.model;
 
 import java.util.Date;
 
-public class PromotionInitialSchedule {
+public class PromotionTags {
     private Integer id;
 
-    private String initialSchedule;
+    private String name;
 
     private Date createTime;
 
     private Date updateTime;
+
+    private Integer isStatus;
 
     private String appId;
 
@@ -21,12 +23,12 @@ public class PromotionInitialSchedule {
         this.id = id;
     }
 
-    public String getInitialSchedule() {
-        return initialSchedule;
+    public String getName() {
+        return name;
     }
 
-    public void setInitialSchedule(String initialSchedule) {
-        this.initialSchedule = initialSchedule == null ? null : initialSchedule.trim();
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
     }
 
     public Date getCreateTime() {
@@ -43,6 +45,14 @@ public class PromotionInitialSchedule {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getIsStatus() {
+        return isStatus;
+    }
+
+    public void setIsStatus(Integer isStatus) {
+        this.isStatus = isStatus;
     }
 
     public String getAppId() {

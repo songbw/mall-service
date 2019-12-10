@@ -23,20 +23,23 @@ public class PromotionController {
     private PromotionService service;
 
     @GetMapping("findPromotion")
-    public OperaResult findPromotionToUser(Integer id, Boolean detail, OperaResult result){
-        result.getData().put("result", service.findPromotionToUser(id, detail));
+    public OperaResult findPromotionToUser(Integer id, Boolean detail,
+                                           @RequestHeader("appId") String appId, OperaResult result){
+        result.getData().put("result", service.findPromotionToUser(id, detail, appId));
         return result;
     }
 
     @GetMapping("mpu")
-    public OperaResult findPromotionByMpu(@RequestParam("skuId")String Mpu, OperaResult result){
-        result.getData().put("result", service.findPromotionByMpu(Mpu));
+    public OperaResult findPromotionByMpu(@RequestParam("skuId")String Mpu,
+                                          @RequestHeader("appId") String appId, OperaResult result){
+        result.getData().put("result", service.findPromotionByMpu(Mpu, appId));
         return result;
     }
 
     @GetMapping("getCurrentScheduleMpu")
-    public OperaResult findCurrentSchedule(Integer num, OperaResult result){
-        result.getData().put("result", service.findCurrentSchedule(num));
+    public OperaResult findCurrentSchedule(Integer num,
+                                           @RequestHeader("appId") String appId, OperaResult result){
+        result.getData().put("result", service.findCurrentSchedule(num, appId));
         return result;
     }
 
@@ -69,19 +72,20 @@ public class PromotionController {
     }
 
     @GetMapping("findOnline")
-    public OperaResult findOnlineMpu(OperaResult result){
-        result.getData().put("result", service.findOnlineMpu());
+    public OperaResult findOnlineMpu(@RequestHeader("appId") String appId, OperaResult result){
+        result.getData().put("result", service.findOnlineMpu(appId));
         return result;
     }
 
     @GetMapping("mpuList")
-    public OperaResult findPromotionByMpuList(@RequestParam("mpuList")List<String> Mpus, OperaResult result){
-        result.getData().put("result", service.findPromotionByMpuList(Mpus));
+    public OperaResult findPromotionByMpuList(@RequestParam("mpuList")List<String> Mpus,
+                                              @RequestHeader("appId") String appId, OperaResult result){
+        result.getData().put("result", service.findPromotionByMpuList(Mpus, appId));
         return result;
     }
 
     @PostMapping("verify")
-    public OperaResult verifyPromotionInfo(@RequestBody List<PromotionMpuBean> beans, OperaResult result){
+    public OperaResult verifyPromotionInfo(@RequestBody List<PromotionMpuBean> beans, @RequestHeader("appId") String appId, OperaResult result){
         result.getData().put("result", service.verifyPromotionInfo(beans));
         return result;
     }

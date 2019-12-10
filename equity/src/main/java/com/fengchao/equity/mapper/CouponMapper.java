@@ -2,6 +2,7 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponExample;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

@@ -49,10 +49,6 @@ public class CouponX {
 
     private Integer scenarioType;
 
-    private String couponMpus;
-
-    private String excludeMpus;
-
     private String categories;
 
     private String brands;
@@ -71,6 +67,47 @@ public class CouponX {
 
     private int userCollectNum;
 
+    private String appId;
+
+    private String couponMpus;
+
+    private String couponSkus;
+
+    private String excludeMpus;
+
+    private String excludeSkus;
+
+    public String getCouponMpus() {
+        return couponMpus;
+    }
+
+    public void setCouponMpus(String couponMpus) {
+        this.couponMpus = couponMpus == null ? null : couponMpus.trim();
+    }
+
+    public String getCouponSkus() {
+        return couponSkus;
+    }
+
+    public void setCouponSkus(String couponSkus) {
+        this.couponSkus = couponSkus == null ? null : couponSkus.trim();
+    }
+
+    public String getExcludeMpus() {
+        return excludeMpus;
+    }
+
+    public void setExcludeMpus(String excludeMpus) {
+        this.excludeMpus = excludeMpus == null ? null : excludeMpus.trim();
+    }
+
+    public String getExcludeSkus() {
+        return excludeSkus;
+    }
+
+    public void setExcludeSkus(String excludeSkus) {
+        this.excludeSkus = excludeSkus == null ? null : excludeSkus.trim();
+    }
     public Integer getId() {
         return id;
     }
@@ -255,22 +292,6 @@ public class CouponX {
         this.scenarioType = scenarioType;
     }
 
-    public String getCouponMpus() {
-        return couponMpus;
-    }
-
-    public void setCouponMpus(String couponMpus) {
-        this.couponMpus = couponMpus;
-    }
-
-    public String getExcludeMpus() {
-        return excludeMpus;
-    }
-
-    public void setExcludeMpus(String excludeMpus) {
-        this.excludeMpus = excludeMpus;
-    }
-
     public String getCategories() {
         return categories;
     }
@@ -335,6 +356,14 @@ public class CouponX {
         this.couponRules = couponRules == null ? null : couponRules.trim();
     }
 
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
+    }
+
     public int getUserCollectNum() {
         return userCollectNum;
     }
@@ -342,5 +371,4 @@ public class CouponX {
     public void setUserCollectNum(int userCollectNum) {
         this.userCollectNum = userCollectNum;
     }
-
 }

@@ -43,7 +43,7 @@ public interface CouponUseInfoService {
 
     int verifyCoupon(CouponUseInfoBean bean);
 
-    List<Coupon> getCollectGiftCoupon(String openId);
+    List<Coupon> getCollectGiftCoupon(String openId, String appId);
 
     CouponUseInfo findBycouponUserId(int couponUserId);
 

@@ -31,6 +31,8 @@ public class PromotionMpuX {
 
     private Integer perLimited;
 
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -149,5 +151,13 @@ public class PromotionMpuX {
 
     public void setPerLimited(Integer perLimited) {
         this.perLimited = perLimited;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

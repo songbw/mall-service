@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PromotionTypeService {
 
-    PageableData<PromotionType> getPromotionTypes(int page, int size);
+    PageableData<PromotionType> getPromotionTypes(int page, int size, String appId);
 
 
     /**

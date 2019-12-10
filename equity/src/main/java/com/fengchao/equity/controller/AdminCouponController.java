@@ -29,8 +29,8 @@ public class AdminCouponController {
     }
 
     @GetMapping("find")
-    public OperaResult findCoupon(Integer offset,Integer limit, OperaResult result){
-        PageBean coupon = couponService.findCoupon(offset, limit);
+    public OperaResult findCoupon(QueryBean bean, OperaResult result){
+        PageBean coupon = couponService.findCoupon(bean.getOffset(), bean.getLimit(), bean.getAppId());
         result.getData().put("result", coupon);
         return result;
     }
@@ -151,8 +151,8 @@ public class AdminCouponController {
     }
 
     @GetMapping("release")
-    public OperaResult findReleaseCoupon(Integer pageNo, Integer pageSize, OperaResult result){
-        PageableData<Coupon> releaseCoupon = couponService.findReleaseCoupon(pageNo, pageSize);
+    public OperaResult findReleaseCoupon(Integer pageNo, Integer pageSize, String appId, OperaResult result){
+        PageableData<Coupon> releaseCoupon = couponService.findReleaseCoupon(pageNo, pageSize, appId);
         result.getData().put("result", releaseCoupon);
         return result;
     }

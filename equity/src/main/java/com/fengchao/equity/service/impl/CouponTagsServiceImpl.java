@@ -29,13 +29,14 @@ public class CouponTagsServiceImpl implements CouponTagsService {
     }
 
     @Override
-    public PageBean findTags(Integer offset, Integer limit) throws EquityException {
+    public PageBean findTags(Integer offset, Integer limit, String appId) throws EquityException {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
+        map.put("appId",appId);
         List<CouponTags> tags = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {

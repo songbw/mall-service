@@ -16,4 +16,5 @@ public class CouponSearchBean  extends QueryBean{
     private Integer status;
     private String couponType;
     private String scenarioType;
+    private String appId;
 }

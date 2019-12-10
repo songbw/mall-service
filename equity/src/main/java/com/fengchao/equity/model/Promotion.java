@@ -25,6 +25,8 @@ public class Promotion {
 
     private Boolean dailySchedule;
 
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -111,5 +113,13 @@ public class Promotion {
 
     public void setDailySchedule(Boolean dailySchedule) {
         this.dailySchedule = dailySchedule;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 }

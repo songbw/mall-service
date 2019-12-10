@@ -30,7 +30,7 @@ public interface CouponXMapper {
 
     int selectActiveCouponCount(HashMap map);
 
-    CouponX selectByCodeKey(String code);
+    CouponX selectByCodeKey(String code, String appId);
 
     List<String> selectActiveCategories();
 

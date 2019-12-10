@@ -25,6 +25,8 @@ public class CouponUseInfo {
 
     private Integer type;
 
+    private String appId;
+
     private Integer deleteFlag;
 
     public Integer getId() {
@@ -104,7 +106,7 @@ public class CouponUseInfo {
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        this.url = url == null ? null : url.trim();
     }
 
     public Integer getType() {
@@ -113,6 +115,14 @@ public class CouponUseInfo {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 
     public Integer getDeleteFlag() {

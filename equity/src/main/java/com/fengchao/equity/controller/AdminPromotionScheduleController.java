@@ -54,8 +54,8 @@ public class AdminPromotionScheduleController {
     }
 
     @GetMapping("initial")
-    public OperaResult findInitialSchedule(OperaResult result){
-        result.getData().put("result", scheduleService.findInitialSchedule());
+    public OperaResult findInitialSchedule(String appId, OperaResult result){
+        result.getData().put("result", scheduleService.findInitialSchedule(appId));
         return result;
     }
 }

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fengchao.equity.mapper.PromotionInitialScheduleMapper">
-  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.PromotionInitialSchedule">
+<mapper namespace="com.fengchao.equity.mapper.PromotionTagsMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.equity.model.PromotionTags">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="initial_schedule" jdbcType="VARCHAR" property="initialSchedule" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_status" jdbcType="INTEGER" property="isStatus" />
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -67,15 +68,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, initial_schedule, create_time, update_time, app_id
+    id, name, create_time, update_time, is_status, app_id
   </sql>
-  <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionInitialScheduleExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionTagsExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from promotion_initial_schedule
+    from promotion_tags
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -86,29 +87,30 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from promotion_initial_schedule
+    from promotion_tags
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey">
-    delete from promotion_initial_schedule
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from promotion_tags
+    where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.fengchao.equity.model.PromotionInitialScheduleExample">
-    delete from promotion_initial_schedule
+  <delete id="deleteByExample" parameterType="com.fengchao.equity.model.PromotionTagsExample">
+    delete from promotion_tags
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionInitialSchedule" useGeneratedKeys="true">
-    insert into promotion_initial_schedule (initial_schedule, create_time, update_time, 
-      app_id)
-    values (#{initialSchedule,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{appId,jdbcType=VARCHAR})
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionTags" useGeneratedKeys="true">
+    insert into promotion_tags (name, create_time, update_time, 
+      is_status, app_id)
+    values (#{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{isStatus,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionInitialSchedule" useGeneratedKeys="true">
-    insert into promotion_initial_schedule
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionTags" useGeneratedKeys="true">
+    insert into promotion_tags
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="initialSchedule != null">
-        initial_schedule,
+      <if test="name != null">
+        name,
       </if>
       <if test="createTime != null">
         create_time,
@@ -116,13 +118,16 @@
       <if test="updateTime != null">
         update_time,
       </if>
+      <if test="isStatus != null">
+        is_status,
+      </if>
       <if test="appId != null">
         app_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="initialSchedule != null">
-        #{initialSchedule,jdbcType=VARCHAR},
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -130,31 +135,37 @@
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="isStatus != null">
+        #{isStatus,jdbcType=INTEGER},
+      </if>
       <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.fengchao.equity.model.PromotionInitialScheduleExample" resultType="java.lang.Long">
-    select count(*) from promotion_initial_schedule
+  <select id="countByExample" parameterType="com.fengchao.equity.model.PromotionTagsExample" resultType="java.lang.Long">
+    select count(*) from promotion_tags
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update promotion_initial_schedule
+    update promotion_tags
     <set>
       <if test="record.id != null">
         id = #{record.id,jdbcType=INTEGER},
       </if>
-      <if test="record.initialSchedule != null">
-        initial_schedule = #{record.initialSchedule,jdbcType=VARCHAR},
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
       </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isStatus != null">
+        is_status = #{record.isStatus,jdbcType=INTEGER},
       </if>
       <if test="record.appId != null">
         app_id = #{record.appId,jdbcType=VARCHAR},
@@ -165,21 +176,22 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update promotion_initial_schedule
+    update promotion_tags
     set id = #{record.id,jdbcType=INTEGER},
-      initial_schedule = #{record.initialSchedule,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      is_status = #{record.isStatus,jdbcType=INTEGER},
       app_id = #{record.appId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.PromotionInitialSchedule">
-    update promotion_initial_schedule
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.PromotionTags">
+    update promotion_tags
     <set>
-      <if test="initialSchedule != null">
-        initial_schedule = #{initialSchedule,jdbcType=VARCHAR},
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -187,17 +199,21 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="isStatus != null">
+        is_status = #{isStatus,jdbcType=INTEGER},
+      </if>
       <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionInitialSchedule">
-    update promotion_initial_schedule
-    set initial_schedule = #{initialSchedule,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.PromotionTags">
+    update promotion_tags
+    set name = #{name,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_status = #{isStatus,jdbcType=INTEGER},
       app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>

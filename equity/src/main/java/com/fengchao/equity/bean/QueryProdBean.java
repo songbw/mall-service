@@ -13,4 +13,5 @@ public class QueryProdBean {
     private String excludeMpus;
     private String categories;
     private String brands;
+    private String appId;
 }

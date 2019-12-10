@@ -52,8 +52,8 @@ public class CouponUseInfoController {
     }
 
     @GetMapping("collectGiftCoupon")
-    public OperaResult getCollectGiftCoupon(@RequestParam("openId") String openId, OperaResult result) {
-        List<Coupon> collectGiftCoupon = couponUseInfoService.getCollectGiftCoupon(openId);
+    public OperaResult getCollectGiftCoupon(@RequestParam("openId") String openId, String appId, OperaResult result) {
+        List<Coupon> collectGiftCoupon = couponUseInfoService.getCollectGiftCoupon(openId, appId);
         result.getData().put("result", collectGiftCoupon);
         return result;
     }

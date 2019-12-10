@@ -3,7 +3,6 @@ package com.fengchao.equity.mapper;
 import com.fengchao.equity.model.PromotionMpu;
 import com.fengchao.equity.model.PromotionMpuExample;
 import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 
 public interface PromotionMpuMapper {

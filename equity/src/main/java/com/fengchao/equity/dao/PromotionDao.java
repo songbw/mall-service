@@ -40,19 +40,21 @@ public class PromotionDao {
         return promotionList;
     }
 
-    public List<Promotion> selectActivePromotion() {
+    public List<Promotion> selectActivePromotion(String appId) {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
         List<Integer> list = new ArrayList<>();
         list.add(3);
         list.add(4);
         criteria.andStatusIn(list);
+        criteria.andAppIdEqualTo(appId);
+
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
         return promotionList;
     }
 
-    public List<Promotion> searchActivePromotion(Boolean dailySchedule, String name) {
+    public List<Promotion> searchActivePromotion(Boolean dailySchedule, String name, String appId) {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
         List<Integer> list = new ArrayList<>();
@@ -65,15 +67,18 @@ public class PromotionDao {
         if(dailySchedule != null && !dailySchedule.equals("")){
             criteria.andDailyScheduleEqualTo(dailySchedule);
         }
+        criteria.andAppIdEqualTo(appId);
+
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
         return promotionList;
     }
 
-    public List<Promotion> findOnlineMpu() {
+    public List<Promotion> findOnlineMpu(String appId) {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
         criteria.andStatusEqualTo(4);
+        criteria.andAppIdEqualTo(appId);
 
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
