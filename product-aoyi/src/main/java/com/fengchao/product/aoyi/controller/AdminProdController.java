@@ -469,6 +469,9 @@ public class AdminProdController {
 
         HSSFCell titleCell11 = titleRow.createCell(11);
         titleCell11.setCellValue("商品库存");
+
+        HSSFCell titleCell12 = titleRow.createCell(12);
+        titleCell12.setCellValue("创建时间");
     }
 
     /**
@@ -565,6 +568,10 @@ public class AdminProdController {
             // 库存
             HSSFCell titleCell11 = hssfRow.createCell(11);
             titleCell11.setCellValue(productExportResVo.getInventory());
+
+            // 创建时间
+            HSSFCell titleCell12 = hssfRow.createCell(12);
+            titleCell12.setCellValue(productExportResVo.getCreateTime());
 
             //
             if (currentRowNum % 100 == 0) {

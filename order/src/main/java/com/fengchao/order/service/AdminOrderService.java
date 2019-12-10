@@ -7,6 +7,7 @@ import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author tom
@@ -53,4 +54,12 @@ public interface AdminOrderService {
     List<ExportOrdersVo> exportOrdersReconciliationOut(OrderExportReqVo orderExportReqVo) throws Exception;
 
     List<OrderPayMethodInfoBean> exportCandRBill(BillExportReqVo billExportReqVo, String tradeType);
+
+    /**
+     * 每日导出数据
+     *
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> exportDailyOrderStatistic() throws Exception;
 }

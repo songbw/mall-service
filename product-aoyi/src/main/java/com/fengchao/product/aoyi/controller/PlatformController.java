@@ -6,12 +6,14 @@ import com.fengchao.product.aoyi.model.Platform;
 import com.fengchao.product.aoyi.service.PlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * @author songbw
  * @date 2019/11/22 10:54
  */
+
 @RestController
 @RequestMapping(value = "/platform", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class PlatformController {
@@ -43,4 +45,28 @@ public class PlatformController {
         return service.modify(bean);
     }
 
+    @GetMapping
+    private OperaResponse find(String appId) {
+        OperaResponse response = new OperaResponse() ;
+        if (StringUtils.isEmpty(appId)) {
+            response.setCode(2000001);
+            response.setMsg("appId不能为空。");
+            return response ;
+        }
+        response.setData(service.findByAppId(appId));
+        return response;
+    }
+
+
+    @GetMapping("sub")
+    private OperaResponse findSub(String appId) {
+        OperaResponse response = new OperaResponse() ;
+        if (StringUtils.isEmpty(appId)) {
+            response.setCode(2000001);
+            response.setMsg("appId不能为空。");
+            return response ;
+        }
+        response.setData(service.findByAppId(appId));
+        return response;
+    }
 }

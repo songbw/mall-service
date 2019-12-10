@@ -1,6 +1,5 @@
 package com.fengchao.order.service;
 
-import com.alibaba.fastjson.JSONArray;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
@@ -25,6 +24,8 @@ public interface OrderService {
 
     PageBean findList(OrderQueryBean queryBean) ;
 
+    PageBean findListV2(OrderQueryBean queryBean) ;
+
     Integer updateStatus(Order bean);
 
     PageBean searchOrderList(OrderBean orderBean);
@@ -38,6 +39,10 @@ public interface OrderService {
     Integer uploadLogistics(Logisticsbean bean);
 
     OperaResult getLogist(String merchantNo, String orderId) ;
+
+    OperaResult getWorkOrderLogist(String logisticNo, String code, String merchantNo) ;
+
+    OperaResult getSubOrderLogist(String merchantNo, String subOrderId) ;
 
     List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) ;
 
@@ -123,4 +128,8 @@ public interface OrderService {
     OrderDetail findDetailById(int id) ;
 
     Integer finishOrderDetail(Integer id);
+
+    List<UnPaidBean> unpaid(String openId) ;
+
+    OperaResponse unpaidCancel(String appId, String openId, String orderNos);
 }

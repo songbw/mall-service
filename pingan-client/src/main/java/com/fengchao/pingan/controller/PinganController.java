@@ -4,10 +4,13 @@ import com.fengchao.pingan.bean.*;
 import com.fengchao.pingan.feign.WSPayClientService;
 import com.fengchao.pingan.service.PaymentService;
 import com.fengchao.pingan.service.UserService;
+import com.fengchao.pingan.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/pingan", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class PinganController {
@@ -56,39 +59,60 @@ public class PinganController {
     }
 
     @GetMapping("initCode")
-    private OperaResponse getInitCode() {
-        return userService.getInitCode() ;
+    private OperaResponse getInitCode(String appId) {
+        return userService.getInitCode(appId) ;
     }
 
     @GetMapping("authCode")
-    private OperaResponse getAuthCode() {
-        return userService.getAuthCode() ;
+    private OperaResponse getAuthCode(String appId) {
+        return userService.getAuthCode(appId) ;
     }
 
     @GetMapping("accessToken")
-    private OperaResponse getAccessToken(String authCode) {
-        return userService.getAuthAccessToken(authCode) ;
+    private OperaResponse getAccessToken(String appId, String authCode) {
+        return userService.getAuthAccessToken(appId, authCode) ;
     }
 
     @GetMapping("refreshToken")
-    private OperaResponse getRefreshToken(String refreshToken) {
-        return userService.getRefreshToken(refreshToken) ;
+    private OperaResponse getRefreshToken(String appId, String refreshToken) {
+        return userService.getRefreshToken(appId, refreshToken) ;
     }
 
     @GetMapping("checkToken")
-    private OperaResponse checkToken(String accessToken) {
-        return userService.checkToken(accessToken) ;
+    private OperaResponse checkToken(String appId, String accessToken) {
+        return userService.checkToken(appId, accessToken) ;
     }
 
     @GetMapping("checkRequestCode")
-    private OperaResponse checkRequestCode(String requestCode) {
+    private OperaResponse checkRequestCode(String appId, String requestCode) {
 //        return userService.checkRequestCode(requestCode) ;
-        return userService.getAuthUserInfoByRequestCode(requestCode) ;
+        return userService.getAuthUserInfoByRequestCode(appId, requestCode) ;
     }
 
     @GetMapping("userInfo")
-    private OperaResponse getUserInfo(String userAccessToken) {
-        return userService.getAuthUserInfo(userAccessToken) ;
+    private OperaResponse getUserInfo(String appId, String userAccessToken) {
+        return userService.getAuthUserInfo(appId, userAccessToken) ;
+    }
+
+    @PostMapping("payment/create")
+    private OperaResponse paymentOrder(@RequestBody CreatePaymentOrderRequestBean paymentBean) {
+        log.info("请求 payment/create 入口参数： {}", JSONUtil.toJsonString(paymentBean));
+        return paymentService.createPaymentOrder(paymentBean);
+    }
+
+    @PostMapping("payment/refund")
+    private OperaResponse orderRefund(@RequestBody OrderRefundRequestBean paymentBean) {
+        return paymentService.orderRefund(paymentBean);
+    }
+
+    @PostMapping("payment/query")
+    private OperaResponse queryPaymentOrder(@RequestBody QueryPaymentOrderRequestBean paymentBean) {
+        return paymentService.queryPaymentOrder(paymentBean);
+    }
+
+    @PostMapping("payment/back")
+    private String paymentBack(@RequestBody BackNotifyRequestBean paymentBean) {
+        return paymentService.backNotify(paymentBean);
     }
 
 }

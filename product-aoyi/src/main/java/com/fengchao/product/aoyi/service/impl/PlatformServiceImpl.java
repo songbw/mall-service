@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.dao.PlatformDao;
 import com.fengchao.product.aoyi.mapper.PlatformMapper;
 import com.fengchao.product.aoyi.model.Platform;
 import com.fengchao.product.aoyi.service.PlatformService;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.Date;
 
 /**
  * @author songbw
- * @date 2019/11/22 10:26
+ * @date 2019/11/26 17:09
  */
 @Service
 @Slf4j
@@ -55,41 +56,46 @@ public class PlatformServiceImpl implements PlatformService {
 
     @Override
     public OperaResponse modify(Platform bean) {
-        OperaResponse response = new OperaResponse() ;
+        OperaResponse response = new OperaResponse();
         if (StringUtils.isEmpty(bean.getAppId())) {
             response.setCode(200011);
             response.setMsg("appId不能为空。");
-            return response ;
+            return response;
         }
         if (bean.getId() == null || bean.getId() == 0) {
             response.setCode(200012);
             response.setMsg("id不能为空或0。");
-            return response ;
+            return response;
         }
         bean.setAppId(null);
         Date date = new Date();
         bean.setUpdatedAt(date);
-        mapper.updateByPrimaryKeySelective(bean) ;
+        mapper.updateByPrimaryKeySelective(bean);
         response.setData(bean.getId());
         return response;
     }
 
     @Override
+    public Platform findByAppId(String appId) {
+        return dao.selectByAppId(appId);
+    }
+
+    @Override
     public OperaResponse findList(QueryBean bean) {
-        OperaResponse response = new OperaResponse() ;
-        response.setData(dao.selectByListPageble(bean));
+        OperaResponse response = new OperaResponse();
+        PageInfo<Platform> pageInfo = dao.selectByListPageble(bean) ;
+        response.setData(pageInfo);
         return response;
     }
 
     @Override
     public OperaResponse find(Integer id) {
-        OperaResponse response = new OperaResponse() ;
-        if (id == null || id == 0) {
-            response.setCode(200012);
-            response.setMsg("id不能为空或0。");
-            return response ;
-        }
-        response.setData(mapper.selectByPrimaryKey(id));
-        return response;
+        return null;
+    }
+
+    @Override
+    public Platform findBySubAppId(String appId) {
+        Platform sub = dao.selectByAppId(appId) ;
+        return mapper.selectByPrimaryKey(sub.getParentId());
     }
 }

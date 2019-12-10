@@ -45,6 +45,7 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
+        // TODO 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
         log.info("findTradeNo 返回 orderList: {}", JSONUtil.toJsonString(orderList));
         PaymentResult result1 = getPayment(paymentBean);
@@ -55,7 +56,9 @@ public class PaymentServiceImpl implements IPaymentService {
                 order.setPaymentNo(result1.getData().getOrderNo());
                 order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                 order.setUpdatedAt(new Date());
-                updatePaymentNo(order);
+                if (order.getPayStatus() != 5) {
+                    updatePaymentNo(order);
+                }
             });
         } else if ("订单号重复".equals(result1.getMsg())) {
             List<Order> orders = findOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
@@ -76,7 +79,9 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     public OperaResult gPayment(PaymentBean paymentBean) {
+        SSOConfigBean configBean =  getSSOConfig(paymentBean.getiAppId()) ;
         OperaResult result = new OperaResult();
+        // TODO 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
         // 关爱通支付
         GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
@@ -93,19 +98,21 @@ public class PaymentServiceImpl implements IPaymentService {
         String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
         guanaitongPaymentBean.setTrade_info(tradeInfoString);
         guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
-        guanaitongPaymentBean.setNotify_url(ssoConfiguration.getGatBackUrl());
+        guanaitongPaymentBean.setNotify_url(configBean.getGatBackUrl());
         guanaitongPaymentBean.setTotal_amount(total_amount);
 
         ObjectMapper oMapper = new ObjectMapper();
         Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
         Result result1 = guanaitongClientService.payment(map) ;
         JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
-        String guanaitongUrl = ssoConfiguration.getGatUrl() + jsonObject.getString("data") ;
+        String guanaitongUrl = configBean.getGatUrl() + jsonObject.getString("data") ;
         orderList.forEach(order -> {
             order.setPaymentNo(outer_trade_no);
             order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
             order.setUpdatedAt(new Date());
-            updatePaymentNo(order);
+            if (order.getPayStatus() != 5) {
+                updatePaymentNo(order);
+            }
         });
         UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
         urlEncodeBean.setUrlEncode(guanaitongUrl);
@@ -149,7 +156,8 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     public String gNotify(GATBackBean backBean) {
-        List<Order> orders = findByPaymentNoAndOpenId(backBean.getOuter_trade_no(), ssoConfiguration.getiAppId() + backBean.getBuyer_open_id());
+        String appId =  getSSOConfigByAppId(backBean.getAppid()) ;
+        List<Order> orders = findByPaymentNoAndOpenId(backBean.getOuter_trade_no(), appId + backBean.getBuyer_open_id());
         int amount = Math.round(backBean.getTotal_amount() * 100);
 
         List<Integer> orderIdList = new ArrayList<>();
@@ -274,6 +282,21 @@ public class PaymentServiceImpl implements IPaymentService {
             return flag;
         }
         return false;
+    }
+
+    private SSOConfigBean getSSOConfig(String appId) {
+        return ssoConfiguration.getRegion().get(appId) ;
+    }
+
+    private String getSSOConfigByAppId(String appId) {
+        Map<String, SSOConfigBean> map = ssoConfiguration.getRegion() ;
+        for (String key : map.keySet()) {
+            SSOConfigBean configBean = map.get(key);
+            if (appId.equals(configBean.getGatAppId())) {
+                return key ;
+            }
+        }
+        return null ;
     }
 
 }
