@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class OrderRefundRequestBean {
+    private String appId ;
     private String merchantNo;
     private String oriOrderNo;
     private Long refundAmt ;

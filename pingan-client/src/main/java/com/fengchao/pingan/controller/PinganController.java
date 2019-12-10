@@ -59,38 +59,38 @@ public class PinganController {
     }
 
     @GetMapping("initCode")
-    private OperaResponse getInitCode() {
+    private OperaResponse getInitCode(String appId) {
         return userService.getInitCode() ;
     }
 
     @GetMapping("authCode")
-    private OperaResponse getAuthCode() {
+    private OperaResponse getAuthCode(String appId) {
         return userService.getAuthCode() ;
     }
 
     @GetMapping("accessToken")
-    private OperaResponse getAccessToken(String authCode) {
+    private OperaResponse getAccessToken(String appId, String authCode) {
         return userService.getAuthAccessToken(authCode) ;
     }
 
     @GetMapping("refreshToken")
-    private OperaResponse getRefreshToken(String refreshToken) {
+    private OperaResponse getRefreshToken(String appId, String refreshToken) {
         return userService.getRefreshToken(refreshToken) ;
     }
 
     @GetMapping("checkToken")
-    private OperaResponse checkToken(String accessToken) {
+    private OperaResponse checkToken(String appId, String accessToken) {
         return userService.checkToken(accessToken) ;
     }
 
     @GetMapping("checkRequestCode")
-    private OperaResponse checkRequestCode(String requestCode) {
+    private OperaResponse checkRequestCode(String appId, String requestCode) {
 //        return userService.checkRequestCode(requestCode) ;
         return userService.getAuthUserInfoByRequestCode(requestCode) ;
     }
 
     @GetMapping("userInfo")
-    private OperaResponse getUserInfo(String userAccessToken) {
+    private OperaResponse getUserInfo(String appId, String userAccessToken) {
         return userService.getAuthUserInfo(userAccessToken) ;
     }
 

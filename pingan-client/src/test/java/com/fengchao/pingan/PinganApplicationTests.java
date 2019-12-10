@@ -1,22 +1,29 @@
 package com.fengchao.pingan;
 
-import com.fengchao.pingan.bean.CreatePaymentOrderRequestBean;
 import com.fengchao.pingan.bean.OrderRefundRequestBean;
+import com.fengchao.pingan.bean.PingAnConfigBean;
 import com.fengchao.pingan.bean.QueryPaymentOrderRequestBean;
+import com.fengchao.pingan.config.PingAnClientConfig;
 import com.fengchao.pingan.service.PaymentService;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
+
+@EnableConfigurationProperties({PingAnClientConfig.class})
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PinganApplicationTests {
 
 	@Autowired
 	private PaymentService paymentService ;
+	@Autowired
+	private PingAnClientConfig config;
 
 	@Ignore
 	@Test
@@ -39,6 +46,14 @@ public class PinganApplicationTests {
 		orderRefundRequestBean.setRefundAmt(1000l);
 		orderRefundRequestBean.setRefundMchOrderNo("sdsfdsda123445511");
 		paymentService.orderRefund(orderRefundRequestBean) ;
+	}
+
+	@Ignore
+	@Test
+	public void configReloa() {
+		Map<String, PingAnConfigBean> map = config.getRegion() ;
+		PingAnConfigBean bean = map.get("11") ;
+		System.out.println(bean);
 	}
 
 }

@@ -37,6 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResult paymentOrder(PaymentBean paymentBean) throws PinganClientException {
+        PingAnConfigBean pingAnConfigBean = getPingAnConfig(paymentBean.getAppId()) ;
         logger.info("ping url is "+ HttpClient.PINGAN_PATH + HttpClient.PAYMENT_ORDER);
         WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_PATH + HttpClient.PAYMENT_ORDER);
         ZfResquest resquest = new ZfResquest();
@@ -45,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
         param.setActPayFee(paymentBean.getAmount());
         param.setBody(paymentBean.getGoodsName());
         param.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-        param.setNotifyUrl(config.getNotifyUrl());
+        param.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
         resquest.setData(param);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(param, Map.class);
@@ -83,16 +84,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public OperaResponse<CreatePaymentOrderBean> createPaymentOrder(CreatePaymentOrderRequestBean paymentBean) {
-        logger.info("ping an url is "+ config.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
+        PingAnConfigBean pingAnConfigBean = getPingAnConfig(paymentBean.getAppId()) ;
+        logger.info("ping an url is "+ pingAnConfigBean.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
         PaymentParamBean<CreatePaymentOrderRequestBean> paramBean = new PaymentParamBean<CreatePaymentOrderRequestBean>() ;
-        paramBean.setAppId(config.getPayAppId());
-        paymentBean.setMerchantNo(config.getPayMerchantNo());
-        paymentBean.setNotifyUrl(config.getNotifyUrl());
-        WebTarget webTarget = HttpClient.createClient().target(config.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
+        paramBean.setAppId(pingAnConfigBean.getPayAppId());
+        paymentBean.setMerchantNo(pingAnConfigBean.getPayMerchantNo());
+        paymentBean.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
-        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        String sign = Pkcs8Util.getSM3(messageString + pingAnConfigBean.getPayAppKey()) ;
         paramBean.setSign(sign);
         paramBean.setMessage(paymentBean);
         logger.info("请求平安 create payment order 参数： {}",JSONUtil.toJsonString(paramBean));
@@ -104,7 +106,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (result.getCode() == 200) {
             JSONObject jsonObject = (JSONObject) JSON.toJSON(result.getData());
             CreatePaymentOrderBean createPaymentOrderBean = new CreatePaymentOrderBean() ;
-            createPaymentOrderBean.setMerchantNo(config.getPayMerchantNo());
+            createPaymentOrderBean.setMerchantNo(pingAnConfigBean.getPayMerchantNo());
             createPaymentOrderBean.setOrderNo(jsonObject.getString("orderNo"));
             result.setData(createPaymentOrderBean);
         }
@@ -114,12 +116,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResult payRefund(RefundBean bean) throws PinganClientException {
+        PingAnConfigBean pingAnConfigBean = getPingAnConfig(bean.getAppId()) ;
         WebTarget webTarget = HttpClient.createClient().target(HttpClient.PINGAN_PATH + HttpClient.PAY_REFUND);
         ZfResquest resquest = new ZfResquest();
         RefundParam param = new RefundParam();
         param.setTotalFee(bean.getAmount());
         param.setRefundFee(bean.getAmount());
-        param.setNoticeUrl(config.getNotifyUrl());
+        param.setNoticeUrl(pingAnConfigBean.getNotifyUrl());
         param.setOutRefundNo(bean.getOutRefundNo());
         param.setSourceOutTradeNo(bean.getSourceOutTradeNo());
         param.setSourceOrderNo(bean.getSourceOrderNo());
@@ -152,12 +155,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResult wsPayClient(PaymentBean paymentBean) {
+        PingAnConfigBean pingAnConfigBean = getPingAnConfig(paymentBean.getAppId()) ;
         PrePayDTO prePayDTO = new PrePayDTO();
         prePayDTO.setOutTradeNo(paymentBean.getAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
         prePayDTO.setTotalFee(paymentBean.getAmount() + "");
         prePayDTO.setActPayFee(paymentBean.getAmount() + "");
         prePayDTO.setBody(paymentBean.getGoodsName());
-        prePayDTO.setNotifyUrl(config.getNotifyUrl());
+        prePayDTO.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
         logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(prePayDTO));
         PaymentResult result = new PaymentResult();
         CommonResult<PrePayResultDTO> prePayResultDTOCommonResult = payClientService.payment(prePayDTO) ;
@@ -179,15 +183,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public OperaResponse<QueryPaymentOrderBean> queryPaymentOrder(QueryPaymentOrderRequestBean paymentBean) {
-        logger.info("query payment order url is "+ config.getPayBasePath() + HttpClient.QUERY_PAYMENT_ORDER);
+        PingAnConfigBean pingAnConfigBean = getPingAnConfig(paymentBean.getAppId()) ;
+        logger.info("query payment order url is "+ pingAnConfigBean.getPayBasePath() + HttpClient.QUERY_PAYMENT_ORDER);
         PaymentParamBean<QueryPaymentOrderRequestBean> paramBean = new PaymentParamBean<QueryPaymentOrderRequestBean>() ;
-        paramBean.setAppId(config.getPayAppId());
-        paymentBean.setMerchantNo(config.getPayMerchantNo());
-        WebTarget webTarget = HttpClient.createClient().target(config.getPayBasePath() + HttpClient.QUERY_PAYMENT_ORDER);
+        paramBean.setAppId(pingAnConfigBean.getPayAppId());
+        paymentBean.setMerchantNo(pingAnConfigBean.getPayMerchantNo());
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getPayBasePath() + HttpClient.QUERY_PAYMENT_ORDER);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
-        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        String sign = Pkcs8Util.getSM3(messageString + pingAnConfigBean.getPayAppKey()) ;
         paramBean.setSign(sign);
         paramBean.setMessage(paymentBean);
         logger.info("请求平安 query payment order 参数： {}", JSONUtil.toJsonString(paramBean));
@@ -201,17 +206,18 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public OperaResponse<OrderRefundBean> orderRefund(OrderRefundRequestBean paymentBean) {
+        PingAnConfigBean pingAnConfigBean = getPingAnConfig(paymentBean.getAppId()) ;
         logger.info("退款 入口参数： {}", JSONUtil.toJsonString(paymentBean));
-        logger.info("order refund url is "+ config.getPayBasePath() + HttpClient.ORDER_REFUND);
+        logger.info("order refund url is "+ pingAnConfigBean.getPayBasePath() + HttpClient.ORDER_REFUND);
         PaymentParamBean<OrderRefundRequestBean> paramBean = new PaymentParamBean<OrderRefundRequestBean>() ;
-        paramBean.setAppId(config.getPayAppId());
+        paramBean.setAppId(pingAnConfigBean.getPayAppId());
 
-        paymentBean.setMerchantNo(config.getPayMerchantNo());
-        WebTarget webTarget = HttpClient.createClient().target(config.getPayBasePath() + HttpClient.ORDER_REFUND);
+        paymentBean.setMerchantNo(pingAnConfigBean.getPayMerchantNo());
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getPayBasePath() + HttpClient.ORDER_REFUND);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
-        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        String sign = Pkcs8Util.getSM3(messageString + pingAnConfigBean.getPayAppKey()) ;
         paramBean.setSign(sign);
         paramBean.setMessage(paymentBean);
         logger.info("请求平安 order refund 参数： {}", JSONUtil.toJsonString(paramBean));
@@ -225,13 +231,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public String backNotify(BackNotifyRequestBean paymentBean) {
+        PingAnConfigBean pingAnConfigBean = getPingAnConfigByTAppId(paymentBean.getAppId());
         logger.info("平安支付回调 back notify 参数： {}", JSONUtil.toJsonString(paymentBean));
         String backSign = paymentBean.getSign() ;
         paymentBean.setSign(null);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
-        String sign = Pkcs8Util.getSM3(messageString + config.getPayAppKey()) ;
+        String sign = Pkcs8Util.getSM3(messageString + pingAnConfigBean.getPayAppKey()) ;
         if (backSign.equals(sign)) {
             // 聚合支付服务
             AggPayBackBean aggPayBackBean = new AggPayBackBean() ;
@@ -245,5 +252,20 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
         return "{\"code\": \"false\"}" ;
+    }
+
+    private PingAnConfigBean getPingAnConfig(String appId) {
+        return  config.getRegion().get(appId) ;
+    }
+
+    private PingAnConfigBean getPingAnConfigByTAppId(String appId) {
+        Map<String, PingAnConfigBean> map = config.getRegion() ;
+        for (String key : map.keySet()) {
+            PingAnConfigBean pingAnConfigBean = map.get(key);
+            if (appId.equals(pingAnConfigBean.getAppId())) {
+                return pingAnConfigBean ;
+            }
+        }
+        return null ;
     }
 }

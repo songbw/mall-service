@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class QueryPaymentOrderRequestBean {
+    private String appId ;
     private String merchantNo ;
     private String mchOrderNo ;
 }

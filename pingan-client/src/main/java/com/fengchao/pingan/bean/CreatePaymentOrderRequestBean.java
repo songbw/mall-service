@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CreatePaymentOrderRequestBean {
+    private String appId ;
     private String merchantNo;
     private String goodsName;
     private Long amount;
