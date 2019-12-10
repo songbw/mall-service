@@ -60,38 +60,38 @@ public class PinganController {
 
     @GetMapping("initCode")
     private OperaResponse getInitCode(String appId) {
-        return userService.getInitCode() ;
+        return userService.getInitCode(appId) ;
     }
 
     @GetMapping("authCode")
     private OperaResponse getAuthCode(String appId) {
-        return userService.getAuthCode() ;
+        return userService.getAuthCode(appId) ;
     }
 
     @GetMapping("accessToken")
     private OperaResponse getAccessToken(String appId, String authCode) {
-        return userService.getAuthAccessToken(authCode) ;
+        return userService.getAuthAccessToken(appId, authCode) ;
     }
 
     @GetMapping("refreshToken")
     private OperaResponse getRefreshToken(String appId, String refreshToken) {
-        return userService.getRefreshToken(refreshToken) ;
+        return userService.getRefreshToken(appId, refreshToken) ;
     }
 
     @GetMapping("checkToken")
     private OperaResponse checkToken(String appId, String accessToken) {
-        return userService.checkToken(accessToken) ;
+        return userService.checkToken(appId, accessToken) ;
     }
 
     @GetMapping("checkRequestCode")
     private OperaResponse checkRequestCode(String appId, String requestCode) {
 //        return userService.checkRequestCode(requestCode) ;
-        return userService.getAuthUserInfoByRequestCode(requestCode) ;
+        return userService.getAuthUserInfoByRequestCode(appId, requestCode) ;
     }
 
     @GetMapping("userInfo")
     private OperaResponse getUserInfo(String appId, String userAccessToken) {
-        return userService.getAuthUserInfo(userAccessToken) ;
+        return userService.getAuthUserInfo(appId, userAccessToken) ;
     }
 
     @PostMapping("payment/create")

@@ -214,7 +214,7 @@ public class LoginServiceImpl implements ILoginService {
         OperaResult result = new OperaResult();
         AccessToken accessToken = new AccessToken() ;
         // 获取平安用户信息
-        OperaResponse<AuthUserBean> authUserBeanOperaResponse = pinganClientService.checkRequestCode(requestCode) ;
+        OperaResponse<AuthUserBean> authUserBeanOperaResponse = pinganClientService.checkRequestCode(requestCode, iAppId) ;
         if (authUserBeanOperaResponse.getCode() != 200) {
             result.setCode(authUserBeanOperaResponse.getCode());
             result.setMsg(authUserBeanOperaResponse.getMsg());
