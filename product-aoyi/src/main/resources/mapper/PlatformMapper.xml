@@ -9,11 +9,8 @@
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
     <result column="status" jdbcType="INTEGER" property="status" />
-<<<<<<< HEAD
-=======
     <result column="wx_app_id" jdbcType="VARCHAR" property="wxAppId" />
     <result column="wx_app_secret" jdbcType="VARCHAR" property="wxAppSecret" />
->>>>>>> hotfix-20191210
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -108,19 +105,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.Platform" useGeneratedKeys="true">
     insert into platform (name, app_id, gateway_url, 
-<<<<<<< HEAD
-      created_at, updated_at, status
-      )
-    values (#{name,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{gatewayUrl,jdbcType=VARCHAR}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}
-      )
-=======
-      created_at, updated_at, status, 
+      created_at, updated_at, status,
       wx_app_id, wx_app_secret)
     values (#{name,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{gatewayUrl,jdbcType=VARCHAR}, 
       #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
       #{wxAppId,jdbcType=VARCHAR}, #{wxAppSecret,jdbcType=VARCHAR})
->>>>>>> hotfix-20191210
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.Platform" useGeneratedKeys="true">
     insert into platform
@@ -143,15 +132,12 @@
       <if test="status != null">
         status,
       </if>
-<<<<<<< HEAD
-=======
       <if test="wxAppId != null">
         wx_app_id,
       </if>
       <if test="wxAppSecret != null">
         wx_app_secret,
       </if>
->>>>>>> hotfix-20191210
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -172,15 +158,12 @@
       <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
-<<<<<<< HEAD
-=======
       <if test="wxAppId != null">
         #{wxAppId,jdbcType=VARCHAR},
       </if>
       <if test="wxAppSecret != null">
         #{wxAppSecret,jdbcType=VARCHAR},
       </if>
->>>>>>> hotfix-20191210
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.fengchao.product.aoyi.model.PlatformExample" resultType="java.lang.Long">
@@ -213,15 +196,12 @@
       <if test="record.status != null">
         status = #{record.status,jdbcType=INTEGER},
       </if>
-<<<<<<< HEAD
-=======
       <if test="record.wxAppId != null">
         wx_app_id = #{record.wxAppId,jdbcType=VARCHAR},
       </if>
       <if test="record.wxAppSecret != null">
         wx_app_secret = #{record.wxAppSecret,jdbcType=VARCHAR},
       </if>
->>>>>>> hotfix-20191210
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -235,13 +215,9 @@
       gateway_url = #{record.gatewayUrl,jdbcType=VARCHAR},
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
       updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
-<<<<<<< HEAD
-      status = #{record.status,jdbcType=INTEGER}
-=======
       status = #{record.status,jdbcType=INTEGER},
       wx_app_id = #{record.wxAppId,jdbcType=VARCHAR},
       wx_app_secret = #{record.wxAppSecret,jdbcType=VARCHAR}
->>>>>>> hotfix-20191210
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -267,15 +243,12 @@
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
-<<<<<<< HEAD
-=======
       <if test="wxAppId != null">
         wx_app_id = #{wxAppId,jdbcType=VARCHAR},
       </if>
       <if test="wxAppSecret != null">
         wx_app_secret = #{wxAppSecret,jdbcType=VARCHAR},
       </if>
->>>>>>> hotfix-20191210
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -286,13 +259,9 @@
       gateway_url = #{gatewayUrl,jdbcType=VARCHAR},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP},
-<<<<<<< HEAD
-      status = #{status,jdbcType=INTEGER}
-=======
       status = #{status,jdbcType=INTEGER},
       wx_app_id = #{wxAppId,jdbcType=VARCHAR},
       wx_app_secret = #{wxAppSecret,jdbcType=VARCHAR}
->>>>>>> hotfix-20191210
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
