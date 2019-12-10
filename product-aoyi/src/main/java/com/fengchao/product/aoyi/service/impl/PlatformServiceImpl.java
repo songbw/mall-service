@@ -90,7 +90,9 @@ public class PlatformServiceImpl implements PlatformService {
 
     @Override
     public OperaResponse find(Integer id) {
-        return null;
+        OperaResponse response = new OperaResponse();
+        response.setData(mapper.selectByPrimaryKey(id)) ;
+        return response;
     }
 
     @Override
