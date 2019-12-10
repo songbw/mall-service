@@ -471,113 +471,110 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.CouponX" >
     update coupon
     <set>
-      <if test="record.id != null">
-        id = #{record.id,jdbcType=INTEGER},
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="record.name != null">
-        name = #{record.name,jdbcType=VARCHAR},
+      <if test="supplierMerchantId != null">
+        supplier_merchant_id = #{supplierMerchantId,jdbcType=VARCHAR},
       </if>
-      <if test="record.supplierMerchantId != null">
-        supplier_merchant_id = #{record.supplierMerchantId,jdbcType=VARCHAR},
+      <if test="supplierMerchantName != null">
+        supplier_merchant_name = #{supplierMerchantName,jdbcType=VARCHAR},
       </if>
-      <if test="record.supplierMerchantName != null">
-        supplier_merchant_name = #{record.supplierMerchantName,jdbcType=VARCHAR},
+      <if test="releaseTotal != null">
+        release_total = #{releaseTotal,jdbcType=INTEGER},
       </if>
-      <if test="record.releaseTotal != null">
-        release_total = #{record.releaseTotal,jdbcType=INTEGER},
+      <if test="releaseNum != null">
+        release_num = #{releaseNum,jdbcType=INTEGER},
       </if>
-      <if test="record.releaseNum != null">
-        release_num = #{record.releaseNum,jdbcType=INTEGER},
+      <if test="releaseStartDate != null">
+        release_start_date = #{releaseStartDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.releaseStartDate != null">
-        release_start_date = #{record.releaseStartDate,jdbcType=TIMESTAMP},
+      <if test="releaseEndDate != null">
+        release_end_date = #{releaseEndDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.releaseEndDate != null">
-        release_end_date = #{record.releaseEndDate,jdbcType=TIMESTAMP},
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
       </if>
-      <if test="record.status != null">
-        status = #{record.status,jdbcType=INTEGER},
+      <if test="effectiveStartDate != null">
+        effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.effectiveStartDate != null">
-        effective_start_date = #{record.effectiveStartDate,jdbcType=TIMESTAMP},
+      <if test="effectiveEndDate != null">
+        effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.effectiveEndDate != null">
-        effective_end_date = #{record.effectiveEndDate,jdbcType=TIMESTAMP},
+      <if test="excludeDates != null">
+        exclude_dates = #{excludeDates,jdbcType=VARCHAR},
       </if>
-      <if test="record.excludeDates != null">
-        exclude_dates = #{record.excludeDates,jdbcType=VARCHAR},
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
       </if>
-      <if test="record.description != null">
-        description = #{record.description,jdbcType=VARCHAR},
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
       </if>
-      <if test="record.url != null">
-        url = #{record.url,jdbcType=VARCHAR},
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.createDate != null">
-        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
       </if>
-      <if test="record.category != null">
-        category = #{record.category,jdbcType=VARCHAR},
+      <if test="tags != null">
+        tags = #{tags,jdbcType=VARCHAR},
       </if>
-      <if test="record.tags != null">
-        tags = #{record.tags,jdbcType=VARCHAR},
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
       </if>
-      <if test="record.imageUrl != null">
-        image_url = #{record.imageUrl,jdbcType=VARCHAR},
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
       </if>
-      <if test="record.code != null">
-        code = #{record.code,jdbcType=VARCHAR},
+      <if test="rulesDescription != null">
+        rules_description = #{rulesDescription,jdbcType=VARCHAR},
       </if>
-      <if test="record.rulesDescription != null">
-        rules_description = #{record.rulesDescription,jdbcType=VARCHAR},
+      <if test="perLimited != null">
+        per_limited = #{perLimited,jdbcType=INTEGER},
       </if>
-      <if test="record.perLimited != null">
-        per_limited = #{record.perLimited,jdbcType=INTEGER},
+      <if test="scopes != null">
+        scopes = #{scopes,jdbcType=VARCHAR},
       </if>
-      <if test="record.scopes != null">
-        scopes = #{record.scopes,jdbcType=VARCHAR},
+      <if test="scenarioType != null">
+        scenario_type = #{scenarioType,jdbcType=INTEGER},
       </if>
-      <if test="record.scenarioType != null">
-        scenario_type = #{record.scenarioType,jdbcType=INTEGER},
+      <if test="categories != null">
+        categories = #{categories,jdbcType=VARCHAR},
       </if>
-      <if test="record.categories != null">
-        categories = #{record.categories,jdbcType=VARCHAR},
+      <if test="brands != null">
+        brands = #{brands,jdbcType=VARCHAR},
       </if>
-      <if test="record.brands != null">
-        brands = #{record.brands,jdbcType=VARCHAR},
+      <if test="collectType != null">
+        collect_type = #{collectType,jdbcType=INTEGER},
       </if>
-      <if test="record.collectType != null">
-        collect_type = #{record.collectType,jdbcType=INTEGER},
+      <if test="points != null">
+        points = #{points,jdbcType=INTEGER},
       </if>
-      <if test="record.points != null">
-        points = #{record.points,jdbcType=INTEGER},
+      <if test="customerType != null">
+        customer_type = #{customerType,jdbcType=INTEGER},
       </if>
-      <if test="record.customerType != null">
-        customer_type = #{record.customerType,jdbcType=INTEGER},
+      <if test="users != null">
+        users = #{users,jdbcType=VARCHAR},
       </if>
-      <if test="record.users != null">
-        users = #{record.users,jdbcType=VARCHAR},
+      <if test="couponType != null">
+        coupon_type = #{couponType,jdbcType=INTEGER},
       </if>
-      <if test="record.couponType != null">
-        coupon_type = #{record.couponType,jdbcType=INTEGER},
+      <if test="couponRules != null">
+        coupon_rules = #{couponRules,jdbcType=VARCHAR},
       </if>
-      <if test="record.couponRules != null">
-        coupon_rules = #{record.couponRules,jdbcType=VARCHAR},
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="record.appId != null">
-        app_id = #{record.appId,jdbcType=VARCHAR},
+      <if test="couponMpus != null">
+        coupon_mpus = #{couponMpus,jdbcType=LONGVARCHAR},
       </if>
-      <if test="record.couponMpus != null">
-        coupon_mpus = #{record.couponMpus,jdbcType=LONGVARCHAR},
+      <if test="couponSkus != null">
+        coupon_skus = #{couponSkus,jdbcType=LONGVARCHAR},
       </if>
-      <if test="record.couponSkus != null">
-        coupon_skus = #{record.couponSkus,jdbcType=LONGVARCHAR},
+      <if test="excludeMpus != null">
+        exclude_mpus = #{excludeMpus,jdbcType=LONGVARCHAR},
       </if>
-      <if test="record.excludeMpus != null">
-        exclude_mpus = #{record.excludeMpus,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="record.excludeSkus != null">
-        exclude_skus = #{record.excludeSkus,jdbcType=LONGVARCHAR},
+      <if test="excludeSkus != null">
+        exclude_skus = #{excludeSkus,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

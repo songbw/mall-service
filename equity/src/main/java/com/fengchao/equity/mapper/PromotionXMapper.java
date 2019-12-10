@@ -45,7 +45,7 @@ public interface PromotionXMapper {
 
     int updateByExample(@Param("record") PromotionX record, @Param("example") PromotionExample example);
 
-    List<PromotionX> selectDaliyPromotion(String appId);
+    List<PromotionX> selectDaliyPromotion(@Param("appId") String appId);
 
-    List<PromotionX> selectSchedulePromotion(String appId);
+    List<PromotionX> selectSchedulePromotion(@Param("appId") String appId);
 }
