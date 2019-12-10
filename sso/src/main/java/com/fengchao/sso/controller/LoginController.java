@@ -221,12 +221,12 @@ public class LoginController {
     }
 
     @GetMapping("/code")
-    public OperaResponse verifyCode(String telephone, String type) {
-        return loginService.verifyCode(telephone, type);
+    public OperaResponse verifyCode(@RequestHeader("appId") String appId, String telephone, String type) {
+        return loginService.verifyCode(telephone, type, appId);
     }
 
     @PutMapping("/wx/bind")
-    public OperaResponse wxBind(@RequestBody BindWXBean bindWXBean) {
+    public OperaResponse wxBind(@RequestHeader("appId") String appId, @RequestBody BindWXBean bindWXBean) {
         return loginService.bindWXOpenId(bindWXBean);
     }
 

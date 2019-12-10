@@ -1,5 +1,7 @@
 package com.fengchao.product.aoyi.service;
 
+import com.fengchao.product.aoyi.bean.OperaResponse;
+import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.model.Platform;
 
 /**
@@ -8,4 +10,8 @@ import com.fengchao.product.aoyi.model.Platform;
  */
 public interface PlatformService {
     Platform findByAppId(String appId) ;
+
+    Platform findBySubAppId(String appId) ;
+
+    OperaResponse findList(QueryBean bean) ;
 }

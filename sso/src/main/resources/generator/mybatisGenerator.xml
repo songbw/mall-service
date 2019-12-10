@@ -49,5 +49,8 @@
         <table tableName="s_user">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
+        <table tableName="bind_sub_account">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
     </context>
 </generatorConfiguration>

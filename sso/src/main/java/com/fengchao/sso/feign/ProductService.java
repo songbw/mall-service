@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "product-aoyi", fallback = ProductServiceH.class)
 public interface ProductService {
 
-    @RequestMapping(value = "/platform", method = RequestMethod.GET)
-    OperaResponse<Platform> findPlatformByAppId(@RequestParam("appId") String appId);
+    @RequestMapping(value = "/platform/sub", method = RequestMethod.GET)
+    OperaResponse<Platform> findPlatformBySubAppId(@RequestParam("appId") String appId);
 
 }

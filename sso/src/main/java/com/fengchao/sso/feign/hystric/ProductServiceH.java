@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductServiceH implements ProductService {
     @Override
-    public OperaResponse<Platform> findPlatformByAppId(String appId) {
+    public OperaResponse<Platform> findPlatformBySubAppId(String appId) {
         OperaResponse result = new OperaResponse();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";

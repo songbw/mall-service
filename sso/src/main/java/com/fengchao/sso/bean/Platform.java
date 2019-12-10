@@ -5,21 +5,21 @@ import java.util.Date;
 public class Platform {
     private Integer id;
 
+    private Integer parentId;
+
     private String name;
 
     private String appId;
 
     private String gatewayUrl;
 
-    private Date createdAt;
-
-    private Date updatedAt;
+    private String webUrl;
 
     private Integer status;
 
-    private String wxAppId;
+    private Date createdAt;
 
-    private String wxAppSecret;
+    private Date updatedAt;
 
     public Integer getId() {
         return id;
@@ -27,6 +27,14 @@ public class Platform {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public String getName() {
@@ -53,6 +61,22 @@ public class Platform {
         this.gatewayUrl = gatewayUrl == null ? null : gatewayUrl.trim();
     }
 
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl == null ? null : webUrl.trim();
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -67,29 +91,5 @@ public class Platform {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getWxAppId() {
-        return wxAppId;
-    }
-
-    public void setWxAppId(String wxAppId) {
-        this.wxAppId = wxAppId == null ? null : wxAppId.trim();
-    }
-
-    public String getWxAppSecret() {
-        return wxAppSecret;
-    }
-
-    public void setWxAppSecret(String wxAppSecret) {
-        this.wxAppSecret = wxAppSecret == null ? null : wxAppSecret.trim();
     }
 }

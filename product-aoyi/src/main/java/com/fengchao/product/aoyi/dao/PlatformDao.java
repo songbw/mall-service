@@ -1,8 +1,11 @@
 package com.fengchao.product.aoyi.dao;
 
+import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.mapper.PlatformMapper;
 import com.fengchao.product.aoyi.model.Platform;
 import com.fengchao.product.aoyi.model.PlatformExample;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,5 +41,19 @@ public class PlatformDao {
             return list.get(0) ;
         }
         return null;
+    }
+
+    /**
+     * 分页查询平台信息
+     * @param queryBean
+     * @return
+     */
+    public PageInfo<Platform> selectAllPageable(QueryBean queryBean) {
+        PlatformExample example = new PlatformExample();
+        PlatformExample.Criteria criteria = example.createCriteria();
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
+        List<Platform> list = mapper.selectByExample(example);
+        PageInfo<Platform> pageInfo = new PageInfo(list);
+        return pageInfo;
     }
 }

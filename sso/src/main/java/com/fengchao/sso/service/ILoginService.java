@@ -24,7 +24,7 @@ public interface ILoginService {
 
     OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) ;
 
-    OperaResponse verifyCode(String telephone, String type) ;
+    OperaResponse verifyCode(String telephone, String type, String appId) ;
 
     OperaResponse bindWXOpenId(BindWXBean bandWXBean) ;
 

@@ -3,12 +3,12 @@ package com.fengchao.sso.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.sso.bean.*;
+import com.fengchao.sso.config.SSOConfiguration;
 import com.fengchao.sso.dao.BalanceDao;
+import com.fengchao.sso.dao.BindSubAccountDao;
 import com.fengchao.sso.dao.UserDao;
 import com.fengchao.sso.feign.*;
-import com.fengchao.sso.mapper.LoginMapper;
-import com.fengchao.sso.mapper.TokenMapper;
-import com.fengchao.sso.mapper.UserMapper;
+import com.fengchao.sso.mapper.*;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
 import com.fengchao.sso.model.*;
 import com.fengchao.sso.service.ILoginService;
@@ -16,6 +16,7 @@ import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@EnableConfigurationProperties({SSOConfiguration.class})
 @Slf4j
 @Service
 public class LoginServiceImpl implements ILoginService {
@@ -53,6 +55,14 @@ public class LoginServiceImpl implements ILoginService {
     private BaseService baseService ;
     @Autowired
     private UserDao userDao ;
+    @Autowired
+    private SSOConfiguration ssoConfiguration;
+    @Autowired
+    private BindSubAccountDao bindSubAccountDao ;
+    @Autowired
+    private BindSubAccountMapper bindSubAccountMapper ;
+    @Autowired
+    private SUserMapper mapper ;
 
     @Override
     public Login selectByPrimaryName(String username) {
@@ -265,13 +275,14 @@ public class LoginServiceImpl implements ILoginService {
             response.setMsg("code不能为空");
             return response ;
         }
-        Platform platform = productService.findPlatformByAppId(appId).getData() ;
-        if (platform == null) {
-            response.setCode(900002);
-            response.setMsg("appId不存在");
-            return response ;
-        }
-        String bean = HttpClient.get(platform.getWxAppId(), platform.getWxAppSecret(), code, String.class) ;
+//        Platform platform = productService.findPlatformByAppId(appId).getData() ;
+//        if (platform == null) {
+//            response.setCode(900002);
+//            response.setMsg("appId不存在");
+//            return response ;
+//        }
+        SSOConfigBean configBean = getSSOConfig(appId) ;
+        String bean = HttpClient.get(configBean.getWxAppId(), configBean.getWxAppSecret(), code, String.class) ;
         log.info(bean);
         JSONObject jsonObject = JSON.parseObject(bean) ;
         if (bean == null) {
@@ -291,7 +302,7 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public OperaResponse verifyCode(String telephone, String type) {
+    public OperaResponse verifyCode(String telephone, String type, String appId) {
         OperaResponse result = new OperaResponse() ;
         if(StringUtil.isEmpty(telephone)){
             result.setCode(100000);
@@ -301,7 +312,7 @@ public class LoginServiceImpl implements ILoginService {
         SMSPostBean smsPostBean = new SMSPostBean() ;
         smsPostBean.setPhone(telephone);
         String code = baseService.send(smsPostBean).getData() ;
-        redisDAO.setKey(type + ":sso:" + telephone, code, 5 * 60 * 1000);
+        redisDAO.setKey(type + ":sso:" + appId + telephone, code, 5 * 60 * 1000);
         return result;
     }
 
@@ -328,17 +339,44 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("appId不正确");
             return result;
         }
-        String code = redisDAO.getValue("wx:sso:" + bandWXBean.getTelephone()) ;
+        String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppId() + bandWXBean.getTelephone()) ;
         if (bandWXBean.getCode().equals(code)) {
             // 绑定openId 查询手机号是否存在，绑定公众号
-            SUser user = userDao.selectUserByTel(bandWXBean.getAppId(), bandWXBean.getTelephone()) ;
+            // TODO 根据子账号appId获取主账户appId
+            OperaResponse<Platform> platformOperaResponse = productService.findPlatformBySubAppId(bandWXBean.getAppId()) ;
+            Platform platform = new Platform() ;
+            if (platformOperaResponse.getCode() == 200) {
+                platform = platformOperaResponse.getData() ;
+            }
+            if (platform == null) {
+                result.setCode(100000);
+                result.setMsg("appId所属主账户不存在");
+                return result;
+            }
+            SUser user = userDao.selectUserByTel(platform.getAppId(), bandWXBean.getTelephone()) ;
             if (user == null) {
                 result.setCode(900100);
                 result.setMsg("电话号码不正确或此用户不存在");
                 return result;
             }
-            SUser updateUser = userDao.updateWXOpenIdByTel(bandWXBean.getAppId(), bandWXBean.getTelephone(), bandWXBean.getOpenId()) ;
-            user.setWxOpenId(updateUser.getWxOpenId());
+            // 绑定第三方openId
+            BindSubAccount bindSubAccount = bindSubAccountDao.selectByUserIdAndAppId(bandWXBean.getAppId(), user.getId()) ;
+            Date date = new Date() ;
+            if (bindSubAccount == null) {
+                bindSubAccount = new BindSubAccount() ;
+                bindSubAccount.setCreatedAt(date);
+                bindSubAccount.setUpdatedAt(date);
+                bindSubAccount.setUserId(user.getId());
+                bindSubAccount.setOpenId(bandWXBean.getOpenId());
+                bindSubAccount.setAppId(bandWXBean.getAppId());
+                // 添加
+                bindSubAccountMapper.insertSelective(bindSubAccount) ;
+            } else {
+                // 修改
+                bindSubAccount.setOpenId(bandWXBean.getOpenId());
+                bindSubAccount.setUpdatedAt(date);
+                bindSubAccountMapper.updateByPrimaryKeySelective(bindSubAccount) ;
+            }
             result.setData(user);
         } else {
             result.setCode(100000);
@@ -361,8 +399,8 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("appId不正确");
             return result;
         }
-        SUser user = userDao.selectUserByWxOpenId(appId, openId) ;
-        result.setData(user);
+        BindSubAccount bindSubAccount = bindSubAccountDao.selectByOpenIdAndAppId(appId, openId) ;
+        result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
         return result;
     }
 
@@ -402,6 +440,21 @@ public class LoginServiceImpl implements ILoginService {
             return guanaitongUserBean;
         }
         return null;
+    }
+
+    private SSOConfigBean getSSOConfig(String appId) {
+        return ssoConfiguration.getRegion().get(appId) ;
+    }
+
+    private String getSSOConfigByAppId(String appId) {
+        Map<String, SSOConfigBean> map = ssoConfiguration.getRegion() ;
+        for (String key : map.keySet()) {
+            SSOConfigBean configBean = map.get(key);
+            if (appId.equals(configBean.getGatAppId())) {
+                return key ;
+            }
+        }
+        return null ;
     }
 
 }
