@@ -408,9 +408,6 @@
   </select>
   <select id="selectDaliyPromotion" resultMap="BaseResultMap">
     select
-    <if test="distinct">
-      distinct
-    </if>
     <include refid="Base_Column_List" />
     from promotion
     where status = 4
@@ -427,9 +424,6 @@
   </update>
   <select id="selectSchedulePromotion" resultMap="BaseResultMap">
     select
-    <if test="distinct">
-      distinct
-    </if>
     <include refid="Base_Column_List" />
     from promotion
     where status in (3, 4)
