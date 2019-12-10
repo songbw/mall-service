@@ -60,7 +60,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return couponUseInfoBean;
         }
 
-        int collectNum = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId());
+        int collectNum = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), coupon.getAppId());
         if(coupon.getPerLimited() != -1){
             if(collectNum >= coupon.getPerLimited()){
                 couponUseInfoBean.setUserCouponCode("2");
@@ -184,6 +184,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
         couponUseInfoBean.setCode(bean.getCode());
         couponUseInfoBean.setUserOpenId(bean.getUserOpenId());
+        couponUseInfoBean.setAppId(bean.getAppId());
         return mapper.selectCollectCouponNum(couponUseInfoBean);
     }
 
@@ -197,6 +198,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         map.put("status",bean.getStatus());
         map.put("userOpenId",bean.getUserOpenId());
         map.put("deleteFlag",0);
+        map.put("appId",bean.getAppId());
         List<CouponUseInfoX> couponUseInfos = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
@@ -228,7 +230,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             List<CouponX> coupons = couponXMapper.selectGrantCoupon();
             List<CouponBean> couponBeans = new ArrayList<>() ;
             coupons.forEach( coupon -> {
-                int num = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId());
+                int num = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), coupon.getAppId());
                 coupon.setUserCollectNum(num);
                 couponBeans.add(couponToBean(coupon));
             });
@@ -350,7 +352,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         CouponX coupon = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
-        int collectNum = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId());
+        int collectNum = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), coupon.getAppId());
         if(coupon.getPerLimited() != -1){
             if(collectNum >= coupon.getPerLimited()){
                 bean.setUserCouponCode("3");
@@ -474,6 +476,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             couponBean.setTags(tagsNum);
         }
         couponBean.setImageUrl(coupon.getImageUrl());
+        couponBean.setAppId(coupon.getAppId());
         Rules rules = new Rules();
         Scenario scenario = new Scenario();
         rules.setScenario(scenario);

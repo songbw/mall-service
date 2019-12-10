@@ -70,7 +70,12 @@
   select
   count(id)
   from coupon_use_info
-  WHERE delete_flag = 0 and coupon_id = #{couponId,jdbcType=INTEGER} and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+  WHERE delete_flag = 0
+  and coupon_id = #{couponId,jdbcType=INTEGER}
+  and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+  <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+  </if>
   </select>
   <select id="selectCollect"  resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.CouponUseInfoBean">
   select
@@ -82,7 +87,12 @@
   select
   count(id)
   from coupon_use_info
-  WHERE delete_flag = 0 and code = #{code,jdbcType=INTEGER} and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+  WHERE delete_flag = 0
+  and code = #{code,jdbcType=INTEGER}
+  and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+  <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+  </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select

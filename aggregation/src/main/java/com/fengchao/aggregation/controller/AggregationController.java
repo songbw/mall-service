@@ -16,7 +16,7 @@ public class AggregationController {
     private AggregationService aggregationService;
 
     @GetMapping("findHomePage")
-    public OperaResult findHomePage(String appId, OperaResult result){
+    public OperaResult findHomePage(@RequestHeader("appId") String appId, OperaResult result){
         if(StringUtils.isEmpty(appId)){
             result.setCode(500);
             result.setMsg("参数有误");

@@ -147,7 +147,7 @@ public class CouponServiceImpl implements CouponService {
         if (total > 0) {
             List<CouponX> coupons = mapper.selectActiveCouponLimit(map);
             coupons.forEach(coupon -> {
-                int num = useInfoMapper.selectCollectCount(coupon.getId(), bean.getUserOpenId());
+                int num = useInfoMapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), bean.getAppId());
                 coupon.setUserCollectNum(num);
                 couponBeans.add(couponToBean(coupon));
             });
@@ -360,6 +360,7 @@ public class CouponServiceImpl implements CouponService {
             couponBean.setTags(tagsNum);
         }
         couponBean.setImageUrl(coupon.getImageUrl());
+        couponBean.setAppId(coupon.getAppId());
         Rules rules = new Rules();
         Scenario scenario = new Scenario();
         rules.setScenario(scenario);
@@ -475,7 +476,7 @@ public class CouponServiceImpl implements CouponService {
 
         List<CouponX> coupons = mapper.selectGiftCoupon();
         coupons.forEach(couponX -> {
-            int num = useInfoMapper.selectCollectCount(couponX.getId(), openId);
+            int num = useInfoMapper.selectCollectCount(couponX.getId(), openId, iAppId);
             couponX.setUserCollectNum(num);
             couponBeans.add(couponToBean(couponX));
         });
@@ -494,11 +495,11 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId) {
+    public List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId, String appId) {
         List<CouponX> couponList = mapper.selectCouponListByIdList(ids);
         List<CouponBean> couponBeanList = new ArrayList<>();
         for (CouponX coupon : couponList) {
-            int num = useInfoMapper.selectCollectCount(coupon.getId(), openId);
+            int num = useInfoMapper.selectCollectCount(coupon.getId(), openId, appId);
             coupon.setUserCollectNum(num);
             CouponBean couponBean = couponToBean(coupon);
             couponBeanList.add(couponBean);

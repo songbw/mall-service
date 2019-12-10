@@ -27,8 +27,9 @@ public class PromotionTypeDao {
     public PageInfo<PromotionType> selectPromotionType(int page, int size, String appId){
 
         PromotionTypeExample example = new PromotionTypeExample();
-        example.createCriteria().andIstatusEqualTo((short)1);
-        example.createCriteria().andAppIdEqualTo(appId);
+        PromotionTypeExample.Criteria criteria = example.createCriteria();
+        criteria.andIstatusEqualTo((short)1);
+        criteria.andAppIdEqualTo(appId);
 
         PageHelper.startPage(page, size);
         List<PromotionType> types =  promotionTypeMapper.selectByExample(example);

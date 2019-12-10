@@ -24,14 +24,16 @@ public class CouponController {
 
 
     @GetMapping("activeCoupon")
-    public OperaResult activeCoupon(CouponUseInfoBean useInfoBean, OperaResult result){
+    public OperaResult activeCoupon(CouponUseInfoBean useInfoBean, @RequestHeader("appId") String appId, OperaResult result){
+        useInfoBean.setAppId(appId);
         PageBean coupon = couponService.activeCoupon(useInfoBean);
         result.getData().put("result", coupon);
         return result;
     }
 
     @PostMapping("collect")
-    public OperaResult collectCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult collectCoupon(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         CouponUseInfoBean couponUseInfoBean = useInfoService.collectCoupon(bean);
         if(couponUseInfoBean.getUserCouponCode().equals("0")){
             result.setCode(40010);
@@ -53,37 +55,46 @@ public class CouponController {
     }
 
     @GetMapping("activeCategories")
-    public OperaResult activeCategories(String appId, OperaResult result){
+    public OperaResult activeCategories(@RequestHeader("appId") String appId, OperaResult result){
         result.getData().put("result", couponService.activeCategories(appId));
         return result;
     }
 
     @PostMapping("CouponCount")
-    public OperaResult selectCouponNum(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult selectCouponNum(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         result.getData().put("couponNum", useInfoService.getCouponNum(bean));
         return result;
     }
 
     @PostMapping("CouponByOpenId")
-    public OperaResult selectCouponByOpenId(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult selectCouponByOpenId(@RequestBody CouponUseInfoBean bean,
+                                            @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         result.getData().put("result", useInfoService.selectCouponByOpenId(bean));
         return result;
     }
 
     @PostMapping("CouponByEquityId")
-    public OperaResult selectCouponByEquityId(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult selectCouponByEquityId(@RequestBody CouponUseInfoBean bean,
+                                              @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         result.getData().put("result", useInfoService.selectCouponByEquityId(bean));
         return result;
     }
 
     @GetMapping("skuById")
-    public OperaResult selectSkuByCouponId(CouponUseInfoBean bean, OperaResult result){
+    public OperaResult selectSkuByCouponId(CouponUseInfoBean bean,
+                                           @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         result.getData().put("result", couponService.selectSkuByCouponId(bean));
         return result;
     }
 
     @PostMapping("redemption")
-    public OperaResult redemption(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult redemption(@RequestBody CouponUseInfoBean bean,
+                                  @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         CouponUseInfoBean couponUseInfoBean = useInfoService.redemption(bean);
         if(couponUseInfoBean.getUserCouponCode().equals("2")){
             result.setCode(40010);
@@ -108,14 +119,18 @@ public class CouponController {
     }
 
     @DeleteMapping("delete")
-    public OperaResult deleteUserCoupon(CouponUseInfoBean bean, OperaResult result){
+    public OperaResult deleteUserCoupon(CouponUseInfoBean bean,
+                                        @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         int pageBean = useInfoService.deleteUserCoupon(bean);
         result.getData().put("result",pageBean);
         return result;
     }
 
     @PostMapping("consume")
-    public OperaResult consume(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult consume(@RequestBody CouponUseInfoBean bean,
+                               @RequestHeader("appId") String appId, OperaResult result){
+        bean.setAppId(appId);
         CouponUseInfoX coupon = couponService.consumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
@@ -149,14 +164,16 @@ public class CouponController {
     }
 
     @PostMapping("release")//释放优惠券
-    public OperaResult releaseCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult releaseCoupon(@RequestBody CouponUseInfoBean bean,
+                                     @RequestHeader("appId") String appId, OperaResult result){
         int num = useInfoService.releaseCoupon(bean);
         result.getData().put("result",num);
         return result;
     }
 
     @PostMapping("verify")//验证优惠券
-    public OperaResult verifyCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
+    public OperaResult verifyCoupon(@RequestBody CouponUseInfoBean bean,
+                                    @RequestHeader("appId") String appId, OperaResult result){
         int num = useInfoService.verifyCoupon(bean);
         if(num == 0){
             result.setCode(500);
@@ -211,14 +228,18 @@ public class CouponController {
     }
 
     @GetMapping("batchCoupon")
-    public OperaResult findCouponListByIdList(@RequestParam("ids") List<Integer> ids, String openId, OperaResult result){
-        List<CouponBean> couponBeanList = couponService.findCouponListByIdList(ids, openId);
+    public OperaResult findCouponListByIdList(@RequestParam("ids") List<Integer> ids,
+                                              @RequestParam("openId")String openId,
+                                              @RequestHeader("appId") String appId,
+                                              OperaResult result){
+        List<CouponBean> couponBeanList = couponService.findCouponListByIdList(ids, openId, appId);
         result.getData().put("result", couponBeanList);
         return result;
     }
 
     @PostMapping("mpus")
-    public OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdBean> beans, String appId, OperaResult result){
+    public OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdBean> beans,
+                                               @RequestHeader("appId") String appId, OperaResult result){
         List<CouponAndPromBean> mpuList = couponService.findCouponListByMpuList(beans, appId);
         result.getData().put("result", mpuList);
         return result;
