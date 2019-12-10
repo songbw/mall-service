@@ -339,20 +339,21 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("appId不正确");
             return result;
         }
+        // 根据子账号appId获取主账户appId
+        OperaResponse<Platform> platformOperaResponse = productService.findPlatformBySubAppId(bandWXBean.getAppId()) ;
+        Platform platform = new Platform() ;
+        if (platformOperaResponse.getCode() == 200) {
+            platform = platformOperaResponse.getData() ;
+        }
+        if (platform == null) {
+            result.setCode(100000);
+            result.setMsg("appId所属主账户不存在");
+            return result;
+        }
         String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppId() + bandWXBean.getTelephone()) ;
         if (bandWXBean.getCode().equals(code)) {
             // 绑定openId 查询手机号是否存在，绑定公众号
-            // TODO 根据子账号appId获取主账户appId
-            OperaResponse<Platform> platformOperaResponse = productService.findPlatformBySubAppId(bandWXBean.getAppId()) ;
-            Platform platform = new Platform() ;
-            if (platformOperaResponse.getCode() == 200) {
-                platform = platformOperaResponse.getData() ;
-            }
-            if (platform == null) {
-                result.setCode(100000);
-                result.setMsg("appId所属主账户不存在");
-                return result;
-            }
+
             SUser user = userDao.selectUserByTel(platform.getAppId(), bandWXBean.getTelephone()) ;
             if (user == null) {
                 result.setCode(900100);
