@@ -83,4 +83,8 @@ public class ProductExportResVo {
      */
     private String floorPrice;
 
+    /**
+     * 创建时间
+     */
+    private String createTime;
 }

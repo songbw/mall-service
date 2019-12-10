@@ -1,7 +1,9 @@
 package com.fengchao.order.dao;
 
 import com.fengchao.order.constants.PaymentStatusEnum;
+import com.fengchao.order.mapper.OrderDetailXMapper;
 import com.fengchao.order.mapper.OrdersMapper;
+import com.fengchao.order.model.Order;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.model.OrdersExample;
 import com.github.pagehelper.PageHelper;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,10 +25,12 @@ import java.util.List;
 public class OrdersDao {
 
     private OrdersMapper ordersMapper;
+    private OrderDetailXMapper orderDetailXMapper ;
 
     @Autowired
-    public OrdersDao(OrdersMapper ordersMapper) {
+    public OrdersDao(OrdersMapper ordersMapper, OrderDetailXMapper orderDetailXMapper) {
         this.ordersMapper = ordersMapper;
+        this.orderDetailXMapper = orderDetailXMapper ;
     }
 
     /**
@@ -131,5 +136,27 @@ public class OrdersDao {
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
         return ordersList;
+    }
+
+    /**
+     * 根据openId 获取待支付信息列表
+     * @param openId
+     * @return
+     */
+    public List<Order> selectOrdersByOpenIdAndUnPaid(String openId) {
+        List<Order> orderList = new ArrayList<>() ;
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andOpenIdEqualTo(openId);
+        criteria.andStatusEqualTo(0) ;
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+        ordersList.forEach(orders -> {
+            Order order = new Order() ;
+//            BeanUtils.copyProperties(orders, order);
+            // 根据查询子订单列表
+            order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+            orderList.add(order) ;
+        });
+        return orderList ;
     }
 }

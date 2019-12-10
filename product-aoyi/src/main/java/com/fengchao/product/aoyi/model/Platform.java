@@ -5,17 +5,22 @@ import java.util.Date;
 public class Platform {
     private Integer id;
 
+    private Integer parentId;
+
     private String name;
 
     private String appId;
 
     private String gatewayUrl;
 
+    private String webUrl;
+
+    private Integer status;
+
     private Date createdAt;
 
     private Date updatedAt;
 
-    private Integer status;
 
     public Integer getId() {
         return id;
@@ -23,6 +28,14 @@ public class Platform {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public String getName() {
@@ -49,6 +62,22 @@ public class Platform {
         this.gatewayUrl = gatewayUrl == null ? null : gatewayUrl.trim();
     }
 
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl == null ? null : webUrl.trim();
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -65,11 +94,4 @@ public class Platform {
         this.updatedAt = updatedAt;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 }

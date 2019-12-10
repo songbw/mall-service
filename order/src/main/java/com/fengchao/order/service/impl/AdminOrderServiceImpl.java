@@ -3,6 +3,7 @@ package com.fengchao.order.service.impl;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.vo.BillExportReqVo;
+import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.constants.OrderPayMethodTypeEnum;
@@ -335,6 +336,116 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
 
+    /**
+     * 导出每日统计
+     *
+     * @return
+     */
+    @Override
+    public Map<String, Object> exportDailyOrderStatistic() throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        try {
+            List<DailyExportOrderStatisticVo> dailyExportOrderStatisticVoList = new ArrayList<>();
+
+            // 获取所有供应商
+            List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
+
+            log.info("每日统计 获取商户列表:{}", JSONUtil.toJsonString(sysCompanyXList));
+
+
+            //
+            long totalCompletedOrderCount = 0; // 总计 已完成子订单数量
+            long totalDeliveredOrderCount = 0; // 总计 已发货子订单数量
+            long totalUnDeliveryOrderCount = 0; // 总计 未发货子订单数量
+            long totalApplyRefundOrderCount = 0; // 总计 售后子订单数量
+            long totalOrderDetailCount = 0; // 总计 所有子订单数量
+            for (SysCompanyX sysCompanyX : sysCompanyXList) { // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+                DailyExportOrderStatisticVo dailyExportOrderStatisticVo = new DailyExportOrderStatisticVo();
+
+                // 1. 供应商名称
+                dailyExportOrderStatisticVo.setSupplierName(sysCompanyX.getName());
+
+                // 2. 统计已完成子订单个数
+                Long completedOrderCount = orderDetailDao.selectCountInSupplierAndStatus(sysCompanyX.getId().intValue(), 3);
+                dailyExportOrderStatisticVo.setCompletedOrderCount(completedOrderCount);
+                totalCompletedOrderCount = totalCompletedOrderCount + completedOrderCount;
+
+                // 3. 统计已发货子订单数量
+                Long deliveredOrderCount = orderDetailDao.selectCountInSupplierAndStatus(sysCompanyX.getId().intValue(), 2);
+                dailyExportOrderStatisticVo.setDeliveredOrderCount(deliveredOrderCount);
+                totalDeliveredOrderCount = totalDeliveredOrderCount + deliveredOrderCount;
+
+                // x.获取代发货的子订单
+                List<OrderDetail> unDeliveryOrderDetailList = orderDetailDao.selectOrderDetailsInSupplierAndStatus(sysCompanyX.getId().intValue(), 1);
+                totalUnDeliveryOrderCount = totalUnDeliveryOrderCount + unDeliveryOrderDetailList.size();
+
+                // 4. 统计待发货子订单数量
+                Long unDeliveryOrderCount = Long.valueOf(unDeliveryOrderDetailList.size());
+                dailyExportOrderStatisticVo.setUnDeliveryOrderCount(unDeliveryOrderCount);
+
+                if (CollectionUtils.isNotEmpty(unDeliveryOrderDetailList)) {
+                    // 5. 待发货的订单中，最早的子订单号
+                    String unDeliveryEarliestOrderNo = unDeliveryOrderDetailList.get(0).getSubOrderId();
+                    dailyExportOrderStatisticVo.setUnDeliveryEarliestOrderNo(unDeliveryEarliestOrderNo);
+
+                    // 6. 待发货的订单中，最早的子订单交易时间
+                    String unDeliveryEarliestOrderTime =
+                            DateUtil.dateTimeFormat(unDeliveryOrderDetailList.get(0).getCreatedAt(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+                    dailyExportOrderStatisticVo.setUnDeliveryEarliestOrderTime(unDeliveryEarliestOrderTime);
+                }
+
+                // 7. 统计申请售后的子点单数量
+                Long applyRefundCount = orderDetailDao.selectCountInSupplierAndStatus(sysCompanyX.getId().intValue(), 5);
+                dailyExportOrderStatisticVo.setApplyRefundCount(applyRefundCount);
+                totalApplyRefundOrderCount = totalApplyRefundOrderCount + applyRefundCount;
+
+                // 8. 统计所有订单数量
+                List<Integer> statusList = new ArrayList<>(); // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+                statusList.add(0);
+                statusList.add(1);
+                statusList.add(2);
+                statusList.add(3);
+                statusList.add(5);
+                Long orderDetailCount = orderDetailDao.selectCountInSupplierAndStatusList(sysCompanyX.getId().intValue(), statusList);
+                dailyExportOrderStatisticVo.setOrderDetailCount(orderDetailCount);
+                totalOrderDetailCount = totalOrderDetailCount + orderDetailCount;
+
+                //// !!
+                dailyExportOrderStatisticVoList.add(dailyExportOrderStatisticVo);
+            }
+
+            dailyExportOrderStatisticVoList.sort((o1, o2) ->
+                    o2.getUnDeliveryOrderCount().intValue() - o1.getUnDeliveryOrderCount().intValue());
+            // dailyExportOrderStatisticVoList.sort(Comparator.comparing(DailyExportOrderStatisticVo::getUnDeliveryOrderCount));
+
+
+            log.info("每日统计 获取导出的data数据:{}", JSONUtil.toJsonString(dailyExportOrderStatisticVoList));
+
+            // 查询从0点到目前时间的新增订单
+            String startTime = DateUtil.nowDate(DateUtil.DATE_YYYY_MM_DD) + " 00:00:00";
+            Date startTimeDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            List<OrderDetail> increasedOrderDetailList = orderDetailDao.selectOrderDetailsByPeriod(startTimeDate, new Date());
+
+            // 处理返回结果
+            resultMap.put("statisticTime", DateUtil.nowDate(DateUtil.DATE_YYYYMMDDHHMMSS));
+            resultMap.put("data", dailyExportOrderStatisticVoList);
+            resultMap.put("increasedCount", increasedOrderDetailList.size());
+            resultMap.put("totalCompletedOrderCount", totalCompletedOrderCount); // 总计 已完成子订单数量
+            resultMap.put("totalDeliveredOrderCount", totalDeliveredOrderCount); // 总计 已发货子订单数量
+            resultMap.put("totalUnDeliveryOrderCount", totalUnDeliveryOrderCount); // 总计 未发货子订单数量
+            resultMap.put("totalApplyRefundOrderCount", totalApplyRefundOrderCount); // 总计 售后子订单数量
+            resultMap.put("totalOrderDetailCount", totalOrderDetailCount); // 总计 所有子订单数量
+
+            log.info("每日统计 统计数据:{}", JSONUtil.toJsonString(resultMap));
+            return resultMap;
+        } catch (Exception e) {
+            log.error("每日统计 异常:{}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+
     //=============================== private =============================
 
     /**
@@ -490,6 +601,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         } else if (settlement == 2) {
                             exportOrdersVo.setSettlementType("精品类结算");
                         }
+                    }else{
+                        exportOrdersVo.setSettlementType("普通类结算");
                     }
                     exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
                     exportOrdersVo.setCouponId(ordersBo.getCouponId() == null ? null : ordersBo.getCouponId().longValue()); // 券码id
@@ -523,7 +636,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
                     exportOrdersVo.setExpressFee(ordersBo.getServFee().toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
+                    exportOrdersVo.setAoyiID(ordersBo.getAoyiId());
                     exportOrdersVo.setMobile(ordersBo.getMobile());
+                    exportOrdersVo.setRemark(orderDetailBo.getRemark());
                     // 退款金额 单位元
                     if (orderDetailBo.getRefundAmount() != null) {
                         exportOrdersVo.setOrderDetailRefundAmount(orderDetailBo.getRefundAmount());
@@ -711,6 +826,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orderDetailBo.setLogisticsContent(orderDetail.getLogisticsContent());
         orderDetailBo.setComcode(orderDetail.getComcode());
         orderDetailBo.setSkuCouponDiscount(orderDetail.getSkuCouponDiscount());
+        orderDetailBo.setRemark(orderDetail.getRemark());
 
         return orderDetailBo;
     }

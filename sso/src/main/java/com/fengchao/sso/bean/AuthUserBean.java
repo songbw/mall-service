@@ -26,4 +26,5 @@ public class AuthUserBean implements Serializable{
     private String degree;
     private String census;
     private String nickName;
+    private String payId;
 }

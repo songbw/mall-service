@@ -33,10 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -520,6 +520,31 @@ public class OrderServiceImpl implements OrderService {
         return pageBean;
     }
 
+    @DataSource(DataSourceNames.TWO)
+    @Override
+    public PageBean findListV2(OrderQueryBean queryBean) {
+        PageBean pageBean = new PageBean();
+        int total = 0;
+        int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
+        HashMap map = new HashMap();
+        map.put("pageNo", offset);
+        map.put("pageSize", queryBean.getPageSize());
+        map.put("openId", queryBean.getOpenId()) ;
+        if (queryBean.getStatus() != null && queryBean.getStatus() != -1) {
+            map.put("status", queryBean.getStatus()) ;
+        }
+        List<Order> orders = new ArrayList<>();
+        total = orderMapper.selectLimitCountV2(map);
+        if (total > 0) {
+            orders = orderMapper.selectLimitV2(map);
+            orders.forEach(order -> {
+                order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+            });
+        }
+        pageBean = PageBean.build(pageBean, orders, total, queryBean.getPageNo(), queryBean.getPageSize());
+        return pageBean;
+    }
+
     @Override
     public Integer updateStatus(Order bean) {
         logger.info("更新订单状态 入参:{}", JSONUtil.toJsonString(bean));
@@ -696,6 +721,55 @@ public class OrderServiceImpl implements OrderService {
         logger.info("物流查询结果： {}", JSONUtils.toJSONString(jsonArray));
         result.getData().put("result", jsonArray) ;
         return result;
+    }
+
+    @Override
+    public OperaResult getWorkOrderLogist(String logisticNo, String code, String merchantNo) {
+        OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(logisticNo)) {
+            result.setCode(4000001);
+            result.setMsg("物流单号不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(code)) {
+            result.setCode(4000001);
+            result.setMsg("物流编码不能为空");
+            return result ;
+        }
+        OperaResponse<JSONObject> response =  baseService.kuaidi100(logisticNo, code) ;
+        if (response.getCode() == 200) {
+            JSONObject jsonObject = response.getData();
+            logger.info("子订单物流查询结果： {}", JSONUtils.toJSONString(jsonObject));
+            result.getData().put("result", jsonObject) ;
+            return result;
+        }
+        return result;
+    }
+
+    @Override
+    public OperaResult getSubOrderLogist(String merchantNo, String subOrderId) {
+        OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(subOrderId)) {
+            result.setCode(4000001);
+            result.setMsg("子订单号不能为空");
+            return result ;
+        }
+        OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(subOrderId);
+        if (orderDetail == null) {
+            result.setCode(4000001);
+            result.setMsg("子订单号不存在。");
+            return result ;
+        }
+        if (orderDetail.getLogisticsId() != null && orderDetail.getComcode() != null) {
+            OperaResponse<JSONObject> response =  baseService.kuaidi100(orderDetail.getLogisticsId(), orderDetail.getComcode()) ;
+            if (response.getCode() == 200) {
+                JSONObject jsonObject = response.getData();
+                logger.info("子订单物流查询结果： {}", JSONUtils.toJSONString(jsonObject));
+                result.getData().put("result", jsonObject) ;
+                return result;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -1030,9 +1104,11 @@ public class OrderServiceImpl implements OrderService {
                 logisticsbeanList.add(logistics);
                 continue;
             }
-            orderDetailDao.updateBySubOrderId(logistics) ;
             OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
-            JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+            if (orderDetail.getStatus() == 1) {
+                orderDetailDao.updateBySubOrderId(logistics) ;
+                JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+            }
         }
         if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
             response.setCode(4000002);
@@ -1054,6 +1130,76 @@ public class OrderServiceImpl implements OrderService {
         orderDetail.setStatus(3);
         orderDetailDao.updateOrderDetailStatus(orderDetail) ;
         return id;
+    }
+
+    @Override
+    public List<UnPaidBean> unpaid(String openId) {
+        HashMap map = new HashMap();
+        map.put("openId", openId) ;
+        map.put("status", 0) ;
+        List<UnPaidBean> unPaidBeans = new ArrayList<>() ;
+        List<Order>  orders = orderMapper.selectByOpenIdAndStatus(map);
+        orders.forEach(order -> {
+            order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+        });
+        Map<String, List<Order>> orderMap = orders.stream().collect(Collectors.groupingBy(order -> fetchGroupKey(order))) ;
+        for (String key : orderMap.keySet()) {
+            UnPaidBean unPaidBean = new UnPaidBean() ;
+            List<Order> orderList = orderMap.get(key);
+            if (orderList != null && orderList.size() > 0) {
+                Order order = orderList.get(0) ;
+                OrderCouponBean orderCouponBean = new OrderCouponBean() ;
+                orderCouponBean.setId(order.getCouponId());
+                orderCouponBean.setCode(order.getCouponCode());
+                orderCouponBean.setDiscount(order.getCouponDiscount());
+                unPaidBean.setCoupon(orderCouponBean);
+                AtomicReference<Float> saleAmount = new AtomicReference<>(0.00f);
+                AtomicReference<Float> servFee= new AtomicReference<>(0.00f);
+                orderList.forEach(order1 -> {
+                    saleAmount.set(saleAmount.get() + order1.getSaleAmount());
+                    servFee.set(servFee.get() + order1.getServFee());
+                });
+                unPaidBean.setSaleAmount(saleAmount.get());
+                unPaidBean.setServFee(servFee.get());
+                unPaidBean.setOrderNos(key);
+            }
+            unPaidBean.setOrdersList(orderList);
+            unPaidBeans.add(unPaidBean) ;
+        }
+        return unPaidBeans;
+    }
+
+    @Override
+    public OperaResponse unpaidCancel(String appId, String openId, String orderNos) {
+        OperaResponse response = new OperaResponse() ;
+
+        if (StringUtils.isEmpty(appId)) {
+            response.setCode(400001);
+            response.setMsg("appId不能位空。");
+            return response ;
+        }
+        if (StringUtils.isEmpty(openId)) {
+            response.setCode(400001);
+            response.setMsg("openId不能位空。");
+            return response ;
+        }
+        if (StringUtils.isEmpty(orderNos)) {
+            response.setCode(400001);
+            response.setMsg("orderNos不能位空。");
+            return response ;
+        }
+        List<Order> orderList = orderMapper.selectByTradeNo(appId + "%" + openId + orderNos) ;
+        orderList.forEach(order -> {
+            cancel(order.getId()) ;
+        });
+        response.setData(orderNos);
+        return response;
+    }
+
+    private String fetchGroupKey(Order order) {
+        String tradeNo = order.getTradeNo();
+        String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());
+        return key;
     }
 
     // ========================================= private ======================================

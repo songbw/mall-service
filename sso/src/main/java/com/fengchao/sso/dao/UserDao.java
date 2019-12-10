@@ -51,4 +51,23 @@ public class UserDao {
 
         return pageInfo;
     }
+
+    /**
+     * 根据手机号和appId查询用户信息
+     *
+     * @param appId
+     * @param telephone
+     * @return
+     */
+    public SUser selectUserByTel(String appId, String telephone) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andTelephoneEqualTo(telephone);
+        List<SUser> userList = mapper.selectByExample(userExample);
+        if (userList != null && userList.size() > 0) {
+            return userList.get(0) ;
+        }
+        return null;
+    }
 }

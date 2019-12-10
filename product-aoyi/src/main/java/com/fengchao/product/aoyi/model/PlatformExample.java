@@ -165,6 +165,66 @@ public class PlatformExample {
             return (Criteria) this;
         }
 
+        public Criteria andParentIdIsNull() {
+            addCriterion("parent_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdIsNotNull() {
+            addCriterion("parent_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdEqualTo(Integer value) {
+            addCriterion("parent_id =", value, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdNotEqualTo(Integer value) {
+            addCriterion("parent_id <>", value, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdGreaterThan(Integer value) {
+            addCriterion("parent_id >", value, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("parent_id >=", value, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdLessThan(Integer value) {
+            addCriterion("parent_id <", value, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdLessThanOrEqualTo(Integer value) {
+            addCriterion("parent_id <=", value, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdIn(List<Integer> values) {
+            addCriterion("parent_id in", values, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdNotIn(List<Integer> values) {
+            addCriterion("parent_id not in", values, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdBetween(Integer value1, Integer value2) {
+            addCriterion("parent_id between", value1, value2, "parentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("parent_id not between", value1, value2, "parentId");
+            return (Criteria) this;
+        }
+
         public Criteria andNameIsNull() {
             addCriterion("name is null");
             return (Criteria) this;
@@ -372,6 +432,76 @@ public class PlatformExample {
 
         public Criteria andGatewayUrlNotBetween(String value1, String value2) {
             addCriterion("gateway_url not between", value1, value2, "gatewayUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlIsNull() {
+            addCriterion("web_url is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlIsNotNull() {
+            addCriterion("web_url is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlEqualTo(String value) {
+            addCriterion("web_url =", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlNotEqualTo(String value) {
+            addCriterion("web_url <>", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlGreaterThan(String value) {
+            addCriterion("web_url >", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlGreaterThanOrEqualTo(String value) {
+            addCriterion("web_url >=", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlLessThan(String value) {
+            addCriterion("web_url <", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlLessThanOrEqualTo(String value) {
+            addCriterion("web_url <=", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlLike(String value) {
+            addCriterion("web_url like", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlNotLike(String value) {
+            addCriterion("web_url not like", value, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlIn(List<String> values) {
+            addCriterion("web_url in", values, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlNotIn(List<String> values) {
+            addCriterion("web_url not in", values, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlBetween(String value1, String value2) {
+            addCriterion("web_url between", value1, value2, "webUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebUrlNotBetween(String value1, String value2) {
+            addCriterion("web_url not between", value1, value2, "webUrl");
             return (Criteria) this;
         }
 

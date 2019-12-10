@@ -13,53 +13,53 @@ public interface UserService {
      * 获取init code
      * @return
      */
-    OperaResponse<InitCodeBean> getInitCode() ;
+    OperaResponse<InitCodeBean> getInitCode(String appId) ;
 
     /**
      * 获取auth code
      * @return
      */
-    OperaResponse<AuthCodeBean> getAuthCode() ;
+    OperaResponse<AuthCodeBean> getAuthCode(String appId) ;
 
     /**
      * 获取 access token
      * @param authCode
      * @return
      */
-    OperaResponse<AccessToken> getAuthAccessToken(String authCode) ;
+    OperaResponse<AccessToken> getAuthAccessToken(String appId, String authCode) ;
 
     /**
      * 刷新 accessToken
      * @param refreshToken
      * @return
      */
-    OperaResponse<AccessToken> getRefreshToken(String refreshToken) ;
+    OperaResponse<AccessToken> getRefreshToken(String appId, String refreshToken) ;
 
     /**
      * 校验 accessToken
      * @param accessToken
      * @return
      */
-    OperaResponse<CheckTokenBean> checkToken(String accessToken) ;
+    OperaResponse<CheckTokenBean> checkToken(String appId, String accessToken) ;
 
     /**
      * 校验 RequestCode
      * @param requestCode
      * @return
      */
-    OperaResponse<CheckTokenBean> checkRequestCode(String requestCode) ;
+    OperaResponse<CheckTokenBean> checkRequestCode(String appId, String requestCode) ;
 
     /**
      * 获取用户信息
      * @param userAccessToken
      * @return
      */
-    OperaResponse<AuthUserBean> getAuthUserInfo(String userAccessToken) ;
+    OperaResponse<AuthUserBean> getAuthUserInfo(String appId, String userAccessToken) ;
 
     /**
      * 根据request code获取用户信息
      * @param requestCode
      * @return
      */
-    OperaResponse<AuthUserBean> getAuthUserInfoByRequestCode(String requestCode) ;
+    OperaResponse<AuthUserBean> getAuthUserInfoByRequestCode(String appId, String requestCode) ;
 }

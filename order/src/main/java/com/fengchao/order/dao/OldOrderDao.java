@@ -40,21 +40,26 @@ public class OldOrderDao {
      * @return
      */
     public PageInfo<ImsSupermanMallOrder> selectAllPageable(OldOrderQueryBean queryBean) {
-        ImsMcMembers imsMcMembers = selectMembersByMobile(queryBean.getMobile()) ;
-        List<ImsSupermanMallOrder> ordersList = new ArrayList<>() ;
-        if (imsMcMembers != null && imsMcMembers.getUid() != null) {
-            ImsSupermanMallOrderExample imsSupermanMallOrderExample = new ImsSupermanMallOrderExample();
-            ImsSupermanMallOrderExample.Criteria criteria = imsSupermanMallOrderExample.createCriteria();
-            criteria.andUidEqualTo(imsMcMembers.getUid());
-            PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
-            imsSupermanMallOrderMapper.selectByExample(imsSupermanMallOrderExample).forEach(imsSupermanMallOrder -> {
-                List<ImsSupermanMallOrderItem> items = new ArrayList<>() ;
-                items = selectItemByOrderId(imsSupermanMallOrder.getId()) ;
-                imsSupermanMallOrder.setItemList(items);
-                ordersList.add(imsSupermanMallOrder) ;
-            });
-        }
+        ImsSupermanMallOrderExample imsSupermanMallOrderExample = new ImsSupermanMallOrderExample();
+        ImsSupermanMallOrderExample.Criteria criteria = imsSupermanMallOrderExample.createCriteria();
+        imsSupermanMallOrderExample.setOrderByClause("id desc");
+        criteria.andUidEqualTo(queryBean.getUid());
+        List<Byte> bytes = new ArrayList<>();
+        bytes.add((byte) -3) ;
+        bytes.add((byte) -2) ;
+        bytes.add((byte) -1) ;
+        criteria.andStatusNotIn(bytes) ;
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
+        List<ImsSupermanMallOrder> ordersList = imsSupermanMallOrderMapper.selectByExample(imsSupermanMallOrderExample);
         PageInfo<ImsSupermanMallOrder> pageInfo = new PageInfo(ordersList);
+        List<ImsSupermanMallOrder> orders = new ArrayList<>() ;
+        pageInfo.getList().forEach(imsSupermanMallOrder -> {
+            List<ImsSupermanMallOrderItem> items = new ArrayList<>() ;
+            items = selectItemByOrderId(imsSupermanMallOrder.getId()) ;
+            imsSupermanMallOrder.setItemList(items);
+            orders.add(imsSupermanMallOrder) ;
+        });
+        pageInfo.setList(orders);
         return pageInfo;
     }
 

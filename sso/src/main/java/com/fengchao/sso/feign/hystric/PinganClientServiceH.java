@@ -74,7 +74,7 @@ public class PinganClientServiceH implements PinganClientService {
     }
 
     @Override
-    public OperaResponse<AuthUserBean> checkRequestCode(String requestCode) {
+    public OperaResponse<AuthUserBean> checkRequestCode(String requestCode, String appId) {
         OperaResponse result = new OperaResponse();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
