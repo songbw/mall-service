@@ -17,6 +17,10 @@ public class Platform {
 
     private Integer status;
 
+    private String wxAppId;
+
+    private String wxAppSecret;
+
     public Integer getId() {
         return id;
     }
@@ -71,5 +75,21 @@ public class Platform {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getWxAppId() {
+        return wxAppId;
+    }
+
+    public void setWxAppId(String wxAppId) {
+        this.wxAppId = wxAppId == null ? null : wxAppId.trim();
+    }
+
+    public String getWxAppSecret() {
+        return wxAppSecret;
+    }
+
+    public void setWxAppSecret(String wxAppSecret) {
+        this.wxAppSecret = wxAppSecret == null ? null : wxAppSecret.trim();
     }
 }

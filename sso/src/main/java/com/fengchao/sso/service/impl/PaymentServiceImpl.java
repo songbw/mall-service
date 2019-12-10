@@ -45,6 +45,7 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
+        // TODO 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
         log.info("findTradeNo 返回 orderList: {}", JSONUtil.toJsonString(orderList));
         PaymentResult result1 = getPayment(paymentBean);
@@ -55,7 +56,9 @@ public class PaymentServiceImpl implements IPaymentService {
                 order.setPaymentNo(result1.getData().getOrderNo());
                 order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
                 order.setUpdatedAt(new Date());
-                updatePaymentNo(order);
+                if (order.getPayStatus() != 5) {
+                    updatePaymentNo(order);
+                }
             });
         } else if ("订单号重复".equals(result1.getMsg())) {
             List<Order> orders = findOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
@@ -77,6 +80,7 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public OperaResult gPayment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
+        // TODO 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
         // 关爱通支付
         GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
@@ -105,7 +109,9 @@ public class PaymentServiceImpl implements IPaymentService {
             order.setPaymentNo(outer_trade_no);
             order.setOutTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
             order.setUpdatedAt(new Date());
-            updatePaymentNo(order);
+            if (order.getPayStatus() != 5) {
+                updatePaymentNo(order);
+            }
         });
         UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
         urlEncodeBean.setUrlEncode(guanaitongUrl);

@@ -19,4 +19,6 @@ public interface PlatformService {
     OperaResponse findList(QueryBean bean) ;
 
     OperaResponse find(Integer id) ;
+
+    Platform findByAppId(String appId) ;
 }

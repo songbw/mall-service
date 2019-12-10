@@ -128,6 +128,11 @@ public class OrderController {
         return service.getLogist(merchantNo, orderId);
     }
 
+    @GetMapping("/sub/logistics")
+    private OperaResult getSubOrderLogistics(String subOrderId, String merchantNo, OperaResult result) {
+        return service.getSubOrderLogist(merchantNo, subOrderId);
+    }
+
     @GetMapping("/tradeNo")
     private OperaResult findOrderListByTradeNo(String appId, String merchantNo, String tradeNo, OperaResult result) {
         result.getData().put("result", service.findTradeNo(appId, merchantNo, tradeNo)) ;
@@ -375,5 +380,22 @@ public class OrderController {
         bean.setMerchantId(merchantId);
         result.getData().put("result", service.updateSubOrderStatus(bean)) ;
         return result;
+    }
+
+    @PostMapping("/all/v2")
+    private OperaResult findListV2(@RequestBody OrderQueryBean queryBean, OperaResult result) {
+        result.getData().put("result", service.findListV2(queryBean)) ;
+        result.getData().put("unpaid", service.unpaid(queryBean.getOpenId())) ;
+        return result;
+    }
+
+    @GetMapping("/unpaid/cancel")
+    private OperaResponse unpaidCancel(String appId, String openId, String orderNos) {
+        return service.unpaidCancel(appId, openId, orderNos) ;
+    }
+
+    @GetMapping("/workorder/logistics")
+    private OperaResult getWorkOrderLogistics(String logisticId, String code, String merchantNo) {
+        return service.getWorkOrderLogist(logisticId, code, merchantNo);
     }
 }

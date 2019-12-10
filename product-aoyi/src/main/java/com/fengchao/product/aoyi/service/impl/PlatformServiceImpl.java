@@ -13,9 +13,10 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
+
 /**
  * @author songbw
- * @date 2019/11/22 10:26
+ * @date 2019/11/26 17:09
  */
 @Service
 @Slf4j
@@ -83,13 +84,19 @@ public class PlatformServiceImpl implements PlatformService {
 
     @Override
     public OperaResponse find(Integer id) {
-        OperaResponse response = new OperaResponse() ;
+        OperaResponse response = new OperaResponse();
         if (id == null || id == 0) {
             response.setCode(200012);
             response.setMsg("id不能为空或0。");
-            return response ;
+            return response;
         }
         response.setData(mapper.selectByPrimaryKey(id));
         return response;
     }
+
+    @Override
+    public Platform findByAppId(String appId) {
+        return dao.selectByAppId(appId);
+    }
+
 }

@@ -1,13 +1,21 @@
 package com.fengchao.base.controller;
 
 import com.fengchao.base.bean.AyFcImages;
+import com.fengchao.base.bean.OperaResponse;
 import com.fengchao.base.bean.OperaResult;
 import com.fengchao.base.service.UploadService;
 import com.fengchao.base.utils.Config;
+import com.fengchao.base.utils.CosUtil;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Stack;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -43,4 +51,19 @@ public class UploadController {
         service.downUpload(images) ;
         return result;
     }
+
+    @GetMapping("/cos/sts")
+    private String getTempKey(){
+        OperaResponse<String> result = new OperaResponse<>();
+        JSONObject cred = CosUtil.tryGetTempkey();
+        if (null == cred){
+            result.setCode(400);
+            result.setMsg("fail");
+        }else{
+            //result.setData(cred);
+            result.setMsg("ok");
+        }
+        return cred.toString();
+    }
+
 }

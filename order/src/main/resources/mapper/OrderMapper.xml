@@ -233,7 +233,37 @@
     <select id="selectForUpdateByMpu" resultType="com.fengchao.order.model.AoyiProdIndex">
       select mpu, inventory from aoyi_prod_index where mpu = '99000128' and <![CDATA[merchant_id <> 2]]>  for update
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    <select id="selectLimitCountV2" resultType="java.lang.Integer" parameterType="Map">
+      select
+      count(id)
+      from orders
+      where open_id = #{openId} and status > -1 and <![CDATA[status <> 0]]>
+      <if test="status != null and status != -1">
+        and status = #{status}
+      </if>
+    </select>
+  <select id="selectLimitV2" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from orders
+    where open_id = #{openId} and status > -1 and <![CDATA[status <> 0]]>
+    <if test="status != null and status != -1">
+      and status = #{status}
+    </if>
+    order by updated_at desc
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectByOpenIdAndStatus" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from orders
+    where open_id = #{openId}
+    <if test="status != null and status != -1">
+      and status = #{status}
+    </if>
+    order by created_at desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from orders
     where id = #{id,jdbcType=INTEGER}
   </delete>

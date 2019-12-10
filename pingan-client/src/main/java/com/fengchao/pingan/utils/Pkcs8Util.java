@@ -13,6 +13,8 @@ import java.util.*;
 import com.fengchao.pingan.bean.InitCodeRequestBean;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bouncycastle.crypto.digests.SM3Digest;
+import org.bouncycastle.util.encoders.Hex;
 
 public class Pkcs8Util {
 
@@ -128,6 +130,16 @@ public class Pkcs8Util {
         buffer.append("appId").append(bean.getAppId()).append("appKey").append(appKey).append("randomSeries").append(bean.getRandomSeries()).append("timestamp").append(bean.getTimestamp());
         String cipherText = DigestUtils.md5Hex(buffer.toString());
         return cipherText;
+    }
+
+    public static String getSM3(String queryString) {
+        byte[] md = new byte[32];
+        byte[] msg1 = queryString.getBytes();
+        SM3Digest sm3 = new SM3Digest();
+        sm3.update(msg1, 0, msg1.length);
+        sm3.doFinal(md, 0);
+        String s = new String(Hex.encode(md));
+        return s.toUpperCase();
     }
 
 }

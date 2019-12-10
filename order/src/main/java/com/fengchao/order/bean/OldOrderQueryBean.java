@@ -11,4 +11,5 @@ import lombok.Setter;
 @Getter
 public class OldOrderQueryBean extends QueryBean {
     private String mobile ;
+    private Integer uid ;
 }

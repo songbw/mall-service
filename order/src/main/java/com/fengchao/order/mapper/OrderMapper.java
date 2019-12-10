@@ -26,7 +26,11 @@ public interface OrderMapper {
 
     int selectLimitCount(HashMap map) ;
 
+    int selectLimitCountV2(HashMap map) ;
+
     List<Order> selectLimit(HashMap map) ;
+
+    List<Order> selectLimitV2(HashMap map) ;
 
     int updateStatusById(Order order) ;
 
@@ -78,6 +82,8 @@ public interface OrderMapper {
     List<CategoryPaymentBean> selectDayCategoryPaymentList(HashMap map) ;
 
     AoyiProdIndex selectForUpdateByMpu(String mpu);
+
+    List<Order> selectByOpenIdAndStatus(HashMap map) ;
 
 
 }

@@ -51,4 +51,60 @@ public class UserDao {
 
         return pageInfo;
     }
+
+    /**
+     * 根据手机号和appId查询用户信息
+     *
+     * @param appId
+     * @param telephone
+     * @return
+     */
+    public SUser selectUserByTel(String appId, String telephone) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andTelephoneEqualTo(telephone);
+        List<SUser> userList = mapper.selectByExample(userExample);
+        if (userList != null && userList.size() > 0) {
+            return userList.get(0) ;
+        }
+        return null;
+    }
+
+    /**
+     * 分页查询用户列表
+     *
+     * @param appId
+     * @param telephone
+     * @return
+     */
+    public SUser updateWXOpenIdByTel(String appId, String telephone, String wxOpenId) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andTelephoneEqualTo(telephone);
+        SUser user = new SUser() ;
+        user.setWxOpenId(wxOpenId);
+        mapper.updateByExampleSelective(user, userExample) ;
+        return user;
+    }
+
+    /**
+     * 分页查询用户列表
+     *
+     * @param appId
+     * @param wxOpenId
+     * @return
+     */
+    public SUser selectUserByWxOpenId(String appId, String wxOpenId) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andWxOpenIdEqualTo(wxOpenId);
+        List<SUser> userList = mapper.selectByExample(userExample);
+        if (userList != null && userList.size() > 0) {
+            return userList.get(0) ;
+        }
+        return null;
+    }
 }

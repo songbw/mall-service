@@ -4,7 +4,7 @@
     <property name="server_name" value="sso"/>
     <property name="maxFileSize" value="100MB"/>
     <property name="maxHistory" value="180"/>
-    <springProfile name="test,prod,gatsn,gatzy">
+    <springProfile name="test,prod,gatsn,gatzy,wuxi">
         <property name="log_dir" value="/data/logs/sso"/>
     </springProfile>
 
@@ -117,7 +117,7 @@
 
 
 
-    <springProfile name="test,prod,gatsn,gatzy">
+    <springProfile name="test,prod,gatsn,gatzy,wuxi">
         <root level="INFO" additivity="false">
             <appender-ref ref="INFO"/>
             <appender-ref ref="ERROR"/>

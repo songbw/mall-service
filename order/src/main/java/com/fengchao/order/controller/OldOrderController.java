@@ -25,9 +25,7 @@ public class OldOrderController {
 
     @PostMapping("/all")
     private OperaResponse findList(@RequestBody OldOrderQueryBean queryBean) {
-        OperaResponse result = new OperaResponse() ;
-        result.setData(service.findList(queryBean));
-        return result;
+        return service.findList(queryBean);
     }
 
 }
