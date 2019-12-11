@@ -18,7 +18,7 @@ public class EquityServiceClientH implements EquityServiceClient {
     private Throwable cause;
 
     @Override
-    public OperaResult consume(CouponUseInfoBean bean, String appId) {
+    public OperaResult consume(CouponUseInfoBean bean) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
@@ -34,22 +34,22 @@ public class EquityServiceClientH implements EquityServiceClient {
     }
 
     @Override
-    public OperaResult occupy(CouponUseInfoBean bean, String appId) {
+    public OperaResult occupy(CouponUseInfoBean bean) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult release(CouponUseInfoBean bean, String appId) {
+    public OperaResult release(CouponUseInfoBean bean) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResponse<List<PromotionBean>> findPromotionListByIdList(List<Integer> idList, String appId) {
+    public OperaResponse<List<PromotionBean>> findPromotionListByIdList(List<Integer> idList) {
         return HystrixDefaultFallback.fallbackResponse(cause);
     }
 
     @Override
-    public OperaResult findCouponUseInfoListByIdList(List<Integer> idList, String appId) {
+    public OperaResult findCouponUseInfoListByIdList(List<Integer> idList) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
@@ -59,7 +59,7 @@ public class EquityServiceClientH implements EquityServiceClient {
     }
 
     @Override
-    public OperaResult createVirtual(VirtualTicketsBean bean, String appId) {
+    public OperaResult createVirtual(VirtualTicketsBean bean) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 

@@ -73,13 +73,8 @@ public class OrderController {
     }
 
     @GetMapping("cancel")
-    private OperaResult cancel(Integer id, @RequestHeader("appId") String appId,  OperaResult result) {
-        if (StringUtils.isEmpty(appId)) {
-            result.setCode(4000002);
-            result.setMsg("appId 不能为空");
-            return result ;
-        }
-        result.getData().put("result", service.cancel(id, appId)) ;
+    private OperaResult cancel(Integer id, OperaResult result) {
+        result.getData().put("result", service.cancel(id)) ;
         return result;
     }
 

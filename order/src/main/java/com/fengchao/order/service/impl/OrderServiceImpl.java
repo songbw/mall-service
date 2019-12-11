@@ -171,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
             CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
             couponUseInfoBean.setUserCouponCode(coupon.getCode());
             couponUseInfoBean.setId(coupon.getId());
-            OperaResult occupyResult = equityService.occupy(couponUseInfoBean, orderBean.getAppId());
+            OperaResult occupyResult = equityService.occupy(couponUseInfoBean);
             if (occupyResult.getCode() != 200) {
                 // 优惠券预占失败的话，订单失败
                 logger.info("订单" + bean.getId() + "优惠券预占失败");
@@ -322,7 +322,7 @@ public class OrderServiceImpl implements OrderService {
                 logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
             } else {
                 if (coupon != null) {
-                    boolean couponRelease = release(coupon.getId(), coupon.getCode(), orderBean.getAppId());
+                    boolean couponRelease = release(coupon.getId(), coupon.getCode());
                     if (!couponRelease) {
                         // 订单失败,释放优惠券，
                         logger.info("订单" + bean.getId() + "释放优惠券失败");
@@ -433,7 +433,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Integer cancel(Integer id, String appId) {
+    public Integer cancel(Integer id) {
         Orders order = adminOrderDao.selectById(id);
         if (order != null) {
             // 更新子订单状态
@@ -454,7 +454,7 @@ public class OrderServiceImpl implements OrderService {
                 List<Orders> ordersList = adminOrderDao.selectByCouponIdAndCouponCode(order.getCouponId(),order.getCouponCode(), 2) ;
                 if (ordersList == null || ordersList.size() == 0) {
                     // TODO 释放优惠券
-                    release(order.getCouponId(), order.getCouponCode(), appId) ;
+                    release(order.getCouponId(), order.getCouponCode()) ;
                 }
             }
             // 获取子订单列表，然后将数量和MPU添加
@@ -813,7 +813,7 @@ public class OrderServiceImpl implements OrderService {
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
         // 核销优惠券
         if (order.getCouponId() != null && order.getCouponId() > 0 && order.getCouponCode() != null && (!"".equals(order.getCouponCode()))) {
-            consume(order.getCouponId(), order.getCouponCode(), order.getAppId()) ;
+            consume(order.getCouponId(), order.getCouponCode()) ;
             order.setCouponStatus(3);
         }
         int id = orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
@@ -1191,7 +1191,7 @@ public class OrderServiceImpl implements OrderService {
         }
         List<Order> orderList = orderMapper.selectByTradeNo(appId + "%" + openId + orderNos) ;
         orderList.forEach(order -> {
-            cancel(order.getId(), appId) ;
+            cancel(order.getId()) ;
         });
         response.setData(orderNos);
         return response;
@@ -1250,22 +1250,22 @@ public class OrderServiceImpl implements OrderService {
 //        return false;
 //    }
 
-    private boolean consume(int id, String code, String appId) {
+    private boolean consume(int id, String code) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
         bean.setUserCouponCode(code);
         bean.setId(id);
-        OperaResult result = equityService.consume(bean, appId);
+        OperaResult result = equityService.consume(bean);
         if (result.getCode() == 200) {
             return true;
         }
         return false;
     }
 
-    private boolean release(int id, String code, String appId) {
+    private boolean release(int id, String code) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
         bean.setUserCouponCode(code);
         bean.setId(id);
-        OperaResult result = equityService.release(bean, appId);
+        OperaResult result = equityService.release(bean);
         if (result.getCode() == 200) {
             return true;
         }
@@ -1359,7 +1359,7 @@ public class OrderServiceImpl implements OrderService {
                 virtualTicketsBean.setOrderId(orderDetail.getId());
                 virtualTicketsBean.setMpu(orderDetail.getMpu());
                 virtualTicketsBean.setNum(orderDetail.getNum());
-                OperaResult operaResult = equityService.createVirtual(virtualTicketsBean, order.getAppId()) ;
+                OperaResult operaResult = equityService.createVirtual(virtualTicketsBean) ;
                 if (operaResult.getCode() != 200) {
                     // TODO 虚拟商品创建失败后如何处理
                     logger.info("用户虚拟商品添加失败，输入参数：{}", JSONUtil.toJsonString(virtualTicketsBean));

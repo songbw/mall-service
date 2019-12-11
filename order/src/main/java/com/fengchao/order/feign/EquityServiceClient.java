@@ -18,7 +18,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/coupon/consume", method = RequestMethod.POST)
-    OperaResult consume(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId);
+    OperaResult consume(@RequestBody CouponUseInfoBean bean);
 
     /**
      * 预占优惠券
@@ -26,7 +26,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/coupon/occupy", method = RequestMethod.POST)
-    OperaResult occupy(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId);
+    OperaResult occupy(@RequestBody CouponUseInfoBean bean);
 
     /**
      * 优惠券释放
@@ -34,7 +34,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/coupon/release", method = RequestMethod.POST)
-    OperaResult release(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId);
+    OperaResult release(@RequestBody CouponUseInfoBean bean);
 
     /**
      * 根据id集合获取Promotion列表
@@ -43,7 +43,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/promotion/findByIdList", method = RequestMethod.GET)
-    OperaResponse<List<PromotionBean>> findPromotionListByIdList(@RequestParam("idList") List<Integer> idList, @RequestHeader("appId") String appId);
+    OperaResponse<List<PromotionBean>> findPromotionListByIdList(@RequestParam("idList") List<Integer> idList);
 
     /**
      * 根据id集合获取Coupon列表
@@ -52,7 +52,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/couponUseInfo/findByIdList", method = RequestMethod.GET)
-    OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList, @RequestHeader("appId") String appId);
+    OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList);
 
     @RequestMapping(value = "/promotion/mpuList", method = RequestMethod.GET)
     OperaResult findPromotionByMpuList(@RequestParam("mpuList") List<String> mpuList, @RequestHeader("appId") String appId);
@@ -63,7 +63,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/virtual/create", method = RequestMethod.POST)
-    OperaResult createVirtual(@RequestBody VirtualTicketsBean bean, @RequestHeader("appId") String appId);
+    OperaResult createVirtual(@RequestBody VirtualTicketsBean bean);
 
     /**
      * 根据MPU批量获取活动和优惠券信息
