@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.fengchao.order.model.Order" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
     <result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
     <result column="aoyi_id" property="aoyiId" jdbcType="VARCHAR" />
     <result column="company_cust_no" property="companyCustNo" jdbcType="VARCHAR" />
@@ -52,7 +53,7 @@
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, open_id, trade_no, aoyi_id, company_cust_no, merchant_id, merchant_no, receiver_name, telephone, mobile,
+    id, open_id, app_id, trade_no, aoyi_id, company_cust_no, merchant_id, merchant_no, receiver_name, telephone, mobile,
     email, province_id, province_name, city_id, city_name, county_id, county_name, town_id, address, zip, remark, invoice_state,
     invoice_type, invoice_title, invoice_content, payment, serv_Fee, amount, status, 
     type,out_trade_no, payment_no, payment_at, payment_amount, payee, refund_fee, pay_type, payment_total_fee, payer, pay_status, pay_order_category, created_at, updated_at, coupon_id, coupon_code, coupon_discount, sale_amount
@@ -268,8 +269,8 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.order.model.Order" keyProperty="id" useGeneratedKeys="true">
-    insert into orders (open_id, trade_no,aoyi_id, company_cust_no, merchant_no, receiver_name,telephone, mobile, email, province_id, province_name, city_id, city_name, county_id, county_name, town_id, address, zip, remark, invoice_state, invoice_type, invoice_title, invoice_content, payment, serv_Fee, amount, coupon_discount, sale_amount, status, type, created_at, updated_at,coupon_id,merchant_id,coupon_code,coupon_status)
-    values (#{openId,jdbcType=VARCHAR}, #{tradeNo,jdbcType=VARCHAR},
+    insert into orders (open_id, app_id, trade_no,aoyi_id, company_cust_no, merchant_no, receiver_name,telephone, mobile, email, province_id, province_name, city_id, city_name, county_id, county_name, town_id, address, zip, remark, invoice_state, invoice_type, invoice_title, invoice_content, payment, serv_Fee, amount, coupon_discount, sale_amount, status, type, created_at, updated_at,coupon_id,merchant_id,coupon_code,coupon_status)
+    values (#{openId,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{tradeNo,jdbcType=VARCHAR},
       #{aoyiId,jdbcType=VARCHAR}, #{companyCustNo,jdbcType=VARCHAR}, #{merchantNo,jdbcType=VARCHAR}, #{receiverName,jdbcType=VARCHAR},
       #{telephone,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{provinceId,jdbcType=VARCHAR}, #{provinceName,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, #{cityName,jdbcType=VARCHAR}, #{countyId,jdbcType=VARCHAR}, #{countyName,jdbcType=VARCHAR},

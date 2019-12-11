@@ -55,7 +55,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return result ;
         }
         ShoppingCart temp = mapper.selectByOpenIdAndSku(bean) ;
-        int perLimit = findPromotionBySku(bean.getMpu(), bean.getOpenId()) ;
+        int perLimit = findPromotionBySku(bean.getMpu(), bean.getOpenId(), bean.getAppId()) ;
         if (perLimit != -1) {
             if (perLimit <= bean.getCount()) {
                 result.setCode(4000001);
@@ -111,7 +111,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return result ;
         }
         ShoppingCart temp = mapper.selectByPrimaryKey(bean.getId()) ;
-        int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId()) ;
+        int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId(), temp.getAppId()) ;
         if (perLimit != -1) {
             if (perLimit <= bean.getCount()) {
                 result.setCode(4000001);
@@ -141,9 +141,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (total > 0) {
             List<ShoppingCart> shoppingCartList = mapper.selectLimit(map) ;
             List<AoyiProdIndex> aoyiProdIndices = findProductByMpuList(shoppingCartList) ;
-            List<CouponAndPromBean>  couponAndPromBeans =  findCouponListByMpuList(aoyiProdIndices) ;
+            List<CouponAndPromBean>  couponAndPromBeans =  findCouponListByMpuList(aoyiProdIndices, queryBean.getAppId()) ;
             shoppingCartList.forEach(shoppingCart -> {
-                int perLimit = findPromotionBySku(shoppingCart.getMpu(), shoppingCart.getOpenId()) ;
+                int perLimit = findPromotionBySku(shoppingCart.getMpu(), shoppingCart.getOpenId(), queryBean.getAppId()) ;
                 shoppingCart.setPerLimited(perLimit);
                 ShoppingCartBean shoppingCartBean = new ShoppingCartBean() ;
                 BeanUtils.copyProperties(shoppingCart, shoppingCartBean);
@@ -170,7 +170,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return response;
     }
 
-    private List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdIndex> beans) {
+    private List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdIndex> beans, String appId) {
         List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
         beans.forEach(aoyiProdIndex -> {
             AoyiProdIndex prodIndex = new AoyiProdIndex() ;
@@ -178,7 +178,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             prodIndex.setMpu(aoyiProdIndex.getMpu());
             aoyiProdIndices.add(prodIndex) ;
         });
-        OperaResult result = equityService.findCouponListByMpuList(aoyiProdIndices) ;
+        OperaResult result = equityService.findCouponListByMpuList(aoyiProdIndices, appId) ;
         if (result != null && result.getCode() == 200) {
             Map<String, Object> data = result.getData();
             Object object = data.get("result");
@@ -207,11 +207,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return null ;
     }
 
-    private int findPromotionBySku(String mpu, String openId) {
+    private int findPromotionBySku(String mpu, String openId, String appId) {
         AtomicInteger perLimit = new AtomicInteger(0);
         List<String> mpus = new ArrayList<>() ;
         mpus.add(mpu) ;
-        OperaResult result = equityService.findPromotionByMpuList(mpus);
+        OperaResult result = equityService.findPromotionByMpuList(mpus, appId);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");

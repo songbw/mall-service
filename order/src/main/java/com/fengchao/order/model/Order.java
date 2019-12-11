@@ -113,6 +113,8 @@ public class Order implements Serializable {
 
     private Float balanceDiscount ;
 
+    private String appId ;
+
     public Integer getId() {
         return id;
     }
@@ -535,5 +537,13 @@ public class Order implements Serializable {
 
     public void setBalanceDiscount(Float balanceDiscount) {
         this.balanceDiscount = balanceDiscount;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

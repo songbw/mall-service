@@ -45,8 +45,8 @@ public class PlatformController {
         return service.modify(bean);
     }
 
-    @GetMapping
-    private OperaResponse find(String appId) {
+    @GetMapping("app")
+    private OperaResponse findByAppId(String appId) {
         OperaResponse response = new OperaResponse() ;
         if (StringUtils.isEmpty(appId)) {
             response.setCode(2000001);

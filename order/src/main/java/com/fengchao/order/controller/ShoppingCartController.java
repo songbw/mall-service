@@ -7,6 +7,7 @@ import com.fengchao.order.model.ShoppingCart;
 import com.fengchao.order.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -18,13 +19,21 @@ public class ShoppingCartController {
     private ShoppingCartService service;
 
     @PostMapping("/all")
-    private OperaResult find(@RequestBody ShoppingCartQueryBean queryBean, OperaResult result) {
+    private OperaResult find(@RequestBody ShoppingCartQueryBean queryBean, OperaResult result, @RequestHeader("appId") String appId) {
+        queryBean.setAppId(appId);
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }
 
     @PostMapping
-    private OperaResult add(@RequestBody ShoppingCart bean) {
+    private OperaResult add(@RequestBody ShoppingCart bean, @RequestHeader("appId") String appId) {
+        OperaResult result = new OperaResult() ;
+        if (StringUtils.isEmpty(appId)) {
+            result.setCode(4000002);
+            result.setMsg("appId 不能为空");
+            return result ;
+        }
+        bean.setAppId(appId);
         return service.add(bean);
     }
 

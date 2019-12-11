@@ -54,7 +54,7 @@ public class EquityServiceClientH implements EquityServiceClient {
     }
 
     @Override
-    public OperaResult findPromotionByMpuList(List<String> mpuList) {
+    public OperaResult findPromotionByMpuList(List<String> mpuList, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
@@ -64,12 +64,12 @@ public class EquityServiceClientH implements EquityServiceClient {
     }
 
     @Override
-    public OperaResult findCouponListByMpuList(List<AoyiProdIndex> beans) {
+    public OperaResult findCouponListByMpuList(List<AoyiProdIndex> beans, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult promotionVerify(List<PromotionVerifyBean> beans) {
+    public OperaResult promotionVerify(List<PromotionVerifyBean> beans, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 

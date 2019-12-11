@@ -1,23 +1,16 @@
 package com.fengchao.order.service.impl;
 
 import com.fengchao.order.bean.KuaidiCodeQueryBean;
-import com.fengchao.order.bean.PageBean;
-import com.fengchao.order.bean.ShoppingCartQueryBean;
 import com.fengchao.order.mapper.KuaidiCodeMapper;
-import com.fengchao.order.mapper.ShoppingCartMapper;
 import com.fengchao.order.model.KuaidiCode;
 import com.fengchao.order.model.KuaidiCodeExample;
-import com.fengchao.order.model.ShoppingCart;
 import com.fengchao.order.service.KuaidiCodeService;
-import com.fengchao.order.service.ShoppingCartService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 @Service

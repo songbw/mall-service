@@ -23,6 +23,8 @@ public class ShoppingCart {
 
     private Integer perLimited = -1;
 
+    private String appId ;
+
     public Integer getId() {
         return id;
     }
@@ -101,5 +103,13 @@ public class ShoppingCart {
 
     public void setPerLimited(Integer perLimited) {
         this.perLimited = perLimited;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

@@ -160,6 +160,7 @@ public class OrderServiceImpl implements OrderService {
         Date date = new Date() ;
         bean.setCreatedAt(date);
         bean.setUpdatedAt(date);
+        bean.setAppId(orderBean.getAppId());
 
         // 优惠券
         OrderCouponBean coupon = orderBean.getCoupon();
@@ -172,7 +173,7 @@ public class OrderServiceImpl implements OrderService {
             couponUseInfoBean.setId(coupon.getId());
             OperaResult occupyResult = equityService.occupy(couponUseInfoBean);
             if (occupyResult.getCode() != 200) {
-                // TODO 优惠券预占失败的话，订单失败
+                // 优惠券预占失败的话，订单失败
                 logger.info("订单" + bean.getId() + "优惠券预占失败");
                 operaResult.setCode(400601);
                 operaResult.setMsg(occupyResult.getMsg());
@@ -187,12 +188,12 @@ public class OrderServiceImpl implements OrderService {
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
         // 验证活动
-        OperaResult promotionResult = promotionVerify(orderMerchantBeans) ;
+        OperaResult promotionResult = promotionVerify(orderMerchantBeans, orderBean.getAppId()) ;
         if (promotionResult.getCode() != 200) {
             return promotionResult ;
         }
         // 验证商品是否超过限购数量
-        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
+        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId(), orderBean.getAppId()) ;
         if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
             return verifyLimitResult ;
         }
@@ -348,7 +349,7 @@ public class OrderServiceImpl implements OrderService {
         return operaResult;
     }
 
-    private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans) {
+    private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans, String appId) {
         List<PromotionVerifyBean> promotionVerifyBeans = new ArrayList<>() ;
         orderMerchantBeans.forEach(orderMerchantBean -> {
             List<OrderDetailX> orderDetailXES = orderMerchantBean.getSkus();
@@ -360,7 +361,7 @@ public class OrderServiceImpl implements OrderService {
             });
         });
         logger.info("promotion verify 入参：{}", JSONUtil.toJsonString(promotionVerifyBeans));
-        OperaResult result = equityService.promotionVerify(promotionVerifyBeans) ;
+        OperaResult result = equityService.promotionVerify(promotionVerifyBeans, appId) ;
         logger.info("promotion verify 返回值：{}", JSONUtil.toJsonString(result));
         if (result != null && result.getCode() == 200) {
             Map<String, Object> data = result.getData();
@@ -383,7 +384,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderMerchantBeans
      * @return
      */
-    private OperaResult verifyPerLimit(List<OrderMerchantBean> orderMerchantBeans, String openId) {
+    private OperaResult verifyPerLimit(List<OrderMerchantBean> orderMerchantBeans, String openId, String appId) {
         List<String> errorMpus = new ArrayList<>() ;
         List<String> mpus = new ArrayList<>() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
@@ -391,7 +392,7 @@ public class OrderServiceImpl implements OrderService {
                 mpus.add(orderSku.getMpu()) ;
             }
         }
-        OperaResult result = equityService.findPromotionByMpuList(mpus);
+        OperaResult result = equityService.findPromotionByMpuList(mpus, appId);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
@@ -1238,16 +1239,16 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
-    private boolean occupy(int id, String code) {
-        CouponUseInfoBean bean = new CouponUseInfoBean();
-        bean.setUserCouponCode(code);
-        bean.setId(id);
-        OperaResult result = equityService.occupy(bean);
-        if (result.getCode() == 200) {
-            return true;
-        }
-        return false;
-    }
+//    private boolean occupy(int id, String code) {
+//        CouponUseInfoBean bean = new CouponUseInfoBean();
+//        bean.setUserCouponCode(code);
+//        bean.setId(id);
+//        OperaResult result = equityService.occupy(bean);
+//        if (result.getCode() == 200) {
+//            return true;
+//        }
+//        return false;
+//    }
 
     private boolean consume(int id, String code) {
         CouponUseInfoBean bean = new CouponUseInfoBean();

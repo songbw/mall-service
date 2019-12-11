@@ -28,13 +28,25 @@ public class OrderController {
 
 
     @PostMapping("/all")
-    private OperaResult findList(@RequestBody OrderQueryBean queryBean, OperaResult result) {
+    private OperaResult findList(@RequestBody OrderQueryBean queryBean, OperaResult result, @RequestHeader("appId") String appId) {
+        if (StringUtils.isEmpty(appId)) {
+            result.setCode(4000002);
+            result.setMsg("appId 不能为空");
+            return result ;
+        }
+        queryBean.setAppId(appId);
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }
 
     @PostMapping
-    private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result) {
+    private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result, @RequestHeader("appId") String appId) {
+        if (StringUtils.isEmpty(appId)) {
+            result.setCode(4000002);
+            result.setMsg("appId 不能为空");
+            return result ;
+        }
+        bean.setAppId(appId);
         log.info("创建订单 入参:{}", JSONUtil.toJsonString(bean));
 
         OperaResult operaResult = service.add2(bean);
@@ -45,11 +57,16 @@ public class OrderController {
     }
 
     @DeleteMapping
-    private OperaResult delete(Integer id, OperaResult result) {
+    private OperaResult delete(Integer id, OperaResult result, @RequestHeader("appId") String appId) {
         if (id == null) {
             result.setCode(4000001);
             result.setMsg("id不能为空");
             return result;
+        }
+        if (StringUtils.isEmpty(appId)) {
+            result.setCode(4000002);
+            result.setMsg("appId 不能为空");
+            return result ;
         }
         result.getData().put("result", service.delete(id)) ;
         return result;
@@ -62,13 +79,24 @@ public class OrderController {
     }
 
     @GetMapping
-    private OperaResult find(Integer id, OperaResult result) {
+    private OperaResult find(Integer id, OperaResult result, @RequestHeader("appId") String appId) {
         result.getData().put("result", service.findById(id)) ;
         return result;
     }
 
     @PutMapping("status")
-    private OperaResult updateStatus(@RequestBody Order bean, OperaResult result) {
+    private OperaResult updateStatus(@RequestBody Order bean, OperaResult result, @RequestHeader("appId") String appId) {
+        if (StringUtils.isEmpty(appId)) {
+            result.setCode(4000002);
+            result.setMsg("appId 不能为空");
+            return result ;
+        }
+        if (bean.getId() == null) {
+            result.setCode(4000001);
+            result.setMsg("id不能为空");
+            return result;
+        }
+        bean.setAppId(appId);
         result.getData().put("result", service.updateStatus(bean)) ;
         return result;
     }
@@ -90,6 +118,11 @@ public class OrderController {
     @PostMapping("/updateRemark")
     private OperaResult updateRemark(@RequestBody Order bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         bean.setMerchantId(merchantId);
+        if (bean.getId() == null) {
+            result.setCode(4000001);
+            result.setMsg("id不能为空");
+            return result;
+        }
         result.getData().put("result", service.updateRemark(bean)) ;
         return result;
     }

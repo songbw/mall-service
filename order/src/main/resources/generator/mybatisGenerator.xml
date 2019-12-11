@@ -49,8 +49,8 @@
 <!--        <table tableName="ims_superman_mall_order_item">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
-        <table tableName="ims_mc_members">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
+<!--        <table tableName="ims_mc_members">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
     </context>
 </generatorConfiguration>
