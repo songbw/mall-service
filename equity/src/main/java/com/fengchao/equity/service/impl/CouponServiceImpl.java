@@ -55,7 +55,7 @@ public class CouponServiceImpl implements CouponService {
         couponx.setCreateDate(new Date());
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
         if(couponx.getCode() == null || "".equals(couponx.getCode())){
-            couponx.setCode(uuid);
+            couponx.setCode(bean.getAppId() + uuid);
         }
         int num = mapper.insertSelective(couponx);
         return couponx.getId();
