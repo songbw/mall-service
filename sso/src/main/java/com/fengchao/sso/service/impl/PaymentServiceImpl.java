@@ -45,8 +45,17 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public OperaResult payment(PaymentBean paymentBean) {
         OperaResult result = new OperaResult();
-        // TODO 查询订单是否为待支付状态
+        // 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
+        orderList.forEach(order -> {
+            if (order.getPayStatus() == 5) {
+                result.setCode(9000001);
+                result.setMsg("存在已支付订单，请重新刷新订单列表");
+            }
+        });
+        if (result.getCode() != 200) {
+            return result ;
+        }
         log.info("findTradeNo 返回 orderList: {}", JSONUtil.toJsonString(orderList));
         PaymentResult result1 = getPayment(paymentBean);
         log.info("getPayment 返回 result1: {}", JSONUtil.toJsonString(result1));
@@ -81,8 +90,17 @@ public class PaymentServiceImpl implements IPaymentService {
     public OperaResult gPayment(PaymentBean paymentBean) {
         SSOConfigBean configBean =  getSSOConfig(paymentBean.getiAppId()) ;
         OperaResult result = new OperaResult();
-        // TODO 查询订单是否为待支付状态
+        // 查询订单是否为待支付状态
         List<Order> orderList = findTradeNo(paymentBean.getiAppId(), paymentBean.getMerchantNo(),paymentBean.getOpenId() + paymentBean.getOrderNos());
+        orderList.forEach(order -> {
+            if (order.getPayStatus() == 5) {
+                result.setCode(9000001);
+                result.setMsg("存在已支付订单，请重新刷新订单列表");
+            }
+        });
+        if (result.getCode() != 200) {
+            return result ;
+        }
         // 关爱通支付
         GuanaitongPaymentBean guanaitongPaymentBean = new GuanaitongPaymentBean();
         String outer_trade_no = paymentBean.gettAppId() + new Date().getTime() + RandomUtil.getRandomString(3) ;
