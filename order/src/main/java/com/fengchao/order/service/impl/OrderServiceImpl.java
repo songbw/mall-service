@@ -160,6 +160,7 @@ public class OrderServiceImpl implements OrderService {
         Date date = new Date() ;
         bean.setCreatedAt(date);
         bean.setUpdatedAt(date);
+        bean.setAppId(orderBean.getAppId());
 
         // 优惠券
         OrderCouponBean coupon = orderBean.getCoupon();
@@ -170,9 +171,9 @@ public class OrderServiceImpl implements OrderService {
             CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
             couponUseInfoBean.setUserCouponCode(coupon.getCode());
             couponUseInfoBean.setId(coupon.getId());
-            OperaResult occupyResult = equityService.occupy(couponUseInfoBean);
+            OperaResult occupyResult = equityService.occupy(couponUseInfoBean, orderBean.getAppId());
             if (occupyResult.getCode() != 200) {
-                // TODO 优惠券预占失败的话，订单失败
+                // 优惠券预占失败的话，订单失败
                 logger.info("订单" + bean.getId() + "优惠券预占失败");
                 operaResult.setCode(400601);
                 operaResult.setMsg(occupyResult.getMsg());
@@ -187,12 +188,12 @@ public class OrderServiceImpl implements OrderService {
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
         // 验证活动
-        OperaResult promotionResult = promotionVerify(orderMerchantBeans) ;
+        OperaResult promotionResult = promotionVerify(orderMerchantBeans, orderBean.getAppId()) ;
         if (promotionResult.getCode() != 200) {
             return promotionResult ;
         }
         // 验证商品是否超过限购数量
-        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId()) ;
+        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId(), orderBean.getAppId()) ;
         if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
             return verifyLimitResult ;
         }
@@ -321,7 +322,7 @@ public class OrderServiceImpl implements OrderService {
                 logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
             } else {
                 if (coupon != null) {
-                    boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                    boolean couponRelease = release(coupon.getId(), coupon.getCode(), orderBean.getAppId());
                     if (!couponRelease) {
                         // 订单失败,释放优惠券，
                         logger.info("订单" + bean.getId() + "释放优惠券失败");
@@ -348,7 +349,7 @@ public class OrderServiceImpl implements OrderService {
         return operaResult;
     }
 
-    private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans) {
+    private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans, String appId) {
         List<PromotionVerifyBean> promotionVerifyBeans = new ArrayList<>() ;
         orderMerchantBeans.forEach(orderMerchantBean -> {
             List<OrderDetailX> orderDetailXES = orderMerchantBean.getSkus();
@@ -360,7 +361,7 @@ public class OrderServiceImpl implements OrderService {
             });
         });
         logger.info("promotion verify 入参：{}", JSONUtil.toJsonString(promotionVerifyBeans));
-        OperaResult result = equityService.promotionVerify(promotionVerifyBeans) ;
+        OperaResult result = equityService.promotionVerify(promotionVerifyBeans, appId) ;
         logger.info("promotion verify 返回值：{}", JSONUtil.toJsonString(result));
         if (result != null && result.getCode() == 200) {
             Map<String, Object> data = result.getData();
@@ -383,7 +384,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderMerchantBeans
      * @return
      */
-    private OperaResult verifyPerLimit(List<OrderMerchantBean> orderMerchantBeans, String openId) {
+    private OperaResult verifyPerLimit(List<OrderMerchantBean> orderMerchantBeans, String openId, String appId) {
         List<String> errorMpus = new ArrayList<>() ;
         List<String> mpus = new ArrayList<>() ;
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
@@ -391,7 +392,7 @@ public class OrderServiceImpl implements OrderService {
                 mpus.add(orderSku.getMpu()) ;
             }
         }
-        OperaResult result = equityService.findPromotionByMpuList(mpus);
+        OperaResult result = equityService.findPromotionByMpuList(mpus, appId);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
@@ -432,7 +433,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Integer cancel(Integer id) {
+    public Integer cancel(Integer id, String appId) {
         Orders order = adminOrderDao.selectById(id);
         if (order != null) {
             // 更新子订单状态
@@ -453,7 +454,7 @@ public class OrderServiceImpl implements OrderService {
                 List<Orders> ordersList = adminOrderDao.selectByCouponIdAndCouponCode(order.getCouponId(),order.getCouponCode(), 2) ;
                 if (ordersList == null || ordersList.size() == 0) {
                     // TODO 释放优惠券
-                    release(order.getCouponId(), order.getCouponCode()) ;
+                    release(order.getCouponId(), order.getCouponCode(), appId) ;
                 }
             }
             // 获取子订单列表，然后将数量和MPU添加
@@ -812,7 +813,7 @@ public class OrderServiceImpl implements OrderService {
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
         // 核销优惠券
         if (order.getCouponId() != null && order.getCouponId() > 0 && order.getCouponCode() != null && (!"".equals(order.getCouponCode()))) {
-            consume(order.getCouponId(), order.getCouponCode()) ;
+            consume(order.getCouponId(), order.getCouponCode(), order.getAppId()) ;
             order.setCouponStatus(3);
         }
         int id = orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
@@ -1190,7 +1191,7 @@ public class OrderServiceImpl implements OrderService {
         }
         List<Order> orderList = orderMapper.selectByTradeNo(appId + "%" + openId + orderNos) ;
         orderList.forEach(order -> {
-            cancel(order.getId()) ;
+            cancel(order.getId(), appId) ;
         });
         response.setData(orderNos);
         return response;
@@ -1238,33 +1239,33 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
-    private boolean occupy(int id, String code) {
+//    private boolean occupy(int id, String code) {
+//        CouponUseInfoBean bean = new CouponUseInfoBean();
+//        bean.setUserCouponCode(code);
+//        bean.setId(id);
+//        OperaResult result = equityService.occupy(bean);
+//        if (result.getCode() == 200) {
+//            return true;
+//        }
+//        return false;
+//    }
+
+    private boolean consume(int id, String code, String appId) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
         bean.setUserCouponCode(code);
         bean.setId(id);
-        OperaResult result = equityService.occupy(bean);
+        OperaResult result = equityService.consume(bean, appId);
         if (result.getCode() == 200) {
             return true;
         }
         return false;
     }
 
-    private boolean consume(int id, String code) {
+    private boolean release(int id, String code, String appId) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
         bean.setUserCouponCode(code);
         bean.setId(id);
-        OperaResult result = equityService.consume(bean);
-        if (result.getCode() == 200) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean release(int id, String code) {
-        CouponUseInfoBean bean = new CouponUseInfoBean();
-        bean.setUserCouponCode(code);
-        bean.setId(id);
-        OperaResult result = equityService.release(bean);
+        OperaResult result = equityService.release(bean, appId);
         if (result.getCode() == 200) {
             return true;
         }
@@ -1358,7 +1359,7 @@ public class OrderServiceImpl implements OrderService {
                 virtualTicketsBean.setOrderId(orderDetail.getId());
                 virtualTicketsBean.setMpu(orderDetail.getMpu());
                 virtualTicketsBean.setNum(orderDetail.getNum());
-                OperaResult operaResult = equityService.createVirtual(virtualTicketsBean) ;
+                OperaResult operaResult = equityService.createVirtual(virtualTicketsBean, order.getAppId()) ;
                 if (operaResult.getCode() != 200) {
                     // TODO 虚拟商品创建失败后如何处理
                     logger.info("用户虚拟商品添加失败，输入参数：{}", JSONUtil.toJsonString(virtualTicketsBean));

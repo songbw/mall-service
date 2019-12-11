@@ -18,7 +18,7 @@ public class EquityServiceClientH implements EquityServiceClient {
     private Throwable cause;
 
     @Override
-    public OperaResult consume(CouponUseInfoBean bean) {
+    public OperaResult consume(CouponUseInfoBean bean, String appId) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
@@ -34,42 +34,42 @@ public class EquityServiceClientH implements EquityServiceClient {
     }
 
     @Override
-    public OperaResult occupy(CouponUseInfoBean bean) {
+    public OperaResult occupy(CouponUseInfoBean bean, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult release(CouponUseInfoBean bean) {
+    public OperaResult release(CouponUseInfoBean bean, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResponse<List<PromotionBean>> findPromotionListByIdList(List<Integer> idList) {
+    public OperaResponse<List<PromotionBean>> findPromotionListByIdList(List<Integer> idList, String appId) {
         return HystrixDefaultFallback.fallbackResponse(cause);
     }
 
     @Override
-    public OperaResult findCouponUseInfoListByIdList(List<Integer> idList) {
+    public OperaResult findCouponUseInfoListByIdList(List<Integer> idList, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult findPromotionByMpuList(List<String> mpuList) {
+    public OperaResult findPromotionByMpuList(List<String> mpuList, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult createVirtual(VirtualTicketsBean bean) {
+    public OperaResult createVirtual(VirtualTicketsBean bean, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult findCouponListByMpuList(List<AoyiProdIndex> beans) {
+    public OperaResult findCouponListByMpuList(List<AoyiProdIndex> beans, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
     @Override
-    public OperaResult promotionVerify(List<PromotionVerifyBean> beans) {
+    public OperaResult promotionVerify(List<PromotionVerifyBean> beans, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 

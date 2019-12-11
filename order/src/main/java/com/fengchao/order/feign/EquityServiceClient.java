@@ -5,10 +5,7 @@ import com.fengchao.order.feign.hystric.EquityServiceClientH;
 import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/coupon/consume", method = RequestMethod.POST)
-    OperaResult consume(@RequestBody CouponUseInfoBean bean);
+    OperaResult consume(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId);
 
     /**
      * 预占优惠券
@@ -29,7 +26,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/coupon/occupy", method = RequestMethod.POST)
-    OperaResult occupy(@RequestBody CouponUseInfoBean bean);
+    OperaResult occupy(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId);
 
     /**
      * 优惠券释放
@@ -37,7 +34,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/coupon/release", method = RequestMethod.POST)
-    OperaResult release(@RequestBody CouponUseInfoBean bean);
+    OperaResult release(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId);
 
     /**
      * 根据id集合获取Promotion列表
@@ -46,7 +43,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/promotion/findByIdList", method = RequestMethod.GET)
-    OperaResponse<List<PromotionBean>> findPromotionListByIdList(@RequestParam("idList") List<Integer> idList);
+    OperaResponse<List<PromotionBean>> findPromotionListByIdList(@RequestParam("idList") List<Integer> idList, @RequestHeader("appId") String appId);
 
     /**
      * 根据id集合获取Coupon列表
@@ -55,10 +52,10 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/couponUseInfo/findByIdList", method = RequestMethod.GET)
-    OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList);
+    OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList, @RequestHeader("appId") String appId);
 
     @RequestMapping(value = "/promotion/mpuList", method = RequestMethod.GET)
-    OperaResult findPromotionByMpuList(@RequestParam("mpuList") List<String> mpuList);
+    OperaResult findPromotionByMpuList(@RequestParam("mpuList") List<String> mpuList, @RequestHeader("appId") String appId);
 
     /**
      * 生成用户虚拟商品
@@ -66,7 +63,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/virtual/create", method = RequestMethod.POST)
-    OperaResult createVirtual(@RequestBody VirtualTicketsBean bean);
+    OperaResult createVirtual(@RequestBody VirtualTicketsBean bean, @RequestHeader("appId") String appId);
 
     /**
      * 根据MPU批量获取活动和优惠券信息
@@ -74,7 +71,7 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/coupon/mpus", method = RequestMethod.POST)
-    OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdIndex> beans);
+    OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdIndex> beans, @RequestHeader("appId") String appId);
 
     /**
      * 根据MPU批量获取活动和优惠券信息
@@ -82,5 +79,5 @@ public interface EquityServiceClient {
      * @return
      */
     @RequestMapping(value = "/promotion/verify", method = RequestMethod.POST)
-    OperaResult promotionVerify(@RequestBody List<PromotionVerifyBean> beans);
+    OperaResult promotionVerify(@RequestBody List<PromotionVerifyBean> beans, @RequestHeader("appId") String appId);
 }

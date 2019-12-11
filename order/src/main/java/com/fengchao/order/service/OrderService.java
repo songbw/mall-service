@@ -16,7 +16,7 @@ public interface OrderService {
 
     OperaResult add2(OrderParamBean bean);
 
-    Integer cancel(Integer id);
+    Integer cancel(Integer id, String appId);
 
     Order findById(Integer id) ;
 
