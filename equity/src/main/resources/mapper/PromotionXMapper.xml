@@ -404,7 +404,7 @@
     WHERE ps.mpu=#{mpu}
     and p.status <![CDATA[ > ]]> 2
     and p.status <![CDATA[ < ]]> 5
-    and app_id = #{appId,jdbcType=VARCHAR}
+    and p.app_id = #{appId,jdbcType=VARCHAR}
   </select>
   <select id="selectDaliyPromotion" resultMap="BaseResultMap">
     select
