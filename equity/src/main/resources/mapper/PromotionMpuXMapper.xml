@@ -170,7 +170,7 @@
     ps.per_limited perLimited
     from promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
     WHERE p.status = 4
-    and app_id = #{appId,jdbcType=VARCHAR}
+    and p.app_id = #{appId,jdbcType=VARCHAR}
     and ps.mpu in
     <foreach item="item" index="index" collection="mpus" open="(" separator="," close=")">
       #{item}
