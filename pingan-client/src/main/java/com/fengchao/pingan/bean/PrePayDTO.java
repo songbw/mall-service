@@ -29,4 +29,6 @@ public class PrePayDTO {
 
     private String notifyUrl;
 
+    private String appId ;
+
 }
