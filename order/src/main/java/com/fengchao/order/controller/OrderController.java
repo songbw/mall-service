@@ -57,16 +57,11 @@ public class OrderController {
     }
 
     @DeleteMapping
-    private OperaResult delete(Integer id, OperaResult result, @RequestHeader("appId") String appId) {
+    private OperaResult delete(Integer id, OperaResult result) {
         if (id == null) {
             result.setCode(4000001);
             result.setMsg("id不能为空");
             return result;
-        }
-        if (StringUtils.isEmpty(appId)) {
-            result.setCode(4000002);
-            result.setMsg("appId 不能为空");
-            return result ;
         }
         result.getData().put("result", service.delete(id)) ;
         return result;
@@ -79,24 +74,18 @@ public class OrderController {
     }
 
     @GetMapping
-    private OperaResult find(Integer id, OperaResult result, @RequestHeader("appId") String appId) {
+    private OperaResult find(Integer id, OperaResult result) {
         result.getData().put("result", service.findById(id)) ;
         return result;
     }
 
     @PutMapping("status")
-    private OperaResult updateStatus(@RequestBody Order bean, OperaResult result, @RequestHeader("appId") String appId) {
-        if (StringUtils.isEmpty(appId)) {
-            result.setCode(4000002);
-            result.setMsg("appId 不能为空");
-            return result ;
-        }
+    private OperaResult updateStatus(@RequestBody Order bean, OperaResult result) {
         if (bean.getId() == null) {
             result.setCode(4000001);
             result.setMsg("id不能为空");
             return result;
         }
-        bean.setAppId(appId);
         result.getData().put("result", service.updateStatus(bean)) ;
         return result;
     }
@@ -130,6 +119,11 @@ public class OrderController {
     @PostMapping("/updateAddress")
     private OperaResult updateOrderAddress(@RequestBody Order bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         bean.setMerchantId(merchantId);
+        if (bean.getId() == null) {
+            result.setCode(4000001);
+            result.setMsg("id不能为空");
+            return result;
+        }
         result.getData().put("result", service.updateOrderAddress(bean)) ;
         return result;
     }
@@ -143,10 +137,8 @@ public class OrderController {
 
     @PostMapping("/uploadLogistics")
     private OperaResult uploadLogistics(@RequestBody Logisticsbean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
-        System.out.println(bean.getLogisticsList());
         bean.setMerchantId(merchantId);
         result.getData().put("result", service.uploadLogistics(bean)) ;
-
         return result;
     }
 
