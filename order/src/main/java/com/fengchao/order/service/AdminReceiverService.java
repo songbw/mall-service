@@ -1,7 +1,6 @@
 package com.fengchao.order.service;
 
 import com.fengchao.order.model.Receiver;
-import com.fengchao.order.model.ShoppingCart;
 
 import java.util.List;
 
