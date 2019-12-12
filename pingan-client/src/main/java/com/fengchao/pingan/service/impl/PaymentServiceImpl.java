@@ -232,8 +232,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public String backNotify(BackNotifyRequestBean paymentBean) {
-        PingAnConfigBean pingAnConfigBean = getPingAnConfigByTAppId(paymentBean.getAppId());
         logger.info("平安支付回调 back notify 参数： {}", JSONUtil.toJsonString(paymentBean));
+        PingAnConfigBean pingAnConfigBean = getPingAnConfigByTAppId(paymentBean.getAppId());
         String backSign = paymentBean.getSign() ;
         paymentBean.setSign(null);
         ObjectMapper objectMapper = new ObjectMapper();
