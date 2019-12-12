@@ -163,7 +163,7 @@ public class CouponController {
 
     @PostMapping("release")//释放优惠券
     public OperaResult releaseCoupon(@RequestBody CouponUseInfoBean bean,
-                                     @RequestHeader("appId") String appId, OperaResult result){
+                                     OperaResult result){
         int num = useInfoService.releaseCoupon(bean);
         result.getData().put("result",num);
         return result;
@@ -171,7 +171,7 @@ public class CouponController {
 
     @PostMapping("verify")//验证优惠券
     public OperaResult verifyCoupon(@RequestBody CouponUseInfoBean bean,
-                                    @RequestHeader("appId") String appId, OperaResult result){
+                                    OperaResult result){
         int num = useInfoService.verifyCoupon(bean);
         if(num == 0){
             result.setCode(500);
