@@ -193,5 +193,9 @@ public class ExportOrdersVo {
      * 子订单备注
      */
     private String remark;
+    /**
+     * 手机号
+     */
+    private String mobile;
 
 }

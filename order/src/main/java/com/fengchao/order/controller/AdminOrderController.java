@@ -438,6 +438,9 @@ public class AdminOrderController {
 
         HSSFCell titleCell28 = titleRow.createCell(28);
         titleCell28.setCellValue("支付单号");
+
+        HSSFCell titleCell29 = titleRow.createCell(29);
+        titleCell29.setCellValue("收件人电话");
     }
 
     /**
@@ -601,13 +604,17 @@ public class AdminOrderController {
                 HSSFCell cell26 = currentRow.createCell(26);
                 cell26.setCellValue(exportOrdersVo.getOpenId());
 
-                // 用户id
+                // 备注
                 HSSFCell cell27 = currentRow.createCell(27);
                 cell27.setCellValue(exportOrdersVo.getRemark());
 
                 // 支付单号
                 HSSFCell cell28 = currentRow.createCell(28);
                 cell28.setCellValue(exportOrdersVo.getPaymentNo());
+
+                // 支付单号
+                HSSFCell cell29 = currentRow.createCell(29);
+                cell29.setCellValue(exportOrdersVo.getMobile());
 
                 //
                 currentRowNum++;

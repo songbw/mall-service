@@ -422,6 +422,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCountyName(ordersBo.getCountyName()); // 区
                     exportOrdersVo.setExpressFee(new BigDecimal(ordersBo.getServFee()).toString()); // 运费
                     exportOrdersVo.setAddress(ordersBo.getAddress() == null ? "" : ordersBo.getAddress()); // 详细地址
+                    exportOrdersVo.setMobile(ordersBo.getMobile() == null ? "" : ordersBo.getMobile()); // 收件人电话
                     exportOrdersVo.setRemark(orderDetailBo.getRemark());
 
                     exportOrdersVoList.add(exportOrdersVo);
