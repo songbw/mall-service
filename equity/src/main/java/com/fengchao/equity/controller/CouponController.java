@@ -22,7 +22,6 @@ public class CouponController {
     @Autowired
     private CouponUseInfoService useInfoService;
 
-
     @GetMapping("activeCoupon")
     public OperaResult activeCoupon(CouponUseInfoBean useInfoBean, @RequestHeader("appId") String appId, OperaResult result){
         useInfoBean.setAppId(appId);
@@ -129,8 +128,7 @@ public class CouponController {
 
     @PostMapping("consume")
     public OperaResult consume(@RequestBody CouponUseInfoBean bean,
-                               @RequestHeader("appId") String appId, OperaResult result){
-        bean.setAppId(appId);
+                               OperaResult result){
         CouponUseInfoX coupon = couponService.consumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
