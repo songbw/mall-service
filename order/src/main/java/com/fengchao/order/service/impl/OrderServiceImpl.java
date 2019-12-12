@@ -583,6 +583,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("merchantId",orderBean.getMerchantId());
         map.put("subStatus",orderBean.getSubStatus());
         map.put("aoyiId",orderBean.getAoyiId());
+        map.put("appId",orderBean.getAppId());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
             map.put("payDateStart", orderBean.getPayDateStart() + " 00:00:00");
         }
@@ -644,6 +645,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("pageNo", offset);
         map.put("pageSize", queryBean.getPageSize());
         map.put("orderId", queryBean.getOrderId());
+        map.put("appId", queryBean.getAppId());
         Order order = orderMapper.selectByPrimaryKey(queryBean.getOrderId());
         total = orderDetailXMapper.selectCount(map);
         if (total > 0) {

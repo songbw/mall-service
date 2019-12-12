@@ -161,7 +161,8 @@ public class PaymentServiceImpl implements PaymentService {
         prePayDTO.setTotalFee(paymentBean.getAmount() + "");
         prePayDTO.setActPayFee(paymentBean.getAmount() + "");
         prePayDTO.setBody(paymentBean.getGoodsName());
-        prePayDTO.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
+//        prePayDTO.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
+        prePayDTO.setAppId(paymentBean.getAppId());
         logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(prePayDTO));
         PaymentResult result = new PaymentResult();
         CommonResult<PrePayResultDTO> prePayResultDTOCommonResult = payClientService.payment(prePayDTO) ;
@@ -231,8 +232,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public String backNotify(BackNotifyRequestBean paymentBean) {
-        PingAnConfigBean pingAnConfigBean = getPingAnConfigByTAppId(paymentBean.getAppId());
         logger.info("平安支付回调 back notify 参数： {}", JSONUtil.toJsonString(paymentBean));
+        PingAnConfigBean pingAnConfigBean = getPingAnConfigByTAppId(paymentBean.getAppId());
         String backSign = paymentBean.getSign() ;
         paymentBean.setSign(null);
         ObjectMapper objectMapper = new ObjectMapper();

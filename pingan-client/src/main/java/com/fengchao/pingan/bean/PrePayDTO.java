@@ -27,6 +27,6 @@ public class PrePayDTO {
 
     private String returnUrl;
 
-    private String notifyUrl;
+    private String appId ;
 
 }
