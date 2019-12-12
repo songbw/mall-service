@@ -161,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
         prePayDTO.setTotalFee(paymentBean.getAmount() + "");
         prePayDTO.setActPayFee(paymentBean.getAmount() + "");
         prePayDTO.setBody(paymentBean.getGoodsName());
-        prePayDTO.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
+//        prePayDTO.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
         prePayDTO.setAppId(paymentBean.getAppId());
         logger.info("聚合支付请求参数值： {}", JSONUtil.toJsonString(prePayDTO));
         PaymentResult result = new PaymentResult();
