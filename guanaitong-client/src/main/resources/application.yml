@@ -18,7 +18,12 @@ eureka:
     service-url:
       defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
 
-GAT_APP_ID: appId which got from guan ai tong
-GAT_APP_SECRET: appSceret which got from guan ai tong
+#品牌直供
+#GAT_APP_ID: 20110867
+#GAT_APP_SECRET: d09469d7a5b1a8c57d980d6ee3eff5eb
+#GAT_URL_PREFIX: https://openapi.guanaitong.cc/
 
-
+#苏宁易购
+GAT_APP_ID: 20110843
+GAT_APP_SECRET: 78dde3cc1e3cab6cbbabbc1bf88faa4e
+GAT_URL_PREFIX: https://openapi.guanaitong.cc/
