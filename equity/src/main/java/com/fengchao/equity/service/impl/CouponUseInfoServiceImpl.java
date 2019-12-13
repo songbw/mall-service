@@ -83,7 +83,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 e.printStackTrace();
             }
             couponUseInfo.setCollectedTime(new Date());
-            couponUseInfo.setUserCouponCode(user_coupon_code);
+            couponUseInfo.setUserCouponCode(coupon.getAppId() + user_coupon_code);
             couponUseInfo.setUrl(url);
             num = mapper.insertSelective(couponUseInfo);
             couponUseInfoBean.setUserCouponCode(user_coupon_code);

@@ -22,7 +22,6 @@ public class CouponController {
     @Autowired
     private CouponUseInfoService useInfoService;
 
-
     @GetMapping("activeCoupon")
     public OperaResult activeCoupon(CouponUseInfoBean useInfoBean, @RequestHeader("appId") String appId, OperaResult result){
         useInfoBean.setAppId(appId);
@@ -129,8 +128,7 @@ public class CouponController {
 
     @PostMapping("consume")
     public OperaResult consume(@RequestBody CouponUseInfoBean bean,
-                               @RequestHeader("appId") String appId, OperaResult result){
-        bean.setAppId(appId);
+                               OperaResult result){
         CouponUseInfoX coupon = couponService.consumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
@@ -165,7 +163,7 @@ public class CouponController {
 
     @PostMapping("release")//释放优惠券
     public OperaResult releaseCoupon(@RequestBody CouponUseInfoBean bean,
-                                     @RequestHeader("appId") String appId, OperaResult result){
+                                     OperaResult result){
         int num = useInfoService.releaseCoupon(bean);
         result.getData().put("result",num);
         return result;
@@ -173,7 +171,7 @@ public class CouponController {
 
     @PostMapping("verify")//验证优惠券
     public OperaResult verifyCoupon(@RequestBody CouponUseInfoBean bean,
-                                    @RequestHeader("appId") String appId, OperaResult result){
+                                    OperaResult result){
         int num = useInfoService.verifyCoupon(bean);
         if(num == 0){
             result.setCode(500);
