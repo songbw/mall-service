@@ -285,7 +285,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             CouponUseInfoX couponUseInfo = new CouponUseInfoX();
             String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCode(coupon.getCode());
-            couponUseInfo.setUserCouponCode(userCouponCode);
+            couponUseInfo.setUserCouponCode(coupon.getAppId() + userCouponCode);
             couponUseInfo.setCouponId(bean.getCouponId());
             couponUseInfo.setAppId(coupon.getAppId());
             useInfos.add(couponUseInfo);
