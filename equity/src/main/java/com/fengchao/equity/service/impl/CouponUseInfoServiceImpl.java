@@ -287,6 +287,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserCouponCode(userCouponCode);
             couponUseInfo.setCouponId(bean.getCouponId());
+            couponUseInfo.setAppId(coupon.getAppId());
             useInfos.add(couponUseInfo);
         }
 

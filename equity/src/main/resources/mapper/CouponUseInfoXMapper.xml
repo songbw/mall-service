@@ -334,6 +334,9 @@
     set user_open_id = #{userOpenId,jdbcType=VARCHAR},
       collected_time = #{collectedTime,jdbcType=TIMESTAMP}
     where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    <if test="appId != null">
+       and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
   </update>
   <update id="updateStatusByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
     update coupon_use_info
