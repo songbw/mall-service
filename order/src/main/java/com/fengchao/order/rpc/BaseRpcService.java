@@ -27,25 +27,32 @@ public class BaseRpcService {
      * @return "SUCCESS" 成功， 其他: 失败
      */
     public String sendWithTemplate(String mobile, Integer templateId, String[] params) {
-        SMSPostBean smsPostBean = new SMSPostBean();
-        smsPostBean.setPhone(mobile);
-        smsPostBean.setTemplateId(templateId); // 短信模版id
-        smsPostBean.setParams(params); // 参数
-        log.info("发送短信 调用base rpc服务 入参:{}", JSONUtil.toJsonString(smsPostBean));
+        try {
+            SMSPostBean smsPostBean = new SMSPostBean();
+            smsPostBean.setPhone(mobile);
+            smsPostBean.setTemplateId(templateId); // 短信模版id
+            smsPostBean.setParams(params); // 参数
+            log.info("发送短信 调用base rpc服务 入参:{}", JSONUtil.toJsonString(smsPostBean));
 
-        OperaResponse<String> operaResponse = baseServiceClient.sendWithTemplate(smsPostBean);
-        log.info("发送短信 调用base rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+            OperaResponse<String> operaResponse = baseServiceClient.sendWithTemplate(smsPostBean);
+            log.info("发送短信 调用base rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
-        // 处理返回
-        if (operaResponse.getCode() == 200) {
-            log.info("发送短信 调用base rpc服务 发送成功");
+            // 处理返回
+            if (operaResponse.getCode() == 200) {
+                log.info("发送短信 调用base rpc服务 发送成功");
 
-            return "SUCCESS";
-        } else {
-            log.info("发送短信 调用base rpc服务 发送失败:{}", operaResponse.getMessage());
+                return "SUCCESS";
+            } else {
+                log.info("发送短信 调用base rpc服务 发送失败:{}", operaResponse.getMessage());
 
-            return operaResponse.getMessage();
+                return operaResponse.getMessage();
+            }
+        } catch (Exception e) {
+            log.error("发送短信 异常:{}", e.getMessage(), e);
+
+            return "exception";
         }
+
     }
 
     /**

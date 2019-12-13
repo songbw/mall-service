@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.MDC;
+import org.springframework.util.StopWatch;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,8 @@ public class PressDeliveryRunnerJobImpl implements JobRunner {
 
     @Override
     public Result run(JobContext jobContext) throws Throwable {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("供应商发货短信提醒任务执行时间");
         //
         BaseRpcService baseRpcService = BeanContext.getBean(BaseRpcService.class);
 
@@ -121,9 +124,13 @@ public class PressDeliveryRunnerJobImpl implements JobRunner {
             baseRpcService.sendMail(MAIL_ADDRESS.split(","),
                     "供应商发货短信提醒任务",
                     "任务执行失败 :: traceId=" + MDC.get("X-B3-TraceId"));
+        } finally {
+            stopWatch.stop();
+
+            log.info("供应商发货短信提醒任务 耗时(秒):{}", stopWatch.getTotalTimeSeconds());
         }
 
-        log.info("应商发货短信提醒任务 执行完成");
-        return new Result(Action.EXECUTE_SUCCESS, "应商发货短信提醒任务 执行完成!");
+        log.info("供应商发货短信提醒任务 执行完成");
+        return new Result(Action.EXECUTE_SUCCESS, "供应商发货短信提醒任务 执行完成!");
     }
 }
