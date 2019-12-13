@@ -256,7 +256,9 @@ public class LoginServiceImpl implements ILoginService {
             user.setiAppId(iAppId);
             userMapper.insertSelective(user);
         }
-        balanceDao.updateOpenIdByTel(authUserBean.getMobileNo(), authUserBean.getOpenId());
+        if ("11".equals(iAppId)) {
+            balanceDao.updateOpenIdByTel(authUserBean.getMobileNo(), authUserBean.getOpenId());
+        }
         result.getData().put("result", accessToken);
         log.info("Third party Token 返回值： {}", JSONUtil.toJsonString(result));
         return result ;
