@@ -234,5 +234,16 @@ public class LoginController {
     public OperaResponse wxBindVerify(String appId, String openId) {
         return loginService.wxBindVerify(appId, openId);
     }
+
+    @GetMapping("/thirdParty/token/wx")
+    public OperaResult getThirdOpenIdWX(String iAppId, String code) {
+        OperaResult result = new OperaResult() ;
+        if (StringUtil.isEmpty(code)){
+            result.setCode(100000);
+            result.setMsg("code不正确");
+            return result;
+        }
+        return loginService.findThirdPartyTokenWX(iAppId, code) ;
+    }
 }
 

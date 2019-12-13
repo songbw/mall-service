@@ -17,7 +17,8 @@ import java.security.cert.X509Certificate;
 public class HttpClient {
 
     private static final String BASE_URL = "https://api.weixin.qq.com" ;
-    private static final String PATH = "/sns/oauth2/access_token" ;
+    private static final String ACCESS_TOKEN_PATH = "/sns/oauth2/access_token" ;
+    private static final String USER_INFO_PATH = "/sns/userinfo" ;
 
     private static Logger logger = LoggerFactory.getLogger(HttpClient.class);
 
@@ -61,9 +62,18 @@ public class HttpClient {
         }
     }
 
-    public static <T> T get(String appId, String secret, String code, Class<T> obj){
+    public static <T> T getAccessToken(String appId, String secret, String code, Class<T> obj){
         client = createClient();
-        WebTarget target = client.target(BASE_URL).path(PATH).queryParam("appid", appId).queryParam("secret", secret).queryParam("code", code).queryParam("grant_type", "authorization_code");
+        WebTarget target = client.target(BASE_URL).path(ACCESS_TOKEN_PATH).queryParam("appid", appId).queryParam("secret", secret).queryParam("code", code).queryParam("grant_type", "authorization_code");
+        logger.info(target.getUri().toString());
+        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
+        T bean = response.readEntity(obj);
+        return bean;
+    }
+
+    public static <T> T getUserInfo(String accessToken, String openId, Class<T> obj){
+        client = createClient();
+        WebTarget target = client.target(BASE_URL).path(USER_INFO_PATH).queryParam("access_token", accessToken).queryParam("openid", openId).queryParam("lang", "zh_CN");
         logger.info(target.getUri().toString());
         Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
         T bean = response.readEntity(obj);
