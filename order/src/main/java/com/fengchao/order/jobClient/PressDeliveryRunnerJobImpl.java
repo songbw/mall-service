@@ -106,12 +106,12 @@ public class PressDeliveryRunnerJobImpl implements JobRunner {
                             String sendResult =
                                     baseRpcService.sendWithTemplate(sysCompanyX.getPhone(), SMS_TEMPLATE, new String[]{count});
 
-                            mailContent.append(sysCompanyX.getName()).append("; 代发货数量:").append(count).append("; 发送结果:").append(sendResult).append("\r\n");
+                            mailContent.append(sysCompanyX.getName()).append("; 待发货数量:").append(count).append("; 发送结果:").append(sendResult).append("\r\n");
                         } else {
-                            mailContent.append(sysCompanyX.getName()).append("; 代发货数量:").append(count).append("; 未找到联系电话").append("\r\n");
+                            mailContent.append(sysCompanyX.getName()).append("; 待发货数量:").append(count).append("; 未找到联系电话").append("\r\n");
                         }
                     } else {
-                        mailContent.append("未匹配供应商:").append(key).append("; 代发货数量:").append(count).append("\r\n");
+                        mailContent.append("未匹配供应商:").append(key).append("; 待发货数量:").append(count).append("\r\n");
                     }
                 }
             }
