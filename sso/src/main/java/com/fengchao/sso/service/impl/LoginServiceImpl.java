@@ -12,6 +12,7 @@ import com.fengchao.sso.mapper.*;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
 import com.fengchao.sso.model.*;
 import com.fengchao.sso.service.ILoginService;
+import com.fengchao.sso.service.WeChatService;
 import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +64,8 @@ public class LoginServiceImpl implements ILoginService {
     private BindSubAccountMapper bindSubAccountMapper ;
     @Autowired
     private SUserMapper mapper ;
+    @Autowired
+    private WeChatService weChatService ;
 
     @Override
     public Login selectByPrimaryName(String username) {
@@ -220,6 +223,50 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
+    public OperaResult findThirdPartyTokenWX(String iAppId, String code) {
+        OperaResult result = new OperaResult();
+        AccessToken accessToken = new AccessToken() ;
+        // 获取微信登录信息
+        OperaResponse<WeChatAccessTokenBean> accessTokenBeanOperaResponse = weChatService.getAccessToken(iAppId, code) ;
+        if (accessTokenBeanOperaResponse.getCode() != 200) {
+            result.setCode(accessTokenBeanOperaResponse.getCode());
+            result.setMsg(accessTokenBeanOperaResponse.getMsg());
+            return result ;
+        }
+        WeChatAccessTokenBean weChatAccessTokenBean = accessTokenBeanOperaResponse.getData() ;
+        accessToken.setOpenId(weChatAccessTokenBean.getOpenid());
+        User temp = new User();
+        temp.setOpenId(weChatAccessTokenBean.getOpenid());
+        temp.setiAppId(iAppId);
+        User user = userMapper.selectByOpenId(temp);
+        if (user == null) {
+            OperaResponse<WeChatUserInfoBean> userInfoBeanOperaResponse = weChatService.getUserInfo(weChatAccessTokenBean.getAccess_token(),weChatAccessTokenBean.getOpenid()) ;
+            if (userInfoBeanOperaResponse.getCode() != 200) {
+                result.setCode(userInfoBeanOperaResponse.getCode());
+                result.setMsg(userInfoBeanOperaResponse.getMsg());
+                return result ;
+            }
+            WeChatUserInfoBean weChatUserInfoBean = userInfoBeanOperaResponse.getData() ;
+            user = new User();
+            user.setOpenId(weChatUserInfoBean.getOpenid());
+            if (!StringUtils.isEmpty(weChatUserInfoBean.getNickname())) {
+                user.setNickname(weChatUserInfoBean.getNickname());
+            } else {
+                String nickname = "fc_" + weChatUserInfoBean.getOpenid().substring(user.getOpenId().length() - 8);
+                user.setNickname(nickname);
+            }
+            user.setName(weChatUserInfoBean.getNickname());
+            user.setSex(weChatUserInfoBean.getSex());
+            user.setHeadImg(weChatUserInfoBean.getHeadimgurl());
+            user.setCreatedAt(new Date());
+            user.setiAppId(iAppId);
+            userMapper.insertSelective(user);
+        }
+        result.getData().put("result", accessToken);
+        return result ;
+    }
+
+    @Override
     public OperaResult getPingAnOpenId(String iAppId, String requestCode) {
         OperaResult result = new OperaResult();
         AccessToken accessToken = new AccessToken() ;
@@ -277,29 +324,7 @@ public class LoginServiceImpl implements ILoginService {
             response.setMsg("code不能为空");
             return response ;
         }
-//        Platform platform = productService.findPlatformByAppId(appId).getData() ;
-//        if (platform == null) {
-//            response.setCode(900002);
-//            response.setMsg("appId不存在");
-//            return response ;
-//        }
-        SSOConfigBean configBean = getSSOConfig(appId) ;
-        String bean = HttpClient.get(configBean.getWxAppId(), configBean.getWxAppSecret(), code, String.class) ;
-        log.info(bean);
-        JSONObject jsonObject = JSON.parseObject(bean) ;
-        if (bean == null) {
-            response.setCode(900003);
-            response.setMsg("获取微信openId失败");
-            return response ;
-        }
-        String openId = jsonObject.getString("openid") ;
-        if (StringUtils.isEmpty(openId)) {
-            response.setCode(900003);
-            response.setMsg("获取微信openId失败");
-            return response ;
-        }
-//        String wxToken = jsonObject.getString("access_token") ;
-        response.setData(jsonObject);
+        response = weChatService.getAccessToken(appId, code) ;
         return response;
     }
 
