@@ -2,7 +2,6 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.bean.AoyiProdBean;
 import com.fengchao.equity.bean.CouponResultBean;
-import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponX;
 import org.apache.ibatis.annotations.Param;
 
@@ -44,7 +43,7 @@ public interface CouponXMapper {
 
     List<CouponX> selectGrantCoupon();
 
-    List<CouponX> selectGiftCoupon();
+    List<CouponX> selectGiftCoupon(@Param("appId") String appId);
 
     List<Integer> selectActiveTagsCoupon(@Param("tagId") Integer tagId);
 
