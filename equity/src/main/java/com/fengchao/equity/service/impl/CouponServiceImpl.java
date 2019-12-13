@@ -474,7 +474,7 @@ public class CouponServiceImpl implements CouponService {
             }
         }
 
-        List<CouponX> coupons = mapper.selectGiftCoupon();
+        List<CouponX> coupons = mapper.selectGiftCoupon(iAppId);
         coupons.forEach(couponX -> {
             int num = useInfoMapper.selectCollectCount(couponX.getId(), openId, iAppId);
             couponX.setUserCollectNum(num);
