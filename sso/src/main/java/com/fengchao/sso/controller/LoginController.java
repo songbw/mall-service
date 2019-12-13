@@ -236,7 +236,8 @@ public class LoginController {
     }
 
     @GetMapping("/thirdParty/token/wx")
-    public OperaResult getThirdOpenIdWX(String iAppId, String code, OperaResult result) {
+    public OperaResult getThirdOpenIdWX(String iAppId, String code) {
+        OperaResult result = new OperaResult() ;
         if (StringUtil.isEmpty(code)){
             result.setCode(100000);
             result.setMsg("code不正确");
