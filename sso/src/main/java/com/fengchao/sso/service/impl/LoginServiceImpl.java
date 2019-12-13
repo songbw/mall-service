@@ -256,7 +256,11 @@ public class LoginServiceImpl implements ILoginService {
                 user.setNickname(nickname);
             }
             user.setName(weChatUserInfoBean.getNickname());
-            user.setSex(weChatUserInfoBean.getSex());
+            if ("1".equals(weChatUserInfoBean.getSex())) {
+                user.setSex("男");
+            } else if ("2".equals(weChatUserInfoBean.getSex())){
+                user.setSex("女");
+            }
             user.setHeadImg(weChatUserInfoBean.getHeadimgurl());
             user.setCreatedAt(new Date());
             user.setiAppId(iAppId);
