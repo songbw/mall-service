@@ -65,7 +65,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findAggregationById(Integer id) throws AggregationException {
         Aggregation aggregation = mapper.selectByPrimaryKey(id);
-        Aggregation aggregationByIdtest = convertContent(aggregation.getContent());
+        Aggregation aggregationByIdtest = convertContent(aggregation.getContent(), aggregation.getAppId());
 //        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
 //        if(AggregationArray == null || AggregationArray.size() < 1 ){
 //            return aggregation;
@@ -119,7 +119,7 @@ public class AggregationServiceImpl implements AggregationService {
         return aggregation;
     }
 
-    public Aggregation convertContent(String content) throws AggregationException {
+    public Aggregation convertContent(String content, String appId) throws AggregationException {
         List<String> mpus = new ArrayList<>();
         Aggregation aggregation = new Aggregation();
         JSONArray AggregationArray = JSONObject.parseArray(content);
@@ -162,7 +162,7 @@ public class AggregationServiceImpl implements AggregationService {
                     aoyiProdMap.put(prod.getMpu(), prod);
                 }
             }
-            OperaResult onlinePromotion = equityService.findOnlinePromotion();
+            OperaResult onlinePromotion = equityService.findOnlinePromotion(appId);
             if (onlinePromotion.getCode() == 200) {
                 Object object = onlinePromotion.getData().get("result");
                 List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
@@ -315,7 +315,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findHomePage(String appId) throws AggregationException {
         Aggregation homePage = mapper.findHomePage(appId);
-        Aggregation aggregationByIdtest = convertContent(homePage.getContent());
+        Aggregation aggregationByIdtest = convertContent(homePage.getContent(), appId);
 //        JSONArray AggregationArray = JSONObject.parseArray(homePage.getContent());
 //        if(AggregationArray == null || AggregationArray.size() < 1 ){
 //            return homePage;

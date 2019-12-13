@@ -285,8 +285,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             CouponUseInfoX couponUseInfo = new CouponUseInfoX();
             String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCode(coupon.getCode());
-            couponUseInfo.setUserCouponCode(userCouponCode);
+            couponUseInfo.setUserCouponCode(coupon.getAppId() + userCouponCode);
             couponUseInfo.setCouponId(bean.getCouponId());
+            couponUseInfo.setAppId(coupon.getAppId());
             useInfos.add(couponUseInfo);
         }
 
@@ -339,6 +340,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX useInfo =new CouponUseInfoX();
         useInfo.setUserOpenId(bean.getUserOpenId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
+        useInfo.setAppId(bean.getAppId());
         Date date = new Date();
         useInfo.setCollectedTime(date);
         CouponUseInfoX couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());

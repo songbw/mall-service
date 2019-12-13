@@ -140,7 +140,11 @@
     select
     <include refid="Base_Column_List" />
     from coupon_use_info
-    where delete_flag = 0 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    where delete_flag = 0
+    <if test="userCouponCode != null" >
+      <bind name="patternName" value="'%' + userCouponCode + '%'" />
+      and user_coupon_code LIKE #{patternName}
+    </if>
   </select>
   <select id="selectGiftCouponIds" resultType="java.lang.Integer" parameterType="java.lang.String" >
     select
@@ -155,9 +159,10 @@
     <if test="id != null" >
       and id = #{id,jdbcType=INTEGER}
     </if>
-    <if test="userCouponCode != null" >
-      and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
-    </if>
+      <if test="userCouponCode != null" >
+          <bind name="patternName" value="'%' + userCouponCode + '%'" />
+          and user_coupon_code LIKE #{patternName}
+      </if>
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
      insert into coupon_use_info (coupon_id, user_coupon_code, user_open_id,
@@ -333,7 +338,14 @@
     update coupon_use_info
     set user_open_id = #{userOpenId,jdbcType=VARCHAR},
       collected_time = #{collectedTime,jdbcType=TIMESTAMP}
-    where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    where status = 1
+    <if test="userCouponCode != null" >
+       <bind name="patternName" value="'%' + userCouponCode + '%'" />
+          and user_coupon_code LIKE #{patternName}
+    </if>
+    <if test="appId != null">
+       and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
   </update>
   <update id="updateStatusByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
     update coupon_use_info
@@ -345,7 +357,11 @@
         consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
       </if>
     </set>
-    where user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    where
+    <if test="userCouponCode != null" >
+      <bind name="patternName" value="'%' + userCouponCode + '%'" />
+      and user_coupon_code LIKE #{patternName}
+    </if>
     <if test="id != null" >
       and id = #{id,jdbcType=INTEGER}
     </if>
@@ -359,7 +375,11 @@
     update coupon_use_info
     set status = #{status,jdbcType=INTEGER},
     consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
-    where type = 1 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    where type = 1 and
+    <if test="userCouponCode != null" >
+        <bind name="patternName" value="'%' + userCouponCode + '%'" />
+          and user_coupon_code LIKE #{patternName}
+    </if>
     <if test="userOpenId != null" >
       and user_open_id = #{userOpenId,jdbcType=INTEGER}
     </if>

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class EquityServiceH implements EquityService {
 
     @Override
-    public OperaResult findOnlinePromotion() {
+    public OperaResult findOnlinePromotion(String appId) {
         OperaResult result = new OperaResult();
         result.setCode(404);
         result.setMsg("获取促销活动信息失败 ");

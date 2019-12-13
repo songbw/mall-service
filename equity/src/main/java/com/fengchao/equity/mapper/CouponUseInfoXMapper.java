@@ -36,7 +36,7 @@ public interface CouponUseInfoXMapper {
 
     int importCode(CouponUseInfoBean bean);
 
-    CouponUseInfoX selectByUserCode(String userCouponCode);
+    CouponUseInfoX selectByUserCode(@Param("userCouponCode") String userCouponCode);
 
     int updateByUserCode(CouponUseInfoX record);
 
