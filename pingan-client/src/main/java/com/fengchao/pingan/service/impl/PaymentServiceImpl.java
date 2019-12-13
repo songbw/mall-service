@@ -263,7 +263,7 @@ public class PaymentServiceImpl implements PaymentService {
         Map<String, PingAnConfigBean> map = config.getRegion() ;
         for (String key : map.keySet()) {
             PingAnConfigBean pingAnConfigBean = map.get(key);
-            if (appId.equals(pingAnConfigBean.getAppId())) {
+            if (appId.equals(pingAnConfigBean.getPayAppId())) {
                 return pingAnConfigBean ;
             }
         }

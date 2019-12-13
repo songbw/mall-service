@@ -111,10 +111,10 @@ public class PaymentServiceImpl implements IPaymentService {
         for (Order order: orderList) {
             total_amount = total_amount + order.getSaleAmount() ;
         }
-        TradeInfoBean tradeInfoBean = new TradeInfoBean();
-        tradeInfoBean.setThirdTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-        String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
-        guanaitongPaymentBean.setTrade_info(tradeInfoString);
+//        TradeInfoBean tradeInfoBean = new TradeInfoBean();
+//        tradeInfoBean.setThirdTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+//        String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
+//        guanaitongPaymentBean.setTrade_info(tradeInfoString);
         guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
         guanaitongPaymentBean.setNotify_url(configBean.getGatBackUrl());
         guanaitongPaymentBean.setTotal_amount(total_amount);
