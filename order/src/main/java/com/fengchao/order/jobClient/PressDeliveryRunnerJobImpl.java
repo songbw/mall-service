@@ -74,6 +74,8 @@ public class PressDeliveryRunnerJobImpl implements JobRunner {
                 baseRpcService.sendMail(MAIL_ADDRESS.split(","),
                         "供应商发货短信提醒任务",
                         "未获取到待发货的订单信息 :: traceId=" + MDC.get("X-B3-TraceId"));
+
+                return;
             }
 
             // 2.1 转map 以merchant为维度, key:merchantId, value: 该商户未发货订单数量
