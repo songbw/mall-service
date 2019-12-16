@@ -110,7 +110,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
         List<OrderDetail> orderDetailList =
                 adminOrderDao.selectExportOrderDetail(ordersIdList, orderExportReqVo.getSubOrderId(), orderExportReqVo.getMerchantId());
-        log.info("导出订单 查询数据库结果List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
+        log.debug("导出订单 查询数据库结果List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
 
         // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
         List<String> paymentNoList = new ArrayList<>();
@@ -157,7 +157,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Date endDateTime = DateUtil.parseDateTime(_end + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
         List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsForReconciliation(orderExportReqVo.getMerchantId(), startDateTime, endDateTime);
-        log.info("导出订单对账单(入账) 查询数据库入账的子订单 结果List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
+        log.debug("导出订单对账单(入账) 查询数据库入账的子订单 结果List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
 
         if (CollectionUtils.isEmpty(orderDetailList)) {
             return Collections.emptyList();
@@ -168,7 +168,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Integer> ordersIdList = orderDetailList.stream().map(d -> d.getOrderId()).collect(Collectors.toList());
         // 查询主订单
         List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList);
-        log.info("导出订单对账单(入账) 查询主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
+        log.debug("导出订单对账单(入账) 查询主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
         // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
         List<String> paymentNoList = new ArrayList<>();
@@ -609,15 +609,17 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCouponSupplier(
                             couponUseInfoBeanMap.get(ordersBo.getCouponId()) == null ?
                                     "" : couponUseInfoBeanMap.get(ordersBo.getCouponId()).getSupplierMerchantName()); // 券来源（券商户）
-                    Integer purchasePrice = null; // 进货价格
-                    if (productInfoBean != null) {
-                        String _sprice = productInfoBean.getSprice();
-                        if (StringUtils.isNotBlank(_sprice)) {
-                            BigDecimal bigDecimal = new BigDecimal(_sprice);
-                            purchasePrice = bigDecimal.multiply(new BigDecimal(100)).intValue();
-                        }
-                    }
-                    exportOrdersVo.setPurchasePrice(purchasePrice); // 进货价格 单位分
+//                    Integer purchasePrice = null; // 进货价格
+//                    if (productInfoBean != null) {
+//                        String _sprice = productInfoBean.getSprice();
+//                        if (StringUtils.isNotBlank(_sprice)) {
+//                            BigDecimal bigDecimal = new BigDecimal(_sprice);
+//                            purchasePrice = bigDecimal.multiply(new BigDecimal(100)).intValue();
+//                        }
+//                    }
+
+                    exportOrdersVo.setPurchasePrice(orderDetailBo.getSprice() == null ?
+                            0 : orderDetailBo.getSprice().multiply(new BigDecimal(100)).intValue()); // 进货价格 单位分
                     exportOrdersVo.setSkuPayPrice(orderDetailBo.getSalePrice() == null ?
                             0 : orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()); // sku 实际支付价格 分
                     exportOrdersVo.setUnitPrice(orderDetailBo.getUnitPrice().multiply(new BigDecimal(100)).intValue()); // 商品单价-去除 活动 的价格
@@ -827,6 +829,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orderDetailBo.setComcode(orderDetail.getComcode());
         orderDetailBo.setSkuCouponDiscount(orderDetail.getSkuCouponDiscount());
         orderDetailBo.setRemark(orderDetail.getRemark());
+        orderDetailBo.setSprice(orderDetail.getSprice());
 
         return orderDetailBo;
     }

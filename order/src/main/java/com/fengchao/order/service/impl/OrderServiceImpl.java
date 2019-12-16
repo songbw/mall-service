@@ -249,6 +249,10 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setImage(prodIndexWithBLOBs.getImage());
                 orderDetail.setModel(prodIndexWithBLOBs.getModel());
                 orderDetail.setName(prodIndexWithBLOBs.getName());
+                if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                    BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                    orderDetail.setSprice(bigDecimal);
+                }
                 orderDetail.setStatus(0);
                 orderDetail.setSkuId(orderSku.getSkuId());
                 orderDetail.setMpu(orderSku.getMpu());
@@ -260,7 +264,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
                 orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
                 // 添加子订单
-                logger.info("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
+                logger.debug("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
                 orderDetailDao.insert(orderDetail);
 //                orderDetailXMapper.insert(orderDetailX) ;
 
@@ -306,7 +310,7 @@ public class OrderServiceImpl implements OrderService {
             } else { //
                 result = aoyiClientService.order(orderBean);
             }
-            logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
+            logger.debug("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
 
             if (result.getCode() == 200) {
                 List<SubOrderT> subOrderTS = result.getData();
@@ -316,10 +320,10 @@ public class OrderServiceImpl implements OrderService {
                         adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
                     }
                 });
-                logger.info("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
+                logger.debug("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
                 operaResult.getData().put("result", orderMerchantBeans) ;
 
-                logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
+                logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
             } else {
                 if (coupon != null) {
                     boolean couponRelease = release(coupon.getId(), coupon.getCode());
@@ -330,9 +334,9 @@ public class OrderServiceImpl implements OrderService {
                 }
                 // 回滚库存
                 if (inventories != null && inventories.size() > 0) {
-                    logger.info("回滚库存，入参：{}", JSONUtil.toJsonString(inventories));
+                    logger.debug("回滚库存，入参：{}", JSONUtil.toJsonString(inventories));
                     OperaResult inventoryAddResult = productService.inventoryAdd(inventories) ;
-                    logger.info("回滚库存, 返回结果：{}", JSONUtil.toJsonString(inventoryAddResult));
+                    logger.debug("回滚库存, 返回结果：{}", JSONUtil.toJsonString(inventoryAddResult));
                 }
                 operaResult.setCode(result.getCode());
                 operaResult.setMsg(result.getMsg());
@@ -341,10 +345,10 @@ public class OrderServiceImpl implements OrderService {
                 return  operaResult;
             }
         } else {
-            logger.info("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
+            logger.debug("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
             operaResult.getData().put("result", orderMerchantBeans) ;
 
-            logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
+            logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
     }
@@ -693,7 +697,11 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setComCode(Logistics.getComCode());
                 orderDetailX.setLogisticsId(Logistics.getLogisticsId());
                 orderDetailX.setStatus(2);
-                orderDetailXMapper.updateByOrderId(orderDetailX);
+                OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(Logistics.getSubOrderId()) ;
+                if (orderDetail.getStatus() == 1) {
+                    orderDetailXMapper.updateByOrderId(orderDetailX);
+                    JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+                }
             });
         }
         return i;

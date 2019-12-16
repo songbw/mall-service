@@ -43,6 +43,9 @@
 <!--        <table tableName="orders">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
+        <table tableName="order_detail">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
 <!--        <table tableName="ims_superman_mall_order">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->

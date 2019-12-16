@@ -27,7 +27,7 @@ public interface ProductService {
 
     List<AoyiProdIndexX> findAll() throws ProductException ;
 
-    ProductInfoBean findAndPromotion(String mpu) throws ProductException;
+    ProductInfoBean findAndPromotion(String mpu, String appId) throws ProductException;
 
     /**
      * 根据mpuId集合查询product列表

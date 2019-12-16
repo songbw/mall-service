@@ -37,13 +37,13 @@ public class ProductController {
     }
 
     @GetMapping
-    private OperaResult find(String mpu, OperaResult result){
+    private OperaResult find(String mpu, @RequestHeader("appId") String appId, OperaResult result){
         if (StringUtils.isEmpty(mpu)) {
             result.setCode(200501);
             result.setMsg("mpu 不能为空");
             return result;
         }
-        result.getData().put("result", service.findAndPromotion(mpu)) ;
+        result.getData().put("result", service.findAndPromotion(mpu, appId)) ;
         return result;
     }
 

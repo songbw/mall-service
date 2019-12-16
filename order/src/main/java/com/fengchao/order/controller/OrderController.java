@@ -47,11 +47,11 @@ public class OrderController {
             return result ;
         }
         bean.setAppId(appId);
-        log.info("创建订单 入参:{}", JSONUtil.toJsonString(bean));
+        log.debug("创建订单 入参:{}", JSONUtil.toJsonString(bean));
 
         OperaResult operaResult = service.add2(bean);
 
-        log.info("创建订单 返回:{}", JSONUtil.toJsonString(operaResult));
+        log.debug("创建订单 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }

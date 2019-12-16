@@ -145,8 +145,8 @@ public class AdminProdController {
     }
 
     @PostMapping("prodAll")
-    public OperaResult findProdAll(@Valid @RequestBody QueryProdBean bean, OperaResult result) {
-        PageBean pageBean = prodService.findProdAll(bean);
+    public OperaResult findProdAll(@Valid @RequestBody QueryProdBean bean, @RequestHeader("appId") String appId, OperaResult result) {
+        PageBean pageBean = prodService.findProdAll(bean, appId);
         result.getData().put("result", pageBean);
         return result;
     }

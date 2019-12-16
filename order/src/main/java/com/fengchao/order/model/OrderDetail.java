@@ -54,6 +54,8 @@ public class OrderDetail {
 
     private BigDecimal checkedPrice;
 
+    private BigDecimal sprice;
+
     public Integer getId() {
         return id;
     }
@@ -252,5 +254,13 @@ public class OrderDetail {
 
     public void setCheckedPrice(BigDecimal checkedPrice) {
         this.checkedPrice = checkedPrice;
+    }
+
+    public BigDecimal getSprice() {
+        return sprice;
+    }
+
+    public void setSprice(BigDecimal sprice) {
+        this.sprice = sprice;
     }
 }
