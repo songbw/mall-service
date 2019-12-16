@@ -115,8 +115,6 @@ public class CouponServiceImpl implements CouponService {
                 JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), bean.getEffectiveEndDate());
             }
         }
-
-
         return mapper.updateByPrimaryKeySelective(coupon);
     }
 
@@ -209,7 +207,7 @@ public class CouponServiceImpl implements CouponService {
             queryProdBean.setCategories(coupon.getCategories());
 //            map.put("brands",coupon.getBrands());
         }
-        OperaResult operaResult = productService.findProdList(queryProdBean);
+        OperaResult operaResult = productService.findProdList(queryProdBean, bean.getAppId());
         Object object = operaResult.getData().get("result");
         String objectString = JSON.toJSONString(object);
         PageBean pageBean = JSONObject.parseObject(objectString, PageBean.class);

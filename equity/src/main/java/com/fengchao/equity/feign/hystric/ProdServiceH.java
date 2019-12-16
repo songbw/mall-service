@@ -19,7 +19,7 @@ public class ProdServiceH implements ProdService {
     }
 
     @Override
-    public OperaResult findProdList(QueryProdBean queryProdBean) {
+    public OperaResult findProdList(QueryProdBean queryProdBean, String appId) {
         OperaResult result = new OperaResult();
         result.setCode(404);
         result.setMsg("获取商品信息失败 " + queryProdBean);
