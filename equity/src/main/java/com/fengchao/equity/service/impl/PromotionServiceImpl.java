@@ -1,25 +1,24 @@
 package com.fengchao.equity.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.PromotionDao;
 import com.fengchao.equity.dao.PromotionScheduleDao;
 import com.fengchao.equity.dao.PromotionTypeDao;
-import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.mapper.PromotionMpuXMapper;
 import com.fengchao.equity.mapper.PromotionScheduleXMapper;
 import com.fengchao.equity.mapper.PromotionXMapper;
 import com.fengchao.equity.mapper.PromotionMpuMapper;
 import com.fengchao.equity.model.*;
+import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,7 +45,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Autowired
     private JobClient jobClient;
     @Autowired
-    private ProdService prodService;
+    private ProductRpcService prodService;
 
     @Autowired
     private PromotionDao promotionDao;
@@ -91,8 +90,8 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public PromotionResult updatePromotion(PromotionX bean) {
         PromotionResult promotionResult = new PromotionResult();
-        PromotionX promotionX  = promotionXMapper.selectByPrimaryKey(bean.getId());
-        if(promotionX == null){
+        PromotionX promotionX = promotionXMapper.selectByPrimaryKey(bean.getId());
+        if (promotionX == null) {
             promotionResult.setNum(0);
             return promotionResult;
         }
@@ -101,50 +100,50 @@ public class PromotionServiceImpl implements PromotionService {
         Integer result = 0;
         AtomicInteger resultPromotionId = new AtomicInteger();
         Set<String> resultMpus = new HashSet<>();
-        if(bean.getStatus() != null && bean.getStatus() == 2){
+        if (bean.getStatus() != null && bean.getStatus() == 2) {
             List<Promotion> promotions = promotionDao.selectActivePromotion(promotionX.getAppId());
 //            Promotion overduePromotion = promotionDao.selectOverduePromotion().get(0);
 //            promotions.add(overduePromotion);
-            if(promotionX.getDailySchedule()!=null && promotionX.getDailySchedule()){
+            if (promotionX.getDailySchedule() != null && promotionX.getDailySchedule()) {
                 List<PromotionX> promotionXES = promotionXMapper.selectSchedulePromotion(promotionX.getAppId());
-                for (int i=0; i < promotionXES.size(); i++){
+                for (int i = 0; i < promotionXES.size(); i++) {
                     PromotionX daliyPromotion = promotionXES.get(i);
                     boolean isDayTrue = DataUtils.isSameDay(promotionX.getStartDate(), daliyPromotion.getStartDate());
-                    if(isDayTrue){
+                    if (isDayTrue) {
                         promotionResult.setNum(3);
                         promotionResult.setPromotionId(daliyPromotion.getId());
                         return promotionResult;
                     }
                 }
                 List<PromotionSchedule> schedules = scheduleDao.findByPromotionId(promotionX.getId());
-                for (int schedulesNum = 0; schedulesNum < schedules.size(); schedulesNum++){
+                for (int schedulesNum = 0; schedulesNum < schedules.size(); schedulesNum++) {
                     PromotionSchedule schedule = schedules.get(schedulesNum);
-                    for (int promotionsNum = 0; promotionsNum < promotions.size(); promotionsNum++){
+                    for (int promotionsNum = 0; promotionsNum < promotions.size(); promotionsNum++) {
                         Promotion promotion = promotions.get(promotionsNum);
-                        if(promotion.getDailySchedule() != null && promotion.getDailySchedule()){
+                        if (promotion.getDailySchedule() != null && promotion.getDailySchedule()) {
                             List<PromotionSchedule> promotionSchedules = scheduleDao.findByPromotionId(promotion.getId());
-                            for (int promotionSchedulesNum = 0; promotionSchedulesNum < promotionSchedules.size(); promotionSchedulesNum++){
+                            for (int promotionSchedulesNum = 0; promotionSchedulesNum < promotionSchedules.size(); promotionSchedulesNum++) {
                                 PromotionSchedule promotionSchedule = promotionSchedules.get(promotionSchedulesNum);
                                 boolean istrue = DataUtils.isContainDate(schedule.getStartTime(), schedule.getEndTime(),
                                         promotionSchedule.getStartTime(), promotionSchedule.getEndTime());
-                                if(istrue){
+                                if (istrue) {
                                     List<String> mpuList = mpuXMapper.selectDaliyMpuList(promotionSchedule.getPromotionId(), promotionSchedule.getId());
                                     List<String> daliyMpuList = mpuXMapper.selectDaliyMpuList(schedule.getPromotionId(), schedule.getId());
                                     Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
-                                    if(!intersection.isEmpty()){
+                                    if (!intersection.isEmpty()) {
                                         result = 2;
                                         resultMpus.addAll(intersection);
                                     }
                                 }
                             }
-                        }else{
+                        } else {
                             boolean istrue = DataUtils.isContainDate(schedule.getStartTime(), schedule.getEndTime(),
                                     promotion.getStartDate(), promotion.getEndDate());
-                            if(istrue){
+                            if (istrue) {
                                 List<String> mpuList = mpuXMapper.selectMpuList(promotion.getId());
                                 List<String> daliyMpuList = mpuXMapper.selectDaliyMpuList(schedule.getPromotionId(), schedule.getId());
                                 Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
-                                if(!intersection.isEmpty()){
+                                if (!intersection.isEmpty()) {
                                     result = 2;
                                     resultMpus.addAll(intersection);
                                 }
@@ -152,33 +151,33 @@ public class PromotionServiceImpl implements PromotionService {
                         }
                     }
                 }
-            }else{
-                for (int promotionsNum = 0; promotionsNum < promotions.size(); promotionsNum++){
+            } else {
+                for (int promotionsNum = 0; promotionsNum < promotions.size(); promotionsNum++) {
                     Promotion promotion = promotions.get(promotionsNum);
-                    if(promotion.getDailySchedule() != null && promotion.getDailySchedule()){
+                    if (promotion.getDailySchedule() != null && promotion.getDailySchedule()) {
                         List<PromotionSchedule> promotionSchedules = scheduleDao.findByPromotionId(promotion.getId());
-                        for (int promotionSchedulesNum = 0; promotionSchedulesNum < promotionSchedules.size(); promotionSchedulesNum++){
+                        for (int promotionSchedulesNum = 0; promotionSchedulesNum < promotionSchedules.size(); promotionSchedulesNum++) {
                             PromotionSchedule promotionSchedule = promotionSchedules.get(promotionSchedulesNum);
                             boolean istrue = DataUtils.isContainDate(promotionX.getStartDate(), promotionX.getEndDate(),
                                     promotionSchedule.getStartTime(), promotionSchedule.getEndTime());
-                            if(istrue){
+                            if (istrue) {
                                 List<String> mpuList = mpuXMapper.selectDaliyMpuList(promotionSchedule.getPromotionId(), promotionSchedule.getId());
                                 List<String> daliyMpuList = mpuXMapper.selectMpuList(promotionX.getId());
                                 Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
-                                if(!intersection.isEmpty()){
+                                if (!intersection.isEmpty()) {
                                     result = 2;
                                     resultMpus.addAll(intersection);
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         boolean istrue = DataUtils.isContainDate(promotionX.getStartDate(), promotionX.getEndDate(),
                                 promotion.getStartDate(), promotion.getEndDate());
-                        if(istrue){
+                        if (istrue) {
                             List<String> mpuList = mpuXMapper.selectMpuList(promotion.getId());
                             List<String> daliyMpuList = mpuXMapper.selectMpuList(promotionX.getId());
                             Sets.SetView<String> intersection = Sets.intersection(ImmutableSet.copyOf(mpuList), ImmutableSet.copyOf(daliyMpuList));
-                            if(!intersection.isEmpty()){
+                            if (!intersection.isEmpty()) {
                                 result = 2;
                                 resultMpus.addAll(intersection);
                             }
@@ -187,51 +186,50 @@ public class PromotionServiceImpl implements PromotionService {
                 }
             }
 
-            if(result != 0){
+            if (result != 0) {
                 promotionResult.setNum(result);
                 promotionResult.setMpus(resultMpus);
                 promotionResult.setPromotionId(resultPromotionId.get());
                 return promotionResult;
             }
-            if(promotionX.getStartDate().after(now)){
+            if (promotionX.getStartDate().after(now)) {
                 //未开始
                 bean.setStatus(3);
                 JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), promotionX.getStartDate());
                 JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
-            }else if(promotionX.getStartDate().before(now)  && promotionX.getEndDate().after(now)){
+            } else if (promotionX.getStartDate().before(now) && promotionX.getEndDate().after(now)) {
                 //已开始
                 bean.setStatus(4);
                 JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
-            }else if( promotionX.getEndDate().before(now)){
+            } else if (promotionX.getEndDate().before(now)) {
                 //已结束
                 bean.setStatus(5);
                 //TODO 回收无法触发的定时器
             }
-        }else if(bean.getStatus() != null && bean.getStatus() == 4){  //处理已开始状态
+        } else if (bean.getStatus() != null && bean.getStatus() == 4) {  //处理已开始状态
             //特殊处理"立即开始"动作中, 管理端会传入开始时间,并以管理端传入时间为准
-            if( bean.getStartDate() != null ){
+            if (bean.getStartDate() != null) {
                 promotionX.setStartDate(bean.getStartDate());
             }
-            if(promotionX.getStartDate().before(now)  && promotionX.getEndDate().after(now)){
+            if (promotionX.getStartDate().before(now) && promotionX.getEndDate().after(now)) {
                 //已开始
                 bean.setStatus(4);
                 JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
-            }else if( promotionX.getEndDate().after(now)){
+            } else if (promotionX.getEndDate().after(now)) {
                 //已结束
                 bean.setStatus(5);
                 //TODO 回收无法触发的定时器
             }
-        }else if(bean.getStatus() != null && bean.getStatus() == 5){  //处理已结束状态
+        } else if (bean.getStatus() != null && bean.getStatus() == 5) {  //处理已结束状态
             bean.setStatus(5);
         }
 
-        if(result != 2){
+        if (result != 2) {
             int num = promotionXMapper.updateByPrimaryKeySelective(bean);
             promotionResult.setNum(num);
         }
         return promotionResult;
     }
-
 
 
     @Override
@@ -241,16 +239,16 @@ public class PromotionServiceImpl implements PromotionService {
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
-        map.put("pageSize",bean.getLimit());
-        map.put("name",bean.getName());
-        map.put("promotionTypeId",bean.getPromotionTypeId());
-        map.put("discountType",bean.getDiscountType());
-        map.put("accountType",bean.getAccountType());
-        map.put("appId",bean.getAppId());
-        if(StringUtils.isNotEmpty(bean.getDailySchedule())){
-            map.put("dailySchedule",Boolean.valueOf(bean.getDailySchedule()));
+        map.put("pageSize", bean.getLimit());
+        map.put("name", bean.getName());
+        map.put("promotionTypeId", bean.getPromotionTypeId());
+        map.put("discountType", bean.getDiscountType());
+        map.put("accountType", bean.getAccountType());
+        map.put("appId", bean.getAppId());
+        if (StringUtils.isNotEmpty(bean.getDailySchedule())) {
+            map.put("dailySchedule", Boolean.valueOf(bean.getDailySchedule()));
         }
-        map.put("status",bean.getStatus());
+        map.put("status", bean.getStatus());
         List<PromotionX> promotions = new ArrayList<>();
         total = promotionXMapper.selectCount(map);
         if (total > 0) {
@@ -264,7 +262,7 @@ public class PromotionServiceImpl implements PromotionService {
     public int deletePromotion(Integer id) {
         PromotionX promotionX = promotionXMapper.selectByPrimaryKey(id);
 
-        if(promotionX.getStatus() != 1){
+        if (promotionX.getStatus() != 1) {
             return 2;
         }
 
@@ -276,7 +274,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public PromotionX findPromotionById(Integer id) {
         PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
-        if(promotion == null){
+        if (promotion == null) {
             return promotion;
         }
         List<PromotionMpuX> promotionMpus = null;
@@ -285,22 +283,20 @@ public class PromotionServiceImpl implements PromotionService {
 //        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
 
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
-        if(!mpuIdList.isEmpty()){
-            OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
-            if (result.getCode() == 200) {
-                Object object = result.getData().get("result");
-                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
-                for(AoyiProdIndex prod: aoyiProdIndices){
-                    if(prod != null){
+        if (!mpuIdList.isEmpty()) {
+            for (int i = 0; i < mpuIdList.size(); i++) {
+                List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+                for (AoyiProdIndex prod : aoyiProdIndices) {
+                    if (prod != null) {
                         aoyiProdMap.put(prod.getMpu(), prod);
                     }
                 }
             }
         }
 
-        promotionMpus.forEach(promotionMpuX ->{
+        promotionMpus.forEach(promotionMpuX -> {
             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-            if(aoyiProdIndex != null){
+            if (aoyiProdIndex != null) {
                 promotionMpuX.setBrand(aoyiProdIndex.getBrand());
                 promotionMpuX.setModel(aoyiProdIndex.getModel());
                 promotionMpuX.setName(aoyiProdIndex.getName());
@@ -332,11 +328,11 @@ public class PromotionServiceImpl implements PromotionService {
     public int createContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpuX> promotionSkus = bean.getPromotionSkus();
-        for(int i = 0; i < promotionSkus.size(); i++){
+        for (int i = 0; i < promotionSkus.size(); i++) {
             PromotionMpuX promotionMpuX = promotionSkus.get(i);
             PromotionMpu promotionMpu = new PromotionMpu();
             promotionMpu.setId(promotionMpuX.getId());
-            if(promotionMpuX.getMpu() == null){
+            if (promotionMpuX.getMpu() == null) {
                 return 0;
             }
             promotionMpu.setMpu(promotionMpuX.getMpu());
@@ -348,7 +344,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpu.setPerLimited(promotionMpuX.getPerLimited());
             promotionMpu.setAppId(promotionMpuX.getAppId());
             num[0] = promotionMpuMapper.insertSelective(promotionMpu);
-        };
+        }
         return num[0];
     }
 
@@ -356,7 +352,7 @@ public class PromotionServiceImpl implements PromotionService {
     public int updateContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpuX> promotionSkus = bean.getPromotionSkus();
-        promotionSkus.forEach(promotionMpuX ->{
+        promotionSkus.forEach(promotionMpuX -> {
             PromotionMpu promotionMpu = new PromotionMpu();
             promotionMpu.setId(promotionMpuX.getId());
             promotionMpu.setMpu(promotionMpuX.getMpu());
@@ -376,7 +372,7 @@ public class PromotionServiceImpl implements PromotionService {
     public int deleteContent(PromotionX bean) {
         final int[] num = {0};
         List<PromotionMpuX> promotionSkus = bean.getPromotionSkus();
-        promotionSkus.forEach(promotionMpuX ->{
+        promotionSkus.forEach(promotionMpuX -> {
             PromotionMpu promotionMpu = new PromotionMpu();
             promotionMpu.setId(promotionMpuX.getId());
             promotionMpu.setMpu(promotionMpuX.getMpu());
@@ -392,51 +388,47 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionX findPromotionToUser(Integer id, Boolean detail, String appId) {
 
         PromotionX promotion = promotionXMapper.selectByPrimaryKey(id);
-        if(promotion == null){
+        if (promotion == null) {
             return promotion;
         }
 
         List<PromotionMpuX> promotionMpus = null;
-        if(detail != null && detail == true){
+        if (detail != null && detail == true) {
             promotionMpus = mpuXMapper.selectByPrimaryMpu(promotion.getId());
             List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
-            OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
-            Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
-            if (result.getCode() == 200) {
-                Object object = result.getData().get("result");
-                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
-                for(AoyiProdIndex prod: aoyiProdIndices){
-                    if(prod != null){
-                        aoyiProdMap.put(prod.getMpu(), prod);
-                    }
+            Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<>();
+            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+            for (AoyiProdIndex prod : aoyiProdIndices) {
+                if (prod != null) {
+                    aoyiProdMap.put(prod.getMpu(), prod);
                 }
-                promotionMpus.forEach(promotionMpuX ->{
-                    AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-                    if(aoyiProdIndex != null){
-                        promotionMpuX.setBrand(aoyiProdIndex.getBrand());
-                        promotionMpuX.setModel(aoyiProdIndex.getModel());
-                        promotionMpuX.setName(aoyiProdIndex.getName());
-                        promotionMpuX.setSprice(aoyiProdIndex.getSprice());
-                        promotionMpuX.setPrice(aoyiProdIndex.getPrice());
-                        promotionMpuX.setState(aoyiProdIndex.getState());
-                        String imageUrl = aoyiProdIndex.getImagesUrl();
-                        if (imageUrl != null && (!"".equals(imageUrl))) {
-                            String image = "";
-                            if (imageUrl.indexOf("/") == 0) {
-                                image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                            } else {
-                                image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                            }
-                            aoyiProdIndex.setImage(image);
+            }
+            promotionMpus.forEach(promotionMpuX -> {
+                AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
+                if (aoyiProdIndex != null) {
+                    promotionMpuX.setBrand(aoyiProdIndex.getBrand());
+                    promotionMpuX.setModel(aoyiProdIndex.getModel());
+                    promotionMpuX.setName(aoyiProdIndex.getName());
+                    promotionMpuX.setSprice(aoyiProdIndex.getSprice());
+                    promotionMpuX.setPrice(aoyiProdIndex.getPrice());
+                    promotionMpuX.setState(aoyiProdIndex.getState());
+                    String imageUrl = aoyiProdIndex.getImagesUrl();
+                    if (imageUrl != null && (!"".equals(imageUrl))) {
+                        String image = "";
+                        if (imageUrl.indexOf("/") == 0) {
+                            image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                        } else {
+                            image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
                         }
-                        promotionMpuX.setImage(aoyiProdIndex.getImage());
+                        aoyiProdIndex.setImage(image);
                     }
+                    promotionMpuX.setImage(aoyiProdIndex.getImage());
+                }
 //                if(promotionMpuX.getScheduleId() != null){
 //                    PromotionSchedule schedule = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
 //                    promotionMpuX.setSchedule(schedule);
 //                }
-                });
-            }
+            });
             promotion.setPromotionSkus(promotionMpus);
         }
         List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
@@ -448,14 +440,14 @@ public class PromotionServiceImpl implements PromotionService {
     public List<PromotionInfoBean> findPromotionByMpu(String mpu, String appId) {
         Date now = new Date();
         List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(mpu, appId);
-        for (int i = 0; i < beans.size(); i++){
-            if(beans.get(i).getDailySchedule() != null && beans.get(i).getDailySchedule()){
+        for (int i = 0; i < beans.size(); i++) {
+            if (beans.get(i).getDailySchedule() != null && beans.get(i).getDailySchedule()) {
                 List<PromotionSchedule> promotionSchedules = scheduleDao.findPromotionSchedule(beans.get(i).getScheduleId());
-                if(!promotionSchedules.isEmpty()){
+                if (!promotionSchedules.isEmpty()) {
                     PromotionSchedule promotionSchedule = promotionSchedules.get(0);
-                    if(promotionSchedule.getEndTime().before(now)){
+                    if (promotionSchedule.getEndTime().before(now)) {
                         beans.remove(i);
-                    }else{
+                    } else {
                         beans.get(i).setStartDate(promotionSchedule.getStartTime());
                         beans.get(i).setEndDate(promotionSchedule.getEndTime());
                     }
@@ -530,32 +522,32 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public PromotionX findCurrentSchedule(Integer num, String appId) {
-        if(num == null){
+        if (num == null) {
             num = 16;
         }
 
         List<PromotionX> promotions = promotionXMapper.selectDaliyPromotion(appId);
-        if(promotions.isEmpty()){
+        if (promotions.isEmpty()) {
             return null;
-        }else{
+        } else {
             PromotionX promotion = null;
             Date date = new Date();
-            for (int i=0; i<promotions.size();i++){
+            for (int i = 0; i < promotions.size(); i++) {
                 boolean isSameDay = DataUtils.isSameDay(date, promotions.get(i).getStartDate());
-                if(isSameDay){
+                if (isSameDay) {
                     promotion = promotions.get(i);
                 }
             }
-            if(promotion == null){
+            if (promotion == null) {
                 return null;
             }
             List<PromotionSchedule> scheduleAll = scheduleDao.findByPromotionId(promotion.getId());
             promotion.setPromotionSchedules(scheduleAll);
             PromotionScheduleX schedule = scheduleXMapper.selectCurrentSchedule(promotion.getId());
 
-            if(schedule == null){
+            if (schedule == null) {
                 schedule = scheduleXMapper.selectSoonSchedule(promotion.getId());
-                if(schedule == null){
+                if (schedule == null) {
                     return promotion;
                 }
             }
@@ -564,35 +556,33 @@ public class PromotionServiceImpl implements PromotionService {
             List<PromotionMpuX> promotionMpus = mpuXMapper.selectDaliyPromotionMpu(promotion.getId(), schedule.getId());
             PageHelper.startPage(1, finalNum);
             List<String> mpuIdList = mpuXMapper.selectDaliyMpuList(promotion.getId(), schedule.getId());
-            OperaResult result = prodService.findProductListByMpuIdList(mpuIdList);
             Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
-            if (result.getCode() == 200) {
-                Object object = result.getData().get("result");
-                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
-                for(AoyiProdIndex prod: aoyiProdIndices){
+            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+            for (AoyiProdIndex prod : aoyiProdIndices) {
+                if (prod != null) {
                     aoyiProdMap.put(prod.getMpu(), prod);
                 }
-                promotionMpus.forEach(promotionMpuX ->{
-                    AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
-                    promotionMpuX.setBrand(aoyiProdIndex.getBrand());
-                    promotionMpuX.setModel(aoyiProdIndex.getModel());
-                    promotionMpuX.setName(aoyiProdIndex.getName());
-                    promotionMpuX.setSprice(aoyiProdIndex.getSprice());
-                    promotionMpuX.setPrice(aoyiProdIndex.getPrice());
-                    promotionMpuX.setState(aoyiProdIndex.getState());
-                    String imageUrl = aoyiProdIndex.getImagesUrl();
-                    if (imageUrl != null && (!"".equals(imageUrl))) {
-                        String image = "";
-                        if (imageUrl.indexOf("/") == 0) {
-                            image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
-                        } else {
-                            image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
-                        }
-                        aoyiProdIndex.setImage(image);
-                    }
-                    promotionMpuX.setImage(aoyiProdIndex.getImage());
-                });
             }
+            promotionMpus.forEach(promotionMpuX -> {
+                AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(promotionMpuX.getMpu());
+                promotionMpuX.setBrand(aoyiProdIndex.getBrand());
+                promotionMpuX.setModel(aoyiProdIndex.getModel());
+                promotionMpuX.setName(aoyiProdIndex.getName());
+                promotionMpuX.setSprice(aoyiProdIndex.getSprice());
+                promotionMpuX.setPrice(aoyiProdIndex.getPrice());
+                promotionMpuX.setState(aoyiProdIndex.getState());
+                String imageUrl = aoyiProdIndex.getImagesUrl();
+                if (imageUrl != null && (!"".equals(imageUrl))) {
+                    String image = "";
+                    if (imageUrl.indexOf("/") == 0) {
+                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                    } else {
+                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                    }
+                    aoyiProdIndex.setImage(image);
+                }
+                promotionMpuX.setImage(aoyiProdIndex.getImage());
+            });
             promotion.setPromotionSkus(promotionMpus);
 //            schedule.setPromotionMpus(promotionMpus);
 //            bean.setPromotionSchedules(promotionSchedules);
@@ -619,17 +609,17 @@ public class PromotionServiceImpl implements PromotionService {
         List<Promotion> onlineMpu = promotionDao.findOnlineMpu(appId);
         Date now = new Date();
         onlineMpu.forEach(promotion -> {
-            if(promotion.getDailySchedule()){
+            if (promotion.getDailySchedule()) {
                 List<PromotionSchedule> schedules = scheduleDao.findByPromotionId(promotion.getId());
                 schedules.forEach(schedule -> {
-                    if(schedule.getStartTime().before(now) && schedule.getEndTime().after(now)){
+                    if (schedule.getStartTime().before(now) && schedule.getEndTime().after(now)) {
                         List<PromotionMpuX> mpuList = mpuXMapper.selectDaliyPromotionMpu(promotion.getId(), schedule.getId());
                         mpuList.forEach(mpu -> {
                             mpus.add(mpu);
                         });
                     }
                 });
-            }else{
+            } else {
                 List<PromotionMpuX> mpuList = mpuXMapper.selectByPrimaryMpu(promotion.getId());
                 mpuList.forEach(mpu -> {
                     mpus.add(mpu);
@@ -655,14 +645,14 @@ public class PromotionServiceImpl implements PromotionService {
     public List<PromotionInfoBean> verifyPromotionInfo(List<PromotionMpuBean> beans) {
         Date now = new Date();
         List<PromotionInfoBean> promotions = new ArrayList<>();
-        for(int i = 0; i < beans.size(); i++) {
+        for (int i = 0; i < beans.size(); i++) {
             PromotionMpuBean bean = beans.get(i);
             PromotionInfoBean promotionInfoBean = new PromotionInfoBean();
             PromotionX promotionX = promotionXMapper.selectByPrimaryKey(bean.getId());
             PromotionMpuX promotionMpuX = mpuXMapper.selectByPrimaryIdAndMpu(bean.getMpu(), bean.getId());
             promotionInfoBean.setId(bean.getId());
             promotionInfoBean.setMpu(bean.getMpu());
-            if(promotionMpuX != null){
+            if (promotionMpuX != null) {
                 promotionInfoBean.setStartDate(promotionX.getStartDate());
                 promotionInfoBean.setEndDate(promotionX.getEndDate());
                 promotionInfoBean.setCreatedDate(promotionX.getCreatedDate());
@@ -671,21 +661,21 @@ public class PromotionServiceImpl implements PromotionService {
                 promotionInfoBean.setStatus(promotionX.getStatus());
                 promotionInfoBean.setSkuid(promotionMpuX.getSkuid());
                 promotionInfoBean.setScheduleId(promotionMpuX.getScheduleId());
-                if(promotionX.getStatus() != 5){
-                    if(promotionX.getDailySchedule() != null && promotionX.getDailySchedule()){
+                if (promotionX.getStatus() != 5) {
+                    if (promotionX.getDailySchedule() != null && promotionX.getDailySchedule()) {
                         List<PromotionSchedule> promotionSchedules = scheduleDao.findPromotionSchedule(promotionMpuX.getScheduleId());
-                        if(!promotionSchedules.isEmpty()){
+                        if (!promotionSchedules.isEmpty()) {
                             PromotionSchedule promotionSchedule = promotionSchedules.get(0);
-                            if(promotionSchedule.getStartTime().before(now) && promotionSchedule.getEndTime().after(now)){
+                            if (promotionSchedule.getStartTime().before(now) && promotionSchedule.getEndTime().after(now)) {
                                 promotionInfoBean.setStatus(4);
-                            }else{
+                            } else {
                                 promotionInfoBean.setStatus(5);
                             }
                         }
-                    }else{
-                        if(promotionX.getStartDate().before(now) && promotionX.getEndDate().after(now)){
+                    } else {
+                        if (promotionX.getStartDate().before(now) && promotionX.getEndDate().after(now)) {
                             promotionInfoBean.setStatus(4);
-                        }else{
+                        } else {
                             promotionInfoBean.setStatus(5);
                         }
                     }
