@@ -121,7 +121,7 @@ public class PressDeliveryRunnerJobImpl implements JobRunner {
 
             // 4. 发送邮件通知相关同学
             baseRpcService.sendMail(MAIL_ADDRESS.split(","),
-                    "供应商发货短信提醒任务",
+                    BeanContext.getProfile() + "-供应商发货短信提醒任务",
                     mailContent.toString() + " :: traceId=" + MDC.get("X-B3-TraceId"));
         } catch (Exception e) {
             LOGGER.error("供应商发货短信提醒任务 异常:{}", e.getMessage(), e);
