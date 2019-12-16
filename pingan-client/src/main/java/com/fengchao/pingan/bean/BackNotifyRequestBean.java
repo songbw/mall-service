@@ -18,4 +18,6 @@ public class BackNotifyRequestBean implements Serializable {
     private String mchOrderNo ;
     private String timeEnd  ;
     private String sign  ;
+    private String payType = "WECHAT" ;
+    private String msgType = "PAY" ;
 }
