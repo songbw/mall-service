@@ -1715,6 +1715,66 @@ public class OrderDetailExample {
             addCriterion("checked_price not between", value1, value2, "checkedPrice");
             return (Criteria) this;
         }
+
+        public Criteria andSpriceIsNull() {
+            addCriterion("sprice is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIsNotNull() {
+            addCriterion("sprice is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceEqualTo(BigDecimal value) {
+            addCriterion("sprice =", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotEqualTo(BigDecimal value) {
+            addCriterion("sprice <>", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceGreaterThan(BigDecimal value) {
+            addCriterion("sprice >", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceGreaterThanOrEqualTo(BigDecimal value) {
+            addCriterion("sprice >=", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceLessThan(BigDecimal value) {
+            addCriterion("sprice <", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceLessThanOrEqualTo(BigDecimal value) {
+            addCriterion("sprice <=", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIn(List<BigDecimal> values) {
+            addCriterion("sprice in", values, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotIn(List<BigDecimal> values) {
+            addCriterion("sprice not in", values, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("sprice between", value1, value2, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("sprice not between", value1, value2, "sprice");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
