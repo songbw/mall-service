@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class EquityServiceH implements EquityService {
 
     @Override
-    public OperaResult findPromotionBySkuId(String skuId) {
+    public OperaResult findPromotionBySkuId(String skuId, String appId) {
         OperaResult result = new OperaResult();
         result.setCode(404);
         result.setMsg("获取促销活动信息失败 " + skuId);
@@ -19,7 +19,7 @@ public class EquityServiceH implements EquityService {
     }
 
     @Override
-    public OperaResult selectCouponBySku(AoyiProdIndexX bean) {
+    public OperaResult selectCouponBySku(AoyiProdIndexX bean, String appId) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
