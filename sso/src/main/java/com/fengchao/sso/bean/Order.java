@@ -103,6 +103,8 @@ public class Order {
 
     private List<OrderDetail> skus;
 
+    private String appId ;
+
     public Integer getId() {
         return id;
     }
@@ -493,5 +495,13 @@ public class Order {
 
     public void setCouponDiscount(Float couponDiscount) {
         this.couponDiscount = couponDiscount;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

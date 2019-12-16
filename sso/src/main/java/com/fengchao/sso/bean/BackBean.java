@@ -24,4 +24,6 @@ public class BackBean {
     private int payStatus;
     // 1支付，2充值，3退款，4提现
     private int orderCategory ;
+
+    private String appId ;
 }

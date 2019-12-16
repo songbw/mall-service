@@ -156,6 +156,7 @@ public class PaymentServiceImpl implements IPaymentService {
             order1.setPayOrderCategory(bean.getOrderCategory());
             order1.setPayType(bean.getPayType());
             order1.setRefundFee(bean.getRefundFee());
+            order1.setAppId(bean.getAppId());
 
             // 执行更新
             updatePaymentByOutTradeNoAndPaymentNo(order1);
@@ -184,7 +185,7 @@ public class PaymentServiceImpl implements IPaymentService {
             order1.setPaymentAt(new Date());
             order1.setStatus(1);
             order1.setPayStatus(5);
-
+            order1.setAppId(appId);
             // 执行更新
             updatePaymentByOutTradeNoAndPaymentNo(order1);
 

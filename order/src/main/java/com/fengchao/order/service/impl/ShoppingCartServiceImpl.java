@@ -48,7 +48,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return result ;
         }
         // 验证MPU是否存在
-        AoyiProdIndex aoyiProdIndex = findProductByMpu(bean.getMpu()) ;
+        AoyiProdIndex aoyiProdIndex = findProductByMpu(bean.getMpu(), bean.getAppId()) ;
         if (aoyiProdIndex == null | aoyiProdIndex.getMpu() == null) {
             result.setCode(4000002);
             result.setMsg(bean.getMpu() + " 商品不存在");
@@ -81,8 +81,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
     }
 
-    private AoyiProdIndex findProductByMpu(String mpu) {
-        OperaResult productResult = productService.find(mpu) ;
+    private AoyiProdIndex findProductByMpu(String mpu, String appId) {
+        OperaResult productResult = productService.find(mpu, appId) ;
         if (productResult.getCode() == 200) {
             Map<String, Object> data = productResult.getData() ;
             Object object = data.get("result");
