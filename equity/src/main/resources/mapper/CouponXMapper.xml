@@ -207,6 +207,9 @@
         and scenario_type = 3
       </if>
     </trim>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
     and status = 4
   </select>
   <select id="selectGrantCoupon" resultMap="BaseResultMap">

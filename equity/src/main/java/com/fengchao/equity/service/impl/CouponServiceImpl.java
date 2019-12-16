@@ -103,7 +103,19 @@ public class CouponServiceImpl implements CouponService {
                 coupon.setStatus(5);
                 JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
             }
+        }else{
+
+            if(bean.getReleaseStartDate() != null){
+                JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), bean.getReleaseStartDate());
+            }
+            if(bean.getReleaseEndDate() != null){
+                JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), bean.getReleaseEndDate());
+            }
+            if(bean.getEffectiveEndDate() != null){
+                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), bean.getEffectiveEndDate());
+            }
         }
+
 
         return mapper.updateByPrimaryKeySelective(coupon);
     }
@@ -513,6 +525,7 @@ public class CouponServiceImpl implements CouponService {
         for(int m = 0; m < prodBeans.size(); m++){
             CouponAndPromBean couponAndPromBean = new CouponAndPromBean();
             AoyiProdBean bean = prodBeans.get(m);
+            bean.setAppId(appId);
             Date now = new Date();
             List<PromotionInfoBean> beans = promotionXMapper.selectPromotionInfoByMpu(bean.getMpu(), appId);
             for (int i = 0; i < beans.size(); i++){

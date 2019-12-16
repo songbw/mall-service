@@ -144,7 +144,10 @@ public class AdminCouponController {
     }
 
     @PostMapping("findByMpu")
-    public OperaResult selectCouponByMpu(@RequestBody AoyiProdBean bean, OperaResult result){
+    public OperaResult selectCouponByMpu(@RequestBody AoyiProdBean bean,
+                                         @RequestHeader String appId,
+                                         OperaResult result){
+        bean.setAppId(appId);
         List<CouponBean> couponBeans = couponService.selectCouponByMpu(bean);
         result.getData().put("result",couponBeans);
         return result;
