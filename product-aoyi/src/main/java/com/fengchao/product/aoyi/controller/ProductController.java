@@ -95,7 +95,12 @@ public class ProductController {
      */
     @GetMapping("/findByMpuIdList")
     private OperaResult findByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
-        log.info("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        if (mpuIdList.size() > 60) {
+            result.setCode(200001);
+            result.setMsg("mpu 列表数量超过50！");
+            return result ;
+        }
         try {
             // 查询
             List<ProductInfoBean> productInfoBeanList = service.queryProductListByMpuIdList(mpuIdList);
@@ -108,7 +113,7 @@ public class ProductController {
             result.setMsg("根据mup集合查询产品信息 异常");
         }
 
-        log.info("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
+        log.debug("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
 
         return result;
     }
@@ -123,7 +128,12 @@ public class ProductController {
      */
     @GetMapping("/mpuIds")
     private OperaResult selectByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
-        log.info("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        if (mpuIdList.size() > 60) {
+            result.setCode(200001);
+            result.setMsg("mpu 列表数量超过50！");
+            return result ;
+        }
         try {
             // 查询
             List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList);
@@ -136,7 +146,7 @@ public class ProductController {
             result.setMsg("根据mup集合查询产品信息 异常");
         }
 
-        log.info("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
+        log.debug("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
 
         return result;
     }
@@ -148,7 +158,12 @@ public class ProductController {
 
     @GetMapping("/getByMpus")
     private OperaResult getProdsByMpus(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
-
+        log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        if (mpuIdList.size() > 60) {
+            result.setCode(200001);
+            result.setMsg("mpu 列表数量超过50！");
+            return result ;
+        }
         try {
             // 查询
             List<AoyiProdIndex> productInfoBeanList = service.getProdsByMpus(mpuIdList);

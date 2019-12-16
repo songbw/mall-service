@@ -74,7 +74,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.debug("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
 //            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
 //                throw new Exception("参数不合法, 商户id为空");
@@ -145,7 +145,7 @@ public class AdminOrderController {
             }
 
             //
-            log.info("export file finish");
+            log.debug("export file finish");
         } catch (Exception e) {
             log.error("导出订单文件异常:{}", e.getMessage(), e);
 
@@ -202,7 +202,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.debug("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
 
             // 1.校验参数
             if (orderExportReqVo.getPayStartDate() == null) {
@@ -317,7 +317,7 @@ public class AdminOrderController {
             }
 
             //
-            log.info("导出订单对账单 export file finish");
+            log.debug("导出订单对账单 export file finish");
         } catch (Exception e) {
             log.error("导出订单对账单异常:{}", e.getMessage(), e);
 
@@ -360,7 +360,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.debug("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
 //            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
 //                throw new Exception("参数不合法, 商户id为空");
@@ -431,7 +431,7 @@ public class AdminOrderController {
             }
 
             //
-            log.info("export file finish");
+            log.debug("export file finish");
         } catch (Exception e) {
             log.error("导出订单文件异常:{}", e.getMessage(), e);
 
@@ -488,7 +488,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.debug("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
 
             // 1.校验参数
             if (orderExportReqVo.getPayStartDate() == null) {
@@ -603,7 +603,7 @@ public class AdminOrderController {
             }
 
             //
-            log.info("导出订单对账单 export file finish");
+            log.debug("导出订单对账单 export file finish");
         } catch (Exception e) {
             log.error("导出订单对账单异常:{}", e.getMessage(), e);
 
@@ -660,7 +660,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("导出交易流水单 入参:{}", JSONUtil.toJsonString(billExportReqVo));
+            log.debug("导出交易流水单 入参:{}", JSONUtil.toJsonString(billExportReqVo));
 
             // 1.校验参数
             if (billExportReqVo.getStartDate() == null) {
@@ -788,7 +788,7 @@ public class AdminOrderController {
             }
 
             //
-            log.info("导出交易流水单 export file finish");
+            log.debug("导出交易流水单 export file finish");
         } catch (Exception e) {
             log.error("导出交易流水单异常:{}", e.getMessage(), e);
 
@@ -922,7 +922,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("每日统计 入参: 无");
+            log.debug("每日统计 入参: 无");
 
             // 1.根据条件获统计数据
             Map<String, Object> statisticMap = adminOrderService.exportDailyOrderStatistic();
@@ -1094,7 +1094,7 @@ public class AdminOrderController {
             }
 
             //
-            log.info("export file finish");
+            log.debug("export file finish");
         } catch (Exception e) {
             log.error("每日统计异常:{}", e.getMessage(), e);
 
