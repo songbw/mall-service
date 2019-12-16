@@ -221,7 +221,7 @@ public class OrderServiceImpl implements OrderService {
             orderMapper.insert(bean);
             AtomicInteger i= new AtomicInteger(1);
             for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
-                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
+                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu(), orderBean.getAppId());
 
                 // 判断产品上下架状态
                 if ("0".equals(prodIndexWithBLOBs.getState())) {
@@ -609,7 +609,7 @@ public class OrderServiceImpl implements OrderService {
             orderBeans = orderMapper.selectOrderLimit(map);
             orderBeans.forEach(order -> {
                 if(order.getImage() == null || "".equals(order.getImage())){
-                    AoyiProdIndex productIndex = findProduct(order.getSkuId());
+                    AoyiProdIndex productIndex = findProduct(order.getSkuId(), orderBean.getAppId());
                     if (productIndex != null) {
                         String imagesUrl = productIndex.getImagesUrl();
                         if (imagesUrl != null && (!"".equals(imagesUrl))) {
@@ -1215,8 +1215,8 @@ public class OrderServiceImpl implements OrderService {
 
     // ========================================= private ======================================
 
-    private AoyiProdIndex findProduct(String skuId) {
-        OperaResult result = productService.find(skuId);
+    private AoyiProdIndex findProduct(String skuId, String appId) {
+        OperaResult result = productService.find(skuId, appId);
         logger.info("根据MPU：" + skuId + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
@@ -1362,7 +1362,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(order.getId()) ;
         logger.info("根据订单ID：" + order.getId() + " 查询子订单列表，输出结果：{}", JSONUtil.toJsonString(orderDetailList));
         orderDetailList.forEach(orderDetail -> {
-            AoyiProdIndex prodIndex = findProduct(orderDetail.getMpu()) ;
+            AoyiProdIndex prodIndex = findProduct(orderDetail.getMpu(), order.getAppId()) ;
             if (prodIndex != null && prodIndex.getType() == 1) {
                 VirtualTicketsBean virtualTicketsBean = new VirtualTicketsBean() ;
                 virtualTicketsBean.setOpenId(order.getOpenId());

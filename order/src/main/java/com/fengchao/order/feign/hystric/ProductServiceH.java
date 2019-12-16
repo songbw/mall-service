@@ -15,7 +15,7 @@ public class ProductServiceH implements ProductService {
     private Throwable cause;
 
     @Override
-    public OperaResult find(String id) {
+    public OperaResult find(String id, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 
