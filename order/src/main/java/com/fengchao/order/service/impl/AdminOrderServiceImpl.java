@@ -376,7 +376,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 dailyExportOrderStatisticVo.setDeliveredOrderCount(deliveredOrderCount);
                 totalDeliveredOrderCount = totalDeliveredOrderCount + deliveredOrderCount;
 
-                // x.获取代发货的子订单
+                // x.获取待发货的子订单
                 List<OrderDetail> unDeliveryOrderDetailList = orderDetailDao.selectOrderDetailsInSupplierAndStatus(sysCompanyX.getId().intValue(), 1);
                 totalUnDeliveryOrderCount = totalUnDeliveryOrderCount + unDeliveryOrderDetailList.size();
 
