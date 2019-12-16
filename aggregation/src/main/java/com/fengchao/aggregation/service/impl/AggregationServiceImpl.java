@@ -12,6 +12,7 @@ import com.fengchao.aggregation.feign.EquityService;
 import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
+import com.fengchao.aggregation.rpc.ProductRpcService;
 import com.fengchao.aggregation.service.AggregationService;
 import com.fengchao.aggregation.utils.CosUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Autowired
     private AggregationMpuMapper mpuMapper;
     @Autowired
-    private ProdService prodService;
+    private ProductRpcService productRpcService;
     @Autowired
     private EquityService equityService;
 
@@ -154,14 +155,11 @@ public class AggregationServiceImpl implements AggregationService {
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
         Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
-            OperaResult result = prodService.findProductListByMpuIdList(mpus);
-            if (result.getCode() == 200) {
-                Object object = result.getData().get("result");
-                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
-                for(AoyiProdIndex prod: aoyiProdIndices){
-                    aoyiProdMap.put(prod.getMpu(), prod);
-                }
+            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus);
+            for(AoyiProdIndex prod: aoyiProdIndices){
+                aoyiProdMap.put(prod.getMpu(), prod);
             }
+
             OperaResult onlinePromotion = equityService.findOnlinePromotion(appId);
             if (onlinePromotion.getCode() == 200) {
                 Object object = onlinePromotion.getData().get("result");

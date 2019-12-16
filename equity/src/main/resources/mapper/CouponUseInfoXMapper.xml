@@ -159,6 +159,9 @@
     <if test="id != null" >
       and id = #{id,jdbcType=INTEGER}
     </if>
+      <if test="appId != null" >
+          and app_id = #{appId,jdbcType=VARCHAR}
+      </if>
       <if test="userCouponCode != null" >
           <bind name="patternName" value="'%' + userCouponCode + '%'" />
           and user_coupon_code LIKE #{patternName}

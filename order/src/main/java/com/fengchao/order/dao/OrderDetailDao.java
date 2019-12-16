@@ -332,6 +332,22 @@ public class OrderDetailDao {
     }
 
     /**
+     * 查询供应商维度下的不同状态的子订单数量
+     *
+     * @param status 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByStatus(Integer status) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andStatusEqualTo(status);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+        return orderDetailList;
+    }
+
+    /**
      * 按照创建时间查询有效订单
      *
      * @param startTime

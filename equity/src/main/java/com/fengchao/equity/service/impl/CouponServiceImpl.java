@@ -159,12 +159,12 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CategoryCouponBean activeCategories(String appId) {
         CategoryCouponBean categoryCouponBean = new CategoryCouponBean();
-        List<String> tags = mapper.selectTags();
+        List<String> tags = mapper.selectTags(appId);
         List<CouponTags> tagList = null;
         if(!tags.isEmpty()){
             tagList = tagsMapper.selectTags(tags);
         }
-        List<String> categories = mapper.selectActiveCategories();
+        List<String> categories = mapper.selectActiveCategories(appId);
 
         OperaResult result = productService.findCategoryList(categories);
         Object object = result.getData().get("result");

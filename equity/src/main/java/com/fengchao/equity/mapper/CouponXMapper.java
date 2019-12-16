@@ -31,9 +31,9 @@ public interface CouponXMapper {
 
     CouponX selectByCodeKey(String code, String appId);
 
-    List<String> selectActiveCategories();
+    List<String> selectActiveCategories(@Param("appId")String appId);
 
-    List<String> selectTags();
+    List<String> selectTags(@Param("appId") String appId);
 
     List<CouponX> selectCouponByMpu(AoyiProdBean aoyiProdBean);
 
