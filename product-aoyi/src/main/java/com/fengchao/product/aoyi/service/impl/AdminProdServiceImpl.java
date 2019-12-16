@@ -327,7 +327,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public PageBean findProdAll(QueryProdBean bean) {
+    public PageBean findProdAll(QueryProdBean bean, String appId) {
         PageBean pageBean = new PageBean();
         int total = 0;
         List<ProductInfoBean> infoBeans = new ArrayList<>();
@@ -337,7 +337,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                 ProductInfoBean infoBean = new ProductInfoBean();
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
-                OperaResult operaResult = equityService.findPromotionBySkuId(aoyiProdIndex.getSkuid());
+                OperaResult operaResult = equityService.findPromotionBySkuId(aoyiProdIndex.getSkuid(), appId);
                 Object object = operaResult.getData().get("result");
                 String objectString = JSON.toJSONString(object);
                 List<PromotionInfoBean> promotionList = JSONObject.parseArray(objectString, PromotionInfoBean.class);

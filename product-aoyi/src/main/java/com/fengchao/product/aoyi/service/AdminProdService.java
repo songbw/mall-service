@@ -31,7 +31,7 @@ public interface AdminProdService {
 
     void delete(Integer merchantId, Integer id) throws ProductException;
 
-    PageBean findProdAll(QueryProdBean bean);
+    PageBean findProdAll(QueryProdBean bean, String appId);
 
     /**
      * 获取商品导出数据

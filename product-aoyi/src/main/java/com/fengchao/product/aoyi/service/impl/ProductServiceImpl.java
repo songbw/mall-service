@@ -189,14 +189,14 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductInfoBean findAndPromotion(String mpu) throws ProductException {
+    public ProductInfoBean findAndPromotion(String mpu, String appId) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
         AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
         if (aoyiProdIndexX != null) {
             BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
-            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu());
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu(), appId);
             infoBean.setPromotion(promotionInfoBeans);
-            List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
+            List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX, appId) ;
             infoBean.setCoupon(couponBeans);
         }
         return infoBean;
@@ -356,8 +356,8 @@ public class ProductServiceImpl implements ProductService {
         return result;
     }
 
-    private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
-        OperaResult result = equityService.selectCouponBySku(bean);
+    private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean, String appId) {
+        OperaResult result = equityService.selectCouponBySku(bean, appId);
         log.info(JSON.toJSONString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
@@ -369,8 +369,8 @@ public class ProductServiceImpl implements ProductService {
         return null;
     }
 
-    private List<PromotionInfoBean> findPromotionBySku(String skuId) {
-        OperaResult result = equityService.findPromotionBySkuId(skuId);
+    private List<PromotionInfoBean> findPromotionBySku(String skuId, String appId) {
+        OperaResult result = equityService.findPromotionBySkuId(skuId, appId);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
