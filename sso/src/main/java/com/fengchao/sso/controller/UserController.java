@@ -46,16 +46,17 @@ public class UserController {
             result.setMsg("性别不能为空");
             return result ;
         }
-        if ("男".equals(bean.getSex()) || "女".equals(bean.getSex())) {
-            bean.setTelephone(null);
-            int id = service.update(bean);
-            result.getData().put("result", id);
-            return result;
-        } else {
-            result.setCode(1000004);
-            result.setMsg("性别不正确");
-            return result ;
-        }
+//        if ("男".equals(bean.getSex()) || "女".equals(bean.getSex())) {
+//
+//        } else {
+//            result.setCode(1000004);
+//            result.setMsg("性别不正确");
+//            return result ;
+//        }
+        bean.setTelephone(null);
+        int id = service.update(bean);
+        result.getData().put("result", id);
+        return result;
     }
 
     @GetMapping
