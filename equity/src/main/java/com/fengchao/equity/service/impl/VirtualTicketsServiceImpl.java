@@ -16,6 +16,7 @@ import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,6 +31,8 @@ public class VirtualTicketsServiceImpl implements VirtualTicketsService {
     private VirtualTicketsDao ticketsDao;
     @Autowired
     private JobClient jobClient;
+    @Autowired
+    private static Environment environment;
 
     @Override
     public int createVirtualticket(VirtualTicketsBean bean) {
@@ -54,7 +57,7 @@ public class VirtualTicketsServiceImpl implements VirtualTicketsService {
         }
         int virtualticket = ticketsDao.createVirtualticket(virtualTickets);
         if(virtualticket != 0 && virtualProd.getEffectiveDays() != -1){
-            JobClientUtils.virtualTicketsInvalidTrigger(jobClient, virtualTickets.getId(), fetureDate);
+            JobClientUtils.virtualTicketsInvalidTrigger(environment, jobClient, virtualTickets.getId(), fetureDate);
         }
         return virtualTickets.getId();
     }

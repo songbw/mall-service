@@ -12,14 +12,11 @@ import java.util.Date;
 @Component
 public class JobClientUtils {
 
-    @Autowired
-    private static Environment environment;
-
     /**
      * 活动生效任务
      * @param id
      */
-    public static void promotionEffectiveTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+    public static void promotionEffectiveTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("promotion_effective_trigger_" + id);
         job.setParam("type", "promotionEffective");
@@ -35,7 +32,7 @@ public class JobClientUtils {
      * 活动结束任务
      * @param id
      */
-    public static void promotionEndTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+    public static void promotionEndTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("promotion_end_trigger_" + id);
         job.setParam("type", "promotionEnd");
@@ -51,7 +48,7 @@ public class JobClientUtils {
      * 优惠卷生效任务
      * @param id
      */
-    public static void couponEffectiveTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+    public static void couponEffectiveTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("coupon_effective_trigger_" + id);
         job.setParam("type", "couponEffective");
@@ -67,7 +64,7 @@ public class JobClientUtils {
      * 优惠券结束任务
      * @param id
      */
-    public static void couponEndTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+    public static void couponEndTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("coupon_end_trigger_" + id);
         job.setParam("type", "couponEnd");
@@ -83,7 +80,7 @@ public class JobClientUtils {
      * 用户优惠券失效任务
      * @param id
      */
-    public static void couponInvalidTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+    public static void couponInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("coupon_invalid_trigger_" + id);
         job.setParam("type", "couponInvalid");
@@ -99,7 +96,7 @@ public class JobClientUtils {
      * 虚拟券失效任务
      * @param id
      */
-    public static void virtualTicketsInvalidTrigger(JobClient jobClient, Integer id, Date triggerTime) {
+    public static void virtualTicketsInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("virtual_invalid_trigger_" + id);
         job.setParam("type", "virtualEnd");
@@ -115,7 +112,7 @@ public class JobClientUtils {
      * 用户优惠券释放任务
      * @param id
      */
-    public static void couponReleaseTrigger(JobClient jobClient, Integer id) {
+    public static void couponReleaseTrigger(Environment environment, JobClient jobClient, Integer id) {
         Job job = new Job();
         job.setTaskId("coupon_release_trigger_" + id);
         job.setParam("type", "couponRelease");

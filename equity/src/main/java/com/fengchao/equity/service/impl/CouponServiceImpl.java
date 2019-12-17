@@ -22,6 +22,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -48,6 +49,8 @@ public class CouponServiceImpl implements CouponService {
     private PromotionXMapper promotionXMapper;
     @Autowired
     private PromotionScheduleDao scheduleDao;
+    @Autowired
+    private static Environment environment;
 
     @Override
     public int createCoupon(CouponBean bean) {
@@ -90,29 +93,29 @@ public class CouponServiceImpl implements CouponService {
             if(couponById.getReleaseStartDate().after(now)){
 
                 coupon.setStatus(3);
-                JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), couponById.getReleaseStartDate());
-                JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                JobClientUtils.couponEffectiveTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseStartDate());
+                JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
+                JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
             }else if(couponById.getReleaseStartDate().before(now)  && couponById.getReleaseEndDate().after(now)){
 
                 coupon.setStatus(4);
-                JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
+                JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
             }else if(couponById.getReleaseEndDate().before(now)){
 
                 coupon.setStatus(5);
-                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
             }
         }else{
 
             if(bean.getReleaseStartDate() != null){
-                JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), bean.getReleaseStartDate());
+                JobClientUtils.couponEffectiveTrigger(environment, jobClient, coupon.getId(), bean.getReleaseStartDate());
             }
             if(bean.getReleaseEndDate() != null){
-                JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), bean.getReleaseEndDate());
+                JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), bean.getReleaseEndDate());
             }
             if(bean.getEffectiveEndDate() != null){
-                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), bean.getEffectiveEndDate());
+                JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), bean.getEffectiveEndDate());
             }
         }
         return mapper.updateByPrimaryKeySelective(coupon);
