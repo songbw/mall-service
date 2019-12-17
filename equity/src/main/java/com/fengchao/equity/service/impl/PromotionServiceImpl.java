@@ -53,7 +53,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Autowired
     private PromotionScheduleDao scheduleDao;
     @Autowired
-    private static Environment environment;
+    private Environment environment;
 
     @Override
     public int effective(int promotionId) {

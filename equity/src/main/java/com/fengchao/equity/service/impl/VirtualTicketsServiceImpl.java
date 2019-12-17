@@ -32,7 +32,7 @@ public class VirtualTicketsServiceImpl implements VirtualTicketsService {
     @Autowired
     private JobClient jobClient;
     @Autowired
-    private static Environment environment;
+    private Environment environment;
 
     @Override
     public int createVirtualticket(VirtualTicketsBean bean) {

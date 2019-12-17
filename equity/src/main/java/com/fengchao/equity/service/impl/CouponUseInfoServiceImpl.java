@@ -44,7 +44,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     @Autowired
     private JobClient jobClient;
     @Autowired
-    private static Environment environment;
+    private Environment environment;
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {

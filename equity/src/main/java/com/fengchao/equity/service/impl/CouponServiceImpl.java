@@ -50,7 +50,7 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     private PromotionScheduleDao scheduleDao;
     @Autowired
-    private static Environment environment;
+    private Environment environment;
 
     @Override
     public int createCoupon(CouponBean bean) {
