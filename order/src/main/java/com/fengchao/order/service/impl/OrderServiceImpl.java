@@ -28,6 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -83,6 +84,8 @@ public class OrderServiceImpl implements OrderService {
     private BaseService baseService;
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private static Environment environment;
 
     @Transactional
     @Override
@@ -275,7 +278,7 @@ public class OrderServiceImpl implements OrderService {
                 shoppingCartMapper.deleteByOpenIdAndSku(shoppingCart);
             }
             // 30分钟后取消订单
-            JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
+            JobClientUtils.orderCancelTrigger(environment, jobClient, bean.getId());
         }
         // 批量扣除库存
         OperaResult inventoryResult = productService.inventorySub(inventories) ;
@@ -700,7 +703,7 @@ public class OrderServiceImpl implements OrderService {
                 OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(Logistics.getSubOrderId()) ;
                 if (orderDetail.getStatus() == 1) {
                     orderDetailXMapper.updateByOrderId(orderDetailX);
-                    JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+                    JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
                 }
             });
         }
@@ -1118,7 +1121,7 @@ public class OrderServiceImpl implements OrderService {
             OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
             if (orderDetail.getStatus() == 1) {
                 orderDetailDao.updateBySubOrderId(logistics) ;
-                JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getId());
+                JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
             }
         }
         if (logisticsbeanList != null && logisticsbeanList.size() > 0) {

@@ -12,13 +12,12 @@ import java.util.Date;
 @Component
 public class JobClientUtils {
 
-    @Autowired
-    private static Environment environment;
+
     /**
      * 定时取消订单任务
      * @param id
      */
-    public static void orderCancelTrigger(JobClient jobClient, Integer id) {
+    public static void orderCancelTrigger(Environment environment, JobClient jobClient, Integer id) {
         Job job = new Job();
         job.setTaskId("order_cancel_trigger_" + id);
         job.setParam("type", "orderCancel");
@@ -34,7 +33,7 @@ public class JobClientUtils {
      * 定时完成订单任务
      * @param id
      */
-    public static void subOrderFinishTrigger(JobClient jobClient, Integer id) {
+    public static void subOrderFinishTrigger(Environment environment, JobClient jobClient, Integer id) {
         Job job = new Job();
         job.setTaskId("sub_order_finish_trigger_" + id);
         job.setParam("type", "subOrderFinish");
