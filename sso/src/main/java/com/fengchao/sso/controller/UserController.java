@@ -41,11 +41,11 @@ public class UserController {
             result.setMsg("对象不能为null");
             return result ;
         }
-        if (StringUtils.isEmpty(bean.getSex())) {
-            result.setCode(1000003);
-            result.setMsg("性别不能为空");
-            return result ;
-        }
+//        if (StringUtils.isEmpty(bean.getSex())) {
+//            result.setCode(1000003);
+//            result.setMsg("性别不能为空");
+//            return result ;
+//        }
 //        if ("男".equals(bean.getSex()) || "女".equals(bean.getSex())) {
 //
 //        } else {
