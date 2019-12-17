@@ -18,12 +18,12 @@ import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -46,15 +46,14 @@ public class PromotionServiceImpl implements PromotionService {
     private JobClient jobClient;
     @Autowired
     private ProductRpcService prodService;
-
     @Autowired
     private PromotionDao promotionDao;
-
     @Autowired
     private PromotionTypeDao promotionTypeDao;
-
     @Autowired
     private PromotionScheduleDao scheduleDao;
+    @Autowired
+    private static Environment environment;
 
     @Override
     public int effective(int promotionId) {
@@ -195,12 +194,12 @@ public class PromotionServiceImpl implements PromotionService {
             if (promotionX.getStartDate().after(now)) {
                 //未开始
                 bean.setStatus(3);
-                JobClientUtils.promotionEffectiveTrigger(jobClient, bean.getId(), promotionX.getStartDate());
-                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+                JobClientUtils.promotionEffectiveTrigger(environment, jobClient, bean.getId(), promotionX.getStartDate());
+                JobClientUtils.promotionEndTrigger(environment, jobClient, bean.getId(), promotionX.getEndDate());
             } else if (promotionX.getStartDate().before(now) && promotionX.getEndDate().after(now)) {
                 //已开始
                 bean.setStatus(4);
-                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+                JobClientUtils.promotionEndTrigger(environment, jobClient, bean.getId(), promotionX.getEndDate());
             } else if (promotionX.getEndDate().before(now)) {
                 //已结束
                 bean.setStatus(5);
@@ -214,7 +213,7 @@ public class PromotionServiceImpl implements PromotionService {
             if (promotionX.getStartDate().before(now) && promotionX.getEndDate().after(now)) {
                 //已开始
                 bean.setStatus(4);
-                JobClientUtils.promotionEndTrigger(jobClient, bean.getId(), promotionX.getEndDate());
+                JobClientUtils.promotionEndTrigger(environment, jobClient, bean.getId(), promotionX.getEndDate());
             } else if (promotionX.getEndDate().after(now)) {
                 //已结束
                 bean.setStatus(5);

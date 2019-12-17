@@ -15,6 +15,7 @@ import com.fengchao.equity.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.client.Entity;
@@ -42,6 +43,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     private CouponDao couponDao;
     @Autowired
     private JobClient jobClient;
+    @Autowired
+    private static Environment environment;
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
@@ -423,7 +426,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         useInfo.setStatus(2);
         int num = mapper.updateStatusByUserCode(useInfo);
         if(num == 1){
-            JobClientUtils.couponReleaseTrigger(jobClient, bean.getId());
+            JobClientUtils.couponReleaseTrigger(environment, jobClient, bean.getId());
         }
         return num;
     }
