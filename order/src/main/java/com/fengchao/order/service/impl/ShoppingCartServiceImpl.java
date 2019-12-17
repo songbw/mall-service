@@ -49,7 +49,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
         // 验证MPU是否存在
         AoyiProdIndex aoyiProdIndex = findProductByMpu(bean.getMpu(), bean.getAppId()) ;
-        if (aoyiProdIndex == null | aoyiProdIndex.getMpu() == null) {
+        if (aoyiProdIndex == null || aoyiProdIndex.getMpu() == null) {
             result.setCode(4000002);
             result.setMsg(bean.getMpu() + " 商品不存在");
             return result ;

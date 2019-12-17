@@ -44,7 +44,8 @@ public class ShoppingCartController {
     }
 
     @PutMapping("/num")
-    private OperaResult modifyNum(@RequestBody ShoppingCart bean) {
+    private OperaResult modifyNum(@RequestBody ShoppingCart bean, @RequestHeader("appId") String appId) {
+        bean.setAppId(appId);
         return service.modifyNum(bean);
     }
 
