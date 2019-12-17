@@ -85,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderDetailMapper orderDetailMapper;
     @Autowired
-    private static Environment environment;
+    private Environment environment;
 
     @Transactional
     @Override
