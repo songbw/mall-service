@@ -103,8 +103,18 @@ public class CouponServiceImpl implements CouponService {
                 coupon.setStatus(5);
                 JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), couponById.getEffectiveEndDate());
             }
-        }
+        }else{
 
+            if(bean.getReleaseStartDate() != null){
+                JobClientUtils.couponEffectiveTrigger(jobClient, coupon.getId(), bean.getReleaseStartDate());
+            }
+            if(bean.getReleaseEndDate() != null){
+                JobClientUtils.couponEndTrigger(jobClient, coupon.getId(), bean.getReleaseEndDate());
+            }
+            if(bean.getEffectiveEndDate() != null){
+                JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), bean.getEffectiveEndDate());
+            }
+        }
         return mapper.updateByPrimaryKeySelective(coupon);
     }
 
