@@ -23,6 +23,8 @@ public class Aggregation {
 
     private String header;
 
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -101,5 +103,13 @@ public class Aggregation {
 
     public void setHeader(String header) {
         this.header = header;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

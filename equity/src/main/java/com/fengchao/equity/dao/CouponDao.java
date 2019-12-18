@@ -41,14 +41,27 @@ public class CouponDao {
         return couponList;
     }
 
-    public PageInfo<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize) {
+    public PageInfo<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId) {
         CouponExample couponExample = new CouponExample();
         CouponExample.Criteria criteria = couponExample.createCriteria();
         criteria.andStatusBetween(3,4);
+        criteria.andAppIdEqualTo(appId);
 
         PageHelper.startPage(pageNo, pageSize);
         List<Coupon> couponList = couponMapper.selectByExample(couponExample);
 
         return new PageInfo<>(couponList);
+    }
+
+    public List<Coupon> selectGiftCouponListByIdList(List<Integer> couponIds) {
+        CouponExample couponExample = new CouponExample();
+        CouponExample.Criteria criteria = couponExample.createCriteria();
+
+        criteria.andIdIn(couponIds);
+        criteria.andCustomerTypeEqualTo(1);
+
+        List<Coupon> couponList = couponMapper.selectByExample(couponExample);
+
+        return couponList;
     }
 }

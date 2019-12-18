@@ -4,10 +4,12 @@ import com.fengchao.order.bean.CategoryPaymentBean;
 import com.fengchao.order.bean.MerchantPaymentBean;
 import com.fengchao.order.bean.OrderDetailBean;
 import com.fengchao.order.bean.PromotionPaymentBean;
+import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.model.Order;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface OrderMapper {
     int deleteByPrimaryKey(Integer id);
@@ -24,7 +26,11 @@ public interface OrderMapper {
 
     int selectLimitCount(HashMap map) ;
 
+    int selectLimitCountV2(HashMap map) ;
+
     List<Order> selectLimit(HashMap map) ;
+
+    List<Order> selectLimitV2(HashMap map) ;
 
     int updateStatusById(Order order) ;
 
@@ -74,4 +80,10 @@ public interface OrderMapper {
     List<MerchantPaymentBean> selectDayMerchantPaymentCount(HashMap map) ;
 
     List<CategoryPaymentBean> selectDayCategoryPaymentList(HashMap map) ;
+
+    AoyiProdIndex selectForUpdateByMpu(String mpu);
+
+    List<Order> selectByOpenIdAndStatus(HashMap map) ;
+
+
 }

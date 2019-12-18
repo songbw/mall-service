@@ -4,7 +4,6 @@ import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponUseInfoX;
-import com.fengchao.equity.model.CouponX;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public interface CouponService {
 
     int createCoupon(CouponBean bean);
 
-    PageBean findCoupon(Integer offset, Integer limit);
+    PageBean findCoupon(Integer offset, Integer limit, String appId);
 
     PageBean serachCoupon(CouponSearchBean bean);
 
@@ -24,7 +23,7 @@ public interface CouponService {
 
     PageBean activeCoupon(CouponUseInfoBean useInfoBean);
 
-    CategoryCouponBean activeCategories();
+    CategoryCouponBean activeCategories(String appId);
 
     CouponBean selectSkuByCouponId(CouponUseInfoBean bean);
 
@@ -50,5 +49,9 @@ public interface CouponService {
 
     List<Object> giftCoupon(String openId, String iAppId);
 
-    PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize);
+    PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId);
+
+    List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId, String appId);
+
+    List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdBean> beans, String appId);
 }

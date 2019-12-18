@@ -12,9 +12,11 @@
     <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
     <result column="header" property="header" jdbcType="VARCHAR" />
     <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, effective_date, background_color,home_page, group_id, status, merchant_id, header, content
+    id, name, effective_date, background_color,home_page, group_id, status,
+    merchant_id, header, content, app_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
@@ -22,18 +24,21 @@
     from aggregation
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="findHomePage" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <select id="findHomePage" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
     <include refid="Base_Column_List" />
     from aggregation
     where status = 1 and home_page = true
+      <if test="appId != null" >
+          and app_id = #{appId,jdbcType=VARCHAR}
+      </if>
   </select>
   <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
     select
     count(id)
     from aggregation
-    WHERE 1=1
-    <if test="name != null" >
+    WHERE status != 3
+      <if test="name != null" >
       <bind name="pattern" value="'%' + name + '%'" />
       and name LIKE #{pattern}
     </if>
@@ -48,13 +53,16 @@
     </if>
     <if test="merchantId != null" >
       and merchant_id = #{merchantId,jdbcType=INTEGER}
+    </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
     </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     id, name, effective_date, background_color, group_id, home_page, status, merchant_id
     from aggregation
-    WHERE 1=1
+    WHERE status != 3
     <if test="name != null" >
       <bind name="pattern" value="'%' + name + '%'" />
       and name LIKE #{pattern}
@@ -70,6 +78,9 @@
     </if>
     <if test="merchantId != null" >
       and merchant_id = #{merchantId,jdbcType=INTEGER}
+    </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
     </if>
     <if test="order == 'asc'" >
       order by id asc
@@ -83,19 +94,20 @@
     select
     <include refid="Base_Column_List" />
     from aggregation
-    where group_id = #{id,jdbcType=INTEGER}
+    where status != 3 and group_id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from aggregation
-    where id = #{id,jdbcType=INTEGER}
+    where status != 3 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.fengchao.aggregation.model.Aggregation" >
-    insert into aggregation (id, name, effective_date,
-      background_color,home_page, group_id, status, merchant_id, header, content
+    insert into aggregation (id, name, effective_date, background_color,home_page,
+      group_id, status, merchant_id, header, content, app_id
       )
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{effectiveDate,jdbcType=TIMESTAMP},
       #{backgroundColor,jdbcType=VARCHAR}, #{homePage,jdbcType=BIT}, #{groupId,jdbcType=INTEGER},
-       #{status,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{header,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}
+       #{status,jdbcType=INTEGER}, #{merchantId,jdbcType=INTEGER}, #{header,jdbcType=VARCHAR},
+       #{content,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.aggregation.model.Aggregation" >
@@ -131,6 +143,9 @@
       <if test="content != null" >
         content,
       </if>
+      <if test="appId != null" >
+        app_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -157,11 +172,14 @@
       <if test="merchantId != null" >
         #{merchantId,jdbcType=INTEGER},
       </if>
+      <if test="header != null" >
+        #{header,jdbcType=VARCHAR},
+      </if>
       <if test="content != null" >
         #{content,jdbcType=VARCHAR},
       </if>
-      <if test="header != null" >
-        #{header,jdbcType=VARCHAR},
+      <if test="appId != null" >
+        #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -195,6 +213,9 @@
       <if test="header != null" >
         header = #{header,jdbcType=VARCHAR},
       </if>
+      <if test="appId != null" >
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -208,7 +229,8 @@
       status = #{status,jdbcType=INTEGER},
       merchant_id = #{merchantId,jdbcType=INTEGER},
       header = #{header,jdbcType=VARCHAR},
-      content = #{content,jdbcType=VARCHAR}
+      content = #{content,jdbcType=VARCHAR},
+      app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateContent">
@@ -216,9 +238,18 @@
     SET content = #{content,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateStatus">
+  <update id="updateStatus"  parameterType="java.lang.String">
     UPDATE aggregation
     SET status = 2
     where status = 1 and home_page = true
+    and app_id = #{appId,jdbcType=VARCHAR}
   </update>
+
+    <select id="selectHomePageByAppId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from aggregation
+        where status = 1 and home_page = true
+        and app_id = #{appId,jdbcType=VARCHAR}
+    </select>
 </mapper>

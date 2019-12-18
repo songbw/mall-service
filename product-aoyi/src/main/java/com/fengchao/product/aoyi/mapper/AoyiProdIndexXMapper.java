@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.mapper;
 
 import com.fengchao.product.aoyi.bean.QueryProdBean;
+import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs;
 
@@ -36,9 +37,25 @@ public interface AoyiProdIndexXMapper {
 
     int selectSearchCount(HashMap map) ;
 
+    int selectPriceCount(HashMap map) ;
+
     List<AoyiProdIndexX> selectProdAll();
 
     int selectSkuByCouponIdCount(QueryProdBean bean);
 
     List<AoyiProdIndexX> selectSkuByCouponIdLimit(QueryProdBean bean);
+
+    /**
+     * 分页查询商品列表
+     *
+     * @param map
+     * @return
+     */
+    List<AoyiProdIndexX> selectProductListPageable(HashMap map);
+
+    List<ProductExportResVo> selectProductPriceListPageable(HashMap map) ;
+
+    AoyiProdIndexX selectForUpdateByMpu(String mpu);
+
+    int batchUpdate(AoyiProdIndexX prodIndex);
 }

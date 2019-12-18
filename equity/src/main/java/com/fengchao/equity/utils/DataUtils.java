@@ -75,6 +75,20 @@ public class DataUtils {
                 && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
                 && (c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH));
     }
+
+    /**
+     * 获取未来 第 past 天的日期
+     * @param past
+     * @return
+     */
+    public static Date getFetureDate(Date date, int past) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        calendar.add(Calendar.DATE, past);
+        Date today = calendar.getTime();
+        return today;
+    }
+
     public static void main(String[] args) {
         System.out.println(decimalFormat("0.01"));
     }

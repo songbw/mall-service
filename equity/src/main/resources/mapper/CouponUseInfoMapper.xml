@@ -13,6 +13,7 @@
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="url" jdbcType="VARCHAR" property="url" />
     <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -75,7 +76,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, coupon_id, user_coupon_code, user_open_id, code, collected_time, consumed_time, 
-    order_id, status, url, type, delete_flag
+    order_id, status, url, type, app_id, delete_flag
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.CouponUseInfoExample" resultMap="BaseResultMap">
     select
@@ -110,12 +111,14 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CouponUseInfo" useGeneratedKeys="true">
     insert into coupon_use_info (coupon_id, user_coupon_code, user_open_id, 
       code, collected_time, consumed_time, 
-      order_id, status, url, type,
-      delete_flag)
+      order_id, status, url, 
+      type, app_id, delete_flag
+      )
     values (#{couponId,jdbcType=INTEGER}, #{userCouponCode,jdbcType=VARCHAR}, #{userOpenId,jdbcType=VARCHAR}, 
       #{code,jdbcType=VARCHAR}, #{collectedTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP}, 
-      #{orderId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER},
-      #{deleteFlag,jdbcType=INTEGER})
+      #{orderId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CouponUseInfo" useGeneratedKeys="true">
     insert into coupon_use_info
@@ -149,6 +152,9 @@
       </if>
       <if test="type != null">
         type,
+      </if>
+      <if test="appId != null">
+        app_id,
       </if>
       <if test="deleteFlag != null">
         delete_flag,
@@ -184,6 +190,9 @@
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
       </if>
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=INTEGER},
@@ -232,6 +241,9 @@
       <if test="record.type != null">
         type = #{record.type,jdbcType=INTEGER},
       </if>
+      <if test="record.appId != null">
+        app_id = #{record.appId,jdbcType=VARCHAR},
+      </if>
       <if test="record.deleteFlag != null">
         delete_flag = #{record.deleteFlag,jdbcType=INTEGER},
       </if>
@@ -253,6 +265,7 @@
       status = #{record.status,jdbcType=INTEGER},
       url = #{record.url,jdbcType=VARCHAR},
       type = #{record.type,jdbcType=INTEGER},
+      app_id = #{record.appId,jdbcType=VARCHAR},
       delete_flag = #{record.deleteFlag,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -291,6 +304,9 @@
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
       </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
       <if test="deleteFlag != null">
         delete_flag = #{deleteFlag,jdbcType=INTEGER},
       </if>
@@ -309,6 +325,7 @@
       status = #{status,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
+      app_id = #{appId,jdbcType=VARCHAR},
       delete_flag = #{deleteFlag,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>

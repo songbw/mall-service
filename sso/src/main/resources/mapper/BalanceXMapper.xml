@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.sso.mapper.BalanceXMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.sso.model.Balance">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_id, telephone, open_id, amount, status, created_at, updated_at
+  </sql>
+  <update id="batchUpdate" parameterType="com.fengchao.sso.model.Balance">
+    update balance set amount = #{amount}, updated_at = now() where id = #{id}
+  </update>
+  <select id="selectForUpdateByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from balance
+    where id = #{id,jdbcType=INTEGER} for update
+  </select>
+  <select id="selectInitAmount" resultType="com.fengchao.sso.bean.BalanceSumBean" parameterType="com.fengchao.sso.bean.BalanceQueryBean">
+    select b.id id, b.telephone telephone, b.amount amount, b.open_id openId, db.sale_amount initAmount from balance b left JOIN balance_detail db on b.id = db.balance_id
+    where type = -1
+  </select>
+  <select id="selectSumSaleAmountByTypeAndBalanceIdAndCreatedAt" resultType="java.lang.Integer" parameterType="com.fengchao.sso.bean.BalanceQueryBean">
+    select sum(sale_amount)
+    from balance_detail
+    where type = #{type} and balance_id = #{balanceId} and created_at between #{start} and #{end}
+  </select>
+  <select id="selectChargeList" resultType="com.fengchao.sso.bean.BalanceSumBean" parameterType="com.fengchao.sso.bean.BalanceQueryBean">
+    select b.telephone telephone, b.open_id openId, db.sale_amount initAmount, db.created_at createdAt, db.operator operator from balance b left JOIN balance_detail db on b.id = db.balance_id
+    where type = 2
+  </select>
+
+</mapper>

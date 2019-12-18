@@ -12,8 +12,10 @@ import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.*;
+import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.client.Entity;
@@ -39,6 +41,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     private CouponUseInfoDao couponUseInfoDao;
     @Autowired
     private CouponDao couponDao;
+    @Autowired
+    private JobClient jobClient;
+    @Autowired
+    private Environment environment;
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
@@ -46,7 +52,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
 
-        CouponX coupon = couponXMapper.selectByCodeKey(bean.getCode());
+        CouponX coupon = couponXMapper.selectByCodeKey(bean.getCode(), bean.getAppId());
         if(coupon == null){
             couponUseInfoBean.setUserCouponCode("0");
             return couponUseInfoBean;
@@ -57,11 +63,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return couponUseInfoBean;
         }
 
-        HashMap map = new HashMap<>();
-        map.put("couponId", coupon.getId());
-        map.put("userOpenId", bean.getUserOpenId());
-
-        int collectNum = mapper.selectCollectCount(map);
+        int collectNum = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), coupon.getAppId());
         if(coupon.getPerLimited() != -1){
             if(collectNum >= coupon.getPerLimited()){
                 couponUseInfoBean.setUserCouponCode("2");
@@ -72,6 +74,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         couponUseInfo.setCouponId(coupon.getId());
         couponUseInfo.setCode(bean.getCode());
         couponUseInfo.setUserOpenId(bean.getUserOpenId());
+        couponUseInfo.setAppId(bean.getAppId());
         int num = 0;
         if(coupon.getSupplierMerchantId().equals("3")){
             OperaResult toushiResult = collectThirdCoupon(bean.getUserOpenId(), bean.getCode());
@@ -83,22 +86,24 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 e.printStackTrace();
             }
             couponUseInfo.setCollectedTime(new Date());
-            couponUseInfo.setUserCouponCode(user_coupon_code);
+            couponUseInfo.setUserCouponCode(coupon.getAppId() + user_coupon_code);
             couponUseInfo.setUrl(url);
             num = mapper.insertSelective(couponUseInfo);
             couponUseInfoBean.setUserCouponCode(user_coupon_code);
         }else if(coupon.getCollectType() == 4){
-            List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
-            if(couponUseInfos != null){
-                CouponUseInfoX useInfo = couponUseInfos.get(0);
-                useInfo.setUserOpenId(bean.getUserOpenId());
-                useInfo.setCollectedTime(new Date());
-                num= mapper.updateByPrimaryKeySelective(useInfo);
-                couponUseInfoBean.setUserCouponCode(useInfo.getUserCouponCode());
-            }
+//            List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
+//            if(couponUseInfos != null){
+//                CouponUseInfoX useInfo = couponUseInfos.get(0);
+//                useInfo.setUserOpenId(bean.getUserOpenId());
+//                useInfo.setCollectedTime(new Date());
+//                num= mapper.updateByPrimaryKeySelective(useInfo);
+//                couponUseInfoBean.setUserCouponCode(useInfo.getUserCouponCode());
+//            }
+            couponUseInfoBean.setUserCouponCode("3");
+            return couponUseInfoBean;
         }else{
             DecimalFormat df=new DecimalFormat("0000");
-            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + (int)((Math.random()*9+1)*100000) + (int)((Math.random()*9+1)*100000);
+            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCollectedTime(new Date());
             couponUseInfo.setUserCouponCode(userCouponCode);
             num = mapper.insertSelective(couponUseInfo);
@@ -182,6 +187,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
         couponUseInfoBean.setCode(bean.getCode());
         couponUseInfoBean.setUserOpenId(bean.getUserOpenId());
+        couponUseInfoBean.setAppId(bean.getAppId());
         return mapper.selectCollectCouponNum(couponUseInfoBean);
     }
 
@@ -195,6 +201,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         map.put("status",bean.getStatus());
         map.put("userOpenId",bean.getUserOpenId());
         map.put("deleteFlag",0);
+        map.put("appId",bean.getAppId());
         List<CouponUseInfoX> couponUseInfos = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
@@ -226,10 +233,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             List<CouponX> coupons = couponXMapper.selectGrantCoupon();
             List<CouponBean> couponBeans = new ArrayList<>() ;
             coupons.forEach( coupon -> {
-//            CouponBean couponBean = couponToBean(coupon);
-//            couponBeans.add(couponBean);
-                map.put("couponId",coupon.getId());
-                int num = mapper.selectCollectCount(map);
+                int num = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), coupon.getAppId());
                 coupon.setUserCollectNum(num);
                 couponBeans.add(couponToBean(coupon));
             });
@@ -256,8 +260,19 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return num;
         }
 
+        Date date = new Date();
+        if(coupon.getReleaseStartDate().after(date) || coupon.getReleaseEndDate().before(date)){
+            num = 1004;
+            return num;
+        }
+
         if(coupon.getCollectType() == null || coupon.getCollectType() != 4){
             num = 1002;
+            return num;
+        }
+
+        if(coupon.getStatus() == 5){
+            num = 1005;
             return num;
         }
 
@@ -271,14 +286,18 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
         for (int i=0; i < coupon.getReleaseTotal(); i++){
             CouponUseInfoX couponUseInfo = new CouponUseInfoX();
-            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + (int)((Math.random()*9+1)*100000) + (int)((Math.random()*9+1)*100000);
+            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCode(coupon.getCode());
-            couponUseInfo.setUserCouponCode(userCouponCode);
+            couponUseInfo.setUserCouponCode(coupon.getAppId() + userCouponCode);
             couponUseInfo.setCouponId(bean.getCouponId());
+            couponUseInfo.setAppId(coupon.getAppId());
             useInfos.add(couponUseInfo);
         }
 
         num = mapper.insertbatchCode(useInfos);
+//        if(num == 1){
+//            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), coupon.getEffectiveEndDate());
+//        }
         return num;
     }
 
@@ -324,14 +343,32 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX useInfo =new CouponUseInfoX();
         useInfo.setUserOpenId(bean.getUserOpenId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setCollectedTime(new Date());
+        useInfo.setAppId(bean.getAppId());
+        Date date = new Date();
+        useInfo.setCollectedTime(date);
         CouponUseInfoX couponUseInfo = mapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             bean.setUserCouponCode("2");
             return bean;
         }
-        int num= mapper.updateByUserCode(useInfo);
+        if(couponUseInfo.getUserOpenId() != null){
+            bean.setUserCouponCode("4");
+            return bean;
+        }
+
         CouponX coupon = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+        int collectNum = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), coupon.getAppId());
+        if(coupon.getPerLimited() != -1){
+            if(collectNum >= coupon.getPerLimited()){
+                bean.setUserCouponCode("3");
+                return bean;
+            }
+        }
+        if(coupon.getStatus() == 5){
+            bean.setUserCouponCode("6");
+            return bean;
+        }
+        int num= mapper.updateByUserCode(useInfo);
         if(num == 1){
             coupon.setReleaseNum(coupon.getReleaseNum() + 1);
             couponXMapper.updateByPrimaryKeySelective(coupon);
@@ -339,7 +376,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             bean.setCouponCollectNum(coupon.getReleaseNum() + 1);
             return bean;
         }else{
-            bean.setUserCouponCode("3");
+            bean.setUserCouponCode("5");
             return bean;
         }
     }
@@ -387,7 +424,11 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         useInfo.setId(bean.getId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(2);
-        return mapper.updateStatusByUserCode(useInfo);
+        int num = mapper.updateStatusByUserCode(useInfo);
+        if(num == 1){
+            JobClientUtils.couponReleaseTrigger(environment, jobClient, bean.getId());
+        }
+        return num;
     }
 
     @Override
@@ -440,6 +481,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             couponBean.setTags(tagsNum);
         }
         couponBean.setImageUrl(coupon.getImageUrl());
+        couponBean.setAppId(coupon.getAppId());
         Rules rules = new Rules();
         Scenario scenario = new Scenario();
         rules.setScenario(scenario);
@@ -531,6 +573,39 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
                 }
             }
         return 0;
+    }
+
+    @Override
+    public List<Coupon> getCollectGiftCoupon(String openId, String appId) {
+        List<Coupon> coupons = new ArrayList<>();
+        List<Integer> couponIds = mapper.selectGiftCouponIds(openId, appId);
+        if(!couponIds.isEmpty()){
+            coupons = couponDao.selectGiftCouponListByIdList(couponIds);
+        }
+
+        return coupons;
+    }
+
+    @Override
+    public CouponUseInfo findBycouponUserId(int couponUserId) {
+        return couponUseInfoDao.findBycouponUserId(couponUserId);
+    }
+
+    @Override
+    public int triggerRelease(int couponUserId) {
+        CouponUseInfoX useInfo = new CouponUseInfoX();
+        CouponUseInfo couponUseInfo = couponUseInfoDao.findBycouponUserId(couponUserId);
+        if(couponUseInfo != null){
+            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            Date date = new Date();
+            if(couponX.getEffectiveEndDate().before(date)){
+                useInfo.setStatus(4);
+            }else{
+                useInfo.setStatus(1);
+            }
+        }
+        useInfo.setId(couponUserId);
+        return mapper.updateByPrimaryKeySelective(useInfo);
     }
 
     // ========================= private =====================================

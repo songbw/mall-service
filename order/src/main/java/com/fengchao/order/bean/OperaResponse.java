@@ -14,6 +14,8 @@ public class OperaResponse<T> implements Serializable {
 	
 	// 结果描述(消息框的内容)
 	private String msg = "Success";
+
+	private String message = "success";
 	
 	//封装的对象
 	private T data;

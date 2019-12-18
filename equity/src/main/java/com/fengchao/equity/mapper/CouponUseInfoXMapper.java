@@ -24,7 +24,9 @@ public interface CouponUseInfoXMapper {
 
     List<CouponUseInfoX> selectLimit(HashMap map);
 
-    int selectCollectCount(HashMap map);
+    int selectCollectCount(@Param("couponId")Integer couponId,
+                           @Param("userOpenId")String userOpenId,
+                           @Param("appId")String appId);
 
     int selectCollectCouponNum(CouponUseInfoBean couponUseInfoBean);
 
@@ -34,7 +36,7 @@ public interface CouponUseInfoXMapper {
 
     int importCode(CouponUseInfoBean bean);
 
-    CouponUseInfoX selectByUserCode(String userCouponCode);
+    CouponUseInfoX selectByUserCode(@Param("userCouponCode") String userCouponCode);
 
     int updateByUserCode(CouponUseInfoX record);
 
@@ -45,4 +47,6 @@ public interface CouponUseInfoXMapper {
     int updateStatusByCouponId(int couponId);
 
     int updateStatusByToushiCode(CouponUseInfoX couponUseInfo);
+
+    List<Integer> selectGiftCouponIds(String openId, String appId);
 }

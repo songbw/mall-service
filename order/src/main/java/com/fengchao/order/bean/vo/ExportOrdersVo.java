@@ -13,7 +13,7 @@ import java.util.Date;
  * 字段不限于：
  *      // 用户id，主订单编号，子订单编号， 订单支付时间， 订单生成时间，品类， 品牌（通过mpu获取），
  *     // sku， mpu， 商品名称， 购买数量 ， 活动 ， 券码， 券来源（券商户），进货价， 销售价，  券支付金额， 订单支付金额，
- *     // 平台分润比， 收件人名， 省 ， 市， 区
+ *     // 平台分润比， 收件人名， 省 ， 市， 区, 收件人手机号, 备注
  */
 @Getter
 @Setter
@@ -79,6 +79,11 @@ public class ExportOrdersVo {
     private Long promotionId;
 
     /**
+     * 结算类型 : 结算类型（0：普通类结算， 1：秒杀类结算， 2：精品类结算）
+     */
+    private String settlementType;
+
+    /**
      * 券码
      */
     private String couponCode;
@@ -105,10 +110,9 @@ public class ExportOrdersVo {
     private Integer unitPrice;
 
     /**
-     * sku 的总价 单位：分
-     * 计算：unitPrice * quantity(购买数量)
+     * sku实际支付价格 单位:分
      */
-    private Integer totalRealPrice;
+    private Integer skuPayPrice;
 
     /**
      * 券支付金额 单位分
@@ -116,8 +120,7 @@ public class ExportOrdersVo {
     private Integer couponPrice;
 
     /**
-     * 实际支付的价格 单位分
-     * 计算：totalRealPrice - couponPrice
+     * 主订单实际支付的价格 单位分
      */
     private Integer payPrice;
 
@@ -151,5 +154,99 @@ public class ExportOrdersVo {
      */
     private String expressFee;
 
+    /**
+     * 详细地址
+     */
+    private String address;
+
+    /**
+     * 供应商名称
+     */
+    private String merchantName;
+
+    /**
+     * 供应商id
+     */
+    private Long merchantId;
+
+    /**
+     * sku 优惠券使用金额 单位:分
+     */
+    private Integer skuCouponDiscount;
+
+    /**
+     * 0：待付款；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+     */
+    private String orderDetailStatus;
+
+    /**
+     * 余额支付金额 单位 元
+     */
+    private String balanceFee;
+
+    /**
+     * 惠民卡支付金额 单位 元
+     */
+    private String huiminCardFee;
+
+    /**
+     * 联机账户支付 单位 元
+     */
+    private String woaFee;
+
+    /**
+     * 快捷支付 单位 元
+     */
+    private String quickPayFee;
+
+    /**
+     * 子订单退款金额 单位 元
+     */
+    private String orderDetailRefundAmount;
+
+    /**
+     * 余额退款金额 单位 元
+     */
+    private String balanceRefund;
+
+    /**
+     * 惠民卡退款金额 单位 元
+     */
+    private String huiminCardRefund;
+
+    /**
+     * 联机账户退款 单位 元
+     */
+    private String woaRefund;
+
+    /**
+     * 快捷退款 单位 元
+     */
+    private String quickPayRefund;
+
+    /**
+     * 收件人手机号
+     */
+    private String mobile;
+
+    /**
+     * 支付订单号
+     */
+    private String paymentNo;
+
+    /**
+     * 退款单号
+     */
+    private String refundNo;
+
+    /**
+     * 备注
+     */
+    private String remark;
+
+    /**
+     * 奥弋订单号
+     */
+    private String aoyiID;
 
 }

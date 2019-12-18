@@ -2,8 +2,13 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
+import com.fengchao.product.aoyi.service.BrandService;
+import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/third/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -21,42 +26,66 @@ public class ThirdProdController {
 
     @Autowired
     private ThirdProdService service;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private BrandService brandService ;
+    @Autowired
+    private AdminProdService adminProdService ;
 
     /**
-     * 创建商品
+     * 新增商品
      *
      * @param bean
-     * @param merchantId
-     * @param result
      * @return
      * @throws ProductException
      */
     @PostMapping
-    public OperaResult create(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId,
-                                OperaResult result) throws ProductException {
-        log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
-
-        try {
-            int id = service.add(bean);
-            result.getData().put("result", id);
-        } catch (Exception e) {
-            log.error("创建商品 异常:{}", e.getMessage(), e);
-
-            result.setCode(500);
-            result.setMsg(e.getMessage());
-        }
-
-        log.info("创建商品 返回:{}", JSONUtil.toJsonString(result));
-
-        return result;
+    public OperaResult create(@RequestBody AoyiProdIndexX bean){
+        log.info("新增商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.add(bean);
     }
 
     @PutMapping
-    public OperaResult update(@RequestBody AoyiProdIndexX bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
-//        bean.setMerchantId(merchantId);
-        int id = service.update(bean);
-        result.getData().put("result", id);
-        return result;
+    public OperaResult update(@RequestBody AoyiProdIndexX bean){
+        log.info("修改商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.update(bean);
+    }
+
+    @PutMapping("receive")
+    public OperaResult insertOrUpdateByMup(@RequestBody AoyiProdIndex bean){
+        log.info("根据MPU添加或修改商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.insertOrUpdateByMpu(bean);
+    }
+
+    @PutMapping("category/receive")
+    public OperaResponse insertCategory(@RequestBody AoyiBaseCategory bean){
+        log.info("根据ID添加或修改类目 入参 category:{}", JSONUtil.toJsonString(bean));
+        return categoryService.insertOrUpdate(bean);
+    }
+
+    @PutMapping("brand/receive")
+    public OperaResponse insertBrand(@RequestBody AoyiBaseBrand bean){
+        log.info("根据ID添加或修改品牌 入参 AoyiBaseBrand:{}", JSONUtil.toJsonString(bean));
+        return brandService.insertOrUpdate(bean);
+    }
+
+    @PostMapping("sync")
+    public OperaResponse sync(@RequestBody ThirdSyncBean bean){
+        log.info("同步商品 入参 AoyiProdIndexX:{}", JSONUtil.toJsonString(bean));
+        return service.sync(bean);
+    }
+
+    @PostMapping("category/sync")
+    public OperaResponse categorySync(@RequestBody CategorySyncBean bean){
+        log.info("同步类目 入参 bean:{}", JSONUtil.toJsonString(bean));
+        return service.syncCategory(bean);
+    }
+
+    @PostMapping("brand/sync")
+    public OperaResponse brandSync(@RequestBody ThirdSyncBean bean){
+        log.info("同步类目 入参 bean:{}", JSONUtil.toJsonString(bean));
+        return service.syncBrand(bean);
     }
 
     /**
@@ -76,6 +105,11 @@ public class ThirdProdController {
         if (StringUtils.isEmpty(bean.getPrice())) {
             result.setCode(210002);
             result.setMsg("price 不能为null");
+            return result;
+        }
+        if (StringUtils.isEmpty(bean.getSPrice())) {
+            result.setCode(210002);
+            result.setMsg("sprice 不能为null");
             return result;
         }
         if (StringUtils.isEmpty(bean.getSkuId())) {
@@ -119,6 +153,17 @@ public class ThirdProdController {
     public OperaResult delete(@RequestHeader("merchant") Integer merchantId, Integer id,  OperaResult result) throws ProductException {
         service.delete(merchantId, id);
         return result;
+    }
+
+    @GetMapping("image/back")
+    public OperaResponse imageBack(Long id,  Integer status) throws ProductException {
+        return service.updateAyFcImageStatus(id, status);
+    }
+
+    @GetMapping("fix")
+    public OperaResponse fix() {
+        adminProdService.fix();
+        return new OperaResponse() ;
     }
 
 }

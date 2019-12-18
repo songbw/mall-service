@@ -1,10 +1,7 @@
 package com.fengchao.sso.service;
 
-import com.fengchao.sso.bean.LoginBean;
-import com.fengchao.sso.bean.ThirdLoginBean;
-import com.fengchao.sso.bean.TokenBean;
+import com.fengchao.sso.bean.*;
 import com.fengchao.sso.model.Login;
-import com.fengchao.sso.model.Token;
 import com.fengchao.sso.util.OperaResult;
 
 public interface ILoginService {
@@ -20,4 +17,19 @@ public interface ILoginService {
     TokenBean thirdLogin(ThirdLoginBean loginBean) ;
 
     OperaResult findThirdPartyToken(String iAppId, String initCode);
+
+    OperaResult findThirdPartyTokenGAT(String iAppId, String initCode);
+
+    OperaResult findThirdPartyTokenWX(String iAppId, String code);
+
+    OperaResult getPingAnOpenId(String iAppId, String requestCode) ;
+
+    OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) ;
+
+    OperaResponse verifyCode(String telephone, String type, String appId) ;
+
+    OperaResponse bindWXOpenId(BindWXBean bandWXBean) ;
+
+    OperaResponse wxBindVerify(String appId, String openId) ;
+
 }

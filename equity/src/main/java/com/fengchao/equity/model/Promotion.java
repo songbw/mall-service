@@ -21,7 +21,11 @@ public class Promotion {
 
     private Long promotionTypeId;
 
+    private Integer accountType;
+
     private Boolean dailySchedule;
+
+    private String appId;
 
     public Integer getId() {
         return id;
@@ -95,11 +99,27 @@ public class Promotion {
         this.promotionTypeId = promotionTypeId;
     }
 
+    public Integer getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(Integer accountType) {
+        this.accountType = accountType;
+    }
+
     public Boolean getDailySchedule() {
         return dailySchedule;
     }
 
     public void setDailySchedule(Boolean dailySchedule) {
         this.dailySchedule = dailySchedule;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 }

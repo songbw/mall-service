@@ -14,6 +14,7 @@
     <result column="saleUnit" jdbcType="VARCHAR" property="saleunit" />
     <result column="state" jdbcType="VARCHAR" property="state" />
     <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="iprice" jdbcType="INTEGER" property="iprice" />
     <result column="sprice" jdbcType="VARCHAR" property="sprice" />
     <result column="images_url" jdbcType="VARCHAR" property="imagesUrl" />
     <result column="introduction_url" jdbcType="VARCHAR" property="introductionUrl" />
@@ -23,6 +24,11 @@
     <result column="mpu" jdbcType="VARCHAR" property="mpu" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="sync_at" jdbcType="TIMESTAMP" property="syncAt" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="compare_url" jdbcType="VARCHAR" property="compareUrl" />
+    <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+    <result column="compare_price" jdbcType="VARCHAR" property="comparePrice" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
     <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
@@ -88,8 +94,8 @@
   </sql>
   <sql id="Base_Column_List">
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
-    sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, created_at, 
-    updated_at
+    iprice, sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, 
+    created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price
   </sql>
   <sql id="Blob_Column_List">
     introduction, prodParams
@@ -146,18 +152,22 @@
     insert into aoyi_prod_index (skuId, brand, category, 
       image, model, name, 
       weight, upc, saleUnit, 
-      state, price, sprice, 
-      images_url, introduction_url, merchant_id, 
-      inventory, brand_id, mpu, 
-      created_at, updated_at, introduction, 
+      state, price, iprice, 
+      sprice, images_url, introduction_url, 
+      merchant_id, inventory, brand_id, 
+      mpu, created_at, updated_at, 
+      sync_at, type, compare_url, 
+      sub_title, compare_price, introduction, 
       prodParams)
     values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, #{saleunit,jdbcType=VARCHAR}, 
-      #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{sprice,jdbcType=VARCHAR}, 
-      #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, #{merchantId,jdbcType=INTEGER}, 
-      #{inventory,jdbcType=INTEGER}, #{brandId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{introduction,jdbcType=LONGVARCHAR}, 
+      #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{iprice,jdbcType=INTEGER}, 
+      #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, 
+      #{merchantId,jdbcType=INTEGER}, #{inventory,jdbcType=INTEGER}, #{brandId,jdbcType=INTEGER}, 
+      #{mpu,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{syncAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{compareUrl,jdbcType=VARCHAR}, 
+      #{subTitle,jdbcType=VARCHAR}, #{comparePrice,jdbcType=VARCHAR}, #{introduction,jdbcType=LONGVARCHAR}, 
       #{prodparams,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
@@ -196,6 +206,9 @@
       <if test="price != null">
         price,
       </if>
+      <if test="iprice != null">
+        iprice,
+      </if>
       <if test="sprice != null">
         sprice,
       </if>
@@ -222,6 +235,21 @@
       </if>
       <if test="updatedAt != null">
         updated_at,
+      </if>
+      <if test="syncAt != null">
+        sync_at,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="compareUrl != null">
+        compare_url,
+      </if>
+      <if test="subTitle != null">
+        sub_title,
+      </if>
+      <if test="comparePrice != null">
+        compare_price,
       </if>
       <if test="introduction != null">
         introduction,
@@ -264,6 +292,9 @@
       <if test="price != null">
         #{price,jdbcType=VARCHAR},
       </if>
+      <if test="iprice != null">
+        #{iprice,jdbcType=INTEGER},
+      </if>
       <if test="sprice != null">
         #{sprice,jdbcType=VARCHAR},
       </if>
@@ -290,6 +321,21 @@
       </if>
       <if test="updatedAt != null">
         #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="syncAt != null">
+        #{syncAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="compareUrl != null">
+        #{compareUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null">
+        #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="comparePrice != null">
+        #{comparePrice,jdbcType=VARCHAR},
       </if>
       <if test="introduction != null">
         #{introduction,jdbcType=LONGVARCHAR},
@@ -344,6 +390,9 @@
       <if test="record.price != null">
         price = #{record.price,jdbcType=VARCHAR},
       </if>
+      <if test="record.iprice != null">
+        iprice = #{record.iprice,jdbcType=INTEGER},
+      </if>
       <if test="record.sprice != null">
         sprice = #{record.sprice,jdbcType=VARCHAR},
       </if>
@@ -371,6 +420,21 @@
       <if test="record.updatedAt != null">
         updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.syncAt != null">
+        sync_at = #{record.syncAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.compareUrl != null">
+        compare_url = #{record.compareUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.subTitle != null">
+        sub_title = #{record.subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comparePrice != null">
+        compare_price = #{record.comparePrice,jdbcType=VARCHAR},
+      </if>
       <if test="record.introduction != null">
         introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -396,6 +460,7 @@
       saleUnit = #{record.saleunit,jdbcType=VARCHAR},
       state = #{record.state,jdbcType=VARCHAR},
       price = #{record.price,jdbcType=VARCHAR},
+      iprice = #{record.iprice,jdbcType=INTEGER},
       sprice = #{record.sprice,jdbcType=VARCHAR},
       images_url = #{record.imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
@@ -405,6 +470,11 @@
       mpu = #{record.mpu,jdbcType=VARCHAR},
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
       updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{record.syncAt,jdbcType=TIMESTAMP},
+      type = #{record.type,jdbcType=INTEGER},
+      compare_url = #{record.compareUrl,jdbcType=VARCHAR},
+      sub_title = #{record.subTitle,jdbcType=VARCHAR},
+      compare_price = #{record.comparePrice,jdbcType=VARCHAR},
       introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       prodParams = #{record.prodparams,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -425,6 +495,7 @@
       saleUnit = #{record.saleunit,jdbcType=VARCHAR},
       state = #{record.state,jdbcType=VARCHAR},
       price = #{record.price,jdbcType=VARCHAR},
+      iprice = #{record.iprice,jdbcType=INTEGER},
       sprice = #{record.sprice,jdbcType=VARCHAR},
       images_url = #{record.imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
@@ -433,7 +504,12 @@
       brand_id = #{record.brandId,jdbcType=INTEGER},
       mpu = #{record.mpu,jdbcType=VARCHAR},
       created_at = #{record.createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{record.syncAt,jdbcType=TIMESTAMP},
+      type = #{record.type,jdbcType=INTEGER},
+      compare_url = #{record.compareUrl,jdbcType=VARCHAR},
+      sub_title = #{record.subTitle,jdbcType=VARCHAR},
+      compare_price = #{record.comparePrice,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -474,6 +550,9 @@
       <if test="price != null">
         price = #{price,jdbcType=VARCHAR},
       </if>
+      <if test="iprice != null">
+        iprice = #{iprice,jdbcType=INTEGER},
+      </if>
       <if test="sprice != null">
         sprice = #{sprice,jdbcType=VARCHAR},
       </if>
@@ -501,6 +580,21 @@
       <if test="updatedAt != null">
         updated_at = #{updatedAt,jdbcType=TIMESTAMP},
       </if>
+      <if test="syncAt != null">
+        sync_at = #{syncAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="compareUrl != null">
+        compare_url = #{compareUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null">
+        sub_title = #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="comparePrice != null">
+        compare_price = #{comparePrice,jdbcType=VARCHAR},
+      </if>
       <if test="introduction != null">
         introduction = #{introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -523,6 +617,7 @@
       saleUnit = #{saleunit,jdbcType=VARCHAR},
       state = #{state,jdbcType=VARCHAR},
       price = #{price,jdbcType=VARCHAR},
+      iprice = #{iprice,jdbcType=INTEGER},
       sprice = #{sprice,jdbcType=VARCHAR},
       images_url = #{imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{introductionUrl,jdbcType=VARCHAR},
@@ -532,6 +627,11 @@
       mpu = #{mpu,jdbcType=VARCHAR},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{syncAt,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
+      compare_url = #{compareUrl,jdbcType=VARCHAR},
+      sub_title = #{subTitle,jdbcType=VARCHAR},
+      compare_price = #{comparePrice,jdbcType=VARCHAR},
       introduction = #{introduction,jdbcType=LONGVARCHAR},
       prodParams = #{prodparams,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
@@ -549,6 +649,7 @@
       saleUnit = #{saleunit,jdbcType=VARCHAR},
       state = #{state,jdbcType=VARCHAR},
       price = #{price,jdbcType=VARCHAR},
+      iprice = #{iprice,jdbcType=INTEGER},
       sprice = #{sprice,jdbcType=VARCHAR},
       images_url = #{imagesUrl,jdbcType=VARCHAR},
       introduction_url = #{introductionUrl,jdbcType=VARCHAR},
@@ -557,7 +658,12 @@
       brand_id = #{brandId,jdbcType=INTEGER},
       mpu = #{mpu,jdbcType=VARCHAR},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      sync_at = #{syncAt,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
+      compare_url = #{compareUrl,jdbcType=VARCHAR},
+      sub_title = #{subTitle,jdbcType=VARCHAR},
+      compare_price = #{comparePrice,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

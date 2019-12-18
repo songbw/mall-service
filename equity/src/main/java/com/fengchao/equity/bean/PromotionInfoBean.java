@@ -25,9 +25,15 @@ public class PromotionInfoBean {
 
     private String skuid;
 
+    private String mpu;
+
     private String discount;
 
     private Integer scheduleId;
 
     private Boolean dailySchedule;
+
+    private String promotionImage;
+
+    private Integer perLimited;
 }

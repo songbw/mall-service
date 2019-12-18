@@ -1,7 +1,8 @@
 package com.fengchao.gateway.config;
 
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.gateway.discovery.DiscoveryClientRouteDefinitionLocator;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -15,11 +16,19 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+@EnableConfigurationProperties({GatewayConfig.class})
 @Configuration
 public class RouteConfiguration {
 
+    @Autowired
+    private GatewayConfig gatewayConfig ;
+
     //这里为支持的请求头，如果有自定义的header字段请自己添加（不知道为什么不能使用*）
-    private static final String ALLOWED_HEADERS = "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN,token,username,client, merchant";
+    private static final String ALLOWED_HEADERS = "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN,token,username,client, merchant, appId";
     private static final String ALLOWED_METHODS = "POST, PUT, GET, DELETE, OPTIONS, PATCH";
     private static final String ALLOWED_ORIGIN = "*";
     private static final String ALLOWED_Expose = "*";
@@ -32,12 +41,23 @@ public class RouteConfiguration {
             if (CorsUtils.isCorsRequest(request)) {
                 ServerHttpResponse response = ctx.getResponse();
                 HttpHeaders headers = response.getHeaders();
-                headers.add("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-                headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
-                headers.add("Access-Control-Max-Age", MAX_AGE);
-                headers.add("Access-Control-Allow-Headers", ALLOWED_HEADERS);
-                headers.add("Access-Control-Expose-Headers", ALLOWED_Expose);
-                headers.add("Access-Control-Allow-Credentials", "true");
+                List<String> allowDomain = gatewayConfig.getOrigins();
+                String origin = request.getHeaders().getOrigin();
+                if (allowDomain.contains(origin)) {
+                    log.info("Access-Control-Allow-Origin " + origin);
+                    headers.add("Access-Control-Allow-Origin", origin);
+                    headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
+                    headers.add("Access-Control-Max-Age", MAX_AGE);
+                    headers.add("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+//                    headers.add("Access-Control-Expose-Headers", ALLOWED_Expose);
+                    headers.add("Access-Control-Allow-Credentials", "true");
+                    headers.add("X-Content-Type-Options", "nosniff");
+                    headers.add("X-XSS-Protection", "1; mode=block");
+                    headers.add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+                    headers.add("Pragma", "no-cache");
+                    headers.add("Expires", "0");
+                    headers.add("X-Frame-Options", "DENY");
+                }
                 if (request.getMethod() == HttpMethod.OPTIONS) {
                     response.setStatusCode(HttpStatus.OK);
                     return Mono.empty();

@@ -1,10 +1,13 @@
 package com.fengchao.elasticsearch.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fengchao.elasticsearch.config.ESConfig;
 import com.fengchao.elasticsearch.domain.*;
 import com.fengchao.elasticsearch.service.ProductESService;
 import com.fengchao.elasticsearch.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -13,22 +16,26 @@ import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
+@EnableConfigurationProperties({ESConfig.class})
 @Repository
 @Slf4j
 public class ProductESServiceImpl implements ProductESService {
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+    @Autowired
+    private ESConfig esConfig;
 
     @Override
     public boolean save(AoyiProdIndex product) {
@@ -38,13 +45,16 @@ public class ProductESServiceImpl implements ProductESService {
     @Override
     public PageBean query(ProductQueryBean queryBean) {
         SearchRequest request = new SearchRequest();
+        request.indices(esConfig.getEsIndex());
+        if (esConfig.getEsType() != null) {
+            request.searchType(esConfig.getEsType()) ;
+        }
         SearchSourceBuilder builder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         if (!StringUtils.isEmpty(queryBean.getKeyword())) {
             MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", queryBean.getKeyword());
             boolQueryBuilder.must(matchQueryBuilder) ;
         }
-
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
         boolQueryBuilder.must(termQueryBuilder);
         builder.query(boolQueryBuilder);
@@ -74,7 +84,7 @@ public class ProductESServiceImpl implements ProductESService {
                 aoyiProdIndices.add(aoyiProdIndex);
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
-            return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits().value + ""), queryBean.getPageNo(), queryBean.getPageSize());
+            return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits() + ""), queryBean.getPageNo(), queryBean.getPageSize());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -110,6 +120,10 @@ public class ProductESServiceImpl implements ProductESService {
     @Override
     public PageBean queryByCategoryPrefix(ProductQueryBean queryBean) {
         SearchRequest request = new SearchRequest();
+        request.indices(esConfig.getEsIndex());
+        if (esConfig.getEsType() != null) {
+            request.searchType(esConfig.getEsType()) ;
+        }
         SearchSourceBuilder builder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         if (!StringUtils.isEmpty(queryBean.getKeyword())) {
@@ -143,10 +157,22 @@ public class ProductESServiceImpl implements ProductESService {
                 aoyiProdIndices.add(aoyiProdIndex);
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
-            return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits().value + ""), queryBean.getPageNo(), queryBean.getPageSize());
+            return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits() + ""), queryBean.getPageNo(), queryBean.getPageSize());
         }catch (Exception e){
             e.printStackTrace();
         }
         return new PageBean();
+    }
+
+    @Override
+    public int delete(int id) {
+        DeleteRequest request = new DeleteRequest(esConfig.getEsIndex(), "zhsc", id + "") ;
+        try {
+            DeleteResponse deleteResponse = restHighLevelClient.delete(request, RequestOptions.DEFAULT) ;
+            deleteResponse.status();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

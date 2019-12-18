@@ -55,4 +55,43 @@ public class OrderDetailBo {
     private String comcode;
 
     private Integer skuCouponDiscount;
+
+    /**
+     * 退款金额 单位元
+     */
+    private String refundAmount;
+
+    private String remark;
+
+    private BigDecimal sprice;
+
+    /**
+     * 0：待付款；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
+     *
+     * @return
+     */
+    public String getOrderDetailStatus() {
+        String _status = "未知";
+
+        if (this.status != null) {
+            switch (this.status) {
+                case 0:
+                    return "待付款";
+                case 1:
+                    return "待发货";
+                case 2:
+                    return "已发货";
+                case 3:
+                    return "已完成";
+                case 4:
+                    return "已取消";
+                case 5:
+                    return "已申请售后";
+                default:
+                    return _status;
+            }
+        }
+
+        return _status;
+    }
 }

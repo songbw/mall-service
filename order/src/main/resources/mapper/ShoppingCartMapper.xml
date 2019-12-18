@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.fengchao.order.model.ShoppingCart" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
     <result column="mac_address" property="macAddress" jdbcType="VARCHAR" />
     <result column="mpu" property="mpu" jdbcType="VARCHAR" />
     <result column="count" property="count" jdbcType="INTEGER" />
@@ -13,7 +14,7 @@
     <result column="is_del" property="isDel" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, open_id, mac_address, mpu, count, status, created_at, updated_at, is_del
+    id, open_id, app_id, mac_address, mpu, count, status, created_at, updated_at, is_del
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -41,6 +42,15 @@
     from shopping_cart
     where open_id = #{openId} and is_del = 0 and status = 0
   </select>
+  <select id="selectByOpenId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from shopping_cart
+    where open_id = #{openId}
+  </select>
+  <select id="selectNumCount" resultType="java.lang.Integer">
+    SELECT SUM(count) FROM shopping_cart WHERE open_id = #{openId};
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from shopping_cart
     where id = #{id,jdbcType=INTEGER}
@@ -49,11 +59,11 @@
     DELETE FROM  shopping_cart WHERE open_id = #{openId} and mpu = #{mpu}
   </delete>
   <insert id="insert" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
-    insert into shopping_cart (open_id, mac_address,
+    insert into shopping_cart (open_id, app_id, mac_address,
       mpu, count,
       created_at, updated_at
       )
-    values (#{openId,jdbcType=VARCHAR}, #{macAddress,jdbcType=VARCHAR},
+    values (#{openId,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{macAddress,jdbcType=VARCHAR},
       #{mpu,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER},
       #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
@@ -66,6 +76,9 @@
       </if>
       <if test="openId != null" >
         open_id,
+      </if>
+      <if test="appId != null" >
+        app_id,
       </if>
       <if test="macAddress != null" >
         mac_address,
@@ -96,6 +109,9 @@
       <if test="openId != null" >
         #{openId,jdbcType=VARCHAR},
       </if>
+      <if test="appId != null" >
+        #{appId,jdbcType=VARCHAR},
+      </if>
       <if test="macAddress != null" >
         #{macAddress,jdbcType=VARCHAR},
       </if>
@@ -125,6 +141,9 @@
       <if test="openId != null" >
         open_id = #{openId,jdbcType=VARCHAR},
       </if>
+      <if test="appId != null" >
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
       <if test="macAddress != null" >
         mac_address = #{macAddress,jdbcType=VARCHAR},
       </if>
@@ -152,6 +171,7 @@
   <update id="updateByPrimaryKey" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
     update shopping_cart
     set open_id = #{openId,jdbcType=VARCHAR},
+      app_id = #{appId,jdbcType=VARCHAR},
       mac_address = #{macAddress,jdbcType=VARCHAR},
       mpu = #{mpu,jdbcType=VARCHAR},
       count = #{count,jdbcType=INTEGER},

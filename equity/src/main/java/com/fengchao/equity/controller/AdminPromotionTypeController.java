@@ -19,9 +19,11 @@ public class AdminPromotionTypeController {
     private PromotionTypeService service;
 
     @GetMapping("findPage")
-    public OperaResult findPromotionTypesByPage(@QueryParam("pageNo") Integer pageNo, @QueryParam("pageSize") Integer pageSize){
+    public OperaResult findPromotionTypesByPage(@QueryParam("pageNo") Integer pageNo,
+                                                @QueryParam("pageSize") Integer pageSize,
+                                                @QueryParam("appId") String appId){
         OperaResult result = new OperaResult();
-        result.getData().put("result", service.getPromotionTypes(pageNo, pageSize));
+        result.getData().put("result", service.getPromotionTypes(pageNo, pageSize, appId));
         return result;
     }
 

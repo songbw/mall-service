@@ -1,16 +1,21 @@
 package com.fengchao.product.aoyi;
 
 import com.fengchao.product.aoyi.db.config.DynamicDataSourceConfig;
+import com.github.ltsopensource.spring.boot.annotation.EnableJobClient;
+import com.github.ltsopensource.spring.boot.annotation.EnableTaskTracker;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-@EnableCaching
+@EnableAsync
+@EnableTaskTracker      // 启动TaskTracker
+//@EnableMonitor          // 启动Monitor
+@EnableJobClient
 @EnableFeignClients
 @EnableDiscoveryClient
 @Import({DynamicDataSourceConfig.class})

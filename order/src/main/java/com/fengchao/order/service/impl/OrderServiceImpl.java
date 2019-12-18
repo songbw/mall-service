@@ -1,5 +1,6 @@
 package com.fengchao.order.service.impl;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -14,6 +15,7 @@ import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
 import com.fengchao.order.feign.AoyiClientService;
+import com.fengchao.order.feign.BaseService;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
@@ -26,9 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,6 +80,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrdersDao ordersDao;
+    @Autowired
+    private BaseService baseService;
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private Environment environment;
 
     @Transactional
     @Override
@@ -90,6 +97,7 @@ public class OrderServiceImpl implements OrderService {
             return operaResult;
         }
         orderBean.setTradeNo(new Date().getTime() + "");
+        orderBean.setTradeNo(RandomUtil.randomString(orderBean.getTradeNo(), 8));
         if (orderBean.getReceiverId() == null || orderBean.getReceiverId() <= 0) {
             operaResult.setCode(400501);
             operaResult.setMsg("receiverId 不能为空。");
@@ -155,6 +163,7 @@ public class OrderServiceImpl implements OrderService {
         Date date = new Date() ;
         bean.setCreatedAt(date);
         bean.setUpdatedAt(date);
+        bean.setAppId(orderBean.getAppId());
 
         // 优惠券
         OrderCouponBean coupon = orderBean.getCoupon();
@@ -162,19 +171,38 @@ public class OrderServiceImpl implements OrderService {
         if (coupon != null) {
             orderCouponMerchants = coupon.getMerchants();
             // 预占优惠券
-            boolean couponConsume = occupy(coupon.getId(), coupon.getCode()) ;
-            if (!couponConsume) {
-                // TODO 优惠券预占失败的话，订单失败
-                logger.info("订单" + bean.getId() + "优惠券核销失败");
+            CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
+            couponUseInfoBean.setUserCouponCode(coupon.getCode());
+            couponUseInfoBean.setId(coupon.getId());
+            OperaResult occupyResult = equityService.occupy(couponUseInfoBean);
+            if (occupyResult.getCode() != 200) {
+                // 优惠券预占失败的话，订单失败
+                logger.info("订单" + bean.getId() + "优惠券预占失败");
+                operaResult.setCode(400601);
+                operaResult.setMsg(occupyResult.getMsg());
+                return operaResult;
             } else {
                 bean.setCouponStatus(2);
             }
         }
+
+
+        List<InventoryMpus> inventories = new ArrayList<>() ;
         // 多商户信息
         List<OrderMerchantBean> orderMerchantBeans = orderBean.getMerchants();
+        // 验证活动
+        OperaResult promotionResult = promotionVerify(orderMerchantBeans, orderBean.getAppId()) ;
+        if (promotionResult.getCode() != 200) {
+            return promotionResult ;
+        }
+        // 验证商品是否超过限购数量
+        OperaResult verifyLimitResult = verifyPerLimit(orderMerchantBeans, orderBean.getOpenId(), orderBean.getAppId()) ;
+        if (verifyLimitResult != null && verifyLimitResult.getCode() != 200) {
+            return verifyLimitResult ;
+        }
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
-            bean.setTradeNo(orderMerchantBean.getTradeNo() + RandomUtil.randomString(orderBean.getTradeNo(), 8));
+            bean.setTradeNo(orderMerchantBean.getTradeNo() + orderBean.getTradeNo());
             orderMerchantBean.setTradeNo(bean.getTradeNo());
             bean.setMerchantNo(orderMerchantBean.getMerchantNo());
             bean.setMerchantId(orderMerchantBean.getMerchantId());
@@ -195,8 +223,25 @@ public class OrderServiceImpl implements OrderService {
             logger.info("创建订单 新增主订单:{}", JSONUtil.toJsonString(bean));
             orderMapper.insert(bean);
             AtomicInteger i= new AtomicInteger(1);
-            orderMerchantBean.getSkus().forEach(orderSku -> {
-                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu());
+            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu(), orderBean.getAppId());
+
+                // 判断产品上下架状态
+                if ("0".equals(prodIndexWithBLOBs.getState())) {
+                    operaResult.setCode(400502);
+                    operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "已下架。");
+                    // 异常数据库回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return operaResult;
+                }
+                // 添加扣除库存列表
+                if (orderSku.getMerchantId() != 2) {
+                    InventoryMpus inventoryMpus = new InventoryMpus();
+                    inventoryMpus.setMpu(orderSku.getMpu());
+                    inventoryMpus.setRemainNum(orderSku.getNum());
+                    inventories.add(inventoryMpus) ;
+                }
+
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setPromotionId(orderSku.getPromotionId());
                 orderDetail.setSalePrice(orderSku.getSalePrice());
@@ -207,29 +252,42 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setImage(prodIndexWithBLOBs.getImage());
                 orderDetail.setModel(prodIndexWithBLOBs.getModel());
                 orderDetail.setName(prodIndexWithBLOBs.getName());
+                if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                    BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                    orderDetail.setSprice(bigDecimal);
+                }
                 orderDetail.setStatus(0);
                 orderDetail.setSkuId(orderSku.getSkuId());
                 orderDetail.setMpu(orderSku.getMpu());
                 orderDetail.setMerchantId(orderSku.getMerchantId());
                 orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
                 orderDetail.setUnitPrice(orderSku.getUnitPrice());
+                orderDetail.setCheckedPrice(orderSku.getCheckedPrice());
                 orderDetail.setNum(orderSku.getNum());
                 orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
                 orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
-
                 // 添加子订单
-                logger.info("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
+                logger.debug("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
                 orderDetailDao.insert(orderDetail);
 //                orderDetailXMapper.insert(orderDetailX) ;
 
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.setOpenId(bean.getOpenId());
-                shoppingCart.setMpu(orderSku.getSkuId());
+                shoppingCart.setMpu(orderSku.getMpu());
                 shoppingCartMapper.deleteByOpenIdAndSku(shoppingCart);
-            });
+            }
             // 30分钟后取消订单
-            JobClientUtils.orderCancelTrigger(jobClient, bean.getId());
+            JobClientUtils.orderCancelTrigger(environment, jobClient, bean.getId());
+        }
+        // 批量扣除库存
+        OperaResult inventoryResult = productService.inventorySub(inventories) ;
+        if (inventoryResult.getCode() != 200) {
+            operaResult.setCode(inventoryResult.getCode());
+            operaResult.setMsg(inventoryResult.getMsg());
+            // 异常数据库回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return  operaResult;
         }
 
         // 传数据给奥义
@@ -237,56 +295,150 @@ public class OrderServiceImpl implements OrderService {
         List<OrderMerchantBean> orderMerchantBeanList = new ArrayList<>(); // aoyi的商品数据
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
+                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
+                orderMerchantBean.getSkus().forEach(orderDetailX -> {
+                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+                    aoyiOrderDetail.add(orderDetailX) ;
+                });
+                orderMerchantBean.setSkus(aoyiOrderDetail);
                 orderMerchantBeanList.add(orderMerchantBean);
             }
         }
+        // 判断是否调用奥义服务模块
+        if (orderMerchantBeanList != null && orderMerchantBeanList.size() > 0) {
+            orderBean.setMerchants(orderMerchantBeanList);
+            OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
+            if ("1001".equals(orderBean.getCompanyCustNo()) || "1002".equals(orderBean.getCompanyCustNo())) { // 关爱通
+                result = aoyiClientService.orderGAT(orderBean);
+            } else { //
+                result = aoyiClientService.order(orderBean);
+            }
+            logger.debug("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
 
-        orderBean.setMerchants(orderMerchantBeanList);
-        // orderBean.getMerchants().removeIf(merchant -> (merchant.getMerchantId() != OrderConstants.AOYI_MERCHANG_CODE));
+            if (result.getCode() == 200) {
+                List<SubOrderT> subOrderTS = result.getData();
+                subOrderTS.forEach(subOrderT -> {
+                    if (!StringUtils.isEmpty(subOrderT.getAoyiId())){
+                        // 更新aoyiId字段
+                        adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
+                    }
+                });
+                logger.debug("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
+                operaResult.getData().put("result", orderMerchantBeans) ;
 
-
-//        createOrder(orderBean) ;
-        OperaResponse<List<SubOrderT>>  result = new OperaResponse<List<SubOrderT>>();
-        if ("1001".equals(orderBean.getCompanyCustNo())) { // 关爱通
-            result = aoyiClientService.orderGAT(orderBean);
-        } else { //
-            result = aoyiClientService.order(orderBean);
-        }
-        logger.info("创建订单 调用aoyi rpc 返回:{}", JSONUtil.toJsonString(result));
-
-        if (result.getCode() == 200) {
-            List<SubOrderT> subOrderTS = result.getData();
-            subOrderTS.forEach(subOrderT -> {
-                if (!StringUtils.isEmpty(subOrderT.getAoyiId())){
-                    // 更新aoyiId字段
-                    adminOrderDao.updateAoyiIdByTradeNo(subOrderT.getAoyiId(), subOrderT.getOrderNo());
+                logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
+            } else {
+                if (coupon != null) {
+                    boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                    if (!couponRelease) {
+                        // 订单失败,释放优惠券，
+                        logger.info("订单" + bean.getId() + "释放优惠券失败");
+                    }
                 }
-            });
-            logger.info("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
+                // 回滚库存
+                if (inventories != null && inventories.size() > 0) {
+                    logger.debug("回滚库存，入参：{}", JSONUtil.toJsonString(inventories));
+                    OperaResult inventoryAddResult = productService.inventoryAdd(inventories) ;
+                    logger.debug("回滚库存, 返回结果：{}", JSONUtil.toJsonString(inventoryAddResult));
+                }
+                operaResult.setCode(result.getCode());
+                operaResult.setMsg(result.getMsg());
+                // 异常数据库回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return  operaResult;
+            }
+        } else {
+            logger.debug("创建订单 OrderServiceImpl#add2 返回orderMerchantBeans:{}", JSONUtil.toJsonString(orderMerchantBeans));
             operaResult.getData().put("result", orderMerchantBeans) ;
 
-            logger.info("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
-        } else {
-
-            if (coupon != null) {
-                boolean couponRelease = release(coupon.getId(), coupon.getCode());
-                if (!couponRelease) {
-                    // TODO 订单失败,释放优惠券，
-                    logger.info("订单" + bean.getId() + "释放优惠券失败");
-                }
-            }
-
-            operaResult.setCode(result.getCode());
-            operaResult.setMsg(result.getMsg());
-            // 异常数据库回滚
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return  operaResult;
+            logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
     }
 
+    private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans, String appId) {
+        List<PromotionVerifyBean> promotionVerifyBeans = new ArrayList<>() ;
+        orderMerchantBeans.forEach(orderMerchantBean -> {
+            List<OrderDetailX> orderDetailXES = orderMerchantBean.getSkus();
+            orderDetailXES.forEach(orderDetailX -> {
+                PromotionVerifyBean promotionVerifyBean = new PromotionVerifyBean() ;
+                promotionVerifyBean.setId(orderDetailX.getPromotionId());
+                promotionVerifyBean.setMpu(orderDetailX.getMpu());
+                promotionVerifyBeans.add(promotionVerifyBean) ;
+            });
+        });
+        logger.info("promotion verify 入参：{}", JSONUtil.toJsonString(promotionVerifyBeans));
+        OperaResult result = equityService.promotionVerify(promotionVerifyBeans, appId) ;
+        logger.info("promotion verify 返回值：{}", JSONUtil.toJsonString(result));
+        if (result != null && result.getCode() == 200) {
+            Map<String, Object> data = result.getData();
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionInfoBean>  promotionInfoBeans = JSONObject.parseArray(jsonString, PromotionInfoBean.class);
+            for (PromotionInfoBean promotionInfoBean : promotionInfoBeans) {
+                if (promotionInfoBean.getStatus() != null && promotionInfoBean.getStatus() != 4) {
+                    result.setCode(400602);
+                    result.setMsg("订单中存在无效活动的商品。");
+                    return result;
+                }
+            }
+        }
+        return result;
+    }
 
-    @CachePut(value = "orders", key = "#id")
+    /**
+     * 验证商品限购数量
+     * @param orderMerchantBeans
+     * @return
+     */
+    private OperaResult verifyPerLimit(List<OrderMerchantBean> orderMerchantBeans, String openId, String appId) {
+        List<String> errorMpus = new ArrayList<>() ;
+        List<String> mpus = new ArrayList<>() ;
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+                mpus.add(orderSku.getMpu()) ;
+            }
+        }
+        OperaResult result = equityService.findPromotionByMpuList(mpus, appId);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionMpuX> subOrderTS = JSONObject.parseArray(jsonString, PromotionMpuX.class);
+            if (subOrderTS != null && subOrderTS.size() > 0) {
+                for (PromotionMpuX promotionMpuX : subOrderTS) {
+                    if (promotionMpuX.getPerLimited() == -1) {
+                        continue;
+                    } else {
+                        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOpenIdAndMpuAndPromotionId(openId, promotionMpuX.getMpu(), promotionMpuX.getId()) ;
+                        if (orderDetailList != null && orderDetailList.size() > 0) {
+                            AtomicInteger sum = new AtomicInteger(0);
+                            orderDetailList.forEach(orderDetail -> {
+                                sum.set(sum.get() + orderDetail.getNum());
+                            });
+                            promotionMpuX.setPerLimited(promotionMpuX.getPerLimited() - sum.get());
+                            for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+                                for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+                                    if (orderSku.getNum() > promotionMpuX.getPerLimited()) {
+                                        errorMpus.add(orderSku.getMpu());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (errorMpus != null && errorMpus.size() > 0) {
+                result.setCode(4000001);
+                result.setMsg("商品超过限购数量，无法添加。");
+                result.getData().put("mpus", errorMpus) ;
+                return result;
+            }
+        }
+        return null;
+    }
+
+
     @Override
     public Integer cancel(Integer id) {
         Orders order = adminOrderDao.selectById(id);
@@ -312,11 +464,24 @@ public class OrderServiceImpl implements OrderService {
                     release(order.getCouponId(), order.getCouponCode()) ;
                 }
             }
+            // 获取子订单列表，然后将数量和MPU添加
+            List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(id) ;
+            List<InventoryMpus> inventoryMpuses = new ArrayList<>() ;
+            orderDetailList.forEach(orderDetail1 -> {
+                InventoryMpus inventoryMpus = new InventoryMpus() ;
+                inventoryMpus.setMpu(orderDetail1.getMpu());
+                inventoryMpus.setRemainNum(orderDetail1.getNum());
+                inventoryMpuses.add(inventoryMpus) ;
+            });
+            logger.info("取消订单，返还库存操作，返还参数：{}", JSONUtil.toJsonString(inventoryMpuses));
+            OperaResult result = productService.inventoryAdd(inventoryMpuses) ;
+            if (result.getCode() != 200) {
+                logger.info("取消订单，返还库存操作失败， 返回结果：{}", JSONUtil.toJsonString(result));
+            }
         }
         return id;
     }
 
-    @Cacheable(value = "orders", key = "#id")
     @DataSource(DataSourceNames.TWO)
     @Override
     public Order findById(Integer id) {
@@ -328,7 +493,6 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    @CacheEvict(value = "orders", key = "#id")
     @Override
     public Integer delete(Integer id) {
         Order order = new Order();
@@ -364,16 +528,45 @@ public class OrderServiceImpl implements OrderService {
         return pageBean;
     }
 
-    @CachePut(value = "orders", key = "#bean.id")
+    @DataSource(DataSourceNames.TWO)
+    @Override
+    public PageBean findListV2(OrderQueryBean queryBean) {
+        PageBean pageBean = new PageBean();
+        int total = 0;
+        int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
+        HashMap map = new HashMap();
+        map.put("pageNo", offset);
+        map.put("pageSize", queryBean.getPageSize());
+        map.put("openId", queryBean.getOpenId()) ;
+        if (queryBean.getStatus() != null && queryBean.getStatus() != -1) {
+            map.put("status", queryBean.getStatus()) ;
+        }
+        List<Order> orders = new ArrayList<>();
+        total = orderMapper.selectLimitCountV2(map);
+        if (total > 0) {
+            orders = orderMapper.selectLimitV2(map);
+            orders.forEach(order -> {
+                order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+            });
+        }
+        pageBean = PageBean.build(pageBean, orders, total, queryBean.getPageNo(), queryBean.getPageSize());
+        return pageBean;
+    }
+
     @Override
     public Integer updateStatus(Order bean) {
+        logger.info("更新订单状态 入参:{}", JSONUtil.toJsonString(bean));
+
         bean.setUpdatedAt(new Date());
         // 更新子订单状态
         if (bean.getStatus() == 2) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(bean.getId());
             orderDetail.setStatus(3);
-            adminOrderDao.updateOrderDetailStatus(orderDetail);
+
+            // adminOrderDao.updateOrderDetailStatus(orderDetail);
+
+            adminOrderDao.updateOrderDetailStatusForReceived(orderDetail);
         }
         orderMapper.updateStatusById(bean) ;
         return bean.getId();
@@ -396,11 +589,19 @@ public class OrderServiceImpl implements OrderService {
         map.put("status",orderBean.getStatus());
         map.put("merchantId",orderBean.getMerchantId());
         map.put("subStatus",orderBean.getSubStatus());
+        map.put("aoyiId",orderBean.getAoyiId());
+        map.put("appId",orderBean.getAppId());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
             map.put("payDateStart", orderBean.getPayDateStart() + " 00:00:00");
         }
         if(orderBean.getPayDateEnd() != null && !orderBean.getPayDateEnd().equals("")){
             map.put("payDateEnd", orderBean.getPayDateEnd() + " 23:59:59");
+        }
+        if(orderBean.getCompleteDateStart() != null && !orderBean.getCompleteDateStart().equals("")){
+            map.put("completeDateStart", orderBean.getCompleteDateStart() + " 00:00:00");
+        }
+        if(orderBean.getCompleteDateEnd() != null && !orderBean.getCompleteDateEnd().equals("")){
+            map.put("completeDateEnd", orderBean.getCompleteDateEnd() + " 23:59:59");
         }
 
         logger.info("查询订单 数据库查询入参:{}", JSONUtil.toJsonString(map));
@@ -411,7 +612,7 @@ public class OrderServiceImpl implements OrderService {
             orderBeans = orderMapper.selectOrderLimit(map);
             orderBeans.forEach(order -> {
                 if(order.getImage() == null || "".equals(order.getImage())){
-                    AoyiProdIndex productIndex = findProduct(order.getSkuId());
+                    AoyiProdIndex productIndex = findProduct(order.getSkuId(), orderBean.getAppId());
                     if (productIndex != null) {
                         String imagesUrl = productIndex.getImagesUrl();
                         if (imagesUrl != null && (!"".equals(imagesUrl))) {
@@ -431,19 +632,16 @@ public class OrderServiceImpl implements OrderService {
         return pageBean;
     }
 
-    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateRemark(Order bean) {
         return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
-    @CachePut(value = "orders", key = "#bean.id")
     @Override
     public Integer updateOrderAddress(Order bean) {
         return orderMapper.updateByPrimaryKeySelective(bean);
     }
 
-    @Cacheable(value = "orders")
     @DataSource(DataSourceNames.TWO)
     @Override
     public Order searchDetail(OrderQueryBean queryBean) {
@@ -454,6 +652,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("pageNo", offset);
         map.put("pageSize", queryBean.getPageSize());
         map.put("orderId", queryBean.getOrderId());
+        map.put("appId", queryBean.getAppId());
         Order order = orderMapper.selectByPrimaryKey(queryBean.getOrderId());
         total = orderDetailXMapper.selectCount(map);
         if (total > 0) {
@@ -501,31 +700,103 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setComCode(Logistics.getComCode());
                 orderDetailX.setLogisticsId(Logistics.getLogisticsId());
                 orderDetailX.setStatus(2);
-                orderDetailXMapper.updateByOrderId(orderDetailX);
+                OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(Logistics.getSubOrderId()) ;
+                if (orderDetail.getStatus() == 1) {
+                    orderDetailXMapper.updateByOrderId(orderDetailX);
+                    JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+                }
             });
         }
         return i;
     }
 
     @Override
-    public JSONArray getLogist(String merchantNo, String orderId) {
+    public OperaResult getLogist(String merchantNo, String orderId) {
+        OperaResult result = new OperaResult();
         JSONArray jsonArray = new JSONArray();
+        List<Orders> orders = ordersDao.selectOrdersByTradeNo(orderId);
+        if (orders == null || orders.size() == 0) {
+            result.setCode(4000001);
+            result.setMsg("订单号不存在");
+            return result ;
+        }
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
         if (logistics != null && logistics.size() > 0) {
-            logistics.forEach(logist -> {
-                if (logist.getLogisticsId() != null && logist.getComCode() != null) {
-                    String jsonString = Kuaidi100.synQueryData(logist.getLogisticsId(), logist.getComCode()) ;
-                    JSONObject jsonObject = JSONObject.parseObject(jsonString);
-                    jsonArray.add(jsonObject);
+            for (OrderDetailX logist : logistics) {
+                if (logist != null && logist.getLogisticsId() != null && logist.getComCode() != null) {
+                    OperaResponse<JSONObject> response =  baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode()) ;
+                    if (response.getCode() == 200) {
+                        JSONObject jsonObject = response.getData();
+                        jsonArray.add(jsonObject);
+                    }
                 }
-            });
+            }
         }
-        return jsonArray;
+        logger.info("物流查询结果： {}", JSONUtils.toJSONString(jsonArray));
+        result.getData().put("result", jsonArray) ;
+        return result;
+    }
+
+    @Override
+    public OperaResult getWorkOrderLogist(String logisticNo, String code, String merchantNo) {
+        OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(logisticNo)) {
+            result.setCode(4000001);
+            result.setMsg("物流单号不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(code)) {
+            result.setCode(4000001);
+            result.setMsg("物流编码不能为空");
+            return result ;
+        }
+        OperaResponse<JSONObject> response =  baseService.kuaidi100(logisticNo, code) ;
+        if (response.getCode() == 200) {
+            JSONObject jsonObject = response.getData();
+            logger.info("子订单物流查询结果： {}", JSONUtils.toJSONString(jsonObject));
+            result.getData().put("result", jsonObject) ;
+            return result;
+        }
+        return result;
+    }
+
+    @Override
+    public OperaResult getSubOrderLogist(String merchantNo, String subOrderId) {
+        OperaResult result = new OperaResult();
+        if (StringUtils.isEmpty(subOrderId)) {
+            result.setCode(4000001);
+            result.setMsg("子订单号不能为空");
+            return result ;
+        }
+        OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(subOrderId);
+        if (orderDetail == null) {
+            result.setCode(4000001);
+            result.setMsg("子订单号不存在。");
+            return result ;
+        }
+        if (orderDetail.getLogisticsId() != null && orderDetail.getComcode() != null) {
+            OperaResponse<JSONObject> response =  baseService.kuaidi100(orderDetail.getLogisticsId(), orderDetail.getComcode()) ;
+            if (response.getCode() == 200) {
+                JSONObject jsonObject = response.getData();
+                logger.info("子订单物流查询结果： {}", JSONUtils.toJSONString(jsonObject));
+                result.getData().put("result", jsonObject) ;
+                return result;
+            }
+        }
+        return null;
     }
 
     @Override
     public List<Order> findTradeNo(String appId, String merchantNo,String tradeNo) {
-        return orderMapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
+        logger.info("findTradeNo 方法入参 appId : " + appId + " merchantNo : " + merchantNo + " tradeNo : " + tradeNo);
+        List<Order> orders = new ArrayList<>();
+        if (StringUtils.isEmpty(merchantNo)) {
+            orders = orderMapper.selectByTradeNo(appId + "%" + tradeNo);
+        } else {
+            orders = orderMapper.selectByTradeNo(appId + "%" + merchantNo + "%" + tradeNo);
+        }
+        logger.info("findTradeNo 方法返回值orders : {}", JSONUtil.toJsonString(orders));
+        return orders ;
     }
 
     @Override
@@ -558,7 +829,10 @@ public class OrderServiceImpl implements OrderService {
             consume(order.getCouponId(), order.getCouponCode()) ;
             order.setCouponStatus(3);
         }
-        return orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+        int id = orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
+        // TODO 虚拟商品相关
+        virtualHandle(order);
+        return id ;
     }
 
     @Override
@@ -589,8 +863,8 @@ public class OrderServiceImpl implements OrderService {
         return dayStatisticsBean;
     }
 
-    @Override
-    public DayStatisticsBean findMerchantOverallStatistics(Integer merchantId) throws Exception {
+    @Deprecated
+    public DayStatisticsBean findMerchantOverallStatisticsDeprecated(Integer merchantId) throws Exception {
         // 1. 初始化统计数据 ：　a.获取订单支付总额; b.(已支付)订单总量; c.(已支付)下单人数
         BigDecimal orderAmount = new BigDecimal(0); // 获取订单支付总额
         Integer orderCount = 0; // (已支付)订单总量
@@ -655,6 +929,58 @@ public class OrderServiceImpl implements OrderService {
         return dayStatisticsBean;
     }
 
+    @Override
+    public DayStatisticsBean findMerchantOverallStatistics(Integer merchantId) throws Exception {
+        // 1. 初始化统计数据 ：　a.获取订单支付总额; b.(已支付)订单总量; c.(已支付)下单人数
+        BigDecimal orderAmount = new BigDecimal(0); // 获取订单支付总额
+        Integer orderCount = 0; // (已支付)订单总量
+        Set<String> openIdSet = new HashSet<>(); // 下单人id 集合
+
+        // 2. 查询已支付的主订单详情数据，分页查询(批量循环查询)
+        int currentPageNo = 1;
+        int pageSize = 300;
+
+        // 2.1 初始化查询
+        logger.info("获取商户的关于订单的总体运营统计数据 初始化查询主订单详情 数据库入参 merchantId:{}, currentPageNo:{}, pageSize:{}",
+                merchantId, currentPageNo, pageSize);
+        PageInfo<Orders> pageInfo = ordersDao.selectPayedOrderListByMerchantIdPageable(merchantId, currentPageNo, pageSize);
+        logger.info("获取商户的关于订单的总体运营统计数据 初始化查询主订单详情 数据库返回 pageInfo:{}", JSONUtil.toJsonString(pageInfo));
+
+        // 总页数
+        Integer totalPage = pageInfo.getPages(); // FIXME : 如果没有数据会怎样?
+
+
+        // 2.2 批量循环查询
+        while (currentPageNo <= totalPage) {
+            if (currentPageNo > 1) {
+                logger.info("获取商户的关于订单的总体运营统计数据 查询主订单详情 数据库入参 merchantId:{}, currentPageNo:{}, pageSize:{}",
+                        merchantId, currentPageNo, pageSize);
+                pageInfo = ordersDao.selectPayedOrderListByMerchantIdPageable(merchantId, currentPageNo, pageSize);
+                logger.info("获取商户的关于订单的总体运营统计数据 查询主订单详情 数据库返回pageInfo:{}", JSONUtil.toJsonString(pageInfo));
+            }
+
+            // 获取查询到的主订单详情 并统计
+            List<Orders> ordersList = pageInfo.getList();
+            for (Orders orders : ordersList) {
+                orderAmount = orderAmount.add(new BigDecimal(orders.getSaleAmount() - orders.getServFee()));
+                orderCount = orderCount + 1; // 订单数量
+                openIdSet.add(orders.getOpenId()); //
+            }
+
+            currentPageNo++;
+        }
+
+        // 3. 拼装结果
+        DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
+        dayStatisticsBean.setOrderPaymentAmount(orderAmount.floatValue());
+        dayStatisticsBean.setOrderCount(orderCount);
+        dayStatisticsBean.setOrderPeopleNum(openIdSet.size()); // 下单人数
+
+        logger.info("获取商户的关于订单的总体运营统计数据 DayStatisticsBean:{}", JSONUtil.toJsonString(dayStatisticsBean));
+
+        return dayStatisticsBean;
+    }
+
     public String queryLogisticsInfo(String logisticsId) {
         String comcode = orderDetailXMapper.selectComCode(logisticsId);
         if(comcode == null || comcode.equals("")){
@@ -682,41 +1008,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDetailBean> queryPayedOrderDetail(String startDateTime, String endDateTime) throws Exception {
-        // 1. 按照时间范围查询子订单集合
-        logger.info("按照时间范围查询已支付的子订单列表 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
+        // 1. 按照时间范围查询已支付的主订单集合
+        logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
         Date startTime = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         Date endTime = DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-        List<OrderDetail> orderDetailList = adminOrderDao.selectOrderDetailsByCreateTimeRange(startTime, endTime);
-        logger.info("按照时间范围查询已支付的子订单列表 数据库返回List<OrderDetail>:{}", JSONUtil.toJsonString(orderDetailList));
+        List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentTime(startTime, endTime);
+        logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
-        // 2. 过滤出已支付的子订单集合
-        // 2.1 根据获取到的子订单获取主订单
-        List<Integer> ordersIdList =
-                orderDetailList.stream().map(detail -> detail.getOrderId()).collect(Collectors.toList());
-        logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库入参:{}", JSONUtil.toJsonString(ordersIdList));
-        // 2.2 查询主订单
-        if (CollectionUtils.isEmpty(ordersIdList)) {
-            return Collections.emptyList();
-        }
-        List<Orders> ordersList = adminOrderDao.selectOrdersListByIdList(ordersIdList);
-        logger.info("按照时间范围查询已支付的子订单列表 查询主订单列表 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
         // 转map key : ordersId, value: Orders
         Map<Integer, Orders> ordersMap = ordersList.stream().collect(Collectors.toMap(o -> o.getId(), o -> o));
 
-        // 2.3 过滤
-        List<OrderDetail> payedOrderDetailList = new ArrayList<>(); // 已支付的子订单集合
-        for (OrderDetail orderDetail : orderDetailList) { // 遍历子订单
-            Integer orderId = orderDetail.getOrderId();
-            Orders orders = ordersMap.get(orderId);
-            if (orders != null && orders.getPayStatus() != null) {
-                // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
-                if (PaymentStatusEnum.PAY_SUCCESS.getValue() == orders.getPayStatus().intValue()) { // 如果 支付成功
-                    payedOrderDetailList.add(orderDetail);
-                }
-            }
+        // 2. 查询已支付的子订单集合
+        // 2.1 根据获取到主订单获取主订单id列表
+        List<Integer> ordersIdList =
+                ordersList.stream().map(orders -> orders.getId()).collect(Collectors.toList());
+        logger.info("按照时间范围查询已支付的子订单列表 查询子订单列表 数据库入参:{}", JSONUtil.toJsonString(ordersIdList));
+        // 2.2 根据查询子订单
+        if (CollectionUtils.isEmpty(ordersIdList)) {
+            return Collections.emptyList();
         }
-        logger.info("按照时间范围查询已支付的子订单列表 获取的已支付子订单集合List<OrderDetail>:{}",
-                JSONUtil.toJsonString(payedOrderDetailList));
+        List<OrderDetail> payedOrderDetailList = orderDetailDao.selectOrderDetailsByOrdersIdList(ordersIdList);
+        logger.info("按照时间范围查询已支付的子订单列表 查询子订单列表 数据库返回List<OrderDetail>:{}", JSONUtil.toJsonString(payedOrderDetailList));
 
         // 3. 转dto
         List<OrderDetailBean> orderDetailBeanList = new ArrayList<>();
@@ -770,10 +1082,145 @@ public class OrderServiceImpl implements OrderService {
         return adminOrderDao.updateOrderDetail(bean);
     }
 
+    @Override
+    public List<Orders> findOrderListByOpenId(String openId) {
+        List<Orders> orders = ordersDao.selectOrderListByOpenId(openId);
+        return orders;
+    }
+
+    @Override
+    public Integer updateSubOrderStatus(OrderDetail bean) {
+        orderDetailDao.updateOrderDetailStatus(bean) ;
+        return bean.getId();
+    }
+
+    @Override
+    public Integer subOrderCancel(OrderDetail bean) {
+        bean.setStatus(5);
+        orderDetailDao.updateOrderDetailStatus(bean) ;
+        return bean.getId();
+    }
+
+    @Override
+    public OperaResponse logistics(List<Logisticsbean> logisticsbeans) {
+        OperaResponse<List<Logisticsbean>> response = new OperaResponse<List<Logisticsbean>>();
+        List<Logisticsbean> logisticsbeanList = new ArrayList<>();
+        for (Logisticsbean logistics: logisticsbeans) {
+            if (StringUtils.isEmpty(logistics.getLogisticsId())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            if (StringUtils.isEmpty(logistics.getLogisticsContent())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            if (StringUtils.isEmpty(logistics.getSubOrderId())) {
+                logisticsbeanList.add(logistics);
+                continue;
+            }
+            OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
+            if (orderDetail.getStatus() == 1) {
+                orderDetailDao.updateBySubOrderId(logistics) ;
+                JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+            }
+        }
+        if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
+            response.setCode(4000002);
+            response.setMsg("信息不完整");
+            response.setData(logisticsbeanList);
+            return response;
+        }
+        return response;
+    }
+
+    @Override
+    public OrderDetail findDetailById(int id) {
+        return orderDetailMapper.selectByPrimaryKey(id) ;
+    }
+
+    @Override
+    public Integer finishOrderDetail(Integer id) {
+        OrderDetail orderDetail = orderDetailMapper.selectByPrimaryKey(id) ;
+        orderDetail.setStatus(3);
+        orderDetailDao.updateOrderDetailStatus(orderDetail) ;
+        return id;
+    }
+
+    @Override
+    public List<UnPaidBean> unpaid(String openId) {
+        HashMap map = new HashMap();
+        map.put("openId", openId) ;
+        map.put("status", 0) ;
+        List<UnPaidBean> unPaidBeans = new ArrayList<>() ;
+        List<Order>  orders = orderMapper.selectByOpenIdAndStatus(map);
+        orders.forEach(order -> {
+            order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+        });
+        Map<String, List<Order>> orderMap = orders.stream().collect(Collectors.groupingBy(order -> fetchGroupKey(order))) ;
+        for (String key : orderMap.keySet()) {
+            UnPaidBean unPaidBean = new UnPaidBean() ;
+            List<Order> orderList = orderMap.get(key);
+            if (orderList != null && orderList.size() > 0) {
+                Order order = orderList.get(0) ;
+                OrderCouponBean orderCouponBean = new OrderCouponBean() ;
+                orderCouponBean.setId(order.getCouponId());
+                orderCouponBean.setCode(order.getCouponCode());
+                orderCouponBean.setDiscount(order.getCouponDiscount());
+                unPaidBean.setCoupon(orderCouponBean);
+                AtomicReference<Float> saleAmount = new AtomicReference<>(0.00f);
+                AtomicReference<Float> servFee= new AtomicReference<>(0.00f);
+                orderList.forEach(order1 -> {
+                    saleAmount.set(saleAmount.get() + order1.getSaleAmount());
+                    servFee.set(servFee.get() + order1.getServFee());
+                });
+                unPaidBean.setSaleAmount(saleAmount.get());
+                unPaidBean.setServFee(servFee.get());
+                unPaidBean.setOrderNos(key);
+            }
+            unPaidBean.setOrdersList(orderList);
+            unPaidBeans.add(unPaidBean) ;
+        }
+        return unPaidBeans;
+    }
+
+    @Override
+    public OperaResponse unpaidCancel(String appId, String openId, String orderNos) {
+        OperaResponse response = new OperaResponse() ;
+
+        if (StringUtils.isEmpty(appId)) {
+            response.setCode(400001);
+            response.setMsg("appId不能位空。");
+            return response ;
+        }
+        if (StringUtils.isEmpty(openId)) {
+            response.setCode(400001);
+            response.setMsg("openId不能位空。");
+            return response ;
+        }
+        if (StringUtils.isEmpty(orderNos)) {
+            response.setCode(400001);
+            response.setMsg("orderNos不能位空。");
+            return response ;
+        }
+        List<Order> orderList = orderMapper.selectByTradeNo(appId + "%" + openId + orderNos) ;
+        orderList.forEach(order -> {
+            cancel(order.getId()) ;
+        });
+        response.setData(orderNos);
+        return response;
+    }
+
+    private String fetchGroupKey(Order order) {
+        String tradeNo = order.getTradeNo();
+        String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());
+        return key;
+    }
+
     // ========================================= private ======================================
 
-    private AoyiProdIndex findProduct(String skuId) {
-        OperaResult result = productService.find(skuId);
+    private AoyiProdIndex findProduct(String skuId, String appId) {
+        OperaResult result = productService.find(skuId, appId);
+        logger.info("根据MPU：" + skuId + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
@@ -805,16 +1252,16 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
-    private boolean occupy(int id, String code) {
-        CouponUseInfoBean bean = new CouponUseInfoBean();
-        bean.setUserCouponCode(code);
-        bean.setId(id);
-        OperaResult result = equityService.occupy(bean);
-        if (result.getCode() == 200) {
-            return true;
-        }
-        return false;
-    }
+//    private boolean occupy(int id, String code) {
+//        CouponUseInfoBean bean = new CouponUseInfoBean();
+//        bean.setUserCouponCode(code);
+//        bean.setId(id);
+//        OperaResult result = equityService.occupy(bean);
+//        if (result.getCode() == 200) {
+//            return true;
+//        }
+//        return false;
+//    }
 
     private boolean consume(int id, String code) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
@@ -880,7 +1327,7 @@ public class OrderServiceImpl implements OrderService {
         // orderDetailBean.setCreatedAt();
         // orderDetailBean.setUpdatedAt();
         // orderDetailBean.setSkuId();
-        // orderDetailBean.setNum();
+        orderDetailBean.setNum(orderDetail.getNum());
         // orderDetailBean.setUnitPrice();
         // orderDetailBean.setImage();
         // orderDetailBean.setModel();
@@ -907,6 +1354,34 @@ public class OrderServiceImpl implements OrderService {
         orderDetailBean.setCategory(orderDetail.getCategory()); // 品类
 
         return orderDetailBean;
+    }
+
+    /**
+     * 处理虚拟商品订单
+     * @param order
+     */
+    private void virtualHandle(Order order) {
+        // TODO 获取子订单中的商品是否为虚拟商品，如果是虚拟商品则通知虚拟资产模块
+        List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailsByOrdersId(order.getId()) ;
+        logger.info("根据订单ID：" + order.getId() + " 查询子订单列表，输出结果：{}", JSONUtil.toJsonString(orderDetailList));
+        orderDetailList.forEach(orderDetail -> {
+            AoyiProdIndex prodIndex = findProduct(orderDetail.getMpu(), order.getAppId()) ;
+            if (prodIndex != null && prodIndex.getType() == 1) {
+                VirtualTicketsBean virtualTicketsBean = new VirtualTicketsBean() ;
+                virtualTicketsBean.setOpenId(order.getOpenId());
+                virtualTicketsBean.setOrderId(orderDetail.getId());
+                virtualTicketsBean.setMpu(orderDetail.getMpu());
+                virtualTicketsBean.setNum(orderDetail.getNum());
+                OperaResult operaResult = equityService.createVirtual(virtualTicketsBean) ;
+                if (operaResult.getCode() != 200) {
+                    // TODO 虚拟商品创建失败后如何处理
+                    logger.info("用户虚拟商品添加失败，输入参数：{}", JSONUtil.toJsonString(virtualTicketsBean));
+                    return;
+                }
+                // 子订单完成
+                finishOrderDetail(orderDetail.getId()) ;
+            }
+        });
     }
 
 

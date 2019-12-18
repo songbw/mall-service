@@ -1,11 +1,9 @@
 package com.fengchao.equity.service;
 
-import com.fengchao.equity.bean.PageBean;
-import com.fengchao.equity.bean.PromotionBean;
-import com.fengchao.equity.bean.PromotionInfoBean;
-import com.fengchao.equity.bean.PromotionResult;
+import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Promotion;
+import com.fengchao.equity.model.PromotionMpuX;
 import com.fengchao.equity.model.PromotionX;
 
 import java.util.List;
@@ -16,7 +14,7 @@ public interface PromotionService {
 
     int createPromotion(PromotionX bean);
 
-    PageBean findPromotion(Integer offset, Integer limit);
+    PageBean findPromotion(Integer offset, Integer limit, String appId);
 
     PromotionResult updatePromotion(PromotionX bean);
 
@@ -32,11 +30,9 @@ public interface PromotionService {
 
     int deleteContent(PromotionX bean);
 
-    PromotionX findPromotionToUser(Integer id, Boolean detail);
+    PromotionX findPromotionToUser(Integer id, Boolean detail, String appId);
 
-    List<PromotionInfoBean> findPromotionInfoByMpu(String mpu);
-
-    List<PromotionInfoBean> findPromotionByMpu(String mpu);
+    List<PromotionInfoBean> findPromotionByMpu(String mpu, String appId);
 
     int end(int promotionId);
 
@@ -50,7 +46,15 @@ public interface PromotionService {
      */
     List<PromotionBean> findPromotionListByIdList(List<Integer> promotionIdList) throws Exception;
 
-    PromotionX findCurrentSchedule(Integer num);
+    PromotionX findCurrentSchedule(Integer num, String appId);
 
-    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule);
+    PageableData<Promotion> findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, String name, String appId);
+
+    List<PromotionMpuX> findOnlineMpu(String appId);
+
+    List<PromotionMpuX> findPromotionByMpuList(List<String> mpus, String appId);
+
+    PromotionX findPromotionToJob(int promotionId);
+
+    List<PromotionInfoBean> verifyPromotionInfo(List<PromotionMpuBean> beans);
 }

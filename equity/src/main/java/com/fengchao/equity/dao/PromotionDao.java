@@ -3,7 +3,6 @@ package com.fengchao.equity.dao;
 import com.fengchao.equity.mapper.PromotionMapper;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionExample;
-import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,40 +40,46 @@ public class PromotionDao {
         return promotionList;
     }
 
-    public List<Promotion> selectActivePromotion() {
+    public List<Promotion> selectActivePromotion(String appId) {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
         List<Integer> list = new ArrayList<>();
         list.add(3);
         list.add(4);
         criteria.andStatusIn(list);
+        criteria.andAppIdEqualTo(appId);
+
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
         return promotionList;
     }
 
-    public List<Promotion> searchActivePromotion(Boolean dailySchedule) {
+    public List<Promotion> searchActivePromotion(Boolean dailySchedule, String name, String appId) {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
         List<Integer> list = new ArrayList<>();
         list.add(3);
         list.add(4);
         criteria.andStatusIn(list);
-        if(dailySchedule != null && !dailySchedule.equals("") ){
+        if(name != null && !name.equals("") ){
+            criteria.andNameLike("%" + name + "%");
+        }
+        if(dailySchedule != null && !dailySchedule.equals("")){
             criteria.andDailyScheduleEqualTo(dailySchedule);
         }
+        criteria.andAppIdEqualTo(appId);
+
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
         return promotionList;
     }
 
-    public List<Promotion> selectOverduePromotion() {
+    public List<Promotion> findOnlineMpu(String appId) {
         PromotionExample promotionExample = new PromotionExample();
         PromotionExample.Criteria criteria = promotionExample.createCriteria();
-        criteria.andStatusEqualTo(5);
-        promotionExample.setOrderByClause("created_date desc");
+        criteria.andStatusEqualTo(4);
+        criteria.andAppIdEqualTo(appId);
 
-        PageHelper.startPage(1, 1);
         List<Promotion> promotionList = promotionMapper.selectByExample(promotionExample);
 
         return promotionList;

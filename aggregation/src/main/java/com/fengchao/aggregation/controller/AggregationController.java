@@ -3,6 +3,7 @@ package com.fengchao.aggregation.controller;
 import com.fengchao.aggregation.bean.OperaResult;
 import com.fengchao.aggregation.model.Aggregation;
 import com.fengchao.aggregation.service.AggregationService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +16,13 @@ public class AggregationController {
     private AggregationService aggregationService;
 
     @GetMapping("findHomePage")
-    public OperaResult findHomePage(OperaResult result){
-        result.getData().put("result", aggregationService.findHomePage());
+    public OperaResult findHomePage(@RequestHeader("appId") String appId, OperaResult result){
+        if(StringUtils.isEmpty(appId)){
+            result.setCode(500);
+            result.setMsg("参数有误");
+            return result;
+        }
+        result.getData().put("result", aggregationService.findHomePage(appId));
         return result;
     }
 

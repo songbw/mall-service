@@ -4,10 +4,7 @@ import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.QueryProdBean;
 import com.fengchao.equity.feign.hystric.ProdServiceH;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,7 +14,7 @@ public interface ProdService {
     OperaResult findCategoryList(@RequestBody List<String> categories);
 
     @RequestMapping(value = "/adminProd/prodAll", method = RequestMethod.POST)
-    OperaResult findProdList(@RequestBody QueryProdBean queryProdBean);
+    OperaResult findProdList(@RequestBody QueryProdBean queryProdBean, @RequestHeader("appId") String appId);
 
     @RequestMapping(value = "/prod/findByMpuIdList", method = RequestMethod.GET)
     OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList);

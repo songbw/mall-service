@@ -50,6 +50,12 @@ public class OrderDetail {
 
     private String remark;
 
+    private Date completeTime;
+
+    private BigDecimal checkedPrice;
+
+    private BigDecimal sprice;
+
     public Integer getId() {
         return id;
     }
@@ -232,5 +238,29 @@ public class OrderDetail {
 
     public void setRemark(String remark) {
         this.remark = remark == null ? null : remark.trim();
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
+    public BigDecimal getCheckedPrice() {
+        return checkedPrice;
+    }
+
+    public void setCheckedPrice(BigDecimal checkedPrice) {
+        this.checkedPrice = checkedPrice;
+    }
+
+    public BigDecimal getSprice() {
+        return sprice;
+    }
+
+    public void setSprice(BigDecimal sprice) {
+        this.sprice = sprice;
     }
 }

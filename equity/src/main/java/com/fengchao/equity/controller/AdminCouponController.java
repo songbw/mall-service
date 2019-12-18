@@ -29,8 +29,8 @@ public class AdminCouponController {
     }
 
     @GetMapping("find")
-    public OperaResult findCoupon(Integer offset,Integer limit, OperaResult result){
-        PageBean coupon = couponService.findCoupon(offset, limit);
+    public OperaResult findCoupon(QueryBean bean, OperaResult result){
+        PageBean coupon = couponService.findCoupon(bean.getOffset(), bean.getLimit(), bean.getAppId());
         result.getData().put("result", coupon);
         return result;
     }
@@ -112,6 +112,12 @@ public class AdminCouponController {
         }else if(num == 1003){
             result.setCode(10013);
             result.setMsg("不能多次分配");
+        }else if(num == 1004){
+            result.setCode(10014);
+            result.setMsg("未在发布有效期内");
+        }else if(num == 1005){
+            result.setCode(10015);
+            result.setMsg("优惠券已下线");
         }else{
             result.getData().put("result", num);
         }
@@ -138,15 +144,18 @@ public class AdminCouponController {
     }
 
     @PostMapping("findByMpu")
-    public OperaResult selectCouponByMpu(@RequestBody AoyiProdBean bean, OperaResult result){
+    public OperaResult selectCouponByMpu(@RequestBody AoyiProdBean bean,
+                                         @RequestHeader String appId,
+                                         OperaResult result){
+        bean.setAppId(appId);
         List<CouponBean> couponBeans = couponService.selectCouponByMpu(bean);
         result.getData().put("result",couponBeans);
         return result;
     }
 
     @GetMapping("release")
-    public OperaResult findReleaseCoupon(Integer pageNo, Integer pageSize, OperaResult result){
-        PageableData<Coupon> releaseCoupon = couponService.findReleaseCoupon(pageNo, pageSize);
+    public OperaResult findReleaseCoupon(Integer pageNo, Integer pageSize, String appId, OperaResult result){
+        PageableData<Coupon> releaseCoupon = couponService.findReleaseCoupon(pageNo, pageSize, appId);
         result.getData().put("result", releaseCoupon);
         return result;
     }

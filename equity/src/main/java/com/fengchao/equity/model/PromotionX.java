@@ -30,6 +30,10 @@ public class PromotionX {
 
     private Boolean dailySchedule;
 
+    private Integer accountType;
+
+    private String appId;
+
     private List<PromotionMpuX> promotionSkus;
 
     private List<PromotionSchedule> promotionSchedules;
@@ -139,5 +143,21 @@ public class PromotionX {
 
     public void setDailySchedule(Boolean dailySchedule) {
         this.dailySchedule = dailySchedule;
+    }
+
+    public Integer getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(Integer accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

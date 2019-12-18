@@ -1,9 +1,9 @@
 package com.fengchao.equity.service;
 
+import com.fengchao.equity.bean.PromotionInitialScheduleBean;
 import com.fengchao.equity.bean.PromotionScheduleBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.PromotionSchedule;
-import com.fengchao.equity.model.PromotionScheduleX;
 
 public interface PromotionScheduleService {
     int createSchedule(PromotionScheduleBean bean);
@@ -15,4 +15,8 @@ public interface PromotionScheduleService {
     int deletePromotion(Integer id);
 
     int updateSchedule(PromotionScheduleBean bean);
+
+    PromotionInitialScheduleBean findInitialSchedule(String appId);
+
+    int createInitialSchedule(PromotionInitialScheduleBean bean);
 }

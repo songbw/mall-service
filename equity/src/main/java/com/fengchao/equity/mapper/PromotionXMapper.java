@@ -27,7 +27,7 @@ public interface PromotionXMapper {
 
     List<PromotionX>  selectAll();
 
-    List<PromotionInfoBean> selectPromotionInfoByMpu(String skuId);
+    List<PromotionInfoBean> selectPromotionInfoByMpu(@Param("mpu")String mpu, @Param("appId")String appId);
 
     int promotionEnd(int promotionId);
 
@@ -45,7 +45,7 @@ public interface PromotionXMapper {
 
     int updateByExample(@Param("record") PromotionX record, @Param("example") PromotionExample example);
 
-    List<PromotionX> selectDaliyPromotion();
+    List<PromotionX> selectDaliyPromotion(@Param("appId") String appId);
 
-    List<PromotionX> selectSchedulePromotion();
+    List<PromotionX> selectSchedulePromotion(@Param("appId") String appId);
 }

@@ -5,9 +5,10 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="merchant_id" property="merchantId" jdbcType="INTEGER" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, merchant_id
+    id, name, merchant_id, app_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -23,6 +24,9 @@
     <if test="merchantId != null" >
       and merchant_id = #{merchantId,jdbcType=INTEGER}
     </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
   </select>
   <select id="selectLimit" parameterType="Map" resultMap="BaseResultMap">
     select
@@ -31,6 +35,9 @@
     where 1=1
     <if test="merchantId != null" >
       and merchant_id = #{merchantId,jdbcType=INTEGER}
+    </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
     </if>
     limit #{pageNo},#{pageSize}
   </select>
@@ -54,6 +61,9 @@
       <if test="merchantId != null" >
         merchant_id,
       </if>
+      <if test="appId != null" >
+        app_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -64,6 +74,9 @@
       </if>
       <if test="merchantId != null" >
         #{merchantId,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null" >
+        #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -76,13 +89,17 @@
       <if test="merchantId != null" >
         merchant_id = #{merchantId,jdbcType=INTEGER},
       </if>
+      <if test="appId != null" >
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.aggregation.model.AggregationGroup">
     update aggregation_group
     set name = #{name,jdbcType=VARCHAR},
-    merchant_id = #{merchantId,jdbcType=INTEGER}
+    merchant_id = #{merchantId,jdbcType=INTEGER},
+    app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

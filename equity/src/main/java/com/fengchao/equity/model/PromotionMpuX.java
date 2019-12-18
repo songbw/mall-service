@@ -27,6 +27,12 @@ public class PromotionMpuX {
 
     private Integer scheduleId;
 
+    private String promotionImage;
+
+    private Integer perLimited;
+
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -131,4 +137,27 @@ public class PromotionMpuX {
         this.scheduleId = scheduleId;
     }
 
+    public String getPromotionImage() {
+        return promotionImage;
+    }
+
+    public void setPromotionImage(String promotionImage) {
+        this.promotionImage = promotionImage;
+    }
+
+    public Integer getPerLimited() {
+        return perLimited;
+    }
+
+    public void setPerLimited(Integer perLimited) {
+        this.perLimited = perLimited;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
 }

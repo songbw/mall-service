@@ -1,29 +1,23 @@
 package com.fengchao.sso.config;
 
+import com.fengchao.sso.bean.SSOConfigBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+import java.util.Map;
+
 @ConfigurationProperties(prefix = "sso")
 // @Component
-public class SSOConfiguration  {
+public class SSOConfiguration  implements Serializable {
 
-    private String gatBackUrl;
+    private Map<String, SSOConfigBean> region ;
 
-    private String gatUrl;
-
-    public String getGatBackUrl() {
-        return gatBackUrl;
+    public Map<String, SSOConfigBean> getRegion() {
+        return region;
     }
 
-    public void setGatBackUrl(String gatBackUrl) {
-        this.gatBackUrl = gatBackUrl;
-    }
-
-    public String getGatUrl() {
-        return gatUrl;
-    }
-
-    public void setGatUrl(String gatUrl) {
-        this.gatUrl = gatUrl;
+    public void setRegion(Map<String, SSOConfigBean> region) {
+        this.region = region;
     }
 }

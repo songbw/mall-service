@@ -7,6 +7,8 @@ public class Orders {
 
     private String openId;
 
+    private String appId;
+
     private String tradeNo;
 
     private String aoyiId;
@@ -113,6 +115,14 @@ public class Orders {
 
     public void setOpenId(String openId) {
         this.openId = openId == null ? null : openId.trim();
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 
     public String getTradeNo() {

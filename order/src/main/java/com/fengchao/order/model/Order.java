@@ -109,6 +109,12 @@ public class Order implements Serializable {
 
     private Integer couponStatus;
 
+    private Integer balanceId ;
+
+    private Float balanceDiscount ;
+
+    private String appId ;
+
     public Integer getId() {
         return id;
     }
@@ -515,5 +521,29 @@ public class Order implements Serializable {
 
     public void setCouponStatus(Integer couponStatus) {
         this.couponStatus = couponStatus;
+    }
+
+    public Integer getBalanceId() {
+        return balanceId;
+    }
+
+    public void setBalanceId(Integer balanceId) {
+        this.balanceId = balanceId;
+    }
+
+    public Float getBalanceDiscount() {
+        return balanceDiscount;
+    }
+
+    public void setBalanceDiscount(Float balanceDiscount) {
+        this.balanceDiscount = balanceDiscount;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

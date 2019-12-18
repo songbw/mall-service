@@ -15,8 +15,8 @@ public interface InvoiceInfoService {
 
     Integer modify(InvoiceInfo bean) ;
 
-    PageBean findList(InvoiceInfoQueryBean bean) ;
-
     InvoiceInfo find(Integer id) ;
+
+    InvoiceInfo findByUserId(String userId) ;
 
 }

@@ -8,6 +8,7 @@
     <result column="istatus" jdbcType="SMALLINT" property="istatus" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -68,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, type_name, type_desc, istatus, create_time, update_time
+    id, type_name, type_desc, istatus, create_time, update_time, app_id
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.PromotionTypeExample" resultMap="BaseResultMap">
     select
@@ -102,9 +103,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionType" useGeneratedKeys="true">
     insert into promotion_type (type_name, type_desc, istatus, 
-      create_time, update_time)
+      create_time, update_time, app_id
+      )
     values (#{typeName,jdbcType=VARCHAR}, #{typeDesc,jdbcType=VARCHAR}, #{istatus,jdbcType=SMALLINT}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{appId,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.PromotionType" useGeneratedKeys="true">
     insert into promotion_type
@@ -124,6 +127,9 @@
       <if test="updateTime != null">
         update_time,
       </if>
+      <if test="appId != null">
+        app_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="typeName != null">
@@ -140,6 +146,9 @@
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -170,6 +179,9 @@
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.appId != null">
+        app_id = #{record.appId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -182,7 +194,8 @@
       type_desc = #{record.typeDesc,jdbcType=VARCHAR},
       istatus = #{record.istatus,jdbcType=SMALLINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      app_id = #{record.appId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -205,6 +218,9 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -214,7 +230,8 @@
       type_desc = #{typeDesc,jdbcType=VARCHAR},
       istatus = #{istatus,jdbcType=SMALLINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

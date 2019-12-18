@@ -23,6 +23,9 @@
     <result column="mpu" property="mpu" jdbcType="VARCHAR" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="sync_at" jdbcType="TIMESTAMP" property="syncAt" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="compare_url" jdbcType="VARCHAR" property="compareUrl" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" extends="BaseResultMap" >
     <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
@@ -30,7 +33,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price,
-    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams
@@ -53,11 +56,9 @@
   </select>
   <select id="selectByMpu" resultMap="BaseResultMap" parameterType="java.lang.String">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id,p.mpu
-    from aoyi_prod_index p
-    left join prod_extend e on p.mpu = e.mpu
-    where p.mpu = #{mpu}
+    <include refid="Base_Column_List" />
+    from aoyi_prod_index
+    where mpu = #{mpu}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from aoyi_prod_index
@@ -323,16 +324,14 @@
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,
-    p.saleUnit, p.state, p.price,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
-    from aoyi_prod_index p
-    left join prod_extend e on p.mpu = e.mpu
+    <include refid="Base_Column_List" />
+    from aoyi_prod_index
     where state = 1
     <if test="category !=null and category !=''">
-      and p.category = #{category}
+      and category = #{category}
     </if>
     <if test="brand !=null and brand !=''">
-      and p.brand = #{brand}
+      and brand = #{brand}
     </if>
     <if test="priceOrder !=null and priceOrder !=''">
       order by CAST(price AS DECIMAL) ${priceOrder}
@@ -381,43 +380,41 @@
   </select>
   <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
     select
-    p.id, p.skuId, p.brand,p.category category, p.model, p.name, p.image, p.weight, p.upc,p.created_at,p.updated_at,
-    p.saleUnit, p.state, p.price, p.sprice,p.images_url, p.introduction_url ,e.image imageExtend, e.images_url imagesUrlExtend, e.introduction_url introductionUrlExtend, p.merchant_id, p.inventory, p.brand_id, p.mpu
-    from aoyi_prod_index p
-    left join prod_extend e on p.mpu = e.mpu
+    <include refid="Base_Column_List" />
+    from aoyi_prod_index
     where 1 = 1
     <if test="id != null and id !=''">
-      and p.id = #{id}
+      and id = #{id}
     </if>
     <if test="name !=null and name !=''">
       <bind name="pattern1" value="'%' + name + '%'"/>
-      and p.name LIKE #{pattern1}
+      and name LIKE #{pattern1}
     </if>
     <if test="categoryID !=null and categoryID !=''">
       <bind name="pattern2" value="categoryID + '%'"/>
-      and p.category LIKE #{pattern2}
+      and category LIKE #{pattern2}
     </if>
     <if test="skuid !=null and skuid !=''">
-      and p.skuid = #{skuid}
+      and skuid = #{skuid}
     </if>
     <if test="mpu !=null and mpu !=''">
-      and p.mpu = #{mpu}
+      and mpu = #{mpu}
     </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
-      and p.brand LIKE #{pattern4}
+      and brand LIKE #{pattern4}
     </if>
     <if test="state !=null and state !=''">
-      and p.state = #{state}
+      and state = #{state}
     </if>
     <if test="merchantId != null and merchantId !=''">
       and merchant_id = #{merchantId}
     </if>
     <if test="order == 'asc'" >
-      order by p.created_at asc
+      order by created_at asc
     </if>
     <if test="order == 'desc'" >
-      order by p.created_at desc
+      order by created_at desc
     </if>
     limit #{pageNo},#{pageSize}
   </select>
@@ -493,4 +490,61 @@
     </if>
     limit #{pageNo},#{pageSize}
   </select>
+
+  <select id="selectProductListPageable" resultMap="BaseResultMap" parameterType="Map">
+    SELECT t1.*
+      FROM
+    aoyi_prod_index t1
+        INNER JOIN
+        (select id from aoyi_prod_index where 1 = 1
+            <if test="name != null and name != ''">
+              <bind name="pattern1" value="'%' + name + '%'"/>
+              and name LIKE #{pattern1}
+            </if>
+            <if test="skuid !=null and skuid !=''">
+              and skuid = #{skuid}
+            </if>
+            <if test="state != null and state !=''">
+              and state = #{state}
+            </if>
+            <if test="categoryID !=null and categoryID !=''">
+              <bind name="pattern2" value="categoryID + '%'"/>
+              and category LIKE #{pattern2}
+            </if>
+            <if test="mpu !=null and mpu !=''">
+              and mpu = #{mpu}
+            </if>
+            <if test="brand !=null and brand !=''">
+              <bind name="pattern4" value="'%' + brand + '%'"/>
+              and aoyi_prod_index.brand LIKE #{pattern4}
+            </if>
+            <if test="merchantId != null and merchantId !=''">
+              and merchant_id = #{merchantId}
+            </if>
+          order by id desc limit #{offset}, #{pageSize}) t2
+        ON t1.id = t2.id;
+  </select>
+  <select id="selectForUpdateByMpu" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from aoyi_prod_index
+    where mpu = #{mpu} and <![CDATA[merchant_id <> 2]]>  for update
+  </select>
+  <select id="selectPriceCount"  resultType="java.lang.Integer" parameterType="Map">
+    select count(id)
+    FROM aoyi_prod_index
+    WHERE state = 1 AND  sprice * #{floorPriceRate} <![CDATA[ > ]]> price
+  </select>
+  <select id="selectProductPriceListPageable"
+          resultType="com.fengchao.product.aoyi.bean.vo.ProductExportResVo"  parameterType="Map">
+    select
+    sprice costPrice, FORMAT((sprice * #{floorPriceRate}), 2) floorPrice, price sellPrice,state, mpu,skuId sku, name productName, brand
+    FROM aoyi_prod_index
+    WHERE state = 1 AND  sprice * #{floorPriceRate} <![CDATA[ > ]]> price
+    limit #{offset}, #{pageSize}
+  </select>
+
+  <update id="batchUpdate" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX">
+    update aoyi_prod_index set inventory = #{inventory}, updated_at = now() where mpu = #{mpu}
+  </update>
 </mapper>

@@ -2,10 +2,9 @@ package com.fengchao.order.feign.hystric;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fengchao.order.bean.CouponUseInfoBean;
-import com.fengchao.order.bean.OperaResponse;
-import com.fengchao.order.bean.OperaResult;
+import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.EquityServiceClient;
+import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -51,6 +50,26 @@ public class EquityServiceClientH implements EquityServiceClient {
 
     @Override
     public OperaResult findCouponUseInfoListByIdList(List<Integer> idList) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResult findPromotionByMpuList(List<String> mpuList, String appId) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResult createVirtual(VirtualTicketsBean bean) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResult findCouponListByMpuList(List<AoyiProdIndex> beans, String appId) {
+        return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResult promotionVerify(List<PromotionVerifyBean> beans, String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
     }
 

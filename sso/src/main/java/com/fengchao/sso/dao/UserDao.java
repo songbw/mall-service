@@ -33,13 +33,41 @@ public class UserDao {
      * @param pageSize
      * @return
      */
-    public PageInfo<SUser> selectUserByPageable(Integer pageNo, Integer pageSize) {
+    public PageInfo<SUser> selectUserByPageable(Integer pageNo, Integer pageSize, String name, String sex, String telephone) {
         SUserExample userExample = new SUserExample();
-
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        if (name != null && (!"".equals(name))) {
+            criteria.andNameEqualTo(name);
+        }
+        if (sex != null && (!"".equals(sex))) {
+            criteria.andSexEqualTo(sex);
+        }
+        if (telephone != null && (!"".equals(telephone))) {
+            criteria.andTelephoneEqualTo(telephone);
+        }
         PageHelper.startPage(pageNo, pageSize);
         List<SUser> userList = mapper.selectByExample(userExample);
         PageInfo<SUser> pageInfo = new PageInfo(userList);
 
         return pageInfo;
+    }
+
+    /**
+     * 根据手机号和appId查询用户信息
+     *
+     * @param appId
+     * @param telephone
+     * @return
+     */
+    public SUser selectUserByTel(String appId, String telephone) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andTelephoneEqualTo(telephone);
+        List<SUser> userList = mapper.selectByExample(userExample);
+        if (userList != null && userList.size() > 0) {
+            return userList.get(0) ;
+        }
+        return null;
     }
 }

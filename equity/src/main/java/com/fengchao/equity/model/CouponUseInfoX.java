@@ -1,6 +1,5 @@
 package com.fengchao.equity.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fengchao.equity.bean.CouponBean;
 
 import java.util.Date;
@@ -28,9 +27,10 @@ public class CouponUseInfoX {
 
     private Integer type;
 
+    private String appId;
+
     private Integer deleteFlag;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private CouponBean couponInfo;
 
     public Integer getId() {
@@ -105,20 +105,12 @@ public class CouponUseInfoX {
         this.status = status;
     }
 
-    public CouponBean getCouponInfo() {
-        return couponInfo;
+    public String getUrl() {
+        return url;
     }
 
-    public void setCouponInfo(CouponBean couponInfo) {
-        this.couponInfo = couponInfo;
-    }
-
-    public Integer getDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(Integer deleteFlag) {
-        this.deleteFlag = deleteFlag;
+    public void setUrl(String url) {
+        this.url = url == null ? null : url.trim();
     }
 
     public Integer getType() {
@@ -129,11 +121,27 @@ public class CouponUseInfoX {
         this.type = type;
     }
 
-    public String getUrl() {
-        return url;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
+    }
+
+    public Integer getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(Integer deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
+
+    public CouponBean getCouponInfo() {
+        return couponInfo;
+    }
+
+    public void setCouponInfo(CouponBean couponInfo) {
+        this.couponInfo = couponInfo;
     }
 }

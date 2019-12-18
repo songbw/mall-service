@@ -1,6 +1,8 @@
 package com.fengchao.sso.feign;
 
 
+import com.fengchao.sso.bean.AuthUserBean;
+import com.fengchao.sso.bean.OperaResponse;
 import com.fengchao.sso.bean.PaymentBean;
 import com.fengchao.sso.bean.RefundBean;
 import com.fengchao.sso.feign.hystric.PinganClientServiceH;
@@ -25,4 +27,7 @@ public interface PinganClientService {
 
     @RequestMapping(value = "/pingan/user", method = RequestMethod.GET)
     OperaResult findUser(@RequestParam("userToken") String userToken);
+
+    @RequestMapping(value = "/pingan/checkRequestCode", method = RequestMethod.GET)
+    OperaResponse<AuthUserBean> checkRequestCode(@RequestParam("requestCode") String requestCode, @RequestParam("appId") String appId) ;
 }

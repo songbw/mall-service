@@ -1,8 +1,8 @@
 package com.fengchao.sso.controller;
 
-import com.fengchao.sso.bean.LoginBean;
-import com.fengchao.sso.bean.ThirdLoginBean;
+import com.fengchao.sso.bean.*;
 import com.fengchao.sso.config.SMSConfig;
+import com.fengchao.sso.feign.BaseService;
 import com.fengchao.sso.model.Login;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.*;
@@ -23,9 +23,10 @@ public class LoginController {
     private ILoginService loginService;
     @Autowired
     private RedisDAO redisDAO;
-
     @Autowired
     private SMSUtil smsUtil;
+    @Autowired
+    private BaseService baseService ;
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @PostMapping("/register")
@@ -194,13 +195,55 @@ public class LoginController {
     }
 
     @GetMapping("/thirdParty/token")
-    public OperaResult thirdPartyToken(String iAppId, String initCode, OperaResult result) {
+    public OperaResult getThirdOpenId(String iAppId, String requestCode) {
+        OperaResult result = new OperaResult();
+        if (StringUtil.isEmpty(requestCode)){
+            result.setCode(100000);
+            result.setMsg("requestCode不正确");
+            return result;
+        }
+        return loginService.getPingAnOpenId(iAppId, requestCode) ;
+    }
+
+    @GetMapping("/thirdParty/token/gat")
+    public OperaResult getThirdOpenIdGAT(String iAppId, String initCode, OperaResult result) {
         if (StringUtil.isEmpty(initCode)){
             result.setCode(100000);
             result.setMsg("initCode不正确");
             return result;
         }
-        return loginService.findThirdPartyToken(iAppId, initCode) ;
+        return loginService.findThirdPartyTokenGAT(iAppId, initCode) ;
+    }
+
+    @GetMapping("wx")
+    public OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) {
+        return loginService.getWXOpenIdByAppIdAndCode(appId, code) ;
+    }
+
+    @GetMapping("/code")
+    public OperaResponse verifyCode(@RequestHeader("appId") String appId, String telephone, String type) {
+        return loginService.verifyCode(telephone, type, appId);
+    }
+
+    @PutMapping("/wx/bind")
+    public OperaResponse wxBind(@RequestHeader("appId") String appId, @RequestBody BindWXBean bindWXBean) {
+        return loginService.bindWXOpenId(bindWXBean);
+    }
+
+    @GetMapping("/wx/bind/verify")
+    public OperaResponse wxBindVerify(String appId, String openId) {
+        return loginService.wxBindVerify(appId, openId);
+    }
+
+    @GetMapping("/thirdParty/token/wx")
+    public OperaResult getThirdOpenIdWX(String iAppId, String code) {
+        OperaResult result = new OperaResult() ;
+        if (StringUtil.isEmpty(code)){
+            result.setCode(100000);
+            result.setMsg("code不正确");
+            return result;
+        }
+        return loginService.findThirdPartyTokenWX(iAppId, code) ;
     }
 }
 

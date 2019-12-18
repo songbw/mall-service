@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.dao.InventoryDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -18,16 +19,18 @@ import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +49,8 @@ public class ProductServiceImpl implements ProductService {
     private CategoryService categoryService;
     @Autowired
     private ESService esService;
+    @Autowired
+    private InventoryDao inventoryDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -72,6 +77,11 @@ public class ProductServiceImpl implements ProductService {
         }
         pageBean = PageBean.build(pageBean, prodIndices, total, queryBean.getPageNo(), queryBean.getPageSize());
         return pageBean;
+    }
+
+    @Override
+    public PageInfo<AoyiProdIndex> findListByCategories(ProductQueryBean queryBean) throws ProductException {
+        return productDao.selectListByCategories(queryBean);
     }
 
     @Override
@@ -105,15 +115,22 @@ public class ProductServiceImpl implements ProductService {
             InventorySkus inventorySkus = new InventorySkus();
             inventorySkus.setNum(sku.getRemainNum());
             inventorySkus.setSkuId(sku.getSkuId());
+            inventorySkus.setProdPrice(sku.getPrice());
             ilist.add(inventorySkus);
             inventory.setSkuIds(ilist);
-            OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
-            InventoryBean inventoryBean = operaResponse.getData();
-            if (inventoryBean != null) {
-                inventoryBean.setSkuId(sku.getSkuId());
-                inventoryBean.setRemainNum(sku.getRemainNum());
-                inventoryBeans.add(inventoryBean);
+            InventoryBean inventoryBean = new InventoryBean() ;
+            AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId()) ;
+            if (aoyiProdIndexX != null && "1".equals(aoyiProdIndexX.getState())) {
+                OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
+                inventoryBean = operaResponse.getData();
+                if (inventoryBean != null) {
+                    inventoryBean.setRemainNum(sku.getRemainNum());
+                } else {
+                    inventoryBean = new InventoryBean() ;
+                }
             }
+            inventoryBean.setSkuId(sku.getSkuId());
+            inventoryBeans.add(inventoryBean);
         }
         operaResult.getData().put("result", inventoryBeans) ;
         return operaResult;
@@ -172,15 +189,16 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductInfoBean findAndPromotion(String mpu) throws ProductException {
+    public ProductInfoBean findAndPromotion(String mpu, String appId) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
         AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
-        BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
-        List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getSkuid());
-        infoBean.setPromotion(promotionInfoBeans);
-
-        List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX) ;
-        infoBean.setCoupon(couponBeans);
+        if (aoyiProdIndexX != null) {
+            BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu(), appId);
+            infoBean.setPromotion(promotionInfoBeans);
+            List<CouponBean> couponBeans =  selectCouponBySku(aoyiProdIndexX, appId) ;
+            infoBean.setCoupon(couponBeans);
+        }
         return infoBean;
     }
 
@@ -226,6 +244,20 @@ public class ProductServiceImpl implements ProductService {
         return productInfoBeanList;
     }
 
+    @DataSource(DataSourceNames.TWO)
+    @Override
+    public List<AoyiProdIndex> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
+        // 1. 查询商品信息
+        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
+        productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
+            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            aoyiProdIndexList.add(aoyiProdIndex);
+        });
+        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        return aoyiProdIndexList;
+    }
+
     @Override
     public OperaResult findPriceGAT(PriceQueryBean queryBean) throws ProductException {
         OperaResult operaResult = new OperaResult();
@@ -253,8 +285,79 @@ public class ProductServiceImpl implements ProductService {
         return esService.search(queryBean) ;
     }
 
-    private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean) {
-        OperaResult result = equityService.selectCouponBySku(bean);
+    @Override
+    public List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList) {
+        // 1. 查询商品信息
+        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        return aoyiProdIndexList;
+    }
+
+    @Override
+    public OperaResult findInventorySelf(InventorySelfQueryBean queryBean) {
+        OperaResult result = new OperaResult();
+        log.info("根据mup集合查询库存信息 数据库查询参数:{}", JSONUtil.toJsonString(queryBean));
+        List<String> mpuList = new ArrayList<>() ;
+        queryBean.getInventories().forEach(inventoryMpus -> {
+            mpuList.add(inventoryMpus.getMpu()) ;
+        });
+        List<InventoryMpus> inventories = new ArrayList<>() ;
+        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuList);
+        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+            for (InventoryMpus inventory: queryBean.getInventories()) {
+                if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){
+                    if (aoyiProdIndex.getInventory() != null && aoyiProdIndex.getInventory() >= inventory.getRemainNum() && "1".equals(aoyiProdIndex.getState())) {
+                        inventory.setState("1");
+                    }
+                    inventories.add(inventory) ;
+                }
+            }
+        });
+        result.getData().put("result", inventories) ;
+        log.info("根据mup集合查询库存信息 数据库查询返回结果:{}", JSONUtil.toJsonString(result));
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public OperaResult inventorySub(List<InventoryMpus> inventories) {
+        log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
+        OperaResult result = new OperaResult();
+        for (InventoryMpus inventoryMpus : inventories) {
+            try {
+                result = inventoryDao.inventorySub(inventoryMpus) ;
+            } catch (SQLException e) {
+                log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
+                log.info(e.getMessage());
+                result.setCode(2000000);
+                result.setMsg("扣减库存失败。");
+                return result;
+            }
+        }
+        log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public OperaResult inventoryAdd(List<InventoryMpus> inventories) {
+        log.info("添加库存，入参{}", JSONUtil.toJsonString(inventories));
+        OperaResult result = new OperaResult();
+        for (InventoryMpus inventoryMpus : inventories) {
+            try {
+                result = inventoryDao.inventoryAdd(inventoryMpus) ;
+            } catch (SQLException e) {
+                log.info("添加库存，异常{}", JSONUtil.toJsonString(inventories));
+                e.printStackTrace();
+            }
+        }
+        log.info("添加库存，返回值{}", JSONUtil.toJsonString(result));
+        return result;
+    }
+
+    private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean, String appId) {
+        OperaResult result = equityService.selectCouponBySku(bean, appId);
         log.info(JSON.toJSONString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
@@ -266,8 +369,8 @@ public class ProductServiceImpl implements ProductService {
         return null;
     }
 
-    private List<PromotionInfoBean> findPromotionBySku(String skuId) {
-        OperaResult result = equityService.findPromotionBySkuId(skuId);
+    private List<PromotionInfoBean> findPromotionBySku(String skuId, String appId) {
+        OperaResult result = equityService.findPromotionBySkuId(skuId, appId);
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");

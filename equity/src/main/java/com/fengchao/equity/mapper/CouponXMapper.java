@@ -2,7 +2,6 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.bean.AoyiProdBean;
 import com.fengchao.equity.bean.CouponResultBean;
-import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponX;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,11 +29,11 @@ public interface CouponXMapper {
 
     int selectActiveCouponCount(HashMap map);
 
-    CouponX selectByCodeKey(String code);
+    CouponX selectByCodeKey(String code, String appId);
 
-    List<String> selectActiveCategories();
+    List<String> selectActiveCategories(@Param("appId")String appId);
 
-    List<String> selectTags();
+    List<String> selectTags(@Param("appId") String appId);
 
     List<CouponX> selectCouponByMpu(AoyiProdBean aoyiProdBean);
 
@@ -44,7 +43,9 @@ public interface CouponXMapper {
 
     List<CouponX> selectGrantCoupon();
 
-    List<CouponX> selectGiftCoupon();
+    List<CouponX> selectGiftCoupon(@Param("appId") String appId);
 
     List<Integer> selectActiveTagsCoupon(@Param("tagId") Integer tagId);
+
+    List<CouponX> selectCouponListByIdList(List<Integer> ids);
 }

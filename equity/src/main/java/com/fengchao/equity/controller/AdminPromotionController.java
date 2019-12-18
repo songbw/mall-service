@@ -2,9 +2,11 @@ package com.fengchao.equity.controller;
 
 import com.fengchao.equity.bean.PromotionBean;
 import com.fengchao.equity.bean.PromotionResult;
+import com.fengchao.equity.bean.QueryBean;
 import com.fengchao.equity.model.PromotionX;
 import com.fengchao.equity.service.PromotionService;
 import com.fengchao.equity.bean.OperaResult;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +26,8 @@ public class AdminPromotionController {
     }
 
     @GetMapping("find")
-    public OperaResult findPromotion(Integer offset, Integer limit, OperaResult result){
-        result.getData().put("result", service.findPromotion(offset, limit));
+    public OperaResult findPromotion(QueryBean bean, OperaResult result){
+        result.getData().put("result", service.findPromotion(bean.getOffset(), bean.getLimit(), bean.getAppId()));
         return result;
     }
 
@@ -98,8 +100,13 @@ public class AdminPromotionController {
     }
 
     @GetMapping("release")
-    public OperaResult findReleasePromotion(Integer pageNo, Integer pageSize, Boolean dailySchedule, OperaResult result){
-        result.getData().put("result", service.findReleasePromotion(pageNo, pageSize, dailySchedule));
+    public OperaResult findReleasePromotion(@Param("pageNo") Integer pageNo,
+                                            @Param("pageSize") Integer pageSize,
+                                            @Param("dailySchedule") Boolean dailySchedule,
+                                            @Param("name") String name,
+                                            @Param("appId") String appId,
+                                            OperaResult result){
+        result.getData().put("result", service.findReleasePromotion(pageNo, pageSize, dailySchedule, name, appId));
         return result;
     }
 }

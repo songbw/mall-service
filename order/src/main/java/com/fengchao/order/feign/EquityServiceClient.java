@@ -1,15 +1,11 @@
 package com.fengchao.order.feign;
 
-import com.fengchao.order.bean.CouponUseInfoBean;
-import com.fengchao.order.bean.OperaResponse;
-import com.fengchao.order.bean.OperaResult;
+import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.hystric.EquityServiceClientH;
+import com.fengchao.order.model.AoyiProdIndex;
 import com.fengchao.order.rpc.extmodel.PromotionBean;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -57,4 +53,31 @@ public interface EquityServiceClient {
      */
     @RequestMapping(value = "/couponUseInfo/findByIdList", method = RequestMethod.GET)
     OperaResult findCouponUseInfoListByIdList(@RequestParam("idList") List<Integer> idList);
+
+    @RequestMapping(value = "/promotion/mpuList", method = RequestMethod.GET)
+    OperaResult findPromotionByMpuList(@RequestParam("mpuList") List<String> mpuList, @RequestHeader("appId") String appId);
+
+    /**
+     * 生成用户虚拟商品
+     * @param bean
+     * @return
+     */
+    @RequestMapping(value = "/virtual/create", method = RequestMethod.POST)
+    OperaResult createVirtual(@RequestBody VirtualTicketsBean bean);
+
+    /**
+     * 根据MPU批量获取活动和优惠券信息
+     * @param beans
+     * @return
+     */
+    @RequestMapping(value = "/coupon/mpus", method = RequestMethod.POST)
+    OperaResult findCouponListByMpuList(@RequestBody List<AoyiProdIndex> beans, @RequestHeader("appId") String appId);
+
+    /**
+     * 根据MPU批量获取活动和优惠券信息
+     * @param beans
+     * @return
+     */
+    @RequestMapping(value = "/promotion/verify", method = RequestMethod.POST)
+    OperaResult promotionVerify(@RequestBody List<PromotionVerifyBean> beans, @RequestHeader("appId") String appId);
 }

@@ -24,4 +24,5 @@ public class AoyiProdBean {
     private String categoryName;
     private String introduction;
     private String prodParams;
+    private String appId;
 }

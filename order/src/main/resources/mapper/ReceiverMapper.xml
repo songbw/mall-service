@@ -43,6 +43,12 @@
     order by updated_at desc
     limit #{pageNo},#{pageSize}
   </select>
+  <select id="selectByOpenId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from receiver
+    where open_id = #{openId}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from receiver
     where id = #{id,jdbcType=INTEGER}

@@ -18,4 +18,5 @@ public class AggregationBean {
     private Integer groupId;
     private String order;
     private Integer merchantId;
+    private String appId;
 }

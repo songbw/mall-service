@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +30,20 @@ public class ProductController {
         return result;
     }
 
+    @PostMapping("/all/categories")
+    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, OperaResult result) throws ProductException {
+        result.getData().put("result", service.findListByCategories(queryBean)) ;
+        return result;
+    }
+
     @GetMapping
-    private OperaResult find(String mpu, OperaResult result){
+    private OperaResult find(String mpu, @RequestHeader("appId") String appId, OperaResult result){
         if (StringUtils.isEmpty(mpu)) {
             result.setCode(200501);
             result.setMsg("mpu 不能为空");
             return result;
         }
-        result.getData().put("result", service.findAndPromotion(mpu)) ;
+        result.getData().put("result", service.findAndPromotion(mpu, appId)) ;
         return result;
     }
 
@@ -88,7 +95,12 @@ public class ProductController {
      */
     @GetMapping("/findByMpuIdList")
     private OperaResult findByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
-        log.info("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        if (mpuIdList.size() > 60) {
+            result.setCode(200001);
+            result.setMsg("mpu 列表数量超过50！");
+            return result ;
+        }
         try {
             // 查询
             List<ProductInfoBean> productInfoBeanList = service.queryProductListByMpuIdList(mpuIdList);
@@ -101,7 +113,40 @@ public class ProductController {
             result.setMsg("根据mup集合查询产品信息 异常");
         }
 
-        log.info("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
+        log.debug("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
+
+        return result;
+    }
+
+    /**
+     * 根据mpuid集合查询product列表
+     *
+     * @param mpuIdList
+     * @param result
+     * @return
+     * @throws ProductException
+     */
+    @GetMapping("/mpuIds")
+    private OperaResult selectByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
+        log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        if (mpuIdList.size() > 60) {
+            result.setCode(200001);
+            result.setMsg("mpu 列表数量超过50！");
+            return result ;
+        }
+        try {
+            // 查询
+            List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList);
+
+            result.getData().put("result", productInfoBeanList);
+        } catch (Exception e) {
+            log.error("根据mup集合查询产品信息 异常:{}", e.getMessage(), e);
+
+            result.setCode(500);
+            result.setMsg("根据mup集合查询产品信息 异常");
+        }
+
+        log.debug("根据mup集合查询产品信息 返回:{}", JSONUtil.toJsonString(result));
 
         return result;
     }
@@ -110,4 +155,57 @@ public class ProductController {
     private OperaResult priceGAT(@RequestBody PriceQueryBean queryBean, OperaResult result) throws ProductException {
         return service.findPriceGAT(queryBean);
     }
+
+    @GetMapping("/getByMpus")
+    private OperaResult getProdsByMpus(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
+        log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        if (mpuIdList.size() > 60) {
+            result.setCode(200001);
+            result.setMsg("mpu 列表数量超过50！");
+            return result ;
+        }
+        try {
+            // 查询
+            List<AoyiProdIndex> productInfoBeanList = service.getProdsByMpus(mpuIdList);
+
+            result.getData().put("result", productInfoBeanList);
+        } catch (Exception e) {
+            log.error("根据mup集合查询产品信息 异常:{}", e.getMessage(), e);
+            result.setCode(500);
+            result.setMsg("根据mup集合查询产品信息 异常");
+        }
+        return result;
+    }
+
+    /**
+     *  自营库存
+     * @param queryBean
+     * @return
+     */
+    @PostMapping("/inventory/self")
+    private OperaResult inventorySelf(@RequestBody InventorySelfQueryBean queryBean) {
+        return service.findInventorySelf(queryBean);
+    }
+
+    /**
+     * 批量减库存
+     * @param inventories
+     * @return
+     */
+    @PutMapping("/inventory/sub")
+    private OperaResult inventorySub(@RequestBody List<InventoryMpus>  inventories) {
+        return service.inventorySub(inventories);
+    }
+
+    /**
+     * 批量增加库存
+     * @param inventories
+     * @return
+     */
+    @PutMapping("/inventory/add")
+    private OperaResult inventoryAdd(@RequestBody List<InventoryMpus>  inventories) {
+        return service.inventoryAdd(inventories);
+    }
+
+
 }

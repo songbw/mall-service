@@ -87,4 +87,6 @@ public class OrderDetailBean implements Serializable {
     private String category;
     private Integer skuCouponDiscount ;
     private String comcode ;
+    private Integer subId;
+    private Date completeTime;
 }

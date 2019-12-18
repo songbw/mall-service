@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="server_name" value="product-aoyi"/>
-    <property name="log_dir" value="../logs/"/>
+    <property name="server_name" value="product"/>
     <property name="maxFileSize" value="100MB"/>
     <property name="maxHistory" value="180"/>
+
+    <springProfile name="test,prod,gatsn,gatzy,wuxi">
+        <property name="log_dir" value="/data/logs/product"/>
+    </springProfile>
+
+    <springProfile name="dev,local">
+        <property name="log_dir" value="./logs/"/>
+    </springProfile>
 
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} - %highlight(%-5level) - %boldYellow(%thread) - %boldGreen(%logger) - traceId=%X{X-B3-TraceId:-} - %msg%n
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %boldYellow(%thread) %boldGreen(%logger) traceId=%X{X-B3-TraceId:-} > %msg%n
             </pattern>
         </encoder>
     </appender>
 
     <!-- info日志 appender  -->
     <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log_dir}/request-product.log</file>
+        <file>${log_dir}/log.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 按天回滚 daily -->
             <fileNamePattern>${log_dir}/${server_name}-info-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
@@ -30,8 +37,9 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} - %-5level - %thread - %logger - traceId=%X{X-B3-TraceId:-} - %msg%n
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level %thread %logger traceId=%X{X-B3-TraceId:-} > %msg%n
             </pattern>
+            <charset>UTF-8</charset>
         </encoder>
 
         <!-- 只打印info日志 -->
@@ -62,8 +70,9 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} - %-5level - %thread - %logger - traceId=%X{X-B3-TraceId:-} - %msg%n
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level %thread %logger traceId=%X{X-B3-TraceId:-} > %msg%n
             </pattern>
+            <charset>UTF-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <!-- 只打印错误日志 -->
@@ -113,7 +122,7 @@
 
 
 
-    <springProfile name="test,prod,gatsn">
+    <springProfile name="test,prod,gatsn,gatzy,wuxi">
         <root level="INFO" additivity="false">
             <appender-ref ref="INFO"/>
             <appender-ref ref="ERROR"/>

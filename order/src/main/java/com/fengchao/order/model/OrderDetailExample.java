@@ -1595,6 +1595,186 @@ public class OrderDetailExample {
             addCriterion("remark not between", value1, value2, "remark");
             return (Criteria) this;
         }
+
+        public Criteria andCompleteTimeIsNull() {
+            addCriterion("complete_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeIsNotNull() {
+            addCriterion("complete_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeEqualTo(Date value) {
+            addCriterion("complete_time =", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeNotEqualTo(Date value) {
+            addCriterion("complete_time <>", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeGreaterThan(Date value) {
+            addCriterion("complete_time >", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("complete_time >=", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeLessThan(Date value) {
+            addCriterion("complete_time <", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeLessThanOrEqualTo(Date value) {
+            addCriterion("complete_time <=", value, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeIn(List<Date> values) {
+            addCriterion("complete_time in", values, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeNotIn(List<Date> values) {
+            addCriterion("complete_time not in", values, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeBetween(Date value1, Date value2) {
+            addCriterion("complete_time between", value1, value2, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompleteTimeNotBetween(Date value1, Date value2) {
+            addCriterion("complete_time not between", value1, value2, "completeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceIsNull() {
+            addCriterion("checked_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceIsNotNull() {
+            addCriterion("checked_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceEqualTo(BigDecimal value) {
+            addCriterion("checked_price =", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceNotEqualTo(BigDecimal value) {
+            addCriterion("checked_price <>", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceGreaterThan(BigDecimal value) {
+            addCriterion("checked_price >", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceGreaterThanOrEqualTo(BigDecimal value) {
+            addCriterion("checked_price >=", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceLessThan(BigDecimal value) {
+            addCriterion("checked_price <", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceLessThanOrEqualTo(BigDecimal value) {
+            addCriterion("checked_price <=", value, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceIn(List<BigDecimal> values) {
+            addCriterion("checked_price in", values, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceNotIn(List<BigDecimal> values) {
+            addCriterion("checked_price not in", values, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("checked_price between", value1, value2, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckedPriceNotBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("checked_price not between", value1, value2, "checkedPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIsNull() {
+            addCriterion("sprice is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIsNotNull() {
+            addCriterion("sprice is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceEqualTo(BigDecimal value) {
+            addCriterion("sprice =", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotEqualTo(BigDecimal value) {
+            addCriterion("sprice <>", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceGreaterThan(BigDecimal value) {
+            addCriterion("sprice >", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceGreaterThanOrEqualTo(BigDecimal value) {
+            addCriterion("sprice >=", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceLessThan(BigDecimal value) {
+            addCriterion("sprice <", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceLessThanOrEqualTo(BigDecimal value) {
+            addCriterion("sprice <=", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIn(List<BigDecimal> values) {
+            addCriterion("sprice in", values, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotIn(List<BigDecimal> values) {
+            addCriterion("sprice not in", values, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("sprice between", value1, value2, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("sprice not between", value1, value2, "sprice");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

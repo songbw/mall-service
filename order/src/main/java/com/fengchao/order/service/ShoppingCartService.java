@@ -1,5 +1,7 @@
 package com.fengchao.order.service;
 
+import com.fengchao.order.bean.OperaResponse;
+import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.bean.PageBean;
 import com.fengchao.order.bean.ShoppingCartQueryBean;
 import com.fengchao.order.model.ShoppingCart;
@@ -9,12 +11,14 @@ import com.fengchao.order.model.ShoppingCart;
  */
 public interface ShoppingCartService {
 
-    Integer add(ShoppingCart bean) ;
+    OperaResult add(ShoppingCart bean) ;
 
     Integer delete(Integer id) ;
 
-    Integer modifyNum(ShoppingCart bean) ;
+    OperaResult modifyNum(ShoppingCart bean) ;
 
     PageBean findList(ShoppingCartQueryBean bean) ;
+
+    OperaResponse count(String openId) ;
 
 }

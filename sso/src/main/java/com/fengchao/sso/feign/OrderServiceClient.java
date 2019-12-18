@@ -37,4 +37,7 @@ public interface OrderServiceClient {
     OperaResponse batchUpdateOrderDetailStatusByOrderIds(@RequestParam("orderIdList") List<Integer> orderIdList,
                                                    @RequestParam("status") Integer status);
 
+    @RequestMapping(value = "/order/orderByopenId", method = RequestMethod.GET)
+    OperaResult findOrderListByOpenId(@RequestParam("openId") String openId);
+
 }

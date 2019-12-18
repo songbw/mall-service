@@ -81,33 +81,8 @@ public class Kuaidi100 {
             param.append(",\"resultv2\":0");
         }
         Map<String, String> params = new HashMap<String, String>();
-//        ArrayList<String> coms = queryAutoComNumByKuadi100(num);
         params.put("customer", CUSTOMER);
-//        if(coms!=null && coms.size() == 1){
-//            param.append(",\"com\":\"").append(coms.get(0)).append("\"");
-//            param.append("}");
-//            String s = param + KEY + CUSTOMER;
-//            String sign = MD5Utils.MD5(s);
-//            params.put("sign", sign);
-//            params.put("param", param.toString());
-//            return post(params);
-//        }else{
-//            String result = null;
-//            for (int i = 0; i < coms.size(); i++){
-//                param.append(",\"com\":\"").append(coms.get(i)).append("\"");
-//                param.append("}");
-//                String s = param + KEY + CUSTOMER;
-//                String sign = MD5Utils.MD5(s);
-//                params.put("sign", sign);
-//                params.put("param", param.toString());
-//                result = post(params);
-//                Boolean resultBoolean = JSONObject.parseObject(result).getBoolean("result");
-//                if(resultBoolean == null){
-//                    return result;
-//                }
-//            }
-//            return result;
-//        }
+
         param.append(",\"com\":\"").append(comCode).append("\"");
         param.append("}");
         String s = param + KEY + CUSTOMER;
@@ -168,6 +143,6 @@ public class Kuaidi100 {
     }
 
     public static void main(String args[]) {
-        System.out.println(synQueryData("0089343203460101", "suning"));
+        System.out.println(synQueryData("0011953635060401", "suning"));
     }
 }

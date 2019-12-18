@@ -2,6 +2,7 @@ package com.fengchao.guanaitong.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fengchao.guanaitong.config.GuanAiTongConfig;
 import com.fengchao.guanaitong.service.IGuanAiTongService;
 import com.fengchao.guanaitong.util.RedisDAO;
 //import com.fengchao.guanaitong.util.RedisUtil;
@@ -30,7 +31,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
     private final String MEDIA_TYPE="application/x-www-form-urlencoded; charset=utf-8";
     //private final String URL_PREFIX = "https://openapi.guanaitong.cc/";//test
-    private final String URL_PREFIX = "https://openapi.guanaitong.com/"; //normal
+    //private final String URL_PREFIX = "https://openapi.guanaitong.com/"; //normal
 
     private static final String TOKEN_CREATE_PATH = "token/create";
 
@@ -39,11 +40,11 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
     private final String APPID_KEY = "appid";
     //private final String APPID_VALUE = "20110843";//test
-    private final String APPID_VALUE = "20091390";//normal
+    //private final String APPID_VALUE = "20091390";//normal
 
     private final String APPSECRET_KEY = "appsecret";
     //private final String APPSECRET_VALUE = "78dde3cc1e3cab6cbbabbc1bf88faa4e";//test
-    private final String APPSECRET_VALUE = "f9d6639e19a68bf1e61425b1fdcd45aa";//normal
+    //private final String APPSECRET_VALUE = "f9d6639e19a68bf1e61425b1fdcd45aa";//normal
 
     //private final String VERSION_KEY = "version";
     //private final String VERSION_VALUE = "1.0.0";
@@ -101,11 +102,11 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         StringBuilder sb = new StringBuilder();
         sb.append(APPID_KEY);
         sb.append("=");
-        sb.append(APPID_VALUE);
+        sb.append(GuanAiTongConfig.getAppId());
         sb.append("&");
         sb.append(APPSECRET_KEY);
         sb.append("=");
-        sb.append(APPSECRET_VALUE);
+        sb.append(GuanAiTongConfig.getAppSecret());
         sb.append("&");
         sb.append(GRANT_TYPE_KEY);
         sb.append("=");
@@ -156,7 +157,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
                     }
                 });
 */
-        map.put(APPID_KEY,APPID_VALUE);
+        map.put(APPID_KEY,GuanAiTongConfig.getAppId());
         map.put(GRANT_TYPE_KEY,GRANT_TYPE_VALUE);
         Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         Long timeStampS = timeStampMs/1000;
@@ -175,7 +176,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         try {
             String token = getAccessToken();
             tMap.put(TOKEN_KEY, token);
-            tMap.put(APPSECRET_KEY, APPSECRET_VALUE);
+            tMap.put(APPSECRET_KEY, GuanAiTongConfig.getAppSecret());
         } catch (Exception e) {
             log.info("getAccessToken got exception : {}",e.getMessage());
             throw new Exception(e);
@@ -216,7 +217,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         MediaType mediaType = MediaType.parse(MEDIA_TYPE);
         RequestBody body = RequestBody.create(mediaType, xForm);
         Request request = new Request.Builder()
-                .url(URL_PREFIX + path)
+                .url(GuanAiTongConfig.getConfigGatUrlPrefix() + path)
                 .post(body).build();
 
         Response response;
@@ -399,7 +400,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         MediaType mediaType = MediaType.parse(MEDIA_TYPE);
         RequestBody body = RequestBody.create(mediaType, xFormBody);
         Request request = new Request.Builder()
-                .url(URL_PREFIX + TOKEN_CREATE_PATH)
+                .url(GuanAiTongConfig.getConfigGatUrlPrefix() + TOKEN_CREATE_PATH)
                 .post(body).build();
 
         Response response;

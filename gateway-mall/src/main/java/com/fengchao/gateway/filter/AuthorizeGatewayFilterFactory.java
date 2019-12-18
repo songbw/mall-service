@@ -1,9 +1,11 @@
 package com.fengchao.gateway.filter;
 
+import com.fengchao.gateway.config.GatewayConfig;
 import com.fengchao.gateway.utils.JwtHelper;
 import com.fengchao.gateway.utils.RedisDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 
+@EnableConfigurationProperties({GatewayConfig.class})
 @Slf4j
 @Component
 public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthorizeGatewayFilterFactory.Config> {
@@ -30,6 +33,8 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
 
     @Autowired
     private RedisDAO redisDAO;
+    @Autowired
+    private GatewayConfig gatewayConfig;
 
     @Override
     public GatewayFilter apply(AuthorizeGatewayFilterFactory.Config config) {
@@ -45,8 +50,10 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 return response.setComplete();
             }
             //忽略以下url请求
-            if(url.indexOf("/toushi/") >= 0 || url.indexOf("/findHomePage") >= 0 || url.indexOf("login") >= 0 || url.indexOf("/thirdParty/token") >= 0 || url.indexOf("/thirdLogin") >= 0 || url.indexOf("/vendors") >= 0 || url.indexOf("/users/verification_code") >= 0 || url.indexOf("/vendors/vendors/password") >= 0){
-                return chain.filter(exchange);
+            for (String unAuth: gatewayConfig.getNoAuthorization()) {
+                if(url.indexOf(unAuth) >= 0){
+                    return chain.filter(exchange);
+                }
             }
             HttpHeaders headers = request.getHeaders();
             /**
@@ -95,6 +102,10 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
+//            if ("Bearer".equals(type)) {
+//                exchange.getRequest().getHeaders().add("username", jwtValue);
+////                headers.add("username", jwtValue);
+//            }
             return chain.filter(exchange);
         };
     }
