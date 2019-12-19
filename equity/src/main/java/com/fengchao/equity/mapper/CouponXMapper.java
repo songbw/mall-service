@@ -41,7 +41,7 @@ public interface CouponXMapper {
 
     int couponEnd(int couponId);
 
-    List<CouponX> selectGrantCoupon();
+    List<CouponX> selectGrantCoupon(@Param("appId") String appId);
 
     List<CouponX> selectGiftCoupon(@Param("appId") String appId);
 
