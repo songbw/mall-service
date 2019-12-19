@@ -159,7 +159,7 @@ public class AggregationServiceImpl implements AggregationService {
             for(AoyiProdIndex prod: aoyiProdIndices){
                 aoyiProdMap.put(prod.getMpu(), prod);
             }
-            log.info("获取商品集合：" + JSONUtils.toJSONString(aoyiProdIndices));
+            log.info("获取商品集合：" + aoyiProdIndices.size());
             OperaResult onlinePromotion = equityService.findOnlinePromotion();
             if (onlinePromotion.getCode() == 200) {
                 Object object = onlinePromotion.getData().get("result");
