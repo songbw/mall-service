@@ -1,5 +1,6 @@
 package com.fengchao.aggregation.service.impl;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -8,17 +9,20 @@ import com.fengchao.aggregation.bean.OperaResult;
 import com.fengchao.aggregation.bean.PageBean;
 import com.fengchao.aggregation.exception.AggregationException;
 import com.fengchao.aggregation.feign.EquityService;
-import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
+import com.fengchao.aggregation.rpc.ProductRpcService;
 import com.fengchao.aggregation.service.AggregationService;
 import com.fengchao.aggregation.utils.CosUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @Service
+@Slf4j
 public class AggregationServiceImpl implements AggregationService {
 
     @Autowired
@@ -26,7 +30,7 @@ public class AggregationServiceImpl implements AggregationService {
     @Autowired
     private AggregationMpuMapper mpuMapper;
     @Autowired
-    private ProdService prodService;
+    private ProductRpcService prodService;
     @Autowired
     private EquityService equityService;
 
@@ -151,14 +155,11 @@ public class AggregationServiceImpl implements AggregationService {
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
         Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
-            OperaResult result = prodService.findProductListByMpuIdList(mpus);
-            if (result.getCode() == 200) {
-                Object object = result.getData().get("result");
-                List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(JSON.toJSONString(object), AoyiProdIndex.class);
-                for(AoyiProdIndex prod: aoyiProdIndices){
-                    aoyiProdMap.put(prod.getMpu(), prod);
-                }
+            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpus);
+            for(AoyiProdIndex prod: aoyiProdIndices){
+                aoyiProdMap.put(prod.getMpu(), prod);
             }
+            log.info("获取商品集合：" + aoyiProdIndices.size());
             OperaResult onlinePromotion = equityService.findOnlinePromotion();
             if (onlinePromotion.getCode() == 200) {
                 Object object = onlinePromotion.getData().get("result");
@@ -188,6 +189,8 @@ public class AggregationServiceImpl implements AggregationService {
                                     }
                                     aoyiProdIndex.setImage(image);
                                 }
+                                jsonObject.put("price", aoyiProdIndex.getPrice());
+                                jsonObject.put("name", aoyiProdIndex.getName());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
                             }
                         }
@@ -215,6 +218,7 @@ public class AggregationServiceImpl implements AggregationService {
                                 }
                                 PromotionMpu promotionMpu = promotionMap.get(mpu);
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
+                                jsonObject.put("name", aoyiProdIndex.getName());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
                                 if(promotionMpu != null){
                                     jsonObject.put("discount",  promotionMpu.getDiscount());
