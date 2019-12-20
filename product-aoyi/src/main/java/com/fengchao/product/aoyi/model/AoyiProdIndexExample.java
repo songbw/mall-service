@@ -1904,6 +1904,76 @@ public class AoyiProdIndexExample {
             addCriterion("compare_price not between", value1, value2, "comparePrice");
             return (Criteria) this;
         }
+
+        public Criteria andTaxRateIsNull() {
+            addCriterion("tax_rate is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateIsNotNull() {
+            addCriterion("tax_rate is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateEqualTo(String value) {
+            addCriterion("tax_rate =", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateNotEqualTo(String value) {
+            addCriterion("tax_rate <>", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateGreaterThan(String value) {
+            addCriterion("tax_rate >", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateGreaterThanOrEqualTo(String value) {
+            addCriterion("tax_rate >=", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateLessThan(String value) {
+            addCriterion("tax_rate <", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateLessThanOrEqualTo(String value) {
+            addCriterion("tax_rate <=", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateLike(String value) {
+            addCriterion("tax_rate like", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateNotLike(String value) {
+            addCriterion("tax_rate not like", value, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateIn(List<String> values) {
+            addCriterion("tax_rate in", values, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateNotIn(List<String> values) {
+            addCriterion("tax_rate not in", values, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateBetween(String value1, String value2) {
+            addCriterion("tax_rate between", value1, value2, "taxRate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTaxRateNotBetween(String value1, String value2) {
+            addCriterion("tax_rate not between", value1, value2, "taxRate");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
