@@ -572,7 +572,11 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailX.setLogisticsContent(Logistics.getLogisticsContent());
                 orderDetailX.setComCode(Logistics.getComCode());
                 orderDetailX.setLogisticsId(Logistics.getLogisticsId());
-                orderDetailX.setStatus(2);
+                OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(Logistics.getSubOrderId()) ;
+                if (orderDetail.getStatus() == 1) {
+                    orderDetailX.setStatus(2);
+                    JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getOrderId());
+                }
                 orderDetailXMapper.updateByOrderId(orderDetailX);
             });
         }
