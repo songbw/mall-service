@@ -179,10 +179,13 @@ public class CouponServiceImpl implements CouponService {
         }
         List<String> categories = mapper.selectActiveCategories(appId);
 
-        OperaResult result = productService.findCategoryList(categories);
-        Object object = result.getData().get("result");
-        String objectString = JSON.toJSONString(object);
-        List<Category> categoryList = JSONObject.parseArray(objectString, Category.class);
+        List<Category> categoryList = null;
+        if(!categories.isEmpty()){
+            OperaResult result = productService.findCategoryList(categories);
+            Object object = result.getData().get("result");
+            String objectString = JSON.toJSONString(object);
+            categoryList = JSONObject.parseArray(objectString, Category.class);
+        }
 
         categoryCouponBean.setTags(tagList);
         categoryCouponBean.setCategorys(categoryList);

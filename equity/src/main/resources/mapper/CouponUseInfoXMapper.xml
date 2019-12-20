@@ -259,12 +259,13 @@
   </insert>
   <insert id="insertbatchCode" parameterType="java.util.List" >
     insert into coupon_use_info (coupon_id, user_coupon_code,
-      code) values
+      code, app_id) values
     <foreach collection="useInfos" item="item" index="index" separator=",">
       (
       #{item.couponId,jdbcType=INTEGER},
       #{item.userCouponCode,jdbcType=VARCHAR},
-      #{item.code,jdbcType=VARCHAR}
+      #{item.code,jdbcType=VARCHAR},
+      #{item.appId,jdbcType=VARCHAR}
       )
     </foreach>
   </insert>
@@ -359,7 +360,7 @@
         consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
       </if>
     </set>
-    where status = 1
+    where delete_flag = 0
     <if test="userCouponCode != null" >
       <bind name="patternName" value="'%' + userCouponCode + '%'" />
       and user_coupon_code LIKE #{patternName}

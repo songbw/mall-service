@@ -230,7 +230,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
         CouponUserResultBean couponUserResultBean = new CouponUserResultBean();
         if(bean.getStatus() != null && bean.getStatus() == 1){
-            List<CouponX> coupons = couponXMapper.selectGrantCoupon();
+            List<CouponX> coupons = couponXMapper.selectGrantCoupon(bean.getAppId());
             List<CouponBean> couponBeans = new ArrayList<>() ;
             coupons.forEach( coupon -> {
                 int num = mapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), coupon.getAppId());
