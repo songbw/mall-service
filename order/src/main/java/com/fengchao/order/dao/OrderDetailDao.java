@@ -375,4 +375,18 @@ public class OrderDetailDao {
         return orderDetailList;
     }
 
+    /**
+     * 按照时间范围 和 状态 查询
+     *
+     * @param startTime
+     * @param endTime
+     * @param appId
+     * @param status
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByPeriod(Date startTime, Date endTime,
+                                                        String appId, int status) {
+
+    }
+
 }

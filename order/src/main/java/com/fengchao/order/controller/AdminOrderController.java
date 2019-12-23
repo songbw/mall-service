@@ -908,7 +908,7 @@ public class AdminOrderController {
 
 
     /**
-     * 每日统计
+     * 导出发货概况
      *
      * @param response
      * @throws Exception
@@ -923,6 +923,243 @@ public class AdminOrderController {
 
         try {
             log.debug("每日统计 入参: 无");
+
+            // 1.根据条件获统计数据
+            Map<String, Object> statisticMap = adminOrderService.exportDailyOrderStatistic();
+            List<DailyExportOrderStatisticVo> dailyExportOrderStatisticVoList = (List) statisticMap.get("data");
+            String statisticTime = (String) statisticMap.get("statisticTime");
+            int increasedCount = (Integer) statisticMap.get("increasedCount"); // 新增订单数量
+            Long totalCompletedOrderCount = (Long) statisticMap.get("totalCompletedOrderCount"); // 总计 已完成子订单数量
+            Long totalDeliveredOrderCount = (Long) statisticMap.get("totalDeliveredOrderCount"); // 总计 已发货子订单数量
+            Long totalUnDeliveryOrderCount = (Long) statisticMap.get("totalUnDeliveryOrderCount"); // 总计 未发货子订单数量
+            Long totalApplyRefundOrderCount = (Long) statisticMap.get("totalApplyRefundOrderCount"); // 总计 售后子订单数量
+            Long totalOrderDetailCount = (Long) statisticMap.get("totalOrderDetailCount"); // 总计 所有子订单数量
+
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("每日统计" + statisticTime); //  加上时间
+
+            //
+            int indexRow = 0;
+
+            // PRE TITLE 1
+            HSSFRow preTitleRow1 = sheet.createRow(indexRow);
+
+            preTitleRow1.createCell(0).setCellValue("无锡商城供应商发货概况记录表");
+            preTitleRow1.createCell(1).setCellValue("");
+            preTitleRow1.createCell(2).setCellValue("");
+            preTitleRow1.createCell(3).setCellValue("");
+            preTitleRow1.createCell(4).setCellValue("");
+            preTitleRow1.createCell(5).setCellValue("");
+            preTitleRow1.createCell(6).setCellValue("");
+            preTitleRow1.createCell(7).setCellValue("");
+            preTitleRow1.createCell(8).setCellValue("");
+
+            sheet.addMergedRegion(new CellRangeAddress(indexRow, indexRow, 0, 8));
+            indexRow = indexRow + 1;
+
+
+            // PRE TITLE 2
+            HSSFRow preTitleRow2 = sheet.createRow(indexRow);
+            indexRow = indexRow + 1;
+            preTitleRow2.createCell(0).setCellValue("已发货:" + totalDeliveredOrderCount);
+            preTitleRow2.createCell(1).setCellValue("待发货:" + totalUnDeliveryOrderCount);
+            preTitleRow2.createCell(2).setCellValue("今日新增有效订单:" + increasedCount);
+            preTitleRow2.createCell(3).setCellValue("已完成:" + totalCompletedOrderCount);
+            preTitleRow2.createCell(4).setCellValue("");
+            preTitleRow2.createCell(5).setCellValue("");
+            preTitleRow2.createCell(6).setCellValue("");
+            preTitleRow2.createCell(7).setCellValue("");
+            preTitleRow2.createCell(8).setCellValue("");
+
+
+            // TITLE
+            HSSFRow titleRow = sheet.createRow(indexRow);
+            indexRow = indexRow + 1;
+
+            HSSFCell titleCell0 = titleRow.createCell(0);
+            titleCell0.setCellValue("序号"); // 主订单
+
+            HSSFCell titleCell1 = titleRow.createCell(1);
+            titleCell1.setCellValue("供应商名称"); // 主订单
+
+            HSSFCell titleCell2 = titleRow.createCell(2);
+            titleCell2.setCellValue("已完成"); // 主订单
+
+            HSSFCell titleCell3 = titleRow.createCell(3);
+            titleCell3.setCellValue("已发货数量"); // 主订单
+
+            HSSFCell titleCell4 = titleRow.createCell(4);
+            titleCell4.setCellValue("待发货数量"); // 主订单
+
+            HSSFCell titleCell5 = titleRow.createCell(5);
+            titleCell5.setCellValue("最早待发订单子单号");
+
+            HSSFCell titleCell6 = titleRow.createCell(6);
+            titleCell6.setCellValue("交易时间");
+
+            HSSFCell titleCell7 = titleRow.createCell(7);
+            titleCell7.setCellValue("售后数量");
+
+            HSSFCell titleCell8 = titleRow.createCell(8);
+            titleCell8.setCellValue("订单数量");
+
+            // CONTENT
+            int snum = 1;
+            for (DailyExportOrderStatisticVo dailyExportOrderStatisticVo : dailyExportOrderStatisticVoList) { // 遍历子订单
+                HSSFRow currentRow = sheet.createRow(indexRow);
+                indexRow = indexRow + 1;
+
+                HSSFCell cell0 = currentRow.createCell(0); // 序号
+                cell0.setCellValue(snum++);
+
+                HSSFCell cell1 = currentRow.createCell(1); // 供应商名称
+                cell1.setCellValue(dailyExportOrderStatisticVo.getSupplierName());
+
+                HSSFCell cell2 = currentRow.createCell(2); // 已完成
+                cell2.setCellValue(dailyExportOrderStatisticVo.getCompletedOrderCount());
+
+                HSSFCell cell3 = currentRow.createCell(3); // 已发货数量
+                cell3.setCellValue(dailyExportOrderStatisticVo.getDeliveredOrderCount());
+
+                HSSFCell cell4 = currentRow.createCell(4); // 待发货数量
+                cell4.setCellValue(dailyExportOrderStatisticVo.getUnDeliveryOrderCount() == null ?
+                        0 : dailyExportOrderStatisticVo.getUnDeliveryOrderCount());
+
+                HSSFCell cell5 = currentRow.createCell(5); // 最早待发订单子单号
+                cell5.setCellValue(dailyExportOrderStatisticVo.getUnDeliveryEarliestOrderNo() == null ?
+                        "--" : dailyExportOrderStatisticVo.getUnDeliveryEarliestOrderNo());
+
+                HSSFCell cell6 = currentRow.createCell(6); // 交易时间
+                cell6.setCellValue(dailyExportOrderStatisticVo.getUnDeliveryEarliestOrderTime() == null ?
+                        "--" : dailyExportOrderStatisticVo.getUnDeliveryEarliestOrderTime());
+
+                HSSFCell cell7 = currentRow.createCell(7); // 售后数量
+                cell7.setCellValue(dailyExportOrderStatisticVo.getApplyRefundCount());
+
+                HSSFCell cell8 = currentRow.createCell(8); // 订单数量
+                cell8.setCellValue(dailyExportOrderStatisticVo.getOrderDetailCount());
+            }
+
+            // 最后一行
+            HSSFRow lastRow = sheet.createRow(indexRow);
+            HSSFCell cell0 = lastRow.createCell(0);
+            cell0.setCellValue("");
+
+            HSSFCell cell1 = lastRow.createCell(1);
+            cell1.setCellValue("总计");
+
+            HSSFCell cell2 = lastRow.createCell(2); // 已完成
+            cell2.setCellValue(totalCompletedOrderCount);
+
+            HSSFCell cell3 = lastRow.createCell(3); // 已发货数量
+            cell3.setCellValue(totalDeliveredOrderCount);
+
+            HSSFCell cell4 = lastRow.createCell(4); // 待发货数量
+            cell4.setCellValue(totalUnDeliveryOrderCount);
+
+            HSSFCell cell5 = lastRow.createCell(5);
+            cell5.setCellValue("");
+
+            HSSFCell cell6 = lastRow.createCell(6); // 交易时间
+            cell6.setCellValue("");
+
+            HSSFCell cell7 = lastRow.createCell(7); // 售后数量
+            cell7.setCellValue(totalApplyRefundOrderCount);
+
+            HSSFCell cell8 = lastRow.createCell(8); // 订单数量
+            cell8.setCellValue(totalOrderDetailCount);
+
+
+            ///////// 文件名
+            String fileName = "DailyStatistic" + statisticTime + ".xls";
+            // 3. 输出文件
+            try {
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出订单文件 出错了:{}", e.getMessage(), e);
+
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
+            log.debug("export file finish");
+        } catch (Exception e) {
+            log.error("每日统计异常:{}", e.getMessage(), e);
+
+//            response.setHeader("content-type", "application/json;charset=UTF-8");
+//            response.setContentType("application/json");
+            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setStatus(400);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "400");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("每日统计 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+
+            if (workbook != null) {
+                workbook.close();
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 导出商品开票信息
+     *
+     * @param response
+     * @throws Exception
+     *
+     */
+    @GetMapping(value = "/export/daily/order")
+    public void exportReceiptBill(@RequestParam("startTime") String startTime,
+                                  @RequestParam("endTime") String endTime,
+                                  @RequestParam(value = "appId", required = false) String appId,
+                                  HttpServletResponse response) throws Exception {
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
+
+        try {
+            log.debug("导出商品开票信息 入参: 无");
+
+            order
 
             // 1.根据条件获统计数据
             Map<String, Object> statisticMap = adminOrderService.exportDailyOrderStatistic();
