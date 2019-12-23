@@ -15,6 +15,15 @@ public class OrderPayMethodInfoBean {
 
     /**
      * 支付方式
+     *  "name": "balance", // 惠民商城余额
+     *  "name": "card", // 惠民优选卡
+     *  "name": "woa", // 惠民商城联机账户
+     *  "name": "bank", // 中投快捷支付
+     *  "name": "pingan", // 惠民商城平安统一支付
+     *  "name": "fcwxh5", // 凤巢微信H5支付
+     *  "name": "fcalipay", // 凤巢支付宝H5支付
+     *  "name": "fcwx", // 凤巢微信公众号支付
+     *  "name": "fcwxxcx", // 凤巢微信小程序支付
      */
     private String payType;
 

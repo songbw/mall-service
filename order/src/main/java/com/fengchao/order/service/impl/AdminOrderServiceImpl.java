@@ -6,6 +6,7 @@ import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.constants.OrderPayMethodTypeEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.dao.OrderDetailDao;
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
 public class AdminOrderServiceImpl implements AdminOrderService {
 
     private static final Integer LIST_PARTITION_SIZE = 100;
+
+    private static final Integer LIST_PARTITION_SIZE_200 = 200;
 
     private AdminOrderDao adminOrderDao;
 
@@ -460,6 +463,86 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Map<String, Object> resultMap = new HashMap<>();
 
         try {
+            // 1. 首先查询符合条件的子订单
+            List<OrderDetail> orderDetailList =
+                    orderDetailDao.selectOrderDetailsByPeriod(startTime, endTime, appId, OrderDetailStatusEnum.COMPLETED.getValue());
+
+            if (CollectionUtils.isEmpty(orderDetailList)) {
+                // TODO :
+
+            }
+
+            // x. 转map key:主订单id， value:List<OrderDetail>
+
+
+            // 2. 查询主订单
+            // 获取主订单id集合
+            List<Integer> orderIdList = orderDetailList.stream().map(od -> od.getOrderId()).collect(Collectors.toList());
+            // 分区
+            List<List<Integer>> orderIdListPartition = Lists.partition(orderIdList, LIST_PARTITION_SIZE_200);
+
+            // 根据主订单id集合 查询主订单信息
+            List<Orders> ordersList = new ArrayList<>(); //
+            for (List<Integer> _orderIdList : orderIdListPartition) {
+                List<Orders> _ordersList = ordersDao.selectOrdersListByIdList(_orderIdList);
+                ordersList.addAll(_ordersList);
+            }
+
+            // x. 转map, key:paymentNo, value:List<Orders>
+            Map<String, List<Orders>> ordersMap = new HashMap<>();
+            for (Orders _orders : ordersList) {
+                String paymentNo = _orders.getPaymentNo();
+                if (StringUtils.isNotBlank(paymentNo)) {
+                    List<Orders> _list = ordersMap.get(paymentNo);
+                    if (_list == null) {
+                        _list = new ArrayList<>();
+
+                        ordersMap.put(paymentNo, _list);
+                    }
+
+                    _list.add(_orders);
+                } else {
+                    log.warn("导出商品开票信息 主订单id:{} 的paymentNo为空", _orders.getId());
+                }
+            }
+
+
+            // 3. 根据payNo，查询支付信息
+            // 获取payNo
+            List<String> paymentNoList = ordersList.stream().map(o -> o.getPaymentNo()).collect(Collectors.toList());
+            // 分区
+            List<List<String>> paymentNoListPartition = Lists.partition(paymentNoList, LIST_PARTITION_SIZE_200);
+
+            // 根据payNo集合 查询支付信息
+            Map<String, List<OrderPayMethodInfoBean>> paymentMethodMap = new HashMap<>();
+            for (List<String> _paymentNoList : paymentNoListPartition) {
+                // key : paymentNo
+                Map<String, List<OrderPayMethodInfoBean>> _paymentMethodMap = wsPayRpcService.queryBatchPayMethod(_paymentNoList);
+
+                paymentMethodMap.putAll(_paymentMethodMap);
+            }
+
+            // aaaa
+            // 以支付单号为维度遍历
+            Set<String> paymentNoSet = paymentMethodMap.keySet();
+            for (String paymentNo : paymentNoSet) {
+                // 判断该订单的支付方式
+                List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = paymentMethodMap.get(paymentNo);
+
+                if (true) {
+
+                }
+            }
+
+
+
+
+
+
+
+
+
+////////////////////////////
             List<DailyExportOrderStatisticVo> dailyExportOrderStatisticVoList = new ArrayList<>();
 
 

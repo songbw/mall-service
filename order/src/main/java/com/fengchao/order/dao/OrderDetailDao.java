@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author tom
@@ -385,8 +386,20 @@ public class OrderDetailDao {
      * @return
      */
     public List<OrderDetail> selectOrderDetailsByPeriod(Date startTime, Date endTime,
-                                                        String appId, int status) {
+                                                        String appId, Integer status) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
 
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andCompleteTimeBetween(startTime, endTime);
+        criteria.andAppIdEqualTo(appId);
+
+        if (!Objects.isNull(status)) {
+            criteria.andStatusEqualTo(status);
+        }
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+        return orderDetailList;
     }
 
 }
