@@ -711,6 +711,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Integer uploadLogisticsId(LogisticsInfoBean bean) {
+        orderDetailDao.updateByOrderDetailId(bean) ;
+        return bean.getId();
+    }
+
+    @Override
     public OperaResult getLogist(String merchantNo, String orderId) {
         OperaResult result = new OperaResult();
         JSONArray jsonArray = new JSONArray();

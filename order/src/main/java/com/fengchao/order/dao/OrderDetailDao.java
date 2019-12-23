@@ -1,5 +1,6 @@
 package com.fengchao.order.dao;
 
+import com.fengchao.order.bean.LogisticsInfoBean;
 import com.fengchao.order.bean.Logisticsbean;
 import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.mapper.KuaidiCodeMapper;
@@ -373,6 +374,20 @@ public class OrderDetailDao {
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
 
         return orderDetailList;
+    }
+
+    /**
+     * 根据子订单ID更新物流信息
+     * @param logisticsbean
+     * @return
+     */
+    public int updateByOrderDetailId(LogisticsInfoBean logisticsbean) {
+        OrderDetail temp = new OrderDetail() ;
+        temp.setLogisticsId(logisticsbean.getLogisticsId());
+        temp.setLogisticsContent(logisticsbean.getLogisticsName());
+        temp.setUpdatedAt(new Date());
+        temp.setComcode(logisticsbean.getLogisticsCode());
+        return orderDetailMapper.updateByPrimaryKeySelective(temp) ;
     }
 
 }
