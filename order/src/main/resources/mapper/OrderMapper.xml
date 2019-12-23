@@ -158,7 +158,7 @@
   </select>
 
   <select id="selectOrderLimit" resultType="com.fengchao.order.bean.OrderDetailBean" parameterType="Map">
-    select 	orders.id id, open_id openId, app_id appId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, orders.merchant_id merchantId, merchant_no merchantNo,receiver_name receiverName, telephone,
+    select 	orders.id id, open_id openId, orders.app_id appId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, orders.merchant_id merchantId, merchant_no merchantNo,receiver_name receiverName, telephone,
     mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, order_detail.remark, invoice_state invoiceState,province_name provinceName, city_name cityName,
     invoice_type invoiceType, invoice_title invoiceTitle, payment_no paymentNo, payment_at paymentAt, invoice_content invoiceContent, payment,county_name countyName,
     serv_Fee servFee, amount, type, orders.status, out_trade_no outTradeNo, payment_amount paymentAmount, payee, refund_fee refundFee, pay_type payType, payment_total_fee paymentTotalFee, payer,
