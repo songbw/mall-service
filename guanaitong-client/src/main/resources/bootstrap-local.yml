@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+      discovery:
+        enabled: false
+    service-registry:
+      auto-registration:
+        enabled: false
+
+
+weixin:
+  ids[0]:
+    iAppId: "01"
+    appId: wxe5b7d5b7722a1577
+    appSecret: f17f8edb74126bb95538194ec79ffde7
+    urlPrefix: https://api.weixin.qq.com/cgi-bin/
+  ids[1]:
+    iAppId: "02"
+    appId: wxe5b7d5b7722a1577
+    appSecret: f17f8edb74126bb95538194ec79ffde7
+    urlPrefix: https://api.weixin.qq.com/cgi-bin/
+
+

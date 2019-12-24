@@ -27,7 +27,6 @@ public class CommonController {
         this.guanAiTongService = guanAiTongService;
     }
 
-
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("token")
     public ResultObject<TokenData> getToken(HttpServletResponse response
