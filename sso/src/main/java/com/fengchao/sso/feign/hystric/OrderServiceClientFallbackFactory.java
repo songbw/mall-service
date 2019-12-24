@@ -128,6 +128,21 @@ public class OrderServiceClientFallbackFactory implements FallbackFactory<OrderS
                 result.setMsg("获取订单服务失败" + msg);
                 return result;
             }
+
+            @Override
+            public OperaResponse sendTradeInfo(String outTradeNo, String paymentNo) {
+                OperaResponse result = new OperaResponse();
+                ObjectMapper objectMapper = new ObjectMapper();
+                String msg = "";
+                try {
+                    msg = objectMapper.writeValueAsString("outTradeNo: " + outTradeNo + "paymentNo: " + paymentNo);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                result.setCode(404);
+                result.setMsg("获取订单服务失败" + msg);
+                return result;
+            }
         };
     }
 

@@ -40,4 +40,7 @@ public interface OrderServiceClient {
     @RequestMapping(value = "/order/orderByopenId", method = RequestMethod.GET)
     OperaResult findOrderListByOpenId(@RequestParam("openId") String openId);
 
+    @RequestMapping(value = "/order/send/tradeInfo", method = RequestMethod.GET)
+    OperaResponse sendTradeInfo(@RequestParam("outTradeNo") String outTradeNo, @RequestParam("paymentNo") String paymentNo);
+
 }
