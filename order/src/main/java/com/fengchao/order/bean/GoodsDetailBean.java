@@ -15,8 +15,8 @@ public class GoodsDetailBean {
     private String sku_id ;
     private String name ;
     private int quantity ;
-    private BigDecimal good_price ;
-    private BigDecimal good_pay_amount ;
-    private BigDecimal good_cost_amount ;
+    private BigDecimal good_price = new BigDecimal(0.00);
+    private BigDecimal good_pay_amount  = new BigDecimal(0.00);
+    private BigDecimal good_cost_amount  = new BigDecimal(0.00);
 
 }
