@@ -167,9 +167,6 @@ public class AggregationServiceImpl implements AggregationService {
                 Object object = onlinePromotion.getData().get("result");
                 List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
                 for(PromotionMpu mpu: promotionMpus){
-                    if(mpu.getMpu().equals("98000066")){
-                        log.info("mpu:98000066 = " + JSONObject.toJSONString(mpu));
-                    }
                     promotionMap.put(mpu.getMpu(), mpu);
                 }
             }
