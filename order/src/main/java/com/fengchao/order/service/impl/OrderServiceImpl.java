@@ -950,8 +950,8 @@ public class OrderServiceImpl implements OrderService {
         if (orders != null && orders.size() > 0) {
             for (Orders orders1 : orders) {
                 tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(new BigDecimal(Float.toString(orders1.getAmount()))));
-                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(new BigDecimal(orders1.getPaymentAmount())));
-                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_pay_amount().add(new BigDecimal(orders1.getPaymentAmount())));
+                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(new BigDecimal(Float.toString(orders1.getAmount()))));
+                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(new BigDecimal(Float.toString(orders1.getAmount()))));
                 List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
                 orderDetails.forEach(orderDetail -> {
                     GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;
@@ -965,9 +965,10 @@ public class OrderServiceImpl implements OrderService {
                 });
             }
             tradeInfoBean.setGoods_detail(goodsDetailBeans);
-            tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().divide(new BigDecimal(100))) ;
-            tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().divide(new BigDecimal(100)));
+//            tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().divide(new BigDecimal(100))) ;
+//            tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().divide(new BigDecimal(100)));
             sendTradeInfoBean.setTrade_info(tradeInfoBean);
+            logger.info("发送订单详情到关爱通，入口参数：{}", JSONUtil.toJsonString(sendTradeInfoBean));
             OperaResponse guanaitongResponse = guanaitongClientService.sendTradeInfo(sendTradeInfoBean) ;
             if (guanaitongResponse.getCode() != 200) {
                 response.setCode(guanaitongResponse.getCode());
