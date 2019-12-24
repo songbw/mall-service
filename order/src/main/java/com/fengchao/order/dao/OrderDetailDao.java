@@ -385,6 +385,7 @@ public class OrderDetailDao {
         temp.setLogisticsContent(logisticsbean.getLogisticsContent());
         temp.setUpdatedAt(new Date());
         temp.setComcode(logisticsbean.getComCode());
+        temp.setId(logisticsbean.getId());
         return orderDetailMapper.updateByPrimaryKeySelective(temp) ;
     }
 
