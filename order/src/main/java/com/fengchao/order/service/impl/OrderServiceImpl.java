@@ -77,6 +77,8 @@ public class OrderServiceImpl implements OrderService {
     private OrdersDao ordersDao;
     @Autowired
     private BaseService baseService;
+    @Autowired
+    private GuanaitongClientService guanaitongClientService ;
 
     @Transactional
     @Override
@@ -932,6 +934,45 @@ public class OrderServiceImpl implements OrderService {
             response.setMsg("信息不完整");
             response.setData(logisticsbeanList);
             return response;
+        }
+        return response;
+    }
+
+    @Override
+    public OperaResponse sendTradeInfo(String outerTradeNo, String paymentNo) {
+        OperaResponse response = new OperaResponse() ;
+        List<Orders> orders = ordersDao.selectOrdersByOutTradeNoAndPaymentNo(outerTradeNo, paymentNo) ;
+        SendTradeInfoBean sendTradeInfoBean = new SendTradeInfoBean() ;
+        sendTradeInfoBean.setOuter_trade_no(paymentNo);
+        TradeInfoBean tradeInfoBean = new TradeInfoBean() ;
+        tradeInfoBean.setThird_trade_no(outerTradeNo);
+        List<GoodsDetailBean> goodsDetailBeans = new ArrayList<>() ;
+        if (orders != null && orders.size() > 0) {
+            for (Orders orders1 : orders) {
+                tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(new BigDecimal(Float.toString(orders1.getAmount()))));
+                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(new BigDecimal(orders1.getPaymentAmount())));
+                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_pay_amount().add(new BigDecimal(orders1.getPaymentAmount())));
+                List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
+                orderDetails.forEach(orderDetail -> {
+                    GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;
+                    goodsDetailBean.setSku_id(orderDetail.getSkuId());
+                    goodsDetailBean.setName(orderDetail.getName());
+                    goodsDetailBean.setQuantity(orderDetail.getNum());
+                    goodsDetailBean.setGood_price(orderDetail.getUnitPrice());
+                    goodsDetailBean.setGood_pay_amount(orderDetail.getUnitPrice());
+                    goodsDetailBean.setGood_cost_amount(orderDetail.getUnitPrice());
+                    goodsDetailBeans.add(goodsDetailBean) ;
+                });
+            }
+            tradeInfoBean.setGoods_detail(goodsDetailBeans);
+            tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().divide(new BigDecimal(100))) ;
+            tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().divide(new BigDecimal(100)));
+            sendTradeInfoBean.setTrade_info(tradeInfoBean);
+            OperaResponse guanaitongResponse = guanaitongClientService.sendTradeInfo(sendTradeInfoBean) ;
+            if (guanaitongResponse.getCode() != 200) {
+                response.setCode(guanaitongResponse.getCode());
+                response.setMsg(guanaitongResponse.getMsg());
+            }
         }
         return response;
     }

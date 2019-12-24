@@ -370,4 +370,10 @@ public class OrderController {
         result.getData().put("result", service.updateSubOrderStatus(bean)) ;
         return result;
     }
+
+    @GetMapping("/send/tradeInfo")
+    private OperaResponse sendOrderDetailByOutTradeNoAndPaymentNo(String outTradeNo, String paymentNo) {
+        return service.sendTradeInfo(outTradeNo, paymentNo);
+    }
+
 }

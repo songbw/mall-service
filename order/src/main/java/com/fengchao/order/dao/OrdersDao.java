@@ -116,4 +116,22 @@ public class OrdersDao {
 
         return pageInfo;
     }
+
+    /**
+     * 根据对外订单号和支付单号查询订单信息
+     *
+     * @param outTrade
+     * @param paymentNo
+     * @return
+     */
+    public List<Orders> selectOrdersByOutTradeNoAndPaymentNo(String outTrade, String paymentNo) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andPaymentNoEqualTo(paymentNo);
+        criteria.andOutTradeNoEqualTo(outTrade);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
 }
