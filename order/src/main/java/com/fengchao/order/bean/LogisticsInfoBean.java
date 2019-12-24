@@ -12,6 +12,6 @@ import lombok.Setter;
 public class LogisticsInfoBean {
     private Integer id ;
     private String logisticsId ;
-    private String logisticsName ;
-    private String logisticsCode ;
+    private String logisticsContent;
+    private String comCode;
 }
