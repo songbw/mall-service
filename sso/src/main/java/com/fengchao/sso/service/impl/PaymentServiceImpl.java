@@ -11,6 +11,7 @@ import com.fengchao.sso.feign.OrderServiceClient;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.rpc.OrderRpcService;
 import com.fengchao.sso.service.IPaymentService;
+import com.fengchao.sso.util.JSONUtil;
 import com.fengchao.sso.util.OperaResult;
 import com.fengchao.sso.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -126,6 +127,8 @@ public class PaymentServiceImpl implements IPaymentService {
                 updatePaymentNo(order);
             }
         });
+        OperaResponse operaResponse = orderService.sendTradeInfo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos(), guanaitongPaymentBean.getOuter_trade_no()) ;
+        log.info("发送订单信息给关爱通，返回结果：{}", JSONUtil.toJsonString(operaResponse));
         UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
         urlEncodeBean.setUrlEncode(guanaitongUrl);
         result.getData().put("result", urlEncodeBean);
