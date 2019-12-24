@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -384,9 +382,10 @@ public class OrderDetailDao {
     public int updateByOrderDetailId(LogisticsInfoBean logisticsbean) {
         OrderDetail temp = new OrderDetail() ;
         temp.setLogisticsId(logisticsbean.getLogisticsId());
-        temp.setLogisticsContent(logisticsbean.getLogisticsName());
+        temp.setLogisticsContent(logisticsbean.getLogisticsContent());
         temp.setUpdatedAt(new Date());
-        temp.setComcode(logisticsbean.getLogisticsCode());
+        temp.setComcode(logisticsbean.getComCode());
+        temp.setId(logisticsbean.getId());
         return orderDetailMapper.updateByPrimaryKeySelective(temp) ;
     }
 
