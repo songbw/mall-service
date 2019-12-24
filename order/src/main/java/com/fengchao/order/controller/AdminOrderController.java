@@ -1134,12 +1134,6 @@ public class AdminOrderController {
 
 
 
-
-
-
-
-
-
     /**
      * 导出商品开票信息
      *
@@ -1147,7 +1141,7 @@ public class AdminOrderController {
      * @throws Exception
      *
      */
-    @GetMapping(value = "/export/daily/order")
+    @GetMapping(value = "/export/receiptBill")
     public void exportReceiptBill(@RequestParam("startTime") String startTime,
                                   @RequestParam("endTime") String endTime,
                                   @RequestParam(value = "appId", required = false) String appId,
@@ -1157,9 +1151,9 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出商品开票信息 入参: 无");
+            log.debug("导出商品开票信息 入参 startTime:{}, endTime:{}, ");
 
-            order
+            adminOrderService.exportReceiptBill(startTime, endTime, appId);
 
             // 1.根据条件获统计数据
             Map<String, Object> statisticMap = adminOrderService.exportDailyOrderStatistic();

@@ -58,7 +58,7 @@ public class OrderPayMethodInfoBean {
     private String totalFee;
 
     /**
-     * 交易实际金额
+     * 交易实际金额 单位 分
      */
     private String actPayFee;
 
