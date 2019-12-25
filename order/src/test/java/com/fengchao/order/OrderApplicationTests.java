@@ -11,6 +11,9 @@ public class OrderApplicationTests {
 
 	@Test
 	public void contextLoads() {
+//		String str = "我在做测试截取字符串";
+//		str.length();
+////		str.substring(0, 100) ;
 	}
 
 }

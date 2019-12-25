@@ -116,4 +116,22 @@ public class OrdersDao {
 
         return pageInfo;
     }
+
+    /**
+     * 根据对外订单号和支付单号查询订单信息
+     *
+     * @param openId
+     * @param paymentNo
+     * @return
+     */
+    public List<Orders> selectOrdersByOpenIdAndPaymentNo(String openId, String paymentNo) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andPaymentNoEqualTo(paymentNo);
+        criteria.andOpenIdEqualTo(openId);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
 }
