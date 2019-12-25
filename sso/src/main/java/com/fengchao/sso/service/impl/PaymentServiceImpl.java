@@ -106,10 +106,10 @@ public class PaymentServiceImpl implements IPaymentService {
         for (Order order: orderList) {
             total_amount = total_amount + order.getSaleAmount() ;
         }
-        TradeInfoBean tradeInfoBean = new TradeInfoBean();
-        tradeInfoBean.setThirdTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
-        String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
-        guanaitongPaymentBean.setTrade_info(tradeInfoString);
+//        TradeInfoBean tradeInfoBean = new TradeInfoBean();
+//        tradeInfoBean.setThirdTradeNo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos());
+//        String tradeInfoString = JSON.toJSONString(tradeInfoBean) ;
+//        guanaitongPaymentBean.setTrade_info(tradeInfoString);
         guanaitongPaymentBean.setReturn_url(paymentBean.getReturnUrl());
         guanaitongPaymentBean.setNotify_url(ssoConfiguration.getGatBackUrl());
         guanaitongPaymentBean.setTotal_amount(total_amount);
@@ -127,8 +127,7 @@ public class PaymentServiceImpl implements IPaymentService {
                 updatePaymentNo(order);
             }
         });
-        OperaResponse operaResponse = orderService.sendTradeInfo(paymentBean.getiAppId() + paymentBean.getMerchantNo() + paymentBean.getOpenId() + paymentBean.getOrderNos(), guanaitongPaymentBean.getOuter_trade_no()) ;
-        log.info("发送订单信息给关爱通，返回结果：{}", JSONUtil.toJsonString(operaResponse));
+
         UrlEncodeBean urlEncodeBean = new UrlEncodeBean();
         urlEncodeBean.setUrlEncode(guanaitongUrl);
         result.getData().put("result", urlEncodeBean);
@@ -192,6 +191,8 @@ public class PaymentServiceImpl implements IPaymentService {
 
         // 批量更新子订单状态为"待发货"
         orderRpcService.batchUpdateOrderDetailStatusByOrderIds(orderIdList, 1); // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：失败
+        OperaResponse operaResponse = orderService.sendTradeInfo(ssoConfiguration.getiAppId() + backBean.getBuyer_open_id(), backBean.getOuter_trade_no()) ;
+        log.info("发送订单信息给关爱通，返回结果：{}", JSONUtil.toJsonString(operaResponse));
         return "success";
     }
 

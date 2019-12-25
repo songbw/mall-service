@@ -19,5 +19,7 @@ public class TradeInfoBean {
     private BigDecimal third_pay_amount = new BigDecimal(0.00);
     private BigDecimal third_cost_amount = new BigDecimal(0.00);
     private int is_third_orders = 2 ;
-    private List<GoodsDetailBean> goods_detail = new ArrayList<>();
+    private List<GoodsDetailBean> goods_detail;
+    private List<ThirdOrdersBean> third_orders = new ArrayList<>();
+
 }

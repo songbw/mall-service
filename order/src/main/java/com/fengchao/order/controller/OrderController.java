@@ -372,8 +372,8 @@ public class OrderController {
     }
 
     @GetMapping("/send/tradeInfo")
-    private OperaResponse sendOrderDetailByOutTradeNoAndPaymentNo(String outTradeNo, String paymentNo) {
-        return service.sendTradeInfo(outTradeNo, paymentNo);
+    private OperaResponse sendOrderDetailByOutTradeNoAndPaymentNo(String openId, String paymentNo) {
+        return service.sendTradeInfo(openId, paymentNo);
     }
 
 }

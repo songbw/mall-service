@@ -130,12 +130,12 @@ public class OrderServiceClientFallbackFactory implements FallbackFactory<OrderS
             }
 
             @Override
-            public OperaResponse sendTradeInfo(String outTradeNo, String paymentNo) {
+            public OperaResponse sendTradeInfo(String openId, String paymentNo) {
                 OperaResponse result = new OperaResponse();
                 ObjectMapper objectMapper = new ObjectMapper();
                 String msg = "";
                 try {
-                    msg = objectMapper.writeValueAsString("outTradeNo: " + outTradeNo + "paymentNo: " + paymentNo);
+                    msg = objectMapper.writeValueAsString("outTradeNo: " + openId + "paymentNo: " + paymentNo);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
