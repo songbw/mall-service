@@ -14,6 +14,7 @@ import com.fengchao.order.rpc.extmodel.*;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.AdminOrderService;
+import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import com.google.common.collect.Lists;
@@ -567,14 +568,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                             _paymentInfoByMpuDimension.setCount(_c + _orderDetail.getNum());
                             // 商品总价 单位分
                             Integer _tp = _paymentInfoByMpuDimension.getTotalPrice() == null ? 0 : _paymentInfoByMpuDimension.getTotalPrice();
-                            _paymentInfoByMpuDimension.setTotalPrice(_tp + convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum());
+                            _paymentInfoByMpuDimension.setTotalPrice(_tp + CalculateUtil.convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum());
 
-                            totalAmount = totalAmount + _paymentInfoByMpuDimension.getTotalPrice(); // 单位 分
+                            totalAmount = totalAmount + CalculateUtil.convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum(); // 单位 分
                         } // end 遍历子订单
                     } // end 遍历主订单
 
                     // 开始计算 每个mpu所占的payAmount的份额
-                    BigDecimal multiplier = new BigDecimal(payAmount).divide(new BigDecimal(totalAmount));
+                    BigDecimal multiplier = new BigDecimal(payAmount).divide(new BigDecimal(totalAmount), 2, BigDecimal.ROUND_HALF_UP);
                     // 遍历最终产生的数据结构:Map<String, paymentInfoByMpuDimension> 其实就是用户单下所有子订单 以mpu为维度的map
                     int index = 0;
                     int remainder = payAmount;
@@ -628,16 +629,16 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                     // 含税总额 单位分
                     int totalPrice = _exportReceiptBillVo.getTotalPrice() == null ? 0 : _exportReceiptBillVo.getTotalPrice();
-                    _exportReceiptBillVo.setTotalPrice(totalPrice + _paymentInfoByMpuDimension.getTotalPrice()); // 含税总额 单位元
+                    _exportReceiptBillVo.setTotalPrice(totalPrice + _paymentInfoByMpuDimension.getHoldAmount()); // 含税总额 单位分
 
                     ////
-                    _exportReceiptBillVo.setTaxPrice(0); // 税额 单位分
-                    _exportReceiptBillVo.setUnitPrice(0); // 含税单价 单位分
+                    // _exportReceiptBillVo.setTaxPrice(0); // 税额 单位分
+                    // _exportReceiptBillVo.setUnitPrice(0); // 含税单价 单位分
 
-                    _exportReceiptBillVo.setName("--"); // 商品名称
-                    _exportReceiptBillVo.setCategory("--"); // 品类名称
-                    _exportReceiptBillVo.setUnit("--"); // 销售单位
-                    _exportReceiptBillVo.setTaxRate("--"); // 税率
+                    //_exportReceiptBillVo.setName("--"); // 商品名称
+                    //_exportReceiptBillVo.setCategory("--"); // 品类名称
+                    //_exportReceiptBillVo.setUnit("--"); // 销售单位
+                    //_exportReceiptBillVo.setTaxRate("--"); // 税率
                 }
             }
 
@@ -668,22 +669,22 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     _exportReceiptBillVo.setCategory(productInfoBean.getCategoryName()); // 品类名称
                     _exportReceiptBillVo.setUnit(productInfoBean.getSaleunit()); // 销售单位
 
+                    // !!含税单价 单位分
+                    int unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
+                            .divide(new BigDecimal(_exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                    _exportReceiptBillVo.setUnitPrice(unitPrice); // 含税单价 单位分
+
                     // 税率 TODO 看一下如果税率是空，rpc后是什么情况
                     String taxRate = StringUtils.isBlank(productInfoBean.getTaxRate()) ? null : productInfoBean.getTaxRate();
-                    _exportReceiptBillVo.setTaxRate(StringUtils.isBlank(taxRate) ? "--" : taxRate);
+                    _exportReceiptBillVo.setTaxRate(taxRate);
 
                     // !!税额 单位分
                     if (StringUtils.isNotBlank(taxRate)) {
                         int taxPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
-                                .divide(new BigDecimal(taxRate).add(new BigDecimal(1)))
+                                .divide(new BigDecimal(taxRate).add(new BigDecimal(1)),2, BigDecimal.ROUND_HALF_UP)
                                 .multiply(new BigDecimal(taxRate)).intValue(); // 单位分
                         _exportReceiptBillVo.setTaxPrice(taxPrice);
                     }
-
-                    // !!含税单价 单位分
-                    int unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
-                            .divide(new BigDecimal(_exportReceiptBillVo.getCount())).intValue();
-                    _exportReceiptBillVo.setUnitPrice(unitPrice); // 含税单价 单位分
                 }
 
                 result.add(_exportReceiptBillVo);
@@ -730,38 +731,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
          * mpuA所占的holdAmount是: (payAmount / (20 + 30) ) * 20
          */
         private Integer holdAmount;
-    }
-
-    /**
-     * 元 转 分
-     *
-     * @param yuan
-     * @return
-     */
-    public static Integer convertYuanToFen(String yuan) {
-        if (StringUtils.isBlank(yuan)) {
-            return null;
-        }
-
-        int fen = new BigDecimal(yuan).multiply(new BigDecimal(100)).intValue();
-
-        return fen;
-    }
-
-    /**
-     * 分 转 元
-     *
-     * @param fen
-     * @return
-     */
-    public static String converFenToYuan(Integer fen) {
-        if (fen == null) {
-            return null;
-        }
-
-        String yuan = new BigDecimal(fen).divide(new BigDecimal(100)).toString();
-
-        return yuan;
     }
 
     /**

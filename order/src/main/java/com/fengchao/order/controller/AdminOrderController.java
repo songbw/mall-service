@@ -3,6 +3,7 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.vo.*;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.service.AdminOrderService;
+import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -1131,7 +1132,7 @@ public class AdminOrderController {
     /**
      * 导出商品开票信息
      *
-     * http://adminorder/export/receiptBill?startTime=2019-11-01&endTime=2019-11-30&appId=11
+     * http://localhost:8004/adminorder/export/receiptBill?startTime=2019-11-01&endTime=2019-11-30&appId=11
      *
      * @param startTime  yyyy-MM-dd
      * @param endTime
@@ -1152,8 +1153,8 @@ public class AdminOrderController {
             log.debug("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}", startTime, endTime, appId);
 
             // 1. 参数校验
-            String _stime = startTime + "00:00:00";
-            String _etime = endTime + "00:00:00";
+            String _stime = startTime + " 00:00:00";
+            String _etime = endTime + " 00:00:00";
             Date startDate = DateUtil.parseDateTime(_stime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             Date endDate = DateUtil.parseDateTime(_etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
@@ -1208,7 +1209,7 @@ public class AdminOrderController {
 
                 HSSFCell cell4 = currentRow.createCell(4); // 实际销售单价（含税单价）
                 cell4.setCellValue(exportReceiptBillVo.getUnitPrice() == null ?
-                        "--" : String.valueOf(exportReceiptBillVo.getUnitPrice()));
+                        "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getUnitPrice()));
 
                 HSSFCell cell5 = currentRow.createCell(5); // 税率
                 cell5.setCellValue(StringUtils.isBlank(exportReceiptBillVo.getTaxRate()) ?
@@ -1216,11 +1217,11 @@ public class AdminOrderController {
 
                 HSSFCell cell6 = currentRow.createCell(6); // 含税金额
                 cell6.setCellValue(exportReceiptBillVo.getTotalPrice() == null ?
-                        "--" : String.valueOf(exportReceiptBillVo.getTotalPrice()));
+                        "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getTotalPrice()));
 
                 HSSFCell cell7 = currentRow.createCell(7); // 税额
                 cell7.setCellValue(exportReceiptBillVo.getTaxPrice() == null ?
-                        "--" : String.valueOf(exportReceiptBillVo.getTaxPrice()));
+                        "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getTaxPrice()));
 
                 indexRow++;
             }
