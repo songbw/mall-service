@@ -4,6 +4,7 @@ import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 
@@ -68,7 +69,12 @@ public interface AdminOrderService {
     /**
      * 导出商品开票信息
      *
+     * @param startTime
+     * @param endTime
+     * @param appId
+     * @param receiptTypeEnum 发票类型
      * @return
+     * @throws Exception
      */
-    List<ExportReceiptBillVo> exportReceiptBill(Date startTime, Date endTime, String appId) throws Exception;
+    List<ExportReceiptBillVo> exportReceiptBill(Date startTime, Date endTime, String appId, ReceiptTypeEnum receiptTypeEnum) throws Exception;
 }

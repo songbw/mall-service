@@ -6,6 +6,7 @@ import com.fengchao.order.bean.vo.*;
 import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.constants.OrderPayMethodTypeEnum;
 import com.fengchao.order.constants.PaymentTypeEnum;
+import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
@@ -457,7 +458,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
      * @return
      */
     @Override
-    public List<ExportReceiptBillVo> exportReceiptBill(Date startTime, Date endTime, String appId) throws Exception {
+    public List<ExportReceiptBillVo> exportReceiptBill(Date startTime, Date endTime,
+                                                       String appId, ReceiptTypeEnum receiptTypeEnum) throws Exception {
         try {
             // 1. 首先查询符合条件的子订单
             List<OrderDetail> orderDetailList =
@@ -550,7 +552,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 Integer totalAmount = 0; // 该用户单(支付订单)下，所有商品的一个总价 num * salePrice 单位分
 
                 // 判断该支付单的支付方式 返回的是所选择的支付方式支付的总额
-                Integer payAmount = judgeBanlanceCardWoaPayment(paymentMethodMap.get(paymentNo)); // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式的支付总额
+                Integer payAmount = judgePaymentType(receiptTypeEnum, paymentMethodMap.get(paymentNo)); // judgeBanlanceCardWoaPayment(paymentMethodMap.get(paymentNo)); // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式的支付总额
                 if (payAmount >= 0) { // 说明该用户单(支付单)在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中
                     // 遍历主订单
                     for (Orders _orders : ordersMap.get(paymentNo)) { // 遍历主订单
@@ -631,14 +633,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     int totalPrice = _exportReceiptBillVo.getTotalPrice() == null ? 0 : _exportReceiptBillVo.getTotalPrice();
                     _exportReceiptBillVo.setTotalPrice(totalPrice + _paymentInfoByMpuDimension.getHoldAmount()); // 含税总额 单位分
 
-                    ////
-                    // _exportReceiptBillVo.setTaxPrice(0); // 税额 单位分
-                    // _exportReceiptBillVo.setUnitPrice(0); // 含税单价 单位分
-
-                    //_exportReceiptBillVo.setName("--"); // 商品名称
-                    //_exportReceiptBillVo.setCategory("--"); // 品类名称
-                    //_exportReceiptBillVo.setUnit("--"); // 销售单位
-                    //_exportReceiptBillVo.setTaxRate("--"); // 税率
                 }
             }
 
@@ -734,6 +728,27 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     /**
+     * 根据指定的开票类型，获取用户单该在 该'开票类型' 下的支付方式的支付总额
+     * (判断发票的类型, 进而获取该类型的支付总额)
+     *
+     * @param receiptTypeEnum 指定的开票类型
+     * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式集合
+     * @return
+     */
+    private Integer judgePaymentType(ReceiptTypeEnum receiptTypeEnum, List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
+        switch (receiptTypeEnum) {
+            case BALANCE_CARD_WOA:
+                return judgeBanlanceCardWoaPayment(orderPayMethodInfoBeanList);
+            case BANK:
+                return judgeBankPayment(orderPayMethodInfoBeanList);
+
+            default:
+                log.warn("获取用户单该在 该'开票类型' 下的支付方式的支付总额 未找到有效的发票类型!");
+                return -1;
+        }
+    }
+
+    /**
      * 判断其支付方式是否是 "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
      *
      * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式
@@ -749,8 +764,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             String payType = orderPayMethodInfoBean.getPayType();
 
             if (PaymentTypeEnum.BALANCE.getName().equals(payType)
-                || PaymentTypeEnum.CARD.getName().equals(payType)
-                || PaymentTypeEnum.WOA.getName().equals(payType)) {
+                    || PaymentTypeEnum.CARD.getName().equals(payType)
+                    || PaymentTypeEnum.WOA.getName().equals(payType)) {
                 if (total < 0) {
                     total = 0;
                 }
@@ -759,6 +774,37 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     total = total + Integer.valueOf(orderPayMethodInfoBean.getActPayFee());
                 } else {
                     log.warn("判断其支付方式是否是 balance card woa 支付金额不合法:{}", orderPayMethodInfoBean.getActPayFee());
+                }
+            }
+        }
+
+        return total;
+    }
+
+    /**
+     * 判断其支付方式是否是 "bank" 中投快捷支付
+     *
+     * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式集合
+     * @return
+     * -1(<0) : 说明该支付订单的支付方式不在 ("bank" 中投快捷支付) 这种支付方式中
+     * 其他值(>=0) : 返回该支付单子在（"bank" 中投快捷支付）这种支付方式
+     */
+    private Integer judgeBankPayment(List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
+        Integer total = -1; // 单位分
+
+        // 遍历支付方式
+        for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
+            String payType = orderPayMethodInfoBean.getPayType();
+
+            if (PaymentTypeEnum.BANK.getName().equals(payType)) {
+                if (total < 0) {
+                    total = 0;
+                }
+
+                if (StringUtils.isNotBlank(orderPayMethodInfoBean.getActPayFee())) { // 单位分
+                    total = total + Integer.valueOf(orderPayMethodInfoBean.getActPayFee());
+                } else {
+                    log.warn("判断其支付方式是否是 bank 支付金额不合法:{}", orderPayMethodInfoBean.getActPayFee());
                 }
             }
         }

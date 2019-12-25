@@ -1,6 +1,7 @@
 package com.fengchao.order.controller;
 
 import com.fengchao.order.bean.vo.*;
+import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.CalculateUtil;
@@ -1132,10 +1133,13 @@ public class AdminOrderController {
     /**
      * 导出商品开票信息
      *
-     * http://localhost:8004/adminorder/export/receiptBill?startTime=2019-11-01&endTime=2019-11-30&appId=11
+     * http://localhost:8004/adminorder/export/receiptBill?startTime=2019-11-01&endTime=2019-11-30&appId=11&receiptType=1
      *
      * @param startTime  yyyy-MM-dd
      * @param endTime
+     * @param receiptType
+     *    1 : "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户 这三种支付方式的发票
+     *    2 : bank 中投快捷支付的发票
      * @param appId
      * @param response
      * @throws Exception
@@ -1143,7 +1147,8 @@ public class AdminOrderController {
     @GetMapping(value = "/export/receiptBill")
     public void exportReceiptBill(@RequestParam("startTime") String startTime,
                                   @RequestParam("endTime") String endTime,
-                                  @RequestParam(value = "appId", required = false) String appId,
+                                  @RequestParam("receiptType") Integer receiptType,
+                                  @RequestParam(value = "appId", required = true) String appId,
                                   HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
         // 创建HSSFWorkbook对象
@@ -1164,8 +1169,25 @@ public class AdminOrderController {
                 throw new Exception("查询日期范围超过一个月");
             }
 
+            // 发票类型
+            if (receiptType == null || receiptType <= 0) {
+                log.warn("导出商品开票信息 无效的发票类型");
+                throw new Exception("无效的发票类型");
+            }
+            ReceiptTypeEnum receiptTypeEnum = ReceiptTypeEnum.getReceiptTypeEnum(receiptType);
+            if (ReceiptTypeEnum.UNKNOWN.equals(receiptTypeEnum)) {
+                log.warn("导出商品开票信息 发票类型不正确");
+                throw new Exception("发票类型不正确");
+            }
+
+            // appId
+            if (StringUtils.isBlank(appId)) {
+                log.warn("导出商品开票信息 appId为空");
+                throw new Exception("未找到正确归属信息");
+            }
+
             // 2. 执行查询&数据处理逻辑
-            List<ExportReceiptBillVo> exportReceiptBillVoList = adminOrderService.exportReceiptBill(startDate, endDate, appId);
+            List<ExportReceiptBillVo> exportReceiptBillVoList = adminOrderService.exportReceiptBill(startDate, endDate, appId, receiptTypeEnum);
             log.info("导出商品开票信息 获取到需要导出数据的个数:{}", exportReceiptBillVoList.size());
 
             // 3. 创建导出文件对象
