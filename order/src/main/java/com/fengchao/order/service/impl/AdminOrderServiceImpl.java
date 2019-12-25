@@ -668,8 +668,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     _exportReceiptBillVo.setCategory(productInfoBean.getCategoryName()); // 品类名称
                     _exportReceiptBillVo.setUnit(productInfoBean.getSaleunit()); // 销售单位
 
-                    // 税率 TODO
-                    String taxRate = null; // StringUtils.isBlank(productInfoBean.get) : null : productInfoBean.get();
+                    // 税率 TODO 看一下如果税率是空，rpc后是什么情况
+                    String taxRate = StringUtils.isBlank(productInfoBean.getTaxRate()) ? null : productInfoBean.getTaxRate();
                     _exportReceiptBillVo.setTaxRate(StringUtils.isBlank(taxRate) ? "--" : taxRate);
 
                     // !!税额 单位分
