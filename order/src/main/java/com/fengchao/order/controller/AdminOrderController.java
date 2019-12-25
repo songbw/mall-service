@@ -1226,8 +1226,6 @@ public class AdminOrderController {
                 indexRow++;
             }
 
-
-
             // 4. 输出文件
             ///////// 文件名
             String fileName = "receipt" + DateUtil.nowDate(DateUtil.DATE_YYYYMMDD) + ".xls";
