@@ -963,7 +963,8 @@ public class OrderServiceImpl implements OrderService {
                 tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
 
                 List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
-                orderDetails.forEach(orderDetail -> {
+                for (int i = 0; i < orderDetails.size(); i++) {
+                    OrderDetail orderDetail = orderDetails.get(i) ;
                     GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;
                     goodsDetailBean.setSku_id(orderDetail.getSkuId());
                     if (orderDetail.getName().length() > 45) {
@@ -972,11 +973,17 @@ public class OrderServiceImpl implements OrderService {
                         goodsDetailBean.setName(orderDetail.getName());
                     }
                     goodsDetailBean.setQuantity(orderDetail.getNum());
-                    goodsDetailBean.setGood_price(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
-                    goodsDetailBean.setGood_pay_amount(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
-                    goodsDetailBean.setGood_cost_amount(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
+                    if (i == 0) {
+                        goodsDetailBean.setGood_price(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())));
+                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())));
+                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())));
+                    } else {
+                        goodsDetailBean.setGood_price(orderDetail.getSalePrice());
+                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice());
+                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice());
+                    }
                     goodsDetailBeans.add(goodsDetailBean) ;
-                });
+                }
                 thirdOrdersBean.setGoods_detail(goodsDetailBeans);
                 thirdOrdersBeans.add(thirdOrdersBean) ;
             }
