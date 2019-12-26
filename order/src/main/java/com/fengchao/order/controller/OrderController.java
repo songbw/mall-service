@@ -445,4 +445,10 @@ public class OrderController {
 //        result.getData().put("result", service.updateSubOrderStatus(bean)) ;
 //        return result;
 //    }
+
+    @PutMapping("/logisticsId")
+    private OperaResult uploadLogisticsId(@RequestBody LogisticsInfoBean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        result.getData().put("result", service.uploadLogisticsId(bean)) ;
+        return result;
+    }
 }

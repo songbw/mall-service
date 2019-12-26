@@ -38,6 +38,8 @@ public interface OrderService {
 
     Integer uploadLogistics(Logisticsbean bean);
 
+    Integer uploadLogisticsId(LogisticsInfoBean bean);
+
     OperaResult getLogist(String merchantNo, String orderId) ;
 
     OperaResult getWorkOrderLogist(String logisticNo, String code, String merchantNo) ;

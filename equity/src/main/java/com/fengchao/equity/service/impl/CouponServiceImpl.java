@@ -177,9 +177,9 @@ public class CouponServiceImpl implements CouponService {
         if(!tags.isEmpty()){
             tagList = tagsMapper.selectTags(tags);
         }
-        List<String> categories = mapper.selectActiveCategories(appId);
 
         List<Category> categoryList = null;
+        List<String> categories = mapper.selectActiveCategories(appId);
         if(!categories.isEmpty()){
             OperaResult result = productService.findCategoryList(categories);
             Object object = result.getData().get("result");

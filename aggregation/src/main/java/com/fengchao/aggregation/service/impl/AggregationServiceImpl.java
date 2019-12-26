@@ -15,12 +15,14 @@ import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.rpc.ProductRpcService;
 import com.fengchao.aggregation.service.AggregationService;
 import com.fengchao.aggregation.utils.CosUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@Slf4j
 public class AggregationServiceImpl implements AggregationService {
 
     @Autowired

@@ -1,5 +1,6 @@
 package com.fengchao.order.dao;
 
+import com.fengchao.order.bean.LogisticsInfoBean;
 import com.fengchao.order.bean.Logisticsbean;
 import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.mapper.KuaidiCodeMapper;
@@ -12,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -400,6 +399,21 @@ public class OrderDetailDao {
 
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
         return orderDetailList;
+    }
+
+    /**
+     * 根据子订单ID更新物流信息
+     * @param logisticsbean
+     * @return
+     */
+    public int updateByOrderDetailId(LogisticsInfoBean logisticsbean) {
+        OrderDetail temp = new OrderDetail() ;
+        temp.setLogisticsId(logisticsbean.getLogisticsId());
+        temp.setLogisticsContent(logisticsbean.getLogisticsContent());
+        temp.setUpdatedAt(new Date());
+        temp.setComcode(logisticsbean.getComCode());
+        temp.setId(logisticsbean.getId());
+        return orderDetailMapper.updateByPrimaryKeySelective(temp) ;
     }
 
 }

@@ -345,6 +345,8 @@ public class BalanceServiceImpl implements IBalanceService {
 
     @Override
     public void exportSum(BalanceQueryBean queryBean, HttpServletResponse response) {
+        queryBean.setStart(queryBean.getStart() + " 00:00:00");
+        queryBean.setEnd(queryBean.getEnd() + " 23:59:59");
         //  查询余额信息
         List<BalanceSumBean> balanceSumBeans = new ArrayList<>() ;
         log.info("开始");
