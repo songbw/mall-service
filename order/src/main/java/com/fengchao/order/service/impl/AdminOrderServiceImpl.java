@@ -665,10 +665,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                     // !!含税单价 单位分
                     int unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
-                            .divide(new BigDecimal(_exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                            .divide(new BigDecimal(_exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
                     _exportReceiptBillVo.setUnitPrice(unitPrice); // 含税单价 单位分
 
-                    // 税率 TODO 看一下如果税率是空，rpc后是什么情况
+                    // 税率
                     String taxRate = StringUtils.isBlank(productInfoBean.getTaxRate()) ? null : productInfoBean.getTaxRate();
                     _exportReceiptBillVo.setTaxRate(taxRate);
 
@@ -676,7 +676,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     if (StringUtils.isNotBlank(taxRate)) {
                         int taxPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
                                 .divide(new BigDecimal(taxRate).add(new BigDecimal(1)),2, BigDecimal.ROUND_HALF_UP)
-                                .multiply(new BigDecimal(taxRate)).intValue(); // 单位分
+                                .multiply(new BigDecimal(taxRate))
+                                .setScale(0, BigDecimal.ROUND_HALF_UP)
+                                .intValue(); // 单位分
                         _exportReceiptBillVo.setTaxPrice(taxPrice);
                     }
                 }
