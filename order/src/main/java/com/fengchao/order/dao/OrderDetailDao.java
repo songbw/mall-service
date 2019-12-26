@@ -380,18 +380,15 @@ public class OrderDetailDao {
      *
      * @param startTime
      * @param endTime
-     * @param appId
      * @param status
      * @return
      */
-    public List<OrderDetail> selectOrderDetailsByPeriod(Date startTime, Date endTime,
-                                                        String appId, Integer status) {
+    public List<OrderDetail> selectOrderDetailsByPeriod(Date startTime, Date endTime, Integer status) {
         OrderDetailExample orderDetailExample = new OrderDetailExample();
 
         OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
 
         criteria.andCompleteTimeBetween(startTime, endTime);
-        criteria.andAppIdEqualTo(appId);
 
         if (!Objects.isNull(status)) {
             criteria.andStatusEqualTo(status);

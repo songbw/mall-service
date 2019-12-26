@@ -28,7 +28,6 @@
     <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime" />
     <result column="checked_price" jdbcType="DECIMAL" property="checkedPrice" />
     <result column="sprice" jdbcType="DECIMAL" property="sprice" />
-    <result column="app_id" jdbcType="VARCHAR" property="appId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -92,7 +91,7 @@
     id, merchant_id, order_id, sub_order_id, mpu, sku_id, num, promotion_id, promotion_discount, 
     sale_price, unit_price, image, model, name, status, created_at, updated_at, logistics_id, 
     logistics_content, comcode, sku_coupon_discount, category, remark, complete_time, 
-    checked_price, sprice, app_id
+    checked_price, sprice
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.order.model.OrderDetailExample" resultMap="BaseResultMap">
     select
@@ -132,8 +131,8 @@
       status, created_at, updated_at, 
       logistics_id, logistics_content, comcode, 
       sku_coupon_discount, category, remark, 
-      complete_time, checked_price, sprice, 
-      app_id)
+      complete_time, checked_price, sprice
+      )
     values (#{merchantId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, 
       #{mpu,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{num,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, 
       #{promotionDiscount,jdbcType=REAL}, #{salePrice,jdbcType=DECIMAL}, #{unitPrice,jdbcType=DECIMAL}, 
@@ -141,8 +140,8 @@
       #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
       #{logisticsId,jdbcType=VARCHAR}, #{logisticsContent,jdbcType=VARCHAR}, #{comcode,jdbcType=VARCHAR}, 
       #{skuCouponDiscount,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
-      #{completeTime,jdbcType=TIMESTAMP}, #{checkedPrice,jdbcType=DECIMAL}, #{sprice,jdbcType=DECIMAL}, 
-      #{appId,jdbcType=VARCHAR})
+      #{completeTime,jdbcType=TIMESTAMP}, #{checkedPrice,jdbcType=DECIMAL}, #{sprice,jdbcType=DECIMAL}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderDetail" useGeneratedKeys="true">
     insert into order_detail
@@ -222,9 +221,6 @@
       <if test="sprice != null">
         sprice,
       </if>
-      <if test="appId != null">
-        app_id,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="merchantId != null">
@@ -301,9 +297,6 @@
       </if>
       <if test="sprice != null">
         #{sprice,jdbcType=DECIMAL},
-      </if>
-      <if test="appId != null">
-        #{appId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -394,9 +387,6 @@
       <if test="record.sprice != null">
         sprice = #{record.sprice,jdbcType=DECIMAL},
       </if>
-      <if test="record.appId != null">
-        app_id = #{record.appId,jdbcType=VARCHAR},
-      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -429,8 +419,7 @@
       remark = #{record.remark,jdbcType=VARCHAR},
       complete_time = #{record.completeTime,jdbcType=TIMESTAMP},
       checked_price = #{record.checkedPrice,jdbcType=DECIMAL},
-      sprice = #{record.sprice,jdbcType=DECIMAL},
-      app_id = #{record.appId,jdbcType=VARCHAR}
+      sprice = #{record.sprice,jdbcType=DECIMAL}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -513,9 +502,6 @@
       <if test="sprice != null">
         sprice = #{sprice,jdbcType=DECIMAL},
       </if>
-      <if test="appId != null">
-        app_id = #{appId,jdbcType=VARCHAR},
-      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -545,8 +531,7 @@
       remark = #{remark,jdbcType=VARCHAR},
       complete_time = #{completeTime,jdbcType=TIMESTAMP},
       checked_price = #{checkedPrice,jdbcType=DECIMAL},
-      sprice = #{sprice,jdbcType=DECIMAL},
-      app_id = #{appId,jdbcType=VARCHAR}
+      sprice = #{sprice,jdbcType=DECIMAL}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

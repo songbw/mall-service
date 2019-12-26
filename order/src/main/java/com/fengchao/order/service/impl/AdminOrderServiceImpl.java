@@ -463,7 +463,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         try {
             // 1. 首先查询符合条件的子订单
             List<OrderDetail> orderDetailList =
-                    orderDetailDao.selectOrderDetailsByPeriod(startTime, endTime, appId, OrderDetailStatusEnum.COMPLETED.getValue());
+                    orderDetailDao.selectOrderDetailsByPeriod(startTime, endTime, OrderDetailStatusEnum.COMPLETED.getValue());
 
             log.info("导出商品开票信息 查询日期条件的子订单的个数是:{}", orderDetailList.size());
 
@@ -473,21 +473,21 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             }
 
             // x. 转map key:主订单id， value:List<OrderDetail>
-            Map<Integer, List<OrderDetail>> orderDetailMap = new HashMap<>();
-            for (OrderDetail orderDetail : orderDetailList) {
-                Integer orderId = orderDetail.getOrderId();
-                if (orderId != null) {
-                    List<OrderDetail> _list = orderDetailMap.get(orderId);
-                    if (_list == null) {
-                        _list = new ArrayList<>();
-                        orderDetailMap.put(orderId, _list);
-                    }
-
-                    _list.add(orderDetail);
-                } else {
-                    log.warn("导出商品开票信息 自订单id:{} 无主订单id", orderDetail.getId());
-                }
-            }
+//            Map<Integer, List<OrderDetail>> orderDetailMap = new HashMap<>();
+//            for (OrderDetail orderDetail : orderDetailList) {
+//                Integer orderId = orderDetail.getOrderId();
+//                if (orderId != null) {
+//                    List<OrderDetail> _list = orderDetailMap.get(orderId);
+//                    if (_list == null) {
+//                        _list = new ArrayList<>();
+//                        orderDetailMap.put(orderId, _list);
+//                    }
+//
+//                    _list.add(orderDetail);
+//                } else {
+//                    log.warn("导出商品开票信息 自订单id:{} 无主订单id", orderDetail.getId());
+//                }
+//            }
 
             // 2. 查询主订单
             // 获取主订单id集合
@@ -498,16 +498,26 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             // 根据主订单id集合 查询主订单信息
             List<Orders> ordersList = new ArrayList<>(); //
             for (List<Integer> _orderIdList : orderIdListPartition) {
-                List<Orders> _ordersList = ordersDao.selectOrdersListByIdList(_orderIdList);
+                List<Orders> _ordersList = ordersDao.selectOrdersListByIdListAndAppId(_orderIdList, appId);
                 ordersList.addAll(_ordersList);
             }
 
             log.info("导出商品开票信息 找到主订单个数是:{}", ordersList.size());
+            if (CollectionUtils.isEmpty(ordersList)) {
+                log.warn("导出商品开票信息 未找到符合条件的主订单");
+                return  Collections.emptyList();
+            }
 
-            // x. 转map, key:paymentNo, value:List<Orders>
+            // x1. 主订单转map, 这里转成两个map
+            // 第一个, key:paymentNo, value:List<Orders>
+            // 第二个, key:id, value:Order
             Map<String, List<Orders>> ordersMap = new HashMap<>();
+            Map<Integer, Orders> ordersIdMap = new HashMap<>();
             for (Orders _orders : ordersList) {
                 String paymentNo = _orders.getPaymentNo();
+
+                ordersIdMap.put(_orders.getId(), _orders);
+
                 if (StringUtils.isNotBlank(paymentNo)) {
                     List<Orders> _list = ordersMap.get(paymentNo);
                     if (_list == null) {
@@ -519,6 +529,30 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     _list.add(_orders);
                 } else {
                     log.warn("导出商品开票信息 主订单id:{} 的paymentNo为空", _orders.getId());
+                }
+            }
+
+            // x2. 根据主订单过滤调子订单中不是指定appId的记录，并将符合条件的子订单转map
+            // 转map key:主订单id， value:List<OrderDetail>
+            Map<Integer, List<OrderDetail>> orderDetailMap = new HashMap<>();
+            for (OrderDetail orderDetail : orderDetailList) {
+                Integer orderId = orderDetail.getOrderId(); // 主订单id
+
+                if (ordersIdMap.get(orderId) == null) { // 如果是空, 说明该子订单不符合指定的appId
+                    log.warn("导出商品开票信息 子订单:{} 不属于指定的appId:{} 不予处理", orderDetail.getId(), appId);
+                    continue;
+                }
+
+                if (orderId != null) {
+                    List<OrderDetail> _list = orderDetailMap.get(orderId);
+                    if (_list == null) {
+                        _list = new ArrayList<>();
+                        orderDetailMap.put(orderId, _list);
+                    }
+
+                    _list.add(orderDetail);
+                } else {
+                    log.warn("导出商品开票信息 自订单id:{} 无主订单id", orderDetail.getId());
                 }
             }
 
