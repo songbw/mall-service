@@ -23,6 +23,13 @@ public interface AdminProdService {
 
     int getProdListToRedis();
 
+    /**
+     * 创建商品
+     *
+     * @param bean
+     * @return
+     * @throws ProductException
+     */
     String add(AoyiProdIndex bean) throws ProductException;
 
     int update(AoyiProdIndex bean) throws ProductException;
