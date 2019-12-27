@@ -62,7 +62,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
              * 客户端端token格式："token" + " " + tokenValue
              */
             String authorization = headers.getFirst(AUTHORIZE_TOKEN);
-
+            log.info("请求token: {}", authorization);
             if (StringUtils.isEmpty(authorization)) {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
