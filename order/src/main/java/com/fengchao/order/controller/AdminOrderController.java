@@ -1159,7 +1159,7 @@ public class AdminOrderController {
 
             // 1. 参数校验
             String _stime = startTime + " 00:00:00";
-            String _etime = endTime + " 00:00:00";
+            String _etime = endTime + " 23:59:59";
             Date startDate = DateUtil.parseDateTime(_stime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             Date endDate = DateUtil.parseDateTime(_etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
