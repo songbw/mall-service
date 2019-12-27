@@ -1,11 +1,7 @@
 package com.fengchao.order.rpc.extmodel;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Setter
 @Getter
@@ -56,4 +52,9 @@ public class ProductInfoBean {
     private Integer brandId ;
 
     private String mpu;
+
+    /**
+     * 商品税率
+     */
+    private String taxRate;
 }

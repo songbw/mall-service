@@ -2,25 +2,31 @@ package com.fengchao.order.service.impl;
 
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
-import com.fengchao.order.bean.vo.BillExportReqVo;
-import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
-import com.fengchao.order.bean.vo.ExportOrdersVo;
-import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.bean.vo.*;
+import com.fengchao.order.constants.OrderDetailStatusEnum;
 import com.fengchao.order.constants.OrderPayMethodTypeEnum;
+import com.fengchao.order.constants.PaymentTypeEnum;
+import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
+import com.fengchao.order.jobClient.BeanContext;
 import com.fengchao.order.rpc.*;
 import com.fengchao.order.rpc.extmodel.*;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.AdminOrderService;
+import com.fengchao.order.utils.AlarmUtil;
+import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import com.google.common.collect.Lists;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +43,8 @@ import java.util.stream.Collectors;
 public class AdminOrderServiceImpl implements AdminOrderService {
 
     private static final Integer LIST_PARTITION_SIZE = 100;
+
+    private static final Integer LIST_PARTITION_SIZE_200 = 200;
 
     private AdminOrderDao adminOrderDao;
 
@@ -446,7 +454,396 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
 
+
+    /**
+     * 导出商品开票信息
+     *
+     * @return
+     */
+    @Override
+    public List<ExportReceiptBillVo> exportReceiptBill(Date startTime, Date endTime,
+                                                       String appId, ReceiptTypeEnum receiptTypeEnum) throws Exception {
+        try {
+            // 1. 首先查询符合条件的子订单
+            List<OrderDetail> orderDetailList =
+                    orderDetailDao.selectOrderDetailsByPeriod(startTime, endTime, OrderDetailStatusEnum.COMPLETED.getValue());
+
+            log.info("导出商品开票信息 查询日期条件的子订单的个数是:{}", orderDetailList.size());
+
+            if (CollectionUtils.isEmpty(orderDetailList)) {
+                log.warn("导出商品开票信息 未找到符合条件的子订单");
+                return Collections.emptyList();
+            }
+
+            // 2. 查询主订单
+            // 获取主订单id集合
+            List<Integer> orderIdList = orderDetailList.stream().map(od -> od.getOrderId()).collect(Collectors.toList());
+            // 分区
+            List<List<Integer>> orderIdListPartition = Lists.partition(orderIdList, LIST_PARTITION_SIZE_200);
+
+            // 根据主订单id集合 查询主订单信息
+            List<Orders> ordersList = new ArrayList<>(); //
+            for (List<Integer> _orderIdList : orderIdListPartition) {
+                List<Orders> _ordersList = ordersDao.selectOrdersListByIdListAndAppId(_orderIdList, appId);
+                ordersList.addAll(_ordersList);
+            }
+
+            log.info("导出商品开票信息 找到主订单个数是:{}", ordersList.size());
+            if (CollectionUtils.isEmpty(ordersList)) {
+                log.warn("导出商品开票信息 未找到符合条件的主订单");
+
+                return  Collections.emptyList();
+            }
+
+            // x1. 主订单转map, 这里转成两个map
+            // 第一个, key:paymentNo, value:List<Orders>
+            // 第二个, key:id, value:Order
+            Map<String, List<Orders>> ordersMap = new HashMap<>();
+            Map<Integer, Orders> ordersIdMap = new HashMap<>();
+            for (Orders _orders : ordersList) {
+                String paymentNo = _orders.getPaymentNo();
+
+                ordersIdMap.put(_orders.getId(), _orders);
+
+                if (StringUtils.isNotBlank(paymentNo)) {
+                    List<Orders> _list = ordersMap.get(paymentNo);
+                    if (_list == null) {
+                        _list = new ArrayList<>();
+
+                        ordersMap.put(paymentNo, _list);
+                    }
+
+                    _list.add(_orders);
+                } else {
+                    log.warn("导出商品开票信息 主订单id:{} 的paymentNo为空", _orders.getId());
+                    AlarmUtil.alarmAsync("导出商品开票信息", "主订单id:" + _orders.getId() + "的paymentNo为空");
+                }
+            }
+
+            // x2. 根据主订单过滤调子订单中不是指定appId的记录，并将符合条件的子订单转map
+            // 转map key:主订单id， value:List<OrderDetail>
+            Map<Integer, List<OrderDetail>> orderDetailMap = new HashMap<>();
+            for (OrderDetail orderDetail : orderDetailList) {
+                Integer orderId = orderDetail.getOrderId(); // 主订单id
+
+                if (ordersIdMap.get(orderId) == null) { // 如果是空, 说明该子订单不符合指定的appId
+                    log.warn("导出商品开票信息 子订单:{} 不属于指定的appId:{} 不予处理", orderDetail.getId(), appId);
+                    continue;
+                }
+
+                if (orderId != null) {
+                    List<OrderDetail> _list = orderDetailMap.get(orderId);
+                    if (_list == null) {
+                        _list = new ArrayList<>();
+                        orderDetailMap.put(orderId, _list);
+                    }
+
+                    _list.add(orderDetail);
+                } else {
+                    log.warn("导出商品开票信息 子订单id:{} 无主订单id", orderDetail.getId());
+                    AlarmUtil.alarmAsync("导出商品开票信息", "子订单id:" + orderDetail.getId() + "无主订单id");
+                }
+            }
+
+
+            // 3. 根据payNo，查询支付信息
+            // 获取payNo
+            List<String> paymentNoList = ordersList.stream().map(o -> o.getPaymentNo()).collect(Collectors.toList());
+            // 分区
+            List<List<String>> paymentNoListPartition = Lists.partition(paymentNoList, LIST_PARTITION_SIZE_200);
+
+            // 根据payNo集合 查询支付信息
+            Map<String, List<OrderPayMethodInfoBean>> paymentMethodMap = new HashMap<>(); //
+            for (List<String> _paymentNoList : paymentNoListPartition) {
+                // key : paymentNo
+                Map<String, List<OrderPayMethodInfoBean>> _paymentMethodMap = wsPayRpcService.queryBatchPayMethod(_paymentNoList);
+
+                paymentMethodMap.putAll(_paymentMethodMap);
+            }
+
+            log.info("导出商品开票信息 找到用户单(支付单)个数是:{}", paymentMethodMap.size());
+
+            // 4.开始计算，计算逻辑：
+            // a.遍历支付订单(用户单)，(同时过滤掉其他的支付方式)
+            // b.将支付订单(用户单)下的子订单以mpu为维度合并，同时合并的信息有: 商品数量 / 商品的总价格; 生成数据结构:Map<String, paymentInfoByMpuDimension> key: mpu value: paymentInfoByMpuDimension
+            // c.将每个用户单生成的Map<String, paymentInfoByMpuDimension> 加入到一个list容器中
+
+            List<Map<String, PaymentInfoByMpuDimension>> container = new ArrayList<>(); // 将每个处理完的用户单，放入该容器
+            // a.以支付单号为维度遍历; 遍历用户单
+            for (String paymentNo : paymentMethodMap.keySet()) { // 遍历支付订单(用户单)
+                Map<String, PaymentInfoByMpuDimension> stringpaymentInfoByMpuDimensionMap = new HashMap<>(); ////// 数据结构 key: mpu value: paymentInfoByMpuDimension; 表示用户单中的以mpu为维度的子订单
+                Integer totalAmount = 0; // 该用户单(支付订单)下，所有商品的一个总价 num * salePrice 单位分
+
+                // 判断该支付单的支付方式 返回的是所选择的支付方式支付的总额
+                Integer payAmount = judgePaymentType(receiptTypeEnum, paymentMethodMap.get(paymentNo)); // judgeBanlanceCardWoaPayment(paymentMethodMap.get(paymentNo)); // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式的支付总额
+                if (payAmount > 0) { // 说明该用户单(支付单)在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中 (20191227 这里排除等于0的情况,因为等于0不用开发票)
+                    // 遍历主订单
+                    for (Orders _orders : ordersMap.get(paymentNo)) { // 遍历主订单
+                        // 遍历子订单
+                        for (OrderDetail _orderDetail : orderDetailMap.get(_orders.getId())) { // 遍历子订单
+                            PaymentInfoByMpuDimension _paymentInfoByMpuDimension = stringpaymentInfoByMpuDimensionMap.get(_orderDetail.getMpu());
+                            if (_paymentInfoByMpuDimension == null) {
+                                _paymentInfoByMpuDimension = new PaymentInfoByMpuDimension();
+                                _paymentInfoByMpuDimension.setMpu(_orderDetail.getMpu()); // 设置mpu
+
+                                stringpaymentInfoByMpuDimensionMap.put(_orderDetail.getMpu(), _paymentInfoByMpuDimension);
+                            }
+                            // 商品数量
+                            int _c = _paymentInfoByMpuDimension.getCount() == null ? 0 : _paymentInfoByMpuDimension.getCount();
+                            _paymentInfoByMpuDimension.setCount(_c + _orderDetail.getNum());
+                            // 商品总价 单位分
+                            Integer _tp = _paymentInfoByMpuDimension.getTotalPrice() == null ? 0 : _paymentInfoByMpuDimension.getTotalPrice();
+                            _paymentInfoByMpuDimension.setTotalPrice(_tp + CalculateUtil.convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum());
+
+                            totalAmount = totalAmount + CalculateUtil.convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum(); // 单位 分
+                        } // end 遍历子订单
+                    } // end 遍历主订单
+
+                    // 开始计算 该用户单下 每个mpu所占的payAmount的份额
+                    if (totalAmount == 0) { // 目前测试时, 出现这种不合法数据, 如遇到则报警
+                        log.warn("导出商品开票信息 根据订单详情信息计算出的总价为0(需要关注)");
+
+                        AlarmUtil.alarmAsync("导出商品开票信息", "该用户单根据子订单信息计算出的总价为0(需要关注) 用户单号(支付单号):" + paymentNo);
+                        continue;
+                    }
+
+                    BigDecimal multiplier = new BigDecimal(payAmount).divide(new BigDecimal(totalAmount), 2, BigDecimal.ROUND_HALF_UP);
+                    // 遍历最终产生的数据结构:Map<String, paymentInfoByMpuDimension> 其实就是用户单下所有子订单 以mpu为维度的map
+                    int index = 0;
+                    int remainder = payAmount;
+                    for (String mpu : stringpaymentInfoByMpuDimensionMap.keySet()) {
+                        PaymentInfoByMpuDimension _paymentInfoByMpuDimension = stringpaymentInfoByMpuDimensionMap.get(mpu);
+
+                        // 该mpu商品所占 指定支付方式的份额 单位分
+                        if (index == stringpaymentInfoByMpuDimensionMap.size() - 1) { // 是最后一个元素
+                            _paymentInfoByMpuDimension.setHoldAmount(remainder <= 0 ? 0 : remainder);
+                        } else {
+                            // 该mpu商品所占 指定支付方式的份额 单位分
+                            Integer holdAmount = multiplier.multiply(new BigDecimal(_paymentInfoByMpuDimension.getTotalPrice())).intValue();
+
+                            _paymentInfoByMpuDimension.setHoldAmount(holdAmount);
+
+                            remainder = remainder - holdAmount;
+                        }
+
+                        index++;
+                    }
+
+                    container.add(stringpaymentInfoByMpuDimensionMap);
+                } // end fi payAmount >= 0
+            } // end 遍历支付订单
+
+            // x. 如果没有指定支付方式的用户单数据
+            if (CollectionUtils.isEmpty(container)) {
+                log.info("导出商品开票信息 没有找到指定支付方式的用户单数据");
+                return Collections.emptyList();
+            }
+
+            // 5. 生产需要导出的vo
+            Map<String, ExportReceiptBillVo> exportReceiptBillVoMap = new HashMap<>(); // key: mpu value: ExportReceiptBillVo
+            for (Map<String, PaymentInfoByMpuDimension> _map : container) { // 遍历用户单 container中每一个元素就是一个用户单
+                // 遍历map(其实是在遍历每个用户单下的所有子订单(mpu))
+                for (String _mpu : _map.keySet()) {
+                    ExportReceiptBillVo _exportReceiptBillVo = exportReceiptBillVoMap.get(_mpu);
+                    if (_exportReceiptBillVo == null) {
+                        _exportReceiptBillVo = new ExportReceiptBillVo();
+                        _exportReceiptBillVo.setMpu(_mpu);
+
+                        exportReceiptBillVoMap.put(_mpu, _exportReceiptBillVo);
+                    }
+
+                    // 一个用户单下的一个mpu的商品信息
+                    PaymentInfoByMpuDimension _paymentInfoByMpuDimension = _map.get(_mpu);
+
+                    // 数量
+                    int _count = _exportReceiptBillVo.getCount() == null ? 0 : _exportReceiptBillVo.getCount();
+                    _exportReceiptBillVo.setCount(_count + _paymentInfoByMpuDimension.getCount()); // 数量
+
+                    // 含税总额 单位分
+                    int totalPrice = _exportReceiptBillVo.getTotalPrice() == null ? 0 : _exportReceiptBillVo.getTotalPrice();
+                    _exportReceiptBillVo.setTotalPrice(
+                            totalPrice + (_paymentInfoByMpuDimension.getHoldAmount() == null ? 0 : _paymentInfoByMpuDimension.getHoldAmount())); // 含税总额 单位分
+
+                }
+            }
+
+            // x. 根据mpu查询一下商品信息
+            List<ProductInfoBean> productInfoBeanList = new ArrayList<>();
+            List<String> mpuList = new ArrayList<>(exportReceiptBillVoMap.keySet());
+            // 分区
+            List<List<String>> mpuPartition = Lists.partition(mpuList, LIST_PARTITION_SIZE_200);
+            for (List<String> _mpuList : mpuPartition) {
+                List<ProductInfoBean> _productInfoBeanList = productRpcService.findProductListByMpus(_mpuList);
+
+                productInfoBeanList.addAll(_productInfoBeanList);
+            }
+            log.info("导出商品开票信息 获取到的商品信息个数是:{}", productInfoBeanList.size());
+
+            // 转map, key: mpu, value: ProductInfoBean
+            Map<String, ProductInfoBean> productInfoBeanMap = productInfoBeanList.stream().collect(Collectors.toMap(p -> p.getMpu(), p -> p));
+
+            // 6. 计算税额和含税单价
+            List<ExportReceiptBillVo> result = new ArrayList<>(); // 该方法的返回
+            for (String _mpu : exportReceiptBillVoMap.keySet()) {
+                ExportReceiptBillVo _exportReceiptBillVo = exportReceiptBillVoMap.get(_mpu);
+
+                // 获取商品信息
+                ProductInfoBean productInfoBean = productInfoBeanMap.get(_mpu);
+                if (productInfoBean != null) {
+                    _exportReceiptBillVo.setName(productInfoBean.getName()); // 商品名称
+                    _exportReceiptBillVo.setCategory(productInfoBean.getCategoryName()); // 品类名称
+                    _exportReceiptBillVo.setUnit(productInfoBean.getSaleunit()); // 销售单位
+
+                    // !!含税单价 单位分
+                    int unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
+                            .divide(new BigDecimal(_exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                    _exportReceiptBillVo.setUnitPrice(unitPrice); // 含税单价 单位分
+
+                    // 税率
+                    String taxRate = StringUtils.isBlank(productInfoBean.getTaxRate()) ? null : productInfoBean.getTaxRate();
+                    _exportReceiptBillVo.setTaxRate(taxRate);
+
+                    // !!税额 单位分
+                    if (StringUtils.isNotBlank(taxRate)) {
+                        int taxPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
+                                .divide(new BigDecimal(taxRate).add(new BigDecimal(1)),2, BigDecimal.ROUND_HALF_UP)
+                                .multiply(new BigDecimal(taxRate))
+                                .setScale(0, BigDecimal.ROUND_HALF_UP)
+                                .intValue(); // 单位分
+                        _exportReceiptBillVo.setTaxPrice(taxPrice);
+                    }
+                }
+
+                result.add(_exportReceiptBillVo);
+            }
+
+            log.info("导出商品开票信息 组装的List<ExportReceiptBillVo>:{}", JSONUtil.toJsonString(result));
+
+            return result;
+        } catch (Exception e) {
+            log.error("导出商品开票信息 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
     //=============================== private =============================
+
+    /**
+     * (一个支付订单号下的) 一个用户单下 以mpu为维度, 商品数量,
+     */
+    @Setter
+    @Getter
+    private class PaymentInfoByMpuDimension {
+
+        private String mpu;
+
+        /**
+         * (该支付订单下) 以mpu为维度的 商品数量
+         */
+        private Integer count;
+
+        /**
+         * (该支付订单下) 以mpu为维度的 商品价格总计
+         *
+         * salePrice * num
+         */
+        private Integer totalPrice;
+
+        /**
+         * (该支付订单下) 以mpu为维度的 分得的支付额度
+         *
+         * 举例:
+         * 支付订单PNO下, 支付金额是payAmount(比如是woa/card/banlance); mpuA的totalPrice 为20, mpuB的totalPrice为30
+         * mpuA所占的holdAmount是: (payAmount / (20 + 30) ) * 20
+         */
+        private Integer holdAmount;
+    }
+
+    /**
+     * 根据指定的开票类型，获取用户单该在 该'开票类型' 下的支付方式的支付总额
+     * (判断发票的类型, 进而获取该类型的支付总额)
+     *
+     * @param receiptTypeEnum 指定的开票类型
+     * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式集合
+     * @return
+     */
+    private Integer judgePaymentType(ReceiptTypeEnum receiptTypeEnum, List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
+        switch (receiptTypeEnum) {
+            case BALANCE_CARD_WOA:
+                return judgeBanlanceCardWoaPayment(orderPayMethodInfoBeanList);
+            case BANK:
+                return judgeBankPayment(orderPayMethodInfoBeanList);
+
+            default:
+                log.warn("获取用户单该在 该'开票类型' 下的支付方式的支付总额 未找到有效的发票类型!");
+                return -1;
+        }
+    }
+
+    /**
+     * 判断其支付方式是否是 "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
+     *
+     * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式
+     * @return
+     * -1(<0) : 说明该支付订单的支付方式不在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中
+     * 其他值(>=0) : 返回该支付单子在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式
+     */
+    private Integer judgeBanlanceCardWoaPayment(List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
+        Integer total = -1; // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户  支付的总额 单位 分
+
+        // 遍历支付方式
+        for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
+            String payType = orderPayMethodInfoBean.getPayType();
+
+            if (PaymentTypeEnum.BALANCE.getName().equals(payType)
+                    || PaymentTypeEnum.CARD.getName().equals(payType)
+                    || PaymentTypeEnum.WOA.getName().equals(payType)) {
+                if (total < 0) {
+                    total = 0;
+                }
+
+                if (StringUtils.isNotBlank(orderPayMethodInfoBean.getActPayFee())) { // 单位分
+                    total = total + Integer.valueOf(orderPayMethodInfoBean.getActPayFee());
+                } else {
+                    log.warn("判断其支付方式是否是 balance card woa 支付金额不合法:{}", orderPayMethodInfoBean.getActPayFee());
+                }
+            }
+        }
+
+        return total;
+    }
+
+    /**
+     * 判断其支付方式是否是 "bank" 中投快捷支付
+     *
+     * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式集合
+     * @return
+     * -1(<0) : 说明该支付订单的支付方式不在 ("bank" 中投快捷支付) 这种支付方式中
+     * 其他值(>=0) : 返回该支付单子在（"bank" 中投快捷支付）这种支付方式
+     */
+    private Integer judgeBankPayment(List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
+        Integer total = -1; // 单位分
+
+        // 遍历支付方式
+        for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
+            String payType = orderPayMethodInfoBean.getPayType();
+
+            if (PaymentTypeEnum.BANK.getName().equals(payType)) {
+                if (total < 0) {
+                    total = 0;
+                }
+
+                if (StringUtils.isNotBlank(orderPayMethodInfoBean.getActPayFee())) { // 单位分
+                    total = total + Integer.valueOf(orderPayMethodInfoBean.getActPayFee());
+                } else {
+                    log.warn("判断其支付方式是否是 bank 支付金额不合法:{}", orderPayMethodInfoBean.getActPayFee());
+                }
+            }
+        }
+
+        return total;
+    }
 
     /**
      * 组装订单导出数据
