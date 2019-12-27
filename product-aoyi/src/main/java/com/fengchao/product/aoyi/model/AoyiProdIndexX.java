@@ -63,6 +63,45 @@ public class AoyiProdIndexX implements Serializable {
 
     private String compareUrl ;
 
+    /**
+     * 副标题
+     */
+    private String subTitle;
+
+    /**
+     * 第三方平台价格
+     */
+    private String comparePrice;
+
+    /**
+     * 商品税率
+     */
+    private String taxRate;
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+    }
+
+    public String getComparePrice() {
+        return comparePrice;
+    }
+
+    public void setComparePrice(String comparePrice) {
+        this.comparePrice = comparePrice;
+    }
+
+    public String getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(String taxRate) {
+        this.taxRate = taxRate;
+    }
+
     public Integer getId() {
         return id;
     }

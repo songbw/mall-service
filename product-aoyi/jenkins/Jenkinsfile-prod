@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh './product-aoyi/jenkins/scripts/deliver.sh'
+                sh './product-aoyi/jenkins/scripts/deliver-prod.sh'
             }
         }
     }

@@ -57,6 +57,8 @@ public class AoyiProdIndex {
 
     private String comparePrice;
 
+    private String taxRate;
+
     public Integer getId() {
         return id;
     }
@@ -271,5 +273,13 @@ public class AoyiProdIndex {
 
     public void setComparePrice(String comparePrice) {
         this.comparePrice = comparePrice == null ? null : comparePrice.trim();
+    }
+
+    public String getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(String taxRate) {
+        this.taxRate = taxRate == null ? null : taxRate.trim();
     }
 }

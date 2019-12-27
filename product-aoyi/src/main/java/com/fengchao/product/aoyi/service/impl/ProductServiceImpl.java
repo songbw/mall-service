@@ -413,6 +413,7 @@ public class ProductServiceImpl implements ProductService {
         productInfoBean.setInventory(aoyiProdIndex.getInventory());
         productInfoBean.setBrandId(aoyiProdIndex.getBrandId());
         productInfoBean.setMpu(aoyiProdIndex.getMpu());
+        productInfoBean.setTaxRate(aoyiProdIndex.getTaxRate());
 
         return productInfoBean;
     }

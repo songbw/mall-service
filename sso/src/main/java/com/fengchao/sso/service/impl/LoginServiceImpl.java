@@ -240,28 +240,33 @@ public class LoginServiceImpl implements ILoginService {
         temp.setiAppId(iAppId);
         User user = userMapper.selectByOpenId(temp);
         if (user == null) {
-            OperaResponse<WeChatUserInfoBean> userInfoBeanOperaResponse = weChatService.getUserInfo(weChatAccessTokenBean.getAccess_token(),weChatAccessTokenBean.getOpenid()) ;
-            if (userInfoBeanOperaResponse.getCode() != 200) {
-                result.setCode(userInfoBeanOperaResponse.getCode());
-                result.setMsg(userInfoBeanOperaResponse.getMsg());
-                return result ;
-            }
-            WeChatUserInfoBean weChatUserInfoBean = userInfoBeanOperaResponse.getData() ;
             user = new User();
-            user.setOpenId(weChatUserInfoBean.getOpenid());
-            if (!StringUtils.isEmpty(weChatUserInfoBean.getNickname())) {
-                user.setNickname(weChatUserInfoBean.getNickname());
-            } else {
-                String nickname = "fc_" + weChatUserInfoBean.getOpenid().substring(user.getOpenId().length() - 8);
+            if ("snsapi_base".equals(weChatAccessTokenBean.getScope())) {
+                String nickname = "fc_" + weChatAccessTokenBean.getOpenid().substring(weChatAccessTokenBean.getOpenid().length() - 8);
                 user.setNickname(nickname);
+            } else {
+                OperaResponse<WeChatUserInfoBean> userInfoBeanOperaResponse = weChatService.getUserInfo(weChatAccessTokenBean.getAccess_token(),weChatAccessTokenBean.getOpenid()) ;
+                if (userInfoBeanOperaResponse.getCode() != 200) {
+                    result.setCode(userInfoBeanOperaResponse.getCode());
+                    result.setMsg(userInfoBeanOperaResponse.getMsg());
+                    return result ;
+                }
+                WeChatUserInfoBean weChatUserInfoBean = userInfoBeanOperaResponse.getData() ;
+                user.setOpenId(weChatUserInfoBean.getOpenid());
+                if (!StringUtils.isEmpty(weChatUserInfoBean.getNickname())) {
+                    user.setNickname(weChatUserInfoBean.getNickname());
+                } else {
+                    String nickname = "fc_" + weChatUserInfoBean.getOpenid().substring(user.getOpenId().length() - 8);
+                    user.setNickname(nickname);
+                }
+                user.setName(weChatUserInfoBean.getNickname());
+                if ("1".equals(weChatUserInfoBean.getSex())) {
+                    user.setSex("男");
+                } else if ("2".equals(weChatUserInfoBean.getSex())){
+                    user.setSex("女");
+                }
+                user.setHeadImg(weChatUserInfoBean.getHeadimgurl());
             }
-            user.setName(weChatUserInfoBean.getNickname());
-            if ("1".equals(weChatUserInfoBean.getSex())) {
-                user.setSex("男");
-            } else if ("2".equals(weChatUserInfoBean.getSex())){
-                user.setSex("女");
-            }
-            user.setHeadImg(weChatUserInfoBean.getHeadimgurl());
             user.setCreatedAt(new Date());
             user.setiAppId(iAppId);
             userMapper.insertSelective(user);
