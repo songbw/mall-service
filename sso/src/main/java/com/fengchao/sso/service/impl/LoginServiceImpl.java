@@ -242,7 +242,7 @@ public class LoginServiceImpl implements ILoginService {
         if (user == null) {
             user = new User();
             if ("snsapi_base".equals(weChatAccessTokenBean.getScope())) {
-                String nickname = "fc_" + weChatAccessTokenBean.getOpenid().substring(user.getOpenId().length() - 8);
+                String nickname = "fc_" + weChatAccessTokenBean.getOpenid().substring(weChatAccessTokenBean.getOpenid().length() - 8);
                 user.setNickname(nickname);
             } else {
                 OperaResponse<WeChatUserInfoBean> userInfoBeanOperaResponse = weChatService.getUserInfo(weChatAccessTokenBean.getAccess_token(),weChatAccessTokenBean.getOpenid()) ;
