@@ -10,11 +10,13 @@ import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.dao.AdminOrderDao;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
+import com.fengchao.order.jobClient.BeanContext;
 import com.fengchao.order.rpc.*;
 import com.fengchao.order.rpc.extmodel.*;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.AdminOrderService;
+import com.fengchao.order.utils.AlarmUtil;
 import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
@@ -24,6 +26,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -472,23 +475,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 return Collections.emptyList();
             }
 
-            // x. 转map key:主订单id， value:List<OrderDetail>
-//            Map<Integer, List<OrderDetail>> orderDetailMap = new HashMap<>();
-//            for (OrderDetail orderDetail : orderDetailList) {
-//                Integer orderId = orderDetail.getOrderId();
-//                if (orderId != null) {
-//                    List<OrderDetail> _list = orderDetailMap.get(orderId);
-//                    if (_list == null) {
-//                        _list = new ArrayList<>();
-//                        orderDetailMap.put(orderId, _list);
-//                    }
-//
-//                    _list.add(orderDetail);
-//                } else {
-//                    log.warn("导出商品开票信息 自订单id:{} 无主订单id", orderDetail.getId());
-//                }
-//            }
-
             // 2. 查询主订单
             // 获取主订单id集合
             List<Integer> orderIdList = orderDetailList.stream().map(od -> od.getOrderId()).collect(Collectors.toList());
@@ -505,6 +491,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             log.info("导出商品开票信息 找到主订单个数是:{}", ordersList.size());
             if (CollectionUtils.isEmpty(ordersList)) {
                 log.warn("导出商品开票信息 未找到符合条件的主订单");
+
                 return  Collections.emptyList();
             }
 
@@ -529,6 +516,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     _list.add(_orders);
                 } else {
                     log.warn("导出商品开票信息 主订单id:{} 的paymentNo为空", _orders.getId());
+                    AlarmUtil.alarmAsync("导出商品开票信息", "主订单id:" + _orders.getId() + "的paymentNo为空");
                 }
             }
 
@@ -552,7 +540,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                     _list.add(orderDetail);
                 } else {
-                    log.warn("导出商品开票信息 自订单id:{} 无主订单id", orderDetail.getId());
+                    log.warn("导出商品开票信息 子订单id:{} 无主订单id", orderDetail.getId());
+                    AlarmUtil.alarmAsync("导出商品开票信息", "子订单id:" + orderDetail.getId() + "无主订单id");
                 }
             }
 
@@ -587,7 +576,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                 // 判断该支付单的支付方式 返回的是所选择的支付方式支付的总额
                 Integer payAmount = judgePaymentType(receiptTypeEnum, paymentMethodMap.get(paymentNo)); // judgeBanlanceCardWoaPayment(paymentMethodMap.get(paymentNo)); // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式的支付总额
-                if (payAmount >= 0) { // 说明该用户单(支付单)在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中
+                if (payAmount > 0) { // 说明该用户单(支付单)在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中 (20191227 这里排除等于0的情况,因为等于0不用开发票)
                     // 遍历主订单
                     for (Orders _orders : ordersMap.get(paymentNo)) { // 遍历主订单
                         // 遍历子订单
@@ -610,7 +599,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         } // end 遍历子订单
                     } // end 遍历主订单
 
-                    // 开始计算 每个mpu所占的payAmount的份额
+                    // 开始计算 该用户单下 每个mpu所占的payAmount的份额
+                    if (totalAmount == 0) { // 目前测试时, 出现这种不合法数据, 如遇到则报警
+                        log.warn("导出商品开票信息 根据订单详情信息计算出的总价为0(需要关注)");
+
+                        AlarmUtil.alarmAsync("导出商品开票信息", "该用户单根据子订单信息计算出的总价为0(需要关注) 用户单号(支付单号):" + paymentNo);
+                        continue;
+                    }
+
                     BigDecimal multiplier = new BigDecimal(payAmount).divide(new BigDecimal(totalAmount), 2, BigDecimal.ROUND_HALF_UP);
                     // 遍历最终产生的数据结构:Map<String, paymentInfoByMpuDimension> 其实就是用户单下所有子订单 以mpu为维度的map
                     int index = 0;
@@ -665,7 +661,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                     // 含税总额 单位分
                     int totalPrice = _exportReceiptBillVo.getTotalPrice() == null ? 0 : _exportReceiptBillVo.getTotalPrice();
-                    _exportReceiptBillVo.setTotalPrice(totalPrice + _paymentInfoByMpuDimension.getHoldAmount()); // 含税总额 单位分
+                    _exportReceiptBillVo.setTotalPrice(
+                            totalPrice + (_paymentInfoByMpuDimension.getHoldAmount() == null ? 0 : _paymentInfoByMpuDimension.getHoldAmount())); // 含税总额 单位分
 
                 }
             }
