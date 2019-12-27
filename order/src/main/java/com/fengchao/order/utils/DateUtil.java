@@ -6,10 +6,13 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Objects;
 
 public class DateUtil {
 
     public static final String DATE_YYYYMMDD = "yyyyMMdd";
+
+    public static final String DATE_YYMM = "yyMM";
 
     public static final String DATE_F_YYYYMD = "yyyy/M/d";
 
@@ -21,7 +24,7 @@ public class DateUtil {
 
     public static final String DATE_YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
-    public static final String DATE_YYYY_MM_DD_HH_MM_ss_S = "yyyy-MM-dd HH:mm:ss.S";
+    public static final String DATE_YYYY_MM_DD_HH_MM_ss_SSS = "yyyy-MM-dd HH:mm:ss.SSS";
 
     public static final String DATE_YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm";
 
@@ -30,6 +33,55 @@ public class DateUtil {
     public static final String TIME_HH_mm = "HH:mm";
 
     public static final String TIME_HH_mm_ss = "HH:mm:ss";
+
+    /**
+     *
+     */
+    public static final String ZERO_DATETIME = "1970-01-01 00:00:00";
+    public static final String ZERO_DATE = "1970-01-01";
+    public static final Date DATE_ZERO_DATETIME = parseDateTime(ZERO_DATETIME, DATE_YYYY_MM_DD_HH_MM_SS);
+
+    /**
+     *
+     */
+    public static final String DIE_DATATIME = "2200-01-01 00:00:00";
+    public static final String DIE_DATA = "2200-01-01";
+    public static final Date DATE_DIE_DATATIME = parseDateTime(DIE_DATATIME, DATE_YYYY_MM_DD_HH_MM_SS);
+
+    /**
+     * 是否是时间"0"
+     *
+     * @param compareDateTime
+     * @param format
+     * @return
+     */
+    public static boolean isZeroDateTime(String compareDateTime, String format) {
+        if (StringUtils.isBlank(compareDateTime)) {
+            return true;
+        }
+
+        int diff = compareDateTime(compareDateTime, format, ZERO_DATETIME, DATE_YYYY_MM_DD_HH_MM_SS);
+
+        return diff <= 0;
+    }
+
+    /**
+     * 是否是时间"0"
+     *
+     * @param compareDateTime
+     * @param format
+     * @return
+     */
+    public static boolean isZeroDateTime(Date compareDateTime, String format) {
+        if (Objects.isNull(compareDateTime)) {
+            return true;
+        }
+
+        //
+        String _cimpareDateTime = dateTimeFormat(compareDateTime, format);
+
+        return isZeroDateTime(_cimpareDateTime, format);
+    }
 
     /**
      * 将一个日期加上或减去 seocndsToAdd 妙数,得出新的日期
@@ -246,6 +298,26 @@ public class DateUtil {
     }
 
     /**
+     * 计算 endDateTime - startDateTime 的小时差
+     *
+     * @param startDateTime
+     * @param startDateTimeFormat
+     * @param endDateTime
+     * @param endDateTimeFormat
+     * @return
+     */
+    public static Long diffDays(String startDateTime, String startDateTimeFormat,
+                                String endDateTime, String endDateTimeFormat) {
+        LocalDateTime start = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern(startDateTimeFormat));
+        LocalDateTime end = LocalDateTime.parse(endDateTime, DateTimeFormatter.ofPattern(endDateTimeFormat));
+
+        Duration duration = Duration.between(start, end);
+        Long diff = duration.toDays();
+
+        return diff;
+    }
+
+    /**
      * 转 Date
      *
      * @param dateTime
@@ -306,7 +378,11 @@ public class DateUtil {
     }
 
     public static void main(String args[]) {
-        System.out.println(convertToLocalTime("21:42:58", DateUtil.TIME_HH_mm_ss).toString());
+//        System.out.println(convertToLocalTime("21:42:58", DateUtil.TIME_HH_mm_ss).toString());
+//        System.out.println(parseDateTime("2019-01-01 00:00:00",DATE_YYYY_MM_DD_HH_MM_SS));
+
+        System.out.println(diffDays("2019-10-10 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS,
+                "2019-10-11 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
     }
 
 }

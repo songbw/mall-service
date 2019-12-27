@@ -1,11 +1,10 @@
 package com.fengchao.order.controller;
 
-import com.fengchao.order.bean.vo.BillExportReqVo;
-import com.fengchao.order.bean.vo.DailyExportOrderStatisticVo;
-import com.fengchao.order.bean.vo.ExportOrdersVo;
-import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.bean.vo.*;
+import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.service.AdminOrderService;
+import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -908,7 +906,7 @@ public class AdminOrderController {
 
 
     /**
-     * 每日统计
+     * 导出发货概况
      *
      * @param response
      * @throws Exception
@@ -1115,6 +1113,185 @@ public class AdminOrderController {
                 writer.write(JSONUtil.toJsonString(map));
             } catch (Exception e1) {
                 log.error("每日统计 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+
+            if (workbook != null) {
+                workbook.close();
+            }
+        }
+    }
+
+
+    /**
+     * 导出商品开票信息
+     *
+     * http://localhost:8004/adminorder/export/receiptBill?startTime=2019-11-01&endTime=2019-11-30&appId=11&receiptType=1
+     *
+     * @param startTime  yyyy-MM-dd
+     * @param endTime
+     * @param receiptType
+     *    1 : "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户 这三种支付方式的发票
+     *    2 : bank 中投快捷支付的发票
+     * @param appId
+     * @param response
+     * @throws Exception
+     */
+    @GetMapping(value = "/export/receiptBill")
+    public void exportReceiptBill(@RequestParam("startTime") String startTime,
+                                  @RequestParam("endTime") String endTime,
+                                  @RequestParam("receiptType") Integer receiptType,
+                                  @RequestParam(value = "appId", required = true) String appId,
+                                  HttpServletResponse response) throws Exception {
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
+
+        try {
+            log.debug("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}", startTime, endTime, appId);
+
+            // 1. 参数校验
+            String _stime = startTime + " 00:00:00";
+            String _etime = endTime + " 23:59:59";
+            Date startDate = DateUtil.parseDateTime(_stime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDate = DateUtil.parseDateTime(_etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+
+            long diffDays = DateUtil.diffDays(_stime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, _etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            if (diffDays > 31) {
+                log.warn("导出商品开票信息 查询日期范围超过一个月");
+                throw new Exception("查询日期范围超过一个月");
+            }
+
+            // 发票类型
+            if (receiptType == null || receiptType <= 0) {
+                log.warn("导出商品开票信息 无效的发票类型");
+                throw new Exception("无效的发票类型");
+            }
+            ReceiptTypeEnum receiptTypeEnum = ReceiptTypeEnum.getReceiptTypeEnum(receiptType);
+            if (ReceiptTypeEnum.UNKNOWN.equals(receiptTypeEnum)) {
+                log.warn("导出商品开票信息 发票类型不正确");
+                throw new Exception("发票类型不正确");
+            }
+
+            // appId
+            if (StringUtils.isBlank(appId)) {
+                log.warn("导出商品开票信息 appId为空");
+                throw new Exception("未找到正确归属信息");
+            }
+
+            // 2. 执行查询&数据处理逻辑
+            List<ExportReceiptBillVo> exportReceiptBillVoList = adminOrderService.exportReceiptBill(startDate, endDate, appId, receiptTypeEnum);
+            log.info("导出商品开票信息 获取到需要导出数据的个数:{}", exportReceiptBillVoList.size());
+
+            // 3. 创建导出文件对象
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("开票信息" + DateUtil.nowDate(DateUtil.DATE_YYYYMMDD)); //  加上时间
+
+            //
+            int indexRow = 0;
+
+            // TITLE
+            HSSFRow title = sheet.createRow(indexRow);
+
+            title.createCell(0).setCellValue("商品名称");
+            title.createCell(1).setCellValue("品类");
+            title.createCell(2).setCellValue("销售单位");
+            title.createCell(3).setCellValue("数量");
+            title.createCell(4).setCellValue("实际销售单价(元)");
+            title.createCell(5).setCellValue("税率");
+            title.createCell(6).setCellValue("含税金额");
+            title.createCell(7).setCellValue("税额");
+
+            indexRow++;
+
+            // CONTENT
+            for (ExportReceiptBillVo exportReceiptBillVo : exportReceiptBillVoList) { // 遍历子订单
+                HSSFRow currentRow = sheet.createRow(indexRow);
+
+                HSSFCell cell0 = currentRow.createCell(0); // 商品名称
+                cell0.setCellValue(StringUtils.isBlank(exportReceiptBillVo.getName()) ? "--" : exportReceiptBillVo.getName());
+
+                HSSFCell cell1 = currentRow.createCell(1); // 品类
+                cell1.setCellValue(StringUtils.isBlank(exportReceiptBillVo.getCategory()) ? "--" : exportReceiptBillVo.getCategory());
+
+                HSSFCell cell2 = currentRow.createCell(2); // 销售单位
+                cell2.setCellValue(StringUtils.isBlank(exportReceiptBillVo.getUnit()) ? "--" : exportReceiptBillVo.getUnit());
+
+                HSSFCell cell3 = currentRow.createCell(3); // 数量
+                cell3.setCellValue(exportReceiptBillVo.getCount() == null ? "--" : String.valueOf(exportReceiptBillVo.getCount()));
+
+                HSSFCell cell4 = currentRow.createCell(4); // 实际销售单价（含税单价）
+                cell4.setCellValue(exportReceiptBillVo.getUnitPrice() == null ?
+                        "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getUnitPrice()));
+
+                HSSFCell cell5 = currentRow.createCell(5); // 税率
+                cell5.setCellValue(StringUtils.isBlank(exportReceiptBillVo.getTaxRate()) ?
+                        "--" : exportReceiptBillVo.getTaxRate());
+
+                HSSFCell cell6 = currentRow.createCell(6); // 含税金额
+                cell6.setCellValue(exportReceiptBillVo.getTotalPrice() == null ?
+                        "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getTotalPrice()));
+
+                HSSFCell cell7 = currentRow.createCell(7); // 税额
+                cell7.setCellValue(exportReceiptBillVo.getTaxPrice() == null ?
+                        "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getTaxPrice()));
+
+                indexRow++;
+            }
+
+            // 4. 输出文件
+            ///////// 文件名
+            String fileName = "receipt" + DateUtil.nowDate(DateUtil.DATE_YYYYMMDD) + ".xls";
+
+            try {
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出商品开票信息 出错了:{}", e.getMessage(), e);
+
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
+            log.debug("导出商品开票信息完成!");
+        } catch (Exception e) {
+            log.error("导出商品开票信息异常:{}", e.getMessage(), e);
+
+//            response.setHeader("content-type", "application/json;charset=UTF-8");
+//            response.setContentType("application/json");
+            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setStatus(400);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "400");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出商品开票信息 错误:{}", e.getMessage(), e);
             } finally {
                 if (writer != null) {
                     writer.close();

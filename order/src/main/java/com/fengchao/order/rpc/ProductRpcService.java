@@ -64,7 +64,7 @@ public class ProductRpcService {
      * @param mpus
      * @return
      */
-    private List<ProductInfoBean> findProductListByMpus(List<String> mpus) {
+    public List<ProductInfoBean> findProductListByMpus(List<String> mpus) {
         List<ProductInfoBean> couponBeanList = new ArrayList<>();
         OperaResult operaResult = productService.findProductListByMpuIdList(mpus);
         log.debug("根据mpu集合查询产品信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));

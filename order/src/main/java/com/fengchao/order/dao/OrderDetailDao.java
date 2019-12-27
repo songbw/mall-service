@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author tom
@@ -371,6 +372,29 @@ public class OrderDetailDao {
 
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
 
+        return orderDetailList;
+    }
+
+    /**
+     * 按照时间范围 和 状态 查询
+     *
+     * @param startTime
+     * @param endTime
+     * @param status
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByPeriod(Date startTime, Date endTime, Integer status) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andCompleteTimeBetween(startTime, endTime);
+
+        if (!Objects.isNull(status)) {
+            criteria.andStatusEqualTo(status);
+        }
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
         return orderDetailList;
     }
 
