@@ -3,6 +3,7 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.vo.*;
 import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
+import com.fengchao.order.service.AdminInvoiceService;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
@@ -31,9 +32,13 @@ public class AdminOrderController {
 
     private AdminOrderService adminOrderService;
 
+    private AdminInvoiceService adminInvoiceService;
+
     @Autowired
-    public AdminOrderController(AdminOrderService adminOrderService) {
+    public AdminOrderController(AdminOrderService adminOrderService,
+                                AdminInvoiceService adminInvoiceService) {
         this.adminOrderService = adminOrderService;
+        this.adminInvoiceService = adminInvoiceService;
     }
 
     /**
@@ -1187,7 +1192,7 @@ public class AdminOrderController {
             }
 
             // 2. 执行查询&数据处理逻辑
-            List<ExportReceiptBillVo> exportReceiptBillVoList = adminOrderService.exportReceiptBill(startDate, endDate, appId, receiptTypeEnum);
+            List<ExportReceiptBillVo> exportReceiptBillVoList = adminInvoiceService.exportInvoice(startDate, endDate, appId, receiptTypeEnum);
             log.info("导出商品开票信息 获取到需要导出数据的个数:{}", exportReceiptBillVoList.size());
 
             // 3. 创建导出文件对象
