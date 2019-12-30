@@ -3,6 +3,7 @@ package com.fengchao.order.rpc;
 import com.alibaba.fastjson.JSON;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.ProductService;
+import com.fengchao.order.rpc.extmodel.Platform;
 import com.fengchao.order.rpc.extmodel.ProductInfoBean;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -78,5 +79,27 @@ public class ProductRpcService {
             log.warn("根据mpu集合查询产品信息 调用product rpc服务 错误!");
         }
         return couponBeanList ;
+    }
+
+
+    /**
+     * 根据appId 获取平台信息
+     * @param appId
+     * @return
+     */
+    public Platform findPlatformByAppId(String appId) {
+        Platform platform = new Platform();
+        OperaResult operaResult = productService.selectPlatformByAppId(appId);
+        log.debug("根据appId获取平台信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+        // 处理返回
+        if (operaResult.getCode() == 200) {
+            Object object = operaResult.getData();
+
+            // 转 ProductInfoBean
+            platform  = JSON.parseObject(JSON.toJSONString(object), Platform.class);
+        } else {
+            log.warn("根据mpu集合查询产品信息 调用product rpc服务 错误!");
+        }
+        return platform ;
     }
 }

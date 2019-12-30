@@ -47,4 +47,12 @@ public interface ProductService {
     @RequestMapping(value = "/prod/inventory/add", method = RequestMethod.PUT)
     OperaResult inventoryAdd(@RequestBody List<InventoryMpus> inventories);
 
+    /**
+     * 获取平台信息
+     * @param appId
+     * @return
+     */
+    @RequestMapping(value = "/platform/app", method = RequestMethod.GET)
+    OperaResult selectPlatformByAppId(@RequestParam("appId") String appId);
+
 }

@@ -3,7 +3,6 @@ package com.fengchao.order.service;
 import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
-import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 
 import java.util.List;
@@ -53,7 +52,7 @@ public interface AdminOrderService {
      */
     List<ExportOrdersVo> exportOrdersReconciliationOut(OrderExportReqVo orderExportReqVo) throws Exception;
 
-    List<OrderPayMethodInfoBean> exportCandRBill(BillExportReqVo billExportReqVo, String tradeType);
+    Map<String, List<OrderPayMethodInfoBean>> exportCandRBill(BillExportReqVo billExportReqVo);
 
     /**
      * 每日导出数据

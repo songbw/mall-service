@@ -97,6 +97,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Orders> ordersList = adminOrderDao.selectExportOrders(queryConditions, startDateTime, endDateTime);
         log.info("导出订单 查询数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
+        //获取平台信息
+        Platform platform = productRpcService.findPlatformByAppId(orderExportReqVo.getAppId());
+
         if (CollectionUtils.isEmpty(ordersList)) {
             return Collections.emptyList();
         }
@@ -105,6 +108,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 获取主订单id列表
         List<Integer> ordersIdList = new ArrayList<>();
         for (Orders orders : ordersList) {
+            orders.setAppId(platform.getName());
             ordersIdList.add(orders.getId());
         }
 
@@ -167,12 +171,16 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 获取主订单id列表
         List<Integer> ordersIdList = orderDetailList.stream().map(d -> d.getOrderId()).collect(Collectors.toList());
         // 查询主订单
-        List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList);
+        List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList, orderExportReqVo.getAppId());
         log.debug("导出订单对账单(入账) 查询主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
+
+        //获取平台信息
+        Platform platform = productRpcService.findPlatformByAppId(orderExportReqVo.getAppId());
 
         // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
         List<String> paymentNoList = new ArrayList<>();
         for (Orders orders : ordersList) {
+            orders.setAppId(platform.getName());
             if (StringUtils.isNotBlank(orders.getPaymentNo())) {
                 paymentNoList.add(orders.getPaymentNo());
             }
@@ -189,7 +197,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 3.组装结果
         List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null, paymentMethodInfoMap, null);
 
-        // patch, 将状态统一为"已退款"
+        // patch, 将状态统一为"已完成"
         if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
             exportOrdersVoList.stream().forEach(e -> e.setOrderDetailStatus("已完成"));
         }
@@ -254,9 +262,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 获取主订单id列表
         List<Integer> ordersIdList = orderDetailList.stream().map(d -> d.getOrderId()).collect(Collectors.toList());
         // 查询主订单
-        List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList);
+        List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList, orderExportReqVo.getAppId());
         log.info("导出订单对账单(出账) 查询已退款的主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
+        //获取平台信息
+        Platform platform = productRpcService.findPlatformByAppId(orderExportReqVo.getAppId());
 
+        for (Orders orders : ordersList) {
+            orders.setAppId(platform.getName());
+        }
         List<List<String>> refundNoPatitionLists = Lists.partition(refundNoList, LIST_PARTITION_SIZE);
         // 退款方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
         Map<String, List<RefundMethodInfoBean>> refundMethodInfoMap = new HashMap<>();
@@ -287,11 +300,56 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     @Override
-    public List<OrderPayMethodInfoBean> exportCandRBill(BillExportReqVo billExportReqVo, String tradeType) {
-        billExportReqVo.setTradeType(tradeType);
-        billExportReqVo.setPageNum(1);
+    public Map<String, List<OrderPayMethodInfoBean>> exportCandRBill(BillExportReqVo billExportReqVo) {
+        Map<String, List<OrderPayMethodInfoBean>> PayMethodInfoBeanMap = new HashMap<>();
+        Date startDateTime = DateUtil.parseDateTime(billExportReqVo.getStartDate() + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        Date endDateTime = DateUtil.parseDateTime(billExportReqVo.getEndDate() + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        String startDate = DateUtil.dateTimeFormat(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        String endDate = DateUtil.dateTimeFormat(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+        billExportReqVo.setStartDate(startDate);
+        billExportReqVo.setEndDate(endDate);
+
+        //获取支付流水
+        billExportReqVo.setTradeType("consume");
         List<OrderPayMethodInfoBean> payMethodInfoBeans = wsPayRpcService.queryPayCandRList(billExportReqVo);
-        return payMethodInfoBeans;
+
+        //获取退款流水
+        billExportReqVo.setPageNum(1);
+        billExportReqVo.setTradeType("refund");
+        List<OrderPayMethodInfoBean> refundMethodInfoBeans = wsPayRpcService.queryPayCandRList(billExportReqVo);
+
+        //获取平台信息
+        Platform platform = productRpcService.findPlatformByAppId(billExportReqVo.getAppId());
+
+        Map<String, Orders> ordersMap = new HashMap<>();
+        if (billExportReqVo.getPayType().equals("bank")) {
+            List<String> paymentNos = new ArrayList<>();
+            for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
+                paymentNos.add(bean.getOrderNo());
+            }
+            List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentNos(paymentNos);
+            for (Orders orders : ordersList) {
+                ordersMap.put(orders.getPaymentNo(), orders);
+            }
+            Map<String, OrderPayMethodInfoBean> parInfoMap = new HashMap<>();
+            for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
+                Orders orders = ordersMap.get(bean.getOrderNo());
+                bean.setCardNo(orders.getOpenId());
+                bean.setTradeType("已完成");
+                bean.setAppId(platform.getName());
+                parInfoMap.put(bean.getOutTradeNo(), bean);
+            }
+
+            for (OrderPayMethodInfoBean bean : refundMethodInfoBeans) {
+                OrderPayMethodInfoBean payMethodInfoBean = parInfoMap.get(bean.getOutTradeNo());
+                bean.setCardNo(payMethodInfoBean.getCardNo());
+                bean.setAppId(platform.getName());
+                bean.setTradeType("已退款");
+            }
+        }
+        PayMethodInfoBeanMap.put("consume", payMethodInfoBeans);
+        PayMethodInfoBeanMap.put("refund", refundMethodInfoBeans);
+        return PayMethodInfoBeanMap;
     }
 
 
@@ -575,6 +633,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setPaymentTime(ordersBo.getPaymentAt()); // 订单支付时间
                     exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
                     exportOrdersVo.setAoyiID(ordersBo.getAoyiId());
+                    exportOrdersVo.setAppId(ordersBo.getAppId());
 
                     ProductInfoBean productInfoBean = productInfoBeanMap.get(orderDetailBo.getMpu());
                     exportOrdersVo.setCategory(productInfoBean == null ? "" : productInfoBean.getCategoryName()); // 品类
@@ -641,6 +700,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setAoyiID(ordersBo.getAoyiId());
                     exportOrdersVo.setMobile(ordersBo.getMobile());
                     exportOrdersVo.setRemark(orderDetailBo.getRemark());
+                    exportOrdersVo.setLogisticsId(orderDetailBo.getLogisticsId());
                     // 退款金额 单位元
                     if (orderDetailBo.getRefundAmount() != null) {
                         exportOrdersVo.setOrderDetailRefundAmount(orderDetailBo.getRefundAmount());
@@ -796,6 +856,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // orderExportReqVo.getSubOrderId();
         orders.setMobile(orderExportReqVo.getPhoneNo());
         orders.setStatus(orderExportReqVo.getOrderStatus());
+        orders.setAppId(orderExportReqVo.getAppId());
 
         return orders;
     }
@@ -888,6 +949,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orderBo.setRefundFee(orders.getRefundFee());
         orderBo.setCreatedAt(orders.getCreatedAt());
         orderBo.setUpdatedAt(orders.getUpdatedAt());
+        orderBo.setAppId(orders.getAppId());
 
         return orderBo;
     }

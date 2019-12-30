@@ -82,4 +82,15 @@ public class OrderPayMethodInfoBean {
      * 手机号
      */
     private String payer;
+
+    /**
+     * tradeType
+     */
+    private String tradeType;
+
+    /**
+     * appId
+     */
+    private String appId;
+
 }

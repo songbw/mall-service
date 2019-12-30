@@ -18,6 +18,8 @@ public class OrdersBo {
 
     private String openId;
 
+    private String appId;
+
     private String tradeNo;
 
     private String aoyiId;

@@ -85,6 +85,9 @@ public class AdminOrderDao {
             criteria.andStatusEqualTo(orders.getStatus());
         }
 
+        if (StringUtils.isNotBlank(orders.getAppId())) {
+            criteria.andAppIdEqualTo(orders.getAppId());
+        }
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
         return ordersList;

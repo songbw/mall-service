@@ -37,4 +37,6 @@ public class OrderExportReqVo {
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date payEndDate;
+
+    private String appId;
 }
