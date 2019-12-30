@@ -92,10 +92,11 @@ public class OrdersDao {
      * @param idList
      * @return
      */
-    public List<Orders> selectOrdersListByIdList(List<Integer> idList) {
+    public List<Orders> selectOrdersListByIdList(List<Integer> idList, String appId) {
         OrdersExample ordersExample = new OrdersExample();
         OrdersExample.Criteria criteria = ordersExample.createCriteria();
         criteria.andIdIn(idList);
+        criteria.andAppIdEqualTo(appId);
 
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
@@ -181,5 +182,14 @@ public class OrdersDao {
             orderList.add(order) ;
         });
         return orderList ;
+    }
+
+    public List<Orders> selectPayedOrdersListByPaymentNos(List<String> paymentNos) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andPaymentNoIn(paymentNos);
+
+        List<Orders> orders = ordersMapper.selectByExample(ordersExample);
+        return orders;
     }
 }

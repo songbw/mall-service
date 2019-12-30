@@ -249,4 +249,14 @@ public class ExportOrdersVo {
      */
     private String aoyiID;
 
+    /**
+     * 物流单号
+     */
+    private String logisticsId;
+
+    /**
+     * 物流单号
+     */
+    private String appId;
+
 }

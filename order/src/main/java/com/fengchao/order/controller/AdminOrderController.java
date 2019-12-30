@@ -356,6 +356,7 @@ public class AdminOrderController {
             }
         }
     }
+
     @GetMapping(value = "/export/admin")
     public void exportOrderAdmin(OrderExportReqVo orderExportReqVo, HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
@@ -676,77 +677,14 @@ public class AdminOrderController {
                 throw new Exception("参数不合法, 查询结束时间为空");
             }
 
-            Date startDateTime = DateUtil.parseDateTime(billExportReqVo.getStartDate() + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            Date endDateTime = DateUtil.parseDateTime(billExportReqVo.getEndDate() + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            String startDate = DateUtil.dateTimeFormat(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            String endDate = DateUtil.dateTimeFormat(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-
-            billExportReqVo.setStartDate(startDate);
-            billExportReqVo.setEndDate(endDate);
-
-            // 2.获取入账订单集合
-            List<OrderPayMethodInfoBean> exportConsume = adminOrderService.exportCandRBill(billExportReqVo, "consume");
-            // 获取出账订单集合
-            List<OrderPayMethodInfoBean> exportRefund = adminOrderService.exportCandRBill(billExportReqVo, "refund");
+            // 2.获取交易订单集合
+            Map<String, List<OrderPayMethodInfoBean>> exportBill = adminOrderService.exportCandRBill(billExportReqVo);
+            List<OrderPayMethodInfoBean> exportConsume = exportBill.get("consume");
+            List<OrderPayMethodInfoBean> exportRefund = exportBill.get("refund");
 
             if (CollectionUtils.isEmpty(exportConsume) && CollectionUtils.isEmpty(exportRefund)) {
                 throw new Exception("未找出有效的导出数据!");
             }
-
-            /**
-             // 3. 将要导出的ExportOrdersVo以主订单维度形成map key:tradeno
-             Map<String, List<ExportOrdersVo>> exportOrdersVoMapIncome = null;
-             Map<String, List<ExportOrdersVo>> exportOrdersVoMapOut = null;
-
-             // 3.1 处理入账
-             if (CollectionUtils.isNotEmpty(exportOrdersVoListIncome)) {
-             exportOrdersVoMapIncome = convertToExportOrdersVoMap(exportOrdersVoListIncome);
-             }
-             // 3.2 处理出账
-             if (CollectionUtils.isNotEmpty(exportOrdersVoListOut)) {
-             exportOrdersVoMapOut = convertToExportOrdersVoMap(exportOrdersVoListOut);
-             }
-
-             // 4.开始组装excel
-             // 创建HSSFWorkbook对象
-             workbook = new HSSFWorkbook();
-
-             // 4.1 组装入账
-             if (exportOrdersVoMapIncome != null) {
-             // 创建HSSFSheet对象
-             HSSFSheet sheetIncome = workbook.createSheet("对账单");
-
-             // 组装title
-             createTitle(sheetIncome);
-
-             // 组装业务数据
-             createContent(sheetIncome, exportOrdersVoMapIncome);
-             }
-
-             // 4.2 组装出账
-             if (exportOrdersVoMapOut != null) {
-             // 创建HSSFSheet对象
-             HSSFSheet sheetOut = workbook.createSheet("出账");
-
-             // 组装title
-             createTitle(sheetOut);
-
-             // 组装业务数据
-             createContent(sheetOut, exportOrdersVoMapOut);
-             } **/
-
-            // 3. 合并导出的订单集合
-//            List<ExportOrdersVo> mergedExportOrdersVoList = new ArrayList<>();
-//            if (exportOrdersVoListIncome != null) {
-//                mergedExportOrdersVoList.addAll(exportOrdersVoListIncome);
-//            }
-//            if (exportOrdersVoListOut != null) {
-//                mergedExportOrdersVoList.addAll(exportOrdersVoListOut);
-//            }
-//
-//            // 转map
-//            Map<String, List<ExportOrdersVo>> exportMap = convertToExportOrdersVoMap(mergedExportOrdersVoList);
-
             // 4.开始组装excel
             // 创建HSSFWorkbook对象
             workbook = new HSSFWorkbook();
@@ -761,10 +699,9 @@ public class AdminOrderController {
                 createBillTitle(sheet2, billExportReqVo);
 
                 // 组装业务数据
-                createBillContent(sheet1, exportConsume, "consume");
-                createBillContent(sheet2, exportRefund, "refund");
+                createBillContent(sheet1, exportConsume);
+                createBillContent(sheet2, exportRefund);
             }
-
 
             // 5. 输出文件
             ///////// 文件名
@@ -795,9 +732,6 @@ public class AdminOrderController {
         } catch (Exception e) {
             log.error("导出交易流水单异常:{}", e.getMessage(), e);
 
-//            response.setHeader("content-type", "application/json;charset=UTF-8");
-//            response.setContentType("application/json");
-            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
             response.setStatus(400);
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json; charset=utf-8");
@@ -828,7 +762,7 @@ public class AdminOrderController {
         }
     }
 
-    private void createBillContent(HSSFSheet sheet, List<OrderPayMethodInfoBean> exportConsume, String tradeType) {
+    private void createBillContent(HSSFSheet sheet, List<OrderPayMethodInfoBean> exportConsume) {
         int currentRowNum = 1; // 行号
         for (int index = 0; index < exportConsume.size(); index++) {
             OrderPayMethodInfoBean payMethodInfoBean = exportConsume.get(index);
@@ -843,16 +777,11 @@ public class AdminOrderController {
             HSSFCell cell3 = currentRow.createCell(3); // 交易时间
             HSSFCell cell4 = currentRow.createCell(4); // 交易金额
             HSSFCell cell5 = currentRow.createCell(5); // 交易状态
+            HSSFCell cell6 = currentRow.createCell(6); //AppId
 
             cell0.setCellValue(payMethodInfoBean.getOrderNo()); // 主订单号
             cell1.setCellValue(payMethodInfoBean.getCardNo()); // 实际支付价格 单位:元
-             // 交易类型
-            if(tradeType.equals("consume")){
-                cell2.setCellValue("已完成");
-            }else if(tradeType.equals("refund")){
-                cell2.setCellValue("已退款");
-            }
-
+            cell2.setCellValue(payMethodInfoBean.getTradeType());// 交易类型
             cell3.setCellValue(payMethodInfoBean.getTradeDate()); // 优惠券码
             cell4.setCellValue(new BigDecimal(payMethodInfoBean.getActPayFee()).divide(new BigDecimal(100)).setScale(2).toString()); // 券来源
             Integer status = payMethodInfoBean.getStatus();
@@ -865,10 +794,11 @@ public class AdminOrderController {
             }else if(status == 3){
                 cell5.setCellValue("超时");
             }
+            cell6.setCellValue(payMethodInfoBean.getAppId());
 
             if(payMethodInfoBean.getPayType().equals("balance")){
-                HSSFCell cell6 = currentRow.createCell(6); // 交易状态
-                cell6.setCellValue(payMethodInfoBean.getPayer());
+                HSSFCell cell7 = currentRow.createCell(7); // 交易状态
+                cell7.setCellValue(payMethodInfoBean.getPayer());
             }
             // 状态
             currentRowNum ++;
@@ -883,29 +813,26 @@ public class AdminOrderController {
         titleCell0.setCellValue("支付单号"); // 支付单号
 
         HSSFCell titleCell1 = titleRow.createCell(1);
-        if(billExportReqVo.getPayType().equals("balance")){
-            titleCell1.setCellValue("openID"); // 卡号
-        }else if(billExportReqVo.getPayType().equals("card")){
-            titleCell1.setCellValue("惠民优选卡号"); // 卡号
-        }else if(billExportReqVo.getPayType().equals("woa")){
-            titleCell1.setCellValue("联机账户卡号"); // 卡号
-        }
+        titleCell1.setCellValue("openID");
 
         HSSFCell titleCell2 = titleRow.createCell(2);
         titleCell2.setCellValue("交易类型"); // 交易类型
 
         HSSFCell titleCell3 = titleRow.createCell(3);
-        titleCell3.setCellValue("交易时间"); // 主订单
+        titleCell3.setCellValue("交易时间"); // 交易时间
 
         HSSFCell titleCell4 = titleRow.createCell(4);
-        titleCell4.setCellValue("交易金额"); // 主订单
+        titleCell4.setCellValue("交易金额"); // 交易金额
 
         HSSFCell titleCell5 = titleRow.createCell(5);
-        titleCell5.setCellValue("交易状态"); // 主订单
+        titleCell5.setCellValue("交易状态"); // 交易状态
+
+        HSSFCell titleCell6 = titleRow.createCell(6);
+        titleCell6.setCellValue("运营平台"); // 交易状态
 
         if(billExportReqVo.getPayType().equals("balance")){
-            HSSFCell titleCell6 = titleRow.createCell(6);
-            titleCell6.setCellValue("手机号"); // 主订单
+            HSSFCell titleCell7 = titleRow.createCell(7);
+            titleCell7.setCellValue("手机号"); // 主订单
         }
     }
 
@@ -1439,6 +1366,12 @@ public class AdminOrderController {
 
         HSSFCell titleCell27 = titleRow.createCell(27);
         titleCell27.setCellValue("收件人手机号");
+
+        HSSFCell titleCell28 = titleRow.createCell(28);
+        titleCell28.setCellValue("物流单号");
+
+        HSSFCell titleCell29 = titleRow.createCell(29);
+        titleCell29.setCellValue("运营平台");
     }
     /**
      * 组装业务数据
@@ -1652,6 +1585,12 @@ public class AdminOrderController {
                 // 收件人手机号
                 HSSFCell cell27 = currentRow.createCell(27);
                 cell27.setCellValue(exportOrdersVo.getMobile());
+                // 物流单号
+                HSSFCell cell28 = currentRow.createCell(28);
+                cell28.setCellValue(exportOrdersVo.getLogisticsId());
+
+                HSSFCell cell29 = currentRow.createCell(29);
+                cell29.setCellValue(exportOrdersVo.getAppId());
 
                 //
                 currentRowNum++;
@@ -1679,7 +1618,6 @@ public class AdminOrderController {
             }
             _exportOrdersVoList.add(exportOrdersVo);
         }
-
         return exprotOrdersVoMap;
     }
 
@@ -1819,7 +1757,13 @@ public class AdminOrderController {
         titleCell38.setCellValue("收件人手机号");
 
         HSSFCell titleCell39 = titleRow.createCell(39);
-        titleCell39.setCellValue("备注信息");
+        titleCell39.setCellValue("物流单号");
+
+        HSSFCell titleCell40 = titleRow.createCell(40);
+        titleCell40.setCellValue("备注信息");
+
+        HSSFCell titleCell41 = titleRow.createCell(41);
+        titleCell41.setCellValue("运营平台");
     }
 
     /**
@@ -2067,9 +2011,15 @@ public class AdminOrderController {
                         // 收件人手机号
                         HSSFCell cell38 = currentRow.createCell(38);
                         cell38.setCellValue(ordersVo.getMobile());
-                        // 备注信息
+                        // 物流单号
                         HSSFCell cell39 = currentRow.createCell(39);
-                        cell39.setCellValue(ordersVo.getRemark());
+                        cell39.setCellValue(ordersVo.getLogisticsId());
+                        // 备注信息
+                        HSSFCell cell40 = currentRow.createCell(40);
+                        cell40.setCellValue(ordersVo.getRemark());
+                        // 运营平台
+                        HSSFCell cell41 = currentRow.createCell(41);
+                        cell41.setCellValue(ordersVo.getAppId());
 
                         //
                         currentRowNum++;

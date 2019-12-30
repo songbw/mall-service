@@ -159,4 +159,30 @@ public class AdminCouponController {
         result.getData().put("result", releaseCoupon);
         return result;
     }
+
+    @PostMapping("redemption")
+    public OperaResult redemption(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        CouponUseInfoBean couponUseInfoBean = useInfoService.redemption(bean);
+        if(couponUseInfoBean.getUserCouponCode().equals("2")){
+            result.setCode(40010);
+            result.setMsg("优惠券不存在");
+        }else if(couponUseInfoBean.getUserCouponCode().equals("3")){
+            result.setCode(40011);
+            result.setMsg("兑换优惠券已达上限");
+        }else if(couponUseInfoBean.getUserCouponCode().equals("4")){
+            result.setCode(40014);
+            result.setMsg("优惠券已失效");
+        }else if(couponUseInfoBean.getUserCouponCode().equals("5")){
+            result.setCode(40015);
+            result.setMsg("兑换失败");
+        }else if(couponUseInfoBean.getUserCouponCode().equals("6")){
+            result.setCode(40016);
+            result.setMsg("优惠券已下线");
+        }else{
+            result.getData().put("couponCode", couponUseInfoBean.getCouponCode());
+            result.getData().put("couponCollectNum", couponUseInfoBean.getCouponCollectNum());
+        }
+        return result;
+    }
+
 }

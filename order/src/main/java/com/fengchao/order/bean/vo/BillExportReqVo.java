@@ -31,4 +31,6 @@ public class BillExportReqVo {
 
     private Integer pageNum = 1;
 
+    private String appId;
+
 }
