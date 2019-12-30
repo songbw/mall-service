@@ -100,6 +100,25 @@ public class OrdersDao {
     }
 
     /**
+     * 根据id集合和appId查询
+     *
+     * @param idList
+     * @param appId
+     * @return
+     */
+    public List<Orders> selectOrdersListByIdListAndAppId(List<Integer> idList, String appId) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+
+        criteria.andIdIn(idList);
+        criteria.andAppIdEqualTo(appId);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
+
+    /**
      * 根据商户id， 分页查询已支付的主订单列表
      *
      * @param merchantId

@@ -2,9 +2,13 @@ package com.fengchao.order.service;
 
 import com.fengchao.order.bean.vo.BillExportReqVo;
 import com.fengchao.order.bean.vo.ExportOrdersVo;
+import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
+import com.fengchao.order.constants.ReceiptTypeEnum;
+import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -61,4 +65,16 @@ public interface AdminOrderService {
      * @throws Exception
      */
     Map<String, Object> exportDailyOrderStatistic() throws Exception;
+
+    /**
+     * 导出商品开票信息
+     *
+     * @param startTime
+     * @param endTime
+     * @param appId
+     * @param receiptTypeEnum 发票类型
+     * @return
+     * @throws Exception
+     */
+    List<ExportReceiptBillVo> exportReceiptBill(Date startTime, Date endTime, String appId, ReceiptTypeEnum receiptTypeEnum) throws Exception;
 }
