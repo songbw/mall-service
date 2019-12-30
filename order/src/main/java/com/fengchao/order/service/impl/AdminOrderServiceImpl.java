@@ -352,6 +352,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 }
                 bean.setTradeType("已退款");
             }
+        }else{
+            if (CollectionUtils.isNotEmpty(payMethodInfoBeans)) {
+                payMethodInfoBeans.stream().forEach(e -> e.setTradeType("已完成"));
+            }
+            if (CollectionUtils.isNotEmpty(refundMethodInfoBeans)) {
+                refundMethodInfoBeans.stream().forEach(e -> e.setTradeType("已退款"));
+            }
         }
         PayMethodInfoBeanMap.put("consume", payMethodInfoBeans);
         PayMethodInfoBeanMap.put("refund", refundMethodInfoBeans);
