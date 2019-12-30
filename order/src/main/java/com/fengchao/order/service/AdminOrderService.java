@@ -5,7 +5,6 @@ import com.fengchao.order.bean.vo.ExportOrdersVo;
 import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.bean.vo.OrderExportReqVo;
 import com.fengchao.order.constants.ReceiptTypeEnum;
-import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 
 import java.util.Date;

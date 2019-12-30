@@ -342,16 +342,20 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             Map<String, OrderPayMethodInfoBean> parInfoMap = new HashMap<>();
             for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
                 Orders orders = ordersMap.get(bean.getOrderNo());
-                bean.setCardNo(orders.getOpenId());
+                if(orders != null){
+                    bean.setCardNo(orders.getOpenId());
+                    bean.setAppId(platform.getName());
+                }
                 bean.setTradeType("已完成");
-                bean.setAppId(platform.getName());
                 parInfoMap.put(bean.getOutTradeNo(), bean);
             }
 
             for (OrderPayMethodInfoBean bean : refundMethodInfoBeans) {
                 OrderPayMethodInfoBean payMethodInfoBean = parInfoMap.get(bean.getOutTradeNo());
-                bean.setCardNo(payMethodInfoBean.getCardNo());
-                bean.setAppId(platform.getName());
+                if(payMethodInfoBean != null){
+                    bean.setCardNo(payMethodInfoBean.getCardNo());
+                    bean.setAppId(platform.getName());
+                }
                 bean.setTradeType("已退款");
             }
         }
