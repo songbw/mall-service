@@ -1,16 +1,7 @@
 hystrix:
   threadpool:
     default:
-      coreSize: 50 ##并发执行的最大线程数，默认10
+      coreSize: 50 # 并发执行的最大线程数，默认10
       maximumSize: 200
-      maxQueueSize: 200 ##BlockingQueue的最大队列数
-      queueSizeRejectionThreshold: 1000 ##即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
-      execution:
-        timeout:
-          enabled: true
-        isolation:
-          strategy: THREAD
-          semaphore:
-            maxConcurrentRequests: 1000
-          thread:
-            timeoutInMilliseconds: 10000
+      maxQueueSize: 200 # BlockingQueue的最大队列数
+      queueSizeRejectionThreshold: 1000 # 即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
