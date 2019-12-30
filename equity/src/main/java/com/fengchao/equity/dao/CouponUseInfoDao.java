@@ -1,8 +1,11 @@
 package com.fengchao.equity.dao;
 
+import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoExample;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,5 +44,19 @@ public class CouponUseInfoDao {
 
     public CouponUseInfo findBycouponUserId(int id) {
         return couponUseInfoMapper.selectByPrimaryKey(id);
+    }
+
+    public PageInfo<CouponUseInfo> findUnCollectCoupon(CouponUseInfoBean bean) {
+        CouponUseInfoExample couponUseInfoExample = new CouponUseInfoExample();
+
+        CouponUseInfoExample.Criteria criteria = couponUseInfoExample.createCriteria();
+        criteria.andCouponIdEqualTo(bean.getCouponId());
+        criteria.andStatusEqualTo(1);
+        criteria.andUserOpenIdIsNull();
+
+        PageHelper.startPage(bean.getOffset(), bean.getLimit());
+        List<CouponUseInfo> couponUseInfoList = couponUseInfoMapper.selectByExample(couponUseInfoExample);
+
+        return new PageInfo<>(couponUseInfoList);
     }
 }
