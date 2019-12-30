@@ -79,7 +79,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
 
             // 3. 合并上2步的信息
             Map<String, ExportReceiptBillVo> exportReceiptBillVoMap = new HashMap<>(); // 合并后的结果
-            for (String mpu : inComeExportReceiptBillVoMap.keySet()) {
+            for (String mpu : inComeExportReceiptBillVoMap.keySet()) { // 遍历入账的数据
                 ExportReceiptBillVo exportReceiptBillVo = new ExportReceiptBillVo(); //
 
                 ExportReceiptBillVo incomeExportReceiptBillVo = inComeExportReceiptBillVoMap.get(mpu);
@@ -106,7 +106,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
 
                     ExportReceiptBillVo _erbiv = outExportReceiptBillVoMap.get(mpu);
                     exportReceiptBillVo.setTotalPrice(0 - _erbiv.getTotalPrice());
-                    exportReceiptBillVo.setTotalPrice(0 - _erbiv.getCount());
+                    exportReceiptBillVo.setCount(0 - _erbiv.getCount());
 
                     exportReceiptBillVoMap.put(mpu, exportReceiptBillVo);
                 }
@@ -143,8 +143,22 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                     _exportReceiptBillVo.setUnit(productInfoBean.getSaleunit()); // 销售单位
 
                     // !!含税单价 单位分
-                    int unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
-                            .divide(new BigDecimal(_exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                    int unitPrice = 0;
+                    if (_exportReceiptBillVo.getCount() == 0) {
+                        log.warn("导出商品开票信息 出账和入账后的商品个数为0, mpu:{}, 抵消后的金额是:{}",
+                                _exportReceiptBillVo.getMpu(), _exportReceiptBillVo.getTotalPrice());
+                        AlarmUtil.alarmAsync("导出商品开票信息",
+                                "出账和入账后的商品个数为0, mpu:" + _exportReceiptBillVo.getMpu() + " 抵消后的金额是:" + _exportReceiptBillVo.getTotalPrice());
+                    } else if (_exportReceiptBillVo.getCount() > 0) {
+                        unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
+                                .divide(new BigDecimal(_exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                    } else if (_exportReceiptBillVo.getCount() < 0) {
+                        log.warn("导出商品开票信息 出账和入账后的商品个数为:{}, mpu:{}, 抵消后的金额是:{}",
+                                _exportReceiptBillVo.getCount(), _exportReceiptBillVo.getMpu(), _exportReceiptBillVo.getTotalPrice());
+
+                        unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
+                                .divide(new BigDecimal(0 - _exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                    }
                     _exportReceiptBillVo.setUnitPrice(unitPrice); // 含税单价 单位分
 
                     // 税率
@@ -201,7 +215,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
             List<String> orderDetailNoList = workOrderList.stream().map(w -> w.getOrderId()).collect(Collectors.toList());
             List<OrderDetail> orderDetailList = orderDetailDao.selectOrderDetailListBySubOrderIds(orderDetailNoList);
 
-            log.info("导出商品开票信息 获取退款子订单个数:{}", orderDetailList.size());
+            log.info("导出商品开票信息 获取所有退款子订单个数:{}", orderDetailList.size());
 
             // x. 转map key: subOrderId, value: OrderDetail
             Map<String, OrderDetail> orderDetailMap =
@@ -228,12 +242,28 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 //  }
                 //]
                 String refundInfoJson = workOrder.getComments();
-                Map<String, Object> refundInfoMap = (Map) JSONObject.parse(refundInfoJson);
+                if (StringUtils.isBlank(refundInfoJson)) {
+                    log.warn("导出商品开票信息 退款信息内容为空tradeNo:{}", workOrder.getTradeNo());
+                    AlarmUtil.alarmAsync("导出商品开票信息", "退款信息内容为空tradeNo:" + workOrder.getTradeNo());
+                    continue;
+                }
+                List<Map<String, Object>> refundInfoMapList = (List) JSONObject.parse(refundInfoJson);
+                if (CollectionUtils.isEmpty(refundInfoMapList)) {
+                    log.warn("导出商品开票信息 退款信息为空tradeNo:{}", workOrder.getTradeNo());
+                    AlarmUtil.alarmAsync("导出商品开票信息", "退款信息为空tradeNo:" + workOrder.getTradeNo());
+                    continue;
+                }
 
                 // 获取指定退款方式下的退款金额
-                Integer refundAmount =calcRefundAmount(receiptTypeEnum, refundInfoMap);
+                Integer refundAmount =calcRefundAmount(receiptTypeEnum, refundInfoMapList);
                 if (refundAmount >= 0) { // 说明该退款信息中 含有指定方式下的退款金额
                     OrderDetail _orderDetail = orderDetailMap.get(workOrder.getOrderId());
+                    if (_orderDetail == null) {
+                        log.warn("导出商品开票信息 从退款信息中没有获取到订单详情记录,surOrderId:{}", workOrder.getOrderId());
+                        AlarmUtil.alarmAsync("导出商品开票信息" , "从退款信息中没有获取到订单详情记录,surOrderId:" + workOrder.getOrderId());
+                        continue;
+                    }
+
                     // mpu
                     String mpu = _orderDetail.getMpu();
 
@@ -258,7 +288,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
 
             return exportReceiptBillVoMap;
         } catch (Exception e) {
-            log.error("");
+            log.error("导出商品开票信息 处理退款记录异常:{}", e.getMessage(), e);
             throw e;
         }
     }
@@ -410,6 +440,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                         continue;
                     }
 
+                    // 开始分配该用户单下的各个mpu分得的payAmount
                     BigDecimal multiplier = new BigDecimal(payAmount).divide(new BigDecimal(totalAmount), 2, BigDecimal.ROUND_HALF_UP);
                     // 遍历最终产生的数据结构:Map<String, paymentInfoByMpuDimension> 其实就是用户单下所有子订单 以mpu为维度的map
                     int index = 0;
@@ -600,15 +631,15 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * 根据指定的开票类型，获取某个sku在该'开票类型'下的退款金额
      *
      * @param receiptTypeEnum
-     * @param refundInfoMap
+     * @param refundInfoList
      * @return 单位分
      */
-    private Integer calcRefundAmount(ReceiptTypeEnum receiptTypeEnum, Map<String, Object> refundInfoMap) {
+    private Integer calcRefundAmount(ReceiptTypeEnum receiptTypeEnum, List<Map<String, Object>> refundInfoList) {
         switch (receiptTypeEnum) {
             case BALANCE_CARD_WOA:
-                return calcBanlanceCardWoaRefundAmount(refundInfoMap);
+                return calcBanlanceCardWoaRefundAmount(refundInfoList);
             case BANK:
-                return calcBankRefundAmount(refundInfoMap);
+                return calcBankRefundAmount(refundInfoList);
 
             default:
                 log.warn("获取用户单该在 该'开票类型' 下的支付方式的支付总额 未找到有效的发票类型!");
@@ -619,7 +650,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
     /**
      * 判断其退款方式是否是 "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
      *
-     * @param refundInfoMap 某个sku的退款详情
+     * @param refundInfoList 某个sku的退款详情
      *
      * [
      *   {
@@ -642,13 +673,18 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * -1(<0) : 说明该退款不在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种退款方式中
      * 其他值(>=0) : 返回该退款在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）
      */
-    private Integer calcBanlanceCardWoaRefundAmount(Map<String, Object> refundInfoMap) {
+    private Integer calcBanlanceCardWoaRefundAmount(List<Map<String, Object>> refundInfoList) {
         Integer total = -1; // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户  支付的总额 单位 分
 
         // 遍历支付方式
-        for (String key : refundInfoMap.keySet()) {
-            Map<String, Object> itemMap = (Map) refundInfoMap.get(key);
-            String payType = itemMap.get("payType") == null ? "" : (String) itemMap.get("payType");
+        for (Map<String, Object> refundInfo : refundInfoList) {
+            String payType = refundInfo.get("payType") == null ? "" : (String) refundInfo.get("payType");
+            int payStatus = refundInfo.get("status") == null ? -1 : (Integer) refundInfo.get("status");
+            if (payStatus != 1) { // 如果退款没有成功
+                log.warn("判断其退款方式是否是 balance card woa 退款详情中含有退款失败的记录outRefundNo:", refundInfo.get("outRefundNo"));
+                AlarmUtil.alarmAsync("导出商品开票信息-判断其退款方式", "判断其退款方式是否是 balance card woa 退款详情中含有退款失败的记录outRefundNo:" + refundInfo.get("outRefundNo"));
+                continue;
+            }
 
             if (PaymentTypeEnum.BALANCE.getName().equals(payType)
                     || PaymentTypeEnum.CARD.getName().equals(payType)
@@ -658,7 +694,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 }
 
                 // 退款金额
-                String refudnAmount = (String) itemMap.get("refundFee");
+                String refudnAmount = (String) refundInfo.get("refundFee");
                 if (StringUtils.isNotBlank(refudnAmount)) { // 单位分
                     total = total + Integer.valueOf(refudnAmount);
                 } else {
@@ -673,7 +709,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
     /**
      * 判断其退款方式是否是 "bank" 中投快捷支付
      *
-     * @param refundInfoMap 某个sku下的退款方式的集合;
+     * @param refundInfoList 某个sku下的退款方式的集合;
      *
      * [
      *   {
@@ -695,13 +731,18 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * -1(<0) : 说明该退款方式不在 ("bank" 中投快捷支付)
      * 其他值(>=0) : 返回该退款在（"bank" 中投快捷支付）
      */
-    private Integer calcBankRefundAmount(Map<String, Object> refundInfoMap) {
+    private Integer calcBankRefundAmount(List<Map<String, Object>> refundInfoList) {
         Integer total = -1; // 单位分
 
         // 遍历支付方式
-        for (String key : refundInfoMap.keySet()) {
-            Map<String, Object> itemMap = (Map) refundInfoMap.get(key);
-            String payType = itemMap.get("payType") == null ? "" : (String) itemMap.get("payType");
+        for (Map<String, Object> refundInfo  : refundInfoList) {
+            String payType = refundInfo.get("payType") == null ? "" : (String) refundInfo.get("payType");
+            int payStatus = refundInfo.get("status") == null ? -1 : (Integer) refundInfo.get("status");
+            if (payStatus != 1) { // 如果退款没有成功
+                log.warn("判断其退款方式是否是 balance card woa 退款详情中含有退款失败的记录outRefundNo:", refundInfo.get("outRefundNo"));
+                AlarmUtil.alarmAsync("导出商品开票信息-判断其退款方式", "判断其退款方式是否是 bank 退款详情中含有退款失败的记录outRefundNo:" + refundInfo.get("outRefundNo"));
+                continue;
+            }
 
             if (PaymentTypeEnum.BANK.getName().equals(payType)) {
                 if (total < 0) {
@@ -709,7 +750,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 }
 
                 // 退款金额
-                String refudnAmount = (String) itemMap.get("refundFee");
+                String refudnAmount = (String) refundInfo.get("refundFee");
                 if (StringUtils.isNotBlank(refudnAmount)) { // 单位分
                     total = total + Integer.valueOf(refudnAmount);
                 } else {
