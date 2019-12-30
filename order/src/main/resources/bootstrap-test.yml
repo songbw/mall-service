@@ -21,7 +21,7 @@ feign:
       default:
         coreSize: 100 # 并发执行的最大线程数，默认10
         maxQueueSize: 100 # BlockingQueue的最大队列数
-        queueSizeRejectionThreshold: 1000 # 即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+        queueSizeRejectionThreshold: 2000 # 即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
   client:
     config:
       default:
