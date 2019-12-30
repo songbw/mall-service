@@ -1,6 +1,30 @@
-hystrix:
-  threadpool:
-    default:
-      coreSize: 100 # 并发执行的最大线程数，默认10
-      maxQueueSize: 100 # BlockingQueue的最大队列数
-      queueSizeRejectionThreshold: 1000 # 即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+#hystrix:
+# threadpool:
+#   default:
+#     coreSize: 100 # 并发执行的最大线程数，默认10
+#     maxQueueSize: 100 # BlockingQueue的最大队列数
+#     queueSizeRejectionThreshold: 1000 # 即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+
+
+
+feign:
+  compression:
+    response:
+      enabled: true
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+  hystrix:
+    enabled: true
+    threadpool:
+      default:
+        coreSize: 100 # 并发执行的最大线程数，默认10
+        maxQueueSize: 100 # BlockingQueue的最大队列数
+        queueSizeRejectionThreshold: 1000 # 即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
