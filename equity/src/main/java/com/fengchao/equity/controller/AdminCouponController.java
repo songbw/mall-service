@@ -185,4 +185,9 @@ public class AdminCouponController {
         return result;
     }
 
+    @GetMapping("unCollect")
+    public OperaResult findUnCollect(CouponUseInfoBean bean, OperaResult result){
+        result.getData().put("result", useInfoService.findUnCollect(bean));
+        return result;
+    }
 }

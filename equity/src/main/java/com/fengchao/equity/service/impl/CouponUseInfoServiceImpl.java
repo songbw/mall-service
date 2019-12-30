@@ -3,6 +3,8 @@ package com.fengchao.equity.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.CouponDao;
 import com.fengchao.equity.dao.CouponUseInfoDao;
 import com.fengchao.equity.exception.EquityException;
@@ -13,6 +15,7 @@ import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -606,6 +609,18 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
         useInfo.setId(couponUserId);
         return mapper.updateByPrimaryKeySelective(useInfo);
+    }
+
+    @Override
+    public PageableData<CouponUseInfo> findUnCollect(CouponUseInfoBean bean) {
+        PageableData<CouponUseInfo> pageableData = new PageableData<>();
+        PageInfo<CouponUseInfo> unCollectCoupon = couponUseInfoDao.findUnCollectCoupon(bean);
+        // 2.处理结果
+        PageVo pageVo = ConvertUtil.convertToPageVo(unCollectCoupon);
+        List<CouponUseInfo> groupInfoList = unCollectCoupon.getList();
+        pageableData.setList(groupInfoList);
+        pageableData.setPageInfo(pageVo);
+        return pageableData;
     }
 
     // ========================= private =====================================

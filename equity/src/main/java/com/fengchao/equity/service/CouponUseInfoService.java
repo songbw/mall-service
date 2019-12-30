@@ -1,6 +1,7 @@
 package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoX;
@@ -48,4 +49,6 @@ public interface CouponUseInfoService {
     CouponUseInfo findBycouponUserId(int couponUserId);
 
     int triggerRelease(int couponUserId);
+
+    PageableData<CouponUseInfo> findUnCollect(CouponUseInfoBean bean);
 }
