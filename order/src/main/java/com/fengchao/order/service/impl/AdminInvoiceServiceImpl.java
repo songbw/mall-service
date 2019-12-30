@@ -85,6 +85,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 ExportReceiptBillVo incomeExportReceiptBillVo = inComeExportReceiptBillVoMap.get(mpu);
                 ExportReceiptBillVo outExportReceiptBillVo = outExportReceiptBillVoMap.get(mpu);
 
+                exportReceiptBillVo.setMpu(mpu);
                 if (outExportReceiptBillVo != null) { // 如果存在退款信息
                     exportReceiptBillVo.setTotalPrice(incomeExportReceiptBillVo.getTotalPrice() - outExportReceiptBillVo.getTotalPrice());
                     exportReceiptBillVo.setCount(incomeExportReceiptBillVo.getCount() - incomeExportReceiptBillVo.getCount());
@@ -108,6 +109,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                     exportReceiptBillVo.setTotalPrice(0 - _erbiv.getTotalPrice());
                     exportReceiptBillVo.setCount(0 - _erbiv.getCount());
 
+                    exportReceiptBillVo.setMpu(mpu);
                     exportReceiptBillVoMap.put(mpu, exportReceiptBillVo);
                 }
             }
