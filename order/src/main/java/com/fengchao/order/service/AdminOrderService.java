@@ -65,15 +65,4 @@ public interface AdminOrderService {
      */
     Map<String, Object> exportDailyOrderStatistic() throws Exception;
 
-    /**
-     * 导出商品开票信息
-     *
-     * @param startTime
-     * @param endTime
-     * @param appId
-     * @param receiptTypeEnum 发票类型
-     * @return
-     * @throws Exception
-     */
-    List<ExportReceiptBillVo> exportReceiptBill(Date startTime, Date endTime, String appId, ReceiptTypeEnum receiptTypeEnum) throws Exception;
 }

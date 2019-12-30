@@ -1018,7 +1018,7 @@ public class OrderServiceImpl implements OrderService {
         logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库入参 startDateTime:{}, endDateTime:{}", startDateTime, endDateTime);
         Date startTime = DateUtil.parseDateTime(startDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         Date endTime = DateUtil.parseDateTime(endDateTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-        List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentTime(startTime, endTime);
+        List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentTime(startTime, endTime, null);
         logger.info("按照时间范围查询已支付的子订单列表 查询已支付的主订单集合 数据库返回List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
         // 转map key : ordersId, value: Orders
