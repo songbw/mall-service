@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 public class AlarmUtil {
 
     private static ExecutorService alarmExecutor = ThreadPoolManager
-            .createThreadPoolExecutor("orderAlarmTaskPool", 20, 50, 300);
+            .createThreadPoolExecutor("OrderAlarmTaskPool", 20, 50, 300);
 
 
 

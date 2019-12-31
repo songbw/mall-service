@@ -3,11 +3,13 @@ package com.fengchao.order.utils;
 import com.github.ltsopensource.core.commons.utils.DateUtils;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JobClientUtils {
 
     private static String active = System.getenv("spring.profiles.active") ;
@@ -17,15 +19,26 @@ public class JobClientUtils {
      * @param id
      */
     public static void orderCancelTrigger(JobClient jobClient, Integer id) {
-        Job job = new Job();
-        job.setTaskId("order_cancel_trigger_" + id);
-        job.setParam("type", "orderCancel");
-        job.setParam("orderId", id + "");
-        job.setTaskTrackerNodeGroup("order_cancel_trade_TaskTracker_" + active);
-        job.setNeedFeedback(true);
-        job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
-        job.setTriggerTime(DateUtils.addMinute(new Date(), 30).getTime());   // 30 分钟之后执行
-        jobClient.submitJob(job);
+        try {
+            Job job = new Job();
+            job.setTaskId("order_cancel_trigger_" + id);
+            job.setParam("type", "orderCancel");
+            job.setParam("orderId", id + "");
+            job.setTaskTrackerNodeGroup("order_cancel_trade_TaskTracker_" + active);
+            job.setNeedFeedback(true);
+            job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
+            job.setTriggerTime(DateUtils.addMinute(new Date(), 30).getTime());   // 30 分钟之后执行
+
+            log.info("lts任务 提交30分钟取消订单任务:{}", JSONUtil.toJsonString(job));
+
+            // 提交
+            jobClient.submitJob(job);
+        } catch (Exception e) {
+            log.error("lts任务 提交30分钟取消订单任务异常:{}", e.getMessage(), e);
+            AlarmUtil.alarmAsync("lts-提交30分钟取消订单任务异常", e.getMessage());
+
+            throw e;
+        }
     }
 
     /**
