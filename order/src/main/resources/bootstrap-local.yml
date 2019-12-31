@@ -7,3 +7,23 @@ rpc:
         #url: http://localhost:8007
       product:
         #url: http://localhost:8002
+
+lts:
+  jobclient:
+    cluster-name: test_cluster
+    registry-address: zookeeper://peer2:2181
+    node-group: orderjobclientgat_${spring.profiles.active}
+    use-retry-client: true
+    configs:
+      job:
+        fail:
+          store: mapdb
+
+  tasktracker:
+    cluster-name: test_cluster
+    registry-address: zookeeper://peer2:2181
+    node-group: ordertasktrackergat_${spring.profiles.active}
+    configs:
+      job:
+        fail:
+          store: mapdb

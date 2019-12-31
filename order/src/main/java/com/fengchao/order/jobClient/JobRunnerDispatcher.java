@@ -1,5 +1,7 @@
 package com.fengchao.order.jobClient;
 
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.TraceContext;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.core.logger.Logger;
@@ -8,7 +10,9 @@ import com.github.ltsopensource.spring.boot.annotation.JobRunner4TaskTracker;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
+import org.slf4j.MDC;
 
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,6 +33,13 @@ public class JobRunnerDispatcher implements JobRunner {
 
     @Override
     public Result run(JobContext jobContext) throws Throwable {
+        // sleuth 自定义trace begin TODO : 目前MDC不设置会导致当前线程不打印traceid
+        CurrentTraceContext currentTraceContext = CurrentTraceContext.Default.create();
+        currentTraceContext.newScope(TraceContext.newBuilder().traceId(new Date().getTime()).spanId(1L).build());
+        String traceId = currentTraceContext.get().traceIdString();
+        MDC.put("X-B3-TraceId", traceId);
+        // sleuth 自定义trace end
+
         Job job = jobContext.getJob();
         String type = job.getParam("type");
         if (type != null && !"".equals(type)) {
