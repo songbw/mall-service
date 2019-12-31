@@ -121,6 +121,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
             // x. 根据mpu查询一下商品信息
             List<ProductInfoBean> productInfoBeanList = new ArrayList<>();
             List<String> mpuList = new ArrayList<>(exportReceiptBillVoMap.keySet());
+            log.info("导出商品开票信息 需要查询商品信息的个数是:{}", mpuList.size());
             // 分区
             List<List<String>> mpuPartition = Lists.partition(mpuList, LIST_PARTITION_SIZE_50);
             for (List<String> _mpuList : mpuPartition) {
@@ -385,8 +386,9 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
             // 3. 根据payNo，查询支付信息
             // 获取payNo
             List<String> paymentNoList = payedOrdersList.stream().map(o -> o.getPaymentNo()).collect(Collectors.toList());
+            log.info("导出商品开票信息 需要查询用户单(支付单)的个数是:{}", paymentNoList.size());
             // 分区
-            List<List<String>> paymentNoListPartition = Lists.partition(paymentNoList, LIST_PARTITION_SIZE_200);
+            List<List<String>> paymentNoListPartition = Lists.partition(paymentNoList, LIST_PARTITION_SIZE_50);
 
             // 根据payNo集合 查询支付信息
             Map<String, List<OrderPayMethodInfoBean>> paymentMethodMap = new HashMap<>(); //
