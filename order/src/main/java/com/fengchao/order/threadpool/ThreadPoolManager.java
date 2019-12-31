@@ -1,6 +1,5 @@
 package com.fengchao.order.threadpool;
 
-import com.fengchao.commission.util.AlarmUtil;
 import com.fengchao.order.utils.AlarmUtil;
 import lombok.extern.slf4j.Slf4j;
 

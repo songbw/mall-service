@@ -1,14 +1,21 @@
 package com.fengchao.order.task;
 
-import com.fengchao.commission.util.FengchaoMailUtil;
+import com.fengchao.order.jobClient.BeanContext;
+import com.fengchao.order.rpc.BaseRpcService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 /**
  * @Author tom
  * @Date 19-9-29 上午11:44
  */
 @Slf4j
-public class AlarmTask implements Runnable {
+public class AlarmTask extends TraceableBaseTask {
+
+    /**
+     * 邮件接收人
+     */
+    private static String MAIL_ADDRESS = "tom.jing@weesharing.com";
 
     private String title;
 
@@ -20,22 +27,11 @@ public class AlarmTask implements Runnable {
     }
 
     @Override
-    public void run() {
-        try {
-            log.info("发送邮件告警 开始 title:{}, content:{}", title, content);
-
-            FengchaoMailUtil.send(title, content);
-
-            log.info("发送邮件告警 结束　title:{}, content:{}", title, content);
-        } catch (Exception e) {
-            log.info("发送邮件告警 异常:{}", e.getMessage(), e);
-        }
+    void execute() {
+        // 1. 发送邮件通知相关同学
+        BaseRpcService baseRpcService = BeanContext.getBean(BaseRpcService.class);
+        baseRpcService.sendMail(MAIL_ADDRESS.split(","),
+                BeanContext.getProfile() + "-" + title,
+                content + " :: traceId=" + MDC.get("X-B3-TraceId"));
     }
-
-//    @Override
-//    public String toString() {
-//        String str = "统一代扣任务 商户单号:" + paymentReqBo.getMerchantNo() + ", step=" + paymentReqBo.getStep() +
-//                ", invoker=" + paymentReqBo.getInvoker() + ", retryTimes=" + paymentReqBo.getRetryTimes();
-//        return str;
-//    }
 }
