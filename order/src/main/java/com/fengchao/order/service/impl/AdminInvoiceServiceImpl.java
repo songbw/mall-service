@@ -149,8 +149,8 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                     if (_exportReceiptBillVo.getCount() == 0) {
                         log.warn("导出商品开票信息 出账和入账后的商品个数为0, mpu:{}, 抵消后的金额是:{}",
                                 _exportReceiptBillVo.getMpu(), _exportReceiptBillVo.getTotalPrice());
-                        AlarmUtil.alarmAsync("导出商品开票信息",
-                                "出账和入账后的商品个数为0, mpu:" + _exportReceiptBillVo.getMpu() + " 抵消后的金额是:" + _exportReceiptBillVo.getTotalPrice());
+//                        AlarmUtil.alarmAsync("导出商品开票信息",
+//                                "出账和入账后的商品个数为0, mpu:" + _exportReceiptBillVo.getMpu() + " 抵消后的金额是:" + _exportReceiptBillVo.getTotalPrice());
                     } else if (_exportReceiptBillVo.getCount() > 0) {
                         unitPrice = new BigDecimal(_exportReceiptBillVo.getTotalPrice())
                                 .divide(new BigDecimal(_exportReceiptBillVo.getCount()), 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
