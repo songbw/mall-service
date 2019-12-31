@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 public class AdminInvoiceServiceImpl implements AdminInvoiceService {
 
     private static final Integer LIST_PARTITION_SIZE_200 = 200;
+    private static final Integer LIST_PARTITION_SIZE_50 = 50;
 
     private OrdersDao ordersDao;
 
@@ -121,8 +122,9 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
             List<ProductInfoBean> productInfoBeanList = new ArrayList<>();
             List<String> mpuList = new ArrayList<>(exportReceiptBillVoMap.keySet());
             // 分区
-            List<List<String>> mpuPartition = Lists.partition(mpuList, LIST_PARTITION_SIZE_200);
+            List<List<String>> mpuPartition = Lists.partition(mpuList, LIST_PARTITION_SIZE_50);
             for (List<String> _mpuList : mpuPartition) {
+                log.info("导出商品开票信息 查询商品信息rpc的入参:{}", JSONUtil.toJsonString(_mpuList));
                 List<ProductInfoBean> _productInfoBeanList = productRpcService.findProductListByMpus(_mpuList);
 
                 productInfoBeanList.addAll(_productInfoBeanList);
@@ -682,7 +684,8 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
         for (Map<String, Object> refundInfo : refundInfoList) {
             String payType = refundInfo.get("payType") == null ? "" : (String) refundInfo.get("payType");
             int payStatus = refundInfo.get("status") == null ? -1 : (Integer) refundInfo.get("status");
-            if (payStatus != 1) { // 如果退款没有成功
+
+            if (payStatus != 1 && payStatus != 3) { // 如果退款没有成功
                 log.warn("判断其退款方式是否是 balance card woa 退款详情中含有退款失败的记录outRefundNo:", refundInfo.get("outRefundNo"));
                 AlarmUtil.alarmAsync("导出商品开票信息-判断其退款方式", "判断其退款方式是否是 balance card woa 退款详情中含有退款失败的记录outRefundNo:" + refundInfo.get("outRefundNo"));
                 continue;
