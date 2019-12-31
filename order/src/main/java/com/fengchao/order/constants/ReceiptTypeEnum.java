@@ -13,8 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 public enum ReceiptTypeEnum {
 
     UNKNOWN(0, "UNKNOWN", "未知"),
-    BALANCE_CARD_WOA(1, "BALANCE_CARD_WOA", "balance card woa 三种支付方式的发票"), // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
-    BANK(2, "BANK", "中投快捷支付的发票");
+    BALANCE(1, "BALANCE", "balance 支付方式的发票"), // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
+    CARD(2, "CARD", "card 支付方式的发票"),
+    WOA(3, "WOA", "woa 支付方式的发票"),
+    BANK(4, "BANK", "中投快捷支付的发票");
 
 
     private Integer code;
@@ -47,8 +49,12 @@ public enum ReceiptTypeEnum {
     public static ReceiptTypeEnum getReceiptTypeEnum(int code) {
         switch (code) {
             case 1:
-                return BALANCE_CARD_WOA;
+                return BALANCE;
             case 2:
+                return CARD;
+            case 3:
+                return WOA;
+            case 4:
                 return BANK;
             default:
                 log.warn("未获取到有效的ReceiptTypeEnum枚举值 code:{}", code);
