@@ -77,7 +77,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
 //            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
 //                throw new Exception("参数不合法, 商户id为空");
@@ -205,7 +205,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
 
             // 1.校验参数
             if (orderExportReqVo.getPayStartDate() == null) {
@@ -364,7 +364,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
 //            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
 //                throw new Exception("参数不合法, 商户id为空");
@@ -492,7 +492,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
 
             // 1.校验参数
             if (orderExportReqVo.getPayStartDate() == null) {
@@ -664,7 +664,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出交易流水单 入参:{}", JSONUtil.toJsonString(billExportReqVo));
+            log.info("导出交易流水单 入参:{}", JSONUtil.toJsonString(billExportReqVo));
 
             // 1.校验参数
             if (billExportReqVo.getStartDate() == null) {
@@ -852,7 +852,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("每日统计 入参: 无");
+            log.info("每日统计 入参: 无");
 
             // 1.根据条件获统计数据
             Map<String, Object> statisticMap = adminOrderService.exportDailyOrderStatistic();
@@ -1087,7 +1087,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}", startTime, endTime, appId);
+            log.info("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}", startTime, endTime, appId);
 
             // 1. 参数校验
             String _stime = startTime + " 00:00:00";
