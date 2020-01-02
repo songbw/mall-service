@@ -188,7 +188,7 @@ public class CouponController {
     @GetMapping("giftCoupon")
     public OperaResult giftCoupon(String openId, String iAppId, OperaResult result){
         List<Object> beans = couponService.giftCoupon(openId, iAppId);
-        if(beans.get(0).equals(2)){
+        if(!beans.isEmpty() && beans.get(0).equals(2)){
             result.setCode(500);
             result.setMsg("该用户不存在");
         }else{
