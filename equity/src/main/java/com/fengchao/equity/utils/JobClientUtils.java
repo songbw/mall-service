@@ -9,8 +9,6 @@ import java.util.Date;
 @Component
 public class JobClientUtils {
 
-    private static String active = System.getenv("spring.profiles.active") ;
-
     /**
      * 活动生效任务
      * @param id
@@ -20,7 +18,7 @@ public class JobClientUtils {
         job.setTaskId("promotion_effective_trigger_" + id);
         job.setParam("type", "promotionEffective");
         job.setParam("promotionId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + active);
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker");
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -36,7 +34,7 @@ public class JobClientUtils {
         job.setTaskId("promotion_end_trigger_" + id);
         job.setParam("type", "promotionEnd");
         job.setParam("promotionId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + active);
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker");
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -52,7 +50,7 @@ public class JobClientUtils {
         job.setTaskId("coupon_effective_trigger_" + id);
         job.setParam("type", "couponEffective");
         job.setParam("couponId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + active);
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker");
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -68,7 +66,7 @@ public class JobClientUtils {
         job.setTaskId("coupon_end_trigger_" + id);
         job.setParam("type", "couponEnd");
         job.setParam("couponId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + active);
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker");
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -84,7 +82,7 @@ public class JobClientUtils {
         job.setTaskId("coupon_invalid_trigger_" + id);
         job.setParam("type", "couponInvalid");
         job.setParam("couponId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + active);
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker");
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
