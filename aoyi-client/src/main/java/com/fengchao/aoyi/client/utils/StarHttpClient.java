@@ -86,7 +86,7 @@ public class StarHttpClient {
         WebTarget target = client.target(path).path(method);
         T bean = null;
         try {
-            bean = target.request(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED_TYPE),obj);
+            bean = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED_TYPE),obj);
         } catch (Exception e) {
             log.error("Star Client error : {}", e);
             throw new AoyiClientException();

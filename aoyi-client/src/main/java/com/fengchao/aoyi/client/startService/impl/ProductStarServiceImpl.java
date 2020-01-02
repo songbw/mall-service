@@ -42,30 +42,48 @@ public class ProductStarServiceImpl implements ProductStarService {
         if (!StringUtils.isEmpty(bean.getEndTime())) {
             params.put("createEndTime", bean.getEndTime()) ;
         }
-        OperaResponse response = new OperaResponse() ;
-        String res = StarHttpClient.post(params,String.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_SPU_LIST, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
-        log.info("同步商品获取商品SpuId列表, 返回结果：{}", res);
+        OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_SPU_LIST, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
+        log.info("同步商品获取商品SpuId列表, 返回结果：{}", JSONUtil.toJsonString(response));
         return response;
     }
 
     @Override
     public OperaResponse getSpuDetail(String spuIds) {
-        return null;
+        Map<String, String> params = new HashMap<>();
+        params.put("spuIds", spuIds);
+        OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_SPU_DETAIL, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
+        log.info("根据SPUID 查询SPU详情, 返回结果：{}", JSONUtil.toJsonString(response));
+        return response;
     }
 
     @Override
     public OperaResponse getSkuListDetailBySpuId(String spuId) {
-        return null;
+        Map<String, String> params = new HashMap<>();
+        params.put("spuId", spuId);
+        OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_SKU_DETAIL, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
+        log.info("根据SPUID 查询SKU列表, 返回结果：{}", JSONUtil.toJsonString(response));
+        return response;
     }
 
     @Override
     public OperaResponse findBrandList(QueryBean bean) {
-        return null;
+        Map<String, String> params = new HashMap<>();
+        params.put("pageIndex", bean.getPageNo() + "");
+        params.put("pageSize", bean.getPageSize() + "");
+        OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_BRAND, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
+        log.info("查询品牌列表, 返回结果：{}", JSONUtil.toJsonString(response));
+        return response;
     }
 
     @Override
     public OperaResponse findProdCategory(String categoryId) {
-        return null;
+        Map<String, String> params = new HashMap<>();
+        if (!StringUtils.isEmpty(categoryId)) {
+            params.put("categoryId", "1");
+        }
+        OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_CATEGORY, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
+        log.info("查询分类信息, 返回结果：{}", JSONUtil.toJsonString(response));
+        return response;
     }
 
     @Override
