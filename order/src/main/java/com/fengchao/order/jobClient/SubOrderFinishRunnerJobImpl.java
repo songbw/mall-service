@@ -25,13 +25,16 @@ public class SubOrderFinishRunnerJobImpl implements JobRunner {
             LOGGER.info("我要执行子订单完成操作：" + jobContext);
             String id = jobContext.getJob().getParam("orderId") ;
             OrderService orderService = BeanContext.getApplicationContext().getBean(OrderService.class);
-            int orderId = Integer.parseInt(id) ;
-            Order order = orderService.findById(orderId) ;
-            if (order != null && order.getStatus() == 0) {
-                orderService.finishOrderDetail(orderId) ;
-                // 会发送到 LTS (JobTracker上)
-                bizLogger.info("订单完成成功");
-            }
+            int orderDetailId = Integer.parseInt(id) ;
+//            Order order = orderService.findById(orderId) ;
+//            if (order != null && order.getStatus() == 0) {
+//                orderService.finishOrderDetail(orderId) ;
+//                // 会发送到 LTS (JobTracker上)
+//                bizLogger.info("订单完成成功");
+//            }
+            orderService.finishOrderDetail(orderDetailId) ;
+            // 会发送到 LTS (JobTracker上)
+            bizLogger.info("订单完成成功");
         } catch (Exception e) {
             LOGGER.info("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());

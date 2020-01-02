@@ -3,6 +3,7 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.vo.*;
 import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
+import com.fengchao.order.service.AdminInvoiceService;
 import com.fengchao.order.service.AdminOrderService;
 import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
@@ -31,9 +32,13 @@ public class AdminOrderController {
 
     private AdminOrderService adminOrderService;
 
+    private AdminInvoiceService adminInvoiceService;
+
     @Autowired
-    public AdminOrderController(AdminOrderService adminOrderService) {
+    public AdminOrderController(AdminOrderService adminOrderService,
+                                AdminInvoiceService adminInvoiceService) {
         this.adminOrderService = adminOrderService;
+        this.adminInvoiceService = adminInvoiceService;
     }
 
     /**
@@ -72,7 +77,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
 //            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
 //                throw new Exception("参数不合法, 商户id为空");
@@ -200,7 +205,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
 
             // 1.校验参数
             if (orderExportReqVo.getPayStartDate() == null) {
@@ -359,7 +364,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
             // 0.入参检验
 //            if (orderExportReqVo.getMerchantId() == null || orderExportReqVo.getMerchantId() <= 0) {
 //                throw new Exception("参数不合法, 商户id为空");
@@ -487,7 +492,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
+            log.info("导出订单对账单 入参:{}", JSONUtil.toJsonString(orderExportReqVo));
 
             // 1.校验参数
             if (orderExportReqVo.getPayStartDate() == null) {
@@ -659,7 +664,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出交易流水单 入参:{}", JSONUtil.toJsonString(billExportReqVo));
+            log.info("导出交易流水单 入参:{}", JSONUtil.toJsonString(billExportReqVo));
 
             // 1.校验参数
             if (billExportReqVo.getStartDate() == null) {
@@ -847,7 +852,7 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("每日统计 入参: 无");
+            log.info("每日统计 入参: 无");
 
             // 1.根据条件获统计数据
             Map<String, Object> statisticMap = adminOrderService.exportDailyOrderStatistic();
@@ -1067,12 +1072,13 @@ public class AdminOrderController {
      * @param receiptType
      *    1 : "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户 这三种支付方式的发票
      *    2 : bank 中投快捷支付的发票
+     *    3 :
      * @param appId
      * @param response
      * @throws Exception
      */
     @GetMapping(value = "/export/receiptBill")
-    public void exportReceiptBill(@RequestParam("startTime") String startTime,
+    public void exportInvoiceBill(@RequestParam("startTime") String startTime,
                                   @RequestParam("endTime") String endTime,
                                   @RequestParam("receiptType") Integer receiptType,
                                   @RequestParam(value = "appId", required = true) String appId,
@@ -1082,7 +1088,8 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.debug("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}", startTime, endTime, appId);
+            log.info("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}, receiptType:{}",
+                    startTime, endTime, appId, receiptType);
 
             // 1. 参数校验
             String _stime = startTime + " 00:00:00";
@@ -1091,9 +1098,9 @@ public class AdminOrderController {
             Date endDate = DateUtil.parseDateTime(_etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
             long diffDays = DateUtil.diffDays(_stime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, _etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            if (diffDays > 31) {
-                log.warn("导出商品开票信息 查询日期范围超过一个月");
-                throw new Exception("查询日期范围超过一个月");
+            if (diffDays > 93) {
+                log.warn("导出商品开票信息 查询日期范围超过三个月");
+                throw new Exception("查询日期范围超过三个月");
             }
 
             // 发票类型
@@ -1114,7 +1121,7 @@ public class AdminOrderController {
             }
 
             // 2. 执行查询&数据处理逻辑
-            List<ExportReceiptBillVo> exportReceiptBillVoList = adminOrderService.exportReceiptBill(startDate, endDate, appId, receiptTypeEnum);
+            List<ExportReceiptBillVo> exportReceiptBillVoList = adminInvoiceService.exportInvoice(startDate, endDate, appId, receiptTypeEnum);
             log.info("导出商品开票信息 获取到需要导出数据的个数:{}", exportReceiptBillVoList.size());
 
             // 3. 创建导出文件对象
