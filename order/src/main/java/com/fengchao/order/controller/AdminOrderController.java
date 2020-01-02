@@ -1072,12 +1072,13 @@ public class AdminOrderController {
      * @param receiptType
      *    1 : "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户 这三种支付方式的发票
      *    2 : bank 中投快捷支付的发票
+     *    3 :
      * @param appId
      * @param response
      * @throws Exception
      */
     @GetMapping(value = "/export/receiptBill")
-    public void exportReceiptBill(@RequestParam("startTime") String startTime,
+    public void exportInvoiceBill(@RequestParam("startTime") String startTime,
                                   @RequestParam("endTime") String endTime,
                                   @RequestParam("receiptType") Integer receiptType,
                                   @RequestParam(value = "appId", required = true) String appId,
@@ -1087,7 +1088,8 @@ public class AdminOrderController {
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}", startTime, endTime, appId);
+            log.info("导出商品开票信息 入参 startTime:{}, endTime:{}, appId:{}, receiptType:{}",
+                    startTime, endTime, appId, receiptType);
 
             // 1. 参数校验
             String _stime = startTime + " 00:00:00";
@@ -1096,9 +1098,9 @@ public class AdminOrderController {
             Date endDate = DateUtil.parseDateTime(_etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
             long diffDays = DateUtil.diffDays(_stime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS, _etime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            if (diffDays > 31) {
-                log.warn("导出商品开票信息 查询日期范围超过一个月");
-                throw new Exception("查询日期范围超过一个月");
+            if (diffDays > 93) {
+                log.warn("导出商品开票信息 查询日期范围超过三个月");
+                throw new Exception("查询日期范围超过三个月");
             }
 
             // 发票类型

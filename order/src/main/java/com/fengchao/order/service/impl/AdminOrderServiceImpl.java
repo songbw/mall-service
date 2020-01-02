@@ -314,11 +314,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         //获取支付流水
         billExportReqVo.setTradeType("consume");
         List<OrderPayMethodInfoBean> payMethodInfoBeans = wsPayRpcService.queryPayCandRList(billExportReqVo);
+        log.info("导出交易流水单 入账信息:{}", JSONUtil.toJsonString(payMethodInfoBeans));
 
         //获取退款流水
         billExportReqVo.setPageNum(1);
         billExportReqVo.setTradeType("refund");
         List<OrderPayMethodInfoBean> refundMethodInfoBeans = wsPayRpcService.queryPayCandRList(billExportReqVo);
+        log.info("导出交易流水单 出账信息:{}", JSONUtil.toJsonString(refundMethodInfoBeans));
 
         //获取平台信息
         Platform platform = productRpcService.findPlatformByAppId(billExportReqVo.getAppId());
