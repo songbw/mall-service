@@ -33,7 +33,7 @@ public class AlarmUtil {
             alarmExecutor.execute(alarmTask);
             log.info("报警alarmAsync执行结束 title:{}, content:{}", title, content);
         } catch (Exception e) {
-            log.info("报警alarmAsync执行异常:{}", e.getMessage(), e);
+            log.error("报警alarmAsync执行异常:{}", e.getMessage(), e);
         }
 
     }

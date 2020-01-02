@@ -1,5 +1,6 @@
 package com.fengchao.order.dao;
 
+import com.fengchao.order.constants.OrdersStatusEnum;
 import com.fengchao.order.constants.PaymentStatusEnum;
 import com.fengchao.order.mapper.OrdersMapper;
 import com.fengchao.order.model.Orders;
@@ -129,6 +130,24 @@ public class OrdersDao {
         OrdersExample.Criteria criteria = ordersExample.createCriteria();
         criteria.andPaymentNoEqualTo(paymentNo);
         criteria.andOpenIdEqualTo(openId);
+
+        List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
+
+        return ordersList;
+    }
+
+    /**
+     * 获取超时30分中, 但是未取消的订单
+     *
+     * @param timepoint
+     * @return
+     */
+    public List<Orders> selectTimeoutAbnormal(Date timepoint) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+
+        criteria.andCreatedAtLessThanOrEqualTo(timepoint);
+        criteria.andStatusEqualTo(OrdersStatusEnum.NON_PAYMENT.getCode());
 
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
