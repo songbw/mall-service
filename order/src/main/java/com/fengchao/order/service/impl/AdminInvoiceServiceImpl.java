@@ -385,7 +385,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
 
             // 3. 根据payNo，查询支付信息
             // 获取payNo
-            List<String> paymentNoList = payedOrdersList.stream().map(o -> o.getPaymentNo()).collect(Collectors.toList());
+            List<String> paymentNoList = new ArrayList<>(ordersPaymentNoMap.keySet()); // payedOrdersList.stream().map(o -> o.getPaymentNo()).collect(Collectors.toList());
             log.info("导出商品开票信息 需要查询用户单(支付单)的个数是:{}", paymentNoList.size());
             // 分区
             List<List<String>> paymentNoListPartition = Lists.partition(paymentNoList, LIST_PARTITION_SIZE_50);
@@ -399,7 +399,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 paymentMethodMap.putAll(_paymentMethodMap);
             }
 
-            log.info("导出商品开票信息 找到用户单(支付单)个数是:{}", paymentMethodMap.size());
+            log.info("导出商品开票信息 找到用户单(支付单)信息是:{}", JSONUtil.toJsonString(paymentMethodMap));
 
 
             // 4.开始计算，计算逻辑：
