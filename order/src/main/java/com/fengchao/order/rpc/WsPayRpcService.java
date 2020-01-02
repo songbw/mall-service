@@ -77,7 +77,7 @@ public class WsPayRpcService {
         List<OrderPayMethodInfoBean> payInfos = new ArrayList<>();
 
         OperaResponse<PayInfoBean> response = wsPayServiceClient.queryConsumeRefundUsing(billExportReqVo);
-        log.info("获取已退款的子订单信息集合 调用workorder rpc服务 返回:{}", JSONUtil.toJsonString(response));
+        log.info("获取支付流水 调用wspay rpc服务 返回:{}", JSONUtil.toJsonString(response));
 
         // 处理返回
         if (response.getCode() == 200) {
@@ -91,11 +91,12 @@ public class WsPayRpcService {
                         tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                     }
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    log.error("获取支付流水 异常:{}", e.getMessage(), e);
                 }
                 OrderPayMethodInfoBean.setTradeDate(tradeDate);
                 payInfos.add(OrderPayMethodInfoBean);
             });
+
             if(data.getTotalPage() > 1){
                 for(int i = 2; i <= data.getTotalPage(); i++){
                     billExportReqVo.setPageNum(i);
@@ -109,7 +110,7 @@ public class WsPayRpcService {
                                 tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                             }
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            log.error("获取支付流水 异常!:{}", e.getMessage(), e);
                         }
                         OrderPayMethodInfoBean.setTradeDate(tradeDate);
                         payInfos.add(OrderPayMethodInfoBean);
@@ -117,10 +118,10 @@ public class WsPayRpcService {
                 }
             }
         } else {
-            log.warn("获取已退款的子订单信息集合 调用workorder rpc服务 错误!");
+            log.warn("获取支付流水 调用wspay rpc服务 错误!");
         }
 
-        log.info("WorkOrderRpcService#queryRefundedOrderDetailList 调用workorder rpc服务 返回:{}",
+        log.info("WsPayRpcService#queryPayCandRList 调用wspay rpc服务 返回:{}",
                 JSONUtil.toJsonString(payInfos));
 
         return payInfos;

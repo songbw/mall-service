@@ -72,11 +72,11 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
         try {
             // 1.获取入账的'发票导出'信息 key: mpu
             Map<String, ExportReceiptBillVo> inComeExportReceiptBillVoMap = handleIncomeInvoiceInfo(startTime, endTime, appId, receiptTypeEnum);
-            log.info("导出商品开票信息 获取入账的信息个数:{}", inComeExportReceiptBillVoMap.size());
+            log.info("导出商品开票信息 获取入账的信息:{}", JSONUtil.toJsonString(inComeExportReceiptBillVoMap));
 
             // 2.获取出账的'发票导出'信息
             Map<String, ExportReceiptBillVo> outExportReceiptBillVoMap = handleOutInvoiceInfo(startTime, endTime, appId, receiptTypeEnum);
-            log.info("导出商品开票信息 获取出账的信息个数:{}", outExportReceiptBillVoMap.size());
+            log.info("导出商品开票信息 获取出账的信息:{}", JSONUtil.toJsonString(outExportReceiptBillVoMap));
 
             // 3. 合并上2步的信息
             Map<String, ExportReceiptBillVo> exportReceiptBillVoMap = new HashMap<>(); // 合并后的结果
@@ -385,7 +385,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
 
             // 3. 根据payNo，查询支付信息
             // 获取payNo
-            List<String> paymentNoList = payedOrdersList.stream().map(o -> o.getPaymentNo()).collect(Collectors.toList());
+            List<String> paymentNoList = new ArrayList<>(ordersPaymentNoMap.keySet()); // payedOrdersList.stream().map(o -> o.getPaymentNo()).collect(Collectors.toList());
             log.info("导出商品开票信息 需要查询用户单(支付单)的个数是:{}", paymentNoList.size());
             // 分区
             List<List<String>> paymentNoListPartition = Lists.partition(paymentNoList, LIST_PARTITION_SIZE_50);
@@ -399,7 +399,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 paymentMethodMap.putAll(_paymentMethodMap);
             }
 
-            log.info("导出商品开票信息 找到用户单(支付单)个数是:{}", paymentMethodMap.size());
+            log.info("导出商品开票信息 找到用户单(支付单)信息是:{}", JSONUtil.toJsonString(paymentMethodMap));
 
 
             // 4.开始计算，计算逻辑：
@@ -556,10 +556,14 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      */
     private Integer judgePaymentType(ReceiptTypeEnum receiptTypeEnum, List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
         switch (receiptTypeEnum) {
-            case BALANCE_CARD_WOA:
-                return judgeBanlanceCardWoaPayment(orderPayMethodInfoBeanList);
+            case BALANCE:
+                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.BALANCE);
+            case CARD:
+                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.CARD);
+            case WOA:
+                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.WOA);
             case BANK:
-                return judgeBankPayment(orderPayMethodInfoBeanList);
+                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.BANK);
 
             default:
                 log.warn("获取用户单该在 该'开票类型' 下的支付方式的支付总额 未找到有效的发票类型!");
@@ -568,23 +572,21 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
     }
 
     /**
-     * 判断其支付方式是否是 "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
+     * 判断其支付方式是否是 指定的PaymentTypeEnum 惠民商城余额;
      *
      * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式
      * @return
-     * -1(<0) : 说明该支付订单的支付方式不在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中
-     * 其他值(>=0) : 返回该支付单子在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式
+     * -1(<0) : 说明该支付订单的支付方式不在（指定的PaymentTypeEnum  ）这种支付方式中
+     * 其他值(>=0) : 返回该支付单子在（指定的PaymentTypeEnum  ）这种支付方式
      */
-    private Integer judgeBanlanceCardWoaPayment(List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
+    private Integer judgeIncomePayment(List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList, PaymentTypeEnum paymentTypeEnum) {
         Integer total = -1; // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户  支付的总额 单位 分
 
         // 遍历支付方式
         for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
             String payType = orderPayMethodInfoBean.getPayType();
 
-            if (PaymentTypeEnum.BALANCE.getName().equals(payType)
-                    || PaymentTypeEnum.CARD.getName().equals(payType)
-                    || PaymentTypeEnum.WOA.getName().equals(payType)) {
+            if (paymentTypeEnum.getName().equals(payType)) {
                 if (total < 0) {
                     total = 0;
                 }
@@ -592,7 +594,8 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 if (StringUtils.isNotBlank(orderPayMethodInfoBean.getActPayFee())) { // 单位分
                     total = total + Integer.valueOf(orderPayMethodInfoBean.getActPayFee());
                 } else {
-                    log.warn("判断其支付方式是否是 balance card woa 支付金额不合法:{}", orderPayMethodInfoBean.getActPayFee());
+                    log.warn("判断其支付方式是否是:{} 支付金额不合法:{}",
+                            paymentTypeEnum.getName(), orderPayMethodInfoBean.getActPayFee());
                 }
             }
         }
@@ -600,38 +603,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
         return total;
     }
 
-    /**
-     * 判断其支付方式是否是 "bank" 中投快捷支付
-     *
-     * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式集合
-     * @return
-     * -1(<0) : 说明该支付订单的支付方式不在 ("bank" 中投快捷支付) 这种支付方式中
-     * 其他值(>=0) : 返回该支付单子在（"bank" 中投快捷支付）这种支付方式
-     */
-    private Integer judgeBankPayment(List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
-        Integer total = -1; // 单位分
-
-        // 遍历支付方式
-        for (OrderPayMethodInfoBean orderPayMethodInfoBean : orderPayMethodInfoBeanList) {
-            String payType = orderPayMethodInfoBean.getPayType();
-
-            if (PaymentTypeEnum.BANK.getName().equals(payType)) {
-                if (total < 0) {
-                    total = 0;
-                }
-
-                if (StringUtils.isNotBlank(orderPayMethodInfoBean.getActPayFee())) { // 单位分
-                    total = total + Integer.valueOf(orderPayMethodInfoBean.getActPayFee());
-                } else {
-                    log.warn("判断其支付方式是否是 bank 支付金额不合法:{}", orderPayMethodInfoBean.getActPayFee());
-                }
-            }
-        }
-
-        return total;
-    }
-
-    /////
+    ///////////
 
     /**
      * 根据指定的开票类型，获取某个sku在该'开票类型'下的退款金额
@@ -642,13 +614,17 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      */
     private Integer calcRefundAmount(ReceiptTypeEnum receiptTypeEnum, List<Map<String, Object>> refundInfoList) {
         switch (receiptTypeEnum) {
-            case BALANCE_CARD_WOA:
-                return calcBanlanceCardWoaRefundAmount(refundInfoList);
+            case BALANCE:
+                return judageOutAmount(refundInfoList, PaymentTypeEnum.BALANCE);
+            case CARD:
+                return judageOutAmount(refundInfoList, PaymentTypeEnum.CARD);
+            case WOA:
+                return judageOutAmount(refundInfoList, PaymentTypeEnum.WOA);
             case BANK:
-                return calcBankRefundAmount(refundInfoList);
+                return judageOutAmount(refundInfoList, PaymentTypeEnum.BANK);
 
             default:
-                log.warn("获取用户单该在 该'开票类型' 下的支付方式的支付总额 未找到有效的发票类型!");
+                log.warn("获取用户单该在 该'开票类型' 下的退款方式的退款总额 未找到有效的发票类型!");
                 return -1;
         }
     }
@@ -657,6 +633,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * 判断其退款方式是否是 "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
      *
      * @param refundInfoList 某个sku的退款详情
+     * @param paymentTypeEnum 指定的退款方式
      *
      * [
      *   {
@@ -676,10 +653,10 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * ]
      *
      * @return
-     * -1(<0) : 说明该退款不在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种退款方式中
-     * 其他值(>=0) : 返回该退款在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）
+     * -1(<0) : 说明该退款不在（指定的退款方式）这种退款方式中
+     * 其他值(>=0) : 返回该退款在（指定的退款方式）这种退款方式中
      */
-    private Integer calcBanlanceCardWoaRefundAmount(List<Map<String, Object>> refundInfoList) {
+    private Integer judageOutAmount(List<Map<String, Object>> refundInfoList, PaymentTypeEnum paymentTypeEnum) {
         Integer total = -1; // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户  支付的总额 单位 分
 
         // 遍历支付方式
@@ -687,13 +664,13 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
             String payType = refundInfo.get("payType") == null ? "" : (String) refundInfo.get("payType");
             int payStatus = refundInfo.get("status") == null ? -1 : (Integer) refundInfo.get("status");
 
-            if (PaymentTypeEnum.BALANCE.getName().equals(payType)
-                    || PaymentTypeEnum.CARD.getName().equals(payType)
-                    || PaymentTypeEnum.WOA.getName().equals(payType)) {
+            if (paymentTypeEnum.getName().equals(payType)) {
                 //
                 if (payStatus != 1 && payStatus != 3) { // 如果退款没有成功
-                    log.warn("判断其退款方式是否是 balance card woa 退款详情中含有退款失败的记录outRefundNo:", refundInfo.get("outRefundNo"));
-                    AlarmUtil.alarmAsync("导出商品开票信息-判断其退款方式", "判断其退款方式是否是 balance card woa 退款详情中含有退款失败的记录outRefundNo:" + refundInfo.get("outRefundNo"));
+                    log.warn("判断其退款方式是否是:{} 退款详情中含有退款失败的记录outRefundNo:",
+                            paymentTypeEnum.getName(), refundInfo.get("outRefundNo"));
+                    AlarmUtil.alarmAsync("导出商品开票信息-判断其退款方式",
+                            "判断其退款方式是否是" + paymentTypeEnum.getName() + "退款详情中含有退款失败的记录outRefundNo:" + refundInfo.get("outRefundNo"));
                     continue;
                 }
                 //
@@ -707,7 +684,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 if (StringUtils.isNotBlank(refudnAmount)) { // 单位分
                     total = total + Integer.valueOf(refudnAmount);
                 } else {
-                    log.warn("判断其退款方式是否是 balance card woa 退款金额不合法:{}", refudnAmount);
+                    log.warn("判断其退款方式是否是:{} 退款金额不合法:{}", paymentTypeEnum.getName(), refudnAmount);
                 }
             }
         }
@@ -715,61 +692,5 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
         return total;
     }
 
-    /**
-     * 判断其退款方式是否是 "bank" 中投快捷支付
-     *
-     * @param refundInfoList 某个sku下的退款方式的集合;
-     *
-     * [
-     *   {
-     *     "createDate": "2019-12-20T16:11:47",
-     *     "merchantCode": "32",
-     *     "orderNo": "e2f2cf41ca674b51aeaeaac8a584fa79",
-     *     "outRefundNo": "111576829506646",
-     *     "payType": "balance",
-     *     "refundFee": "10",
-     *     "refundNo": "",
-     *     "sourceOutTradeNo": "118111a3bf2248b9e6404c87dff0892572ebb953283501",
-     *     "status": 1,
-     *     "statusMsg": "退款成功",
-     *     "totalFee": "0",
-     *     "tradeDate": "20191220161146"
-     *   }
-     * ]
-     * @return
-     * -1(<0) : 说明该退款方式不在 ("bank" 中投快捷支付)
-     * 其他值(>=0) : 返回该退款在（"bank" 中投快捷支付）
-     */
-    private Integer calcBankRefundAmount(List<Map<String, Object>> refundInfoList) {
-        Integer total = -1; // 单位分
 
-        // 遍历支付方式
-        for (Map<String, Object> refundInfo  : refundInfoList) {
-            String payType = refundInfo.get("payType") == null ? "" : (String) refundInfo.get("payType");
-            int payStatus = refundInfo.get("status") == null ? -1 : (Integer) refundInfo.get("status");
-
-            if (PaymentTypeEnum.BANK.getName().equals(payType)) {
-                //
-                if (payStatus != 1) { // 如果退款没有成功
-                    log.warn("判断其退款方式是否是 bank 退款详情中含有退款失败的记录outRefundNo:", refundInfo.get("outRefundNo"));
-                    AlarmUtil.alarmAsync("导出商品开票信息-判断其退款方式", "判断其退款方式是否是 bank 退款详情中含有退款失败的记录outRefundNo:" + refundInfo.get("outRefundNo"));
-                    continue;
-                }
-                //
-                if (total < 0) {
-                    total = 0;
-                }
-
-                // 退款金额
-                String refudnAmount = (String) refundInfo.get("refundFee");
-                if (StringUtils.isNotBlank(refudnAmount)) { // 单位分
-                    total = total + Integer.valueOf(refudnAmount);
-                } else {
-                    log.warn("判断其退款方式是否是 bank 支付金额不合法:{}", refudnAmount);
-                }
-            }
-        }
-
-        return total;
-    }
 }
