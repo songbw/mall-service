@@ -188,22 +188,25 @@ public class AdminPromotionController {
             titleCell3.setCellValue("商品SKU"); // 商品SKU
 
             HSSFCell titleCell4 = titleRow.createCell(4);
-            titleCell4.setCellValue("商品名"); // 商品名
+            titleCell4.setCellValue("商品MPU"); // 商品SKU
 
             HSSFCell titleCell5 = titleRow.createCell(5);
-            titleCell5.setCellValue("进货价格(元)");
+            titleCell5.setCellValue("商品名"); // 商品名
 
             HSSFCell titleCell6 = titleRow.createCell(6);
-            titleCell6.setCellValue("销售价格(元)");
+            titleCell6.setCellValue("进货价格(元)");
 
             HSSFCell titleCell7 = titleRow.createCell(7);
-            titleCell7.setCellValue("第三方平台价");
+            titleCell7.setCellValue("销售价格(元)");
 
             HSSFCell titleCell8 = titleRow.createCell(8);
-            titleCell8.setCellValue("促销价格(元)");
+            titleCell8.setCellValue("第三方平台价");
 
             HSSFCell titleCell9 = titleRow.createCell(9);
-            titleCell9.setCellValue("运营平台");
+            titleCell9.setCellValue("促销价格(元)");
+
+            HSSFCell titleCell10 = titleRow.createCell(10);
+            titleCell10.setCellValue("运营平台");
 
             // CONTENT
             for (ExportPromotionInfo info : promotionInfos) { // 遍历子订单
@@ -229,23 +232,26 @@ public class AdminPromotionController {
                 HSSFCell cell3 = currentRow.createCell(3); // 商品SKU
                 cell3.setCellValue(info.getSkuid());
 
-                HSSFCell cell4 = currentRow.createCell(4); // 商品名
-                cell4.setCellValue(info.getSkuName());
+                HSSFCell cell4 = currentRow.createCell(4); // 商品MPU
+                cell4.setCellValue(info.getMpu());
 
-                HSSFCell cell5 = currentRow.createCell(5); // 进货价
-                cell5.setCellValue(info.getSprice());
+                HSSFCell cell5 = currentRow.createCell(5); // 商品名
+                cell5.setCellValue(info.getSkuName());
 
-                HSSFCell cell6 = currentRow.createCell(6); // 销售价
-                cell6.setCellValue(info.getPrice());
+                HSSFCell cell6 = currentRow.createCell(6); // 进货价
+                cell6.setCellValue(info.getSprice());
 
-                HSSFCell cell7 = currentRow.createCell(7); // 第三方价格
-                cell7.setCellValue(info.getComparePrice());
+                HSSFCell cell7 = currentRow.createCell(7); // 销售价
+                cell7.setCellValue(info.getPrice());
 
-                HSSFCell cell8 = currentRow.createCell(8); // 活动价
-                cell8.setCellValue(info.getDiscount());
+                HSSFCell cell8 = currentRow.createCell(8); // 第三方价格
+                cell8.setCellValue(info.getComparePrice());
 
-                HSSFCell cell9 = currentRow.createCell(9); // 运营平台
-                cell9.setCellValue(info.getAppName());
+                HSSFCell cell9 = currentRow.createCell(9); // 活动价
+                cell9.setCellValue(info.getDiscount());
+
+                HSSFCell cell10 = currentRow.createCell(10); // 运营平台
+                cell10.setCellValue(info.getAppName());
             }
 
 
