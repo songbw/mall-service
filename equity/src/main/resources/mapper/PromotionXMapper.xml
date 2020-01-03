@@ -430,4 +430,22 @@
     and daily_schedule = true
     and app_id = #{appId,jdbcType=VARCHAR}
   </select>
+
+  <select id="selectPromotionInfo" resultType="com.fengchao.equity.bean.ExportPromotionInfo">
+    SELECT
+    p.id,
+    p.name,
+    p.status,
+    p.start_date startDate,
+    p.end_date endDate,
+    p.app_id appId,
+    ps.mpu,
+    ps.skuId,
+    ps.discount
+    FROM promotion_mpu ps LEFT JOIN promotion p ON ps.promotion_id=p.id
+    WHERE p.status <![CDATA[ < ]]> 5
+    <if test="appId != null" >
+      and p.app_id = #{appId,jdbcType=INTEGER}
+    </if>
+  </select>
 </mapper>
