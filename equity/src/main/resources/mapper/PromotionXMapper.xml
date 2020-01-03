@@ -352,6 +352,12 @@
     <if test="appId != null" >
       and app_id = #{appId,jdbcType=INTEGER}
     </if>
+    <if test="ids != null" >
+      and id in
+      <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -378,6 +384,12 @@
     </if>
     <if test="appId != null" >
       and app_id = #{appId,jdbcType=INTEGER}
+    </if>
+    <if test="ids != null" >
+      and id in
+      <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     order by created_date desc
     limit #{pageNo},#{pageSize}

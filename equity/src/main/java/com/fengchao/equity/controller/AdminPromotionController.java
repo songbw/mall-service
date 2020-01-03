@@ -42,7 +42,7 @@ public class AdminPromotionController {
 
     @GetMapping("find")
     public OperaResult findPromotion(QueryBean bean, OperaResult result){
-        result.getData().put("result", service.findPromotion(bean.getOffset(), bean.getLimit(), bean.getAppId()));
+        result.getData().put("result", service.findPromotion(bean));
         return result;
     }
 
@@ -263,7 +263,8 @@ public class AdminPromotionController {
                 response.setContentType("application/octet-stream");
                 response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-                outputStream = response.getOutputStream();
+//                outputStream = response.getOutputStream();
+                outputStream = new FileOutputStream("D://" + fileName);
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
