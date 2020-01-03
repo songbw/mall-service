@@ -35,9 +35,9 @@ public class QueryAbnormalOrderSchedule {
     }
 
     /**
-     * 每2分钟检测一次
+     * 每4分钟检测一次
      */
-    @Scheduled(fixedDelay = 120000)
+    @Scheduled(fixedDelay = 240000)
     public void cancelRechargeOrder() {
         try {
             MDC.put("X-B3-TraceId", UUID.randomUUID().toString());
