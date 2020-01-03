@@ -143,6 +143,24 @@ public class AdminPromotionController {
         // 创建HSSFWorkbook对象
         HSSFWorkbook workbook = null;
 
+        if (bean.getCoefficient() == null) {
+            throw new Exception("参数不合法, 查询开始时间为空");
+        }
+        if (bean.getSymbol() == null) {
+            throw new Exception("参数不合法, 查询结束时间为空");
+        }
+        if (bean.getType() == null) {
+            throw new Exception("参数不合法, 查询结束时间为空");
+        }
+
+        if(bean.getSymbol().equals("less")){
+            bean.setSymbol("<");
+        }else if(bean.getSymbol().equals("more")){
+            bean.setSymbol(">");
+        }else if(bean.getSymbol().equals("equals")){
+            bean.setSymbol("==");
+        }
+
         try {
             // 1.根据条件获统计数据
             List<ExportPromotionInfo> promotionInfos = service.exportPromotionMpu(bean);
