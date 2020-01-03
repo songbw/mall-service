@@ -218,7 +218,9 @@
     set logistics_id = #{logisticsId,jdbcType=VARCHAR},
         logistics_content = #{logisticsContent,jdbcType=VARCHAR},
         comcode = #{comCode},
-        status = #{status}
+    <if test="status != null" >
+      status = #{status}
+    </if>
     where sub_order_id = #{subOrderId,jdbcType=VARCHAR}
     and order_id = #{orderId,jdbcType=INTEGER}
   </update>

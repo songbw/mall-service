@@ -925,9 +925,9 @@ public class OrderServiceImpl implements OrderService {
                 logisticsbeanList.add(logistics);
                 continue;
             }
-            orderDetailDao.updateBySubOrderId(logistics) ;
             OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
             if (orderDetail.getStatus() == 1) {
+                orderDetailDao.updateBySubOrderId(logistics) ;
                 JobClientUtils.subOrderFinishTrigger(jobClient, orderDetail.getOrderId());
             }
         }

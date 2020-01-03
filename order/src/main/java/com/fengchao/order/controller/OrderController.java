@@ -105,10 +105,8 @@ public class OrderController {
 
     @PostMapping("/uploadLogistics")
     private OperaResult uploadLogistics(@RequestBody Logisticsbean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
-        System.out.println(bean.getLogisticsList());
         bean.setMerchantId(merchantId);
         result.getData().put("result", service.uploadLogistics(bean)) ;
-
         return result;
     }
 
