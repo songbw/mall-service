@@ -13,7 +13,7 @@ set tmp_dir /tmp
 spawn sh -c " scp -P $port -r $src_dir$name $user@$host:$tag_dir"
 expect "password:"
 send "${passwd}\n"
-set timeout 60000
+set timeout 30000
 expect "$ "
 
 ##登录目标机器
