@@ -18,8 +18,7 @@ expect "$ "
 
 ##登录目标机器
 spawn ssh $user@$host -p $port
-expect "password:"
-send "${passwd}\n"
+
 expect "]$ "
 send "cd $tag_dir\n"
 expect "]$ "
