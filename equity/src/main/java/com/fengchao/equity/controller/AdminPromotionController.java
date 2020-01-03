@@ -191,16 +191,16 @@ public class AdminPromotionController {
             titleCell4.setCellValue("商品名"); // 商品名
 
             HSSFCell titleCell5 = titleRow.createCell(5);
-            titleCell5.setCellValue("进货价");
+            titleCell5.setCellValue("进货价格(元)");
 
             HSSFCell titleCell6 = titleRow.createCell(6);
-            titleCell6.setCellValue("销售价");
+            titleCell6.setCellValue("销售价格(元)");
 
             HSSFCell titleCell7 = titleRow.createCell(7);
             titleCell7.setCellValue("第三方平台价");
 
             HSSFCell titleCell8 = titleRow.createCell(8);
-            titleCell8.setCellValue("活动价");
+            titleCell8.setCellValue("促销价格(元)");
 
             HSSFCell titleCell9 = titleRow.createCell(9);
             titleCell9.setCellValue("运营平台");
