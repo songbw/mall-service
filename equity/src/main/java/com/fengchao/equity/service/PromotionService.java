@@ -16,7 +16,7 @@ public interface PromotionService {
 
     int createPromotion(PromotionX bean);
 
-    PageBean findPromotion(Integer offset, Integer limit, String appId);
+    PageBean findPromotion(QueryBean bean);
 
     PromotionResult updatePromotion(PromotionX bean);
 

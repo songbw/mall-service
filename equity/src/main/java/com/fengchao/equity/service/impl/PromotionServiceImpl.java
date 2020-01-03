@@ -73,20 +73,21 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PageBean findPromotion(Integer offset, Integer limit, String appId) {
+    public PageBean findPromotion(QueryBean bean) {
         PageBean pageBean = new PageBean();
         int total = 0;
-        int pageNo = PageBean.getOffset(offset, limit);
+        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
-        map.put("pageSize", limit);
-        map.put("appId", appId);
+        map.put("pageSize", bean.getLimit());
+        map.put("appId", bean.getAppId());
+        map.put("ids", bean.getIds());
         List<PromotionX> promotions = new ArrayList<>();
         total = promotionXMapper.selectCount(map);
         if (total > 0) {
             promotions = promotionXMapper.selectLimit(map);
         }
-        pageBean = PageBean.build(pageBean, promotions, total, offset, limit);
+        pageBean = PageBean.build(pageBean, promotions, total, bean.getOffset(), bean.getLimit());
         return pageBean;
     }
 
