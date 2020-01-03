@@ -2,8 +2,10 @@ package com.fengchao.equity.rpc;
 
 import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.model.AoyiProdIndex;
+import com.fengchao.equity.model.Platform;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,5 +71,27 @@ public class ProductRpcService {
             log.warn("根据mpu集合查询产品信息 调用product rpc服务 错误!");
         }
         return couponBeanList ;
+    }
+
+    /**
+     * 获取平台信息
+     * @return
+     */
+    public List<Platform> findPlatformAll() {
+        List<Platform> platformBeanList = new ArrayList<>();
+        PageVo pageVo = new PageVo();
+        pageVo.setPageNo(1);
+        pageVo.setPageSize(10);
+        OperaResult operaResult = productService.selectPlatformAll(pageVo);
+        // 处理返回
+        if (operaResult.getCode() == 200) {
+            List<Platform> platformList = (List<Platform>) operaResult.getData().get("list");
+
+            // 转 ProductInfoBean
+            platformBeanList = JSON.parseArray(JSON.toJSONString(platformList), Platform.class);
+        } else {
+            log.warn("获取平台信息 调用product rpc服务 错误!");
+        }
+        return platformBeanList ;
     }
 }
