@@ -115,7 +115,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("order",bean.getOrder());
         if (bean.getMerchantHeader() == 0) {
             map.put("merchantId", bean.getMerchantId());
-        } else if (bean.getMerchantHeader() == bean.getMerchantId()) {
+        } else if (bean.getMerchantHeader().equals(bean.getMerchantId())) {
             map.put("merchantId", bean.getMerchantId());
         } else {
             return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
