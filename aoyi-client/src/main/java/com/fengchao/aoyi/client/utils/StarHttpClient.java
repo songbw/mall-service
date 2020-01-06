@@ -35,6 +35,17 @@ public class StarHttpClient {
     public static final String STAR_ADDRESS_INFO = "/address/getAddressInfo";
     public static final String STAR_GOOD_HOLD_SKU_INVENTORY = "/goods/preHoldSkuInventory";
     public static final String STAR_GOOD_RELEASE_SKU_INVENTORY = "/goods/releaseSkuInventory";
+    public static final String STAR_ORDER_ADD_ORDER = "/order/addOrder";
+    public static final String STAR_ORDER_CONFIRM_ORDER = "/order/confirmOrder";
+    public static final String STAR_ORDER_APPLY_REFUND_GOODS = "/order/applyRefundAndGoods";
+    public static final String STAR_ORDER_APPLY_REFUND = "/order/applyRefund";
+    public static final String STAR_ORDER_FREIGHT = "/order/getOrderFreight";
+    public static final String STAR_ORDER_CANCEL_APPLY_REFUND = "/order/cancelApplyRefund";
+    public static final String STAR_ORDER_EXPRESS = "/order/findExpressInfoByOrderSn";
+    public static final String STAR_ORDER_FIND_BY_ORDERSN = "/order/findOrderByOrderSn";
+    public static final String STAR_ORDER_LOGISTICS_COMPANY = "/order/getLogisticsCompanyList";
+    public static final String STAR_ORDER_RETURN_STATUS = "/order/getReturnOrderStatuts";
+    public static final String STAR_ORDER_RETURN_GOODS = "/order/returnOrderGoods";
 
     private static Client client = null;
 
