@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrdersDao ordersDao;
     @Autowired
-    private BaseService baseService;
+    private BaseServiceClient baseService;
     @Autowired
     private GuanaitongClientService guanaitongClientService ;
 

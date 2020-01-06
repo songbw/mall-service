@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableTaskTracker      // 启动TaskTracker
 //@EnableMonitor          // 启动Monitor
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Import;
 @Import({DynamicDataSourceConfig.class})
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 @MapperScan({"com.fengchao.order.mapper"})
+@EnableScheduling
 public class OrderApplication {
 
 	public static void main(String[] args) {
