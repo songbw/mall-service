@@ -89,7 +89,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 exportReceiptBillVo.setMpu(mpu);
                 if (outExportReceiptBillVo != null) { // 如果存在退款信息
                     exportReceiptBillVo.setTotalPrice(incomeExportReceiptBillVo.getTotalPrice() - outExportReceiptBillVo.getTotalPrice());
-                    exportReceiptBillVo.setCount(incomeExportReceiptBillVo.getCount() - incomeExportReceiptBillVo.getCount());
+                    exportReceiptBillVo.setCount(incomeExportReceiptBillVo.getCount() - outExportReceiptBillVo.getCount());
 
                     outExportReceiptBillVoMap.remove(mpu); //
                 } else {
@@ -447,7 +447,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                     }
 
                     // 开始分配该用户单下的各个mpu分得的payAmount
-                    BigDecimal multiplier = new BigDecimal(payAmount).divide(new BigDecimal(totalAmount), 2, BigDecimal.ROUND_HALF_UP);
+                    // BigDecimal multiplier = new BigDecimal(payAmount).divide(new BigDecimal(totalAmount), 2, BigDecimal.ROUND_HALF_UP);
                     // 遍历最终产生的数据结构:Map<String, paymentInfoByMpuDimension> 其实就是用户单下所有子订单 以mpu为维度的map
                     int index = 0;
                     int remainder = payAmount;
@@ -459,11 +459,15 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                             _paymentInfoByMpuDimension.setHoldAmount(remainder <= 0 ? 0 : remainder);
                         } else {
                             // 该mpu商品所占 指定支付方式的份额 单位分
-                            Integer holdAmount = multiplier.multiply(new BigDecimal(_paymentInfoByMpuDimension.getTotalPrice())).intValue();
+                            // Integer holdAmount = multiplier.multiply(new BigDecimal(_paymentInfoByMpuDimension.getTotalPrice())).intValue();
 
-                            _paymentInfoByMpuDimension.setHoldAmount(holdAmount);
+                            Integer holdAmount1 = new BigDecimal(payAmount).multiply(new BigDecimal(_paymentInfoByMpuDimension.getTotalPrice()))
+                                    .divide(new BigDecimal(totalAmount), 2, BigDecimal.ROUND_HALF_UP).intValue();
 
-                            remainder = remainder - holdAmount;
+
+                            _paymentInfoByMpuDimension.setHoldAmount(holdAmount1);
+
+                            remainder = remainder - holdAmount1;
                         }
 
                         index++;
