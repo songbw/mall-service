@@ -3,6 +3,7 @@ package com.fengchao.equity.feign.hystric;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.QueryProdBean;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.feign.ProdService;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,15 @@ public class ProdServiceH implements ProdService {
         ObjectMapper objectMapper = new ObjectMapper();
         result.setCode(404);
         result.setMsg("获取商品信息失败 " + mpuIdList);
+        return result;
+    }
+
+    @Override
+    public OperaResult selectPlatformAll(PageVo pageVo) {
+        OperaResult result = new OperaResult();
+        ObjectMapper objectMapper = new ObjectMapper();
+        result.setCode(404);
+        result.setMsg("获取平台信息失败 " + pageVo);
         return result;
     }
 }

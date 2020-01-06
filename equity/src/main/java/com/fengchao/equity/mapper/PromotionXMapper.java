@@ -1,5 +1,6 @@
 package com.fengchao.equity.mapper;
 
+import com.fengchao.equity.bean.ExportPromotionInfo;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.model.PromotionExample;
 import com.fengchao.equity.model.PromotionX;
@@ -48,4 +49,6 @@ public interface PromotionXMapper {
     List<PromotionX> selectDaliyPromotion(@Param("appId") String appId);
 
     List<PromotionX> selectSchedulePromotion(@Param("appId") String appId);
+
+    List<ExportPromotionInfo> selectPromotionInfo(@Param("appId") String appId);
 }

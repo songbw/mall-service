@@ -2,10 +2,12 @@ package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.bean.vo.ExportPromotionVo;
 import com.fengchao.equity.model.Promotion;
 import com.fengchao.equity.model.PromotionMpuX;
 import com.fengchao.equity.model.PromotionX;
 
+import javax.script.ScriptException;
 import java.util.List;
 
 public interface PromotionService {
@@ -14,7 +16,7 @@ public interface PromotionService {
 
     int createPromotion(PromotionX bean);
 
-    PageBean findPromotion(Integer offset, Integer limit, String appId);
+    PageBean findPromotion(QueryBean bean);
 
     PromotionResult updatePromotion(PromotionX bean);
 
@@ -57,4 +59,6 @@ public interface PromotionService {
     PromotionX findPromotionToJob(int promotionId);
 
     List<PromotionInfoBean> verifyPromotionInfo(List<PromotionMpuBean> beans);
+
+    List<ExportPromotionInfo> exportPromotionMpu(ExportPromotionVo bean) throws ScriptException;
 }

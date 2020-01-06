@@ -2,6 +2,7 @@ package com.fengchao.equity.feign;
 
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.QueryProdBean;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.feign.hystric.ProdServiceH;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -18,4 +19,11 @@ public interface ProdService {
 
     @RequestMapping(value = "/prod/findByMpuIdList", method = RequestMethod.GET)
     OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList);
+
+    /**
+     * 获取平台信息
+     * @return
+     */
+    @RequestMapping(value = "/platform/all", method = RequestMethod.POST)
+    OperaResult selectPlatformAll(@RequestBody PageVo pageVo);
 }

@@ -3,11 +3,9 @@ package com.fengchao.aoyi.client.controller;
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.OrderParamBean;
 import com.fengchao.aoyi.client.bean.QueryLogist;
-import com.fengchao.aoyi.client.config.AoyiClientConfig;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 

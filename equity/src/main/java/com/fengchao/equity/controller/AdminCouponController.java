@@ -6,12 +6,15 @@ import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
+import com.fengchao.equity.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/adminCoupon", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AdminCouponController {
@@ -24,6 +27,7 @@ public class AdminCouponController {
 
     @PostMapping("create")
     public OperaResult createCoupon(@RequestBody CouponBean bean, OperaResult result){
+        log.info("创建createCoupon优惠券参数 入参:{}", JSONUtil.toJsonString(bean));
         result.getData().put("couponId",couponService.createCoupon(bean));
         return result;
     }
@@ -162,6 +166,7 @@ public class AdminCouponController {
 
     @PostMapping("redemption")
     public OperaResult redemption(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        log.info("兑换优惠券参数 入参:{}", JSONUtil.toJsonString(bean));
         CouponUseInfoBean couponUseInfoBean = useInfoService.redemption(bean);
         if(couponUseInfoBean.getUserCouponCode().equals("2")){
             result.setCode(40010);

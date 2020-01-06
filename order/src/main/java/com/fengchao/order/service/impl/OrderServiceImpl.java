@@ -252,6 +252,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setImage(prodIndexWithBLOBs.getImage());
                 orderDetail.setModel(prodIndexWithBLOBs.getModel());
                 orderDetail.setName(prodIndexWithBLOBs.getName());
+                orderDetail.setProductType(prodIndexWithBLOBs.getType());
                 if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
                     BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
                     orderDetail.setSprice(bigDecimal);

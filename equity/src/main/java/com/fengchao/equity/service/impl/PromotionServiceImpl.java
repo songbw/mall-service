@@ -2,6 +2,7 @@ package com.fengchao.equity.service.impl;
 
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.bean.vo.ExportPromotionVo;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.PromotionDao;
 import com.fengchao.equity.dao.PromotionScheduleDao;
@@ -26,6 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -69,20 +73,21 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PageBean findPromotion(Integer offset, Integer limit, String appId) {
+    public PageBean findPromotion(QueryBean bean) {
         PageBean pageBean = new PageBean();
         int total = 0;
-        int pageNo = PageBean.getOffset(offset, limit);
+        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
-        map.put("pageSize", limit);
-        map.put("appId", appId);
+        map.put("pageSize", bean.getLimit());
+        map.put("appId", bean.getAppId());
+        map.put("ids", bean.getIds());
         List<PromotionX> promotions = new ArrayList<>();
         total = promotionXMapper.selectCount(map);
         if (total > 0) {
             promotions = promotionXMapper.selectLimit(map);
         }
-        pageBean = PageBean.build(pageBean, promotions, total, offset, limit);
+        pageBean = PageBean.build(pageBean, promotions, total, bean.getOffset(), bean.getLimit());
         return pageBean;
     }
 
@@ -683,6 +688,82 @@ public class PromotionServiceImpl implements PromotionService {
             promotions.add(promotionInfoBean);
         }
         return promotions;
+    }
+
+    @Override
+    public List<ExportPromotionInfo> exportPromotionMpu(ExportPromotionVo bean) throws ScriptException {
+        List<ExportPromotionInfo> resultList = new ArrayList<>();
+        List<ExportPromotionInfo> promotionInfoBeans = promotionXMapper.selectPromotionInfo(bean.getAppId());
+        List<String> mpuIdList = new ArrayList<>();
+        for (ExportPromotionInfo promotionInfo : promotionInfoBeans) {
+            if(promotionInfo.getMpu() != null){
+                mpuIdList.add(promotionInfo.getMpu());
+            }else{
+                log.info("错误信息 入参:{}", JSONUtil.toJsonString(promotionInfo));
+            }
+        }
+        Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
+        List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+        for (AoyiProdIndex prod : aoyiProdIndices) {
+            if (prod != null) {
+                aoyiProdMap.put(prod.getMpu(), prod);
+            }
+        }
+
+        Map<String, String> platformMap = new HashMap<String, String>();
+        List<Platform> platformAll = prodService.findPlatformAll();
+        for (Platform platform : platformAll) {
+            if (platform != null) {
+                platformMap.put(platform.getAppId(), platform.getName());
+            }
+        }
+
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("js");
+        if(bean.getType().equals("price")){
+            for (ExportPromotionInfo promotionInfo : promotionInfoBeans) {
+                AoyiProdIndex prodIndex = aoyiProdMap.get(promotionInfo.getMpu());
+                String s = promotionInfo.getDiscount() + bean.getSymbol() + prodIndex.getPrice() + "*" + bean.getCoefficient();
+                boolean eval = (boolean) engine.eval(s);
+                if(eval){
+                    promotionInfo.setComparePrice(prodIndex.getComparePrice());
+                    promotionInfo.setPrice(prodIndex.getPrice());
+                    promotionInfo.setSprice(prodIndex.getSprice());
+                    promotionInfo.setSkuName(prodIndex.getName());
+                    promotionInfo.setAppName(platformMap.get(promotionInfo.getAppId()));
+                    resultList.add(promotionInfo);
+                }
+            }
+        }else if(bean.getType().equals("sprice")){
+            for (ExportPromotionInfo promotionInfo : promotionInfoBeans) {
+                AoyiProdIndex prodIndex = aoyiProdMap.get(promotionInfo.getMpu());
+                String s = promotionInfo.getDiscount() + bean.getSymbol() + prodIndex.getSprice()+ "*" + bean.getCoefficient();
+                boolean eval = (boolean) engine.eval(s);
+                if(eval){
+                    promotionInfo.setComparePrice(prodIndex.getComparePrice());
+                    promotionInfo.setPrice(prodIndex.getPrice());
+                    promotionInfo.setSprice(prodIndex.getSprice());
+                    promotionInfo.setSkuName(prodIndex.getName());
+                    promotionInfo.setAppName(platformMap.get(promotionInfo.getAppId()));
+                    resultList.add(promotionInfo);
+                }
+            }
+        }else if(bean.getType().equals("comparePrice")){
+            for (ExportPromotionInfo promotionInfo : promotionInfoBeans) {
+                AoyiProdIndex prodIndex = aoyiProdMap.get(promotionInfo.getMpu());
+                String s = promotionInfo.getDiscount() + bean.getSymbol() + prodIndex.getComparePrice() + "*" + bean.getCoefficient();
+                boolean eval = (boolean) engine.eval(s);
+                if(eval){
+                    promotionInfo.setComparePrice(prodIndex.getComparePrice());
+                    promotionInfo.setPrice(prodIndex.getPrice());
+                    promotionInfo.setSprice(prodIndex.getSprice());
+                    promotionInfo.setSkuName(prodIndex.getName());
+                    promotionInfo.setAppName(platformMap.get(promotionInfo.getAppId()));
+                    resultList.add(promotionInfo);
+                }
+            }
+        }
+        return resultList;
     }
 
     // ====================================== private ==========================
