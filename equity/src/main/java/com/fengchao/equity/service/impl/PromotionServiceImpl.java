@@ -743,6 +743,7 @@ public class PromotionServiceImpl implements PromotionService {
                     promotionInfo.setComparePrice(prodIndex.getComparePrice());
                     promotionInfo.setPrice(prodIndex.getPrice());
                     promotionInfo.setSprice(prodIndex.getSprice());
+                    promotionInfo.setSkuName(prodIndex.getName());
                     promotionInfo.setAppName(platformMap.get(promotionInfo.getAppId()));
                     resultList.add(promotionInfo);
                 }
@@ -756,6 +757,7 @@ public class PromotionServiceImpl implements PromotionService {
                     promotionInfo.setComparePrice(prodIndex.getComparePrice());
                     promotionInfo.setPrice(prodIndex.getPrice());
                     promotionInfo.setSprice(prodIndex.getSprice());
+                    promotionInfo.setSkuName(prodIndex.getName());
                     promotionInfo.setAppName(platformMap.get(promotionInfo.getAppId()));
                     resultList.add(promotionInfo);
                 }
