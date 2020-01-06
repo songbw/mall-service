@@ -110,5 +110,8 @@ public class OrdersBo {
 
     private Date updatedAt;
 
+    /**
+     * 订单详情
+     */
     private List<OrderDetailBo> orderDetailBoList;
 }
