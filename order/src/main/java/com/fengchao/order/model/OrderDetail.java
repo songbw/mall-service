@@ -56,6 +56,8 @@ public class OrderDetail {
 
     private BigDecimal sprice;
 
+    private Integer productType;
+
     public Integer getId() {
         return id;
     }
@@ -262,5 +264,13 @@ public class OrderDetail {
 
     public void setSprice(BigDecimal sprice) {
         this.sprice = sprice;
+    }
+
+    public Integer getProductType() {
+        return productType;
+    }
+
+    public void setProductType(Integer productType) {
+        this.productType = productType;
     }
 }

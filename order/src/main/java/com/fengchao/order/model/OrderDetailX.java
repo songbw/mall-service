@@ -55,6 +55,8 @@ public class OrderDetailX implements Serializable {
 
     private String remark;
 
+    private Integer productType ;
+
     public Integer getId() {
         return id;
     }
@@ -253,5 +255,13 @@ public class OrderDetailX implements Serializable {
 
     public void setSkuBalanceDiscount(BigDecimal skuBalanceDiscount) {
         this.skuBalanceDiscount = skuBalanceDiscount;
+    }
+
+    public Integer getProductType() {
+        return productType;
+    }
+
+    public void setProductType(Integer productType) {
+        this.productType = productType;
     }
 }
