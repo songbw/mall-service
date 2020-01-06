@@ -40,25 +40,43 @@ public class ProductRpcService {
         // 返回值
         List<ProductInfoBean> couponBeanList = new ArrayList<>();
 
-        log.info("根据mpu集合查询产品信息 调用product rpc服务 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        log.debug("根据mpu集合查询产品信息 调用product rpc服务 入参:{}", JSONUtil.toJsonString(mpuIdList));
 
         if (CollectionUtils.isNotEmpty(mpuIdList)) {
-            OperaResult operaResult = productService.findProductListByMpuIdList(mpuIdList);
-            log.info("根据mpu集合查询产品信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
-
-            // 处理返回
-            if (operaResult.getCode() == 200) {
-                List<ProductInfoBean> _couponBeanList = (List<ProductInfoBean>) operaResult.getData().get("result");
-
-                // 转 ProductInfoBean
-                couponBeanList = JSON.parseArray(JSON.toJSONString(_couponBeanList), ProductInfoBean.class);
-            } else {
-                log.warn("根据mpu集合查询产品信息 调用product rpc服务 错误!");
+            List<String> subMpuList = new ArrayList<>() ;
+            for (int i = 0; i < mpuIdList.size(); i++) {
+                if (i + 50 > mpuIdList.size()) {
+                    subMpuList = mpuIdList.subList(i, mpuIdList.size());
+                } else {
+                    subMpuList = mpuIdList.subList(i, i + 50) ;
+                }
+                i = i + 49 ;
+                couponBeanList.addAll(findProductListByMpus(subMpuList)) ;
             }
         }
-
-        log.info("ProductRpcService#findProductListByMpuIdList 调用product rpc服务 返回:{}", JSONUtil.toJsonString(couponBeanList));
+        log.debug("ProductRpcService#findProductListByMpuIdList 调用product rpc服务 返回:{}", JSONUtil.toJsonString(couponBeanList));
 
         return couponBeanList;
+    }
+
+    /**
+     * 根据mpu 获取产品信息
+     * @param mpus
+     * @return
+     */
+    public List<ProductInfoBean> findProductListByMpus(List<String> mpus) {
+        List<ProductInfoBean> couponBeanList = new ArrayList<>();
+        OperaResult operaResult = productService.findProductListByMpuIdList(mpus);
+        log.debug("根据mpu集合查询产品信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+        // 处理返回
+        if (operaResult.getCode() == 200) {
+            List<ProductInfoBean> _couponBeanList = (List<ProductInfoBean>) operaResult.getData().get("result");
+
+            // 转 ProductInfoBean
+            couponBeanList = JSON.parseArray(JSON.toJSONString(_couponBeanList), ProductInfoBean.class);
+        } else {
+            log.warn("根据mpu集合查询产品信息 调用product rpc服务 错误!");
+        }
+        return couponBeanList ;
     }
 }
