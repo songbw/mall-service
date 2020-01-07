@@ -31,5 +31,5 @@ public interface SettlementAssistService {
      * @param appId
      * @return
      */
-    List<UserOrderBo> queryOutUserOrderBoList(Date startTime, Date endTime, String appId);
+    List<UserOrderBo> queryRefundUserOrderBoList(Date startTime, Date endTime, String appId);
 }

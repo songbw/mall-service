@@ -5,13 +5,16 @@ import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.bo.UserOrderBo;
 import com.fengchao.order.bean.vo.ExportReceiptBillVo;
+import com.fengchao.order.constants.PaymentTypeEnum;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
+import com.fengchao.order.rpc.EquityRpcService;
 import com.fengchao.order.rpc.WorkOrderRpcService;
 import com.fengchao.order.rpc.WsPayRpcService;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
+import com.fengchao.order.rpc.extmodel.PromotionBean;
 import com.fengchao.order.rpc.extmodel.RefundDetailBean;
 import com.fengchao.order.rpc.extmodel.WorkOrder;
 import com.fengchao.order.service.SettlementAssistService;
@@ -43,15 +46,19 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
     private WorkOrderRpcService workOrderRpcService;
 
+    private EquityRpcService equityRpcService;
+
     @Autowired
     public SettlementAssistServiceImpl(OrdersDao ordersDao,
                                        OrderDetailDao orderDetailDao,
                                        WsPayRpcService wsPayRpcService,
-                                       WorkOrderRpcService workOrderRpcService) {
+                                       WorkOrderRpcService workOrderRpcService,
+                                       EquityRpcService equityRpcService) {
         this.ordersDao = ordersDao;
         this.orderDetailDao = orderDetailDao;
         this.wsPayRpcService = wsPayRpcService;
         this.workOrderRpcService = workOrderRpcService;
+        this.equityRpcService = equityRpcService;
     }
 
     @Override
@@ -89,6 +96,9 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             return Collections.emptyList(); //
         }
 
+        // x. 获取子订单集合相关的结算类型信息
+        Map<Integer, Integer> promotionMap = queryOrderDetailSettlementType(orderDetailList);
+
         // x. 子订单转map, key: orderId, value:List<OrderDetailBo>
         Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
         for (OrderDetail orderDetail : orderDetailList) {
@@ -101,9 +111,10 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
             //
             OrderDetailBo orderDetailBo = convertToOrderDetailBo(orderDetail);
+            orderDetailBo.setSettlementType(promotionMap.get(orderDetailBo.getPromotionId()) == null ?
+                    0 : promotionMap.get(orderDetailBo.getPromotionId()));
             _list.add(orderDetailBo);
         }
-
 
         // 4. 组装主订单和子订单 - 结果以map输出, key: paymentNo, value:List<OrdersBo>
         Map<String, List<OrdersBo>> ordersBoMap = new HashMap<>();
@@ -160,7 +171,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
     }
 
     @Override
-    public List<UserOrderBo> queryOutUserOrderBoList(Date startTime, Date endTime, String appId) {
+    public List<UserOrderBo> queryRefundUserOrderBoList(Date startTime, Date endTime, String appId) {
         try {
             // 1. 查询退款的信息
             List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, startTime, endTime);
@@ -219,10 +230,15 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
                 refundDetailBeanMap.put(workOrder.getOrderId(), refundDetailBeanList);
             }
 
+            // x. 获取子订单集合相关的结算类型信息
+            Map<Integer, Integer> promotionMap = queryOrderDetailSettlementType(orderDetailList);
+
             // 5. 将子订单设置退款详情  并输出map结果 key: 主订单id， value:List<OrderDetail>
             Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
             for (OrderDetail _orderDetail : orderDetailList) {
                 OrderDetailBo orderDetailBo = convertToOrderDetailBo(_orderDetail);
+                orderDetailBo.setSettlementType(promotionMap.get(orderDetailBo.getPromotionId()) == null ?
+                        0 : promotionMap.get(orderDetailBo.getPromotionId()));
 
                 // 5.1 设置退款信息
                 // 获取退款信息
@@ -264,14 +280,51 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             // 7. 组装用户单
             List<UserOrderBo> userOrderBoList = new ArrayList<>();
             for (String paymentNo : ordersBoMap.keySet()) {
+                // 7.1 处理用户单退款总额信息
+                int cardRefundAmount = 0;
+                int balanceRefundAmount = 0;
+                int bankRefundAmount = 0;
+                int woaRefundAmount = 0;
+
+                // 商户单信息
+                List<OrdersBo> _ordresBoList = ordersBoMap.get(paymentNo);
+                for (OrdersBo _ordersBo : _ordresBoList) { // 遍历商户单
+                    List<OrderDetailBo> _orderDetailBoList = _ordersBo.getOrderDetailBoList(); // 子订单信息
+                    for (OrderDetailBo _orderDetailBo : _orderDetailBoList) { // 遍历子订单
+                        List<RefundDetailBean> refundDetailBeanList = _orderDetailBo.getRefundDetailBeanList(); // 该子订单的退款详情
+                        for (RefundDetailBean refundDetailBean : refundDetailBeanList) { // 遍历该子订单的退款方式
+                            Integer refundFee = Integer.valueOf(refundDetailBean.getRefundFee());
+
+                            if (PaymentTypeEnum.CARD.getName().equals(refundDetailBean.getPayType())) {
+                                cardRefundAmount = cardRefundAmount + refundFee;
+                            } else if (PaymentTypeEnum.BALANCE.getName().equals(refundDetailBean.getPayType())) {
+                                balanceRefundAmount = balanceRefundAmount + refundFee;
+                            } else if (PaymentTypeEnum.BANK.getName().equals(refundDetailBean.getPayType())) {
+                                bankRefundAmount = bankRefundAmount + refundFee;
+                            } else if (PaymentTypeEnum.WOA.getName().equals(refundDetailBean.getPayType())) {
+                                woaRefundAmount = woaRefundAmount + refundFee;
+                            } else {
+                                log.warn("结算辅助服务-查询出账的用户单 未找到相应的退款类型 outRefundNo:{}", refundDetailBean.getOutRefundNo());
+                            }
+                        }
+                    }
+                }
+
+                // 7.2 组装用户单
                 UserOrderBo userOrderBo = new UserOrderBo();
 
                 userOrderBo.setPaymentNo(paymentNo);
                 userOrderBo.setUserOrderNo(paymentNo);
                 userOrderBo.setMerchantOrderList(ordersBoMap.get(paymentNo));
 
+                // 退款信息
+                List<OrderPayMethodInfoBean> refundMethodInfoBeanList = assembleRefundInfo(cardRefundAmount,
+                        balanceRefundAmount, bankRefundAmount, woaRefundAmount);
+                userOrderBo.setRefundMethodInfoBeanList(refundMethodInfoBeanList);
+
+                //
                 userOrderBoList.add(userOrderBo);
-            }
+            } // end 组装用户单
 
             log.info("结算辅助服务-查询出账的用户单 获取用户单信息:{}", JSONUtil.toJsonString(userOrderBoList));
             return userOrderBoList;
@@ -283,6 +336,69 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
 
     //====================================== private ======================================
+
+    /**
+     * 获取子订单集合的结算类型信息
+     *
+     * @param orderDetailList
+     */
+    private Map<Integer, Integer> queryOrderDetailSettlementType(List<OrderDetail> orderDetailList) {
+        List<Integer> promotionIdList = orderDetailList.stream().map(od -> od.getPromotionId()).collect(Collectors.toList());
+
+        // 分区
+        List<List<Integer>> promotionIdListPartition = Lists.partition(promotionIdList, LIST_PARTITION_SIZE_50);
+
+        //
+        List<PromotionBean> promotionBeanList = new ArrayList<>();
+        for (List<Integer> _itemIdList : promotionIdListPartition) {
+            List<PromotionBean> _list = equityRpcService.queryPromotionByIdList(_itemIdList);
+            promotionBeanList.addAll(_list);
+        }
+
+        // 转map key:promotionId, value: 结算类型
+        Map<Integer, Integer> promotionMap = promotionBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p.getAccountType()));
+
+        return promotionMap;
+    }
+
+    /**
+     * 组装退款信息
+     *
+     * @param cardRefundAmount
+     * @param balanceRefundAmount
+     * @param bankRefundAmount
+     * @param woaRefundAmount
+     * @return
+     */
+    private List<OrderPayMethodInfoBean> assembleRefundInfo(int cardRefundAmount,
+                                                            int balanceRefundAmount,
+                                                            int bankRefundAmount,
+                                                            int woaRefundAmount) {
+        List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = new ArrayList<>();
+
+        for (PaymentTypeEnum paymentTypeEnum : PaymentTypeEnum.values()) {
+            OrderPayMethodInfoBean orderPayMethodInfoBean = new OrderPayMethodInfoBean();
+            if ("card".equals(paymentTypeEnum.getName())) {
+                orderPayMethodInfoBean.setPayType("card");
+                orderPayMethodInfoBean.setActPayFee(String.valueOf(cardRefundAmount));
+                orderPayMethodInfoBeanList.add(orderPayMethodInfoBean);
+            } else if ("balance".equals(paymentTypeEnum.getName())) {
+                orderPayMethodInfoBean.setPayType("balance");
+                orderPayMethodInfoBean.setActPayFee(String.valueOf(balanceRefundAmount));
+                orderPayMethodInfoBeanList.add(orderPayMethodInfoBean);
+            } else if ("bank".equals(paymentTypeEnum.getName())) {
+                orderPayMethodInfoBean.setPayType("bank");
+                orderPayMethodInfoBean.setActPayFee(String.valueOf(bankRefundAmount));
+                orderPayMethodInfoBeanList.add(orderPayMethodInfoBean);
+            } else if ("woa".equals(paymentTypeEnum.getName())) {
+                orderPayMethodInfoBean.setPayType("woa");
+                orderPayMethodInfoBean.setActPayFee(String.valueOf(woaRefundAmount));
+                orderPayMethodInfoBeanList.add(orderPayMethodInfoBean);
+            }
+        }
+
+        return orderPayMethodInfoBeanList;
+    }
 
     private OrdersBo convertToOrdersBo(Orders orders) {
         OrdersBo ordersBo = new OrdersBo();
