@@ -1,5 +1,6 @@
 package com.fengchao.order.bean.bo;
 
+import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,5 +28,14 @@ public class UserOrderBo {
      */
     private List<OrdersBo> merchantOrderList;
 
+    /**
+     * 支付方式详情
+     */
+    private List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList;
+
+    /**
+     * 退款方式详情
+     */
+    private List<OrderPayMethodInfoBean> refundMethodInfoBeanList;
 
 }

@@ -20,4 +20,16 @@ public interface SettlementAssistService {
      * @return
      */
     List<UserOrderBo> queryIncomeUserOrderBoList(Date startTime, Date endTime, String appId);
+
+
+
+    /**
+     * 根据时间范围 查询出账的 用户单
+     *
+     * @param startTime
+     * @param endTime
+     * @param appId
+     * @return
+     */
+    List<UserOrderBo> queryOutUserOrderBoList(Date startTime, Date endTime, String appId);
 }

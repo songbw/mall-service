@@ -1,10 +1,12 @@
 package com.fengchao.order.bean.bo;
 
+import com.fengchao.order.rpc.extmodel.RefundDetailBean;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author tom
@@ -64,6 +66,11 @@ public class OrderDetailBo {
     private String remark;
 
     private BigDecimal sprice;
+
+    /**
+     * 该子订单的退款详情
+     */
+    private List<RefundDetailBean> refundDetailBeanList;
 
     /**
      * 0：待付款；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
