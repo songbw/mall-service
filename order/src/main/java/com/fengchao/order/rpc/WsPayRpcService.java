@@ -86,14 +86,16 @@ public class WsPayRpcService {
                 Date orderDateEnd = null;
                 String tradeDate = "";
                 try {
-                    if(OrderPayMethodInfoBean.getTradeDate() != null && !OrderPayMethodInfoBean.getTradeDate().equals("")){
+                    if(OrderPayMethodInfoBean.getTradeDate() != null
+                            && !OrderPayMethodInfoBean.getTradeDate().equals("")
+                            && !OrderPayMethodInfoBean.getPayType().equals("fcalipay")){
                         orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
                         tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
+                        OrderPayMethodInfoBean.setTradeDate(tradeDate);
                     }
                 } catch (ParseException e) {
                     log.error("获取支付流水 异常:{}", e.getMessage(), e);
                 }
-                OrderPayMethodInfoBean.setTradeDate(tradeDate);
                 payInfos.add(OrderPayMethodInfoBean);
             });
 
@@ -105,14 +107,16 @@ public class WsPayRpcService {
                         Date orderDateEnd = null;
                         String tradeDate = "";
                         try {
-                            if(OrderPayMethodInfoBean.getTradeDate() != null && !OrderPayMethodInfoBean.getTradeDate().equals("")){
+                            if(OrderPayMethodInfoBean.getTradeDate() != null
+                                    && !OrderPayMethodInfoBean.getTradeDate().equals("")
+                                    && !OrderPayMethodInfoBean.getPayType().equals("fcalipay")){
                                 orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
                                 tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
+                                OrderPayMethodInfoBean.setTradeDate(tradeDate);
                             }
                         } catch (ParseException e) {
                             log.error("获取支付流水 异常!:{}", e.getMessage(), e);
                         }
-                        OrderPayMethodInfoBean.setTradeDate(tradeDate);
                         payInfos.add(OrderPayMethodInfoBean);
                     });
                 }
