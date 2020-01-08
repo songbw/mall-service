@@ -29,13 +29,18 @@ public class UserOrderBo {
     private List<OrdersBo> merchantOrderList;
 
     /**
-     * 支付方式详情
+     * 支付(入账)方式详情
      */
-    private List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList;
+    private List<OrderPayMethodInfoBean> payMethodInfoBeanList;
 
     /**
      * 退款方式详情
      */
     private List<OrderPayMethodInfoBean> refundMethodInfoBeanList;
+
+    /**
+     * 合并入账和退款的方式详情
+     */
+    private List<OrderPayMethodInfoBean> mergedMethodInfoBeanList;
 
 }

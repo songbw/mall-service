@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.bo.UserOrderBo;
-import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.constants.PaymentTypeEnum;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
@@ -160,7 +159,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             userOrderBo.setPaymentNo(paymentNo); // 支付单号
             userOrderBo.setUserOrderNo(paymentNo); // 用户单号
             userOrderBo.setMerchantOrderList(ordersBoMap.get(paymentNo)); // 商户单
-            userOrderBo.setOrderPayMethodInfoBeanList(paymentMethodMap.get(paymentNo)); // 支付方式
+            userOrderBo.setPayMethodInfoBeanList(paymentMethodMap.get(paymentNo)); // 支付方式
 
             userOrderBoList.add(userOrderBo);
         }
