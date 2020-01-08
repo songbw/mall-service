@@ -1260,6 +1260,55 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public OperaResponse updateOrderReceiverAddress(ReceiverAddressBean bean) {
+        OperaResponse response = new OperaResponse() ;
+        if (bean == null) {
+            response.setCode(400020);
+            response.setMsg("数据不能为null");
+            return response ;
+        }
+        if (bean.getOrderDetailId() == null || bean.getOrderDetailId() == 0) {
+            response.setCode(400021);
+            response.setMsg("子订单ID不能为0或null");
+            return response ;
+        }
+        OrderDetail checkOrderDetail = orderDetailMapper.selectByPrimaryKey(bean.getOrderDetailId()) ;
+        if (checkOrderDetail == null) {
+            response.setCode(400022);
+            response.setMsg("子订单ID不存在");
+            return response ;
+        }
+        if (checkOrderDetail.getStatus() == 5) {
+            checkOrderDetail.setStatus(1);
+            checkOrderDetail.setUpdatedAt(new Date());
+        }
+        Orders checkOrders = mapper.selectByPrimaryKey(checkOrderDetail.getOrderId()) ;
+        if (checkOrders == null) {
+            response.setCode(400023);
+            response.setMsg("所属主订单不存在");
+            return response ;
+        }
+        checkOrders.setReceiverName(bean.getReceiverName());
+        checkOrders.setMobile(bean.getMobile());
+        checkOrders.setProvinceId(bean.getProvinceId());
+        checkOrders.setProvinceName(bean.getProvinceName());
+        checkOrders.setCityId(bean.getCityId());
+        checkOrders.setCityName(bean.getCityName());
+        checkOrders.setCountyId(bean.getCountyId());
+        checkOrders.setCountyName(bean.getCountyName());
+        checkOrders.setAddress(bean.getAddress());
+        checkOrders.setZip(bean.getZip());
+        checkOrders.setUpdatedAt(new Date());
+        if (checkOrders.getStatus() == 3) {
+            checkOrders.setStatus(1);
+        }
+        mapper.updateByPrimaryKeySelective(checkOrders) ;
+        orderDetailMapper.updateByPrimaryKeySelective(checkOrderDetail) ;
+        response.setData(bean.getOrderDetailId());
+        return response;
+    }
+
     private String fetchGroupKey(Order order) {
         String tradeNo = order.getTradeNo();
         String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());
