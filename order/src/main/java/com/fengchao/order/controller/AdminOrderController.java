@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -714,7 +715,8 @@ public class AdminOrderController {
                 response.setContentType("application/octet-stream");
                 response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-                outputStream = response.getOutputStream();
+//                outputStream = response.getOutputStream();
+                outputStream = new FileOutputStream("D://" + fileName);
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -773,32 +775,34 @@ public class AdminOrderController {
             // -- 主订单
             HSSFCell cell0 = currentRow.createCell(0); // 支付单号
             HSSFCell cell1 = currentRow.createCell(1); // 卡号
-            HSSFCell cell2 = currentRow.createCell(2); // 交易类型
-            HSSFCell cell3 = currentRow.createCell(3); // 交易时间
-            HSSFCell cell4 = currentRow.createCell(4); // 交易金额
-            HSSFCell cell5 = currentRow.createCell(5); // 交易状态
-            HSSFCell cell6 = currentRow.createCell(6); //AppId
+            HSSFCell cell2 = currentRow.createCell(2); // 第三方
+            HSSFCell cell3 = currentRow.createCell(3); // 交易类型
+            HSSFCell cell4 = currentRow.createCell(4); // 交易时间
+            HSSFCell cell5 = currentRow.createCell(5); // 交易金额
+            HSSFCell cell6 = currentRow.createCell(6); // 交易状态
+            HSSFCell cell7 = currentRow.createCell(7); //AppId
 
             cell0.setCellValue(payMethodInfoBean.getOrderNo()); // 主订单号
             cell1.setCellValue(payMethodInfoBean.getCardNo()); // 实际支付价格 单位:元
-            cell2.setCellValue(payMethodInfoBean.getTradeType());// 交易类型
-            cell3.setCellValue(payMethodInfoBean.getTradeDate()); // 优惠券码
-            cell4.setCellValue(new BigDecimal(payMethodInfoBean.getActPayFee()).divide(new BigDecimal(100)).setScale(2).toString()); // 券来源
+            cell2.setCellValue(payMethodInfoBean.getOutTradeNo());// 交易类型
+            cell3.setCellValue(payMethodInfoBean.getTradeType());// 交易类型
+            cell4.setCellValue(payMethodInfoBean.getTradeDate()); // 优惠券码
+            cell5.setCellValue(new BigDecimal(payMethodInfoBean.getActPayFee()).divide(new BigDecimal(100)).setScale(2).toString()); // 券来源
             Integer status = payMethodInfoBean.getStatus();
             if(status == 0){
-                cell5.setCellValue("新创建");
+                cell6.setCellValue("新创建");
             }else if(status == 1){
-                cell5.setCellValue("成功");
+                cell6.setCellValue("成功");
             }else if(status == 2){
-                cell5.setCellValue("失败");
+                cell6.setCellValue("失败");
             }else if(status == 3){
-                cell5.setCellValue("超时");
+                cell6.setCellValue("超时");
             }
-            cell6.setCellValue(payMethodInfoBean.getAppId());
+            cell7.setCellValue(payMethodInfoBean.getAppId());
 
             if(payMethodInfoBean.getPayType().equals("balance")){
-                HSSFCell cell7 = currentRow.createCell(7); // 交易状态
-                cell7.setCellValue(payMethodInfoBean.getPayer());
+                HSSFCell cell8 = currentRow.createCell(8); // 余额手机号
+                cell8.setCellValue(payMethodInfoBean.getPayer());
             }
             // 状态
             currentRowNum ++;
@@ -816,23 +820,26 @@ public class AdminOrderController {
         titleCell1.setCellValue("openID");
 
         HSSFCell titleCell2 = titleRow.createCell(2);
-        titleCell2.setCellValue("交易类型"); // 交易类型
+        titleCell2.setCellValue("第三方流水号"); // 第三方流水号
 
         HSSFCell titleCell3 = titleRow.createCell(3);
-        titleCell3.setCellValue("交易时间"); // 交易时间
+        titleCell3.setCellValue("交易类型"); // 交易类型
 
         HSSFCell titleCell4 = titleRow.createCell(4);
-        titleCell4.setCellValue("交易金额"); // 交易金额
+        titleCell4.setCellValue("交易时间"); // 交易时间
 
         HSSFCell titleCell5 = titleRow.createCell(5);
-        titleCell5.setCellValue("交易状态"); // 交易状态
+        titleCell5.setCellValue("交易金额"); // 交易金额
 
         HSSFCell titleCell6 = titleRow.createCell(6);
-        titleCell6.setCellValue("运营平台"); // 交易状态
+        titleCell6.setCellValue("交易状态"); // 交易状态
+
+        HSSFCell titleCell7 = titleRow.createCell(7);
+        titleCell7.setCellValue("运营平台"); // 交易状态
 
         if(billExportReqVo.getPayType().equals("balance")){
-            HSSFCell titleCell7 = titleRow.createCell(7);
-            titleCell7.setCellValue("手机号"); // 主订单
+            HSSFCell titleCell8 = titleRow.createCell(8);
+            titleCell8.setCellValue("手机号"); // 主订单
         }
     }
 
