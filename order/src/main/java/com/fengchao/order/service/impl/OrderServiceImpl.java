@@ -1243,7 +1243,7 @@ public class OrderServiceImpl implements OrderService {
         }
         Date date = new Date() ;
         checkOrderDetail.setUpdatedAt(date);
-        checkOrderDetail.setCompleteTime(new Date(-28800000));
+//        checkOrderDetail.setCompleteTime(new Date(-28800000));
         // 更新子订单
         orderDetailMapper.updateByPrimaryKey(checkOrderDetail) ;
         // 查询主订单，判断是否要更新
