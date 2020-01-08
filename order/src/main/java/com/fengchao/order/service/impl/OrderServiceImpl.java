@@ -86,6 +86,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailMapper orderDetailMapper;
     @Autowired
     private Environment environment;
+    @Autowired
+    private OrdersMapper mapper ;
 
     @Transactional
     @Override
@@ -1214,6 +1216,47 @@ public class OrderServiceImpl implements OrderService {
             cancel(order.getId()) ;
         });
         response.setData(orderNos);
+        return response;
+    }
+
+    @Override
+    public OperaResponse workOrderGoBack(Integer orderDetailId) {
+        OperaResponse response = new OperaResponse() ;
+        // 查询子订单
+        OrderDetail checkOrderDetail = orderDetailMapper.selectByPrimaryKey(orderDetailId) ;
+        if (checkOrderDetail == null) {
+            response.setCode(400010);
+            response.setMsg("订单号不存在");
+            return response ;
+        }
+        if (checkOrderDetail.getStatus() != 5) {
+            response.setCode(400011);
+            response.setMsg("子订单状态不上申请售后状态");
+            return response ;
+        }
+        if (StringUtils.isEmpty(checkOrderDetail.getLogisticsId())) {
+            checkOrderDetail.setStatus(1);
+        } else {
+            checkOrderDetail.setStatus(2);
+            // 启动定时完成任务
+            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetailId);
+        }
+        Date date = new Date() ;
+        checkOrderDetail.setUpdatedAt(date);
+        checkOrderDetail.setCompleteTime(new Date(-28800000));
+        // 更新子订单
+        orderDetailMapper.updateByPrimaryKey(checkOrderDetail) ;
+        // 查询主订单，判断是否要更新
+        Orders checkOrders = mapper.selectByPrimaryKey(checkOrderDetail.getOrderId()) ;
+        if (checkOrders != null) {
+            if (checkOrders.getStatus() == 2 || checkOrders.getStatus() == 3) {
+                checkOrders.setStatus(1);
+                checkOrders.setUpdatedAt(date);
+                // 更新主订单
+                mapper.updateByPrimaryKeySelective(checkOrders) ;
+            }
+        }
+        response.setData(orderDetailId);
         return response;
     }
 

@@ -424,31 +424,14 @@ public class OrderController {
         return service.getWorkOrderLogist(logisticId, code, merchantNo);
     }
 
-//    @PutMapping("/subOrder/status")
-//    private OperaResult updateSubOrderStatus(@RequestBody OrderDetail bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
-//        if (StringUtils.isEmpty(bean)) {
-//            result.setCode(4000004);
-//            result.setMsg("参数不能为空。");
-//            return result;
-//        }
-//        if (StringUtils.isEmpty(bean.getId())) {
-//            result.setCode(4000005);
-//            result.setMsg("id不能为空。");
-//            return result;
-//        }
-//        if (StringUtils.isEmpty(bean.getStatus())) {
-//            result.setCode(4000005);
-//            result.setMsg("status不能为空。");
-//            return result;
-//        }
-//        bean.setMerchantId(merchantId);
-//        result.getData().put("result", service.updateSubOrderStatus(bean)) ;
-//        return result;
-//    }
-
     @PutMapping("/logisticsId")
     private OperaResult uploadLogisticsId(@RequestBody LogisticsInfoBean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
         result.getData().put("result", service.uploadLogisticsId(bean)) ;
         return result;
+    }
+
+    @GetMapping("/workorder/goback")
+    private OperaResponse workOrderGoBack(Integer orderDetailId) {
+        return service.workOrderGoBack(orderDetailId);
     }
 }
