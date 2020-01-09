@@ -26,7 +26,8 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
         this.settlementAssistService = settlementAssistService;
     }
 
-    public List<ExportShareProfitVo> export(Date startTime, Date endTime, String appId) {
+    @Override
+    public List<ExportShareProfitVo> exportShareProfit(Date startTime, Date endTime, String appId) {
         List<UserOrderBo> mergedUserOrderBoList = settlementAssistService.mergeIncomeAndRefundUserOrder(startTime, endTime, appId);
         settlementAssistService.assignPaymentAmout(mergedUserOrderBoList);
 
@@ -68,8 +69,6 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
 
         return exportShareProfitVoList;
     }
-
-
 
 
     //========================================================== private ============================================
