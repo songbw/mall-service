@@ -617,9 +617,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
         for (OrdersBo refundOrdersBo : refundMerchantOrdersBoList) { // 遍历商户单
             List<OrderDetailBo> refundOrderDetailBoList = refundOrdersBo.getOrderDetailBoList();
             for (OrderDetailBo orderDetailBo : refundOrderDetailBoList) { // 遍历订单详情
-                OrderDetailBo _orderDetailBo = refundOrderDetailBoMap.get(orderDetailBo.getMpu());
-
-                refundOrderDetailBoMap.put(_orderDetailBo.getMpu(), _orderDetailBo);
+                refundOrderDetailBoMap.put(orderDetailBo.getMpu(), orderDetailBo);
             }
         }
 

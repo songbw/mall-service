@@ -40,6 +40,17 @@ public class ShareProfitController {
         this.adminShareProfitService = adminShareProfitService;
     }
 
+    /**
+     * 导出分润表
+     *
+     * http://localhost:8004/adminorder/export/shareprofit?startTime=2019-11-01&endTime=2019-11-30&appId=11
+     *
+     * @param startTime
+     * @param endTime
+     * @param appId
+     * @param response
+     * @throws Exception
+     */
     @GetMapping(value = "/export/shareprofit")
     public void shareprofit(@RequestParam("startTime") String startTime,
                             @RequestParam("endTime") String endTime,
