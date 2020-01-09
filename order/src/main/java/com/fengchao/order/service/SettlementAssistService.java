@@ -32,4 +32,23 @@ public interface SettlementAssistService {
      * @return
      */
     List<UserOrderBo> queryRefundUserOrderBoList(Date startTime, Date endTime, String appId);
+
+    /**
+     * 合并出账和入账的用户单
+     * 主要合并sku的数量 和 出账入账的金额
+     *
+     * @param startTime
+     * @param endTime
+     * @param appId
+     * @return
+     */
+    List<UserOrderBo> mergeIncomeAndRefundUserOrder(Date startTime, Date endTime, String appId);
+
+    /**
+     * 获取出账和入账合并后的用户单，并计算每个用户单中的子订单所占每种支付方式的金额(分摊用户单的费用)
+     *
+     * @param userOrderBoList
+     * @return
+     */
+    List<UserOrderBo> assignPaymentAmout(List<UserOrderBo> userOrderBoList);
 }

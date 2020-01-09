@@ -29,6 +29,11 @@ public class UserOrderBo {
     private List<OrdersBo> merchantOrderList;
 
     /**
+     * 该用户单下所有子订单的salePrice*num之和
+     */
+    private Integer totalSalePrice;
+
+    /**
      * 支付(入账)方式详情
      */
     private List<OrderPayMethodInfoBean> payMethodInfoBeanList;

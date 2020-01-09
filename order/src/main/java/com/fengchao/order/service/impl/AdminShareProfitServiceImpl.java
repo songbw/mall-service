@@ -4,13 +4,16 @@ import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.bo.UserOrderBo;
 import com.fengchao.order.bean.vo.ExportShareProfitVo;
+import com.fengchao.order.constants.PaymentTypeEnum;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.service.AdminShareProfitService;
 import com.fengchao.order.service.SettlementAssistService;
+import com.fengchao.order.utils.CalculateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,14 +23,93 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
 
     private SettlementAssistService settlementAssistService;
 
-
-    public ExportShareProfitVo exportShareProfit(Date startTime, Date endTime, String appId) {
+    public ExportShareProfitVo export(Date startTime, Date endTime, String appId) {
         List<UserOrderBo> mergedUserOrderBoList = mergeIncomeAndRefundUserOrder(startTime, endTime, appId);
+        assignPaymentAmout(mergedUserOrderBoList);
 
+        // 按照支付方式聚合子订单
+        Map<String, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
+
+    }
+
+
+    /**
+     * 获取出账和入账合并后的用户单，并计算每个用户单中的子订单所占每种支付方式的金额(分摊用户单的费用)
+     *
+     * @return
+     */
+    private List<UserOrderBo> assignPaymentAmout(List<UserOrderBo> userOrderBoList) {
         // 分配金额
+        for (UserOrderBo userOrderBo : userOrderBoList) { // 遍历用户单
+            // 1. 获取该用户单的基础数据
+            // 该用户单下所有子订单的salePrice*num之和 单位分
+            Integer totalSalePrice = userOrderBo.getTotalSalePrice();
 
-        return null;
+            // 该用户单的支付信息
+            List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = userOrderBo.getMergedMethodInfoBeanList();
+            // 转map key: paymentType value: 实际金额 单位分
+            Map<String, Integer> payMethodMap = orderPayMethodInfoBeanList.stream().collect(Collectors.toMap(pm -> pm.getActPayFee(), pm -> Integer.valueOf(pm.getActPayFee())));
 
+            // 2. 列出该用户单所有支付方式的金额(单位 分):
+            Integer balanceAmount = payMethodMap.get(PaymentTypeEnum.BALANCE.getName()) == null ?
+                    0 : payMethodMap.get(PaymentTypeEnum.BALANCE.getName()); // 余额
+            Integer cardAmount = payMethodMap.get(PaymentTypeEnum.CARD.getName()) == null ?
+                    0 : payMethodMap.get(PaymentTypeEnum.CARD.getName()); // 惠民卡
+            Integer woaAmount = payMethodMap.get(PaymentTypeEnum.WOA.getName()) == null ?
+                    0 : payMethodMap.get(PaymentTypeEnum.WOA.getName()); // 联机账户
+            Integer bankAmount = payMethodMap.get(PaymentTypeEnum.BANK.getName()) == null ?
+                    0 : payMethodMap.get(PaymentTypeEnum.BANK.getName()); // 快捷支付
+
+            // 3. 开始分摊
+            Integer remainBalanceAmount = balanceAmount;
+            Integer remainCardAmount = cardAmount;
+            Integer remainWoaAmount = woaAmount;
+            Integer remainBankAmount = bankAmount;
+
+            for (int i = 0; i < userOrderBo.getMerchantOrderList().size(); i++) { // 遍历(遍历该用户单下的所有子订单)
+                OrdersBo ordersBo = userOrderBo.getMerchantOrderList().get(i);
+
+                for (int j = 0; j < ordersBo.getOrderDetailBoList().size(); j++) {
+                    OrderDetailBo orderDetailBo = ordersBo.getOrderDetailBoList().get(j);
+
+                    if (i == (userOrderBo.getMerchantOrderList().size() - 1)
+                            && j == (ordersBo.getOrderDetailBoList().size() - 1)) { // 如果是最后一条记录，那么使用减法
+                        orderDetailBo.setShareBalanceAmount(remainBalanceAmount);
+                        orderDetailBo.setShareCardAmount(remainCardAmount);
+                        orderDetailBo.setShareWoaAmount(remainWoaAmount);
+                        orderDetailBo.setShareBankAmount(remainBankAmount);
+                    } else {
+                        Integer multiplier = CalculateUtil.convertYuanToFen(orderDetailBo.getSalePrice().toString()) * orderDetailBo.getNum(); // 可能为0
+
+                        // 余额分摊
+                        Integer shareBalanceAmount =
+                                new BigDecimal(balanceAmount).multiply(new BigDecimal(multiplier)).divide(new BigDecimal(totalSalePrice), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                        orderDetailBo.setShareBalanceAmount(shareBalanceAmount);
+                        remainBalanceAmount = remainBalanceAmount - shareBalanceAmount;
+
+                        // 惠民卡分摊
+                        Integer shareCardAmount =
+                                new BigDecimal(cardAmount).multiply(new BigDecimal(multiplier)).divide(new BigDecimal(totalSalePrice), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                        orderDetailBo.setShareCardAmount(shareCardAmount);
+                        remainCardAmount = remainCardAmount - shareCardAmount;
+
+                        // 联机账户分摊
+                        Integer shareWoaAmount =
+                                new BigDecimal(woaAmount).multiply(new BigDecimal(multiplier)).divide(new BigDecimal(totalSalePrice), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                        orderDetailBo.setShareWoaAmount(shareWoaAmount);
+                        remainWoaAmount = remainWoaAmount - shareWoaAmount;
+
+                        // 快捷支付分摊
+                        Integer shareBankAmount =
+                                new BigDecimal(bankAmount).multiply(new BigDecimal(multiplier)).divide(new BigDecimal(totalSalePrice), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                        orderDetailBo.setShareBankAmount(shareBankAmount);
+                        remainBankAmount = remainBankAmount - shareBankAmount;
+                    }
+                }
+            }
+        }
+
+        return userOrderBoList;
     }
 
     @Override

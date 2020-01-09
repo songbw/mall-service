@@ -114,4 +114,9 @@ public class OrdersBo {
      * 订单详情
      */
     private List<OrderDetailBo> orderDetailBoList;
+
+    /**
+     * 该主订单下所有子订单的sale_price*num之和  单位 分
+     */
+    private Integer totalSalePrice;
 }

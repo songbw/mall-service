@@ -78,6 +78,26 @@ public class OrderDetailBo {
     private Integer settlementType;
 
     /**
+     * 余额分摊 单位分
+     */
+    private Integer shareBalanceAmount;
+
+    /**
+     * 惠民卡分摊 单位分
+     */
+    private Integer shareCardAmount;
+
+    /**
+     * 联机账户分摊 单位分
+     */
+    private Integer shareWoaAmount;
+
+    /**
+     * 快捷支付分摊 单位分
+     */
+    private Integer shareBankAmount;
+
+    /**
      * 0：待付款；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
      *
      * @return

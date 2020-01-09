@@ -13,7 +13,8 @@ import java.util.List;
 public interface AdminShareProfitService {
 
     /**
-     * 导出分润报表
+     * 合并出账和入账的用户单
+     * 主要合并sku的数量 和 出账入账的金额
      *
      * @param startTime
      * @param endTime
