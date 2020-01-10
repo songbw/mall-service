@@ -200,6 +200,16 @@ public class ExportOrdersVo {
     private String quickPayFee;
 
     /**
+     * 支付宝支付 单位 元
+     */
+    private String fcalipayFee;
+
+    /**
+     * 微信支付 单位 元
+     */
+    private String fcwxFee;
+
+    /**
      * 子订单退款金额 单位 元
      */
     private String orderDetailRefundAmount;
@@ -223,6 +233,15 @@ public class ExportOrdersVo {
      * 快捷退款 单位 元
      */
     private String quickPayRefund;
+    /**
+     * 支付宝退款 单位 元
+     */
+    private String fcalipayRefund;
+
+    /**
+     * 微信退款 单位 元
+     */
+    private String fcwxRefund;
 
     /**
      * 收件人手机号
