@@ -716,6 +716,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元
                         exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
                         exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
+                        exportOrdersVo.setFcalipayFee("0"); // 支付宝支付 单位 元
+                        exportOrdersVo.setFcwxFee("0"); // 微信支付 单位 元
                         if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
 
                             boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
@@ -761,6 +763,18 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         exportOrdersVo.setQuickPayFee(exportOrdersVo.getQuickPayFee() + "(异常)");
                                     }
+                                }else if (OrderPayMethodTypeEnum.FCALIPAY.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcalipayFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcalipayFee(exportOrdersVo.getFcalipayFee()+ "(异常)");
+                                    }
+                                }else if (OrderPayMethodTypeEnum.FCWX.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcwxFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcwxFee(exportOrdersVo.getFcwxFee() + "(异常)");
+                                    }
                                 }
                             }
 
@@ -780,6 +794,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         exportOrdersVo.setHuiminCardRefund("0"); // 惠民卡支付金额 单位 元
                         exportOrdersVo.setWoaRefund("0"); // 联机账户支付 单位 元
                         exportOrdersVo.setQuickPayRefund("0"); // 快捷支付 单位 元
+                        exportOrdersVo.setFcalipayRefund("0"); // 支付宝支付 单位 元
+                        exportOrdersVo.setFcwxRefund("0"); // 微信支付 单位 元
                         if (CollectionUtils.isNotEmpty(refundMethodInfoList)) {
 
                             boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
@@ -824,6 +840,18 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         exportOrdersVo.setQuickPayRefund(exportOrdersVo.getQuickPayRefund() + "(超时)");
+                                    }
+                                }else if (OrderPayMethodTypeEnum.FCALIPAY.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcalipayRefund(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcalipayRefund(exportOrdersVo.getFcalipayRefund() + "(异常)");
+                                    }
+                                }else if (OrderPayMethodTypeEnum.FCWX.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcwxRefund(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcwxRefund(exportOrdersVo.getFcwxRefund()+ "(异常)");
                                     }
                                 }
                             }
