@@ -136,4 +136,6 @@ public interface OrderService {
     OperaResponse unpaidCancel(String appId, String openId, String orderNos);
 
     OperaResponse workOrderGoBack(Integer orderDetailId) ;
+
+    OperaResponse updateOrderReceiverAddress(ReceiverAddressBean bean) ;
 }

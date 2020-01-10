@@ -78,6 +78,8 @@ public class AoyiProdIndexX implements Serializable {
      */
     private String taxRate;
 
+    private String floorPrice;
+
     public String getSubTitle() {
         return subTitle;
     }
@@ -332,5 +334,13 @@ public class AoyiProdIndexX implements Serializable {
 
     public void setCompareUrl(String compareUrl) {
         this.compareUrl = compareUrl;
+    }
+
+    public String getFloorPrice() {
+        return floorPrice;
+    }
+
+    public void setFloorPrice(String floorPrice) {
+        this.floorPrice = floorPrice;
     }
 }

@@ -59,6 +59,8 @@ public class AoyiProdIndex {
 
     private String taxRate;
 
+    private String floorPrice;
+
     public Integer getId() {
         return id;
     }
@@ -281,5 +283,13 @@ public class AoyiProdIndex {
 
     public void setTaxRate(String taxRate) {
         this.taxRate = taxRate == null ? null : taxRate.trim();
+    }
+
+    public String getFloorPrice() {
+        return floorPrice;
+    }
+
+    public void setFloorPrice(String floorPrice) {
+        this.floorPrice = floorPrice == null ? null : floorPrice.trim();
     }
 }

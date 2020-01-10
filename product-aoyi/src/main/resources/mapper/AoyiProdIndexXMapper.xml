@@ -29,6 +29,7 @@
     <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
     <result column="compare_price" jdbcType="VARCHAR" property="comparePrice" />
     <result column="tax_rate" jdbcType="VARCHAR" property="taxRate" />
+    <result column="floor_price" jdbcType="VARCHAR" property="floorPrice" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" extends="BaseResultMap" >
     <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
@@ -36,7 +37,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price,
-    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate, floor_price
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams

@@ -434,4 +434,11 @@ public class OrderController {
     private OperaResponse workOrderGoBack(Integer orderDetailId) {
         return service.workOrderGoBack(orderDetailId);
     }
+
+    @PutMapping("/address")
+    private OperaResult uploadOrderReceiveAddress(@RequestBody ReceiverAddressBean bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
+        log.info("修改订单收货人地址信息： {} , {}", JSONUtil.toJsonString(bean), merchantId);
+        result.getData().put("result", service.updateOrderReceiverAddress(bean)) ;
+        return result;
+    }
 }
