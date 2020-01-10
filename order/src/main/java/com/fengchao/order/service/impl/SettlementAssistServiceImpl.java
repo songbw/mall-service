@@ -1,6 +1,5 @@
 package com.fengchao.order.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
@@ -162,7 +161,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             paymentMethodMap.putAll(_paymentMethodMap);
         }
 
-        log.info("结算辅助服务-查询进账的用户单 找到用户单支付方式信息是:{}", JSONUtil.toJsonString(paymentMethodMap));
+        log.info("结算辅助服务-查询进账的用户单 找到所有入账用户单支付方式信息是:{}", JSONUtil.toJsonString(paymentMethodMap));
 
         // 6. 组装用户单数据
         List<UserOrderBo> userOrderBoList = new ArrayList<>();
@@ -184,7 +183,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             userOrderBoList.add(userOrderBo);
         }
 
-        log.info("结算辅助服务-查询进账的用户单 获取的入账用户单信息:{}", JSONUtil.toJsonString(userOrderBoList));
+        log.info("结算辅助服务-查询进账的用户单 获取的入账用户单信息:{}", JSONUtil.toJsonStringWithoutNull(userOrderBoList));
 
         return userOrderBoList;
     }
@@ -195,7 +194,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             // 1. 查询退款的信息
             List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, startTime, endTime);
             if (CollectionUtils.isEmpty(workOrderList)) {
-                log.info("结算辅助服务-查询退款共担 未获取到退款记录");
+                log.info("结算辅助服务-查询退款工单 未获取到退款记录");
 
                 return Collections.emptyList();
             }
@@ -210,6 +209,8 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             // 3. 根据子订单查询主订单
             List<Integer> orderIdList = orderDetailList.stream().map(o -> o.getOrderId()).collect(Collectors.toList());
             List<Orders> ordersList = ordersDao.selectOrdersListByIdList(orderIdList, appId);
+
+            log.info("结算辅助服务-查询出账的用户单 获取所有退款主订单个数:{}", ordersList.size());
 
             // 4. 解析退款信息 输出map结果 key:子订单号, value:RefundDetailBean
             Map<String, List<RefundDetailBean>> refundDetailBeanMap = new HashMap<>(); //
@@ -251,7 +252,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
             // x. 获取子订单集合相关的结算类型信息 key:promotionId, value: 结算类型
             Map<Integer, Integer> promotionMap = queryOrderDetailSettlementType(orderDetailList);
-            log.info("结算辅助服务-查询进账的用户单 获取子订单集合相关的结算类型信息(出账):{}", JSONUtil.toJsonString(promotionMap));
+            log.info("结算辅助服务-查询出账的用户单 获取子订单集合相关的结算类型信息(出账):{}", JSONUtil.toJsonString(promotionMap));
 
             // 5. 将子订单设置退款详情  并输出map结果 key: 主订单id， value:List<OrderDetail>
             Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
@@ -286,7 +287,15 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
                 List<OrderDetailBo> _orderDetailBoList = orderDetailBoMap.get(ordersBo.getId());
                 ordersBo.setOrderDetailBoList(_orderDetailBoList);
 
-                // 6.2 转map
+                // 6.2 计算该主订单下所有子订单的salePrice*num之和
+                Integer totalPriceForOrder = 0; // 单位分
+                for (OrderDetailBo _orderDetailBo : _orderDetailBoList) {
+                    totalPriceForOrder = totalPriceForOrder +
+                            CalculateUtil.convertYuanToFen(_orderDetailBo.getSalePrice().multiply(new BigDecimal(_orderDetailBo.getNum())).toString());
+                }
+                ordersBo.setTotalSalePrice(totalPriceForOrder);
+
+                // 6.3 转map key: paymentNo， value:List<OrdersBo>
                 List<OrdersBo> _ordersBoList = ordersBoMap.get(orders.getPaymentNo());
                 if (_ordersBoList == null) {
                     _ordersBoList = new ArrayList<>();
@@ -308,7 +317,11 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
                 // 商户单信息
                 List<OrdersBo> _ordresBoList = ordersBoMap.get(paymentNo);
+
+                Integer totalSalePrice = 0; // 准备计算该用户单下所有子订单salePrice*num之和
                 for (OrdersBo _ordersBo : _ordresBoList) { // 遍历商户单
+                    totalSalePrice = totalSalePrice + _ordersBo.getTotalSalePrice(); // 该用户单下所有子订单salePrice*num之和
+
                     List<OrderDetailBo> _orderDetailBoList = _ordersBo.getOrderDetailBoList(); // 子订单信息
                     for (OrderDetailBo _orderDetailBo : _orderDetailBoList) { // 遍历子订单
                         List<RefundDetailBean> refundDetailBeanList = _orderDetailBo.getRefundDetailBeanList(); // 该子订单的退款详情
@@ -336,6 +349,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
                 userOrderBo.setPaymentNo(paymentNo);
                 userOrderBo.setUserOrderNo(paymentNo);
                 userOrderBo.setMerchantOrderList(ordersBoMap.get(paymentNo));
+                userOrderBo.setTotalSalePrice(totalSalePrice); // 该用户单下所有子订单salePrice*num之和
 
                 // 退款信息
                 List<OrderPayMethodInfoBean> refundMethodInfoBeanList = assembleRefundInfo(cardRefundAmount,
@@ -346,7 +360,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
                 userOrderBoList.add(userOrderBo);
             } // end 组装用户单
 
-            log.info("结算辅助服务-查询出账的用户单 获取出账用户单信息:{}", JSONUtil.toJsonString(userOrderBoList));
+            log.info("结算辅助服务-查询出账的用户单 获取出账用户单信息:{}", JSONUtil.toJsonStringWithoutNull(userOrderBoList));
             return userOrderBoList;
         } catch (Exception e) {
             log.error("结算辅助服务-查询出账的用户单 处理退款记录异常:{}", e.getMessage(), e);
@@ -375,16 +389,21 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             // 2.1 获取该入账用户单关联的出账用户单
             UserOrderBo refundUserOrderBo = refundUserOrderBoMap.get(incomeUserOrderBo.getPaymentNo());
             // 设置该用户单的退款信息
-            mergedUserOrderBo.setRefundMethodInfoBeanList(refundUserOrderBo == null ? null : refundUserOrderBo.getPayMethodInfoBeanList());
+            mergedUserOrderBo.setRefundMethodInfoBeanList(refundUserOrderBo == null ? null : refundUserOrderBo.getRefundMethodInfoBeanList());
 
             // 2.2 合并入账和退款子订单的个数
             if (refundUserOrderBo != null) { // 如果该入账用户单存在退款用户单
                 mergeIncomeAndRefundOrderDetailNum(mergedUserOrderBo, refundUserOrderBo);
             }
 
-            // 2.3 合并支付和退款信息, 这个合并逻辑并没有改变原有的数据，而是新增了合并后的属性(支付方式)MergedMethodInfoBeanList
+            // 2.3 合并入账和出账用户单中的totalSalePrice属性
+            if (refundUserOrderBo != null) {
+                mergedUserOrderBo.setTotalSalePrice(mergedUserOrderBo.getTotalSalePrice() - refundUserOrderBo.getTotalSalePrice());
+            }
+
+            // 2.4 合并支付和退款信息, 注意: 这个合并逻辑并没有改变原有的数据，而是新增了合并后的属性(支付方式)MergedMethodInfoBeanList
             List<OrderPayMethodInfoBean> mergedPayMethodInfoList =
-                    mergePayMethodInfoBean(mergedUserOrderBo.getPayMethodInfoBeanList(), refundUserOrderBo == null ? null : refundUserOrderBo.getPayMethodInfoBeanList());
+                    mergePayMethodInfoBean(mergedUserOrderBo.getPayMethodInfoBeanList(), mergedUserOrderBo.getRefundMethodInfoBeanList());
             // 设置支付(出账，入账)合并后的信息
             mergedUserOrderBo.setMergedMethodInfoBeanList(mergedPayMethodInfoList);
 
@@ -409,7 +428,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             }
         }
 
-        log.info("结算辅助服务-查询出账的用户单 合并出账和入账用户单信息为:{}", JSONUtil.toJsonString(mergedUserOrderBoList));
+        log.info("结算辅助服务 合并出账和入账用户单信息为:{}", JSONUtil.toJsonStringWithoutNull(mergedUserOrderBoList));
 
         //
         return mergedUserOrderBoList;
@@ -426,7 +445,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             // 该用户单的支付信息
             List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = userOrderBo.getMergedMethodInfoBeanList();
             // 转map key: paymentType value: 实际金额 单位分
-            Map<String, Integer> payMethodMap = orderPayMethodInfoBeanList.stream().collect(Collectors.toMap(pm -> pm.getActPayFee(), pm -> Integer.valueOf(pm.getActPayFee())));
+            Map<String, Integer> payMethodMap = orderPayMethodInfoBeanList.stream().collect(Collectors.toMap(pm -> pm.getPayType(), pm -> Integer.valueOf(pm.getActPayFee())));
 
             // 2. 列出该用户单所有支付方式的金额(单位 分):
             Integer balanceAmount = payMethodMap.get(PaymentTypeEnum.BALANCE.getName()) == null ?
