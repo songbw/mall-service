@@ -1,5 +1,6 @@
 package com.fengchao.order.bean.vo;
 
+import com.fengchao.order.constants.AppPlatformEnum;
 import com.fengchao.order.constants.PaymentTypeEnum;
 import com.fengchao.order.constants.SettlementTypeEnum;
 import lombok.Getter;
@@ -12,9 +13,10 @@ import lombok.Setter;
 @Setter
 public class ExportShareProfitVo {
 
-    private String appId;
-
-    private String appName;
+    /**
+     * 平台表识别
+     */
+    private AppPlatformEnum appPlatformEnum;
 
     /**
      * 支付方式

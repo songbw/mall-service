@@ -109,14 +109,15 @@ public class ShareProfitController {
 
                 HSSFCell cell0 = currentRow.createCell(0); // 运营平台
                 if (indexRow == 1) {
-                    cell0.setCellValue(StringUtils.isBlank(exportShareProfitVo.getAppName()) ? "--" : exportShareProfitVo.getAppName());
+                    cell0.setCellValue(exportShareProfitVo.getAppPlatformEnum() == null
+                            ? "--" : exportShareProfitVo.getAppPlatformEnum().getDesc());
                 } else {
                     cell0.setCellValue("");
                 }
 
                 HSSFCell cell1 = currentRow.createCell(1); // 支付方式
                 cell1.setCellValue(exportShareProfitVo.getPaymentTypeEnum() == null ?
-                        "--" : exportShareProfitVo.getPaymentTypeEnum().getName());
+                        "--" : exportShareProfitVo.getPaymentTypeEnum().getDesc());
 
                 HSSFCell cell2 = currentRow.createCell(2); // 结算类型
                 cell2.setCellValue(exportShareProfitVo.getSettlementTypeEnum() == null ?

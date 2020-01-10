@@ -242,12 +242,12 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
                 List<RefundDetailBean> refundDetailBeanList = JSONObject.parseArray(refundInfoJson, RefundDetailBean.class);
                 if (CollectionUtils.isEmpty(refundDetailBeanList)) {
-                    log.warn("结算辅助服务-查询出账的用户单 退款信息为空tradeNo:{}", workOrder.getTradeNo());
+                    log.warn("结算辅助服务-查询出账的用户单 退款信息为空tradeNo:{}, refundInfoJson:{}", workOrder.getTradeNo(), refundInfoJson);
                     AlarmUtil.alarmAsync("结算辅助服务-查询出账的用户单", "退款信息为空tradeNo:" + workOrder.getTradeNo());
                     continue;
                 }
 
-                refundDetailBeanMap.put(workOrder.getOrderId(), refundDetailBeanList);
+                refundDetailBeanMap.put(workOrder.getOrderId(), refundDetailBeanList); // key:子订单号, value:RefundDetailBean
             }
 
             // x. 获取子订单集合相关的结算类型信息 key:promotionId, value: 结算类型
@@ -256,7 +256,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
             // 5. 将子订单设置退款详情  并输出map结果 key: 主订单id， value:List<OrderDetail>
             Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
-            for (OrderDetail _orderDetail : orderDetailList) {
+            for (OrderDetail _orderDetail : orderDetailList) { // 遍历退款的子订单
                 OrderDetailBo orderDetailBo = convertToOrderDetailBo(_orderDetail);
                 orderDetailBo.setSettlementType(promotionMap.get(orderDetailBo.getPromotionId()) == null ?
                         0 : promotionMap.get(orderDetailBo.getPromotionId()));
@@ -324,26 +324,26 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
                     List<OrderDetailBo> _orderDetailBoList = _ordersBo.getOrderDetailBoList(); // 子订单信息
                     for (OrderDetailBo _orderDetailBo : _orderDetailBoList) { // 遍历子订单
-                        log.warn("该子订单的退款详情: {}, {}",
-                                JSONUtil.toJsonStringWithoutNull(_orderDetailBo),  _orderDetailBo.getRefundDetailBeanList());
+                        // 该子订单的退款详情; 注意: 在测试数据下，有时获取不到该子订单的退款信息(退款信息为null), 所以需要判断
+                        List<RefundDetailBean> refundDetailBeanList = _orderDetailBo.getRefundDetailBeanList();
+                        if (CollectionUtils.isNotEmpty(refundDetailBeanList)) {
+                            for (RefundDetailBean refundDetailBean : refundDetailBeanList) { // 遍历该子订单的退款方式
+                                Integer refundFee = Integer.valueOf(refundDetailBean.getRefundFee());
 
-                        List<RefundDetailBean> refundDetailBeanList = _orderDetailBo.getRefundDetailBeanList(); // 该子订单的退款详情
-                        for (RefundDetailBean refundDetailBean : refundDetailBeanList) { // 遍历该子订单的退款方式
-                            Integer refundFee = Integer.valueOf(refundDetailBean.getRefundFee());
-
-                            if (PaymentTypeEnum.CARD.getName().equals(refundDetailBean.getPayType())) {
-                                cardRefundAmount = cardRefundAmount + refundFee;
-                            } else if (PaymentTypeEnum.BALANCE.getName().equals(refundDetailBean.getPayType())) {
-                                balanceRefundAmount = balanceRefundAmount + refundFee;
-                            } else if (PaymentTypeEnum.BANK.getName().equals(refundDetailBean.getPayType())) {
-                                bankRefundAmount = bankRefundAmount + refundFee;
-                            } else if (PaymentTypeEnum.WOA.getName().equals(refundDetailBean.getPayType())) {
-                                woaRefundAmount = woaRefundAmount + refundFee;
-                            } else {
-                                log.warn("结算辅助服务-查询出账的用户单 未找到相应的退款类型:{} outRefundNo:{}",
-                                        refundDetailBean.getPayType(), refundDetailBean.getOutRefundNo());
+                                if (PaymentTypeEnum.CARD.getName().equals(refundDetailBean.getPayType())) {
+                                    cardRefundAmount = cardRefundAmount + refundFee;
+                                } else if (PaymentTypeEnum.BALANCE.getName().equals(refundDetailBean.getPayType())) {
+                                    balanceRefundAmount = balanceRefundAmount + refundFee;
+                                } else if (PaymentTypeEnum.BANK.getName().equals(refundDetailBean.getPayType())) {
+                                    bankRefundAmount = bankRefundAmount + refundFee;
+                                } else if (PaymentTypeEnum.WOA.getName().equals(refundDetailBean.getPayType())) {
+                                    woaRefundAmount = woaRefundAmount + refundFee;
+                                } else {
+                                    log.warn("结算辅助服务-查询出账的用户单 未找到相应的退款类型:{} outRefundNo:{}",
+                                            refundDetailBean.getPayType(), refundDetailBean.getOutRefundNo());
+                                }
                             }
-                        }
+                        } // end fi
                     }
                 }
 

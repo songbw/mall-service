@@ -4,6 +4,7 @@ import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
 import com.fengchao.order.bean.bo.UserOrderBo;
 import com.fengchao.order.bean.vo.ExportShareProfitVo;
+import com.fengchao.order.constants.AppPlatformEnum;
 import com.fengchao.order.constants.PaymentTypeEnum;
 import com.fengchao.order.constants.SettlementTypeEnum;
 import com.fengchao.order.service.AdminShareProfitService;
@@ -58,12 +59,15 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
         } // end 遍历所有子订单
 
         // 准备导出数据
+        AppPlatformEnum appPlatformEnum = AppPlatformEnum.getAppTerminalTypeEnum(appId);
+
+        //
         List<ExportShareProfitVo> exportShareProfitVoList = new ArrayList<>();
         for (Integer settlementType : orderDetailBoMap.keySet()) {
             SettlementTypeEnum settlementTypeEnum = SettlementTypeEnum.getSettlementTypeEnum(settlementType); // 结算方式
             List<OrderDetailBo> _orderDetailBoList = orderDetailBoMap.get(settlementType); // 该结算方式下的所有子订单
 
-            List<ExportShareProfitVo> _list = assembleTotalAmountInSettlementType(settlementTypeEnum, _orderDetailBoList);
+            List<ExportShareProfitVo> _list = assembleTotalAmountInSettlementType(appPlatformEnum, settlementTypeEnum, _orderDetailBoList);
 
             exportShareProfitVoList.addAll(_list);
         }
@@ -77,24 +81,28 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
     /**
      * 计算某个指定结算类型下的所有子订单中，不同支付方式所消费的金额
      *
+     * @param appPlatformEnum 平台表识
      * @param settlementTypeEnum 指定的结算类型
      * @param orderDetailBoList 某个指定的结算类型下的子订单集合
      * @return
      */
-    private List<ExportShareProfitVo> assembleTotalAmountInSettlementType(SettlementTypeEnum settlementTypeEnum, List<OrderDetailBo> orderDetailBoList) {
+    private List<ExportShareProfitVo> assembleTotalAmountInSettlementType(AppPlatformEnum appPlatformEnum,
+                                                                          SettlementTypeEnum settlementTypeEnum,
+                                                                          List<OrderDetailBo> orderDetailBoList) {
         Integer balanceAmount = 0;
         Integer cardAmount = 0;
         Integer woaAmount = 0;
         Integer bankAmount = 0;
 
+        // 指定结算类型下所有子订单的各个支付方式之和
         for (OrderDetailBo orderDetailBo : orderDetailBoList) {
             balanceAmount = balanceAmount + orderDetailBo.getShareBalanceAmount();
             cardAmount = cardAmount + orderDetailBo.getShareCardAmount();
             woaAmount = woaAmount + orderDetailBo.getShareWoaAmount();
             bankAmount = bankAmount + orderDetailBo.getShareBankAmount();
-
         }
 
+        // 返回值
         List<ExportShareProfitVo> exportShareProfitVoList = new ArrayList<>();
 
         // 余额
@@ -102,6 +110,7 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
         balanceExportVo.setAmout(balanceAmount);
         balanceExportVo.setSettlementTypeEnum(settlementTypeEnum);
         balanceExportVo.setPaymentTypeEnum(PaymentTypeEnum.BALANCE);
+        balanceExportVo.setAppPlatformEnum(appPlatformEnum);
 
         exportShareProfitVoList.add(balanceExportVo);
 
@@ -110,6 +119,7 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
         cardExportVo.setAmout(cardAmount);
         cardExportVo.setSettlementTypeEnum(settlementTypeEnum);
         cardExportVo.setPaymentTypeEnum(PaymentTypeEnum.CARD);
+        cardExportVo.setAppPlatformEnum(appPlatformEnum);
 
         exportShareProfitVoList.add(cardExportVo);
 
@@ -118,6 +128,7 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
         woaExportVo.setAmout(woaAmount);
         woaExportVo.setSettlementTypeEnum(settlementTypeEnum);
         woaExportVo.setPaymentTypeEnum(PaymentTypeEnum.WOA);
+        woaExportVo.setAppPlatformEnum(appPlatformEnum);
 
         exportShareProfitVoList.add(woaExportVo);
 
@@ -126,6 +137,7 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
         bankExportVo.setAmout(bankAmount);
         bankExportVo.setSettlementTypeEnum(settlementTypeEnum);
         bankExportVo.setPaymentTypeEnum(PaymentTypeEnum.BANK);
+        bankExportVo.setAppPlatformEnum(appPlatformEnum);
 
         exportShareProfitVoList.add(bankExportVo);
 
