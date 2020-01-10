@@ -324,6 +324,8 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
                     List<OrderDetailBo> _orderDetailBoList = _ordersBo.getOrderDetailBoList(); // 子订单信息
                     for (OrderDetailBo _orderDetailBo : _orderDetailBoList) { // 遍历子订单
+                        log.warn("该子订单的退款详情: {}", JSONUtil.toJsonStringWithoutNull(_orderDetailBo));
+
                         List<RefundDetailBean> refundDetailBeanList = _orderDetailBo.getRefundDetailBeanList(); // 该子订单的退款详情
                         for (RefundDetailBean refundDetailBean : refundDetailBeanList) { // 遍历该子订单的退款方式
                             Integer refundFee = Integer.valueOf(refundDetailBean.getRefundFee());
@@ -337,7 +339,8 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
                             } else if (PaymentTypeEnum.WOA.getName().equals(refundDetailBean.getPayType())) {
                                 woaRefundAmount = woaRefundAmount + refundFee;
                             } else {
-                                log.warn("结算辅助服务-查询出账的用户单 未找到相应的退款类型 outRefundNo:{}", refundDetailBean.getOutRefundNo());
+                                log.warn("结算辅助服务-查询出账的用户单 未找到相应的退款类型:{} outRefundNo:{}",
+                                        refundDetailBean.getPayType(), refundDetailBean.getOutRefundNo());
                             }
                         }
                     }
