@@ -1,5 +1,6 @@
 package com.fengchao.order.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.bo.OrdersBo;
@@ -99,6 +100,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
         // x. 获取子订单集合相关的结算类型信息 key:promotionId, value: 结算类型
         Map<Integer, Integer> promotionMap = queryOrderDetailSettlementType(orderDetailList);
+        log.info("结算辅助服务-查询进账的用户单 获取子订单集合相关的结算类型信息(入账):{}", JSONUtil.toJsonString(promotionMap));
 
         // x. 子订单转map, key: orderId, value:List<OrderDetailBo>
         Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
@@ -135,7 +137,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             }
             ordersBo.setTotalSalePrice(totalPriceForOrder);
 
-            // 输出结果
+            // 输出结果map key: paymentNo, value:List<OrdersBo>
             List<OrdersBo> _ordersBoList = ordersBoMap.get(orders.getPaymentNo());
             if (_ordersBoList == null) {
                 _ordersBoList = new ArrayList<>();
@@ -147,7 +149,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
         // 5. 根据paymentNo集合，查询支付信息
         // 获取payNo
-        log.info("结算辅助服务-查询进账的用户单 需要查询用户单(支付单)的个数是:{}", paymentNoList.size());
+        log.info("结算辅助服务-查询进账的用户单 需要查询用户单支付方式信息的个数是:{}", paymentNoList.size());
         // 分区
         List<List<String>> paymentNoListPartition = Lists.partition(paymentNoList, LIST_PARTITION_SIZE_50);
 
@@ -160,7 +162,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             paymentMethodMap.putAll(_paymentMethodMap);
         }
 
-        log.info("结算辅助服务-查询进账的用户单 找到用户单(支付单)信息是:{}", JSONUtil.toJsonString(paymentMethodMap));
+        log.info("结算辅助服务-查询进账的用户单 找到用户单支付方式信息是:{}", JSONUtil.toJsonString(paymentMethodMap));
 
         // 6. 组装用户单数据
         List<UserOrderBo> userOrderBoList = new ArrayList<>();
@@ -182,7 +184,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             userOrderBoList.add(userOrderBo);
         }
 
-        log.info("结算辅助服务-查询进账的用户单 获取的用户单信息:{}", JSONUtil.toJsonString(userOrderBoList));
+        log.info("结算辅助服务-查询进账的用户单 获取的入账用户单信息:{}", JSONUtil.toJsonString(userOrderBoList));
 
         return userOrderBoList;
     }
@@ -193,7 +195,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             // 1. 查询退款的信息
             List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, startTime, endTime);
             if (CollectionUtils.isEmpty(workOrderList)) {
-                log.info("结算辅助服务-查询出账的用户单 未获取到退款记录");
+                log.info("结算辅助服务-查询退款共担 未获取到退款记录");
 
                 return Collections.emptyList();
             }
@@ -249,6 +251,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
             // x. 获取子订单集合相关的结算类型信息 key:promotionId, value: 结算类型
             Map<Integer, Integer> promotionMap = queryOrderDetailSettlementType(orderDetailList);
+            log.info("结算辅助服务-查询进账的用户单 获取子订单集合相关的结算类型信息(出账):{}", JSONUtil.toJsonString(promotionMap));
 
             // 5. 将子订单设置退款详情  并输出map结果 key: 主订单id， value:List<OrderDetail>
             Map<Integer, List<OrderDetailBo>> orderDetailBoMap = new HashMap<>();
@@ -343,7 +346,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
                 userOrderBoList.add(userOrderBo);
             } // end 组装用户单
 
-            log.info("结算辅助服务-查询出账的用户单 获取用户单信息:{}", JSONUtil.toJsonString(userOrderBoList));
+            log.info("结算辅助服务-查询出账的用户单 获取出账用户单信息:{}", JSONUtil.toJsonString(userOrderBoList));
             return userOrderBoList;
         } catch (Exception e) {
             log.error("结算辅助服务-查询出账的用户单 处理退款记录异常:{}", e.getMessage(), e);
@@ -354,12 +357,12 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
     @Override
     public List<UserOrderBo> mergeIncomeAndRefundUserOrder(Date startTime, Date endTime, String appId) {
         // 1. 查询入账和出账的用户单
-        // 获取入账的用户单 TODO : 如果为空？
+        // 获取入账的用户单
         List<UserOrderBo> incomeUserOrderBoList = queryIncomeUserOrderBoList(startTime, endTime, appId);
-        // 获取出账的用户单 TODO : 如果为空？
+        // 获取出账的用户单
         List<UserOrderBo> refundUserOrderBoList = queryRefundUserOrderBoList(startTime, endTime, appId);
 
-        // x. 将出账的用户单转map key: paymentNo, value:UserOrderBo  TODO : 如果为空？
+        // x. 将出账的用户单转map key: paymentNo, value:UserOrderBo
         Map<String, UserOrderBo> refundUserOrderBoMap = refundUserOrderBoList.stream().collect(Collectors.toMap(r -> r.getPaymentNo(), r -> r));
 
         // 2. 合并入账和出账的用户单，合并内容有: 金额信息、sku的数量
@@ -406,7 +409,9 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             }
         }
 
+        log.info("结算辅助服务-查询出账的用户单 合并出账和入账用户单信息为:{}", JSONUtil.toJsonString(mergedUserOrderBoList));
 
+        //
         return mergedUserOrderBoList;
     }
 
