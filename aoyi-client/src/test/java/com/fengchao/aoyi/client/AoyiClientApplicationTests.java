@@ -65,7 +65,9 @@ public class AoyiClientApplicationTests {
 
 	@Test
 	public void contextOrderLoads() {
+		StarOrderBean starOrderBean = new StarOrderBean() ;
 
+		orderStarService.addOrder(starOrderBean) ;
 	}
 
 }
