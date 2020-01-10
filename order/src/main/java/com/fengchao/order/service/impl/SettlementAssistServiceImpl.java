@@ -324,7 +324,8 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
 
                     List<OrderDetailBo> _orderDetailBoList = _ordersBo.getOrderDetailBoList(); // 子订单信息
                     for (OrderDetailBo _orderDetailBo : _orderDetailBoList) { // 遍历子订单
-                        log.warn("该子订单的退款详情: {}", JSONUtil.toJsonStringWithoutNull(_orderDetailBo));
+                        log.warn("该子订单的退款详情: {}, {}",
+                                JSONUtil.toJsonStringWithoutNull(_orderDetailBo),  _orderDetailBo.getRefundDetailBeanList());
 
                         List<RefundDetailBean> refundDetailBeanList = _orderDetailBo.getRefundDetailBeanList(); // 该子订单的退款详情
                         for (RefundDetailBean refundDetailBean : refundDetailBeanList) { // 遍历该子订单的退款方式
