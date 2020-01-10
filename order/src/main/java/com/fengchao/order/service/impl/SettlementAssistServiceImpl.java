@@ -519,12 +519,14 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
      * @param orderDetailList
      */
     private Map<Integer, Integer> queryOrderDetailSettlementType(List<OrderDetail> orderDetailList) {
-        List<Integer> promotionIdList = orderDetailList.stream().map(od -> od.getPromotionId()).collect(Collectors.toList());
+        // 活动的id集合
+        Set<Integer> promotionIdSet = orderDetailList.stream().map(od -> od.getPromotionId()).collect(Collectors.toSet());
 
         // 分区
+        List<Integer> promotionIdList = new ArrayList<>(promotionIdSet);
         List<List<Integer>> promotionIdListPartition = Lists.partition(promotionIdList, LIST_PARTITION_SIZE_50);
 
-        //
+        // 根据活动的id集合 批量查询 活动信息
         List<PromotionBean> promotionBeanList = new ArrayList<>();
         for (List<Integer> _itemIdList : promotionIdListPartition) {
             List<PromotionBean> _list = equityRpcService.queryPromotionByIdList(_itemIdList);
@@ -532,7 +534,8 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
         }
 
         // 转map key:promotionId, value: 结算类型（0：普通类结算， 1：秒杀类结算， 2：精品类结算）
-        Map<Integer, Integer> promotionMap = promotionBeanList.stream().collect(Collectors.toMap(p -> p.getId(), p -> p.getAccountType()));
+        Map<Integer, Integer> promotionMap = promotionBeanList.stream()
+                .collect(Collectors.toMap(p -> p.getId(), p -> p.getAccountType(), (oldValue, newValue) -> oldValue));
 
         return promotionMap;
     }
