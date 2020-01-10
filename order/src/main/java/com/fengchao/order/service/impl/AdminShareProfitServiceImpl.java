@@ -32,7 +32,8 @@ public class AdminShareProfitServiceImpl implements AdminShareProfitService {
         settlementAssistService.assignPaymentAmout(mergedUserOrderBoList);
 
         if (CollectionUtils.isEmpty(mergedUserOrderBoList)) {
-            // TODO :
+            log.warn("导出分润表 获取出账和入账的用户单为空");
+            return Collections.emptyList();
         }
 
         // 按照结算类型聚合子订单 key: 结算类型(0：普通类结算， 1：秒杀类结算， 2：精品类结算)， value: List<OrderDetailBo>
