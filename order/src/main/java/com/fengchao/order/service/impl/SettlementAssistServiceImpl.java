@@ -506,6 +506,8 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             }
         }
 
+        log.info("结算辅助服务 每个用户单中的子订单所占每种支付方式的金额(分摊用户单的费用)结果:{}", JSONUtil.toJsonStringWithoutNull(userOrderBoList));
+
         return userOrderBoList;
     }
 
