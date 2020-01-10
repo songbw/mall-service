@@ -47,9 +47,16 @@ public class AoyiClientApplicationTests {
 		addressInfoQueryBean.setCityName("重庆市");
 		addressInfoQueryBean.setRegionName("涪陵区");
 		productStarService.getAddressInfo(addressInfoQueryBean) ;
+
+
+	}
+
+	@Ignore
+	@Test
+	public void contextOrderLoads() {
 		HoldSkuInventoryQueryBean holdSkuInventoryQueryBean = new HoldSkuInventoryQueryBean() ;
 		holdSkuInventoryQueryBean.setAreaId("4524130,4524157,4524163");
-		holdSkuInventoryQueryBean.setOutOrderNo("2345");
+		holdSkuInventoryQueryBean.setOutOrderNo("202001103");
 		StarCodeBean starCodeBean = new StarCodeBean() ;
 		starCodeBean.setCode("SL-ECP-37234");
 		starCodeBean.setQuantity("3");
@@ -57,17 +64,28 @@ public class AoyiClientApplicationTests {
 		starCodeBeans.add(starCodeBean) ;
 		holdSkuInventoryQueryBean.setCodeInvList(starCodeBeans);
 		productStarService.preHoldSkuInventory(holdSkuInventoryQueryBean) ;
-		ReleaseSkuInventoryQueryBean releaseSkuInventoryQueryBean = new ReleaseSkuInventoryQueryBean() ;
-		releaseSkuInventoryQueryBean.setOutOrderNo("345333");
-		releaseSkuInventoryQueryBean.setCodeInvList(starCodeBeans);
-		productStarService.releaseSkuInventory(releaseSkuInventoryQueryBean) ;
-	}
 
-	@Test
-	public void contextOrderLoads() {
+
 		StarOrderBean starOrderBean = new StarOrderBean() ;
-
+		starOrderBean.setOutOrderNo("202001103");
+		starOrderBean.setReceiverAreaId("4524130,4524157,4524163");
+		starOrderBean.setReceiverAreaName("广东省,深圳市,龙岗区");
+		starOrderBean.setReceiverAddr("李朗怡亚通整合物流");
+		starOrderBean.setReceiver("哇哈哈");
+		starOrderBean.setReceiverPhone("18500001112");
+		starOrderBean.setReceiverMobile("18500001112");
+		starOrderBean.setFreight("20");
+		starOrderBean.setBuyerRemark("11");
+		starOrderBean.setSellerRemark("22");
+		starOrderBean.setSkuList(starCodeBeans);
 		orderStarService.addOrder(starOrderBean) ;
+
+//		ReleaseSkuInventoryQueryBean releaseSkuInventoryQueryBean = new ReleaseSkuInventoryQueryBean() ;
+//		releaseSkuInventoryQueryBean.setOutOrderNo("345333");
+//		releaseSkuInventoryQueryBean.setCodeInvList(starCodeBeans);
+//		productStarService.releaseSkuInventory(releaseSkuInventoryQueryBean) ;
+
+//		orderStarService.confirmOrder("323929029") ;
 	}
 
 }

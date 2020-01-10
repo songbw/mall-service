@@ -3,6 +3,9 @@ package com.fengchao.aoyi.client.starBean;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author songbw
  * @date 2020/1/3 16:23
@@ -24,5 +27,5 @@ public class StarOrderBean {
     private String idcardNo ;
     private String idcardFirstUrl ;
     private String idcardSecondUrl ;
-    private String skuList ;
+    private List<StarCodeBean> skuList = new ArrayList<>();
 }
