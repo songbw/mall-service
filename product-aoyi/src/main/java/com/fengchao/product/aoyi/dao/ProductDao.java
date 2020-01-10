@@ -368,7 +368,9 @@ public class ProductDao {
         criteria.andMpuEqualTo(bean.getMpu());
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
-        aoyiProdIndex.setPrice(bean.getPrice());
+        if (!StringUtils.isEmpty(bean.getPrice())) {
+            aoyiProdIndex.setPrice(bean.getPrice());
+        }
         if (!StringUtils.isEmpty(bean.getState())) {
             aoyiProdIndex.setState(bean.getState());
         }

@@ -534,8 +534,22 @@ public class CouponServiceImpl implements CouponService {
                         }
                     }
                 }
-                couponAndPromBean.setPromotions(beans);
             }
+            beans.sort(new Comparator<PromotionInfoBean>() {
+                @Override
+                public int compare(PromotionInfoBean o1, PromotionInfoBean o2) {
+                    //以下代码决定按日期升序排序，若将return“-1”与“1”互换，即可实现升序。
+                    //getTime 方法返回一个整数值，这个整数代表了从 1970 年 1 月 1 日开始计算到 Date 对象中的时间之间的毫秒数。
+                    if (o1.getStartDate().after(o2.getStartDate())) {
+                        return 1;
+                    } else if (o1.getStartDate().before(o2.getStartDate())) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+            couponAndPromBean.setPromotions(beans);
 
             List<CouponBean> couponBeans =  new ArrayList<>();
             mapper.selectCouponByMpu(bean).forEach(coupon -> {

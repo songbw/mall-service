@@ -111,6 +111,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return result ;
         }
         ShoppingCart temp = mapper.selectByPrimaryKey(bean.getId()) ;
+        if (temp == null) {
+            result.setCode(4000003);
+            result.setMsg("ID不存在");
+            return result ;
+        }
         int perLimit = findPromotionBySku(temp.getMpu(), temp.getOpenId(), temp.getAppId()) ;
         if (perLimit != -1) {
             if (perLimit <= bean.getCount()) {

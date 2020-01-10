@@ -3,8 +3,10 @@ package com.fengchao.aoyi.client;
 import com.fengchao.aoyi.client.bean.OperaResponse;
 import com.fengchao.aoyi.client.bean.QueryBean;
 import com.fengchao.aoyi.client.starBean.*;
+import com.fengchao.aoyi.client.startService.OrderStarService;
 import com.fengchao.aoyi.client.startService.ProductStarService;
 import com.google.inject.internal.cglib.core.$ClassNameReader;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,10 @@ public class AoyiClientApplicationTests {
 
 	@Autowired
 	private ProductStarService productStarService;
+	@Autowired
+	private OrderStarService orderStarService ;
 
+	@Ignore
 	@Test
 	public void contextLoads() {
 		QueryBean queryBean = new QueryBean() ;
@@ -56,6 +61,13 @@ public class AoyiClientApplicationTests {
 		releaseSkuInventoryQueryBean.setOutOrderNo("345333");
 		releaseSkuInventoryQueryBean.setCodeInvList(starCodeBeans);
 		productStarService.releaseSkuInventory(releaseSkuInventoryQueryBean) ;
+	}
+
+	@Test
+	public void contextOrderLoads() {
+		StarOrderBean starOrderBean = new StarOrderBean() ;
+
+		orderStarService.addOrder(starOrderBean) ;
 	}
 
 }

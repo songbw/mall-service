@@ -86,6 +86,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailMapper orderDetailMapper;
     @Autowired
     private Environment environment;
+    @Autowired
+    private OrdersMapper mapper ;
 
     @Transactional
     @Override
@@ -1214,6 +1216,96 @@ public class OrderServiceImpl implements OrderService {
             cancel(order.getId()) ;
         });
         response.setData(orderNos);
+        return response;
+    }
+
+    @Override
+    public OperaResponse workOrderGoBack(Integer orderDetailId) {
+        OperaResponse response = new OperaResponse() ;
+        // 查询子订单
+        OrderDetail checkOrderDetail = orderDetailMapper.selectByPrimaryKey(orderDetailId) ;
+        if (checkOrderDetail == null) {
+            response.setCode(400010);
+            response.setMsg("订单号不存在");
+            return response ;
+        }
+        if (checkOrderDetail.getStatus() != 5) {
+            response.setCode(400011);
+            response.setMsg("子订单状态不上申请售后状态");
+            return response ;
+        }
+        if (StringUtils.isEmpty(checkOrderDetail.getLogisticsId())) {
+            checkOrderDetail.setStatus(1);
+        } else {
+            checkOrderDetail.setStatus(2);
+            // 启动定时完成任务
+            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetailId);
+        }
+        Date date = new Date() ;
+        checkOrderDetail.setUpdatedAt(date);
+//        checkOrderDetail.setCompleteTime(new Date(-28800000));
+        // 更新子订单
+        orderDetailMapper.updateByPrimaryKey(checkOrderDetail) ;
+        // 查询主订单，判断是否要更新
+        Orders checkOrders = mapper.selectByPrimaryKey(checkOrderDetail.getOrderId()) ;
+        if (checkOrders != null) {
+            if (checkOrders.getStatus() == 2 || checkOrders.getStatus() == 3) {
+                checkOrders.setStatus(1);
+                checkOrders.setUpdatedAt(date);
+                // 更新主订单
+                mapper.updateByPrimaryKeySelective(checkOrders) ;
+            }
+        }
+        response.setData(orderDetailId);
+        return response;
+    }
+
+    @Override
+    public OperaResponse updateOrderReceiverAddress(ReceiverAddressBean bean) {
+        OperaResponse response = new OperaResponse() ;
+        if (bean == null) {
+            response.setCode(400020);
+            response.setMsg("数据不能为null");
+            return response ;
+        }
+        if (bean.getOrderDetailId() == null || bean.getOrderDetailId() == 0) {
+            response.setCode(400021);
+            response.setMsg("子订单ID不能为0或null");
+            return response ;
+        }
+        OrderDetail checkOrderDetail = orderDetailMapper.selectByPrimaryKey(bean.getOrderDetailId()) ;
+        if (checkOrderDetail == null) {
+            response.setCode(400022);
+            response.setMsg("子订单ID不存在");
+            return response ;
+        }
+        if (checkOrderDetail.getStatus() == 5) {
+            checkOrderDetail.setStatus(1);
+            checkOrderDetail.setUpdatedAt(new Date());
+        }
+        Orders checkOrders = mapper.selectByPrimaryKey(checkOrderDetail.getOrderId()) ;
+        if (checkOrders == null) {
+            response.setCode(400023);
+            response.setMsg("所属主订单不存在");
+            return response ;
+        }
+        checkOrders.setReceiverName(bean.getReceiverName());
+        checkOrders.setMobile(bean.getMobile());
+        checkOrders.setProvinceId(bean.getProvinceId());
+        checkOrders.setProvinceName(bean.getProvinceName());
+        checkOrders.setCityId(bean.getCityId());
+        checkOrders.setCityName(bean.getCityName());
+        checkOrders.setCountyId(bean.getCountyId());
+        checkOrders.setCountyName(bean.getCountyName());
+        checkOrders.setAddress(bean.getAddress());
+        checkOrders.setZip(bean.getZip());
+        checkOrders.setUpdatedAt(new Date());
+        if (checkOrders.getStatus() == 3) {
+            checkOrders.setStatus(1);
+        }
+        mapper.updateByPrimaryKeySelective(checkOrders) ;
+        orderDetailMapper.updateByPrimaryKeySelective(checkOrderDetail) ;
+        response.setData(bean.getOrderDetailId());
         return response;
     }
 

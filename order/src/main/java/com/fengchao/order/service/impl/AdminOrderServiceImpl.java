@@ -135,7 +135,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
 
         // 4.获取组装结果的其他相关数据
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null, paymentMethodInfoMap , null);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, null, paymentMethodInfoMap, null);
 
         log.info("导出订单 获取导出结果List<ExportOrdersVo>:{}", JSONUtil.toJsonString(exportOrdersVoList));
 
@@ -144,7 +144,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     /**
      * 导出订单入账对账单 - 获取导出的vo : List<ExportOrdersVo>
-     *
+     * <p>
      * 1.获取"已完成","已退款"状态的子订单
      * 2.拼装导出数据
      *
@@ -211,7 +211,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     /**
      * 导出订单出账对账单 - 获取导出的vo : List<ExportOrdersVo>
-     *
+     * <p>
      * 1.获取"已完成","已退款"状态的子订单
      * 2.拼装导出数据
      *
@@ -283,13 +283,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Map<String, List<RefundMethodInfoBean>> refundNoOrderInfoMap = new HashMap<>();
         for (WorkOrder workOrder : workOrderList) {
             List<RefundMethodInfoBean> refundMethodInfoBeans = refundMethodInfoMap.get(workOrder.getGuanaitongTradeNo());
-            if(CollectionUtils.isNotEmpty(refundMethodInfoBeans)){
+            if (CollectionUtils.isNotEmpty(refundMethodInfoBeans)) {
                 refundNoOrderInfoMap.put(workOrder.getOrderId(), refundMethodInfoBeans);
             }
         }
 
         // 3.组装结果!!!
-        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, orderDetailRefundAmountMap,null, refundNoOrderInfoMap);
+        List<ExportOrdersVo> exportOrdersVoList = assembleExportOrderData(ordersList, orderDetailList, orderDetailRefundAmountMap, null, refundNoOrderInfoMap);
 
         // patch, 将状态统一为"已退款"
         if (CollectionUtils.isNotEmpty(exportOrdersVoList)) {
@@ -326,41 +326,32 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Platform platform = productRpcService.findPlatformByAppId(billExportReqVo.getAppId());
 
         Map<String, Orders> ordersMap = new HashMap<>();
-        if (billExportReqVo.getPayType().equals("bank")) {
-            List<String> paymentNos = new ArrayList<>();
-            for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
-                paymentNos.add(bean.getOrderNo());
+        List<String> paymentNos = new ArrayList<>();
+        for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
+            paymentNos.add(bean.getOrderNo());
+        }
+        List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentNos(paymentNos);
+        for (Orders orders : ordersList) {
+            ordersMap.put(orders.getPaymentNo(), orders);
+        }
+        Map<String, OrderPayMethodInfoBean> parInfoMap = new HashMap<>();
+        for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
+            Orders orders = ordersMap.get(bean.getOrderNo());
+            if (orders != null) {
+                bean.setCardNo(orders.getOpenId());
+                bean.setAppId(platform.getName());
             }
-            List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentNos(paymentNos);
-            for (Orders orders : ordersList) {
-                ordersMap.put(orders.getPaymentNo(), orders);
-            }
-            Map<String, OrderPayMethodInfoBean> parInfoMap = new HashMap<>();
-            for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
-                Orders orders = ordersMap.get(bean.getOrderNo());
-                if(orders != null){
-                    bean.setCardNo(orders.getOpenId());
-                    bean.setAppId(platform.getName());
-                }
-                bean.setTradeType("已完成");
-                parInfoMap.put(bean.getOutTradeNo(), bean);
-            }
+            bean.setTradeType("已完成");
+            parInfoMap.put(bean.getOutTradeNo(), bean);
+        }
 
-            for (OrderPayMethodInfoBean bean : refundMethodInfoBeans) {
-                OrderPayMethodInfoBean payMethodInfoBean = parInfoMap.get(bean.getOutTradeNo());
-                if(payMethodInfoBean != null){
-                    bean.setCardNo(payMethodInfoBean.getCardNo());
-                    bean.setAppId(platform.getName());
-                }
-                bean.setTradeType("已退款");
+        for (OrderPayMethodInfoBean bean : refundMethodInfoBeans) {
+            OrderPayMethodInfoBean payMethodInfoBean = parInfoMap.get(bean.getOutTradeNo());
+            if (payMethodInfoBean != null) {
+                bean.setCardNo(payMethodInfoBean.getCardNo());
+                bean.setAppId(platform.getName());
             }
-        }else{
-            if (CollectionUtils.isNotEmpty(payMethodInfoBeans)) {
-                payMethodInfoBeans.stream().forEach(e -> e.setTradeType("已完成"));
-            }
-            if (CollectionUtils.isNotEmpty(refundMethodInfoBeans)) {
-                refundMethodInfoBeans.stream().forEach(e -> e.setTradeType("已退款"));
-            }
+            bean.setTradeType("已退款");
         }
         PayMethodInfoBeanMap.put("consume", payMethodInfoBeans);
         PayMethodInfoBeanMap.put("refund", refundMethodInfoBeans);
@@ -519,9 +510,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
 
-
-
-
     //=============================== private =============================
 
     /**
@@ -593,7 +581,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
 
 
-
         // 4.获取组装结果的其他相关数据
         // 4.1 获取导出需要的promotion信息列表
         List<PromotionBean> promotionBeanList =
@@ -622,8 +609,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
         // 转map
         Map<Long, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
-
-
 
 
         // x. ordersBoList 组装 List<ExportOrdersVo>
@@ -678,7 +663,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         } else if (settlement == 2) {
                             exportOrdersVo.setSettlementType("精品类结算");
                         }
-                    }else{
+                    } else {
                         exportOrdersVo.setSettlementType("普通类结算");
                     }
                     exportOrdersVo.setCouponCode(ordersBo.getCouponCode()); // 券码
@@ -703,7 +688,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCouponPrice(ordersBo.getCouponDiscount() == null ?
                             0 : new BigDecimal(ordersBo.getCouponDiscount().toString()).multiply(new BigDecimal(100)).intValue()); // 主订单 券支付金额
                     exportOrdersVo.setSkuCouponDiscount(orderDetailBo.getSkuCouponDiscount() == null ?
-                            0 :orderDetailBo.getSkuCouponDiscount()); // 子订单 sku的优惠券支付金额 分
+                            0 : orderDetailBo.getSkuCouponDiscount()); // 子订单 sku的优惠券支付金额 分
 
                     exportOrdersVo.setPayPrice(ordersBo.getSaleAmount() == null ?
                             0 : new BigDecimal(ordersBo.getSaleAmount().toString()).multiply(new BigDecimal(100)).intValue()); // // 主订单实际支付的价格 单位:分 // (exportOrdersVo.getTotalRealPrice() - exportOrdersVo.getCouponPrice()); // orderDetailBo.getSalePrice().multiply(new BigDecimal(100)).intValue()
@@ -725,12 +710,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     }
 
                     // 支付方式
-                    if(paymentMethodInfoMap != null){
+                    if (paymentMethodInfoMap != null) {
                         List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = paymentMethodInfoMap.get(ordersBo.getPaymentNo());
                         exportOrdersVo.setBalanceFee("0"); // 余额支付金额 单位 元
                         exportOrdersVo.setHuiminCardFee("0"); // 惠民卡支付金额 单位 元
                         exportOrdersVo.setWoaFee("0"); // 联机账户支付 单位 元
                         exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
+                        exportOrdersVo.setFcalipayFee("0"); // 支付宝支付 单位 元
+                        exportOrdersVo.setFcwxFee("0"); // 微信支付 单位 元
                         if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
 
                             boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
@@ -776,6 +763,18 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         exportOrdersVo.setQuickPayFee(exportOrdersVo.getQuickPayFee() + "(异常)");
                                     }
+                                }else if (OrderPayMethodTypeEnum.FCALIPAY.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcalipayFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcalipayFee(exportOrdersVo.getFcalipayFee()+ "(异常)");
+                                    }
+                                }else if (OrderPayMethodTypeEnum.FCWX.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcwxFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcwxFee(exportOrdersVo.getFcwxFee() + "(异常)");
+                                    }
                                 }
                             }
 
@@ -789,12 +788,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     }
 
                     // 退款方式
-                    if(refundMethodInfoMap != null){
+                    if (refundMethodInfoMap != null) {
                         List<RefundMethodInfoBean> refundMethodInfoList = refundMethodInfoMap.get(orderDetailBo.getSubOrderId());
                         exportOrdersVo.setBalanceRefund("0"); // 余额支付金额 单位 元
                         exportOrdersVo.setHuiminCardRefund("0"); // 惠民卡支付金额 单位 元
                         exportOrdersVo.setWoaRefund("0"); // 联机账户支付 单位 元
                         exportOrdersVo.setQuickPayRefund("0"); // 快捷支付 单位 元
+                        exportOrdersVo.setFcalipayRefund("0"); // 支付宝支付 单位 元
+                        exportOrdersVo.setFcwxRefund("0"); // 微信支付 单位 元
                         if (CollectionUtils.isNotEmpty(refundMethodInfoList)) {
 
                             boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
@@ -840,6 +841,18 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         exportOrdersVo.setQuickPayRefund(exportOrdersVo.getQuickPayRefund() + "(超时)");
                                     }
+                                }else if (OrderPayMethodTypeEnum.FCALIPAY.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcalipayRefund(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcalipayRefund(exportOrdersVo.getFcalipayRefund() + "(异常)");
+                                    }
+                                }else if (OrderPayMethodTypeEnum.FCWX.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setFcwxRefund(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setFcwxRefund(exportOrdersVo.getFcwxRefund()+ "(异常)");
+                                    }
                                 }
                             }
 
@@ -855,7 +868,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVoList.add(exportOrdersVo);
                 } // 遍历子订单 end
             } // end if 子订单不为空
-
 
 
         } // 遍历主订单 end

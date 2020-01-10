@@ -301,7 +301,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         }
         List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
         bean.forEach(aoyiProdIndex -> {
-            if (StringUtils.isEmpty(aoyiProdIndex.getMpu()) || StringUtils.isEmpty(aoyiProdIndex.getPrice()) || StringUtils.isEmpty(aoyiProdIndex.getState())) {
+            if (StringUtils.isEmpty(aoyiProdIndex.getMpu())) {
                 aoyiProdIndices.add(aoyiProdIndex) ;
             } else {
                 productDao.updatePriceAndState(aoyiProdIndex);

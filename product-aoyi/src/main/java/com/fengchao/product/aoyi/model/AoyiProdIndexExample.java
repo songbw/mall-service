@@ -1974,6 +1974,76 @@ public class AoyiProdIndexExample {
             addCriterion("tax_rate not between", value1, value2, "taxRate");
             return (Criteria) this;
         }
+
+        public Criteria andFloorPriceIsNull() {
+            addCriterion("floor_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceIsNotNull() {
+            addCriterion("floor_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceEqualTo(String value) {
+            addCriterion("floor_price =", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceNotEqualTo(String value) {
+            addCriterion("floor_price <>", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceGreaterThan(String value) {
+            addCriterion("floor_price >", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceGreaterThanOrEqualTo(String value) {
+            addCriterion("floor_price >=", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceLessThan(String value) {
+            addCriterion("floor_price <", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceLessThanOrEqualTo(String value) {
+            addCriterion("floor_price <=", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceLike(String value) {
+            addCriterion("floor_price like", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceNotLike(String value) {
+            addCriterion("floor_price not like", value, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceIn(List<String> values) {
+            addCriterion("floor_price in", values, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceNotIn(List<String> values) {
+            addCriterion("floor_price not in", values, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceBetween(String value1, String value2) {
+            addCriterion("floor_price between", value1, value2, "floorPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andFloorPriceNotBetween(String value1, String value2) {
+            addCriterion("floor_price not between", value1, value2, "floorPrice");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
