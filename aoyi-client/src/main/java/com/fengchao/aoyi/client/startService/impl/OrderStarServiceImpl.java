@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,11 +41,19 @@ public class OrderStarServiceImpl implements OrderStarService {
         params.put("buyerRemark", bean.getBuyerRemark());
         params.put("sellerRemark", bean.getSellerRemark());
         //海淘商品必填
-        params.put("idcardName", bean.getIdcardName());
-        params.put("idcardNo", bean.getIdcardNo());
-        params.put("idcardFirstUrl", bean.getIdcardFirstUrl());
-        params.put("idcardSecondUrl", bean.getIdcardSecondUrl());
-        params.put("skuList", bean.getSkuList());
+        if (!StringUtils.isEmpty(bean.getIdcardName())) {
+            params.put("idcardName", bean.getIdcardName());
+        }
+        if (!StringUtils.isEmpty(bean.getIdcardNo())) {
+            params.put("idcardNo", bean.getIdcardNo());
+        }
+        if (!StringUtils.isEmpty(bean.getIdcardFirstUrl())) {
+            params.put("idcardFirstUrl", bean.getIdcardFirstUrl());
+        }
+        if (!StringUtils.isEmpty(bean.getIdcardSecondUrl())) {
+            params.put("idcardSecondUrl", bean.getIdcardSecondUrl());
+        }
+        params.put("skuList", JSONUtil.toJsonString(bean.getSkuList()));
         OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_ORDER_ADD_ORDER, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
         log.info("订单下单, 返回结果：{}", JSONUtil.toJsonString(response));
         if (response.getCode() == 0) {
