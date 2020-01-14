@@ -5,6 +5,7 @@ import com.fengchao.aoyi.client.bean.QueryCarriage;
 import com.fengchao.aoyi.client.bean.QueryCityPrice;
 import com.fengchao.aoyi.client.bean.QueryInventory;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
+import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.ProductService;
 import com.fengchao.aoyi.client.utils.JSONUtil;
@@ -57,6 +58,39 @@ public class WeipinhuiController {
         }
 
         log.info("获取品牌列表 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
+
+    /**
+     * 获取类目列表
+     *
+     * http://localhost:8001/weipinhui/getCategory?pageNumber=1&pageSize=20
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/getCategory")
+    private OperaResult<List<CategoryResDto>> getCategory(@RequestParam("pageNumber") Integer pageNumber,
+                                                       @RequestParam("pageSize") Integer pageSize) {
+        log.info("获取类目列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
+
+        OperaResult<List<CategoryResDto>> operaResult = new OperaResult<>();
+        try {
+            List<CategoryResDto> categoryResDtoList = productWeipinhuiService.getCategory(pageNumber, pageSize);
+
+            operaResult.setData(categoryResDtoList);
+            operaResult.setCode(200);
+        } catch (Exception e) {
+            log.error("获取类目列表 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败");
+            operaResult.setCode(500);
+        }
+
+        log.info("获取类目列表 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }

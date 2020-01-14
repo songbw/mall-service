@@ -29,6 +29,9 @@ public class WeipinhuiClientConfig {
     @Value("${weipinhui.url.getBrand}")
     private String urlGetBrand;
 
+    @Value("${weipinhui.url.getCategory}")
+    private String urlGetCategory;
+
     @PostConstruct//在servlet初始化的时候加载，并且只加载一次，和构造代码块的作用类似
     private void init() {
         log.info("product config properties start!");
@@ -39,5 +42,6 @@ public class WeipinhuiClientConfig {
         log.info("weipinhui.privateKey = {}", privateKey);
 
         log.info("weipinhui.url.getBrand = {}", urlGetBrand);
+        log.info("weipinhui.url.getCategory = {}", urlGetCategory);
     }
 }

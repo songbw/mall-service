@@ -5,6 +5,7 @@ weipinhui:
   appSecret: BD0A589C139D536F0FE402060775E35F
   url:
     getBrand: http://aoyitest.aoyi365.com:8080/aoyi/rest/brand/getBrand
+    getCategory: http://aoyitest.aoyi365.com:8080/aoyi/rest/category/getCategory
 
   privateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDApPEzql843P16
     ESyxnv6VB4xR9FV8beK7B4u4kDogxP/UHebwfLzoYXhQp9mHH22cTgNamPmh0PD/
