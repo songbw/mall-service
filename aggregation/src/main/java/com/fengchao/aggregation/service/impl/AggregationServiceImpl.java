@@ -194,6 +194,7 @@ public class AggregationServiceImpl implements AggregationService {
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("name", aoyiProdIndex.getName());
+                                jsonObject.put("subTitle", aoyiProdIndex.getSubTitle());
                             }
                         }
                 }
@@ -222,6 +223,7 @@ public class AggregationServiceImpl implements AggregationService {
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
                                 jsonObject.put("name", aoyiProdIndex.getName());
+                                jsonObject.put("subTitle", aoyiProdIndex.getSubTitle());
                                 if(promotionMpu != null){
                                     jsonObject.put("discount",  promotionMpu.getDiscount());
                                 }

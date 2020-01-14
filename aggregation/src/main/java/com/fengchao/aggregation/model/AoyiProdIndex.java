@@ -27,6 +27,8 @@ public class AoyiProdIndex {
 
     private String price;
 
+    private Integer iprice;
+
     private String sprice;
 
     private String imagesUrl;
@@ -44,6 +46,20 @@ public class AoyiProdIndex {
     private Date createdAt;
 
     private Date updatedAt;
+
+    private Date syncAt;
+
+    private Integer type;
+
+    private String compareUrl;
+
+    private String subTitle;
+
+    private String comparePrice;
+
+    private String taxRate;
+
+    private String floorPrice;
 
     public Integer getId() {
         return id;
@@ -141,6 +157,14 @@ public class AoyiProdIndex {
         this.price = price == null ? null : price.trim();
     }
 
+    public Integer getIprice() {
+        return iprice;
+    }
+
+    public void setIprice(Integer iprice) {
+        this.iprice = iprice;
+    }
+
     public String getSprice() {
         return sprice;
     }
@@ -211,5 +235,61 @@ public class AoyiProdIndex {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Date getSyncAt() {
+        return syncAt;
+    }
+
+    public void setSyncAt(Date syncAt) {
+        this.syncAt = syncAt;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getCompareUrl() {
+        return compareUrl;
+    }
+
+    public void setCompareUrl(String compareUrl) {
+        this.compareUrl = compareUrl == null ? null : compareUrl.trim();
+    }
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle == null ? null : subTitle.trim();
+    }
+
+    public String getComparePrice() {
+        return comparePrice;
+    }
+
+    public void setComparePrice(String comparePrice) {
+        this.comparePrice = comparePrice == null ? null : comparePrice.trim();
+    }
+
+    public String getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(String taxRate) {
+        this.taxRate = taxRate == null ? null : taxRate.trim();
+    }
+
+    public String getFloorPrice() {
+        return floorPrice;
+    }
+
+    public void setFloorPrice(String floorPrice) {
+        this.floorPrice = floorPrice == null ? null : floorPrice.trim();
     }
 }
