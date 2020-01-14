@@ -96,7 +96,10 @@ public class OrdersDao {
         OrdersExample ordersExample = new OrdersExample();
         OrdersExample.Criteria criteria = ordersExample.createCriteria();
         criteria.andIdIn(idList);
-        criteria.andAppIdEqualTo(appId);
+
+        if (StringUtils.isNotBlank(appId)) {
+            criteria.andAppIdEqualTo(appId);
+        }
 
         List<Orders> ordersList = ordersMapper.selectByExample(ordersExample);
 
