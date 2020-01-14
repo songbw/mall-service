@@ -437,7 +437,9 @@ public class LoginServiceImpl implements ILoginService {
             return result;
         }
         BindSubAccount bindSubAccount = bindSubAccountDao.selectByOpenIdAndAppId(appId, openId) ;
-        result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
+        if (bindSubAccount != null && bindSubAccount.getUserId() != null) {
+            result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
+        }
         return result;
     }
 
