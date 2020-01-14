@@ -418,12 +418,11 @@ public class AdminOrderController {
 
             // 3. 输出文件
             try {
-//                response.setHeader("content-type", "application/octet-stream");
-//                response.setContentType("application/octet-stream");
-//                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-//
-//                outputStream = response.getOutputStream();
-                outputStream = new FileOutputStream("D://" + fileName);
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
@@ -716,8 +715,7 @@ public class AdminOrderController {
                 response.setContentType("application/octet-stream");
                 response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-//                outputStream = response.getOutputStream();
-                outputStream = new FileOutputStream("D://" + fileName);
+                outputStream = response.getOutputStream();
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {

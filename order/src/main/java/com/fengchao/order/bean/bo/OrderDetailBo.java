@@ -1,10 +1,12 @@
 package com.fengchao.order.bean.bo;
 
+import com.fengchao.order.rpc.extmodel.RefundDetailBean;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author tom
@@ -64,6 +66,36 @@ public class OrderDetailBo {
     private String remark;
 
     private BigDecimal sprice;
+
+    /**
+     * 该子订单的退款详情
+     */
+    private List<RefundDetailBean> refundDetailBeanList;
+
+    /**
+     * 结算类型 （0：普通类结算， 1：秒杀类结算， 2：精品类结算）
+     */
+    private Integer settlementType;
+
+    /**
+     * 余额分摊 单位分
+     */
+    private Integer shareBalanceAmount;
+
+    /**
+     * 惠民卡分摊 单位分
+     */
+    private Integer shareCardAmount;
+
+    /**
+     * 联机账户分摊 单位分
+     */
+    private Integer shareWoaAmount;
+
+    /**
+     * 快捷支付分摊 单位分
+     */
+    private Integer shareBankAmount;
 
     /**
      * 0：待付款；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
