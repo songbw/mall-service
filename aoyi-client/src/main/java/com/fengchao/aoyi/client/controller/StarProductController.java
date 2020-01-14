@@ -26,52 +26,52 @@ public class StarProductController {
     private ProductStarService service ;
 
     @PostMapping("/spus")
-    private OperaResponse getSpuIdList(@RequestBody QueryBean queryBean) throws AoyiClientException {
+    private OperaResponse getSpuIdList(@RequestBody QueryBean queryBean) {
         return service.getSpuIdList(queryBean);
     }
 
     @GetMapping("/spu/detail")
-    private OperaResponse getSpuDetail(String spuIds) throws AoyiClientException {
+    private OperaResponse getSpuDetail(String spuIds) {
         return service.getSpuDetail(spuIds);
     }
 
     @GetMapping("/sku/detail")
-    private OperaResponse getSkuDetail(String skuId) throws AoyiClientException {
+    private OperaResponse getSkuDetail(String skuId) {
         return service.getSkuListDetailBySpuId(skuId);
     }
 
     @PostMapping("/brand")
-    private OperaResponse findBrandList(@RequestBody QueryBean queryBean) throws AoyiClientException {
+    private OperaResponse findBrandList(@RequestBody QueryBean queryBean) {
         return service.findBrandList(queryBean);
     }
 
     @GetMapping("/category")
-    private OperaResponse findProdCategory(String categoryId) throws AoyiClientException {
+    private OperaResponse findProdCategory(String categoryId) {
         return service.findProdCategory(categoryId);
     }
 
     @PostMapping("/inventory")
-    private OperaResponse findSkuInventory(@RequestBody InventoryQueryBean queryBean) throws AoyiClientException {
+    private OperaResponse findSkuInventory(@RequestBody InventoryQueryBean queryBean) {
         return service.findSkuInventory(queryBean);
     }
 
     @GetMapping("/price")
-    private OperaResponse findSkuSalePrice(String codes) throws AoyiClientException {
+    private OperaResponse findSkuSalePrice(String codes) {
         return service.findSkuSalePrice(codes);
     }
 
     @PostMapping("/address")
-    private OperaResponse getAddressInfo(@RequestBody AddressInfoQueryBean bean) throws AoyiClientException {
+    private OperaResponse getAddressInfo(@RequestBody AddressInfoQueryBean bean) {
         return service.getAddressInfo(bean);
     }
 
     @PostMapping("/inventory/hold")
-    private OperaResponse preHoldSkuInventory(@RequestBody HoldSkuInventoryQueryBean bean) throws AoyiClientException {
+    private OperaResponse preHoldSkuInventory(@RequestBody HoldSkuInventoryQueryBean bean) {
         return service.preHoldSkuInventory(bean);
     }
 
     @PostMapping("/inventory/release")
-    private OperaResponse releaseSkuInventory(@RequestBody ReleaseSkuInventoryQueryBean bean) throws AoyiClientException {
+    private OperaResponse releaseSkuInventory(@RequestBody ReleaseSkuInventoryQueryBean bean) {
         return service.releaseSkuInventory(bean);
     }
 }
