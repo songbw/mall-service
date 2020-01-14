@@ -7,6 +7,7 @@ import com.fengchao.aoyi.client.bean.QueryInventory;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.ProductService;
+import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +47,16 @@ public class WeipinhuiController {
             List<BrandResDto> brandResDtoList = productWeipinhuiService.getBrand(pageNumber, pageSize);
 
             operaResult.setData(brandResDtoList);
+            operaResult.setCode(200);
         } catch (Exception e) {
             log.error("获取品牌列表 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败");
+            operaResult.setCode(500);
         }
+
+        log.info("获取品牌列表 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }
