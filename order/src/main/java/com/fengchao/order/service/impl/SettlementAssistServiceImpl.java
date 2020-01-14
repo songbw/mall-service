@@ -473,6 +473,16 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
                 for (int j = 0; j < ordersBo.getOrderDetailBoList().size(); j++) {
                     OrderDetailBo orderDetailBo = ordersBo.getOrderDetailBoList().get(j);
 
+                    if (totalSalePrice == 0 || totalSalePrice == null) { // 该用户单没花钱...
+                        orderDetailBo.setShareBalanceAmount(0);
+                        orderDetailBo.setShareCardAmount(0);
+                        orderDetailBo.setShareWoaAmount(0);
+                        orderDetailBo.setShareBankAmount(0);
+
+                        continue;
+                    }
+
+
                     if (i == (userOrderBo.getMerchantOrderList().size() - 1)
                             && j == (ordersBo.getOrderDetailBoList().size() - 1)) { // 如果是最后一条记录，那么使用减法
                         orderDetailBo.setShareBalanceAmount(remainBalanceAmount);
