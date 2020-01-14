@@ -449,7 +449,8 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
             // 该用户单的支付信息
             List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList = userOrderBo.getMergedMethodInfoBeanList();
             // 转map key: paymentType value: 实际金额 单位分
-            Map<String, Integer> payMethodMap = orderPayMethodInfoBeanList.stream().collect(Collectors.toMap(pm -> pm.getPayType(), pm -> Integer.valueOf(pm.getActPayFee())));
+            Map<String, Integer> payMethodMap = orderPayMethodInfoBeanList.stream()
+                    .collect(Collectors.toMap(pm -> pm.getPayType(), pm -> Integer.valueOf(pm.getActPayFee()), (oldValue, newValue) -> oldValue + newValue));
 
             // 2. 列出该用户单所有支付方式的金额(单位 分):
             Integer balanceAmount = payMethodMap.get(PaymentTypeEnum.BALANCE.getName()) == null ?
