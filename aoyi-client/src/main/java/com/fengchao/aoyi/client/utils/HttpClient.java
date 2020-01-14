@@ -4,6 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.service.impl.ProductServiceImpl;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +21,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -140,6 +148,29 @@ public class HttpClient {
         Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
         T bean = response.readEntity(obj);
         return bean;
+    }
+
+    /**
+     *
+     * @param url
+     * @param param
+     * @param encoding
+     * @return
+     * @throws IOException
+     */
+    public static String sendHttpPost(String url, String param,String encoding) throws IOException {
+        CloseableHttpClient httpclient = HttpClients.custom().build();
+        HttpPost httpPost = new HttpPost(url);
+        StringEntity stringEntity=new StringEntity(param.toString(),encoding); //这里设置发送内容的编码格式
+        stringEntity.setContentType("application/json");
+        httpPost.setEntity(stringEntity);
+        CloseableHttpResponse response = httpclient.execute(httpPost);
+        HttpEntity entity = response.getEntity();
+        String responseContent = EntityUtils.toString(entity,encoding);
+
+        response.close();
+        httpclient.close();
+        return responseContent;
     }
 
     public static void main(String args[]) {
