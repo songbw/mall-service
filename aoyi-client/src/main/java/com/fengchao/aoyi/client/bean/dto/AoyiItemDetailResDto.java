@@ -7,7 +7,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class AoyiItemResDto {
+public class AoyiItemDetailResDto {
 
     private String itemId; // "50000550",
 

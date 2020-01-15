@@ -1,14 +1,9 @@
 package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
-import com.fengchao.aoyi.client.bean.QueryCarriage;
-import com.fengchao.aoyi.client.bean.QueryCityPrice;
-import com.fengchao.aoyi.client.bean.QueryInventory;
-import com.fengchao.aoyi.client.bean.dto.AoyiItemResDto;
+import com.fengchao.aoyi.client.bean.dto.AoyiItemDetailResDto;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
 import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
-import com.fengchao.aoyi.client.exception.AoyiClientException;
-import com.fengchao.aoyi.client.service.ProductService;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
 import lombok.extern.slf4j.Slf4j;
@@ -106,13 +101,13 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/queryItemsList")
-    private OperaResult<List<AoyiItemResDto>> queryItemsList(@RequestParam("pageNumber") Integer pageNumber,
-                                                          @RequestParam("pageSize") Integer pageSize) {
+    private OperaResult<List<AoyiItemDetailResDto>> queryItemsList(@RequestParam("pageNumber") Integer pageNumber,
+                                                                   @RequestParam("pageSize") Integer pageSize) {
         log.info("获取items列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
-        OperaResult<List<AoyiItemResDto>> operaResult = new OperaResult<>();
+        OperaResult<List<AoyiItemDetailResDto>> operaResult = new OperaResult<>();
         try {
-            List<AoyiItemResDto> aoyiItemResDtoList = productWeipinhuiService.queryItemsList(pageNumber, pageSize);
+            List<AoyiItemDetailResDto> aoyiItemResDtoList = productWeipinhuiService.queryItemsList(pageNumber, pageSize);
 
             operaResult.setData(aoyiItemResDtoList);
             operaResult.setCode(200);
@@ -129,6 +124,36 @@ public class WeipinhuiController {
         return operaResult;
     }
 
+    /**
+     * 根据itemId查询详情
+     *
+     * http://localhost:8001/weipinhui/queryItemDetial?itemId=50000550
+     *
+     * @param itemId
+     * @return
+     */
+    @GetMapping("/queryItemDetial")
+    private OperaResult<AoyiItemDetailResDto> queryItemDetial(@RequestParam("itemId") String itemId) {
+        log.info("根据itemId查询详情 入参 itemId:{}", itemId);
+
+        OperaResult<AoyiItemDetailResDto> operaResult = new OperaResult<>();
+        try {
+            AoyiItemDetailResDto aoyiItemDetailResDto = productWeipinhuiService.queryItemDetial(itemId);
+
+            operaResult.setData(aoyiItemDetailResDto);
+            operaResult.setCode(200);
+        } catch (Exception e) {
+            log.error("根据itemId查询详情 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("根据itemId查询详情 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
 
 
 }

@@ -1,6 +1,8 @@
 package com.fengchao.aoyi.client.weipinhuiService.client;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.aoyi.client.bean.dto.AoyiProdRquest;
+import com.fengchao.aoyi.client.bean.dto.AoyiProductDetailRequest;
 import com.fengchao.aoyi.client.bean.dto.WeipinhuiResponse;
 import com.fengchao.aoyi.client.config.WeipinhuiClientConfig;
 import com.fengchao.aoyi.client.utils.HttpClient;
@@ -201,6 +203,68 @@ public class WeipinhuiServiceClient {
             return weipinhuiResponse;
         } catch (Exception e) {
             log.error("唯品会获取items列表 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
+    /**
+     * 根据itemId查询详情
+     *
+     * @param itemId
+     * @return
+     * @throws Exception
+     */
+    public WeipinhuiResponse queryItemDetial(String itemId) throws Exception {
+        try {
+            Long timestamp = System.currentTimeMillis(); // 时间戳
+
+            // 1. 组装请求参数
+            AoyiProductDetailRequest aoyiProductDetailRequest = new AoyiProductDetailRequest();
+            aoyiProductDetailRequest.setAppId(weipinhuiClientConfig.getAppId());
+            aoyiProductDetailRequest.setAppSecret(weipinhuiClientConfig.getAppSecret());
+            aoyiProductDetailRequest.setTimestamp(timestamp);
+
+            aoyiProductDetailRequest.setItemId(itemId);
+
+            // 2. 准备签名字段
+            Map<String, String> myselfSign = new HashMap<>();
+            myselfSign.put("appId", weipinhuiClientConfig.getAppId());
+            myselfSign.put("appSecret", weipinhuiClientConfig.getAppSecret());
+            myselfSign.put("timestamp", String.valueOf(timestamp));
+
+            myselfSign.put("aoyiProductDetailRequest", JSON.toJSONString(aoyiProductDetailRequest));
+
+            // 排序
+            String sortParamString = SortUtils.formatUrlParam(myselfSign, false);
+            log.info("唯品会根据itemId查询详情 签名字段排序后为:{}", JSONUtil.toJsonString(sortParamString));
+
+            // 签名
+            String signMyself = RSAUtil.signMyself(sortParamString);
+
+
+            // 3. 请求
+            aoyiProductDetailRequest.setSign(signMyself);
+            String requestParam = JSONUtil.toJsonString(aoyiProductDetailRequest);
+
+            log.info("唯品会根据itemId查询详情 准备请求唯品会 url:{} 请求参数:{}",
+                    weipinhuiClientConfig.getUrlQueryItemDetial(), requestParam);
+
+            String resultInfo = HttpClient.sendHttpPost(weipinhuiClientConfig.getUrlQueryItemDetial(), requestParam, "utf-8");
+
+            log.info("唯品会根据itemId查询详情 请求唯品会 原始返回:{}", resultInfo);
+
+            // 3. 解析返回
+            WeipinhuiResponse weipinhuiResponse = JSONUtil.parse(resultInfo, WeipinhuiResponse.class);
+            if (weipinhuiResponse.getCode().intValue() != 200) {
+                log.warn("唯品会根据itemId查询详情 获取到错误返回");
+
+                throw new Exception(weipinhuiResponse.getMessage());
+            }
+
+            return weipinhuiResponse;
+        } catch (Exception e) {
+            log.error("唯品会根据itemId查询详情 异常:{}", e.getMessage(), e);
 
             throw e;
         }

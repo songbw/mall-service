@@ -1,6 +1,6 @@
 package com.fengchao.aoyi.client.weipinhuiService.impl;
 
-import com.fengchao.aoyi.client.bean.dto.AoyiItemResDto;
+import com.fengchao.aoyi.client.bean.dto.AoyiItemDetailResDto;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
 import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
 import com.fengchao.aoyi.client.bean.dto.WeipinhuiResponse;
@@ -69,7 +69,7 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
     }
 
     @Override
-    public List<AoyiItemResDto> queryItemsList(Integer pageNumber, Integer pageSize) throws Exception {
+    public List<AoyiItemDetailResDto> queryItemsList(Integer pageNumber, Integer pageSize) throws Exception {
         try {
             // 1. 执行请求
             WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.queryItemsList(pageNumber, pageSize);
@@ -77,14 +77,36 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
             log.info("获取items列表 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
 
             // 2. 解析返回
-            List<AoyiItemResDto> aoyiItemResDtoList =
-                    JSONUtil.parseList(weipinhuiResponse.getResult().toString(), AoyiItemResDto.class);
+            List<AoyiItemDetailResDto> aoyiItemDetailResDtoList =
+                    JSONUtil.parseList(weipinhuiResponse.getResult().toString(), AoyiItemDetailResDto.class);
 
-            log.info("获取items列表 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiItemResDtoList));
+            log.info("获取items列表 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
 
-            return aoyiItemResDtoList;
+            return aoyiItemDetailResDtoList;
         } catch (Exception e) {
             log.error("获取items列表 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
+    @Override
+    public AoyiItemDetailResDto queryItemDetial(String itemId) throws Exception {
+        try {
+            // 1. 执行请求
+            WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.queryItemDetial(itemId);
+
+            log.info("根据itemId查询详情 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
+
+            // 2. 解析返回
+            AoyiItemDetailResDto aoyiItemDetailResDto =
+                    JSONUtil.parse(weipinhuiResponse.getResult().toString(), AoyiItemDetailResDto.class);
+
+            log.info("根据itemId查询详情 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDto));
+
+            return aoyiItemDetailResDto;
+        } catch (Exception e) {
+            log.error("根据itemId查询详情 异常:{}", e.getMessage(), e);
 
             throw e;
         }
