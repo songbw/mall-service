@@ -130,4 +130,18 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
             throw e;
         }
     }
+
+    @Override
+    public void renderOrder(AoyiRenderOrderRequest aoyiRenderOrderRequest) throws Exception {
+        try {
+            // 1. 执行请求
+            WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.renderOrder(aoyiRenderOrderRequest);
+
+            log.info("预占订单接口 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
+        } catch (Exception e) {
+            log.error("预占订单接口 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
 }

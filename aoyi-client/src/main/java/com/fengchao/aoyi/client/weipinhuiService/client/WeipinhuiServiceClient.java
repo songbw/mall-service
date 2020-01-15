@@ -1,10 +1,7 @@
 package com.fengchao.aoyi.client.weipinhuiService.client;
 
 import com.alibaba.fastjson.JSON;
-import com.fengchao.aoyi.client.bean.dto.AoyiProdRquest;
-import com.fengchao.aoyi.client.bean.dto.AoyiProductDetailRequest;
-import com.fengchao.aoyi.client.bean.dto.AoyiProductInventoryRequest;
-import com.fengchao.aoyi.client.bean.dto.WeipinhuiResponse;
+import com.fengchao.aoyi.client.bean.dto.*;
 import com.fengchao.aoyi.client.config.WeipinhuiClientConfig;
 import com.fengchao.aoyi.client.utils.HttpClient;
 import com.fengchao.aoyi.client.utils.JSONUtil;
@@ -334,6 +331,65 @@ public class WeipinhuiServiceClient {
             return weipinhuiResponse;
         } catch (Exception e) {
             log.error("唯品会库存查询接口 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
+    /**
+     * 预占订单接口
+     *
+     * @param aoyiRenderOrderRequest
+     * @return
+     * @throws Exception
+     */
+    public WeipinhuiResponse renderOrder(AoyiRenderOrderRequest aoyiRenderOrderRequest) throws Exception {
+        try {
+            Long timestamp = System.currentTimeMillis(); // 时间戳
+
+            // 1. 组装请求参数
+            aoyiRenderOrderRequest.setAppId(weipinhuiClientConfig.getAppId());
+            aoyiRenderOrderRequest.setAppSecret(weipinhuiClientConfig.getAppSecret());
+            aoyiRenderOrderRequest.setTimestamp(timestamp);
+
+            // 2. 准备签名字段
+            Map<String, String> myselfSign = new HashMap<>();
+            myselfSign.put("appId", weipinhuiClientConfig.getAppId());
+            myselfSign.put("appSecret", weipinhuiClientConfig.getAppSecret());
+            myselfSign.put("timestamp", String.valueOf(timestamp));
+
+            myselfSign.put("aoyiRenderOrderRequest", JSON.toJSONString(aoyiRenderOrderRequest));
+
+            // 排序
+            String sortParamString = SortUtils.formatUrlParam(myselfSign, false);
+            log.info("唯品会预占订单接口 签名字段排序后为:{}", JSONUtil.toJsonString(sortParamString));
+
+            // 签名
+            String signMyself = RSAUtil.signMyself(sortParamString);
+
+
+            // 3. 请求
+            aoyiRenderOrderRequest.setSign(signMyself);
+            String requestParam = JSONUtil.toJsonString(aoyiRenderOrderRequest);
+
+            String requestUrl = weipinhuiClientConfig.getUrlRenderOrder();
+            log.info("唯品会预占订单接口 准备请求唯品会 url:{} 请求参数:{}", requestUrl, requestParam);
+
+            String resultInfo = HttpClient.sendHttpPost(requestUrl, requestParam, "utf-8");
+
+            log.info("唯品会预占订单接口 请求唯品会 原始返回:{}", resultInfo);
+
+            // 3. 解析返回
+            WeipinhuiResponse weipinhuiResponse = JSONUtil.parse(resultInfo, WeipinhuiResponse.class);
+            if (weipinhuiResponse.getCode().intValue() != 200) {
+                log.warn("唯品会预占订单接口 获取到错误返回");
+
+                throw new Exception(weipinhuiResponse.getMessage());
+            }
+
+            return weipinhuiResponse;
+        } catch (Exception e) {
+            log.error("唯品会预占订单接口 异常:{}", e.getMessage(), e);
 
             throw e;
         }

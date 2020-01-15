@@ -10,19 +10,29 @@ public class AoyiSkuResDto {
     private String skuId; // 500005500
 
     /**
-     * 商品 sku 名称
+     * 商品规格 1
      */
-    private String skuTitle; // "花色"
+    private String sepca; // "白色"
+
+    /**
+     * 商品规格 2
+     */
+    private String sepcb; // "12kg",
+
+    /**
+     * 商品规格 3
+     */
+    private String sepcc;
 
     /**
      * 商品成本价
      */
-    private String priceCent; // ": "161",
+    private String priceCent; // "159.00",
 
     /**
-     * 市场价格
+     * 建议售价
      */
-    private String reservePrice; // "159.00",
+    private String sellPrice;
 
     /**
      * 是否出售

@@ -1,9 +1,6 @@
 package com.fengchao.aoyi.client.weipinhuiService;
 
-import com.fengchao.aoyi.client.bean.dto.AoyiItemDetailResDto;
-import com.fengchao.aoyi.client.bean.dto.AoyiQueryInventoryResDto;
-import com.fengchao.aoyi.client.bean.dto.BrandResDto;
-import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
+import com.fengchao.aoyi.client.bean.dto.*;
 
 import java.util.List;
 
@@ -59,4 +56,12 @@ public interface ProductWeipinhuiService {
      * @throws Exception
      */
     AoyiQueryInventoryResDto queryItemInventory(String itemId, String skuId, Integer num, String divisionCode) throws Exception;
+
+    /**
+     * 预占订单接口
+     *
+     * @param aoyiRenderOrderRequest
+     * @throws Exception
+     */
+    void renderOrder(AoyiRenderOrderRequest aoyiRenderOrderRequest) throws Exception;
 }

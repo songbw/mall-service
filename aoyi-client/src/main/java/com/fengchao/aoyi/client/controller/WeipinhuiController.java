@@ -1,10 +1,7 @@
 package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
-import com.fengchao.aoyi.client.bean.dto.AoyiItemDetailResDto;
-import com.fengchao.aoyi.client.bean.dto.AoyiQueryInventoryResDto;
-import com.fengchao.aoyi.client.bean.dto.BrandResDto;
-import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
+import com.fengchao.aoyi.client.bean.dto.*;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
 import lombok.extern.slf4j.Slf4j;
@@ -192,6 +189,35 @@ public class WeipinhuiController {
         }
 
         log.info("库存查询接口 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
+
+    /**
+     * 预占订单接口
+     *
+     * @param aoyiRenderOrderRequest
+     * @return
+     */
+    @PostMapping("/queryItemInventory")
+    private OperaResult queryItemDetial(@RequestBody AoyiRenderOrderRequest aoyiRenderOrderRequest) {
+
+        log.info("预占订单接口 入参:{}", JSONUtil.toJsonString(aoyiRenderOrderRequest));
+
+        OperaResult operaResult = new OperaResult<>();
+        try {
+            productWeipinhuiService.renderOrder(aoyiRenderOrderRequest);
+
+            operaResult.setCode(200);
+        } catch (Exception e) {
+            log.error("预占订单接口 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("预占订单接口 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }
