@@ -4,6 +4,7 @@ import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.QueryCarriage;
 import com.fengchao.aoyi.client.bean.QueryCityPrice;
 import com.fengchao.aoyi.client.bean.QueryInventory;
+import com.fengchao.aoyi.client.bean.dto.AoyiItemResDto;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
 import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
@@ -53,7 +54,7 @@ public class WeipinhuiController {
             log.error("获取品牌列表 异常:{}", e.getMessage(), e);
 
             operaResult.setData(null);
-            operaResult.setMsg("失败");
+            operaResult.setMsg("失败:" + e.getMessage());
             operaResult.setCode(500);
         }
 
@@ -86,11 +87,44 @@ public class WeipinhuiController {
             log.error("获取类目列表 异常:{}", e.getMessage(), e);
 
             operaResult.setData(null);
-            operaResult.setMsg("失败");
+            operaResult.setMsg("失败:" + e.getMessage());
             operaResult.setCode(500);
         }
 
         log.info("获取类目列表 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
+
+    /**
+     * 获取items列表
+     *
+     * http://localhost:8001/weipinhui/queryItemsList?pageNumber=1&pageSize=20
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/queryItemsList")
+    private OperaResult<List<AoyiItemResDto>> queryItemsList(@RequestParam("pageNumber") Integer pageNumber,
+                                                          @RequestParam("pageSize") Integer pageSize) {
+        log.info("获取items列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
+
+        OperaResult<List<AoyiItemResDto>> operaResult = new OperaResult<>();
+        try {
+            List<AoyiItemResDto> aoyiItemResDtoList = productWeipinhuiService.queryItemsList(pageNumber, pageSize);
+
+            operaResult.setData(aoyiItemResDtoList);
+            operaResult.setCode(200);
+        } catch (Exception e) {
+            log.error("获取items列表 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("获取items列表 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }

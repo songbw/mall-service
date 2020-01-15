@@ -1,5 +1,6 @@
 package com.fengchao.aoyi.client.weipinhuiService.impl;
 
+import com.fengchao.aoyi.client.bean.dto.AoyiItemResDto;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
 import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
 import com.fengchao.aoyi.client.bean.dto.WeipinhuiResponse;
@@ -62,6 +63,28 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
             return categoryResDtoList;
         } catch (Exception e) {
             log.error("获取类目列表 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
+    @Override
+    public List<AoyiItemResDto> queryItemsList(Integer pageNumber, Integer pageSize) throws Exception {
+        try {
+            // 1. 执行请求
+            WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.queryItemsList(pageNumber, pageSize);
+
+            log.info("获取items列表 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
+
+            // 2. 解析返回
+            List<AoyiItemResDto> aoyiItemResDtoList =
+                    JSONUtil.parseList(weipinhuiResponse.getResult().toString(), AoyiItemResDto.class);
+
+            log.info("获取items列表 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiItemResDtoList));
+
+            return aoyiItemResDtoList;
+        } catch (Exception e) {
+            log.error("获取items列表 异常:{}", e.getMessage(), e);
 
             throw e;
         }

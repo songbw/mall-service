@@ -6,6 +6,7 @@ weipinhui:
   url:
     getBrand: http://aoyitest.aoyi365.com:8080/aoyi/rest/brand/getBrand
     getCategory: http://aoyitest.aoyi365.com:8080/aoyi/rest/category/getCategory
+    queryItemsList: http://aoyitest.aoyi365.com:8080/aoyi/rest/prodcut/queryItemsList
 
   privateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDApPEzql843P16
     ESyxnv6VB4xR9FV8beK7B4u4kDogxP/UHebwfLzoYXhQp9mHH22cTgNamPmh0PD/
@@ -33,4 +34,10 @@ weipinhui:
     2yvc1Q5DPjpcITEMePGQQfcMfJIKj5N2Bx0uvokkNcG/wnVXpQ8N9bXy9kw0imdt
     kDg8OHKO+Nww4IJY3toUVf+IeD2cpiRoWIm6Bq2ApIRMjMHbsVOnGfpOvItxY5Fk
     0G/KJUWQZpSVwAs7x1OmHA7N
-  publicKey:
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwKTxM6pfONz9ehEssZ7+
+    lQeMUfRVfG3iuweLuJA6IMT/1B3m8Hy86GF4UKfZhx9tnE4DWpj5odDw/9iCaLf6
+    cyyKbOydVl5UJ+LjoRCyhw5hJy3TXbJQqNQlVnTdF6xTmeWtHZVG4TR0HC9E1UWD
+    acns+CbmLvmBK02VjtBn8tvTSqtkJ3+CtrT5MV8VDYl9qZP/IaPyU59B7resdBkD
+    qZe1cG0KmXOR/M8NuywartWcCgiIKkqXcI5dAbMlFKveDUgk8lIQwOe2nvzW0WUI
+    rk65b3g1aAcqTjAEwxlo1BA5ZbcIvlI231n0LVzrx/o7pAe0O9FiBA/UdHFjyOqq
+    sQIDAQAB

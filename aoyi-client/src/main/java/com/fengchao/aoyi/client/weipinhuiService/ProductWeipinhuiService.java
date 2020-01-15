@@ -1,5 +1,6 @@
 package com.fengchao.aoyi.client.weipinhuiService;
 
+import com.fengchao.aoyi.client.bean.dto.AoyiItemResDto;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
 import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
 
@@ -28,4 +29,13 @@ public interface ProductWeipinhuiService {
      * @return
      */
     List<CategoryResDto> getCategory(Integer pageNumber, Integer pageSize) throws Exception;
+
+    /**
+     * 获取items列表
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    List<AoyiItemResDto> queryItemsList(Integer pageNumber, Integer pageSize) throws Exception;
 }

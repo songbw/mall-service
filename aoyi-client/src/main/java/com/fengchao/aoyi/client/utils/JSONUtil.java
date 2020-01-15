@@ -30,6 +30,25 @@ public class JSONUtil {
 
     /**
      *
+     * @param obj
+     * @return
+     */
+    public static final String toJsonStringWithoutNull(Object obj) {
+        String json = null;
+
+        try {
+            json = JSON.toJSONString(obj);
+        } catch (Exception e) {
+            log.error("JSONUtil#toJsonString 异常:{}", e.getMessage(), e);
+
+            json = null;
+        }
+
+        return json;
+    }
+
+    /**
+     *
      * @param json
      * @param clazz
      * @param <T>
