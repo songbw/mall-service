@@ -1,4 +1,4 @@
-package com.fengchao.aoyi.client.bean.dto;
+package com.fengchao.aoyi.client.bean.dto.weipinhui;
 
 import lombok.Getter;
 import lombok.Setter;

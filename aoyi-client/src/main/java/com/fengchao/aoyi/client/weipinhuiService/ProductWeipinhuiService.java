@@ -1,6 +1,7 @@
 package com.fengchao.aoyi.client.weipinhuiService;
 
 import com.fengchao.aoyi.client.bean.dto.*;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
 
 import java.util.List;
 

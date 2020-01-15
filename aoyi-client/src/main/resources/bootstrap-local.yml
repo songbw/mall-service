@@ -10,6 +10,7 @@ weipinhui:
     queryItemDetial: http://aoyitest.aoyi365.com:8080/aoyi/rest/prodcut/queryItemDetail
     queryItemInventory: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/queryItemInventory
     renderOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/renderOrder
+    createOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/confirmOrder
 
   privateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDApPEzql843P16
     ESyxnv6VB4xR9FV8beK7B4u4kDogxP/UHebwfLzoYXhQp9mHH22cTgNamPmh0PD/

@@ -2,6 +2,7 @@ package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.dto.*;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
 import lombok.extern.slf4j.Slf4j;
