@@ -2,6 +2,7 @@ package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.dto.AoyiItemDetailResDto;
+import com.fengchao.aoyi.client.bean.dto.AoyiQueryInventoryResDto;
 import com.fengchao.aoyi.client.bean.dto.BrandResDto;
 import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
 import com.fengchao.aoyi.client.utils.JSONUtil;
@@ -27,7 +28,7 @@ public class WeipinhuiController {
 
     /**
      * 获取品牌列表
-     *
+     * <p>
      * http://localhost:8001/weipinhui/getBrand?pageNumber=1&pageSize=20
      *
      * @param pageNumber
@@ -60,7 +61,7 @@ public class WeipinhuiController {
 
     /**
      * 获取类目列表
-     *
+     * <p>
      * http://localhost:8001/weipinhui/getCategory?pageNumber=1&pageSize=20
      *
      * @param pageNumber
@@ -69,7 +70,7 @@ public class WeipinhuiController {
      */
     @GetMapping("/getCategory")
     private OperaResult<List<CategoryResDto>> getCategory(@RequestParam("pageNumber") Integer pageNumber,
-                                                       @RequestParam("pageSize") Integer pageSize) {
+                                                          @RequestParam("pageSize") Integer pageSize) {
         log.info("获取类目列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
         OperaResult<List<CategoryResDto>> operaResult = new OperaResult<>();
@@ -93,7 +94,7 @@ public class WeipinhuiController {
 
     /**
      * 获取items列表
-     *
+     * <p>
      * http://localhost:8001/weipinhui/queryItemsList?pageNumber=1&pageSize=20
      *
      * @param pageNumber
@@ -126,7 +127,7 @@ public class WeipinhuiController {
 
     /**
      * 根据itemId查询详情
-     *
+     * <p>
      * http://localhost:8001/weipinhui/queryItemDetial?itemId=50000550
      *
      * @param itemId
@@ -151,6 +152,46 @@ public class WeipinhuiController {
         }
 
         log.info("根据itemId查询详情 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
+
+    /**
+     * 库存查询接口
+     * <p>
+     * http://localhost:8001/weipinhui/queryItemInventory?itemId=50000550&skuId=50000550&num=1&divisionCode=2429
+     *
+     * @param itemId
+     * @param skuId
+     * @param num          数量
+     * @param divisionCode 地址code
+     * @return
+     */
+    @GetMapping("/queryItemInventory")
+    private OperaResult<AoyiQueryInventoryResDto> queryItemDetial(@RequestParam("itemId") String itemId,
+                                                                  @RequestParam("skuId") String skuId,
+                                                                  @RequestParam("num") Integer num,
+                                                                  @RequestParam("divisionCode") String divisionCode) {
+
+        log.info("库存查询接口 入参 itemId:{} skuId:{} num:{} divisionCode:{}",
+                itemId, skuId, num, divisionCode);
+
+        OperaResult<AoyiQueryInventoryResDto> operaResult = new OperaResult<>();
+        try {
+            AoyiQueryInventoryResDto aoyiQueryInventoryResDto =
+                    productWeipinhuiService.queryItemInventory(itemId, skuId, num, divisionCode);
+
+            operaResult.setData(aoyiQueryInventoryResDto);
+            operaResult.setCode(200);
+        } catch (Exception e) {
+            log.error("库存查询接口 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("库存查询接口 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }

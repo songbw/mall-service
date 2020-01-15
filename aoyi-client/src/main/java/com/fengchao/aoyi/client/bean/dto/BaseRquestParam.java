@@ -1,13 +1,15 @@
 package com.fengchao.aoyi.client.bean.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @Auther: labanYB
  * @Date: 2019/6/14 0014 15:37
  * @Description: public param
  */
-@Data
+@Setter
+@Getter
 public class BaseRquestParam {
 
         //appId

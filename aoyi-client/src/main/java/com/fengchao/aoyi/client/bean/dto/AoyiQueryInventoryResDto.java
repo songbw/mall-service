@@ -3,14 +3,13 @@ package com.fengchao.aoyi.client.bean.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * @Auther: liuyubo
- * @Date: 2019/6/24 13:49
- * @Description:
- */
 @Setter
 @Getter
-public class AoyiProductDetailRequest extends BaseRquestParam {
+public class AoyiQueryInventoryResDto {
 
     private String itemId;
+
+    private String skuId;
+
+    private String inventory;
 }

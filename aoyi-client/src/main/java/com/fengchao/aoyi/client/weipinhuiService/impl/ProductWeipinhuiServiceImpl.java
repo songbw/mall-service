@@ -1,9 +1,6 @@
 package com.fengchao.aoyi.client.weipinhuiService.impl;
 
-import com.fengchao.aoyi.client.bean.dto.AoyiItemDetailResDto;
-import com.fengchao.aoyi.client.bean.dto.BrandResDto;
-import com.fengchao.aoyi.client.bean.dto.CategoryResDto;
-import com.fengchao.aoyi.client.bean.dto.WeipinhuiResponse;
+import com.fengchao.aoyi.client.bean.dto.*;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
 import com.fengchao.aoyi.client.weipinhuiService.client.WeipinhuiServiceClient;
@@ -34,7 +31,7 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
 
             // 2. 解析返回
             List<BrandResDto> brandResDtoList =
-                    JSONUtil.parseList(weipinhuiResponse.getResult().toString(), BrandResDto.class);
+                    JSONUtil.parseList(weipinhuiResponse.getResult() == null ? null : weipinhuiResponse.getResult().toString(), BrandResDto.class);
 
             log.info("获取品牌列表 结果:{}", JSONUtil.toJsonString(brandResDtoList));
 
@@ -56,7 +53,7 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
 
             // 2. 解析返回
             List<CategoryResDto> categoryResDtoList =
-                    JSONUtil.parseList(weipinhuiResponse.getResult().toString(), CategoryResDto.class);
+                    JSONUtil.parseList(weipinhuiResponse.getResult() == null ? null : weipinhuiResponse.getResult().toString(), CategoryResDto.class);
 
             log.info("获取类目列表 结果:{}", JSONUtil.toJsonString(categoryResDtoList));
 
@@ -78,7 +75,7 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
 
             // 2. 解析返回
             List<AoyiItemDetailResDto> aoyiItemDetailResDtoList =
-                    JSONUtil.parseList(weipinhuiResponse.getResult().toString(), AoyiItemDetailResDto.class);
+                    JSONUtil.parseList(weipinhuiResponse.getResult() == null ? null : weipinhuiResponse.getResult().toString(), AoyiItemDetailResDto.class);
 
             log.info("获取items列表 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
 
@@ -100,13 +97,35 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
 
             // 2. 解析返回
             AoyiItemDetailResDto aoyiItemDetailResDto =
-                    JSONUtil.parse(weipinhuiResponse.getResult().toString(), AoyiItemDetailResDto.class);
+                    JSONUtil.parse(weipinhuiResponse.getResult() == null ? null : weipinhuiResponse.getResult().toString(), AoyiItemDetailResDto.class);
 
             log.info("根据itemId查询详情 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDto));
 
             return aoyiItemDetailResDto;
         } catch (Exception e) {
             log.error("根据itemId查询详情 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
+    @Override
+    public AoyiQueryInventoryResDto queryItemInventory(String itemId, String skuId, Integer num, String divisionCode) throws Exception {
+        try {
+            // 1. 执行请求
+            WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.queryItemInventory(itemId, skuId, num, divisionCode);
+
+            log.info("库存查询接口 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
+
+            // 2. 解析返回
+            AoyiQueryInventoryResDto aoyiQueryInventoryResDto =
+                    JSONUtil.parse(weipinhuiResponse.getResult() == null ? null : weipinhuiResponse.getResult().toString(), AoyiQueryInventoryResDto.class);
+
+            log.info("库存查询接口 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiQueryInventoryResDto));
+
+            return aoyiQueryInventoryResDto;
+        } catch (Exception e) {
+            log.error("库存查询接口 异常:{}", e.getMessage(), e);
 
             throw e;
         }
