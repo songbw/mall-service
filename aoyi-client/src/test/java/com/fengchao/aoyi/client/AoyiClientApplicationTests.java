@@ -32,7 +32,7 @@ public class AoyiClientApplicationTests {
 	@Autowired
 	private OrderStarService orderStarService ;
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void contextLoads() {
 		QueryBean queryBean = new QueryBean() ;

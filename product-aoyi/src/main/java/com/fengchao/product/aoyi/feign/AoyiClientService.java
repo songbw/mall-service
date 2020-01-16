@@ -28,4 +28,10 @@ public interface AoyiClientService {
 
     @RequestMapping(value = "/star/product/sku/detail", method = RequestMethod.GET)
     OperaResponse getSkuDetail(@RequestParam("skuId") String skuId);
+
+    @RequestMapping(value = "/star/product/brand", method = RequestMethod.POST)
+    OperaResponse findBrandList(@RequestBody QueryBean queryBean);
+
+    @RequestMapping(value = "/star/product/category", method = RequestMethod.GET)
+    OperaResponse findProdCategory(@RequestParam("categoryId") String categoryId);
 }

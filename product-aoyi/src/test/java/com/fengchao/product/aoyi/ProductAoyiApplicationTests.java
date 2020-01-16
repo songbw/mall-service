@@ -13,9 +13,9 @@ import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.mapper.SkuCodeXMapper;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
-import com.fengchao.product.aoyi.model.SkuCode;
+import com.fengchao.product.aoyi.mapper.StarBrandMapper;
+import com.fengchao.product.aoyi.mapper.StarCategoryMapper;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.starBean.SkuBean;
@@ -51,6 +51,10 @@ public class ProductAoyiApplicationTests {
 	private AdminProdService prodService;
 	@Autowired
 	private AoyiClientService aoyiClientService ;
+	@Autowired
+	private StarBrandMapper starBrandMapper ;
+	@Autowired
+	private StarCategoryMapper starCategoryMapper ;
 
 	@Ignore
 	@Test
@@ -128,7 +132,7 @@ public class ProductAoyiApplicationTests {
 
 	@Ignore
 	@Test
-	public void starProduct(){
+	public void starProduct() {
 		QueryBean queryBean = new QueryBean() ;
 		queryBean.setPageNo(1);
 		queryBean.setPageSize(100);
@@ -168,6 +172,70 @@ public class ProductAoyiApplicationTests {
 				JSONObject jsonObject = skuDetailData.getJSONObject(0) ;
 				SkuBean skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<SkuBean>(){});
 				log.info("获取SKU信息，入参：{}, 结果：{}",spuArray.getString(i), JSONUtil.toJsonString(skuBean));
+			}
+		}
+	}
+
+	@Ignore
+	@Test
+	public void starBrand() {
+		QueryBean queryBean = new QueryBean() ;
+		for (int i = 0; i < 100; i++) {
+			queryBean.setPageNo(i + 1);
+			queryBean.setPageSize(100);
+			OperaResponse response = aoyiClientService.findBrandList(queryBean) ;
+			if (response.getCode() == 200) {
+				String data = JSONUtil.toJsonString(response.getData()) ;
+				JSONObject brands = JSONObject.parseObject(data) ;
+				JSONArray brandArray =  brands.getJSONArray("brandList") ;
+				for (int j = 0; j < brandArray.size(); j++) {
+					JSONObject jsonObject = brandArray.getJSONObject(j) ;
+					StarBrand starBrand = new StarBrand() ;
+					starBrand.setStarId(jsonObject.getInteger("brandId"));
+					starBrand.setLogo(jsonObject.getString("brandLogo"));
+					starBrand.setName(jsonObject.getString("brandName"));
+					starBrandMapper.insert(starBrand) ;
+				}
+			}
+		}
+	}
+
+	@Ignore
+	@Test
+	public void starCategory() {
+		OperaResponse response = aoyiClientService.findProdCategory(null) ;
+		if (response.getCode() == 200) {
+			String data = JSONUtil.toJsonString(response.getData()) ;
+			JSONObject categorys = JSONObject.parseObject(data) ;
+			JSONArray categoryArray =  categorys.getJSONArray("categoryList") ;
+			for (int j = 0; j < categoryArray.size(); j++) {
+				JSONObject jsonObject = categoryArray.getJSONObject(j) ;
+				StarCategory starCategory = new StarCategory() ;
+				starCategory.setStarId(jsonObject.getInteger("cateId"));
+				starCategory.setLevel(jsonObject.getInteger("level"));
+				starCategory.setName(jsonObject.getString("cateName"));
+				starCategory.setParentId(jsonObject.getInteger("parentId"));
+				starCategoryMapper.insert(starCategory) ;
+				subStarCategory(starCategory.getStarId()) ;
+			}
+		}
+	}
+
+	private void subStarCategory(int categoryId) {
+		OperaResponse response = aoyiClientService.findProdCategory(categoryId + "") ;
+		if (response.getCode() == 200) {
+			String data = JSONUtil.toJsonString(response.getData()) ;
+			JSONObject categorys = JSONObject.parseObject(data) ;
+			JSONArray categoryArray =  categorys.getJSONArray("categoryList") ;
+			for (int j = 0; j < categoryArray.size(); j++) {
+				JSONObject jsonObject = categoryArray.getJSONObject(j) ;
+				StarCategory starCategory = new StarCategory() ;
+				starCategory.setStarId(jsonObject.getInteger("cateId"));
+				starCategory.setLevel(jsonObject.getInteger("level"));
+				starCategory.setName(jsonObject.getString("cateName"));
+				starCategory.setParentId(jsonObject.getInteger("parentId"));
+				starCategoryMapper.insert(starCategory) ;
+				subStarCategory(starCategory.getStarId()) ;
 			}
 		}
 	}
