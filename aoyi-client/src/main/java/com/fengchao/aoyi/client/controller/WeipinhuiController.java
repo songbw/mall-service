@@ -2,6 +2,7 @@ package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.dto.*;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiConfirmOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
@@ -34,7 +35,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/getBrand")
-    private OperaResult<List<BrandResDto>> getBrand(@RequestParam("pageNumber") Integer pageNumber,
+    public OperaResult<List<BrandResDto>> getBrand(@RequestParam("pageNumber") Integer pageNumber,
                                                     @RequestParam("pageSize") Integer pageSize) {
         log.info("获取品牌列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
@@ -67,7 +68,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/getCategory")
-    private OperaResult<List<CategoryResDto>> getCategory(@RequestParam("pageNumber") Integer pageNumber,
+    public OperaResult<List<CategoryResDto>> getCategory(@RequestParam("pageNumber") Integer pageNumber,
                                                           @RequestParam("pageSize") Integer pageSize) {
         log.info("获取类目列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
@@ -100,7 +101,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/queryItemsList")
-    private OperaResult<List<AoyiItemDetailResDto>> queryItemsList(@RequestParam("pageNumber") Integer pageNumber,
+    public OperaResult<List<AoyiItemDetailResDto>> queryItemsList(@RequestParam("pageNumber") Integer pageNumber,
                                                                    @RequestParam("pageSize") Integer pageSize) {
         log.info("获取items列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
@@ -132,7 +133,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/queryItemDetial")
-    private OperaResult<AoyiItemDetailResDto> queryItemDetial(@RequestParam("itemId") String itemId) {
+    public OperaResult<AoyiItemDetailResDto> queryItemDetial(@RequestParam("itemId") String itemId) {
         log.info("根据itemId查询详情 入参 itemId:{}", itemId);
 
         OperaResult<AoyiItemDetailResDto> operaResult = new OperaResult<>();
@@ -166,7 +167,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/queryItemInventory")
-    private OperaResult<AoyiQueryInventoryResDto> queryItemDetial(@RequestParam("itemId") String itemId,
+    public OperaResult<AoyiQueryInventoryResDto> queryItemDetial(@RequestParam("itemId") String itemId,
                                                                   @RequestParam("skuId") String skuId,
                                                                   @RequestParam("num") Integer num,
                                                                   @RequestParam("divisionCode") String divisionCode) {
@@ -201,7 +202,7 @@ public class WeipinhuiController {
      * @return
      */
     @PostMapping("/queryItemInventory")
-    private OperaResult queryItemDetial(@RequestBody AoyiRenderOrderRequest aoyiRenderOrderRequest) {
+    public OperaResult queryItemDetial(@RequestBody AoyiRenderOrderRequest aoyiRenderOrderRequest) {
 
         log.info("预占订单接口 入参:{}", JSONUtil.toJsonString(aoyiRenderOrderRequest));
 
@@ -223,5 +224,33 @@ public class WeipinhuiController {
         return operaResult;
     }
 
+    /**
+     * 确认订单接口
+     *
+     * @param aoyiConfirmOrderRequest
+     * @return
+     */
+    @PostMapping("/queryItemInventory")
+    public OperaResult queryItemDetial(@RequestBody AoyiConfirmOrderRequest aoyiConfirmOrderRequest) {
+
+        log.info("确认订单接口 入参:{}", JSONUtil.toJsonString(aoyiConfirmOrderRequest));
+
+        OperaResult operaResult = new OperaResult<>();
+        try {
+            productWeipinhuiService.createOrder(aoyiConfirmOrderRequest);
+
+            operaResult.setCode(200);
+        } catch (Exception e) {
+            log.error("确认订单接口 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("确认订单接口 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
 
 }

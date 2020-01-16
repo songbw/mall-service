@@ -1,6 +1,7 @@
 package com.fengchao.aoyi.client.weipinhuiService;
 
 import com.fengchao.aoyi.client.bean.dto.*;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiConfirmOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
 
 import java.util.List;
@@ -65,4 +66,12 @@ public interface ProductWeipinhuiService {
      * @throws Exception
      */
     void renderOrder(AoyiRenderOrderRequest aoyiRenderOrderRequest) throws Exception;
+
+    /**
+     * 确认订单接口
+     *
+     * @param aoyiConfirmOrderRequest
+     * @throws Exception
+     */
+    void createOrder(AoyiConfirmOrderRequest aoyiConfirmOrderRequest) throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.fengchao.aoyi.client.weipinhuiService.impl;
 
 import com.fengchao.aoyi.client.bean.dto.*;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiConfirmOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
@@ -141,6 +142,20 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
             log.info("预占订单接口 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
         } catch (Exception e) {
             log.error("预占订单接口 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
+    @Override
+    public void createOrder(AoyiConfirmOrderRequest aoyiConfirmOrderRequest) throws Exception {
+        try {
+            // 1. 执行请求
+            WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.createOrder(aoyiConfirmOrderRequest);
+
+            log.info("确认订单接口 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
+        } catch (Exception e) {
+            log.error("确认订单接口 异常:{}", e.getMessage(), e);
 
             throw e;
         }
