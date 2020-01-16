@@ -25,7 +25,8 @@ public class ProductController {
     private ProductService service;
 
     @PostMapping("/all")
-    private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean, OperaResult result) throws ProductException {
+    private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId, OperaResult result) throws ProductException {
+        queryBean.setAppId(appId);
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }

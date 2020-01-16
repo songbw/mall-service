@@ -24,7 +24,8 @@ public class ProdESController {
     }
 
     @PostMapping
-    public OperaResult search(@RequestBody ProductQueryBean queryBean, OperaResult result) {
+    public OperaResult search(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, OperaResult result) {
+        queryBean.setAppId(appId);
         result.getData().put("result", service.query(queryBean)) ;
         return result;
     }

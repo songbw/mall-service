@@ -2,7 +2,6 @@ package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResponse;
 import com.fengchao.aoyi.client.bean.QueryBean;
-import com.fengchao.aoyi.client.exception.AoyiClientException;
 import com.fengchao.aoyi.client.starBean.AddressInfoQueryBean;
 import com.fengchao.aoyi.client.starBean.HoldSkuInventoryQueryBean;
 import com.fengchao.aoyi.client.starBean.InventoryQueryBean;

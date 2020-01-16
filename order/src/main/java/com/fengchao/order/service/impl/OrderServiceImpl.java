@@ -1150,8 +1150,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer finishOrderDetail(Integer id) {
         OrderDetail orderDetail = orderDetailMapper.selectByPrimaryKey(id) ;
-        orderDetail.setStatus(3);
-        orderDetailDao.updateOrderDetailStatus(orderDetail) ;
+        if (orderDetail != null && orderDetail.getStatus() == 2) {
+            orderDetail.setStatus(3);
+            orderDetailDao.updateOrderDetailStatus(orderDetail) ;
+        }
         return id;
     }
 

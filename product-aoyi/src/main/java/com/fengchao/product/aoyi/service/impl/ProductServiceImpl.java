@@ -67,12 +67,16 @@ public class ProductServiceImpl implements ProductService {
             map.put("brand", queryBean.getBrand());
         if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
             map.put("priceOrder", queryBean.getPriceOrder());
-        List<AoyiProdIndexX> prodIndices = new ArrayList<>();
+        List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
             mapper.selectLimit(map).forEach(aoyiProdIndex -> {
+                ProductInfoBean infoBean = new ProductInfoBean();
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
-                prodIndices.add(aoyiProdIndex);
+                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+                infoBean.setPromotion(promotionInfoBeans);
+                prodIndices.add(infoBean);
             });
         }
         pageBean = PageBean.build(pageBean, prodIndices, total, queryBean.getPageNo(), queryBean.getPageSize());
@@ -80,8 +84,29 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageInfo<AoyiProdIndex> findListByCategories(ProductQueryBean queryBean) throws ProductException {
-        return productDao.selectListByCategories(queryBean);
+    public PageInfo<ProductInfoBean> findListByCategories(ProductQueryBean queryBean) throws ProductException {
+        PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
+        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean);
+        productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
+        productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
+        productInfoBeanPageInfo.setPageSize(prodIndexPageInfo.getPageSize());
+        productInfoBeanPageInfo.setSize(prodIndexPageInfo.getSize());
+        productInfoBeanPageInfo.setStartRow(prodIndexPageInfo.getStartRow());
+        productInfoBeanPageInfo.setPages(prodIndexPageInfo.getPages());
+        productInfoBeanPageInfo.setEndRow(prodIndexPageInfo.getEndRow());
+
+        List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
+        List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
+        aoyiProdIndices.forEach(aoyiProdIndex -> {
+            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            ProductInfoBean infoBean = new ProductInfoBean() ;
+            BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+            infoBean.setPromotion(promotionInfoBeans);
+            productInfoBeans.add(infoBean) ;
+        });
+        productInfoBeanPageInfo.setList(productInfoBeans);
+        return productInfoBeanPageInfo ;
     }
 
     @Override

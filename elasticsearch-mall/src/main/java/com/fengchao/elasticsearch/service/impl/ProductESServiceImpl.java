@@ -1,8 +1,11 @@
 package com.fengchao.elasticsearch.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.elasticsearch.config.ESConfig;
 import com.fengchao.elasticsearch.domain.*;
+import com.fengchao.elasticsearch.feign.EquityService;
 import com.fengchao.elasticsearch.service.ProductESService;
 import com.fengchao.elasticsearch.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Repository;
@@ -25,6 +29,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @EnableConfigurationProperties({ESConfig.class})
@@ -36,6 +41,8 @@ public class ProductESServiceImpl implements ProductESService {
     private RestHighLevelClient restHighLevelClient;
     @Autowired
     private ESConfig esConfig;
+    @Autowired
+    private EquityService equityService ;
 
     @Override
     public boolean save(AoyiProdIndex product) {
@@ -72,16 +79,20 @@ public class ProductESServiceImpl implements ProductESService {
         request.source(builder);
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
-            List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>();
+            List<ProductInfoBean> aoyiProdIndices = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
             for (SearchHit documentFields : response.getHits()) {
+                ProductInfoBean infoBean = new ProductInfoBean();
                 // doc 转 json
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
-                aoyiProdIndices.add(aoyiProdIndex);
+                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+                infoBean.setPromotion(promotionInfoBeans);
+                aoyiProdIndices.add(infoBean);
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
             return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits() + ""), queryBean.getPageNo(), queryBean.getPageSize());
@@ -145,16 +156,20 @@ public class ProductESServiceImpl implements ProductESService {
         request.source(builder);
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
-            List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>();
+            List<ProductInfoBean> aoyiProdIndices = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
             for (SearchHit documentFields : response.getHits()) {
+                ProductInfoBean infoBean = new ProductInfoBean();
                 // doc 转 json
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
-                aoyiProdIndices.add(aoyiProdIndex);
+                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+                infoBean.setPromotion(promotionInfoBeans);
+                aoyiProdIndices.add(infoBean);
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
             return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits() + ""), queryBean.getPageNo(), queryBean.getPageSize());
@@ -174,5 +189,17 @@ public class ProductESServiceImpl implements ProductESService {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    private List<PromotionInfoBean> findPromotionBySku(String skuId, String appId) {
+        OperaResult result = equityService.findPromotionBySkuId(skuId, appId);
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            List<PromotionInfoBean> subOrderTS = JSONObject.parseArray(jsonString, PromotionInfoBean.class);
+            return subOrderTS;
+        }
+        return null;
     }
 }

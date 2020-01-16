@@ -263,12 +263,7 @@ public class ProductDao {
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
             criteria.andCategoryIn(queryBean.getCategories());
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
-        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>() ;
-        aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample).forEach(aoyiProdIndex -> {
-            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
-            aoyiProdIndexList.add(aoyiProdIndex) ;
-        });
-
+        List<AoyiProdIndex>  aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
         PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);
 
         return pageInfo;

@@ -15,7 +15,7 @@ public interface ProductService {
 
     PageBean findList(ProductQueryBean queryBean) throws ProductException;
 
-    PageInfo<AoyiProdIndex> findListByCategories(ProductQueryBean queryBean) throws ProductException;
+    PageInfo<ProductInfoBean> findListByCategories(ProductQueryBean queryBean) throws ProductException;
 
     OperaResult findPrice(PriceQueryBean queryBean) throws ProductException ;
 

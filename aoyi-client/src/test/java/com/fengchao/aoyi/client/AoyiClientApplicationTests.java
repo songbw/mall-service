@@ -32,7 +32,7 @@ public class AoyiClientApplicationTests {
 	@Autowired
 	private OrderStarService orderStarService ;
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void contextLoads() {
 		QueryBean queryBean = new QueryBean() ;
@@ -95,6 +95,7 @@ public class AoyiClientApplicationTests {
 //		orderStarService.confirmOrder("323929029") ;
 	}
 
+	@Ignore
 	@Test
 	public void getSpuIdList() {
 		QueryBean queryBean = new QueryBean() ;
