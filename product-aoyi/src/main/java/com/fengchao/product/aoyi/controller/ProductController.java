@@ -32,7 +32,8 @@ public class ProductController {
     }
 
     @PostMapping("/all/categories")
-    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, OperaResult result) throws ProductException {
+    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, OperaResult result) throws ProductException {
+        queryBean.setAppId(appId);
         result.getData().put("result", service.findListByCategories(queryBean)) ;
         return result;
     }
