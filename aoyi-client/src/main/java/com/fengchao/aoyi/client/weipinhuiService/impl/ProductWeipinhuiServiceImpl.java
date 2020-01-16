@@ -175,4 +175,26 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
             throw e;
         }
     }
+
+    @Override
+    public AoyiAdrressResDto queryAddress(Integer pageNumber, Integer pageSize) throws Exception {
+        try {
+            // 1. 执行请求
+            WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.queryAddress(pageNumber, pageSize);
+
+            log.info("获取地址接口 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
+
+            // 2. 解析返回
+            AoyiAdrressResDto aoyiAdrressResDto =
+                    JSONUtil.parse(weipinhuiResponse.getResult() == null ? null : weipinhuiResponse.getResult().toString(), AoyiAdrressResDto.class);
+
+            log.info("获取地址接口 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiAdrressResDto));
+
+            return aoyiAdrressResDto;
+        } catch (Exception e) {
+            log.error("获取地址接口 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
 }

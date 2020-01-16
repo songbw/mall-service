@@ -83,4 +83,14 @@ public interface ProductWeipinhuiService {
      * @throws Exception
      */
     void releaseOrder(AoyiReleaseOrderRequest aoyiReleaseOrderRequest) throws Exception;
+
+    /**
+     * 获取地址接口
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     * @throws Exception
+     */
+    AoyiAdrressResDto queryAddress(Integer pageNumber, Integer pageSize) throws Exception;
 }

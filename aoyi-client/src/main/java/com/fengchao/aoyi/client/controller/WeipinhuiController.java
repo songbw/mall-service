@@ -283,4 +283,36 @@ public class WeipinhuiController {
         return operaResult;
     }
 
+    /**
+     * 获取地址接口
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/queryAddress")
+    public OperaResult queryAddress(@RequestParam("pageNumber") Integer pageNumber,
+                                    @RequestParam("pageSize") Integer pageSize) {
+
+        log.info("获取地址接口 入参 pageNumber:{} pageSize:{}", pageNumber, pageSize);
+
+        OperaResult operaResult = new OperaResult<>();
+        try {
+            AoyiAdrressResDto aoyiAdrressResDto = productWeipinhuiService.queryAddress(pageNumber, pageSize);
+
+            operaResult.setCode(200);
+            operaResult.setData(aoyiAdrressResDto);
+        } catch (Exception e) {
+            log.error("获取地址接口 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("获取地址接口 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
+
 }
