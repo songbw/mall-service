@@ -2,6 +2,7 @@ package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiConfirmOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiOrderLogisticsRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiReleaseOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.res.*;
@@ -290,7 +291,7 @@ public class WeipinhuiController {
      * @param pageSize
      * @return
      */
-    @PostMapping("/queryAddress")
+    @GetMapping("/queryAddress")
     public OperaResult queryAddress(@RequestParam("pageNumber") Integer pageNumber,
                                     @RequestParam("pageSize") Integer pageSize) {
 
@@ -311,6 +312,36 @@ public class WeipinhuiController {
         }
 
         log.info("获取地址接口 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
+
+    /**
+     * 物流查询接口
+     *
+     * @param aoyiOrderLogisticsRequest
+     * @return
+     */
+    @GetMapping("/queryOrderLogistics")
+    public OperaResult queryOrderLogistics(@RequestBody AoyiOrderLogisticsRequest aoyiOrderLogisticsRequest) {
+
+        log.info("物流查询接口 入参:{}", JSONUtil.toJsonString(aoyiOrderLogisticsRequest));
+
+        OperaResult operaResult = new OperaResult<>();
+        try {
+            AoyiLogisticsResDto aoyiLogisticsResDto = productWeipinhuiService.queryOrderLogistics(aoyiOrderLogisticsRequest);
+
+            operaResult.setCode(200);
+            operaResult.setData(aoyiLogisticsResDto);
+        } catch (Exception e) {
+            log.error("物流查询接口 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("物流查询接口 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }

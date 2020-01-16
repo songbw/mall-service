@@ -574,4 +574,63 @@ public class WeipinhuiServiceClient {
             throw e;
         }
     }
+
+    /**
+     * 物流查询接口
+     *
+     * @param aoyiOrderLogisticsRequest
+     * @return
+     * @throws Exception
+     */
+    public WeipinhuiResponse queryOrderLogistics(AoyiOrderLogisticsRequest aoyiOrderLogisticsRequest) throws Exception {
+        try {
+            Long timestamp = System.currentTimeMillis(); // 时间戳
+
+            // 1. 组装请求参数
+            aoyiOrderLogisticsRequest.setAppId(weipinhuiClientConfig.getAppId());
+            aoyiOrderLogisticsRequest.setAppSecret(weipinhuiClientConfig.getAppSecret());
+            aoyiOrderLogisticsRequest.setTimestamp(timestamp);
+
+            // 2. 准备签名字段
+            Map<String, String> myselfSign = new HashMap<>();
+            myselfSign.put("appId", weipinhuiClientConfig.getAppId());
+            myselfSign.put("appSecret", weipinhuiClientConfig.getAppSecret());
+            myselfSign.put("timestamp", String.valueOf(timestamp));
+
+            myselfSign.put("aoyiOrderLogisticsRequest", JSON.toJSONString(aoyiOrderLogisticsRequest));
+
+            // 排序
+            String sortParamString = SortUtils.formatUrlParam(myselfSign, false);
+            log.info("唯品会物流查询接口 签名字段排序后为:{}", JSONUtil.toJsonString(sortParamString));
+
+            // 签名
+            String signMyself = RSAUtil.signMyself(sortParamString);
+
+
+            // 3. 请求
+            aoyiOrderLogisticsRequest.setSign(signMyself);
+            String requestParam = JSONUtil.toJsonString(aoyiOrderLogisticsRequest);
+
+            String requestUrl = weipinhuiClientConfig.getUrlQueryOrderLogistics();
+            log.info("唯品会物流查询接口 准备请求唯品会 url:{} 请求参数:{}", requestUrl, requestParam);
+
+            String resultInfo = HttpClient.sendHttpPost(requestUrl, requestParam, "utf-8");
+
+            log.info("唯品会物流查询接口 请求唯品会 原始返回:{}", resultInfo);
+
+            // 3. 解析返回
+            WeipinhuiResponse weipinhuiResponse = JSONUtil.parse(resultInfo, WeipinhuiResponse.class);
+            if (weipinhuiResponse.getCode().intValue() != 200) {
+                log.warn("唯品会物流查询接口 获取到错误返回");
+
+                throw new Exception(weipinhuiResponse.getMessage());
+            }
+
+            return weipinhuiResponse;
+        } catch (Exception e) {
+            log.error("唯品会物流查询接口 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.fengchao.aoyi.client.weipinhuiService.impl;
 
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiConfirmOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiOrderLogisticsRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiReleaseOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.res.*;
@@ -193,6 +194,29 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
             return aoyiAdrressResDto;
         } catch (Exception e) {
             log.error("获取地址接口 异常:{}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
+    @Override
+    public AoyiLogisticsResDto queryOrderLogistics(AoyiOrderLogisticsRequest aoyiOrderLogisticsRequest) throws Exception {
+        try {
+            // 1. 执行请求
+            WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.queryOrderLogistics(aoyiOrderLogisticsRequest);
+
+            log.info("物流查询接口 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));
+
+            // 2. 解析返回
+            AoyiLogisticsResDto aoyiLogisticsResDto =
+                    JSONUtil.parse(weipinhuiResponse.getResult() == null ?
+                            null : weipinhuiResponse.getResult().toString(), AoyiLogisticsResDto.class);
+
+            log.info("物流查询接口 结果:{}", JSONUtil.toJsonStringWithoutNull(aoyiLogisticsResDto));
+
+            return aoyiLogisticsResDto;
+        } catch (Exception e) {
+            log.error("物流查询接口 异常:{}", e.getMessage(), e);
 
             throw e;
         }
