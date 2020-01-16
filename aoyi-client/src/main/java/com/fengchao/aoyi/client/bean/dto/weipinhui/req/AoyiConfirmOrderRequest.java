@@ -1,11 +1,11 @@
-package com.fengchao.aoyi.client.bean.dto.weipinhui;
+package com.fengchao.aoyi.client.bean.dto.weipinhui.req;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class AoyiReleaseOrderRequest extends BaseRquestParam {
+public class AoyiConfirmOrderRequest extends BaseRquestParam {
 
     /**
      * 外部主订单号

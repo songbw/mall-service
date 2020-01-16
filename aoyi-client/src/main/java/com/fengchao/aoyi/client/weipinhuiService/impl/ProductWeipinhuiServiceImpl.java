@@ -1,9 +1,9 @@
 package com.fengchao.aoyi.client.weipinhuiService.impl;
 
-import com.fengchao.aoyi.client.bean.dto.*;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiConfirmOrderRequest;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiReleaseOrderRequest;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiConfirmOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiReleaseOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiRenderOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.res.*;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
 import com.fengchao.aoyi.client.weipinhuiService.client.WeipinhuiServiceClient;

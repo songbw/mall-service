@@ -1,8 +1,8 @@
 package com.fengchao.aoyi.client.weipinhuiService.client;
 
 import com.alibaba.fastjson.JSON;
-import com.fengchao.aoyi.client.bean.dto.*;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.*;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.*;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.res.WeipinhuiResponse;
 import com.fengchao.aoyi.client.config.WeipinhuiClientConfig;
 import com.fengchao.aoyi.client.utils.HttpClient;
 import com.fengchao.aoyi.client.utils.JSONUtil;

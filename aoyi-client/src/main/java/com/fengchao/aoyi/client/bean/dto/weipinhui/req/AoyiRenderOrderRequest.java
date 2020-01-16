@@ -1,4 +1,7 @@
-package com.fengchao.aoyi.client.bean.dto.weipinhui;
+package com.fengchao.aoyi.client.bean.dto.weipinhui.req;
+
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiItem;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiDeliverAddress;
 
 import java.util.List;
 

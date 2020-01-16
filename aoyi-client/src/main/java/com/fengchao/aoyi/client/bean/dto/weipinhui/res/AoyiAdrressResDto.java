@@ -1,4 +1,4 @@
-package com.fengchao.aoyi.client.bean.dto;
+package com.fengchao.aoyi.client.bean.dto.weipinhui.res;
 
 public class AoyiAdrressResDto {
 

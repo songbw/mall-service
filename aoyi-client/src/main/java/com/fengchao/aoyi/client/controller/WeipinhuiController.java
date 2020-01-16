@@ -1,10 +1,10 @@
 package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
-import com.fengchao.aoyi.client.bean.dto.*;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiConfirmOrderRequest;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiReleaseOrderRequest;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiConfirmOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiReleaseOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiRenderOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.res.*;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class WeipinhuiController {
      */
     @GetMapping("/getBrand")
     public OperaResult<List<BrandResDto>> getBrand(@RequestParam("pageNumber") Integer pageNumber,
-                                                    @RequestParam("pageSize") Integer pageSize) {
+                                                   @RequestParam("pageSize") Integer pageSize) {
         log.info("获取品牌列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
         OperaResult<List<BrandResDto>> operaResult = new OperaResult<>();
@@ -70,7 +70,7 @@ public class WeipinhuiController {
      */
     @GetMapping("/getCategory")
     public OperaResult<List<CategoryResDto>> getCategory(@RequestParam("pageNumber") Integer pageNumber,
-                                                          @RequestParam("pageSize") Integer pageSize) {
+                                                         @RequestParam("pageSize") Integer pageSize) {
         log.info("获取类目列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
         OperaResult<List<CategoryResDto>> operaResult = new OperaResult<>();
@@ -103,7 +103,7 @@ public class WeipinhuiController {
      */
     @GetMapping("/queryItemsList")
     public OperaResult<List<AoyiItemDetailResDto>> queryItemsList(@RequestParam("pageNumber") Integer pageNumber,
-                                                                   @RequestParam("pageSize") Integer pageSize) {
+                                                                  @RequestParam("pageSize") Integer pageSize) {
         log.info("获取items列表 入参 pageNumber:{}, pageSize:{}", pageNumber, pageSize);
 
         OperaResult<List<AoyiItemDetailResDto>> operaResult = new OperaResult<>();
@@ -169,9 +169,9 @@ public class WeipinhuiController {
      */
     @GetMapping("/queryItemInventory")
     public OperaResult<AoyiQueryInventoryResDto> queryItemInventory(@RequestParam("itemId") String itemId,
-                                                                  @RequestParam("skuId") String skuId,
-                                                                  @RequestParam("num") Integer num,
-                                                                  @RequestParam("divisionCode") String divisionCode) {
+                                                                    @RequestParam("skuId") String skuId,
+                                                                    @RequestParam("num") Integer num,
+                                                                    @RequestParam("divisionCode") String divisionCode) {
 
         log.info("库存查询接口 入参 itemId:{} skuId:{} num:{} divisionCode:{}",
                 itemId, skuId, num, divisionCode);
