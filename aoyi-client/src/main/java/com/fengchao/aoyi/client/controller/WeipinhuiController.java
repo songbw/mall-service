@@ -230,8 +230,8 @@ public class WeipinhuiController {
      * @param aoyiConfirmOrderRequest
      * @return
      */
-    @PostMapping("/queryItemInventory")
-    public OperaResult queryItemDetial(@RequestBody AoyiConfirmOrderRequest aoyiConfirmOrderRequest) {
+    @PostMapping("/createOrder")
+    public OperaResult createOrder(@RequestBody AoyiConfirmOrderRequest aoyiConfirmOrderRequest) {
 
         log.info("确认订单接口 入参:{}", JSONUtil.toJsonString(aoyiConfirmOrderRequest));
 
