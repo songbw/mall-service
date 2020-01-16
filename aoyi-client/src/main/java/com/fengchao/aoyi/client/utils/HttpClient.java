@@ -1,9 +1,8 @@
 package com.fengchao.aoyi.client.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.exception.AoyiClientException;
-import com.fengchao.aoyi.client.service.impl.ProductServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -27,6 +26,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+@Slf4j
 public class HttpClient {
 
 //    private static final String AOYI_BASE_URL = "https://i.aoyi365.com/rest" ;
@@ -158,19 +158,39 @@ public class HttpClient {
      * @return
      * @throws IOException
      */
-    public static String sendHttpPost(String url, String param,String encoding) throws IOException {
-        CloseableHttpClient httpclient = HttpClients.custom().build();
-        HttpPost httpPost = new HttpPost(url);
-        StringEntity stringEntity=new StringEntity(param.toString(),encoding); //这里设置发送内容的编码格式
-        stringEntity.setContentType("application/json");
-        httpPost.setEntity(stringEntity);
-        CloseableHttpResponse response = httpclient.execute(httpPost);
-        HttpEntity entity = response.getEntity();
-        String responseContent = EntityUtils.toString(entity,encoding);
+    public static String sendHttpPost(String url, String param, String encoding) throws Exception {
+        CloseableHttpClient httpclient = null;
+        CloseableHttpResponse response = null;
 
-        response.close();
-        httpclient.close();
-        return responseContent;
+        try {
+            httpclient = HttpClients.custom().build();
+            HttpPost httpPost = new HttpPost(url);
+            StringEntity stringEntity = new StringEntity(param.toString(), encoding); //这里设置发送内容的编码格式
+            stringEntity.setContentType("application/json");
+            httpPost.setEntity(stringEntity);
+
+            log.info("HttpClient#sendHttpPost 发送请求 url:{}, param:{}", url, param);
+
+            response = httpclient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            String responseContent = EntityUtils.toString(entity, encoding);
+
+            log.info("HttpClient#sendHttpPost 返回:{}", responseContent);
+
+            return responseContent;
+        } catch (Exception e) {
+            log.error("HttpClient#sendHttpPost 异常:{}", e.getMessage(), e);
+
+            throw e;
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+
+            if (httpclient != null) {
+                httpclient.close();
+            }
+        }
     }
 
     public static void main(String args[]) {

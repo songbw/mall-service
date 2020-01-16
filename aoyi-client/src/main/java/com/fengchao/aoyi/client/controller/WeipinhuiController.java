@@ -3,6 +3,7 @@ package com.fengchao.aoyi.client.controller;
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.dto.*;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiConfirmOrderRequest;
+import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiReleaseOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.utils.JSONUtil;
 import com.fengchao.aoyi.client.weipinhuiService.ProductWeipinhuiService;
@@ -167,7 +168,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/queryItemInventory")
-    public OperaResult<AoyiQueryInventoryResDto> queryItemDetial(@RequestParam("itemId") String itemId,
+    public OperaResult<AoyiQueryInventoryResDto> queryItemInventory(@RequestParam("itemId") String itemId,
                                                                   @RequestParam("skuId") String skuId,
                                                                   @RequestParam("num") Integer num,
                                                                   @RequestParam("divisionCode") String divisionCode) {
@@ -201,8 +202,8 @@ public class WeipinhuiController {
      * @param aoyiRenderOrderRequest
      * @return
      */
-    @PostMapping("/queryItemInventory")
-    public OperaResult queryItemDetial(@RequestBody AoyiRenderOrderRequest aoyiRenderOrderRequest) {
+    @PostMapping("/renderOrder")
+    public OperaResult renderOrder(@RequestBody AoyiRenderOrderRequest aoyiRenderOrderRequest) {
 
         log.info("预占订单接口 入参:{}", JSONUtil.toJsonString(aoyiRenderOrderRequest));
 
@@ -249,6 +250,35 @@ public class WeipinhuiController {
         }
 
         log.info("确认订单接口 返回:{}", JSONUtil.toJsonString(operaResult));
+
+        return operaResult;
+    }
+
+    /**
+     * 取消订单接口
+     *
+     * @param aoyiReleaseOrderRequest
+     * @return
+     */
+    @PostMapping("/releaseOrder")
+    public OperaResult releaseOrder(@RequestBody AoyiReleaseOrderRequest aoyiReleaseOrderRequest) {
+
+        log.info("取消订单接口 入参:{}", JSONUtil.toJsonString(aoyiReleaseOrderRequest));
+
+        OperaResult operaResult = new OperaResult<>();
+        try {
+            productWeipinhuiService.releaseOrder(aoyiReleaseOrderRequest);
+
+            operaResult.setCode(200);
+        } catch (Exception e) {
+            log.error("取消订单接口 异常:{}", e.getMessage(), e);
+
+            operaResult.setData(null);
+            operaResult.setMsg("失败:" + e.getMessage());
+            operaResult.setCode(500);
+        }
+
+        log.info("取消订单接口 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }

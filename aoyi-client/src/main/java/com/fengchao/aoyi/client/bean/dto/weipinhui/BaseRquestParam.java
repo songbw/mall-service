@@ -12,15 +12,15 @@ import lombok.Setter;
 @Getter
 public class BaseRquestParam {
 
-        //appId
-        private String appId;
+    //appId
+    private String appId;
 
-        //app_secret
-        private String appSecret;
+    //app_secret
+    private String appSecret;
 
-        //timestamp
-        private Long timestamp;
+    //timestamp
+    private Long timestamp;
 
-        //sign
-        private String sign;
+    //sign
+    private String sign;
 }
