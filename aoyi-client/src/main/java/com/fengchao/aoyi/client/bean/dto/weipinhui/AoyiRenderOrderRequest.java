@@ -1,8 +1,5 @@
 package com.fengchao.aoyi.client.bean.dto.weipinhui;
 
-import com.fengchao.aoyi.client.bean.dto.AoyiDeliverAddressRequest;
-import com.fengchao.aoyi.client.bean.dto.AoyiItemRequest;
-
 import java.util.List;
 
 public class AoyiRenderOrderRequest extends BaseRquestParam {
@@ -22,10 +19,10 @@ public class AoyiRenderOrderRequest extends BaseRquestParam {
     /**
      * 商品信息
      */
-    private List<AoyiItemRequest> items;
+    private List<AoyiItem> items;
 
     /**
      * 订单地址信息
      */
-    private AoyiDeliverAddressRequest deliveryAddress;
+    private AoyiDeliverAddress deliveryAddress;
 }

@@ -1,4 +1,4 @@
-package com.fengchao.aoyi.client.bean.dto;
+package com.fengchao.aoyi.client.bean.dto.weipinhui;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class AoyiDeliverAddressRequest {
+public class AoyiDeliverAddress {
 
     /**
      * 地址 Code 只能识别区级别地址代码
