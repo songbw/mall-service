@@ -32,7 +32,7 @@ public class AoyiClientApplicationTests {
 	@Autowired
 	private OrderStarService orderStarService ;
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void contextLoads() {
 		QueryBean queryBean = new QueryBean() ;
@@ -42,7 +42,7 @@ public class AoyiClientApplicationTests {
 //		queryBean.setEndTime("2019-07-06 16:43:35");
 		OperaResponse response = productStarService.getSpuIdList(queryBean) ;
 		productStarService.getSpuDetail("116997,116998,117004") ;
-		productStarService.getSkuListDetailBySpuId("118463") ;
+		productStarService.getSkuListDetailBySpuId("116997") ;
 		productStarService.findBrandList(queryBean) ;
 		productStarService.findProdCategory("3992") ;
 		InventoryQueryBean inventoryQueryBean = new InventoryQueryBean() ;
