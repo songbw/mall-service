@@ -93,7 +93,7 @@ public interface ProductWeipinhuiService {
      * @return
      * @throws Exception
      */
-    AoyiAdrressResDto queryAddress(Integer pageNumber, Integer pageSize) throws Exception;
+    List<AoyiAdrressResDto> queryAddress(Integer pageNumber, Integer pageSize) throws Exception;
 
     /**
      * 物流查询接口

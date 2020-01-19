@@ -44,6 +44,6 @@ public class AoyiItemDetailResDto {
     /**
      * sku list
      */
-    List<AoyiSkuResDto> aoyiTmallSkusResponseList;
+    List<AoyiSkuResDto> aoyiSkusResponses;
 
 }

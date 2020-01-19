@@ -11,5 +11,5 @@ public class AoyiQueryInventoryResDto {
 
     private String skuId;
 
-    private String inventory;
+    private Boolean inventoy;
 }

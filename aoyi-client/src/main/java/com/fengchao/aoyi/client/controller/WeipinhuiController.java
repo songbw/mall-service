@@ -32,6 +32,8 @@ public class WeipinhuiController {
      * <p>
      * http://localhost:8001/weipinhui/getBrand?pageNumber=1&pageSize=20
      *
+     * 每页20， 大约537页，最后一页6条
+     *
      * @param pageNumber
      * @param pageSize
      * @return
@@ -64,6 +66,8 @@ public class WeipinhuiController {
      * 获取类目列表
      * <p>
      * http://localhost:8001/weipinhui/getCategory?pageNumber=1&pageSize=20
+     *
+     * 每页20， 大约67页 最后一页8条数据
      *
      * @param pageNumber
      * @param pageSize
@@ -287,6 +291,10 @@ public class WeipinhuiController {
     /**
      * 获取地址接口
      *
+     * http://localhost:8001/weipinhui/queryAddress?pageNumber=1&pageSize=20
+     *
+     * 每页20 ，共165页，最后一页16条
+     *
      * @param pageNumber
      * @param pageSize
      * @return
@@ -299,10 +307,10 @@ public class WeipinhuiController {
 
         OperaResult operaResult = new OperaResult<>();
         try {
-            AoyiAdrressResDto aoyiAdrressResDto = productWeipinhuiService.queryAddress(pageNumber, pageSize);
+            List<AoyiAdrressResDto> aoyiAdrressResDtoList = productWeipinhuiService.queryAddress(pageNumber, pageSize);
 
             operaResult.setCode(200);
-            operaResult.setData(aoyiAdrressResDto);
+            operaResult.setData(aoyiAdrressResDtoList);
         } catch (Exception e) {
             log.error("获取地址接口 异常:{}", e.getMessage(), e);
 
