@@ -13,5 +13,5 @@ public class AoyiAdrressResDto {
 
     private String divisionLevel;
 
-    private String parendId;
+    private String parentId;
 }

@@ -327,17 +327,17 @@ public class WeipinhuiController {
     /**
      * 物流查询接口
      *
-     * @param aoyiOrderLogisticsRequest
+     * @param subOrderNo
      * @return
      */
     @GetMapping("/queryOrderLogistics")
-    public OperaResult queryOrderLogistics(@RequestBody AoyiOrderLogisticsRequest aoyiOrderLogisticsRequest) {
+    public OperaResult queryOrderLogistics(@RequestParam("subOrderNo") String subOrderNo) {
 
-        log.info("物流查询接口 入参:{}", JSONUtil.toJsonString(aoyiOrderLogisticsRequest));
+        log.info("物流查询接口 入参:{}", subOrderNo);
 
         OperaResult operaResult = new OperaResult<>();
         try {
-            AoyiLogisticsResDto aoyiLogisticsResDto = productWeipinhuiService.queryOrderLogistics(aoyiOrderLogisticsRequest);
+            AoyiLogisticsResDto aoyiLogisticsResDto = productWeipinhuiService.queryOrderLogistics(subOrderNo);
 
             operaResult.setCode(200);
             operaResult.setData(aoyiLogisticsResDto);

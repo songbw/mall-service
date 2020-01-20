@@ -19,7 +19,7 @@ public class AoyiItem {
     /**
      * 商品数量
      */
-    private String number;
+    private Integer number;
 
     /**
      * 商品销售单价

@@ -2,9 +2,13 @@ package com.fengchao.aoyi.client.bean.dto.weipinhui.req;
 
 import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiItem;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.AoyiDeliverAddress;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Setter
+@Getter
 public class AoyiRenderOrderRequest extends BaseRquestParam {
 
     private String orderNo;

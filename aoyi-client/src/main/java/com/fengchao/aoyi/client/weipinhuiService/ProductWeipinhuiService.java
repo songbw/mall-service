@@ -1,7 +1,6 @@
 package com.fengchao.aoyi.client.weipinhuiService;
 
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiConfirmOrderRequest;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiOrderLogisticsRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiReleaseOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.res.*;
@@ -98,9 +97,9 @@ public interface ProductWeipinhuiService {
     /**
      * 物流查询接口
      *
-     * @param aoyiOrderLogisticsRequest
+     * @param subOrderNo
      * @return
      * @throws Exception
      */
-    AoyiLogisticsResDto queryOrderLogistics(AoyiOrderLogisticsRequest aoyiOrderLogisticsRequest) throws Exception;
+    AoyiLogisticsResDto queryOrderLogistics(String subOrderNo) throws Exception;
 }

@@ -200,9 +200,11 @@ public class ProductWeipinhuiServiceImpl implements ProductWeipinhuiService {
     }
 
     @Override
-    public AoyiLogisticsResDto queryOrderLogistics(AoyiOrderLogisticsRequest aoyiOrderLogisticsRequest) throws Exception {
+    public AoyiLogisticsResDto queryOrderLogistics(String subOrderNo) throws Exception {
         try {
             // 1. 执行请求
+            AoyiOrderLogisticsRequest aoyiOrderLogisticsRequest = new AoyiOrderLogisticsRequest();
+            aoyiOrderLogisticsRequest.setSubOrderNo(subOrderNo);
             WeipinhuiResponse weipinhuiResponse = weipinhuiServiceClient.queryOrderLogistics(aoyiOrderLogisticsRequest);
 
             log.info("物流查询接口 返回WeipinhuiResponse:{}", JSONUtil.toJsonString(weipinhuiResponse));

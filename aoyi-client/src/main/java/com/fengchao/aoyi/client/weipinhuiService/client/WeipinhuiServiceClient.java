@@ -422,7 +422,7 @@ public class WeipinhuiServiceClient {
 
             // 排序
             String sortParamString = SortUtils.formatUrlParam(myselfSign, false);
-            log.info("唯品会确认订单接口 签名字段排序后为:{}", JSONUtil.toJsonString(sortParamString));
+            log.info("唯品会确认订单接口 签名字段排序后为:{}", sortParamString);
 
             // 签名
             String signMyself = RSAUtil.signMyself(sortParamString);
