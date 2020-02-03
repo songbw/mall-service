@@ -9,7 +9,7 @@ set tag_dir /data/server/product/userapps
 set name product-aoyi-0.0.1-SNAPSHOT.jar
 set tmp_dir /tmp
 
-send "/usr/local/mysql/bin/mysqldump -u fengchao -p -d fc_mall > db.sql"
+send "/usr/local/mysql/bin/mysqldump -u fengchao -p -d fc_mall > db.sql\n"
 expect "password:"
 send "${passwd}\n"
 set timeout 30000
