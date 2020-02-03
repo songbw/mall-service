@@ -9,6 +9,15 @@ set tag_dir /data/server/product/userapps
 set name product-aoyi-0.0.1-SNAPSHOT.jar
 set tmp_dir /tmp
 
+/usr/local/mysql/bin/mysqldump -uroot -p -d fc_mall > db.sql
+
+##拷贝db文件到目标机器
+spawn sh -c " scp -P 22051 -r db.sql $user@121.36.52.130:$tmp_dir"
+expect "password:"
+send "${passwd}\n"
+set timeout 30000
+expect "$ "
+
 ##拷贝jar文件到目标机器
 spawn sh -c " scp -P $port -r $src_dir$name $user@$host:$tag_dir"
 expect "password:"
