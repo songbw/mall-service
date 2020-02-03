@@ -8,7 +8,8 @@
     <result column="purchase_qty" jdbcType="INTEGER" property="purchaseQty" />
     <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
     <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="spu_id" jdbcType="VARCHAR" property="spuId" />
+    <result column="spu_id" jdbcType="INTEGER" property="spuId" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, code, goods_logo, purchase_qty, sku_id, status, spu_id
+    id, code, goods_logo, purchase_qty, sku_id, status, spu_id, price
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.StarSkuExample" resultMap="BaseResultMap">
     select
@@ -103,11 +104,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.StarSku" useGeneratedKeys="true">
     insert into star_sku (code, goods_logo, purchase_qty, 
-      sku_id, status, spu_id
-      )
+      sku_id, status, spu_id, 
+      price)
     values (#{code,jdbcType=VARCHAR}, #{goodsLogo,jdbcType=VARCHAR}, #{purchaseQty,jdbcType=INTEGER}, 
-      #{skuId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{spuId,jdbcType=VARCHAR}
-      )
+      #{skuId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{spuId,jdbcType=INTEGER}, 
+      #{price,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.StarSku" useGeneratedKeys="true">
     insert into star_sku
@@ -130,6 +131,9 @@
       <if test="spuId != null">
         spu_id,
       </if>
+      <if test="price != null">
+        price,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="code != null">
@@ -148,7 +152,10 @@
         #{status,jdbcType=INTEGER},
       </if>
       <if test="spuId != null">
-        #{spuId,jdbcType=VARCHAR},
+        #{spuId,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -180,7 +187,10 @@
         status = #{record.status,jdbcType=INTEGER},
       </if>
       <if test="record.spuId != null">
-        spu_id = #{record.spuId,jdbcType=VARCHAR},
+        spu_id = #{record.spuId,jdbcType=INTEGER},
+      </if>
+      <if test="record.price != null">
+        price = #{record.price,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -195,7 +205,8 @@
       purchase_qty = #{record.purchaseQty,jdbcType=INTEGER},
       sku_id = #{record.skuId,jdbcType=VARCHAR},
       status = #{record.status,jdbcType=INTEGER},
-      spu_id = #{record.spuId,jdbcType=VARCHAR}
+      spu_id = #{record.spuId,jdbcType=INTEGER},
+      price = #{record.price,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -219,7 +230,10 @@
         status = #{status,jdbcType=INTEGER},
       </if>
       <if test="spuId != null">
-        spu_id = #{spuId,jdbcType=VARCHAR},
+        spu_id = #{spuId,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -231,7 +245,8 @@
       purchase_qty = #{purchaseQty,jdbcType=INTEGER},
       sku_id = #{skuId,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
-      spu_id = #{spuId,jdbcType=VARCHAR}
+      spu_id = #{spuId,jdbcType=INTEGER},
+      price = #{price,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

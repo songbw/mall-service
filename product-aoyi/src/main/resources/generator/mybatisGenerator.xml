@@ -12,7 +12,7 @@
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
         <!--数据库链接URL，用户名、密码 -->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.200.37:3306/fc_mall" userId="fengchao" password="Smartautotech@123">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://139.9.114.143:3306/fc_mall" userId="fengchao" password="Smartautotech@123">
         </jdbcConnection>
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
@@ -50,15 +50,15 @@
 <!--        <table tableName="star_category" enableInsert="true">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
-        <table tableName="star_spu" enableInsert="true">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
+<!--        <table tableName="star_spu" enableInsert="true">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
 <!--        <table tableName="star_detail_img" enableInsert="true">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
-<!--        <table tableName="star_sku" enableInsert="true">-->
-<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
-<!--        </table>-->
+        <table tableName="star_sku" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
 <!--        <table tableName="star_property" enableInsert="true">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
