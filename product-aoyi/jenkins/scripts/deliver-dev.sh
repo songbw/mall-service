@@ -16,7 +16,7 @@ set timeout 30000
 expect "$ "
 
 ##拷贝db文件到目标机器
-spawn sh -c " scp -P 22051 -r db.sql $user@121.36.52.130:$tmp_dir"
+spawn sh -c " scp -P 22051 -r db.sql $user@121.36.52.130:$tmp_dir\n"
 expect "password:"
 send "${passwd}\n"
 set timeout 30000
