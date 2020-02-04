@@ -140,7 +140,7 @@ public class ProductAoyiApplicationTests {
 		});
 	}
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void starProduct() {
 		QueryBean queryBean = new QueryBean() ;
