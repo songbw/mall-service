@@ -19,7 +19,9 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -236,18 +238,20 @@ public class ProductServiceImpl implements ProductService {
             aoyiProdIndexX = ProductHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
         }
         // 查询spu图片
-        List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
-        String imageUrl = "" ;
-        if (starDetailImgs != null && starDetailImgs.size() > 0) {
-            for (int i = 0; i < starDetailImgs.size(); i++) {
-                StarDetailImg starDetailImg = starDetailImgs.get(0) ;
-                if (i == 0) {
-                    imageUrl = starDetailImg.getImgUrl() ;
-                } else {
-                    imageUrl = imageUrl + ":" + starDetailImg.getImgUrl() ;
+        if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
+            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
+            String imageUrl = "" ;
+            if (starDetailImgs != null && starDetailImgs.size() > 0) {
+                for (int i = 0; i < starDetailImgs.size(); i++) {
+                    StarDetailImg starDetailImg = starDetailImgs.get(0) ;
+                    if (i == 0) {
+                        imageUrl = starDetailImg.getImgUrl() ;
+                    } else {
+                        imageUrl = imageUrl + ";" + starDetailImg.getImgUrl() ;
+                    }
                 }
+                aoyiProdIndexX.setImagesUrl(imageUrl);
             }
-            aoyiProdIndexX.setImagesUrl(imageUrl);
         }
         // 查询spu属性
         List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(aoyiProdIndexX.getId(), 0) ;
