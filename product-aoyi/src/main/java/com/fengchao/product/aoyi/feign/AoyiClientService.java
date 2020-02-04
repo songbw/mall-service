@@ -5,7 +5,7 @@ import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(value = "aoyi-client", url = "http://localhost:8001", fallback = AoyiClientServiceH.class)
+@FeignClient(value = "aoyi-client", fallback = AoyiClientServiceH.class)
 public interface AoyiClientService {
 
     @RequestMapping(value = "/product/price", method = RequestMethod.POST)

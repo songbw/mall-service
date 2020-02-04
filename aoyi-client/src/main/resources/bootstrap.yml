@@ -19,48 +19,13 @@ spring:
   application:
     name: aoyi-client
   cloud:
-    service-registry:
-      auto-registration:
-        enabled: false
-#    config:
-#      discovery:
-#        enabled: true
-#        service-id: config-server
-#      profile: ${spring.profiles.active}
-#      retry:
-#        max-attempts: 3
-#        max-interval: 2000
-#        initial-interval: 2000
-#        request-read-timeout: 10000
-
----
-
-server:
-  compression:
-    enabled: true
-    mime-types:
-      - image/png
-      - image/jpeg
-      - image/jpg
-      - text/html
-      - application/javascript
-      - text/css
-      - application/octet-stream
-      - application/json
-
-
-logging:
-  file: /data/logs/aoyi-client/log.log
-  pattern:
-    file: '%d %-5level [%thread] %logger : %msg%n'
-  level:
-    org.springframework.web: debug
-    com.fengchao.aoyi.client.controller: debug
-    com.fengchao.aoyi.client.service: debug
-
-aoyi:
-  gatBackUrl: http://localhost:8001
-star:
-  appKey: ydb7d95384fdbb113d
-  appSecret: 3218526a3bed4bd8b91dc35fb2325470
-  baseUrl: http://pre-openapi.380star.com/
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      profile: ${spring.profiles.active}
+      retry:
+        max-attempts: 3
+        max-interval: 2000
+        initial-interval: 2000
+        request-read-timeout: 10000
