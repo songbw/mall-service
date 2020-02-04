@@ -3,8 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
-import com.fengchao.product.aoyi.dao.InventoryDao;
-import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -12,8 +11,7 @@ import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.ESService;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
@@ -51,6 +49,12 @@ public class ProductServiceImpl implements ProductService {
     private ESService esService;
     @Autowired
     private InventoryDao inventoryDao ;
+    @Autowired
+    private StarDetailImgDao starDetailImgDao ;
+    @Autowired
+    private StarPropertyDao starPropertyDao ;
+    @Autowired
+    private StarSkuDao starSkuDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -181,7 +185,6 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    @Cacheable(value = "aoyiProdIndex", key = "#id")
     @DataSource(DataSourceNames.TWO)
     @Override
     public AoyiProdIndexX find(String id) throws ProductException {
@@ -211,12 +214,10 @@ public class ProductServiceImpl implements ProductService {
         return prodIndices;
     }
 
-
-
     @Override
     public ProductInfoBean findAndPromotion(String mpu, String appId) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
-        AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
+        AoyiProdIndexXWithBLOBs aoyiProdIndexX = findByMpu(mpu) ;
         if (aoyiProdIndexX != null) {
             BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
             List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu(), appId);
@@ -227,13 +228,43 @@ public class ProductServiceImpl implements ProductService {
         return infoBean;
     }
 
-    @Cacheable(value = "AoyiProdIndexX", key = "#mpu")
     @DataSource(DataSourceNames.TWO)
-    private AoyiProdIndexX findByMpu(String mpu) {
-        AoyiProdIndexX aoyiProdIndexX = mapper.selectByMpu(mpu);
+    @Override
+    public AoyiProdIndexXWithBLOBs findByMpu(String mpu) {
+        AoyiProdIndexXWithBLOBs aoyiProdIndexX = mapper.selectByMpu(mpu);
         if (aoyiProdIndexX != null) {
-            aoyiProdIndexX = ProductHandle.updateImage(aoyiProdIndexX) ;
+            aoyiProdIndexX = ProductHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
         }
+        // 查询spu图片
+        List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
+        String imageUrl = "" ;
+        if (starDetailImgs != null && starDetailImgs.size() > 0) {
+            for (int i = 0; i < starDetailImgs.size(); i++) {
+                StarDetailImg starDetailImg = starDetailImgs.get(0) ;
+                if (i == 0) {
+                    imageUrl = starDetailImg.getImgUrl() ;
+                } else {
+                    imageUrl = imageUrl + ":" + starDetailImg.getImgUrl() ;
+                }
+            }
+            aoyiProdIndexX.setImagesUrl(imageUrl);
+        }
+        // 查询spu属性
+        List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(aoyiProdIndexX.getId(), 0) ;
+        aoyiProdIndexX.setProperties(starProperties);
+        // 查询sku
+        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
+        starSkus.forEach(starSku -> {
+            StarSkuBean starSkuBean = new StarSkuBean() ;
+            BeanUtils.copyProperties(starSku, starSkuBean);
+            // 查询sku属性
+            List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+            starSkuBean.setPropertyList(skuProperties);
+            starSkuBeans.add(starSkuBean) ;
+        });
+
+        aoyiProdIndexX.setSkuList(starSkuBeans);
         return aoyiProdIndexX;
     }
 

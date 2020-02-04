@@ -61,6 +61,8 @@ public class AoyiProdIndex {
 
     private String floorPrice;
 
+    private Integer crossBorder;
+
     public Integer getId() {
         return id;
     }
@@ -291,5 +293,13 @@ public class AoyiProdIndex {
 
     public void setFloorPrice(String floorPrice) {
         this.floorPrice = floorPrice == null ? null : floorPrice.trim();
+    }
+
+    public Integer getCrossBorder() {
+        return crossBorder;
+    }
+
+    public void setCrossBorder(Integer crossBorder) {
+        this.crossBorder = crossBorder;
     }
 }

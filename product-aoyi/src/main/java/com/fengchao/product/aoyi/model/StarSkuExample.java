@@ -504,52 +504,62 @@ public class StarSkuExample {
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdEqualTo(Integer value) {
+        public Criteria andSpuIdEqualTo(String value) {
             addCriterion("spu_id =", value, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdNotEqualTo(Integer value) {
+        public Criteria andSpuIdNotEqualTo(String value) {
             addCriterion("spu_id <>", value, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdGreaterThan(Integer value) {
+        public Criteria andSpuIdGreaterThan(String value) {
             addCriterion("spu_id >", value, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdGreaterThanOrEqualTo(Integer value) {
+        public Criteria andSpuIdGreaterThanOrEqualTo(String value) {
             addCriterion("spu_id >=", value, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdLessThan(Integer value) {
+        public Criteria andSpuIdLessThan(String value) {
             addCriterion("spu_id <", value, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdLessThanOrEqualTo(Integer value) {
+        public Criteria andSpuIdLessThanOrEqualTo(String value) {
             addCriterion("spu_id <=", value, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdIn(List<Integer> values) {
+        public Criteria andSpuIdLike(String value) {
+            addCriterion("spu_id like", value, "spuId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpuIdNotLike(String value) {
+            addCriterion("spu_id not like", value, "spuId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpuIdIn(List<String> values) {
             addCriterion("spu_id in", values, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdNotIn(List<Integer> values) {
+        public Criteria andSpuIdNotIn(List<String> values) {
             addCriterion("spu_id not in", values, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdBetween(Integer value1, Integer value2) {
+        public Criteria andSpuIdBetween(String value1, String value2) {
             addCriterion("spu_id between", value1, value2, "spuId");
             return (Criteria) this;
         }
 
-        public Criteria andSpuIdNotBetween(Integer value1, Integer value2) {
+        public Criteria andSpuIdNotBetween(String value1, String value2) {
             addCriterion("spu_id not between", value1, value2, "spuId");
             return (Criteria) this;
         }

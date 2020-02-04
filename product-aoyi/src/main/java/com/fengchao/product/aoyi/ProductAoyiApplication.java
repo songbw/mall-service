@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
-@EnableTaskTracker      // 启动TaskTracker
+//@EnableTaskTracker      // 启动TaskTracker
 //@EnableMonitor          // 启动Monitor
-@EnableJobClient
+//@EnableJobClient
 @EnableFeignClients
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 @Import({DynamicDataSourceConfig.class})
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 @MapperScan({"com.fengchao.product.aoyi.mapper"})

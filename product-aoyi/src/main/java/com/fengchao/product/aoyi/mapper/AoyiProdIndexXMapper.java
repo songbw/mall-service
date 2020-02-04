@@ -19,7 +19,7 @@ public interface AoyiProdIndexXMapper {
 
     AoyiProdIndexX selectBySkuId(String skuId);
 
-    AoyiProdIndexX selectByMpu(String sku);
+    AoyiProdIndexXWithBLOBs selectByMpu(String sku);
 
     int updateByPrimaryKeySelective(AoyiProdIndexX record);
 
@@ -33,7 +33,7 @@ public interface AoyiProdIndexXMapper {
 
     List<AoyiProdIndexX> selectAll(HashMap map) ;
 
-    List<AoyiProdIndexX> selectSearchLimit(HashMap map) ;
+    List<AoyiProdIndexXWithBLOBs> selectSearchLimit(HashMap map) ;
 
     int selectSearchCount(HashMap map) ;
 

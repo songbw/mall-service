@@ -2044,6 +2044,66 @@ public class AoyiProdIndexExample {
             addCriterion("floor_price not between", value1, value2, "floorPrice");
             return (Criteria) this;
         }
+
+        public Criteria andCrossBorderIsNull() {
+            addCriterion("cross_border is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderIsNotNull() {
+            addCriterion("cross_border is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderEqualTo(Integer value) {
+            addCriterion("cross_border =", value, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderNotEqualTo(Integer value) {
+            addCriterion("cross_border <>", value, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderGreaterThan(Integer value) {
+            addCriterion("cross_border >", value, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderGreaterThanOrEqualTo(Integer value) {
+            addCriterion("cross_border >=", value, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderLessThan(Integer value) {
+            addCriterion("cross_border <", value, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderLessThanOrEqualTo(Integer value) {
+            addCriterion("cross_border <=", value, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderIn(List<Integer> values) {
+            addCriterion("cross_border in", values, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderNotIn(List<Integer> values) {
+            addCriterion("cross_border not in", values, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderBetween(Integer value1, Integer value2) {
+            addCriterion("cross_border between", value1, value2, "crossBorder");
+            return (Criteria) this;
+        }
+
+        public Criteria andCrossBorderNotBetween(Integer value1, Integer value2) {
+            addCriterion("cross_border not between", value1, value2, "crossBorder");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

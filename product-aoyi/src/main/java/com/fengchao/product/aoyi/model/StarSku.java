@@ -13,7 +13,7 @@ public class StarSku {
 
     private Integer status;
 
-    private Integer spuId;
+    private String spuId;
 
     private String price;
 
@@ -65,12 +65,12 @@ public class StarSku {
         this.status = status;
     }
 
-    public Integer getSpuId() {
+    public String getSpuId() {
         return spuId;
     }
 
-    public void setSpuId(Integer spuId) {
-        this.spuId = spuId;
+    public void setSpuId(String spuId) {
+        this.spuId = spuId == null ? null : spuId.trim();
     }
 
     public String getPrice() {

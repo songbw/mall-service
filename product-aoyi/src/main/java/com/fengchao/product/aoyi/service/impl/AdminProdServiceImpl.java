@@ -84,15 +84,13 @@ public class AdminProdServiceImpl implements AdminProdService {
         total = aoyiProdIndexXMapper.selectSearchCount(map);
         if (total > 0) {
             aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
+                aoyiProdIndex = ProductHandle.updateImageWithBLOBS(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
         }
         pageBean = PageBean.build(pageBean, prods, total, offset, limit);
         return pageBean;
     }
-
-
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -123,7 +121,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         total = aoyiProdIndexXMapper.selectSearchCount(map);
         if (total > 0) {
             aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
+                aoyiProdIndex = ProductHandle.updateImageWithBLOBS(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
         }

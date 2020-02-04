@@ -15,6 +15,7 @@ import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
+import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.starBean.SkuBean;
 import com.fengchao.product.aoyi.starBean.SpuBean;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -60,6 +61,10 @@ public class ProductAoyiApplicationTests {
 	private StarSpuMapper starSpuMapper ;
 	@Autowired
 	private StarSkuMapper starSkuMapper ;
+	@Autowired
+	private AoyiProdIndexMapper aoyiProdIndexMapper;
+	@Autowired
+	private ProductService productService ;
 
 	@Ignore
 	@Test
@@ -149,51 +154,66 @@ public class ProductAoyiApplicationTests {
 				String resJsonString = JSON.toJSONString(spuIdsResponse) ;
 				JSONObject resJson = JSONObject.parseObject(resJsonString) ;
 				JSONArray spuArray = resJson.getJSONObject("data").getJSONArray("spuIdList") ;
-				for (int i = 0; i < spuArray.size(); i++) {
-					String detailParam = "" ;
-					System.out.println(i);
-					if ((i + 49) > spuArray.size()) {
-						detailParam = JSONUtil.toJsonString(spuArray.subList(i, spuArray.size()));
-					} else {
-						detailParam = JSONUtil.toJsonString(spuArray.subList(i, i + 49));
-					}
-					detailParam = detailParam.replace("[", "").replace("]", "").replace("\"", "") ;
-					OperaResponse spuDetailRes = aoyiClientService.getSpuDetail(detailParam) ;
-					if (spuDetailRes.getCode() == 200) {
-						String spuDetailResString = JSON.toJSONString(spuDetailRes) ;
-						JSONObject spuDetailResJson = JSONObject.parseObject(spuDetailResString) ;
-						JSONArray spuDetailData = spuDetailResJson.getJSONArray("data") ;
-						for (int j = 0; j < spuDetailData.size(); j++) {
-							JSONObject jsonObject = spuDetailData.getJSONObject(j) ;
-							StarSpu spuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSpu>(){});
-							// insert spu
-							starSpuMapper.insertSelective(spuBean) ;
-							JSONArray detailImgArray = jsonObject.getJSONArray("detailImgUrlList");
-							for (int k = 0; k < detailImgArray.size(); k++) {
-								String detailImgJson = detailImgArray.getString(k) ;
-								StarDetailImg starDetailImg = new StarDetailImg() ;
-								starDetailImg.setImgUrl(detailImgJson);
-								// set spu id
-								starDetailImg.setSpuId(spuBean.getId());
-								// isert detail img
-								starDetailImgMapper.insertSelective(starDetailImg) ;
-							}
-							JSONArray propertyArray = jsonObject.getJSONArray("spuPropertyList") ;
-							for (int k = 0; k < propertyArray.size(); k++) {
-								JSONObject propertyJson = propertyArray.getJSONObject(k) ;
-								StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
-								// set spu id
-								starProperty.setProductId(spuBean.getId());
-								// set type 0
-								starProperty.setType(0);
-								// isert property
-								starPropertyMapper.insertSelective(starProperty) ;
-							}
-							log.info("获取SPU信息，结果：{}",JSONUtil.toJsonString(spuBean));
-						}
-						i = i+ 49 ;
-					}
-				}
+//				for (int i = 0; i < spuArray.size(); i++) {
+//					String detailParam = "" ;
+//					System.out.println(i);
+//					if ((i + 49) > spuArray.size()) {
+//						detailParam = JSONUtil.toJsonString(spuArray.subList(i, spuArray.size()));
+//					} else {
+//						detailParam = JSONUtil.toJsonString(spuArray.subList(i, i + 49));
+//					}
+//					detailParam = detailParam.replace("[", "").replace("]", "").replace("\"", "") ;
+//					OperaResponse spuDetailRes = aoyiClientService.getSpuDetail(detailParam) ;
+//					if (spuDetailRes.getCode() == 200) {
+//						String spuDetailResString = JSON.toJSONString(spuDetailRes) ;
+//						JSONObject spuDetailResJson = JSONObject.parseObject(spuDetailResString) ;
+//						JSONArray spuDetailData = spuDetailResJson.getJSONArray("data") ;
+//						for (int j = 0; j < spuDetailData.size(); j++) {
+//							JSONObject jsonObject = spuDetailData.getJSONObject(j) ;
+//							StarSpu spuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSpu>(){});
+//							AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs() ;
+//							Date date = new Date();
+//							aoyiProdIndexWithBLOBs.setCreatedAt(date);
+//							aoyiProdIndexWithBLOBs.setUpdatedAt(date);
+//							aoyiProdIndexWithBLOBs.setMpu(spuBean.getGoodsCode());
+//							aoyiProdIndexWithBLOBs.setSkuid(spuBean.getSpuId());
+//							aoyiProdIndexWithBLOBs.setMerchantId(127);
+//							aoyiProdIndexWithBLOBs.setName(spuBean.getName());
+//							aoyiProdIndexWithBLOBs.setImage(spuBean.getMainImgUrl());
+//							aoyiProdIndexWithBLOBs.setState(spuBean.getStatus() + "");
+//							aoyiProdIndexWithBLOBs.setIntroduction(spuBean.getDetailInfo());
+//							aoyiProdIndexWithBLOBs.setCrossBorder(spuBean.getCrossBorder());
+//
+//							// insert spu
+//							aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs) ;
+//							// insert spu
+////							starSpuMapper.insertSelective(spuBean) ;
+//							JSONArray detailImgArray = jsonObject.getJSONArray("detailImgUrlList");
+//							for (int k = 0; k < detailImgArray.size(); k++) {
+//								String detailImgJson = detailImgArray.getString(k) ;
+//								StarDetailImg starDetailImg = new StarDetailImg() ;
+//								starDetailImg.setImgUrl(detailImgJson);
+//								// set spu id
+//								starDetailImg.setSpuId(aoyiProdIndexWithBLOBs.getId());
+//								// isert detail img
+//								starDetailImgMapper.insertSelective(starDetailImg) ;
+//							}
+//							JSONArray propertyArray = jsonObject.getJSONArray("spuPropertyList") ;
+//							for (int k = 0; k < propertyArray.size(); k++) {
+//								JSONObject propertyJson = propertyArray.getJSONObject(k) ;
+//								StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
+//								// set spu id
+//								starProperty.setProductId(aoyiProdIndexWithBLOBs.getId());
+//								// set type 0
+//								starProperty.setType(0);
+//								// isert property
+//								starPropertyMapper.insertSelective(starProperty) ;
+//							}
+//							log.info("获取SPU信息，结果：{}",JSONUtil.toJsonString(spuBean));
+//						}
+//						i = i+ 49 ;
+//					}
+//				}
 				for (int i = 0; i < spuArray.size(); i++) {
 					log.info("获取SKU信息，入参：{}", spuArray.getString(i)) ;
 					OperaResponse skuDetailRes = aoyiClientService.getSkuDetail(spuArray.getString(i)) ;
@@ -203,6 +223,7 @@ public class ProductAoyiApplicationTests {
 						JSONArray skuDetailData = skuDetailResJson.getJSONArray("data") ;
 						JSONObject jsonObject = skuDetailData.getJSONObject(0) ;
 						StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
+						skuBean.setSpuId(spuArray.getString(i));
 						// insert spu
 						starSkuMapper.insertSelective(skuBean) ;
 						JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
@@ -286,6 +307,13 @@ public class ProductAoyiApplicationTests {
 				subStarCategory(starCategory.getStarId()) ;
 			}
 		}
+	}
+
+	@Ignore
+	@Test
+	public void testFindByMpu() {
+		AoyiProdIndexXWithBLOBs aoyiProdIndexXWithBLOBs = productService.findByMpu("6109515") ;
+		System.out.println(JSONUtil.toJsonString(aoyiProdIndexXWithBLOBs));
 	}
 
 }
