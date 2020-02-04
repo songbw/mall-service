@@ -12,7 +12,7 @@ weipinhui:
     renderOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/renderOrder
     createOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/confirmOrder
     releaseOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/releaseOrder
-    queryAddress: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/queryAddress
+    queryAddress: http://47.110.135.104:8080/aoyi/rest/order/queryAddress
     ## 物流信息
     queryOrderLogistics: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/queryOrderLogistics
 
