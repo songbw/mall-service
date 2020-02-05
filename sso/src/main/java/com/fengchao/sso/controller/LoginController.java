@@ -7,6 +7,7 @@ import com.fengchao.sso.model.Login;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,11 @@ public class LoginController {
             return result;
         }
         String value = redisDAO.getValue("zc:sso:" + loginBean.getAppId() + loginBean.getUsername()) ;
+        if(StringUtils.isEmpty(value)) {
+            result.setCode(10008);
+            result.setMsg("验证码不正确");
+            return result;
+        }
 //            String value = redisDAO.getValue(loginBean.getUsername());
         if(!value.equals(loginBean.getCode())){
             result.setCode(10008);
