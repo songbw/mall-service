@@ -37,21 +37,21 @@ public class LoginController {
             result.setCode(10007);
             result.setMsg("用户名已存在");
             return result;
-        }else{
-            String value = redisDAO.getValue(loginBean.getUsername());
-            if(!value.equals(loginBean.getCode())){
-                result.setCode(10008);
-                result.setMsg("验证码不正确");
-                return result;
-            }
-            if(StringUtil.isNotEmpty(loginBean.getUsername()) && StringUtil.isNotEmpty(loginBean.getPassword())){
-                loginService.insertSelective(loginBean) ;
-            }
-//            String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-            String token = JwtTokenUtil.generateToken(loginBean);
-            result.getData().put("Token",token);
-            redisDAO.setKey("sso:" + loginBean.getAppId() + loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
         }
+        String value = redisDAO.getValue("zc:sso:" + loginBean.getAppId() + loginBean.getUsername()) ;
+//            String value = redisDAO.getValue(loginBean.getUsername());
+        if(!value.equals(loginBean.getCode())){
+            result.setCode(10008);
+            result.setMsg("验证码不正确");
+            return result;
+        }
+        if(StringUtil.isNotEmpty(loginBean.getUsername()) && StringUtil.isNotEmpty(loginBean.getPassword())){
+            loginService.insertSelective(loginBean) ;
+        }
+//            String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        String token = JwtTokenUtil.generateToken(loginBean);
+        result.getData().put("Token",token);
+        redisDAO.setKey("sso:" + loginBean.getAppId() + loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
         return result;
     }
 
