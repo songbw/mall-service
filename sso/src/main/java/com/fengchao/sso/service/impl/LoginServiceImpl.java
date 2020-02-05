@@ -84,7 +84,9 @@ public class LoginServiceImpl implements ILoginService {
         user.setLoginId(Integer.parseInt(login.getId()));
         user.setiAppId(loginBean.getAppId());
         user.setOpenId(Md5Util.md5(loginBean.getUsername() + login.getAppId()));
+        String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
         user.setTelephone(loginBean.getUsername());
+        user.setNickname(nickname);
         return userMapper.insertSelective(user);
     }
 
