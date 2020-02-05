@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient(value = "aoyi-client", url = "http://localhost:8001", fallback = AoyiClientServiceH.class)
+@FeignClient(value = "aoyi-client", fallback = AoyiClientServiceH.class)
 public interface AoyiClientService {
 
     @RequestMapping(value = "/order", method = RequestMethod.POST)

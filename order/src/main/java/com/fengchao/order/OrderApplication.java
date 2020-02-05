@@ -13,11 +13,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 
-//@EnableTaskTracker      // 启动TaskTracker
+@EnableTaskTracker      // 启动TaskTracker
 //@EnableMonitor          // 启动Monitor
-//@EnableJobClient
+@EnableJobClient
 @EnableFeignClients
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 @Import({DynamicDataSourceConfig.class})
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 @MapperScan({"com.fengchao.order.mapper"})
