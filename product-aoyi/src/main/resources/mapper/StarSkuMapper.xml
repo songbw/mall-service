@@ -9,7 +9,10 @@
     <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="spu_id" jdbcType="VARCHAR" property="spuId" />
-    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="price" jdbcType="INTEGER" property="price" />
+    <result column="istatus" jdbcType="SMALLINT" property="istatus" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +73,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, code, goods_logo, purchase_qty, sku_id, status, spu_id, price
+    id, code, goods_logo, purchase_qty, sku_id, status, spu_id, price, istatus, update_time, 
+    create_time
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.StarSkuExample" resultMap="BaseResultMap">
     select
@@ -105,10 +109,12 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.StarSku" useGeneratedKeys="true">
     insert into star_sku (code, goods_logo, purchase_qty, 
       sku_id, status, spu_id, 
-      price)
+      price, istatus, update_time, 
+      create_time)
     values (#{code,jdbcType=VARCHAR}, #{goodsLogo,jdbcType=VARCHAR}, #{purchaseQty,jdbcType=INTEGER}, 
       #{skuId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{spuId,jdbcType=VARCHAR}, 
-      #{price,jdbcType=VARCHAR})
+      #{price,jdbcType=INTEGER}, #{istatus,jdbcType=SMALLINT}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.StarSku" useGeneratedKeys="true">
     insert into star_sku
@@ -134,6 +140,15 @@
       <if test="price != null">
         price,
       </if>
+      <if test="istatus != null">
+        istatus,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="code != null">
@@ -155,7 +170,16 @@
         #{spuId,jdbcType=VARCHAR},
       </if>
       <if test="price != null">
-        #{price,jdbcType=VARCHAR},
+        #{price,jdbcType=INTEGER},
+      </if>
+      <if test="istatus != null">
+        #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -190,7 +214,16 @@
         spu_id = #{record.spuId,jdbcType=VARCHAR},
       </if>
       <if test="record.price != null">
-        price = #{record.price,jdbcType=VARCHAR},
+        price = #{record.price,jdbcType=INTEGER},
+      </if>
+      <if test="record.istatus != null">
+        istatus = #{record.istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="_parameter != null">
@@ -206,7 +239,10 @@
       sku_id = #{record.skuId,jdbcType=VARCHAR},
       status = #{record.status,jdbcType=INTEGER},
       spu_id = #{record.spuId,jdbcType=VARCHAR},
-      price = #{record.price,jdbcType=VARCHAR}
+      price = #{record.price,jdbcType=INTEGER},
+      istatus = #{record.istatus,jdbcType=SMALLINT},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -233,7 +269,16 @@
         spu_id = #{spuId,jdbcType=VARCHAR},
       </if>
       <if test="price != null">
-        price = #{price,jdbcType=VARCHAR},
+        price = #{price,jdbcType=INTEGER},
+      </if>
+      <if test="istatus != null">
+        istatus = #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -246,7 +291,10 @@
       sku_id = #{skuId,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       spu_id = #{spuId,jdbcType=VARCHAR},
-      price = #{price,jdbcType=VARCHAR}
+      price = #{price,jdbcType=INTEGER},
+      istatus = #{istatus,jdbcType=SMALLINT},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

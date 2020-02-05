@@ -1,5 +1,7 @@
 package com.fengchao.product.aoyi.model;
 
+import java.util.Date;
+
 public class StarSku {
     private Integer id;
 
@@ -15,7 +17,13 @@ public class StarSku {
 
     private String spuId;
 
-    private String price;
+    private Integer price;
+
+    private Short istatus;
+
+    private Date updateTime;
+
+    private Date createTime;
 
     public Integer getId() {
         return id;
@@ -73,11 +81,35 @@ public class StarSku {
         this.spuId = spuId == null ? null : spuId.trim();
     }
 
-    public String getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
-        this.price = price == null ? null : price.trim();
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Short getIstatus() {
+        return istatus;
+    }
+
+    public void setIstatus(Short istatus) {
+        this.istatus = istatus;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }
