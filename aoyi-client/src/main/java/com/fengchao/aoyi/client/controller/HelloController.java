@@ -36,24 +36,6 @@ public class HelloController {
     }
 
     /**
-     * 获取品牌列表
-     * <p>
-     * http://localhost:8001/weipinhui/getBrand?pageNumber=1&pageSize=20
-     *
-     * 每页20， 大约537页，最后一页6条
-     *
-     * @return
-     */
-    @GetMapping("/hello")
-    public String hello() {
-        log.info("获取品牌列表 入参 pageNumber:{}, pageSize:{}");
-
-
-
-        return "sdfasdf";
-    }
-
-    /**
      * 导出唯品会地址
      *
      * http://localhost:8001/test/weipinhui/export/address
