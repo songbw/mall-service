@@ -447,6 +447,17 @@ public class LoginServiceImpl implements ILoginService {
         return result;
     }
 
+    @Override
+    public TokenBean login(LoginBean loginBean) {
+        TokenBean tokenBean = new TokenBean();
+        String token = JwtTokenUtil.generateToken(loginBean);
+        SUser user = userDao.selectUserByTel(loginBean.getAppId(), loginBean.getUsername()) ;
+        tokenBean.setToken(token);
+        tokenBean.setOpenId(user.getOpenId());
+        redisDAO.setKey("sso:" + loginBean.getAppId() + loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
+        return tokenBean;
+    }
+
     private AccessToken getPingAnToken(String initCode) {
         OperaResult result = pinganClientService.findToken(initCode);
         if (result.getCode() == 200) {

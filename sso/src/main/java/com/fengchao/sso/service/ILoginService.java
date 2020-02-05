@@ -32,4 +32,6 @@ public interface ILoginService {
 
     OperaResponse wxBindVerify(String appId, String openId) ;
 
+    TokenBean login(LoginBean loginBean) ;
+
 }

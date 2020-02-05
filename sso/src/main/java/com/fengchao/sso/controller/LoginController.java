@@ -54,10 +54,7 @@ public class LoginController {
         if(StringUtil.isNotEmpty(loginBean.getUsername()) && StringUtil.isNotEmpty(loginBean.getPassword())){
             loginService.insertSelective(loginBean) ;
         }
-//            String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-        String token = JwtTokenUtil.generateToken(loginBean);
-        result.getData().put("Token",token);
-        redisDAO.setKey("sso:" + loginBean.getAppId() + loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
+        result.getData().put("result",loginService.login(loginBean));
         return result;
     }
 
@@ -95,12 +92,7 @@ public class LoginController {
             result.setMsg("密码不正确");
             return result;
         }
-//        String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-//        result.getData().put("Token", token);
-//        redisDAO.setKey(loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
-        String token = JwtTokenUtil.generateToken(loginBean);
-        result.getData().put("Token",token);
-        redisDAO.setKey("sso:" + loginBean.getAppId() + loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
+       result.getData().put("result", loginService.login(loginBean));
         return result;
     }
 
