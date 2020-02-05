@@ -6,7 +6,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import org.springframework.stereotype.Component;
 
-@Component
+@Deprecated
 public class AoyiClientServiceH implements AoyiClientService {
     @Override
     public OperaResponse price(QueryCityPrice queryBean) {

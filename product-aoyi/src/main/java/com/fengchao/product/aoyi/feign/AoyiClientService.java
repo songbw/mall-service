@@ -1,11 +1,12 @@
 package com.fengchao.product.aoyi.feign;
 
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceClientFallbackFactory;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(value = "aoyi-client", fallback = AoyiClientServiceH.class)
+@FeignClient(value = "aoyi-client", fallbackFactory = AoyiClientServiceClientFallbackFactory.class)
 public interface AoyiClientService {
 
     @RequestMapping(value = "/product/price", method = RequestMethod.POST)
