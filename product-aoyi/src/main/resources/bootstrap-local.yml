@@ -1,5 +1,10 @@
 spring.cloud.service-registry.auto-registration.enabled: false
 
+rpc:
+  feign:
+    client:
+      aoyiclient:
+       url: http://localhost:8001
 
 server:
   compression:

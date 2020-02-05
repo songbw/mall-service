@@ -6,7 +6,7 @@ import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(value = "aoyi-client", fallbackFactory = AoyiClientServiceClientFallbackFactory.class)
+@FeignClient(value = "aoyi-client", url = "${rpc.feign.client.aoyiclient.url:}", fallbackFactory = AoyiClientServiceClientFallbackFactory.class)
 public interface AoyiClientService {
 
     @RequestMapping(value = "/product/price", method = RequestMethod.POST)
@@ -35,4 +35,11 @@ public interface AoyiClientService {
 
     @RequestMapping(value = "/star/product/category", method = RequestMethod.GET)
     OperaResponse findProdCategory(@RequestParam("categoryId") String categoryId);
+
+    // 唯品会 begin
+    @RequestMapping(value = "/weipinhui/getBrand", method = RequestMethod.GET)
+    OperaResponse weipinhuiGetBrand(@RequestParam("pageNumber") Integer pageNumber,
+                                    @RequestParam("pageSize") Integer pageSize);
+
+    // 唯品会 end
 }

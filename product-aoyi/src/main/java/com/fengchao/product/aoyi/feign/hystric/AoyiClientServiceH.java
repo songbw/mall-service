@@ -82,4 +82,9 @@ public class AoyiClientServiceH implements AoyiClientService {
     public OperaResponse findProdCategory(String categoryId) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
+
+    @Override
+    public OperaResponse weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
 }

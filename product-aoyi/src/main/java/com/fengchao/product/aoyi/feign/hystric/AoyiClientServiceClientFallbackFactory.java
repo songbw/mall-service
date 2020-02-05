@@ -93,6 +93,11 @@ public class AoyiClientServiceClientFallbackFactory implements FallbackFactory<A
             public OperaResponse findProdCategory(String categoryId) {
                 return HystrixDefaultFallback.defaultReponseFallback();
             }
+
+            @Override
+            public OperaResponse weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
+                return HystrixDefaultFallback.defaultReponseFallback();
+            }
         };
     }
 
