@@ -8,4 +8,5 @@ public class LoginBean {
     private String password;
     private String oldPassword;
     private String code;
+    private String appId;
 }

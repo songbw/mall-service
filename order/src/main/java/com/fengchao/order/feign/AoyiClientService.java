@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient(value = "aoyi-client", fallback = AoyiClientServiceH.class)
+@FeignClient(value = "aoyi-client", url = "http://localhost:8001", fallback = AoyiClientServiceH.class)
 public interface AoyiClientService {
 
     @RequestMapping(value = "/order", method = RequestMethod.POST)
@@ -26,5 +26,11 @@ public interface AoyiClientService {
 
     @RequestMapping(value = "/order/gat", method = RequestMethod.POST)
     OperaResponse<List<SubOrderT>> orderGAT(@RequestBody OrderParamBean orderParamBean);
+
+    @RequestMapping(value = "/star/product/inventory/hold", method = RequestMethod.POST)
+    OperaResponse preHoldSkuInventory(@RequestBody HoldSkuInventoryQueryBean bean);
+
+    @RequestMapping(value = "/star/product/inventory/hold", method = RequestMethod.POST)
+    OperaResponse releaseSkuInventory(@RequestBody ReleaseSkuInventoryQueryBean bean);
 
 }

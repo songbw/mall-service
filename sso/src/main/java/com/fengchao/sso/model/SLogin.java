@@ -2,8 +2,8 @@ package com.fengchao.sso.model;
 
 import java.util.Date;
 
-public class Login {
-    private String id;
+public class SLogin {
+    private Integer id;
 
     private String username;
 
@@ -21,12 +21,12 @@ public class Login {
 
     private String appId;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -90,6 +90,6 @@ public class Login {
     }
 
     public void setAppId(String appId) {
-        this.appId = appId;
+        this.appId = appId == null ? null : appId.trim();
     }
 }
