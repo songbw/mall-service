@@ -19,6 +19,8 @@ public class Login {
 
     private Date creatdate;
 
+    private String appId;
+
     public String getId() {
         return id;
     }
@@ -81,5 +83,13 @@ public class Login {
 
     public void setCreatdate(Date creatdate) {
         this.creatdate = creatdate;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

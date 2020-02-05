@@ -1,5 +1,7 @@
 package com.fengchao.product.aoyi.model;
 
+import com.fengchao.product.aoyi.bean.StarSkuBean;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -79,6 +81,18 @@ public class AoyiProdIndexX implements Serializable {
     private String taxRate;
 
     private String floorPrice;
+
+    private Integer crossBorder;
+
+    /**
+     * spu属性
+     */
+    private List<StarProperty> properties ;
+
+    /**
+     * sku信息
+     */
+    private List<StarSkuBean> skuList ;
 
     public String getSubTitle() {
         return subTitle;
@@ -342,5 +356,29 @@ public class AoyiProdIndexX implements Serializable {
 
     public void setFloorPrice(String floorPrice) {
         this.floorPrice = floorPrice;
+    }
+
+    public List<StarProperty> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<StarProperty> properties) {
+        this.properties = properties;
+    }
+
+    public Integer getCrossBorder() {
+        return crossBorder;
+    }
+
+    public void setCrossBorder(Integer crossBorder) {
+        this.crossBorder = crossBorder;
+    }
+
+    public List<StarSkuBean> getSkuList() {
+        return skuList;
+    }
+
+    public void setSkuList(List<StarSkuBean> skuList) {
+        this.skuList = skuList;
     }
 }

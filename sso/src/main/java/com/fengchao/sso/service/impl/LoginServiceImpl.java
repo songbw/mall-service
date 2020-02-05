@@ -79,8 +79,12 @@ public class LoginServiceImpl implements ILoginService {
         login.setUsername(loginBean.getUsername());
         login.setPassword(loginBean.getPassword());
         login.setCreatdate(new Date());
+        login.setAppId(loginBean.getAppId());
         int insertNum = loginMapper.insertSelective(login);
         user.setLoginId(Integer.parseInt(login.getId()));
+        user.setiAppId(loginBean.getAppId());
+        user.setOpenId((loginBean.getUsername() + login.getAppId()).hashCode() + "");
+        user.setTelephone(loginBean.getUsername());
         return userMapper.insertSelective(user);
     }
 
@@ -437,7 +441,9 @@ public class LoginServiceImpl implements ILoginService {
             return result;
         }
         BindSubAccount bindSubAccount = bindSubAccountDao.selectByOpenIdAndAppId(appId, openId) ;
-        result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
+        if (bindSubAccount != null && bindSubAccount.getUserId() != null) {
+            result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
+        }
         return result;
     }
 

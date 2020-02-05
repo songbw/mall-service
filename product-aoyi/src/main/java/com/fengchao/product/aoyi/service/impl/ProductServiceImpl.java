@@ -3,8 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
-import com.fengchao.product.aoyi.dao.InventoryDao;
-import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -12,8 +11,7 @@ import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.ESService;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
@@ -21,7 +19,9 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -51,6 +51,12 @@ public class ProductServiceImpl implements ProductService {
     private ESService esService;
     @Autowired
     private InventoryDao inventoryDao ;
+    @Autowired
+    private StarDetailImgDao starDetailImgDao ;
+    @Autowired
+    private StarPropertyDao starPropertyDao ;
+    @Autowired
+    private StarSkuDao starSkuDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -67,12 +73,16 @@ public class ProductServiceImpl implements ProductService {
             map.put("brand", queryBean.getBrand());
         if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
             map.put("priceOrder", queryBean.getPriceOrder());
-        List<AoyiProdIndexX> prodIndices = new ArrayList<>();
+        List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
             mapper.selectLimit(map).forEach(aoyiProdIndex -> {
+                ProductInfoBean infoBean = new ProductInfoBean();
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
-                prodIndices.add(aoyiProdIndex);
+                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+                infoBean.setPromotion(promotionInfoBeans);
+                prodIndices.add(infoBean);
             });
         }
         pageBean = PageBean.build(pageBean, prodIndices, total, queryBean.getPageNo(), queryBean.getPageSize());
@@ -80,8 +90,29 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageInfo<AoyiProdIndex> findListByCategories(ProductQueryBean queryBean) throws ProductException {
-        return productDao.selectListByCategories(queryBean);
+    public PageInfo<ProductInfoBean> findListByCategories(ProductQueryBean queryBean) throws ProductException {
+        PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
+        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean);
+        productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
+        productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
+        productInfoBeanPageInfo.setPageSize(prodIndexPageInfo.getPageSize());
+        productInfoBeanPageInfo.setSize(prodIndexPageInfo.getSize());
+        productInfoBeanPageInfo.setStartRow(prodIndexPageInfo.getStartRow());
+        productInfoBeanPageInfo.setPages(prodIndexPageInfo.getPages());
+        productInfoBeanPageInfo.setEndRow(prodIndexPageInfo.getEndRow());
+
+        List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
+        List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
+        aoyiProdIndices.forEach(aoyiProdIndex -> {
+            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            ProductInfoBean infoBean = new ProductInfoBean() ;
+            BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+            infoBean.setPromotion(promotionInfoBeans);
+            productInfoBeans.add(infoBean) ;
+        });
+        productInfoBeanPageInfo.setList(productInfoBeans);
+        return productInfoBeanPageInfo ;
     }
 
     @Override
@@ -156,7 +187,6 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    @Cacheable(value = "aoyiProdIndex", key = "#id")
     @DataSource(DataSourceNames.TWO)
     @Override
     public AoyiProdIndexX find(String id) throws ProductException {
@@ -186,12 +216,10 @@ public class ProductServiceImpl implements ProductService {
         return prodIndices;
     }
 
-
-
     @Override
     public ProductInfoBean findAndPromotion(String mpu, String appId) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
-        AoyiProdIndexX aoyiProdIndexX = findByMpu(mpu) ;
+        AoyiProdIndexXWithBLOBs aoyiProdIndexX = findByMpu(mpu) ;
         if (aoyiProdIndexX != null) {
             BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
             List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu(), appId);
@@ -202,13 +230,45 @@ public class ProductServiceImpl implements ProductService {
         return infoBean;
     }
 
-    @Cacheable(value = "AoyiProdIndexX", key = "#mpu")
     @DataSource(DataSourceNames.TWO)
-    private AoyiProdIndexX findByMpu(String mpu) {
-        AoyiProdIndexX aoyiProdIndexX = mapper.selectByMpu(mpu);
+    @Override
+    public AoyiProdIndexXWithBLOBs findByMpu(String mpu) {
+        AoyiProdIndexXWithBLOBs aoyiProdIndexX = mapper.selectByMpu(mpu);
         if (aoyiProdIndexX != null) {
-            aoyiProdIndexX = ProductHandle.updateImage(aoyiProdIndexX) ;
+            aoyiProdIndexX = ProductHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
         }
+        // 查询spu图片
+        if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
+            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
+            String imageUrl = "" ;
+            if (starDetailImgs != null && starDetailImgs.size() > 0) {
+                for (int i = 0; i < starDetailImgs.size(); i++) {
+                    StarDetailImg starDetailImg = starDetailImgs.get(0) ;
+                    if (i == 0) {
+                        imageUrl = starDetailImg.getImgUrl() ;
+                    } else {
+                        imageUrl = imageUrl + ";" + starDetailImg.getImgUrl() ;
+                    }
+                }
+                aoyiProdIndexX.setImagesUrl(imageUrl);
+            }
+        }
+        // 查询spu属性
+        List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(aoyiProdIndexX.getId(), 0) ;
+        aoyiProdIndexX.setProperties(starProperties);
+        // 查询sku
+        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
+        starSkus.forEach(starSku -> {
+            StarSkuBean starSkuBean = new StarSkuBean() ;
+            BeanUtils.copyProperties(starSku, starSkuBean);
+            // 查询sku属性
+            List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+            starSkuBean.setPropertyList(skuProperties);
+            starSkuBeans.add(starSkuBean) ;
+        });
+
+        aoyiProdIndexX.setSkuList(starSkuBeans);
         return aoyiProdIndexX;
     }
 

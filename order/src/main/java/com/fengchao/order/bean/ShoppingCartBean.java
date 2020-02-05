@@ -13,6 +13,8 @@ public class ShoppingCartBean extends AoyiProdIndex {
 
     private String mpu;
 
+    private String skuId;
+
     private Integer count;
 
     private Integer status;
@@ -103,5 +105,13 @@ public class ShoppingCartBean extends AoyiProdIndex {
 
     public void setPerLimited(Integer perLimited) {
         this.perLimited = perLimited;
+    }
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
     }
 }

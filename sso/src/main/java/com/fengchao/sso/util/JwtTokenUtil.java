@@ -1,5 +1,6 @@
 package com.fengchao.sso.util;
 
+import com.fengchao.sso.bean.LoginBean;
 import com.fengchao.sso.bean.ThirdLoginBean;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -43,6 +44,28 @@ public class JwtTokenUtil {
         map.put("alg", "HS512");
         return Jwts.builder().setHeader(map)
                 .setSubject(jwtUserInfo.getiAppId() + jwtUserInfo.getOpenId())
+                .setExpiration(DateTime.now().plusSeconds(EXPIRATIONTIME).toDate())
+                .signWith(SignatureAlgorithm.HS512, signingKey)
+                .compact();
+    }
+
+    /**
+     * HS512算法生成Token
+     * @param loginBean
+     *          用户信息
+     * @return
+     *          生成的Token
+     */
+    public static String generateToken(LoginBean loginBean){
+        if(loginBean == null){
+            return null;
+        }
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(SECRET);
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("alg", "HS512");
+        return Jwts.builder().setHeader(map)
+                .setSubject(loginBean.getAppId() + loginBean.getUsername())
                 .setExpiration(DateTime.now().plusSeconds(EXPIRATIONTIME).toDate())
                 .signWith(SignatureAlgorithm.HS512, signingKey)
                 .compact();

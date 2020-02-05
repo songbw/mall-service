@@ -5,6 +5,7 @@ import com.fengchao.base.service.TagsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,8 +17,8 @@ public class TagsController {
     private TagsService service;
 
     @GetMapping
-    private OperaResult find(OperaResult result) {
-        result.getData().put("cdnUrl", service.findById(1)) ;
+    private OperaResult find(@RequestHeader("appId") String appId,  OperaResult result) {
+        result.getData().put("cdnUrl", service.findByAppId(appId)) ;
         return result;
     }
 

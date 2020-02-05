@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.bean;
 
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductInfoBean extends AoyiProdIndex implements Serializable {
+public class ProductInfoBean extends AoyiProdIndexXWithBLOBs implements Serializable {
 
     private List<PromotionInfoBean> promotion = new ArrayList<>();
 

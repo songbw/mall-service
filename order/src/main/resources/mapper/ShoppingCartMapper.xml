@@ -7,6 +7,7 @@
     <result column="app_id" property="appId" jdbcType="VARCHAR" />
     <result column="mac_address" property="macAddress" jdbcType="VARCHAR" />
     <result column="mpu" property="mpu" jdbcType="VARCHAR" />
+    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
     <result column="count" property="count" jdbcType="INTEGER" />
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
@@ -14,7 +15,7 @@
     <result column="is_del" property="isDel" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, open_id, app_id, mac_address, mpu, count, status, created_at, updated_at, is_del
+    id, open_id, app_id, mac_address, mpu, sku_id, count, status, created_at, updated_at, is_del
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -60,11 +61,11 @@
   </delete>
   <insert id="insert" parameterType="com.fengchao.order.model.ShoppingCart"  keyProperty="id" useGeneratedKeys="true">
     insert into shopping_cart (open_id, app_id, mac_address,
-      mpu, count,
+      mpu, sku_id, count,
       created_at, updated_at
       )
     values (#{openId,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{macAddress,jdbcType=VARCHAR},
-      #{mpu,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER},
+      #{mpu,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER},
       #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -85,6 +86,9 @@
       </if>
       <if test="mpu != null" >
         mpu,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
       </if>
       <if test="count != null" >
         count,
@@ -118,6 +122,9 @@
       <if test="mpu != null" >
         #{mpu,jdbcType=VARCHAR},
       </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=VARCHAR},
+      </if>
       <if test="count != null" >
         #{count,jdbcType=INTEGER},
       </if>
@@ -150,6 +157,9 @@
       <if test="mpu != null" >
         mpu = #{mpu,jdbcType=VARCHAR},
       </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=VARCHAR},
+      </if>
       <if test="count != null" >
         count = #{count,jdbcType=INTEGER},
       </if>
@@ -174,6 +184,7 @@
       app_id = #{appId,jdbcType=VARCHAR},
       mac_address = #{macAddress,jdbcType=VARCHAR},
       mpu = #{mpu,jdbcType=VARCHAR},
+      sku_id = #{skuId,jdbcType=VARCHAR},
       count = #{count,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},

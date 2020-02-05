@@ -12,7 +12,7 @@
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
         <!--数据库链接URL，用户名、密码 -->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.200.37:3306/sso" userId="fengchao" password="Smartautotech@123">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://139.9.114.143:3306/sso" userId="fengchao" password="Smartautotech@123">
         </jdbcConnection>
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
@@ -46,11 +46,14 @@
 <!--        <table tableName="balance_detail">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
-        <table tableName="s_user">
+        <table tableName="s_login">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
-        <table tableName="bind_sub_account">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
+<!--        <table tableName="s_user">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
+<!--        <table tableName="bind_sub_account">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
     </context>
 </generatorConfiguration>

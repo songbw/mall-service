@@ -46,5 +46,15 @@ public class AoyiClientServiceH implements AoyiClientService {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 
+    @Override
+    public OperaResponse preHoldSkuInventory(HoldSkuInventoryQueryBean bean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse releaseSkuInventory(ReleaseSkuInventoryQueryBean bean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
 
 }

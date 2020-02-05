@@ -5,6 +5,8 @@ public class Tags {
 
     private String work;
 
+    private String appId ;
+
     public Integer getId() {
         return id;
     }
@@ -19,5 +21,13 @@ public class Tags {
 
     public void setWork(String work) {
         this.work = work == null ? null : work.trim();
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

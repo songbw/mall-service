@@ -27,4 +27,10 @@ public interface AoyiClientService {
     @RequestMapping(value = "/order/gat", method = RequestMethod.POST)
     OperaResponse<List<SubOrderT>> orderGAT(@RequestBody OrderParamBean orderParamBean);
 
+    @RequestMapping(value = "/star/product/inventory/hold", method = RequestMethod.POST)
+    OperaResponse preHoldSkuInventory(@RequestBody HoldSkuInventoryQueryBean bean);
+
+    @RequestMapping(value = "/star/product/inventory/hold", method = RequestMethod.POST)
+    OperaResponse releaseSkuInventory(@RequestBody ReleaseSkuInventoryQueryBean bean);
+
 }

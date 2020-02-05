@@ -25,13 +25,15 @@ public class ProductController {
     private ProductService service;
 
     @PostMapping("/all")
-    private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean, OperaResult result) throws ProductException {
+    private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId, OperaResult result) throws ProductException {
+        queryBean.setAppId(appId);
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }
 
     @PostMapping("/all/categories")
-    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, OperaResult result) throws ProductException {
+    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, OperaResult result) throws ProductException {
+        queryBean.setAppId(appId);
         result.getData().put("result", service.findListByCategories(queryBean)) ;
         return result;
     }

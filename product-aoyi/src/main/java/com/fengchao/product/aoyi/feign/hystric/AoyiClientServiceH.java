@@ -57,4 +57,29 @@ public class AoyiClientServiceH implements AoyiClientService {
     public OperaResponse priceGAT(QueryCityPrice queryBean) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
+
+    @Override
+    public OperaResponse getSpuIdList(QueryBean queryBean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse getSpuDetail(String spuIds) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse getSkuDetail(String skuId) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse findBrandList(QueryBean queryBean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse findProdCategory(String categoryId) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
 }

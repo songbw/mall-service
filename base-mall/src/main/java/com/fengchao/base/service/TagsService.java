@@ -9,4 +9,6 @@ public interface TagsService {
 
     Tags findById(int id) ;
 
+    Tags findByAppId(String appId) ;
+
 }

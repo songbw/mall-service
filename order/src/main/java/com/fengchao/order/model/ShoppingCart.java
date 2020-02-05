@@ -11,6 +11,8 @@ public class ShoppingCart {
 
     private String mpu;
 
+    private String skuId;
+
     private Integer count;
 
     private Integer status;
@@ -111,5 +113,13 @@ public class ShoppingCart {
 
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
     }
 }

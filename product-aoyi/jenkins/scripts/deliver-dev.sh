@@ -24,11 +24,13 @@ expect "]$ "
 send "cd $tag_dir\n"
 expect "]$ "
 
-
 ## 重启
 send "cd ../bin/\n"
 expect "]$ "
 send "./stop.sh\n"
 expect "]$ "
 send "./start.sh\n"
+expect "]$ "
+
+send "./wuxi.sh\n"
 expect "]$ "

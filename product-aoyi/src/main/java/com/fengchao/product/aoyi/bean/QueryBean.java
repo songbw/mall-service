@@ -19,4 +19,5 @@ public class QueryBean implements Serializable {
         private String endTime;
         private String key="";
         private String openId;
+        private String appId ;
 }

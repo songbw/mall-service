@@ -30,6 +30,7 @@
     <result column="compare_price" jdbcType="VARCHAR" property="comparePrice" />
     <result column="tax_rate" jdbcType="VARCHAR" property="taxRate" />
     <result column="floor_price" jdbcType="VARCHAR" property="floorPrice" />
+    <result column="cross_border" jdbcType="INTEGER" property="crossBorder" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" extends="BaseResultMap" >
     <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
@@ -37,7 +38,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price,
-    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate, floor_price
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate, floor_price, cross_border
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams
@@ -58,9 +59,11 @@
     left join prod_extend e on p.mpu = e.mpu
     where p.skuId = #{skuid}
   </select>
-  <select id="selectByMpu" resultMap="BaseResultMap" parameterType="java.lang.String">
+  <select id="selectByMpu" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
     select
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from aoyi_prod_index
     where mpu = #{mpu}
   </select>
@@ -382,9 +385,11 @@
       and merchant_id = #{merchantId}
     </if>
   </select>
-  <select id="selectSearchLimit" resultMap="BaseResultMap" parameterType="Map">
+  <select id="selectSearchLimit" resultMap="ResultMapWithBLOBs" parameterType="Map">
     select
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from aoyi_prod_index
     where 1 = 1
     <if test="id != null and id !=''">
