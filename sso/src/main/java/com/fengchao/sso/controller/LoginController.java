@@ -194,8 +194,14 @@ public class LoginController {
             result.setMsg("验证码不为空");
             return result;
         }
-        String value = redisDAO.getValue(loginBean.getUsername());
-        if(StringUtil.isEmpty(value)  || !value.equals(loginBean.getCode())){
+        String value = redisDAO.getValue("fp:sso:" + loginBean.getAppId() + loginBean.getUsername()) ;
+        if(StringUtils.isEmpty(value)) {
+            result.setCode(10008);
+            result.setMsg("验证码不正确");
+            return result;
+        }
+//        String value = redisDAO.getValue(loginBean.getUsername());
+        if(!value.equals(loginBean.getCode())){
             result.setCode(100004);
             result.setMsg("验证码不正确");
             return result;
