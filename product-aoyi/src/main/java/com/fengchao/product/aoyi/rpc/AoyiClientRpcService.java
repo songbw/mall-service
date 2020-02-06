@@ -4,10 +4,12 @@ import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,31 +34,27 @@ public class AoyiClientRpcService {
      *
      * @return
      */
-    public List<SysCompany> queryAllMerchantList() {
-        /**
+    public List<BrandResDto> weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
         // 返回值
-        List<SysCompany> sysCompanyList = new ArrayList<>();
+        List<BrandResDto> brandResDtoList = new ArrayList<>();
 
         // 执行rpc调用
-        log.info("查询所有的商户信息 调用vendors rpc服务 入参:无");
+        log.info("同步唯品会品牌信息 调用aoyi-client rpc服务 入参:无");
 
         // 将merchantIdList转成Long型
-        OperaResponse<List<SysCompany>> resultObject = vendorsServiceClient.queryAllMerchantList();
-        log.info("查询所有的商户信息 调用vendors rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+        OperaResponse<List<BrandResDto>> resultObject = aoyiClientService.weipinhuiGetBrand(pageNumber, pageSize);
+        log.info("同步唯品会品牌信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
 
         // 处理返回
         if (resultObject.getCode() == 200) {
-            sysCompanyList = resultObject.getData();
+            brandResDtoList = resultObject.getData();
         } else {
-            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+            log.warn("同步唯品会品牌信息 调用aoyi-client rpc服务 错误!");
         }
 
-        log.info("VendorsRpcService#queryAllMerchantList 调用vendors rpc服务 返回:{}",
-                JSONUtil.toJsonString(sysCompanyList));
+        log.info("AoyiClientRpcService#weipinhuiGetBrand 调用aoyi-client rpc服务 返回:{}",
+                JSONUtil.toJsonString(brandResDtoList));
 
-        return sysCompanyList;
-         */
-
-        return null;
+        return brandResDtoList;
     }
 }

@@ -3,8 +3,11 @@ package com.fengchao.product.aoyi.feign;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceClientFallbackFactory;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @FeignClient(value = "aoyi-client", url = "${rpc.feign.client.aoyiclient.url:}", fallbackFactory = AoyiClientServiceClientFallbackFactory.class)
 public interface AoyiClientService {
@@ -38,8 +41,8 @@ public interface AoyiClientService {
 
     // 唯品会 begin
     @RequestMapping(value = "/weipinhui/getBrand", method = RequestMethod.GET)
-    OperaResponse weipinhuiGetBrand(@RequestParam("pageNumber") Integer pageNumber,
-                                    @RequestParam("pageSize") Integer pageSize);
+    OperaResponse<List<BrandResDto>> weipinhuiGetBrand(@RequestParam("pageNumber") Integer pageNumber,
+                                                       @RequestParam("pageSize") Integer pageSize);
 
     // 唯品会 end
 }

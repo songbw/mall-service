@@ -16,6 +16,7 @@ import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.ProductService;
+import com.fengchao.product.aoyi.service.weipinhui.WeipinhuiDataService;
 import com.fengchao.product.aoyi.starBean.SkuBean;
 import com.fengchao.product.aoyi.starBean.SpuBean;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.DecimalFormat;
@@ -34,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RunWith(SpringRunner.class)
+@ActiveProfiles("local")
 @SpringBootTest
 public class ProductAoyiApplicationTests {
 
@@ -65,6 +68,9 @@ public class ProductAoyiApplicationTests {
 	private AoyiProdIndexMapper aoyiProdIndexMapper;
 	@Autowired
 	private ProductService productService ;
+
+	@Autowired
+	private WeipinhuiDataService weipinhuiDataService;
 
 	@Ignore
 	@Test
@@ -316,4 +322,9 @@ public class ProductAoyiApplicationTests {
 		System.out.println(JSONUtil.toJsonString(aoyiProdIndexXWithBLOBs));
 	}
 
+	@Test
+	public void testWeipinhui() {
+
+
+	}
 }

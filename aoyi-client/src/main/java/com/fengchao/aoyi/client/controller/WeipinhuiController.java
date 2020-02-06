@@ -300,7 +300,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/queryAddress")
-    public OperaResult queryAddress(@RequestParam("pageNumber") Integer pageNumber,
+    public OperaResult<List<AoyiAdrressResDto>> queryAddress(@RequestParam("pageNumber") Integer pageNumber,
                                     @RequestParam("pageSize") Integer pageSize) {
 
         log.info("获取地址接口 入参 pageNumber:{} pageSize:{}", pageNumber, pageSize);
@@ -331,7 +331,7 @@ public class WeipinhuiController {
      * @return
      */
     @GetMapping("/queryOrderLogistics")
-    public OperaResult queryOrderLogistics(@RequestParam("subOrderNo") String subOrderNo) {
+    public OperaResult<AoyiLogisticsResDto> queryOrderLogistics(@RequestParam("subOrderNo") String subOrderNo) {
 
         log.info("物流查询接口 入参:{}", subOrderNo);
 
