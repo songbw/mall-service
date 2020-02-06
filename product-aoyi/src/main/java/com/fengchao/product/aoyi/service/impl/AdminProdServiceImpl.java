@@ -55,7 +55,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private AoyiBaseCategoryXMapper categoryMapper;
     @Autowired
-    private AoyiBaseBrandMapper brandMapper;
+    private AoyiBaseBrandXMapper brandMapper;
 
     @Autowired
     private ProductDao productDao;
@@ -248,7 +248,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         aoyiProdIndexWithBLOBs.setState(String.valueOf(ProductStatusEnum.INIT.getValue()));
         // 设置品牌
         if (requestProdParams.getBrandId() != null && requestProdParams.getBrandId() > 0) {
-            AoyiBaseBrand baseBrand = brandMapper.selectByPrimaryKey(requestProdParams.getBrandId());
+            AoyiBaseBrandX baseBrand = brandMapper.selectByPrimaryKey(requestProdParams.getBrandId());
             if (baseBrand == null) {
                 aoyiProdIndexWithBLOBs.setBrandId(0);
             }

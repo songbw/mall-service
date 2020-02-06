@@ -7,13 +7,12 @@ import com.fengchao.product.aoyi.dao.PlatformDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.BaseService;
-import com.fengchao.product.aoyi.mapper.AoyiBaseBrandMapper;
+import com.fengchao.product.aoyi.mapper.AoyiBaseBrandXMapper;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
-import com.fengchao.product.aoyi.utils.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Autowired
     private CategoryDao categoryDao ;
     @Autowired
-    private AoyiBaseBrandMapper baseBrandMapper;
+    private AoyiBaseBrandXMapper baseBrandMapper;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -314,7 +313,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             response.setMsg("platformId 不存在");
             return response ;
         }
-        List<AoyiBaseBrand> baseBrands = new ArrayList<>() ;
+        List<AoyiBaseBrandX> baseBrands = new ArrayList<>() ;
         if (bean.getBrands() != null && bean.getBrands().size() > 0) {
             baseBrands = baseBrandMapper.selectByBrandIdList(bean.getBrands()) ;
         }

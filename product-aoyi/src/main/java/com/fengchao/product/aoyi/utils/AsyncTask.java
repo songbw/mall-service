@@ -3,7 +3,7 @@ package com.fengchao.product.aoyi.utils;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.dao.ProductDao;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseBrandX;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@ public class AsyncTask {
     }
 
     @Async
-    public void executeAsyncBrandTask(WebTarget webTarget, List<AoyiBaseBrand> brands) {
+    public void executeAsyncBrandTask(WebTarget webTarget, List<AoyiBaseBrandX> brands) {
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         brands.forEach(brand -> {
             Response response1 = invocationBuilder.put(Entity.entity(brand, MediaType.APPLICATION_JSON));

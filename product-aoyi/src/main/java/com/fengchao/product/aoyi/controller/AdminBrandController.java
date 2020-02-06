@@ -2,7 +2,7 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseBrandX;
 import com.fengchao.product.aoyi.service.AdminBrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,13 +32,13 @@ public class AdminBrandController {
     }
 
     @PostMapping("updateBrand")
-    public OperaResult updateBrand(@RequestBody AoyiBaseBrand bean, OperaResult result){
+    public OperaResult updateBrand(@RequestBody AoyiBaseBrandX bean, OperaResult result){
         result.getData().put("result",brandService.updateBrandbyId(bean));
         return result;
     }
 
     @PostMapping
-    public OperaResult create(@RequestBody AoyiBaseBrand bean, OperaResult result){
+    public OperaResult create(@RequestBody AoyiBaseBrandX bean, OperaResult result){
         result.getData().put("result",brandService.create(bean));
         return result;
     }

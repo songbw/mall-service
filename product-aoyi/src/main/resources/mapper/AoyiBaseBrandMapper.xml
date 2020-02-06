@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiBaseBrandMapper" >
-  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiBaseBrand" >
+<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiBaseBrandXMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
     <id column="brand_id" property="brandId" jdbcType="INTEGER" />
     <result column="brand_name" property="brandName" jdbcType="VARCHAR" />
     <result column="brand_cname" property="brandCname" jdbcType="VARCHAR" />
@@ -13,7 +13,7 @@
     <result column="is_show" property="isShow" jdbcType="BIT" />
     <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiBaseBrand" extends="BaseResultMap" >
+  <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiBaseBrandX" extends="BaseResultMap" >
     <result column="brand_desc" property="brandDesc" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -35,7 +35,7 @@
     delete from aoyi_base_brand
     where brand_id = #{brandId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand" >
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
     insert into aoyi_base_brand (brand_name, brand_cname,
       brand_ename, brand_first_char, brand_logo, 
       site_url, sort_order, is_show, 
@@ -45,7 +45,7 @@
       #{siteUrl,jdbcType=VARCHAR}, #{sortOrder,jdbcType=TINYINT}, #{isShow,jdbcType=BIT}, 
       #{addTime}, #{brandDesc,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand"  keyProperty="brandId" useGeneratedKeys="true">
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX"  keyProperty="brandId" useGeneratedKeys="true">
     insert into aoyi_base_brand
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="brandId != null" >
@@ -118,7 +118,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand"  keyProperty="brandId" useGeneratedKeys="true">
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX"  keyProperty="brandId" useGeneratedKeys="true">
     update aoyi_base_brand
     <set >
       <if test="brandName != null" >
@@ -154,7 +154,7 @@
     </set>
     where brand_id = #{brandId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand" >
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
     update aoyi_base_brand
     set brand_name = #{brandName,jdbcType=VARCHAR},
       brand_cname = #{brandCname,jdbcType=VARCHAR},
@@ -168,7 +168,7 @@
       brand_desc = #{brandDesc,jdbcType=LONGVARCHAR}
     where brand_id = #{brandId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrand" >
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
     update aoyi_base_brand
     set brand_name = #{brandName,jdbcType=VARCHAR},
       brand_cname = #{brandCname,jdbcType=VARCHAR},

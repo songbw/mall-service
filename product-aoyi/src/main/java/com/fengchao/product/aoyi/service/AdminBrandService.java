@@ -1,15 +1,15 @@
 package com.fengchao.product.aoyi.service;
 
 import com.fengchao.product.aoyi.bean.PageBean;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseBrandX;
 
 public interface AdminBrandService {
 
     PageBean findBrandList(Integer offset, Integer limit);
 
-    Integer updateBrandbyId(AoyiBaseBrand bean);
+    Integer updateBrandbyId(AoyiBaseBrandX bean);
 
-    Integer create(AoyiBaseBrand bean);
+    Integer create(AoyiBaseBrandX bean);
 
     void delete(Integer id);
 

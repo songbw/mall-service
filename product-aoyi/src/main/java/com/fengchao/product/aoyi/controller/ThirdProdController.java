@@ -2,7 +2,7 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseBrandX;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/third/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -65,7 +63,7 @@ public class ThirdProdController {
     }
 
     @PutMapping("brand/receive")
-    public OperaResponse insertBrand(@RequestBody AoyiBaseBrand bean){
+    public OperaResponse insertBrand(@RequestBody AoyiBaseBrandX bean){
         log.info("根据ID添加或修改品牌 入参 AoyiBaseBrand:{}", JSONUtil.toJsonString(bean));
         return brandService.insertOrUpdate(bean);
     }
