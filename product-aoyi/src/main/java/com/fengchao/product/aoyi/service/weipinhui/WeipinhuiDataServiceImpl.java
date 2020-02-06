@@ -1,11 +1,15 @@
 package com.fengchao.product.aoyi.service.weipinhui;
 
+import com.fengchao.product.aoyi.dao.AoyiBaseBrandDao;
+import com.fengchao.product.aoyi.model.AoyiBaseBrand;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
+import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,8 +23,12 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
     private AoyiClientRpcService aoyiClientRpcService;
 
-    public WeipinhuiDataServiceImpl(AoyiClientRpcService aoyiClientRpcService) {
+    private AoyiBaseBrandDao aoyiBaseBrandDao;
+
+    public WeipinhuiDataServiceImpl(AoyiClientRpcService aoyiClientRpcService,
+                                    AoyiBaseBrandDao aoyiBaseBrandDao) {
         this.aoyiClientRpcService = aoyiClientRpcService;
+        this.aoyiBaseBrandDao = aoyiBaseBrandDao;
     }
 
     @Override
@@ -34,15 +42,37 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 log.info("同步品牌 第{}页 共{}条数据>>>>", pageNumber, brandResDtoList.size());
 
                 // 2. 入库处理
+                List<Integer> newBrandIdList = new ArrayList<>(); // 记录一下插入的brand(已有的不需要插入)
+                List<AoyiBaseBrand> insertAoyiBaseBrandList = new ArrayList<>();
                 if (CollectionUtils.isNotEmpty(brandResDtoList)) {
                     for (BrandResDto brandResDto : brandResDtoList) {
+                        // 查询数据库是否已经存在改brand
+                        Integer brandId = Integer.valueOf(brandResDto.getBrandId());
+                        AoyiBaseBrand exsitAoyiBaseBrand = aoyiBaseBrandDao.selectByBrandId(brandId);
+
+                        // 如果不存在, 则需要插入
+                        if (exsitAoyiBaseBrand == null) {
+                            AoyiBaseBrand insertAoyiBaseBrand = new AoyiBaseBrand();
+                            insertAoyiBaseBrand.setBrandId(brandId);
+                            insertAoyiBaseBrand.setBrandName(brandResDto.getBrandName());
+                            insertAoyiBaseBrand.setBrandDesc("唯品会");
+
+                            newBrandIdList.add(brandId);
+                            insertAoyiBaseBrandList.add(insertAoyiBaseBrand);
+                        }
 
                     }
+
+                    log.info("同步品牌 第{}页 需要插入数据{}条: {}",
+                            pageNumber, newBrandIdList.size(), JSONUtil.toJsonString(newBrandIdList));
+
+                    // 执行插入
+                    aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
                 }
 
                 // 3. 判断是否需要继续同步
-                if (brandResDtoList.size() <= PAGESIZE) {
-                    log.info("同步品牌 ");
+                if (brandResDtoList.size() == 0) {
+                    log.info("同步品牌 结束");
                     break;
                 }
 
@@ -53,9 +83,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 if (maxPageCount != -1 && pageCount >= maxPageCount) {
                     log.warn("同步品牌 达到最大页数{}限制 停止同步!", maxPageCount);
                 }
-            }
+            } // end while
         } catch (Exception e) {
-            log.error("");
+            log.error("同步品牌 异常:{}", e.getMessage(), e);
         }
 
     }

@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.mapper;
 
+import com.fengchao.product.aoyi.model.AoyiBaseBrand;
 import com.fengchao.product.aoyi.model.AoyiBaseBrandX;
 
 import java.util.HashMap;
@@ -27,4 +28,11 @@ public interface AoyiBaseBrandXMapper {
     List<AoyiBaseBrandX>  selectNameList(HashMap map);
 
     List<AoyiBaseBrandX>  selectByBrandIdList(List<Integer> brandIds);
+
+    /**
+     * 批量插入
+     *
+     * @param aoyiBaseBrandList
+     */
+    void batchInsert(List<AoyiBaseBrand> aoyiBaseBrandList);
 }
