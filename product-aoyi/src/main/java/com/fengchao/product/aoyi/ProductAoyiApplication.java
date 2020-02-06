@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
-@EnableTaskTracker      // 启动TaskTracker
+//@EnableTaskTracker      // 启动TaskTracker
 //@EnableMonitor          // 启动Monitor
-@EnableJobClient
+//@EnableJobClient
 @EnableFeignClients
 @EnableDiscoveryClient
 @Import({DynamicDataSourceConfig.class})

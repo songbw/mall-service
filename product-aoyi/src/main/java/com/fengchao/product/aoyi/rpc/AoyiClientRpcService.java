@@ -39,7 +39,8 @@ public class AoyiClientRpcService {
         List<BrandResDto> brandResDtoList = new ArrayList<>();
 
         // 执行rpc调用
-        log.info("同步唯品会品牌信息 调用aoyi-client rpc服务 入参:无");
+        log.info("同步唯品会品牌信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
+                pageNumber, pageSize);
 
         // 将merchantIdList转成Long型
         OperaResponse<List<BrandResDto>> resultObject = aoyiClientService.weipinhuiGetBrand(pageNumber, pageSize);

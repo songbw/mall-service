@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用于同步唯品会数据的服务
@@ -35,11 +36,16 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
     public void getBrand(Integer pageNumber, Integer maxPageCount) throws Exception {
         try {
             int pageCount = 0;
+            int totalInsert = 0; // 记录一下本次执行一共插入的数据数量
+
 
             while (true) {
                 // 1. 获取数据
                 List<BrandResDto> brandResDtoList = aoyiClientRpcService.weipinhuiGetBrand(pageNumber, PAGESIZE);
-                log.info("同步品牌 第{}页 共{}条数据>>>>", pageNumber, brandResDtoList.size());
+
+                List<String> brandIdList = brandResDtoList.stream().map(b -> b.getBrandId()).collect(Collectors.toList());
+                log.info("同步品牌 第{}页 共{}条数据 >>>> {}",
+                        pageNumber, brandResDtoList.size(), JSONUtil.toJsonString(brandIdList));
 
                 // 2. 入库处理
                 List<Integer> newBrandIdList = new ArrayList<>(); // 记录一下插入的brand(已有的不需要插入)
@@ -67,7 +73,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             pageNumber, newBrandIdList.size(), JSONUtil.toJsonString(newBrandIdList));
 
                     // 执行插入
-                    aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
+                    // aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
+
+                    totalInsert = totalInsert + newBrandIdList.size();
                 }
 
                 // 3. 判断是否需要继续同步
@@ -82,7 +90,11 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 //
                 if (maxPageCount != -1 && pageCount >= maxPageCount) {
                     log.warn("同步品牌 达到最大页数{}限制 停止同步!", maxPageCount);
+
+                    break;
                 }
+
+                log.info("同步品牌 本次插入数据{}条", totalInsert);
             } // end while
         } catch (Exception e) {
             log.error("同步品牌 异常:{}", e.getMessage(), e);
