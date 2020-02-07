@@ -217,8 +217,8 @@
   </select>
 
   <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
-    insert into fund
-    (brand_id, brand_ename, brand_desc)
+    insert into aoyi_base_brand
+    (brand_id, brand_name, brand_desc)
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
