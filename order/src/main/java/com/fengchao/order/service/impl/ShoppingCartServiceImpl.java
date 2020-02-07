@@ -68,7 +68,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (temp == null) {
             bean.setCreatedAt(date);
             bean.setUpdatedAt(date);
-            bean.setCount(1);
+            if (bean.getCount() == null) {
+                bean.setCount(1);
+            }
             mapper.insert(bean) ;
             result.getData().put("result", bean.getId()) ;
             return result ;
