@@ -94,7 +94,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     break;
                 }
 
-                log.info("同步品牌 本次插入数据{}条", totalInsert);
+                log.info("同步品牌 累计插入数据{}条", totalInsert);
             } // end while
         } catch (Exception e) {
             log.error("同步品牌 异常:{}", e.getMessage(), e);
