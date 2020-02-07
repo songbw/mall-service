@@ -146,6 +146,7 @@ public class OrderServiceImpl implements OrderService {
         bean.setInvoiceContent(orderBean.getInvoiceTitleName());
         bean.setPayment(orderBean.getPayment());
         bean.setReceiverName(receiver.getReceiverName());
+        bean.setRegionId(orderBean.getRegionId());
         bean.setTelephone(receiver.getTelephone());
         bean.setMobile(receiver.getMobile());
         bean.setEmail(receiver.getEmail());

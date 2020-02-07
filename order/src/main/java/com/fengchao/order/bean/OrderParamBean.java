@@ -30,6 +30,7 @@ public class OrderParamBean implements Serializable {
     private String cityId;
     private String countyId;
     private String townId;
+    private String regionId;
     private String address;
     private String zip;
     private String invoiceState;
