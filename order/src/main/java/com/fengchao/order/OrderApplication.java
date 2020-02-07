@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 
 //@EnableTaskTracker      // 启动TaskTracker
 //@EnableMonitor          // 启动Monitor
-//@EnableJobClient
+@EnableJobClient
 @EnableFeignClients
 //@EnableDiscoveryClient
 @Import({DynamicDataSourceConfig.class})

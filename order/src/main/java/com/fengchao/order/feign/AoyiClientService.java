@@ -30,7 +30,7 @@ public interface AoyiClientService {
     @RequestMapping(value = "/star/product/inventory/hold", method = RequestMethod.POST)
     OperaResponse preHoldSkuInventory(@RequestBody HoldSkuInventoryQueryBean bean);
 
-    @RequestMapping(value = "/star/product/inventory/hold", method = RequestMethod.POST)
+    @RequestMapping(value = "/star/product/inventory/release", method = RequestMethod.POST)
     OperaResponse releaseSkuInventory(@RequestBody ReleaseSkuInventoryQueryBean bean);
 
 }

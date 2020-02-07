@@ -296,6 +296,8 @@ public class OrderServiceImpl implements OrderService {
         // 传数据给奥义
         // 滤掉非aoyi商品的数据
         List<OrderMerchantBean> orderMerchantBeanList = new ArrayList<>(); // aoyi的商品数据
+        //STAR商品的数据
+        List<OrderMerchantBean> starOrderMerchantBeanList = new ArrayList<>();
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
                 List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
@@ -306,7 +308,18 @@ public class OrderServiceImpl implements OrderService {
                 orderMerchantBean.setSkus(aoyiOrderDetail);
                 orderMerchantBeanList.add(orderMerchantBean);
             }
+            if (orderMerchantBean.getMerchantId() == OrderConstants.STAR_MERCHANG_CODE) {
+                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
+                orderMerchantBean.getSkus().forEach(orderDetailX -> {
+                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+                    aoyiOrderDetail.add(orderDetailX) ;
+                });
+                orderMerchantBean.setSkus(aoyiOrderDetail);
+                starOrderMerchantBeanList.add(orderMerchantBean);
+            }
         }
+        // TODO 调用预占商品库存星链模块接口
+
         // 判断是否调用奥义服务模块
         if (orderMerchantBeanList != null && orderMerchantBeanList.size() > 0) {
             orderBean.setMerchants(orderMerchantBeanList);
@@ -357,6 +370,13 @@ public class OrderServiceImpl implements OrderService {
             logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
+    }
+
+    private OperaResponse preHoldSkuInventory(List<OrderMerchantBean> starOrderMerchantBeanList){
+        OperaResponse operaResponse = new OperaResponse() ;
+        HoldSkuInventoryQueryBean bean = new HoldSkuInventoryQueryBean() ;
+
+        return operaResponse;
     }
 
     private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans, String appId) {
