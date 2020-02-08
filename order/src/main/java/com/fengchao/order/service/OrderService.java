@@ -4,6 +4,7 @@ import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -138,4 +139,8 @@ public interface OrderService {
     OperaResponse workOrderGoBack(Integer orderDetailId) ;
 
     OperaResponse updateOrderReceiverAddress(ReceiverAddressBean bean) ;
+
+    OperaResponse confirmOrder(ConfirmOrderBean bean) ;
+
+    OperaResponse confirmStarOrder(List<Integer> orderIds) ;
 }

@@ -1404,6 +1404,19 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public OperaResponse confirmOrder(ConfirmOrderBean bean) {
+        List<Order> orders = findByOutTradeNoAndPaymentNo(bean.getOutTradeNo(), bean.getOrderNo()) ;
+        return null;
+    }
+
+    @Override
+    public OperaResponse confirmStarOrder(List<Integer> orderIds) {
+        List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndMerchantId(orderIds, 127) ;
+
+        return null;
+    }
+
     private String fetchGroupKey(Order order) {
         String tradeNo = order.getTradeNo();
         String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());

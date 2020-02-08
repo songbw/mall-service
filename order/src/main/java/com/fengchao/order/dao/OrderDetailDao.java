@@ -413,4 +413,20 @@ public class OrderDetailDao {
         return orderDetailMapper.updateByPrimaryKeySelective(temp) ;
     }
 
+    /**
+     * 按照订单ID列表和商户ID查询子订单列表
+     *
+     * @param ordersIds
+     * @param merchantId
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByOrdersIdsAndMerchantId(List<Integer> ordersIds, Integer merchantId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdIn(ordersIds) ;
+        criteria.andMerchantIdEqualTo(merchantId) ;
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+        return orderDetailList;
+    }
+
 }

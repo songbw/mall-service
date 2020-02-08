@@ -441,4 +441,9 @@ public class OrderController {
         result.getData().put("result", service.updateOrderReceiverAddress(bean)) ;
         return result;
     }
+
+    @PostMapping("confirm")
+    private OperaResponse confirmOrder(@RequestBody ConfirmOrderBean bean) {
+        return service.confirmOrder(bean) ;
+    }
 }
