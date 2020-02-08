@@ -49,6 +49,8 @@ public class Orders {
 
     private String townId;
 
+    private String regionId;
+
     private String address;
 
     private String zip;
@@ -283,6 +285,14 @@ public class Orders {
 
     public void setTownId(String townId) {
         this.townId = townId == null ? null : townId.trim();
+    }
+
+    public String getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(String regionId) {
+        this.regionId = regionId == null ? null : regionId.trim();
     }
 
     public String getAddress() {

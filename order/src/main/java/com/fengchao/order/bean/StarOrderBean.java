@@ -1,4 +1,4 @@
-package com.fengchao.aoyi.client.starBean;
+package com.fengchao.order.bean;
 
 import lombok.Getter;
 import lombok.Setter;

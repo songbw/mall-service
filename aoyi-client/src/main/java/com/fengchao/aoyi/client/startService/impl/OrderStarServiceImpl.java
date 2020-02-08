@@ -210,7 +210,7 @@ public class OrderStarServiceImpl implements OrderStarService {
     }
 
     @Override
-    public OperaResponse getReturnOrderStatuts(ReturnOrderGoodsBean bean) {
+    public OperaResponse getReturnOrderStatutsNotify(ReturnOrderGoodsBean bean) {
         Map<String, String> params = new HashMap<>();
         params.put("orderSn", bean.getOrderSn());
         params.put("serviceSn", bean.getServiceSn());

@@ -114,7 +114,7 @@ public interface OrderStarService {
      * @param bean
      * @return
      */
-    OperaResponse getReturnOrderStatuts(ReturnOrderGoodsBean bean) ;
+    OperaResponse getReturnOrderStatutsNotify(ReturnOrderGoodsBean bean) ;
 
 
 }

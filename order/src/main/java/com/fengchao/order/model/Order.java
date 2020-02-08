@@ -115,6 +115,8 @@ public class Order implements Serializable {
 
     private String appId ;
 
+    private String regionId;
+
     public Integer getId() {
         return id;
     }
@@ -545,5 +547,13 @@ public class Order implements Serializable {
 
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public String getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(String regionId) {
+        this.regionId = regionId;
     }
 }

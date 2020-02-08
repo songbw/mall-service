@@ -1665,6 +1665,76 @@ public class OrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andRegionIdIsNull() {
+            addCriterion("region_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdIsNotNull() {
+            addCriterion("region_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdEqualTo(String value) {
+            addCriterion("region_id =", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdNotEqualTo(String value) {
+            addCriterion("region_id <>", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdGreaterThan(String value) {
+            addCriterion("region_id >", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdGreaterThanOrEqualTo(String value) {
+            addCriterion("region_id >=", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdLessThan(String value) {
+            addCriterion("region_id <", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdLessThanOrEqualTo(String value) {
+            addCriterion("region_id <=", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdLike(String value) {
+            addCriterion("region_id like", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdNotLike(String value) {
+            addCriterion("region_id not like", value, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdIn(List<String> values) {
+            addCriterion("region_id in", values, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdNotIn(List<String> values) {
+            addCriterion("region_id not in", values, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdBetween(String value1, String value2) {
+            addCriterion("region_id between", value1, value2, "regionId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegionIdNotBetween(String value1, String value2) {
+            addCriterion("region_id not between", value1, value2, "regionId");
+            return (Criteria) this;
+        }
+
         public Criteria andAddressIsNull() {
             addCriterion("address is null");
             return (Criteria) this;

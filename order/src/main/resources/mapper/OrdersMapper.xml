@@ -25,6 +25,7 @@
     <result column="county_name" jdbcType="VARCHAR" property="countyName" />
     <result column="county_id" jdbcType="VARCHAR" property="countyId" />
     <result column="town_id" jdbcType="VARCHAR" property="townId" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="zip" jdbcType="VARCHAR" property="zip" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
@@ -114,7 +115,7 @@
     id, open_id, app_id, trade_no, aoyi_id, merchant_id, merchant_no, coupon_code, coupon_discount, 
     coupon_id, coupon_status, company_cust_no, receiver_name, telephone, mobile, email, 
     province_name, province_id, city_name, city_id, county_name, county_id, town_id, 
-    address, zip, remark, invoice_state, invoice_type, invoice_title, invoice_content, 
+    region_id, address, zip, remark, invoice_state, invoice_type, invoice_title, invoice_content, 
     payment, serv_Fee, sale_amount, amount, status, type, out_trade_no, payment_no, payment_at, 
     payment_amount, payee, pay_type, payment_total_fee, payer, pay_status, pay_order_category, 
     refund_fee, created_at, updated_at
@@ -157,16 +158,16 @@
       telephone, mobile, email, 
       province_name, province_id, city_name, 
       city_id, county_name, county_id, 
-      town_id, address, zip, 
-      remark, invoice_state, invoice_type, 
-      invoice_title, invoice_content, payment, 
-      serv_Fee, sale_amount, amount, 
-      status, type, out_trade_no, 
-      payment_no, payment_at, payment_amount, 
-      payee, pay_type, payment_total_fee, 
-      payer, pay_status, pay_order_category, 
-      refund_fee, created_at, updated_at
-      )
+      town_id, region_id, address, 
+      zip, remark, invoice_state, 
+      invoice_type, invoice_title, invoice_content, 
+      payment, serv_Fee, sale_amount, 
+      amount, status, type, 
+      out_trade_no, payment_no, payment_at, 
+      payment_amount, payee, pay_type, 
+      payment_total_fee, payer, pay_status, 
+      pay_order_category, refund_fee, created_at, 
+      updated_at)
     values (#{openId,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{tradeNo,jdbcType=VARCHAR}, 
       #{aoyiId,jdbcType=VARCHAR}, #{merchantId,jdbcType=INTEGER}, #{merchantNo,jdbcType=VARCHAR}, 
       #{couponCode,jdbcType=VARCHAR}, #{couponDiscount,jdbcType=REAL}, #{couponId,jdbcType=INTEGER}, 
@@ -174,16 +175,16 @@
       #{telephone,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{provinceName,jdbcType=VARCHAR}, #{provinceId,jdbcType=VARCHAR}, #{cityName,jdbcType=VARCHAR}, 
       #{cityId,jdbcType=VARCHAR}, #{countyName,jdbcType=VARCHAR}, #{countyId,jdbcType=VARCHAR}, 
-      #{townId,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{zip,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR}, #{invoiceState,jdbcType=VARCHAR}, #{invoiceType,jdbcType=VARCHAR}, 
-      #{invoiceTitle,jdbcType=VARCHAR}, #{invoiceContent,jdbcType=VARCHAR}, #{payment,jdbcType=VARCHAR}, 
-      #{servFee,jdbcType=REAL}, #{saleAmount,jdbcType=REAL}, #{amount,jdbcType=REAL}, 
-      #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{outTradeNo,jdbcType=VARCHAR}, 
-      #{paymentNo,jdbcType=VARCHAR}, #{paymentAt,jdbcType=TIMESTAMP}, #{paymentAmount,jdbcType=INTEGER}, 
-      #{payee,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR}, #{paymentTotalFee,jdbcType=INTEGER}, 
-      #{payer,jdbcType=VARCHAR}, #{payStatus,jdbcType=INTEGER}, #{payOrderCategory,jdbcType=INTEGER}, 
-      #{refundFee,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
-      )
+      #{townId,jdbcType=VARCHAR}, #{regionId,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{zip,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{invoiceState,jdbcType=VARCHAR}, 
+      #{invoiceType,jdbcType=VARCHAR}, #{invoiceTitle,jdbcType=VARCHAR}, #{invoiceContent,jdbcType=VARCHAR}, 
+      #{payment,jdbcType=VARCHAR}, #{servFee,jdbcType=REAL}, #{saleAmount,jdbcType=REAL}, 
+      #{amount,jdbcType=REAL}, #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{outTradeNo,jdbcType=VARCHAR}, #{paymentNo,jdbcType=VARCHAR}, #{paymentAt,jdbcType=TIMESTAMP}, 
+      #{paymentAmount,jdbcType=INTEGER}, #{payee,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR}, 
+      #{paymentTotalFee,jdbcType=INTEGER}, #{payer,jdbcType=VARCHAR}, #{payStatus,jdbcType=INTEGER}, 
+      #{payOrderCategory,jdbcType=INTEGER}, #{refundFee,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.Orders" useGeneratedKeys="true">
     insert into orders
@@ -253,6 +254,9 @@
       </if>
       <if test="townId != null">
         town_id,
+      </if>
+      <if test="regionId != null">
+        region_id,
       </if>
       <if test="address != null">
         address,
@@ -399,6 +403,9 @@
       </if>
       <if test="townId != null">
         #{townId,jdbcType=VARCHAR},
+      </if>
+      <if test="regionId != null">
+        #{regionId,jdbcType=VARCHAR},
       </if>
       <if test="address != null">
         #{address,jdbcType=VARCHAR},
@@ -558,6 +565,9 @@
       <if test="record.townId != null">
         town_id = #{record.townId,jdbcType=VARCHAR},
       </if>
+      <if test="record.regionId != null">
+        region_id = #{record.regionId,jdbcType=VARCHAR},
+      </if>
       <if test="record.address != null">
         address = #{record.address,jdbcType=VARCHAR},
       </if>
@@ -666,6 +676,7 @@
       county_name = #{record.countyName,jdbcType=VARCHAR},
       county_id = #{record.countyId,jdbcType=VARCHAR},
       town_id = #{record.townId,jdbcType=VARCHAR},
+      region_id = #{record.regionId,jdbcType=VARCHAR},
       address = #{record.address,jdbcType=VARCHAR},
       zip = #{record.zip,jdbcType=VARCHAR},
       remark = #{record.remark,jdbcType=VARCHAR},
@@ -764,6 +775,9 @@
       </if>
       <if test="townId != null">
         town_id = #{townId,jdbcType=VARCHAR},
+      </if>
+      <if test="regionId != null">
+        region_id = #{regionId,jdbcType=VARCHAR},
       </if>
       <if test="address != null">
         address = #{address,jdbcType=VARCHAR},
@@ -870,6 +884,7 @@
       county_name = #{countyName,jdbcType=VARCHAR},
       county_id = #{countyId,jdbcType=VARCHAR},
       town_id = #{townId,jdbcType=VARCHAR},
+      region_id = #{regionId,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
       zip = #{zip,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},

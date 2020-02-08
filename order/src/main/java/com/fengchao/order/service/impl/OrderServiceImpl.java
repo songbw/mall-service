@@ -146,6 +146,7 @@ public class OrderServiceImpl implements OrderService {
         bean.setInvoiceContent(orderBean.getInvoiceTitleName());
         bean.setPayment(orderBean.getPayment());
         bean.setReceiverName(receiver.getReceiverName());
+        bean.setRegionId(orderBean.getRegionId());
         bean.setTelephone(receiver.getTelephone());
         bean.setMobile(receiver.getMobile());
         bean.setEmail(receiver.getEmail());
@@ -296,6 +297,8 @@ public class OrderServiceImpl implements OrderService {
         // 传数据给奥义
         // 滤掉非aoyi商品的数据
         List<OrderMerchantBean> orderMerchantBeanList = new ArrayList<>(); // aoyi的商品数据
+        //STAR商品的数据
+        List<OrderMerchantBean> starOrderMerchantBeanList = new ArrayList<>();
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
                 List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
@@ -306,7 +309,24 @@ public class OrderServiceImpl implements OrderService {
                 orderMerchantBean.setSkus(aoyiOrderDetail);
                 orderMerchantBeanList.add(orderMerchantBean);
             }
+            if (orderMerchantBean.getMerchantId() == OrderConstants.STAR_MERCHANG_CODE) {
+                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
+                orderMerchantBean.getSkus().forEach(orderDetailX -> {
+                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+                    aoyiOrderDetail.add(orderDetailX) ;
+                });
+                orderMerchantBean.setSkus(aoyiOrderDetail);
+                starOrderMerchantBeanList.add(orderMerchantBean);
+            }
         }
+        // 调用预占商品库存星链模块接口
+        OperaResponse preHoldSkuInventoryResponse = preHoldSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList, coupon, inventories) ;
+        if (preHoldSkuInventoryResponse.getCode() != 200) {
+            operaResult.setCode(preHoldSkuInventoryResponse.getCode());
+            operaResult.setMsg(preHoldSkuInventoryResponse.getMsg());
+            return operaResult ;
+        }
+
         // 判断是否调用奥义服务模块
         if (orderMerchantBeanList != null && orderMerchantBeanList.size() > 0) {
             orderBean.setMerchants(orderMerchantBeanList);
@@ -338,6 +358,11 @@ public class OrderServiceImpl implements OrderService {
                         logger.info("订单" + bean.getId() + "释放优惠券失败");
                     }
                 }
+                //TODO 释放星链商品库存
+                OperaResponse releaseSkuResponse = releaseSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList) ;
+                if (releaseSkuResponse.getCode() != 200) {
+                    logger.error("释放星链商品库存,返回结果：{}", JSONUtil.toJsonString(releaseSkuResponse));
+                }
                 // 回滚库存
                 if (inventories != null && inventories.size() > 0) {
                     logger.debug("回滚库存，入参：{}", JSONUtil.toJsonString(inventories));
@@ -357,6 +382,74 @@ public class OrderServiceImpl implements OrderService {
             logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
+    }
+
+    /**
+     * 调用预占商品库存星链模块接口
+     * @param tradeNo
+     * @param starOrderMerchantBeanList
+     * @return
+     */
+    private OperaResponse preHoldSkuInventory(String tradeNo, List<OrderMerchantBean> starOrderMerchantBeanList, OrderCouponBean coupon,List<InventoryMpus> inventories) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        HoldSkuInventoryQueryBean bean = new HoldSkuInventoryQueryBean() ;
+        bean.setOutOrderNo(tradeNo);
+        List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
+        starOrderMerchantBeanList.forEach(orderMerchantBean -> {
+            orderMerchantBean.getSkus().forEach(orderDetailX -> {
+                StarCodeBean starCodeBean = new StarCodeBean() ;
+                starCodeBean.setCode(orderDetailX.getSkuId());
+                starCodeBean.setQuantity(orderDetailX.getNum() + "");
+                starCodeBeans.add(starCodeBean) ;
+            });
+        });
+        bean.setCodeInvList(starCodeBeans);
+        operaResponse = aoyiClientService.preHoldSkuInventory(bean) ;
+        if (operaResponse.getCode() != 200) {
+            if (coupon != null) {
+                boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                if (!couponRelease) {
+                    // 订单失败,释放优惠券，
+                    logger.info("订单" + tradeNo + "释放优惠券失败");
+                }
+            }
+            // 回滚库存
+            if (inventories != null && inventories.size() > 0) {
+                logger.debug("回滚库存，入参：{}", JSONUtil.toJsonString(inventories));
+                OperaResult inventoryAddResult = productService.inventoryAdd(inventories) ;
+                logger.debug("回滚库存, 返回结果：{}", JSONUtil.toJsonString(inventoryAddResult));
+            }
+            // 异常数据库回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+        return operaResponse;
+    }
+
+    /**
+     * 调用释放商品库存星链模块接口
+     * @param tradeNo
+     * @param starOrderMerchantBeanList
+     * @return
+     */
+    private OperaResponse releaseSkuInventory(String tradeNo, List<OrderMerchantBean> starOrderMerchantBeanList) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        ReleaseSkuInventoryQueryBean bean = new ReleaseSkuInventoryQueryBean() ;
+        bean.setOutOrderNo(tradeNo);
+        List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
+        starOrderMerchantBeanList.forEach(orderMerchantBean -> {
+            orderMerchantBean.getSkus().forEach(orderDetailX -> {
+                StarCodeBean starCodeBean = new StarCodeBean() ;
+                starCodeBean.setCode(orderDetailX.getSkuId());
+                starCodeBean.setQuantity(orderDetailX.getNum() + "");
+                starCodeBeans.add(starCodeBean) ;
+            });
+        });
+        bean.setCodeInvList(starCodeBeans);
+        operaResponse = aoyiClientService.releaseSkuInventory(bean) ;
+        if (operaResponse.getCode() != 200) {
+            logger.info("订单" + tradeNo + "释放星链库存失败");
+        }
+        return operaResponse;
     }
 
     private OperaResult promotionVerify(List<OrderMerchantBean> orderMerchantBeans, String appId) {
@@ -1308,6 +1401,34 @@ public class OrderServiceImpl implements OrderService {
         mapper.updateByPrimaryKeySelective(checkOrders) ;
         orderDetailMapper.updateByPrimaryKeySelective(checkOrderDetail) ;
         response.setData(bean.getOrderDetailId());
+        return response;
+    }
+
+    @Override
+    public OperaResponse confirmOrder(ConfirmOrderBean bean) {
+        List<Order> orders = findByOutTradeNoAndPaymentNo(bean.getOutTradeNo(), bean.getOrderNo()) ;
+        return null;
+    }
+
+    @Override
+    public OperaResponse confirmStarOrder(List<Integer> orderIds) {
+        List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndMerchantId(orderIds, 127) ;
+        List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
+        orderDetails.forEach(orderDetail -> {
+            StarCodeBean starCodeBean = new StarCodeBean() ;
+            starCodeBean.setCode(orderDetail.getSkuId());
+            starCodeBean.setQuantity(orderDetail.getNum() + "");
+            starCodeBeans.add(starCodeBean) ;
+        });
+        StarOrderBean starOrderBean = new StarOrderBean() ;
+        starOrderBean.setSkuList(starCodeBeans);
+        Orders orders = mapper.selectByPrimaryKey(orderIds.get(0)) ;
+        starOrderBean.setRegionId(orders.getRegionId());
+        starOrderBean.setOutOrderNo(orders.getTradeNo().substring(orders.getTradeNo().length() - 8));
+        starOrderBean.setReceiverAddr(orders.getAddress());
+        starOrderBean.setReceiver(orders.getReceiverName());
+        starOrderBean.setReceiverPhone(orders.getMobile());
+        OperaResponse response = aoyiClientService.addOrder(starOrderBean) ;
         return response;
     }
 
