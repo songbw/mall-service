@@ -55,6 +55,7 @@ public class OrderStarServiceImpl implements OrderStarService {
             params.put("idcardSecondUrl", bean.getIdcardSecondUrl());
         }
         params.put("skuList", JSONUtil.toJsonString(bean.getSkuList()));
+        log.info("订单下单, 入参：{}", JSONUtil.toJsonString(params));
         OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_ORDER_ADD_ORDER, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
         log.info("订单下单, 返回结果：{}", JSONUtil.toJsonString(response));
         if (response.getCode() == 0) {
