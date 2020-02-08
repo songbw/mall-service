@@ -1413,8 +1413,23 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OperaResponse confirmStarOrder(List<Integer> orderIds) {
         List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndMerchantId(orderIds, 127) ;
-
-        return null;
+        List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
+        orderDetails.forEach(orderDetail -> {
+            StarCodeBean starCodeBean = new StarCodeBean() ;
+            starCodeBean.setCode(orderDetail.getSkuId());
+            starCodeBean.setQuantity(orderDetail.getNum() + "");
+            starCodeBeans.add(starCodeBean) ;
+        });
+        StarOrderBean starOrderBean = new StarOrderBean() ;
+        starOrderBean.setSkuList(starCodeBeans);
+        Orders orders = mapper.selectByPrimaryKey(orderIds.get(0)) ;
+        starOrderBean.setRegionId(orders.getRegionId());
+        starOrderBean.setOutOrderNo(orders.getTradeNo().substring(orders.getTradeNo().length() - 8));
+        starOrderBean.setReceiverAddr(orders.getAddress());
+        starOrderBean.setReceiver(orders.getReceiverName());
+        starOrderBean.setReceiverPhone(orders.getMobile());
+        OperaResponse response = aoyiClientService.addOrder(starOrderBean) ;
+        return response;
     }
 
     private String fetchGroupKey(Order order) {

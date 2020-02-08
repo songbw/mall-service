@@ -33,4 +33,7 @@ public interface AoyiClientService {
     @RequestMapping(value = "/star/product/inventory/release", method = RequestMethod.POST)
     OperaResponse releaseSkuInventory(@RequestBody ReleaseSkuInventoryQueryBean bean);
 
+    @RequestMapping(value = "/star/orders", method = RequestMethod.POST)
+    OperaResponse addOrder(@RequestBody StarOrderBean bean);
+
 }

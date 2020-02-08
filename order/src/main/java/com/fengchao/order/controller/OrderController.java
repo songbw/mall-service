@@ -217,6 +217,11 @@ public class OrderController {
 
         log.info("根据主订单id集合批量更新子订单的状态 返回:{}", JSONUtil.toJsonString(operaResponse));
 
+        OperaResponse operaResponse1 = service.confirmStarOrder(orderIdList) ;
+        if (operaResponse1.getCode() != 200) {
+            log.info("怡亚通订单下单结果：{}", JSONUtil.toJsonString(operaResponse1));
+        }
+
         return operaResponse;
     }
 
