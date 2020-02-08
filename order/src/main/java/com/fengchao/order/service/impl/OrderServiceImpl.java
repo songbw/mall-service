@@ -25,6 +25,7 @@ import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1434,6 +1435,18 @@ public class OrderServiceImpl implements OrderService {
         starOrderBean.setReceiver(orders.getReceiverName());
         starOrderBean.setReceiverPhone(orders.getMobile());
         OperaResponse response = aoyiClientService.addOrder(starOrderBean) ;
+        if (response.getCode() == 200) {
+            String resJsonString = JSON.toJSONString(response.getData()) ;
+            JSONArray resJsonArray = JSONObject.parseArray(resJsonString) ;
+            JSONObject resJson = resJsonArray.getJSONObject(0) ;
+            String orderSn = resJson.getString("orderSn") ;
+            orderIds.forEach(id -> {
+                Orders temp = new Orders() ;
+                temp.setId(id);
+                temp.setAoyiId(orderSn);
+                mapper.updateByPrimaryKeySelective(temp) ;
+            });
+        }
         return response;
     }
 
