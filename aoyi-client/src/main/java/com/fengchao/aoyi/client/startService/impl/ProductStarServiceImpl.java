@@ -170,6 +170,7 @@ public class ProductStarServiceImpl implements ProductStarService {
         params.put("outOrderNo", bean.getOutOrderNo());
 //        params.put("skuInvList", "[{\"spuId\":\"59587\",\"skuId\":\"6072\",\"count\":\"10000\"}]");
         params.put("codeInvList", JSONUtil.toJsonString(bean.getCodeInvList()));
+        log.info("预占商品库存, 入参：{}", JSONUtil.toJsonString(params));
         OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_HOLD_SKU_INVENTORY, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
         log.info("预占商品库存, 返回结果：{}", JSONUtil.toJsonString(response));
         if (response.getCode() == 0) {
@@ -187,6 +188,7 @@ public class ProductStarServiceImpl implements ProductStarService {
         params.put("outOrderNo", bean.getOutOrderNo());
 //        params.put("skuInvList", "[{\"spuId\":\"115332\",\"skuId\":\"85775\"}]");
         params.put("codeInvList", JSONUtil.toJsonString(bean.getCodeInvList()));
+        log.info("释放预占商品库存, 入参：{}", JSONUtil.toJsonString(params));
         OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_RELEASE_SKU_INVENTORY, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
         log.info("释放预占商品库存, 返回结果：{}", JSONUtil.toJsonString(response));
         if (response.getCode() == 0) {
