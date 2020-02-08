@@ -19,16 +19,13 @@ spring:
   application:
     name: order
   cloud:
-    service-registry:
-      auto-registration:
-        enabled: false
-#    config:
-#      discovery:
-#        enabled: true
-#        service-id: config-server
-#      profile: ${spring.profiles.active}
-#      retry:
-#        max-attempts: 3
-#        max-interval: 2000
-#        initial-interval: 2000
-#        request-read-timeout: 10000
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      profile: ${spring.profiles.active}
+      retry:
+        max-attempts: 3
+        max-interval: 2000
+        initial-interval: 2000
+        request-read-timeout: 10000
