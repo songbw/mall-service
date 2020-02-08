@@ -31,8 +31,9 @@ public class OrderStarServiceImpl implements OrderStarService {
     public OperaResponse addOrder(StarOrderBean bean) {
         Map<String, String> params = new HashMap<>();
         params.put("outOrderNo", bean.getOutOrderNo());
-        params.put("receiverAreaId", bean.getReceiverAreaId());
-        params.put("receiverAreaName", bean.getReceiverAreaName());
+//        params.put("receiverAreaId", bean.getReceiverAreaId());
+//        params.put("receiverAreaName", bean.getReceiverAreaName());
+        params.put("regionId", bean.getRegionId()) ;
         params.put("receiverAddr", bean.getReceiverAddr());
         params.put("receiver", bean.getReceiver());
         params.put("receiverPhone", bean.getReceiverPhone());
