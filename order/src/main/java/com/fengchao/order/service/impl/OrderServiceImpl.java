@@ -362,9 +362,11 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
                 //TODO 释放星链商品库存
-                OperaResponse releaseSkuResponse = releaseSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList) ;
-                if (releaseSkuResponse.getCode() != 200) {
-                    logger.error("释放星链商品库存,返回结果：{}", JSONUtil.toJsonString(releaseSkuResponse));
+                if (starOrderMerchantBeanList != null && starOrderMerchantBeanList.size() > 0) {
+                    OperaResponse releaseSkuResponse = releaseSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList) ;
+                    if (releaseSkuResponse.getCode() != 200) {
+                        logger.error("释放星链商品库存,返回结果：{}", JSONUtil.toJsonString(releaseSkuResponse));
+                    }
                 }
                 // 回滚库存
                 if (inventories != null && inventories.size() > 0) {
