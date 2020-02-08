@@ -320,6 +320,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         // 调用预占商品库存星链模块接口
+        logger.info("订单怡亚通商品信息, {}", JSONUtil.toJsonString(starOrderMerchantBeanList));
         OperaResponse preHoldSkuInventoryResponse = preHoldSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList, coupon, inventories) ;
         if (preHoldSkuInventoryResponse.getCode() != 200) {
             operaResult.setCode(preHoldSkuInventoryResponse.getCode());
