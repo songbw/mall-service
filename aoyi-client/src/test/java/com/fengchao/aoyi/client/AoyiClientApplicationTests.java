@@ -75,8 +75,8 @@ public class AoyiClientApplicationTests {
 
 		StarOrderBean starOrderBean = new StarOrderBean() ;
 		starOrderBean.setOutOrderNo("202001103");
-		starOrderBean.setReceiverAreaId("4524130,4524157,4524163");
-		starOrderBean.setReceiverAreaName("广东省,深圳市,龙岗区");
+//		starOrderBean.setReceiverAreaId("4524130,4524157,4524163");
+//		starOrderBean.setReceiverAreaName("广东省,深圳市,龙岗区");
 		starOrderBean.setReceiverAddr("李朗怡亚通整合物流");
 		starOrderBean.setReceiver("哇哈哈");
 		starOrderBean.setReceiverPhone("18500001112");
