@@ -1,6 +1,7 @@
 package com.fengchao.aoyi.client.startService.impl;
 
 import com.fengchao.aoyi.client.bean.OperaResponse;
+import com.fengchao.aoyi.client.bean.StarBackBean;
 import com.fengchao.aoyi.client.config.StarClientConfig;
 import com.fengchao.aoyi.client.starBean.*;
 import com.fengchao.aoyi.client.startService.OrderStarService;
@@ -228,5 +229,15 @@ public class OrderStarServiceImpl implements OrderStarService {
             response.setMsg(response.getMessage());
         }
         return response;
+    }
+
+    @Override
+    public String notify(StarBackBean bean) {
+        if ("1".equals(bean.getUpdateType())) {
+            //TODO 供应商发货
+        } else {
+            //TODO 工单状态变更
+        }
+        return null;
     }
 }

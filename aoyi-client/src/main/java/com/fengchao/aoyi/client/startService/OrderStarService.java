@@ -1,6 +1,7 @@
 package com.fengchao.aoyi.client.startService;
 
 import com.fengchao.aoyi.client.bean.OperaResponse;
+import com.fengchao.aoyi.client.bean.StarBackBean;
 import com.fengchao.aoyi.client.starBean.*;
 
 /**
@@ -115,6 +116,22 @@ public interface OrderStarService {
      * @return
      */
     OperaResponse getReturnOrderStatutsNotify(ReturnOrderGoodsBean bean) ;
+
+    /**
+     * 变更提醒类型	oldStatus	oldStatusName	     newStatus	newStatusName	updateType
+     * 供应商发货	    20	   已支付待发货	            30	      已发货待收货	     1
+     * 财务审核不通过	    3	   商审核通过，待平台退款	    12	      财务审核不通过	     2
+     * 财务审核不通过	    5	   供应商确认收货，待平台退款   12	      财务审核不通过	     2
+     * 供应商审核通过	    1	   供应商审核退款中	        3	      供应商审核通过	     2
+     * 供应商审核不通过	1	   供应商审核退款中	        2	      供应商审核不通过	 2
+     * 供应商确认收货	    3	   供应商审核通过	            5	      确认收货，待平台退款	 2
+     * 退货关闭	        3	   供应商审核通过	            10	      退货关闭	         2
+     * 财务审核通过	    3	   供应商审核通过	            13	      财务审核通过	     2
+     * 财务审核通过	    5	   商家确认收货	            13	      财务审核通过	     2
+     * @param bean
+     * @return
+     */
+    String notify(StarBackBean bean) ;
 
 
 }

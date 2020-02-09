@@ -57,7 +57,7 @@ public class StarOrderController {
 
     @GetMapping
     private OperaResponse findOrderByOrderSn(String orderSn) {
-        return service.findExpressInfoByOrderSn(orderSn);
+        return service.findOrderByOrderSn(orderSn);
     }
 
     @GetMapping("logistics/company")
