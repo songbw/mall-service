@@ -238,7 +238,7 @@ public class OrderServiceImpl implements OrderService {
                     return operaResult;
                 }
                 // 添加扣除库存列表
-                if (orderSku.getMerchantId() != 2) {
+                if (orderSku.getMerchantId() != 2 && orderSku.getMerchantId() != 4) {
                     InventoryMpus inventoryMpus = new InventoryMpus();
                     inventoryMpus.setMpu(orderSku.getMpu());
                     inventoryMpus.setRemainNum(orderSku.getNum());
