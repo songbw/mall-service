@@ -246,12 +246,12 @@
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
-      #{item.category_id},
-      #{item.category_name},
-      #{item.parent_id},
-      #{item.category_class},
-      #{item.category_desc},
-      #{item.idate},
+      #{item.categoryId},
+      #{item.categoryName},
+      #{item.parentId},
+      #{item.categoryClass},
+      #{item.categoryDesc},
+      #{item.idate}
       )
     </foreach>
   </insert>

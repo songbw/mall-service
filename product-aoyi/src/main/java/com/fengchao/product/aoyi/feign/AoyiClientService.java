@@ -60,7 +60,7 @@ public interface AoyiClientService {
      * @param pageSize
      * @return
      */
-    @RequestMapping(value = "/weipinhui/getBrand", method = RequestMethod.GET)
+    @RequestMapping(value = "/weipinhui/getCategory", method = RequestMethod.GET)
     OperaResponse<List<CategoryResDto>> weipinhuiGetCategory(@RequestParam("pageNumber") Integer pageNumber,
                                                              @RequestParam("pageSize") Integer pageSize);
     // 唯品会 end

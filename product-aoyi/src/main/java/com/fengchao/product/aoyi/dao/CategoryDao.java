@@ -22,8 +22,10 @@ public class CategoryDao {
     private AoyiBaseCategoryXMapper aoyiBaseCategoryXMapper;
 
     @Autowired
-    public CategoryDao(AoyiBaseCategoryMapper aoyiBaseCategoryMapper) {
+    public CategoryDao(AoyiBaseCategoryMapper aoyiBaseCategoryMapper,
+                       AoyiBaseCategoryXMapper aoyiBaseCategoryXMapper) {
         this.aoyiBaseCategoryMapper = aoyiBaseCategoryMapper;
+        this.aoyiBaseCategoryXMapper = aoyiBaseCategoryXMapper;
     }
 
     /**

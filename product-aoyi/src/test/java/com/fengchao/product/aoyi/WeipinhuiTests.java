@@ -21,9 +21,18 @@ public class WeipinhuiTests {
 
 	@Test
 	@Ignore
-	public void testWeipinhui() {
+	public void testGetBrand() {
 		try {
 			weipinhuiDataService.syncGetBrand(2, 1);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+
+	@Test
+	public void testGetCategory() {
+		try {
+			weipinhuiDataService.syncGetCategory(1, 2);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

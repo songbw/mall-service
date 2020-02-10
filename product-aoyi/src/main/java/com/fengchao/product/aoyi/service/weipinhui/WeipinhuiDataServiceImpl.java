@@ -35,6 +35,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                                     CategoryDao categoryDao) {
         this.aoyiClientRpcService = aoyiClientRpcService;
         this.aoyiBaseBrandDao = aoyiBaseBrandDao;
+        this.categoryDao = categoryDao;
     }
 
     @Override
@@ -119,9 +120,8 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 // 1. 获取数据
                 List<CategoryResDto> categoryResDtoList = aoyiClientRpcService.weipinhuiGetCategory(pageNumber, PAGESIZE);
 
-                List<String> categoryLevel3 = categoryResDtoList.stream().map(b -> b.getCategoryIdLevel3()).collect(Collectors.toList());
                 log.info("同步品类 第{}页 共{}条数据 >>>> {}",
-                        pageNumber, categoryLevel3.size(), JSONUtil.toJsonString(categoryLevel3));
+                        pageNumber, categoryResDtoList.size(), JSONUtil.toJsonString(categoryResDtoList));
 
                 // 2. 将数据转map key:categoryId value:AoyiBaseCategory
                 Map<Integer, AoyiBaseCategory> aoyiBaseCategoryMap = new HashMap<>();
@@ -184,17 +184,19 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         }
                     }
 
-                    log.info("同步品类 第{}页 共找到需要同步的数据{}条, 数据是:{}",
-                            aoyiBaseCategoryMap.size(), JSONUtil.toJsonString(aoyiBaseCategoryMap));
+                    log.info("同步品类 第{}页 共找到需要同步的数据{}条 数据是: {}",
+                            pageNumber, aoyiBaseCategoryMap.size(), JSONUtil.toJsonString(aoyiBaseCategoryMap));
 
                     // 4. 批量插入数据库
                     if (aoyiBaseCategoryMap.size() > 0) {
                         // 执行插入
-                        // categoryDao.batchInsert(new ArrayList<>(aoyiBaseCategoryMap.values()));
+                        categoryDao.batchInsert(new ArrayList<>(aoyiBaseCategoryMap.values()));
                     }
 
                     totalInsert = totalInsert + aoyiBaseCategoryMap.size();
-                } // end fi
+                } // end fi 如果分页查询到数据
+
+                log.info("同步品类 第{}页 累计插入数据{}条", pageNumber, totalInsert);
 
                 // 3. 判断是否需要继续同步
                 if (categoryResDtoList.size() == 0) {
@@ -211,8 +213,6 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     break;
                 }
-
-                log.info("同步品类 累计插入数据{}条", totalInsert);
             } // end while
         } catch (Exception e) {
             log.error("同步品类 异常:{}", e.getMessage(), e);
