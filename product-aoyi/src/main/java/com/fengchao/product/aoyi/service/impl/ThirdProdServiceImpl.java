@@ -1,10 +1,7 @@
 package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.*;
-import com.fengchao.product.aoyi.dao.AyFcImagesDao;
-import com.fengchao.product.aoyi.dao.CategoryDao;
-import com.fengchao.product.aoyi.dao.PlatformDao;
-import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.BaseService;
@@ -57,6 +54,8 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private StarPropertyMapper starPropertyMapper;
     @Autowired
     private StarSkuMapper starSkuMapper ;
+    @Autowired
+    private StarSkuDao starSkuDao ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -348,7 +347,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     public OperaResponse syncStarProd() {
         logger.info("syncStarProd");
         OperaResponse response = new OperaResponse() ;
-        asyncTask.executeAsyncStarProd(aoyiClientService, productDao, aoyiProdIndexMapper, starDetailImgMapper, starPropertyMapper, starSkuMapper);
+        asyncTask.executeAsyncStarProd(aoyiClientService, productDao, aoyiProdIndexMapper, starDetailImgMapper, starPropertyMapper, starSkuMapper, starSkuDao);
         return response;
     }
 

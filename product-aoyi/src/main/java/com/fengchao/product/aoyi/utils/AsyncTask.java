@@ -8,6 +8,7 @@ import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.mapper.StarDetailImgMapper;
@@ -74,7 +75,7 @@ public class AsyncTask {
     }
 
     @Async
-    public void executeAsyncStarProd(AoyiClientService aoyiClientService, ProductDao productDao, AoyiProdIndexMapper aoyiProdIndexMapper, StarDetailImgMapper starDetailImgMapper, StarPropertyMapper starPropertyMapper, StarSkuMapper starSkuMapper) {
+    public void executeAsyncStarProd(AoyiClientService aoyiClientService, ProductDao productDao, AoyiProdIndexMapper aoyiProdIndexMapper, StarDetailImgMapper starDetailImgMapper, StarPropertyMapper starPropertyMapper, StarSkuMapper starSkuMapper, StarSkuDao starSkuDao) {
         QueryBean queryBean = new QueryBean() ;
         queryBean.setPageSize(100);
         for (int x = 0; x < 1000; x++) {
@@ -159,22 +160,22 @@ public class AsyncTask {
                         StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
                         skuBean.setSpuId(spuArray.getString(i));
                         // insert spu
-//                        List<AoyiProdIndex> aoyiProdIndices =  productDao.findBySkuId(spuArray.getString(i), 4) ;
-//                        if (aoyiProdIndices == null || aoyiProdIndices.size() == 0) {
-                        starSkuMapper.insertSelective(skuBean) ;
-                        JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
-                        for (int j = 0; j < propertyArray.size(); j++) {
-                            JSONObject propertyJson = propertyArray.getJSONObject(j) ;
-                            StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
-                            // set spu id
-                            starProperty.setProductId(skuBean.getId());
-                            // set type 1
-                            starProperty.setType(1);
-                            // isert property
-                            starPropertyMapper.insertSelective(starProperty) ;
+                        List<StarSku> starSkus = starSkuDao.selectBySpuIdAndCode(spuArray.getString(i), skuBean.getCode()) ;
+                        if (starSkus == null || starSkus.size() == 0) {
+                            starSkuMapper.insertSelective(skuBean) ;
+                            JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
+                            for (int j = 0; j < propertyArray.size(); j++) {
+                                JSONObject propertyJson = propertyArray.getJSONObject(j) ;
+                                StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
+                                // set spu id
+                                starProperty.setProductId(skuBean.getId());
+                                // set type 1
+                                starProperty.setType(1);
+                                // isert property
+                                starPropertyMapper.insertSelective(starProperty) ;
+                            }
+                            log.info("获取SKU信息，入参：{}, 结果：{}",spuArray.getString(i), JSONUtil.toJsonString(skuBean));
                         }
-                        log.info("获取SKU信息，入参：{}, 结果：{}",spuArray.getString(i), JSONUtil.toJsonString(skuBean));
-//                        }
                     }
                 }
             }
