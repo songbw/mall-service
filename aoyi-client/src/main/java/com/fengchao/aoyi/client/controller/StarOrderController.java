@@ -56,8 +56,8 @@ public class StarOrderController {
     }
 
     @GetMapping
-    private OperaResponse findOrderByOrderSn(String orderSn) {
-        return service.findOrderByOrderSn(orderSn);
+    private OperaResponse findOrderByOrderSn(String serviceSn) {
+        return service.findOrderByOrderSn(serviceSn);
     }
 
     @GetMapping("logistics/company")
@@ -66,12 +66,12 @@ public class StarOrderController {
     }
 
     @GetMapping("return/status")
-    private OperaResponse getReturnOrderStatuts(String serviceSn) {
+    private OperaResponse getReturnOrderStatus(String serviceSn) {
         return service.getReturnOrderStatuts(serviceSn);
     }
 
-    @PostMapping("/return/status")
-    private OperaResponse getReturnOrderStatutsNotify(@RequestBody ReturnOrderGoodsBean bean) {
+    @PostMapping("/return/goods")
+    private OperaResponse getReturnOrderGoodsNotify(@RequestBody ReturnOrderGoodsBean bean) {
         return service.getReturnOrderStatutsNotify(bean);
     }
 }

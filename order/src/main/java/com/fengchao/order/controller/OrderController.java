@@ -3,6 +3,7 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.JSONUtil;
 import jdk.nashorn.internal.objects.annotations.Getter;
@@ -450,5 +451,11 @@ public class OrderController {
     @PostMapping("confirm")
     private OperaResponse confirmOrder(@RequestBody ConfirmOrderBean bean) {
         return service.confirmOrder(bean) ;
+    }
+
+    @PutMapping("/status/deliver")
+    private OperaResponse deliver(@RequestBody Orders bean) {
+        log.info("怡亚通发货通知： {}", JSONUtil.toJsonString(bean));
+        return service.deliverStatus(bean);
     }
 }

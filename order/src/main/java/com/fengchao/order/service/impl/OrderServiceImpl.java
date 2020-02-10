@@ -1450,6 +1450,25 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public OperaResponse deliverStatus(Orders orders) {
+        Orders bean = ordersDao.selectOrdersByTradeNoAndAoyiId(orders) ;
+        OperaResponse response = new OperaResponse() ;
+        if (bean != null && bean.getStatus() == 1) {
+            List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersId(bean.getId()) ;
+            if (orderDetails != null && orderDetails.size() > 0) {
+                orderDetails.forEach(orderDetail -> {
+                    if (orderDetail.getStatus() == 1) {
+                        orderDetail.setStatus(2);
+                        orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
+                        JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+                    }
+                });
+            }
+        }
+        return response;
+    }
+
     private String fetchGroupKey(Order order) {
         String tradeNo = order.getTradeNo();
         String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());

@@ -143,4 +143,6 @@ public interface OrderService {
     OperaResponse confirmOrder(ConfirmOrderBean bean) ;
 
     OperaResponse confirmStarOrder(List<Integer> orderIds) ;
+
+    OperaResponse deliverStatus(Orders orders) ;
 }

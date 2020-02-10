@@ -22,7 +22,7 @@ public class StarOrderBackController {
     @Autowired
     private OrderStarService starService ;
 
-    @PostMapping(value = "/back", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     private String gBack(StarBackBean bean) {
         log.info("怡亚通回调 入参:{}", JSON.toJSONString(bean));
 
