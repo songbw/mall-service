@@ -6,9 +6,9 @@ import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.dao.PlatformDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.BaseService;
-import com.fengchao.product.aoyi.mapper.AoyiBaseBrandMapper;
-import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
+import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
@@ -47,6 +47,16 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private CategoryDao categoryDao ;
     @Autowired
     private AoyiBaseBrandMapper baseBrandMapper;
+    @Autowired
+    private AoyiClientService aoyiClientService ;
+    @Autowired
+    private AoyiProdIndexMapper aoyiProdIndexMapper ;
+    @Autowired
+    private  StarDetailImgMapper starDetailImgMapper;
+    @Autowired
+    private StarPropertyMapper starPropertyMapper;
+    @Autowired
+    private StarSkuMapper starSkuMapper ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -331,6 +341,13 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         images.setStatus(status);
         images.setUpdatedAt(new Date());
         ayFcImagesDao.updateStatus(images);
+        return response;
+    }
+
+    @Override
+    public OperaResponse syncStarProd() {
+        OperaResponse response = new OperaResponse() ;
+        asyncTask.executeAsyncStarProd(aoyiClientService, productDao, aoyiProdIndexMapper, starDetailImgMapper, starPropertyMapper, starSkuMapper);
         return response;
     }
 

@@ -166,4 +166,10 @@ public class ThirdProdController {
         return new OperaResponse() ;
     }
 
+    @GetMapping("star")
+    public OperaResponse starProd() {
+        service.syncStarProd();
+        return new OperaResponse() ;
+    }
+
 }
