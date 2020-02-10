@@ -25,7 +25,6 @@ import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -362,7 +361,7 @@ public class OrderServiceImpl implements OrderService {
                         logger.info("订单" + bean.getId() + "释放优惠券失败");
                     }
                 }
-                //TODO 释放星链商品库存
+                // 释放星链商品库存
                 if (starOrderMerchantBeanList != null && starOrderMerchantBeanList.size() > 0) {
                     OperaResponse releaseSkuResponse = releaseSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList) ;
                     if (releaseSkuResponse.getCode() != 200) {
@@ -1418,7 +1417,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OperaResponse confirmStarOrder(List<Integer> orderIds) {
-        List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndMerchantId(orderIds, 127) ;
+        List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndMerchantId(orderIds, OrderConstants.STAR_MERCHANG_CODE) ;
         List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
         orderDetails.forEach(orderDetail -> {
             StarCodeBean starCodeBean = new StarCodeBean() ;
