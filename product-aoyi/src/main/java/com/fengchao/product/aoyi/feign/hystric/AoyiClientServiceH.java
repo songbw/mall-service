@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Deprecated
 public class AoyiClientServiceH implements AoyiClientService {
@@ -85,6 +88,11 @@ public class AoyiClientServiceH implements AoyiClientService {
 
     @Override
     public OperaResponse weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<List<CategoryResDto>> weipinhuiGetCategory(Integer pageNumber, Integer pageSize) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 }

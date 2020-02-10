@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @Author tom
@@ -96,6 +99,11 @@ public class AoyiClientServiceClientFallbackFactory implements FallbackFactory<A
 
             @Override
             public OperaResponse weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
+                return HystrixDefaultFallback.defaultReponseFallback();
+            }
+
+            @Override
+            public OperaResponse<List<CategoryResDto>> weipinhuiGetCategory(Integer pageNumber, Integer pageSize) {
                 return HystrixDefaultFallback.defaultReponseFallback();
             }
         };

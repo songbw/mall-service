@@ -12,5 +12,14 @@ public interface WeipinhuiDataService {
      * @param maxPageNumber 最大查询的页数，-1为无限
      * @throws Exception
      */
-    void getBrand(Integer pageNumber, Integer maxPageNumber) throws Exception;
+    void syncGetBrand(Integer pageNumber, Integer maxPageNumber) throws Exception;
+
+    /**
+     * 同步品牌
+     *
+     * @param pageNumber
+     * @param maxPageNumber 最大查询的页数，-1为无限
+     * @throws Exception
+     */
+    void syncGetCategory(Integer pageNumber, Integer maxPageNumber) throws Exception;
 }

@@ -2,14 +2,12 @@ package com.fengchao.product.aoyi.rpc;
 
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
-import com.fengchao.product.aoyi.feign.VendorsServiceClient;
-import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,7 @@ public class AoyiClientRpcService {
     }
 
     /**
-     * 查询所有的商户信息
+     * 查询唯品会品牌信息
      *
      * @return
      */
@@ -39,23 +37,53 @@ public class AoyiClientRpcService {
         List<BrandResDto> brandResDtoList = new ArrayList<>();
 
         // 执行rpc调用
-        log.info("同步唯品会品牌信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
+        log.info("查询唯品会品牌信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
                 pageNumber, pageSize);
 
         // 将merchantIdList转成Long型
         OperaResponse<List<BrandResDto>> resultObject = aoyiClientService.weipinhuiGetBrand(pageNumber, pageSize);
-        log.info("同步唯品会品牌信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+        log.info("查询唯品会品牌信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
 
         // 处理返回
         if (resultObject.getCode() == 200) {
             brandResDtoList = resultObject.getData();
         } else {
-            log.warn("同步唯品会品牌信息 调用aoyi-client rpc服务 错误!");
+            log.warn("查询唯品会品牌信息 调用aoyi-client rpc服务 错误!");
         }
 
         log.info("AoyiClientRpcService#weipinhuiGetBrand 调用aoyi-client rpc服务 返回:{}",
                 JSONUtil.toJsonString(brandResDtoList));
 
         return brandResDtoList;
+    }
+
+    /**
+     * 查询唯品会类目信息
+     *
+     * @return
+     */
+    public List<CategoryResDto> weipinhuiGetCategory(Integer pageNumber, Integer pageSize) {
+        // 返回值
+        List<CategoryResDto> categoryResDtoList = new ArrayList<>();
+
+        // 执行rpc调用
+        log.info("查询唯品会类目信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
+                pageNumber, pageSize);
+
+        // 将merchantIdList转成Long型
+        OperaResponse<List<CategoryResDto>> resultObject = aoyiClientService.weipinhuiGetCategory(pageNumber, pageSize);
+        log.info("查询唯品会类目信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+
+        // 处理返回
+        if (resultObject.getCode() == 200) {
+            categoryResDtoList = resultObject.getData();
+        } else {
+            log.warn("查询唯品会类目信息 调用aoyi-client rpc服务 错误!");
+        }
+
+        log.info("AoyiClientRpcService#weipinhuiGetCategory 调用aoyi-client rpc服务 返回:{}",
+                JSONUtil.toJsonString(categoryResDtoList));
+
+        return categoryResDtoList;
     }
 }

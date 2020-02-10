@@ -23,7 +23,7 @@ public class WeipinhuiTests {
 	@Ignore
 	public void testWeipinhui() {
 		try {
-			weipinhuiDataService.getBrand(2, 1);
+			weipinhuiDataService.syncGetBrand(2, 1);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

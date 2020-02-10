@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryMapper;
+import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryExample;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import java.util.List;
 public class CategoryDao {
 
     private AoyiBaseCategoryMapper aoyiBaseCategoryMapper;
+
+    private AoyiBaseCategoryXMapper aoyiBaseCategoryXMapper;
 
     @Autowired
     public CategoryDao(AoyiBaseCategoryMapper aoyiBaseCategoryMapper) {
@@ -72,6 +75,18 @@ public class CategoryDao {
     }
 
     /**
+     * 根据主键查询
+     *
+     * @param categoryId
+     * @return
+     */
+    public AoyiBaseCategory selectByPrimaryKey(Integer categoryId) {
+        AoyiBaseCategory aoyiBaseCategory = aoyiBaseCategoryMapper.selectByPrimaryKey(categoryId);
+
+        return aoyiBaseCategory;
+    }
+
+    /**
      * 添加或更新类目信息
      *
      * @param bean
@@ -86,5 +101,9 @@ public class CategoryDao {
             aoyiBaseCategoryMapper.insertSelective(bean) ;
         }
         return bean.getCategoryId();
+    }
+
+    public void batchInsert(List<AoyiBaseCategory> aoyiBaseCategoryList) {
+        aoyiBaseCategoryXMapper.batchInsert(aoyiBaseCategoryList);
     }
 }
