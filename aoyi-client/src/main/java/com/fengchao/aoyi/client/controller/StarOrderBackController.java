@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @2020-02-09 12:18 下午
  **/
 @RestController
-@RequestMapping(value = "/star/order/back")
+@RequestMapping(value = "/star/order/back", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 @Slf4j
 public class StarOrderBackController {
 
     @Autowired
     private OrderStarService starService ;
 
-    @PostMapping(produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping
     private String gBack(StarBackBean bean) {
         log.info("怡亚通回调 入参:{}", JSON.toJSONString(bean));
 
