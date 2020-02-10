@@ -9,6 +9,8 @@
     <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="spu_id" jdbcType="VARCHAR" property="spuId" />
+    <result column="advise_price" jdbcType="INTEGER" property="advisePrice" />
+    <result column="sprice" jdbcType="INTEGER" property="sprice" />
     <result column="price" jdbcType="INTEGER" property="price" />
     <result column="istatus" jdbcType="SMALLINT" property="istatus" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -73,8 +75,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, code, goods_logo, purchase_qty, sku_id, status, spu_id, price, istatus, update_time, 
-    create_time
+    id, code, goods_logo, purchase_qty, sku_id, status, spu_id, advise_price, sprice, 
+    price, istatus, update_time, create_time
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.StarSkuExample" resultMap="BaseResultMap">
     select
@@ -109,12 +111,14 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.StarSku" useGeneratedKeys="true">
     insert into star_sku (code, goods_logo, purchase_qty, 
       sku_id, status, spu_id, 
-      price, istatus, update_time, 
-      create_time)
+      advise_price, sprice, price, 
+      istatus, update_time, create_time
+      )
     values (#{code,jdbcType=VARCHAR}, #{goodsLogo,jdbcType=VARCHAR}, #{purchaseQty,jdbcType=INTEGER}, 
       #{skuId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{spuId,jdbcType=VARCHAR}, 
-      #{price,jdbcType=INTEGER}, #{istatus,jdbcType=SMALLINT}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{createTime,jdbcType=TIMESTAMP})
+      #{advisePrice,jdbcType=INTEGER}, #{sprice,jdbcType=INTEGER}, #{price,jdbcType=INTEGER}, 
+      #{istatus,jdbcType=SMALLINT}, #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.StarSku" useGeneratedKeys="true">
     insert into star_sku
@@ -136,6 +140,12 @@
       </if>
       <if test="spuId != null">
         spu_id,
+      </if>
+      <if test="advisePrice != null">
+        advise_price,
+      </if>
+      <if test="sprice != null">
+        sprice,
       </if>
       <if test="price != null">
         price,
@@ -168,6 +178,12 @@
       </if>
       <if test="spuId != null">
         #{spuId,jdbcType=VARCHAR},
+      </if>
+      <if test="advisePrice != null">
+        #{advisePrice,jdbcType=INTEGER},
+      </if>
+      <if test="sprice != null">
+        #{sprice,jdbcType=INTEGER},
       </if>
       <if test="price != null">
         #{price,jdbcType=INTEGER},
@@ -213,6 +229,12 @@
       <if test="record.spuId != null">
         spu_id = #{record.spuId,jdbcType=VARCHAR},
       </if>
+      <if test="record.advisePrice != null">
+        advise_price = #{record.advisePrice,jdbcType=INTEGER},
+      </if>
+      <if test="record.sprice != null">
+        sprice = #{record.sprice,jdbcType=INTEGER},
+      </if>
       <if test="record.price != null">
         price = #{record.price,jdbcType=INTEGER},
       </if>
@@ -239,6 +261,8 @@
       sku_id = #{record.skuId,jdbcType=VARCHAR},
       status = #{record.status,jdbcType=INTEGER},
       spu_id = #{record.spuId,jdbcType=VARCHAR},
+      advise_price = #{record.advisePrice,jdbcType=INTEGER},
+      sprice = #{record.sprice,jdbcType=INTEGER},
       price = #{record.price,jdbcType=INTEGER},
       istatus = #{record.istatus,jdbcType=SMALLINT},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
@@ -268,6 +292,12 @@
       <if test="spuId != null">
         spu_id = #{spuId,jdbcType=VARCHAR},
       </if>
+      <if test="advisePrice != null">
+        advise_price = #{advisePrice,jdbcType=INTEGER},
+      </if>
+      <if test="sprice != null">
+        sprice = #{sprice,jdbcType=INTEGER},
+      </if>
       <if test="price != null">
         price = #{price,jdbcType=INTEGER},
       </if>
@@ -291,6 +321,8 @@
       sku_id = #{skuId,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       spu_id = #{spuId,jdbcType=VARCHAR},
+      advise_price = #{advisePrice,jdbcType=INTEGER},
+      sprice = #{sprice,jdbcType=INTEGER},
       price = #{price,jdbcType=INTEGER},
       istatus = #{istatus,jdbcType=SMALLINT},
       update_time = #{updateTime,jdbcType=TIMESTAMP},

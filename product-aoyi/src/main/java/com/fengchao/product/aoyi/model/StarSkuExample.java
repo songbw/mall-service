@@ -565,6 +565,126 @@ public class StarSkuExample {
             return (Criteria) this;
         }
 
+        public Criteria andAdvisePriceIsNull() {
+            addCriterion("advise_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceIsNotNull() {
+            addCriterion("advise_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceEqualTo(Integer value) {
+            addCriterion("advise_price =", value, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceNotEqualTo(Integer value) {
+            addCriterion("advise_price <>", value, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceGreaterThan(Integer value) {
+            addCriterion("advise_price >", value, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceGreaterThanOrEqualTo(Integer value) {
+            addCriterion("advise_price >=", value, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceLessThan(Integer value) {
+            addCriterion("advise_price <", value, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceLessThanOrEqualTo(Integer value) {
+            addCriterion("advise_price <=", value, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceIn(List<Integer> values) {
+            addCriterion("advise_price in", values, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceNotIn(List<Integer> values) {
+            addCriterion("advise_price not in", values, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceBetween(Integer value1, Integer value2) {
+            addCriterion("advise_price between", value1, value2, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andAdvisePriceNotBetween(Integer value1, Integer value2) {
+            addCriterion("advise_price not between", value1, value2, "advisePrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIsNull() {
+            addCriterion("sprice is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIsNotNull() {
+            addCriterion("sprice is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceEqualTo(Integer value) {
+            addCriterion("sprice =", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotEqualTo(Integer value) {
+            addCriterion("sprice <>", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceGreaterThan(Integer value) {
+            addCriterion("sprice >", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceGreaterThanOrEqualTo(Integer value) {
+            addCriterion("sprice >=", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceLessThan(Integer value) {
+            addCriterion("sprice <", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceLessThanOrEqualTo(Integer value) {
+            addCriterion("sprice <=", value, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceIn(List<Integer> values) {
+            addCriterion("sprice in", values, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotIn(List<Integer> values) {
+            addCriterion("sprice not in", values, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceBetween(Integer value1, Integer value2) {
+            addCriterion("sprice between", value1, value2, "sprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSpriceNotBetween(Integer value1, Integer value2) {
+            addCriterion("sprice not between", value1, value2, "sprice");
+            return (Criteria) this;
+        }
+
         public Criteria andPriceIsNull() {
             addCriterion("price is null");
             return (Criteria) this;

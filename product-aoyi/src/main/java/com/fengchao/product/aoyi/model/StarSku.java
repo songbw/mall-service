@@ -17,6 +17,10 @@ public class StarSku {
 
     private String spuId;
 
+    private Integer advisePrice;
+
+    private Integer sprice;
+
     private Integer price;
 
     private Short istatus;
@@ -79,6 +83,22 @@ public class StarSku {
 
     public void setSpuId(String spuId) {
         this.spuId = spuId == null ? null : spuId.trim();
+    }
+
+    public Integer getAdvisePrice() {
+        return advisePrice;
+    }
+
+    public void setAdvisePrice(Integer advisePrice) {
+        this.advisePrice = advisePrice;
+    }
+
+    public Integer getSprice() {
+        return sprice;
+    }
+
+    public void setSprice(Integer sprice) {
+        this.sprice = sprice;
     }
 
     public Integer getPrice() {
