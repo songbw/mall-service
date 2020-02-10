@@ -168,6 +168,7 @@ public class ThirdProdController {
 
     @GetMapping("star")
     public OperaResponse starProd() {
+        log.info("开始同步星链商品");
         service.syncStarProd();
         return new OperaResponse() ;
     }
