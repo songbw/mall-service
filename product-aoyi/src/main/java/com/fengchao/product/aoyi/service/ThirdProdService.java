@@ -33,4 +33,6 @@ public interface ThirdProdService {
     OperaResponse updateAyFcImageStatus(Long id, Integer status) ;
 
     OperaResponse syncStarProd() ;
+
+    OperaResponse syncStarProdPrice() ;
 }

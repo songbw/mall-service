@@ -34,4 +34,7 @@ public interface AoyiClientService {
 
     @RequestMapping(value = "/star/product/category", method = RequestMethod.GET)
     OperaResponse findProdCategory(@RequestParam("categoryId") String categoryId);
+
+    @RequestMapping(value = "/star/product/price", method = RequestMethod.GET)
+    OperaResponse findSkuSalePrice(@RequestParam("codes") String codes) ;
 }

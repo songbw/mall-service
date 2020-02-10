@@ -18,12 +18,15 @@ import com.fengchao.product.aoyi.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -180,5 +183,48 @@ public class AsyncTask {
                 }
             }
         }
+    }
+
+    @Async
+    public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao) {
+        List<StarSku> starSkus = starSkuDao.selectAll() ;
+        List<String> codes = new ArrayList<>() ;
+        String code = "" ;
+        int i = 0 ;
+        for (StarSku starSku: starSkus) {
+            if (i > 200) {
+                codes.add(code) ;
+                i = 0 ;
+                code = "";
+            }
+            if (StringUtils.isEmpty(code)) {
+                i = i + 1;
+                code = starSku.getCode() ;
+            } else {
+                i = i + 1;
+                code = code + "," + starSku.getCode() ;
+            }
+        }
+        codes.forEach(c -> {
+            OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(c) ;
+            String skuPriceResString = JSON.toJSONString(priceResponse) ;
+            JSONObject skuDetailResJson = JSONObject.parseObject(skuPriceResString) ;
+            JSONArray skuPriceData = skuDetailResJson.getJSONArray("data") ;
+            for (int j = 0; j < skuPriceData.size(); j++) {
+                JSONObject skuPriceJson = skuPriceData.getJSONObject(j) ;
+                String channelPrice = skuPriceJson.getString("channelPrice") ;
+                String retailPrice = skuPriceJson.getString("retailPrice") ;
+                String skuCode = skuPriceJson.getString("code") ;
+                BigDecimal bigDecimalC = new BigDecimal(channelPrice) ;
+                int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue() ;
+                BigDecimal bigDecimalR = new BigDecimal(retailPrice) ;
+                int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue() ;
+                StarSku starSku = new StarSku() ;
+                starSku.setCode(skuCode);
+                starSku.setSprice(sprice);
+                starSku.setAdvisePrice(advisePrice);
+                starSkuDao.updatePriceByCode(starSku);
+            }
+        });
     }
 }
