@@ -770,4 +770,20 @@ public class AdminProdServiceImpl implements AdminProdService {
         operaResponse.setData(bean);
         return operaResponse;
     }
+
+    @Override
+    public OperaResponse updateBatch(List<AoyiProdIndex> beans) {
+        OperaResponse response = new OperaResponse() ;
+        beans.forEach(bean -> {
+            if (bean.getId() != null) {
+                AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs() ;
+                bean.setPrice(null);
+                bean.setState(null);
+                BeanUtils.copyProperties(bean, aoyiProdIndexWithBLOBs);
+                mapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs) ;
+            }
+        });
+        response.setData(beans);
+        return response;
+    }
 }

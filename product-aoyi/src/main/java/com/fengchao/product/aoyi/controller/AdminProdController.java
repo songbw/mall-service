@@ -87,22 +87,18 @@ public class AdminProdController {
     public OperaResult create(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId,
                               OperaResult result) throws ProductException {
         log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
-
         try {
             // 入参校验
             if (bean.getMerchantId() <= 0) {
                 throw new Exception("参数merchantId不合法");
             }
-
             if (merchantId == 0) { // 平台需要校验销售价格
                 if (StringUtils.isBlank(bean.getPrice()) || Float.valueOf(bean.getPrice()) <= 0) {
                     throw new Exception("参数price不合法");
                 }
             }
-
             // 执行新增商品
             String id = prodService.add(bean);
-
             result.getData().put("result", id);
         } catch (Exception e) {
             log.error("创建商品 异常:{}", e.getMessage(), e);
@@ -110,9 +106,7 @@ public class AdminProdController {
             result.setCode(500);
             result.setMsg(e.getMessage());
         }
-
         log.info("创建商品 返回:{}", JSONUtil.toJsonString(result));
-
         return result;
     }
 
@@ -657,6 +651,12 @@ public class AdminProdController {
     @PutMapping("spu/state")
     public OperaResponse updateBatchSpuState(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
         return prodService.updateSpuState(bean);
+    }
+
+    @PutMapping("batch")
+    public OperaResponse updateBatch(@RequestBody List<AoyiProdIndex> bean, @RequestHeader("merchant") Integer merchantId){
+//        bean.setMerchantId(merchantId);
+        return prodService.updateBatch(bean);
     }
 
 }

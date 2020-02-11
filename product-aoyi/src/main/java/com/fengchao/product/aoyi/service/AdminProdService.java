@@ -71,4 +71,11 @@ public interface AdminProdService {
     OperaResponse updateSkuPriceAndState(StarSku bean);
 
     OperaResponse updateSpuState(AoyiProdIndex bean);
+
+    /**
+     * 批量更新
+     * @param beans
+     * @return
+     */
+    OperaResponse updateBatch(List<AoyiProdIndex> beans);
 }
