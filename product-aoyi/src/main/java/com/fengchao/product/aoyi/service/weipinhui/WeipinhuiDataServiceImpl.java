@@ -5,6 +5,8 @@ import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiSkuResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -106,7 +108,6 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             log.error("同步品牌 异常:{}", e.getMessage(), e);
         }
     }
-
 
 
     @Override
@@ -217,6 +218,86 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         } catch (Exception e) {
             log.error("同步品类 异常:{}", e.getMessage(), e);
         }
+    }
 
+    /**
+     * {
+     * "code": 200,
+     * "msg": "Success",
+     * "data": {
+     * "itemId": "30007552",
+     * "itemTitle": "南极人（10双装）条纹星星 时尚透气 船袜 女士 袜子",
+     * "canSell": "false",
+     * "brandId": "1597",
+     * "categoryId": "11233031",
+     * "itemImage": "[\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/1.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/2.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/3.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/4.jpg\"]",
+     * "itemDetailImage": "[\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/7.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/8.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/9.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/10.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/11.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/12.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/13.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/14.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/15.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/16.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/17.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/18.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/19.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/20.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/21.jpg\"]",
+     * "aoyiSkusResponses": [
+     * {
+     * "skuId": "30012086",
+     * "sepca": "混色",
+     * "sepcb": null,
+     * "sepcc": null,
+     * "priceCent": "43.47",
+     * "sellPrice": "49",
+     * "canSell": "false",
+     * "skuImageUrl": "/aoyi_vip/aoyi30010k/30007552/ZT/30012086/5.jpg",
+     * "skuImage": "[\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/1.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/2.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/3.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/4.jpg\"]",
+     * "skuDetailImage": "[\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/7.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/8.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/9.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/10.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/11.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/12.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/13.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/14.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/15.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/16.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/17.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/18.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/19.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/20.jpg\",\"/aoyi_vip/aoyi30010k/30007552/ZT/30012086/21.jpg\"]"
+     * }
+     * ]
+     * }
+     * }
+     *
+     * @param itemIdList
+     * @throws Exception
+     */
+    @Override
+    public void syncItemDetail(List<String> itemIdList, Integer maxCount) throws Exception {
+        try {
+            int totalSku = 0;
+            int totalItem = 0; // 记录一下本次执行一共插入的数据数量
+
+            for (String itemId : itemIdList) {
+                // 1. 获取数据
+                AoyiItemDetailResDto aoyiItemDetailResDto = aoyiClientRpcService.weipinhuiQueryItemDetial(itemId);
+                log.info("同步商品itemId:{}  >>>>>> AoyiItemDetailResDto: {}",
+                        itemId, JSONUtil.toJsonString(aoyiItemDetailResDto));
+
+                // 2. 入库处理
+                int _tmpSkuCount = 0;
+                if (aoyiItemDetailResDto != null) {
+                    // 获取sku集合
+                    List<AoyiSkuResDto> aoyiSkuResDtoList = aoyiItemDetailResDto.getAoyiSkusResponses();
+
+                    _tmpSkuCount = (aoyiSkuResDtoList == null ? 0 : aoyiSkuResDtoList.size());
+                    log.info("同步商品itemId:{} 获取到sku {}个",
+                            itemId, aoyiSkuResDtoList == null ? null : aoyiSkuResDtoList.size());
+
+                    if (CollectionUtils.isNotEmpty(aoyiSkuResDtoList)) {
+                        // 遍历sku
+                        for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) {
+
+                        }
+
+                        // 执行插入
+                        // aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
+                    }
+                }
+
+                totalSku = totalSku + _tmpSkuCount;
+                totalItem++;
+
+                log.info("同步商品itemId:{} <<<<<< 累计插入spu:{} 条 sku:{}条", itemId, totalItem, totalSku);
+
+                // 3. 判断是否需要继续同步
+                if (maxCount != -1 && totalItem >= maxCount) {
+                    log.info("同步商品itemId:{} 达到最大限制:{} 同步结束", itemId, maxCount);
+                    break;
+                }
+            } // end for
+        } catch (Exception e) {
+            log.error("同步商品 异常:{}", e.getMessage(), e);
+        }
     }
 }

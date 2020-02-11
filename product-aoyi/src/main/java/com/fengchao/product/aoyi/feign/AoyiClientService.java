@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.feign;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceClientFallbackFactory;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -65,5 +66,14 @@ public interface AoyiClientService {
     @RequestMapping(value = "/weipinhui/getCategory", method = RequestMethod.GET)
     OperaResponse<List<CategoryResDto>> weipinhuiGetCategory(@RequestParam("pageNumber") Integer pageNumber,
                                                              @RequestParam("pageSize") Integer pageSize);
+
+    /**
+     * 唯品会商品详情查询
+     *
+     * @param itemId
+     * @return
+     */
+    @RequestMapping(value = "/weipinhui/queryItemDetial", method = RequestMethod.GET)
+    OperaResponse<AoyiItemDetailResDto> weipinhuiQueryItemDetial(@RequestParam("itemId") String itemId);
     // 唯品会 end
 }

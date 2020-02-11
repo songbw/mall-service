@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.rpc;
 
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -85,5 +86,34 @@ public class AoyiClientRpcService {
                 JSONUtil.toJsonString(categoryResDtoList));
 
         return categoryResDtoList;
+    }
+
+    /**
+     * 查询唯品会商品详情
+     *
+     * @return
+     */
+    public AoyiItemDetailResDto weipinhuiQueryItemDetial(String itemId) {
+        // 返回值
+        AoyiItemDetailResDto aoyiItemDetailResDto = null;
+
+        // 执行rpc调用
+        log.info("查询唯品会商品详情 调用aoyi-client rpc服务 入参:{}", itemId);
+
+        // 将merchantIdList转成Long型
+        OperaResponse<AoyiItemDetailResDto> resultObject = aoyiClientService.weipinhuiQueryItemDetial(itemId);
+        log.info("查询唯品会商品详情 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+
+        // 处理返回
+        if (resultObject.getCode() == 200) {
+            aoyiItemDetailResDto = resultObject.getData();
+        } else {
+            log.warn("查询唯品会商品详情 调用aoyi-client rpc服务 错误!");
+        }
+
+        log.info("AoyiClientRpcService#weipinhuiQueryItemDetial 调用aoyi-client rpc服务 返回:{}",
+                JSONUtil.toJsonString(aoyiItemDetailResDto));
+
+        return aoyiItemDetailResDto;
     }
 }
