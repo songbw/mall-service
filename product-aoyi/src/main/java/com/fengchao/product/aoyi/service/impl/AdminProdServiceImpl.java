@@ -68,6 +68,8 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @Autowired
     private CategoryDao categoryDao;
+    @Autowired
+    private StarSkuMapper starSkuMapper ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -708,5 +710,18 @@ public class AdminProdServiceImpl implements AdminProdService {
             skuCode.setSkuValue(atomicInteger.get());
             skuCodeMapper.updateSkuValueByPrimaryKey(skuCode);
         });
+    }
+
+    @Override
+    public OperaResponse updateSkuPriceAndState(StarSku bean) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        if (bean == null || bean.getId() == null || bean.getId() <= 0) {
+            operaResponse.setCode(200200);
+            operaResponse.setMsg("ID不能为空");
+            return operaResponse ;
+        }
+        starSkuMapper.updateByPrimaryKeySelective(bean) ;
+        operaResponse.setData(bean);
+        return operaResponse;
     }
 }

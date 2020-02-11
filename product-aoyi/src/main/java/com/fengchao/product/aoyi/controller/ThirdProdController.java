@@ -2,10 +2,7 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.BrandService;
 import com.fengchao.product.aoyi.service.CategoryService;
@@ -176,6 +173,11 @@ public class ThirdProdController {
     public OperaResponse starProdPrice() {
         log.info("开始同步星链价格");
         return service.syncStarProdPrice();
+    }
+
+    @PutMapping("star/sku")
+    public OperaResponse updateStarSku(@RequestBody StarSku bean) {
+        return adminProdService.updateSkuPriceAndState(bean) ;
     }
 
 }

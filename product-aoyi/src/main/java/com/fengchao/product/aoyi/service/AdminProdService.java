@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.model.StarSku;
 
 import java.util.List;
 
@@ -66,4 +67,6 @@ public interface AdminProdService {
     OperaResult inventoryUpdate(InventoryMpus inventory) ;
 
     void fix();
+
+    OperaResponse updateSkuPriceAndState(StarSku bean);
 }
