@@ -1,8 +1,10 @@
 package com.fengchao.order.feign;
 
 import com.fengchao.order.bean.InventoryMpus;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.hystric.ProductServiceH;
+import com.fengchao.order.model.AoyiProdIndex;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,5 +56,14 @@ public interface ProductService {
      */
     @RequestMapping(value = "/platform/app", method = RequestMethod.GET)
     OperaResult selectPlatformByAppId(@RequestParam("appId") String appId);
+
+    /**
+     * 根据mpu,code集合查询产品信息
+     *
+     * @param mpuIdList
+     * @return
+     */
+    @RequestMapping(value = "/prod/sku/mpuIds", method = RequestMethod.GET)
+    OperaResponse selectByMpuIdListAndSkuCodes(@RequestBody List<AoyiProdIndex> mpuIdList);
 
 }

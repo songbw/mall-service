@@ -71,4 +71,17 @@ public class StarSkuDao {
         mapper.updateByExampleSelective(starSku, example);
     }
 
+    /**
+     * 根据codeList`查询SKU信息
+     *
+     * @return
+     */
+    public List<StarSku> selectByCodeList(List<String> codeList) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andCodeIn(codeList) ;
+        List<StarSku> list = mapper.selectByExample(example);
+        return list;
+    }
+
 }

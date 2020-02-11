@@ -204,14 +204,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private List<AoyiProdIndex> findProductByMpuList(List<ShoppingCart> shoppingCarts) {
-        List<String> mpus = new ArrayList<>();
+        List<AoyiProdIndex> mpus = new ArrayList<>();
         shoppingCarts.forEach(shoppingCart -> {
-            mpus.add(shoppingCart.getMpu()) ;
+            AoyiProdIndex aoyiProdIndex = new AoyiProdIndex() ;
+            aoyiProdIndex.setMpu(shoppingCart.getMpu());
+            aoyiProdIndex.setSkuid(shoppingCart.getSkuId());
+            mpus.add(aoyiProdIndex) ;
         });
-        OperaResult result = productService.selectProductListByMpuIdList(mpus);
+        OperaResponse result = productService.selectByMpuIdListAndSkuCodes(mpus);
         if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData();
-            Object object = data.get("result");
+//            Map<String, Object> data = result.getData();
+            Object object = result.getData();
             String jsonString = JSON.toJSONString(object);
             List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(jsonString, AoyiProdIndex.class);
             return aoyiProdIndices;
