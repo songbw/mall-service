@@ -3,6 +3,7 @@ package com.fengchao.order.controller;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.utils.JSONUtil;
 import jdk.nashorn.internal.objects.annotations.Getter;
@@ -216,6 +217,11 @@ public class OrderController {
         }
 
         log.info("根据主订单id集合批量更新子订单的状态 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        OperaResponse operaResponse1 = service.confirmStarOrder(orderIdList) ;
+        if (operaResponse1.getCode() != 200) {
+            log.info("怡亚通订单下单结果：{}", JSONUtil.toJsonString(operaResponse1));
+        }
 
         return operaResponse;
     }
@@ -440,5 +446,16 @@ public class OrderController {
         log.info("修改订单收货人地址信息： {} , {}", JSONUtil.toJsonString(bean), merchantId);
         result.getData().put("result", service.updateOrderReceiverAddress(bean)) ;
         return result;
+    }
+
+    @PostMapping("confirm")
+    private OperaResponse confirmOrder(@RequestBody ConfirmOrderBean bean) {
+        return service.confirmOrder(bean) ;
+    }
+
+    @PutMapping("/status/deliver")
+    private OperaResponse deliver(@RequestBody Orders bean) {
+        log.info("怡亚通发货通知： {}", JSONUtil.toJsonString(bean));
+        return service.deliverStatus(bean);
     }
 }

@@ -83,8 +83,10 @@ public class LoginServiceImpl implements ILoginService {
         int insertNum = loginMapper.insertSelective(login);
         user.setLoginId(Integer.parseInt(login.getId()));
         user.setiAppId(loginBean.getAppId());
-        user.setOpenId((loginBean.getUsername() + login.getAppId()).hashCode() + "");
+        user.setOpenId(Md5Util.md5(loginBean.getUsername() + login.getAppId()));
+        String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
         user.setTelephone(loginBean.getUsername());
+        user.setNickname(nickname);
         return userMapper.insertSelective(user);
     }
 
@@ -445,6 +447,17 @@ public class LoginServiceImpl implements ILoginService {
             result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
         }
         return result;
+    }
+
+    @Override
+    public TokenBean login(LoginBean loginBean) {
+        TokenBean tokenBean = new TokenBean();
+        String token = JwtTokenUtil.generateToken(loginBean);
+        SUser user = userDao.selectUserByTel(loginBean.getAppId(), loginBean.getUsername()) ;
+        tokenBean.setToken(token);
+        tokenBean.setOpenId(user.getOpenId());
+        redisDAO.setKey("sso:" + loginBean.getAppId() + loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
+        return tokenBean;
     }
 
     private AccessToken getPingAnToken(String initCode) {

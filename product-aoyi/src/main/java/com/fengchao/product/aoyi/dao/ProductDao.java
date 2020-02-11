@@ -262,6 +262,7 @@ public class ProductDao {
             aoyiProdIndexExample.setOrderByClause("CAST(price AS DECIMAL) " + queryBean.getPriceOrder());
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
             criteria.andCategoryIn(queryBean.getCategories());
+        criteria.andStateEqualTo("1") ;
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
         List<AoyiProdIndex>  aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
         PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);

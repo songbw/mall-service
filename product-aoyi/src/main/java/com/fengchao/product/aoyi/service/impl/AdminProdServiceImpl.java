@@ -622,6 +622,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
         // productExportResVo.setMerchantName(aoyiProdIndexX.); // 商品供应商
         productExportResVo.setSku(aoyiProdIndexX.getSkuid()); // 商品SKU
+        productExportResVo.setMpu(aoyiProdIndexX.getMpu()); // 商品MPU
 
         // 商品状态
         Integer state = Integer.valueOf(aoyiProdIndexX.getState()); // -1:初始状态；0：下架；1：上架

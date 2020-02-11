@@ -1,14 +1,11 @@
 package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.*;
-import com.fengchao.product.aoyi.dao.AyFcImagesDao;
-import com.fengchao.product.aoyi.dao.CategoryDao;
-import com.fengchao.product.aoyi.dao.PlatformDao;
-import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.exception.ProductException;
+import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.BaseService;
-import com.fengchao.product.aoyi.mapper.AoyiBaseBrandXMapper;
-import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
+import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
@@ -23,7 +20,6 @@ import javax.ws.rs.client.WebTarget;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 @Service
 public class ThirdProdServiceImpl implements ThirdProdService {
@@ -45,7 +41,19 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Autowired
     private CategoryDao categoryDao ;
     @Autowired
-    private AoyiBaseBrandXMapper baseBrandMapper;
+    private AoyiBaseBrandXMapper baseBrandXMapper;
+    @Autowired
+    private AoyiClientService aoyiClientService ;
+    @Autowired
+    private AoyiProdIndexMapper aoyiProdIndexMapper ;
+    @Autowired
+    private  StarDetailImgMapper starDetailImgMapper;
+    @Autowired
+    private StarPropertyMapper starPropertyMapper;
+    @Autowired
+    private StarSkuMapper starSkuMapper ;
+    @Autowired
+    private StarSkuDao starSkuDao ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -315,7 +323,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         }
         List<AoyiBaseBrandX> baseBrands = new ArrayList<>() ;
         if (bean.getBrands() != null && bean.getBrands().size() > 0) {
-            baseBrands = baseBrandMapper.selectByBrandIdList(bean.getBrands()) ;
+            baseBrands = baseBrandXMapper.selectByBrandIdList(bean.getBrands()) ;
         }
         WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/brand/receive");
         asyncTask.executeAsyncBrandTask(webTarget,baseBrands);
@@ -330,6 +338,22 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         images.setStatus(status);
         images.setUpdatedAt(new Date());
         ayFcImagesDao.updateStatus(images);
+        return response;
+    }
+
+    @Override
+    public OperaResponse syncStarProd() {
+        logger.info("syncStarProd");
+        OperaResponse response = new OperaResponse() ;
+        asyncTask.executeAsyncStarProd(aoyiClientService, productDao, aoyiProdIndexMapper, starDetailImgMapper, starPropertyMapper, starSkuMapper, starSkuDao);
+        return response;
+    }
+
+    @Override
+    public OperaResponse syncStarProdPrice() {
+        logger.info("syncStarProdPrice");
+        OperaResponse response = new OperaResponse() ;
+        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao);
         return response;
     }
 

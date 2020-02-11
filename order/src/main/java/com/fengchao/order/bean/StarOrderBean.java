@@ -1,4 +1,4 @@
-package com.fengchao.aoyi.client.starBean;
+package com.fengchao.order.bean;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,8 +14,8 @@ import java.util.List;
 @Getter
 public class StarOrderBean {
     private String outOrderNo ;
-//    private String receiverAreaId ;
-//    private String receiverAreaName ;
+    private String receiverAreaId ;
+    private String receiverAreaName ;
     private String regionId ;
     private String receiverAddr ;
     private String receiver ;

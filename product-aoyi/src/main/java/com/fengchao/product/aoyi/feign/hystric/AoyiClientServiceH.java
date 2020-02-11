@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -83,6 +82,11 @@ public class AoyiClientServiceH implements AoyiClientService {
 
     @Override
     public OperaResponse findProdCategory(String categoryId) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse findSkuSalePrice(String codes) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 

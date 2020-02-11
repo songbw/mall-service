@@ -1,5 +1,6 @@
 package com.fengchao.order.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
@@ -17,7 +18,7 @@ import java.util.List;
  * 订单列表
  */
 @RestController
-@RequestMapping(value = "/third/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/third/order")
 @Slf4j
 public class ThirdOrderController {
 
@@ -25,7 +26,7 @@ public class ThirdOrderController {
     private OrderService service;
 
 
-    @PostMapping("logistics")
+    @PostMapping(value = "logistics", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private OperaResponse updateStatus(@RequestBody List<Logisticsbean> bean) {
         return service.logistics(bean);
     }

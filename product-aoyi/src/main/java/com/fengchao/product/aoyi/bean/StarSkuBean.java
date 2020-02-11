@@ -27,7 +27,11 @@ public class StarSkuBean {
 
     private String spuId;
 
-    private String price;
+    private Integer advisePrice;
+
+    private Integer sprice;
+
+    private Integer price;
 
     private List<StarProperty> propertyList ;
 }

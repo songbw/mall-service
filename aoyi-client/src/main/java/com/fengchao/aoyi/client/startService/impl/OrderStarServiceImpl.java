@@ -1,7 +1,10 @@
 package com.fengchao.aoyi.client.startService.impl;
 
 import com.fengchao.aoyi.client.bean.OperaResponse;
+import com.fengchao.aoyi.client.bean.Orders;
+import com.fengchao.aoyi.client.bean.StarBackBean;
 import com.fengchao.aoyi.client.config.StarClientConfig;
+import com.fengchao.aoyi.client.feign.OrderServiceClient;
 import com.fengchao.aoyi.client.starBean.*;
 import com.fengchao.aoyi.client.startService.OrderStarService;
 import com.fengchao.aoyi.client.utils.JSONUtil;
@@ -26,13 +29,16 @@ public class OrderStarServiceImpl implements OrderStarService {
 
     @Autowired
     private StarClientConfig starClientConfig;
+    @Autowired
+    private OrderServiceClient orderServiceClient ;
 
     @Override
     public OperaResponse addOrder(StarOrderBean bean) {
         Map<String, String> params = new HashMap<>();
         params.put("outOrderNo", bean.getOutOrderNo());
-        params.put("receiverAreaId", bean.getReceiverAreaId());
-        params.put("receiverAreaName", bean.getReceiverAreaName());
+//        params.put("receiverAreaId", bean.getReceiverAreaId());
+//        params.put("receiverAreaName", bean.getReceiverAreaName());
+        params.put("regionId", bean.getRegionId()) ;
         params.put("receiverAddr", bean.getReceiverAddr());
         params.put("receiver", bean.getReceiver());
         params.put("receiverPhone", bean.getReceiverPhone());
@@ -54,6 +60,7 @@ public class OrderStarServiceImpl implements OrderStarService {
             params.put("idcardSecondUrl", bean.getIdcardSecondUrl());
         }
         params.put("skuList", JSONUtil.toJsonString(bean.getSkuList()));
+        log.info("订单下单, 入参：{}", JSONUtil.toJsonString(params));
         OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_ORDER_ADD_ORDER, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
         log.info("订单下单, 返回结果：{}", JSONUtil.toJsonString(response));
         if (response.getCode() == 0) {
@@ -210,7 +217,7 @@ public class OrderStarServiceImpl implements OrderStarService {
     }
 
     @Override
-    public OperaResponse getReturnOrderStatuts(ReturnOrderGoodsBean bean) {
+    public OperaResponse getReturnOrderStatutsNotify(ReturnOrderGoodsBean bean) {
         Map<String, String> params = new HashMap<>();
         params.put("orderSn", bean.getOrderSn());
         params.put("serviceSn", bean.getServiceSn());
@@ -226,5 +233,27 @@ public class OrderStarServiceImpl implements OrderStarService {
             response.setMsg(response.getMessage());
         }
         return response;
+    }
+
+    @Override
+    public String notify(StarBackBean bean) {
+        OperaResponse response = new OperaResponse() ;
+        if ("1".equals(bean.getUpdateType())) {
+            // 供应商发货
+            if ("20".equals(bean.getOldStatus()) && "30".equals(bean.getNewStatus())) {
+                Orders orders = new Orders() ;
+                orders.setTradeNo(bean.getOutOrderNo());
+                orders.setAoyiId(bean.getOrderSn());
+                response = orderServiceClient.deliverStatue(orders);
+                if (response.getCode() == 200) {
+                    return "success" ;
+                } else {
+                    return "error" ;
+                }
+            }
+        } else {
+            //TODO 工单状态变更
+        }
+        return null;
     }
 }

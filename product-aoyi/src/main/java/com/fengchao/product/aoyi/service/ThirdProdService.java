@@ -31,4 +31,8 @@ public interface ThirdProdService {
     OperaResponse syncBrand(ThirdSyncBean bean) ;
 
     OperaResponse updateAyFcImageStatus(Long id, Integer status) ;
+
+    OperaResponse syncStarProd() ;
+
+    OperaResponse syncStarProdPrice() ;
 }

@@ -164,4 +164,16 @@ public class ThirdProdController {
         return new OperaResponse() ;
     }
 
+    @GetMapping("star")
+    public OperaResponse starProd() {
+        log.info("开始同步星链商品");
+        return service.syncStarProd();
+    }
+
+    @GetMapping("star/price")
+    public OperaResponse starProdPrice() {
+        log.info("开始同步星链价格");
+        return service.syncStarProdPrice();
+    }
+
 }

@@ -68,12 +68,19 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (temp == null) {
             bean.setCreatedAt(date);
             bean.setUpdatedAt(date);
-            bean.setCount(1);
+            if (bean.getCount() == null) {
+                bean.setCount(1);
+            }
             mapper.insert(bean) ;
             result.getData().put("result", bean.getId()) ;
             return result ;
         } else {
-            temp.setCount(temp.getCount() + 1);
+            if (bean.getCount() == null) {
+                temp.setCount(temp.getCount() + 1);
+            } else {
+                temp.setCount(temp.getCount() + bean.getCount());
+            }
+
             temp.setUpdatedAt(date);
             mapper.updateNumById(temp);
             result.getData().put("result", bean.getId()) ;

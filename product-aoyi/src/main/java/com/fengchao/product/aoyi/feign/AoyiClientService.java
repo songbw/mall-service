@@ -40,8 +40,10 @@ public interface AoyiClientService {
     @RequestMapping(value = "/star/product/category", method = RequestMethod.GET)
     OperaResponse findProdCategory(@RequestParam("categoryId") String categoryId);
 
-    // 唯品会 begin
+    @RequestMapping(value = "/star/product/price", method = RequestMethod.GET)
+    OperaResponse findSkuSalePrice(@RequestParam("codes") String codes) ;
 
+    // 唯品会 begin
     /**
      * 唯品会品牌查询
      *

@@ -1,6 +1,8 @@
 package com.fengchao.product.aoyi;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.product.aoyi.service.weipinhui.WeipinhuiDataService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -37,5 +41,64 @@ public class WeipinhuiTests {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 *             "itemId": "30007551",
+	 *             "itemId": "30007552",
+	 *             "itemId": "30007554",
+	 *             "itemId": "30007560",
+	 *             "itemId": "30007561",
+	 *             "itemId": "30007567",
+	 *             "itemId": "30007569",
+	 *             "itemId": "30007580",
+	 *             "itemId": "30007581",
+	 *             "itemId": "30007586",
+	 *             "itemId": "30007589",
+	 *             "itemId": "30007594",
+	 *             "itemId": "30007595",
+	 *             "itemId": "30008149",
+	 *             "itemId": "30008295",
+	 *             "itemId": "30008302",
+	 *             "itemId": "30008335",
+	 *             "itemId": "30008458",
+	 *             "itemId": "30008594",
+	 *             "itemId": "30008601",
+	 *             "itemId": "30008604",
+	 *             "itemId": "30008607",
+	 *             "itemId": "30008993",
+	 *             "itemId": "30009002",
+	 *             "itemId": "30009004",
+	 *             "itemId": "30011419",
+	 *             "itemId": "30011425",
+	 *             "itemId": "30011427",
+	 *             "itemId": "30011428",
+	 *             "itemId": "30011449",
+	 *             "itemId": "30011479",
+	 *             "itemId": "30011486",
+	 *             "itemId": "30011487",
+	 *             "itemId": "30011494",
+	 *             "itemId": "30011495",
+	 *             "itemId": "30011543",
+	 *             "itemId": "30011561",
+	 *             "itemId": "30011595",
+	 *             "itemId": "30011607",
+	 *             "itemId": "30011608",
+	 *             "itemId": "30011622",
+	 *             "itemId": "30011660",
+	 *             "itemId": "30011671",
+	 *             "itemId": "30011680",
+	 *             "itemId": "30011759",
+	 *             "itemId": "30011763",
+	 *             "itemId": "30011766",
+	 */
+	@Test
+	public void testGetItemDetail() {
+
+		String itemIds = "[\"30007551\",\"30007552\",\"30007554\",\"30007560\",\"30007561\",\"30007567\",\"30007569\",\"30007580\",\"30007581\",\"30007586\",\"30007589\",\"30007594\",\"30007595\",\"30008149\",\"30008295\",\"30008302\",\"30008335\",\"30008458\",\"30008594\",\"30008601\",\"30008604\",\"30008607\",\"30008993\",\"30009002\",\"30009004\",\"30011419\",\"30011425\",\"30011427\",\"30011428\",\"30011449\",\"30011479\",\"30011486\",\"30011487\",\"30011494\",\"30011495\",\"30011543\",\"30011561\",\"30011595\",\"30011607\",\"30011608\",\"30011622\",\"30011660\",\"30011671\",\"30011680\",\"30011759\",\"30011763\",\"30011766\"]";
+
+		List<String> itemIdList = JSON.parseArray(itemIds, String.class);
+
+		System.out.println("====" + JSONUtil.toJsonString(itemIdList));
 	}
 }

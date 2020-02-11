@@ -56,5 +56,10 @@ public class AoyiClientServiceH implements AoyiClientService {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 
+    @Override
+    public OperaResponse addOrder(StarOrderBean bean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
 
 }

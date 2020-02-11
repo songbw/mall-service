@@ -34,4 +34,41 @@ public class StarSkuDao {
         List<StarSku> list = mapper.selectByExample(example);
         return list;
     }
+
+    /**
+     * 根据spuId查询SKU信息
+     *
+     * @return
+     */
+    public List<StarSku> selectBySpuIdAndCode(String spuId, String code) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andSpuIdEqualTo(spuId) ;
+        criteria.andCodeEqualTo(code) ;
+        List<StarSku> list = mapper.selectByExample(example);
+        return list;
+    }
+
+    /**
+     * 根据spuId查询SKU信息
+     *
+     * @return
+     */
+    public List<StarSku> selectAll() {
+        StarSkuExample example = new StarSkuExample();
+        List<StarSku> list = mapper.selectByExample(example);
+        return list;
+    }
+
+    /**
+     * 根据code跟新价格
+     * @param starSku
+     */
+    public void updatePriceByCode(StarSku starSku) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andCodeEqualTo(starSku.getCode()) ;
+        mapper.updateByExampleSelective(starSku, example);
+    }
+
 }

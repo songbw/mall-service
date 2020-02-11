@@ -1,19 +1,29 @@
-package com.fengchao.order.model;
+package com.fengchao.aoyi.client.bean;
 
-import com.fengchao.order.bean.PageBean;
-
-import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-public class Order implements Serializable {
+public class Orders {
     private Integer id;
 
     private String openId;
 
+    private String appId;
+
     private String tradeNo;
 
     private String aoyiId;
+
+    private Integer merchantId;
+
+    private String merchantNo;
+
+    private String couponCode;
+
+    private Float couponDiscount;
+
+    private Integer couponId;
+
+    private Integer couponStatus;
 
     private String companyCustNo;
 
@@ -25,19 +35,21 @@ public class Order implements Serializable {
 
     private String email;
 
-    private String provinceId;
-
     private String provinceName;
 
-    private String cityId;
+    private String provinceId;
 
     private String cityName;
 
-    private String countyId;
+    private String cityId;
 
     private String countyName;
 
+    private String countyId;
+
     private String townId;
+
+    private String regionId;
 
     private String address;
 
@@ -53,69 +65,43 @@ public class Order implements Serializable {
 
     private String invoiceContent;
 
-    private String taxNo;
-
     private String payment;
 
     private Float servFee;
 
-    private Float amount;
-
     private Float saleAmount;
+
+    private Float amount;
 
     private Integer status;
 
     private Integer type;
 
     private String outTradeNo;
-    //支付系统订单号
+
     private String paymentNo;
 
     private Date paymentAt;
-    //实际退款金额
+
     private Integer paymentAmount;
-    // 商户号，充值钱包的时候没有
-    private String payee ;
-    // 退款金额，退款时候有
-    private int refundFee;
-    // 支付方式
+
+    private String payee;
+
     private String payType;
-    // 订单总金额
-    private int paymentTotalFee;
-    // C端个人账号。 表示唯一用户
+
+    private Integer paymentTotalFee;
+
     private String payer;
-    // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
-    private int payStatus;
-    // 1支付，2充值，3退款，4提现
-    private int payOrderCategory ;
+
+    private Integer payStatus;
+
+    private Integer payOrderCategory;
+
+    private Integer refundFee;
 
     private Date createdAt;
 
     private Date updatedAt;
-
-    private String merchantNo;
-
-    private Integer merchantId;
-
-    private Integer couponId;
-
-    private String couponCode;
-
-    private Float couponDiscount;
-
-    private List<OrderDetailX> skus;
-
-    private PageBean skusPage;
-
-    private Integer couponStatus;
-
-    private Integer balanceId ;
-
-    private Float balanceDiscount ;
-
-    private String appId ;
-
-    private String regionId;
 
     public Integer getId() {
         return id;
@@ -133,6 +119,14 @@ public class Order implements Serializable {
         this.openId = openId == null ? null : openId.trim();
     }
 
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
+    }
+
     public String getTradeNo() {
         return tradeNo;
     }
@@ -147,6 +141,54 @@ public class Order implements Serializable {
 
     public void setAoyiId(String aoyiId) {
         this.aoyiId = aoyiId == null ? null : aoyiId.trim();
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public String getMerchantNo() {
+        return merchantNo;
+    }
+
+    public void setMerchantNo(String merchantNo) {
+        this.merchantNo = merchantNo == null ? null : merchantNo.trim();
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode == null ? null : couponCode.trim();
+    }
+
+    public Float getCouponDiscount() {
+        return couponDiscount;
+    }
+
+    public void setCouponDiscount(Float couponDiscount) {
+        this.couponDiscount = couponDiscount;
+    }
+
+    public Integer getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Integer couponId) {
+        this.couponId = couponId;
+    }
+
+    public Integer getCouponStatus() {
+        return couponStatus;
+    }
+
+    public void setCouponStatus(Integer couponStatus) {
+        this.couponStatus = couponStatus;
     }
 
     public String getCompanyCustNo() {
@@ -189,6 +231,14 @@ public class Order implements Serializable {
         this.email = email == null ? null : email.trim();
     }
 
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName == null ? null : provinceName.trim();
+    }
+
     public String getProvinceId() {
         return provinceId;
     }
@@ -197,12 +247,28 @@ public class Order implements Serializable {
         this.provinceId = provinceId == null ? null : provinceId.trim();
     }
 
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName == null ? null : cityName.trim();
+    }
+
     public String getCityId() {
         return cityId;
     }
 
     public void setCityId(String cityId) {
         this.cityId = cityId == null ? null : cityId.trim();
+    }
+
+    public String getCountyName() {
+        return countyName;
+    }
+
+    public void setCountyName(String countyName) {
+        this.countyName = countyName == null ? null : countyName.trim();
     }
 
     public String getCountyId() {
@@ -219,6 +285,14 @@ public class Order implements Serializable {
 
     public void setTownId(String townId) {
         this.townId = townId == null ? null : townId.trim();
+    }
+
+    public String getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(String regionId) {
+        this.regionId = regionId == null ? null : regionId.trim();
     }
 
     public String getAddress() {
@@ -293,6 +367,14 @@ public class Order implements Serializable {
         this.servFee = servFee;
     }
 
+    public Float getSaleAmount() {
+        return saleAmount;
+    }
+
+    public void setSaleAmount(Float saleAmount) {
+        this.saleAmount = saleAmount;
+    }
+
     public Float getAmount() {
         return amount;
     }
@@ -317,76 +399,12 @@ public class Order implements Serializable {
         this.type = type;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<OrderDetailX> getSkus() {
-        return skus;
-    }
-
-    public void setSkus(List<OrderDetailX> skus) {
-        this.skus = skus;
-    }
-
-    public String getTaxNo() {
-        return taxNo;
-    }
-
-    public void setTaxNo(String taxNo) {
-        this.taxNo = taxNo;
-    }
-
-    public String getMerchantNo() {
-        return merchantNo;
-    }
-
-    public void setMerchantNo(String merchantNo) {
-        this.merchantNo = merchantNo;
-    }
-
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
-    public String getCountyName() {
-        return countyName;
-    }
-
-    public void setCountyName(String countyName) {
-        this.countyName = countyName;
-    }
-
     public String getOutTradeNo() {
         return outTradeNo;
     }
 
     public void setOutTradeNo(String outTradeNo) {
-        this.outTradeNo = outTradeNo;
+        this.outTradeNo = outTradeNo == null ? null : outTradeNo.trim();
     }
 
     public String getPaymentNo() {
@@ -394,7 +412,7 @@ public class Order implements Serializable {
     }
 
     public void setPaymentNo(String paymentNo) {
-        this.paymentNo = paymentNo;
+        this.paymentNo = paymentNo == null ? null : paymentNo.trim();
     }
 
     public Date getPaymentAt() {
@@ -418,15 +436,7 @@ public class Order implements Serializable {
     }
 
     public void setPayee(String payee) {
-        this.payee = payee;
-    }
-
-    public int getRefundFee() {
-        return refundFee;
-    }
-
-    public void setRefundFee(int refundFee) {
-        this.refundFee = refundFee;
+        this.payee = payee == null ? null : payee.trim();
     }
 
     public String getPayType() {
@@ -434,14 +444,14 @@ public class Order implements Serializable {
     }
 
     public void setPayType(String payType) {
-        this.payType = payType;
+        this.payType = payType == null ? null : payType.trim();
     }
 
-    public int getPaymentTotalFee() {
+    public Integer getPaymentTotalFee() {
         return paymentTotalFee;
     }
 
-    public void setPaymentTotalFee(int paymentTotalFee) {
+    public void setPaymentTotalFee(Integer paymentTotalFee) {
         this.paymentTotalFee = paymentTotalFee;
     }
 
@@ -450,110 +460,46 @@ public class Order implements Serializable {
     }
 
     public void setPayer(String payer) {
-        this.payer = payer;
+        this.payer = payer == null ? null : payer.trim();
     }
 
-    public int getPayStatus() {
+    public Integer getPayStatus() {
         return payStatus;
     }
 
-    public void setPayStatus(int payStatus) {
+    public void setPayStatus(Integer payStatus) {
         this.payStatus = payStatus;
     }
 
-    public int getPayOrderCategory() {
+    public Integer getPayOrderCategory() {
         return payOrderCategory;
     }
 
-    public void setPayOrderCategory(int payOrderCategory) {
+    public void setPayOrderCategory(Integer payOrderCategory) {
         this.payOrderCategory = payOrderCategory;
     }
 
-    public Integer getMerchantId() {
-        return merchantId;
+    public Integer getRefundFee() {
+        return refundFee;
     }
 
-    public void setMerchantId(Integer merchantId) {
-        this.merchantId = merchantId;
+    public void setRefundFee(Integer refundFee) {
+        this.refundFee = refundFee;
     }
 
-    public Float getSaleAmount() {
-        return saleAmount;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setSaleAmount(Float saleAmount) {
-        this.saleAmount = saleAmount;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Integer getCouponId() {
-        return couponId;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setCouponId(Integer couponId) {
-        this.couponId = couponId;
-    }
-
-    public String getCouponCode() {
-        return couponCode;
-    }
-
-    public void setCouponCode(String couponCode) {
-        this.couponCode = couponCode;
-    }
-
-    public Float getCouponDiscount() {
-        return couponDiscount;
-    }
-
-    public void setCouponDiscount(Float couponDiscount) {
-        this.couponDiscount = couponDiscount;
-    }
-
-    public PageBean getSkusPage() {
-        return skusPage;
-    }
-
-    public void setSkusPage(PageBean skusPage) {
-        this.skusPage = skusPage;
-    }
-
-    public Integer getCouponStatus() {
-        return couponStatus;
-    }
-
-    public void setCouponStatus(Integer couponStatus) {
-        this.couponStatus = couponStatus;
-    }
-
-    public Integer getBalanceId() {
-        return balanceId;
-    }
-
-    public void setBalanceId(Integer balanceId) {
-        this.balanceId = balanceId;
-    }
-
-    public Float getBalanceDiscount() {
-        return balanceDiscount;
-    }
-
-    public void setBalanceDiscount(Float balanceDiscount) {
-        this.balanceDiscount = balanceDiscount;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getRegionId() {
-        return regionId;
-    }
-
-    public void setRegionId(String regionId) {
-        this.regionId = regionId;
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
