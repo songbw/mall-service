@@ -5,7 +5,6 @@ import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -120,6 +119,31 @@ public class AdminProdController {
     @PutMapping
     public OperaResult update(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
 //        bean.setMerchantId(merchantId);
+        if (StringUtils.isEmpty(bean.getCategory())) {
+            result.setCode(200100);
+            result.setMsg("类别不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(bean.getPrice())) {
+            result.setCode(200101);
+            result.setMsg("销售价格不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(bean.getImage())) {
+            result.setCode(200102);
+            result.setMsg("封面图不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(bean.getImagesUrl())) {
+            result.setCode(200103);
+            result.setMsg("主图不能为空");
+            return result ;
+        }
+        if (StringUtils.isEmpty(bean.getIntroductionUrl())) {
+            result.setCode(200104);
+            result.setMsg("详情图不能为空");
+            return result ;
+        }
         int id = prodService.update(bean);
         result.getData().put("result", id);
         return result;
