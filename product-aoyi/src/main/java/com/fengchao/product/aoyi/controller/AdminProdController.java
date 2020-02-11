@@ -496,6 +496,9 @@ public class AdminProdController {
 
         HSSFCell titleCell12 = titleRow.createCell(12);
         titleCell12.setCellValue("创建时间");
+
+        HSSFCell titleCell13 = titleRow.createCell(13);
+        titleCell13.setCellValue("商品MPU");
     }
 
     /**
@@ -596,6 +599,10 @@ public class AdminProdController {
             // 创建时间
             HSSFCell titleCell12 = hssfRow.createCell(12);
             titleCell12.setCellValue(productExportResVo.getCreateTime());
+
+            // 创建时间
+            HSSFCell titleCell13 = hssfRow.createCell(13);
+            titleCell13.setCellValue(productExportResVo.getMpu());
 
             //
             if (currentRowNum % 100 == 0) {
