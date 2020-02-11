@@ -374,4 +374,16 @@ public class ProductDao {
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
     }
 
+    /**
+     * 更新上下架状态
+     * @param bean
+     */
+    public void updateStateById(AoyiProdIndex bean) {
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setId(bean.getId());
+        aoyiProdIndex.setState(bean.getState());
+        aoyiProdIndex.setUpdatedAt(new Date());
+        aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndex);
+    }
+
 }

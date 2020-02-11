@@ -56,6 +56,8 @@ public class AdminProdServiceImpl implements AdminProdService {
     private AoyiBaseCategoryXMapper categoryMapper;
     @Autowired
     private AoyiBaseBrandMapper brandMapper;
+    @Autowired
+    private AoyiProdIndexMapper mapper ;
 
     @Autowired
     private ProductDao productDao;
@@ -721,6 +723,50 @@ public class AdminProdServiceImpl implements AdminProdService {
             return operaResponse ;
         }
         starSkuMapper.updateByPrimaryKeySelective(bean) ;
+        operaResponse.setData(bean);
+        return operaResponse;
+    }
+
+    @Override
+    public OperaResponse updateSpuState(AoyiProdIndex bean) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        if (bean == null || bean.getId() == null || bean.getId() <= 0) {
+            operaResponse.setCode(200200);
+            operaResponse.setMsg("ID不能为空");
+            return operaResponse ;
+        }
+        if (bean.getState() == null) {
+            operaResponse.setCode(200201);
+            operaResponse.setMsg("state不能为空");
+            return operaResponse ;
+        }
+        AoyiProdIndex aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
+        if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
+            operaResponse.setCode(200100);
+            operaResponse.setMsg("类别不能为空");
+            return operaResponse ;
+        }
+        if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
+            operaResponse.setCode(200101);
+            operaResponse.setMsg("销售价格不能为空");
+            return operaResponse ;
+        }
+        if (StringUtils.isEmpty(aoyiProdIndex.getImage())) {
+            operaResponse.setCode(200102);
+            operaResponse.setMsg("封面图不能为空");
+            return operaResponse ;
+        }
+        if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
+            operaResponse.setCode(200103);
+            operaResponse.setMsg("主图不能为空");
+            return operaResponse ;
+        }
+        if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl())) {
+            operaResponse.setCode(200104);
+            operaResponse.setMsg("详情图不能为空");
+            return operaResponse ;
+        }
+        productDao.updateStateById(bean) ;
         operaResponse.setData(bean);
         return operaResponse;
     }
