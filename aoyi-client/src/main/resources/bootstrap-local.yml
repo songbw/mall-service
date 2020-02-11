@@ -7,12 +7,12 @@ weipinhui:
   url:
     getBrand: http://47.110.135.104:8080/aoyi/rest/brand/getBrand
     getCategory: http://47.110.135.104:8080/aoyi/rest/category/getCategory
-    queryItemsList: http://aoyitest.aoyi365.com:8080/aoyi/rest/prodcut/queryItemsList
-    queryItemDetial: http://aoyitest.aoyi365.com:8080/aoyi/rest/prodcut/queryItemDetail
-    queryItemInventory: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/queryItemInventory
-    renderOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/renderOrder
-    createOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/confirmOrder
-    releaseOrder: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/releaseOrder
+    queryItemsList: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemsList
+    queryItemDetial: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemDetail
+    queryItemInventory: http://47.110.135.104:8080/aoyi/rest/order/queryItemInventory
+    renderOrder: http://47.110.135.104:8080/aoyi/rest/order/renderOrder
+    createOrder: http://47.110.135.104:8080/aoyi/rest/order/confirmOrder
+    releaseOrder: http://47.110.135.104:8080/aoyi/rest/order/releaseOrder
     queryAddress: http://47.110.135.104:8080/aoyi/rest/order/queryAddress
     ## 物流信息
     queryOrderLogistics: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/queryOrderLogistics

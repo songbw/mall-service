@@ -101,7 +101,7 @@ public class WeipinhuiController {
      * 获取items列表
      * <p>
      * http://localhost:8001/weipinhui/queryItemsList?pageNumber=1&pageSize=20
-     *
+     * 3页，每页20条 最后一页 7 条数据
      * @param pageNumber
      * @param pageSize
      * @return

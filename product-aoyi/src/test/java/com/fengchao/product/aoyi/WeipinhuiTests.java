@@ -30,6 +30,7 @@ public class WeipinhuiTests {
 	}
 
 	@Test
+	@Ignore
 	public void testGetCategory() {
 		try {
 			weipinhuiDataService.syncGetCategory(1, 2);
