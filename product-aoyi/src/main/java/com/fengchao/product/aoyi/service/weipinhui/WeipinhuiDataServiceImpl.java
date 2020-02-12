@@ -277,7 +277,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
 
                     // 执行插入
-                    // aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
+                    if (CollectionUtils.isNotEmpty(insertAoyiProdIndexList)) {
+                        productDao.batchInsert(insertAoyiProdIndexList);
+                    }
 
                     totalInsert = totalInsert + insertAoyiProdIndexList.size();
                 }

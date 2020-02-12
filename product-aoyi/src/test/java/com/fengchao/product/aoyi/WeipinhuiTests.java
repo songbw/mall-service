@@ -46,7 +46,7 @@ public class WeipinhuiTests {
     @Test
     public void testQueryItemIdList() {
         try {
-            weipinhuiDataService.syncItemIdList(1, -1);
+            weipinhuiDataService.syncItemIdList(1, 1);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

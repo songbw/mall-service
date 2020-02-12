@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.bean.ThirdSyncBean;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
+import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
@@ -30,9 +31,13 @@ public class ProductDao {
 
     private AoyiProdIndexMapper aoyiProdIndexMapper;
 
+    private AoyiProdIndexXMapper aoyiProdIndexXMapper;
+
     @Autowired
-    public ProductDao(AoyiProdIndexMapper aoyiProdIndexMapper) {
+    public ProductDao(AoyiProdIndexMapper aoyiProdIndexMapper,
+                      AoyiProdIndexXMapper aoyiProdIndexXMapper) {
         this.aoyiProdIndexMapper = aoyiProdIndexMapper;
+        this.aoyiProdIndexXMapper = aoyiProdIndexXMapper;
     }
 
     /**
@@ -44,6 +49,15 @@ public class ProductDao {
     public Integer insert(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
         aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
         return aoyiProdIndexWithBLOBs.getId();
+    }
+
+    /**
+     * 批量插入
+     *
+     * @param aoyiProdIndexList
+     */
+    public void batchInsert(List<AoyiProdIndex> aoyiProdIndexList) {
+        aoyiProdIndexXMapper.batchInsert(aoyiProdIndexList);
     }
 
     /**
