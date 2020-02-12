@@ -438,7 +438,7 @@ public class ProductServiceImpl implements ProductService {
             aoyiProdIndexList.add(aoyiProdIndex);
         });
 
-        return null;
+        return aoyiProdIndexList;
     }
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean, String appId) {
