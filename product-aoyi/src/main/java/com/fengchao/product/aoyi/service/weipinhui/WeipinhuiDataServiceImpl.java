@@ -1,9 +1,12 @@
 package com.fengchao.product.aoyi.service.weipinhui;
 
+import com.fengchao.product.aoyi.ProductAoyiApplication;
 import com.fengchao.product.aoyi.dao.AoyiBaseBrandDao;
 import com.fengchao.product.aoyi.dao.CategoryDao;
+import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiSkuResDto;
@@ -32,12 +35,16 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
     private CategoryDao categoryDao;
 
+    private ProductDao productDao;
+
     public WeipinhuiDataServiceImpl(AoyiClientRpcService aoyiClientRpcService,
                                     AoyiBaseBrandDao aoyiBaseBrandDao,
-                                    CategoryDao categoryDao) {
+                                    CategoryDao categoryDao,
+                                    ProductDao productDao) {
         this.aoyiClientRpcService = aoyiClientRpcService;
         this.aoyiBaseBrandDao = aoyiBaseBrandDao;
         this.categoryDao = categoryDao;
+        this.productDao = productDao;
     }
 
     @Override
@@ -226,27 +233,53 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             int pageCount = 0;
             int totalInsert = 0; // 记录一下执行一共插入的数据数量
 
-
             while (true) {
                 // 1. 获取数据
                 List<AoyiItemDetailResDto> aoyiItemDetailResDtoList
                         = aoyiClientRpcService.weipinhuiQueryItemsList(pageNumber, PAGESIZE);
 
-                log.info("同步itemIdList 第{}页 共{}条数据 >>>> {}",
+                log.info("同步itemIdList 第{}页 共查询到{}条数据 >>>> {}",
                         pageNumber, aoyiItemDetailResDtoList.size(), JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
 
                 // 2. 入库处理
                 if (CollectionUtils.isNotEmpty(aoyiItemDetailResDtoList)) {
+                    // 转数据库实体
+                    List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
+                    List<String> itemIdList = new ArrayList<>();
                     for (AoyiItemDetailResDto aoyiItemDetailResDto : aoyiItemDetailResDtoList) {
+                        AoyiProdIndex aoyiProdIndex = new AoyiProdIndex();
 
+                        aoyiProdIndex.setSkuid(aoyiItemDetailResDto.getItemId());
+                        aoyiProdIndex.setMpu(aoyiItemDetailResDto.getItemId());
+                        aoyiProdIndex.setMerchantId(2);
+
+                        itemIdList.add(aoyiItemDetailResDto.getItemId());
+                        aoyiProdIndexList.add(aoyiProdIndex);
                     }
 
+                    // 查询数据库是否已存在数据
+                    List<AoyiProdIndex> exsitAoyiprodIndexList =
+                            productDao.selectAoyiProdIndexListByMpuIdList(itemIdList);
+
+                    List<String> exsitItemIdList =
+                            exsitAoyiprodIndexList.stream().map(e -> e.getSkuid()).collect(Collectors.toList());
+
+                    // 去掉已存在的数据
+                    List<AoyiProdIndex> insertAoyiProdIndexList = new ArrayList<>(); // 准备插入的数据
+                    for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
+                        if (!exsitItemIdList.contains(aoyiProdIndex.getSkuid())) {
+                            insertAoyiProdIndexList.add(aoyiProdIndex);
+                        }
+                    }
+
+                    log.info("同步itemIdList 第{}页 需要插入数据{}条 内容:{}",
+                            pageNumber, insertAoyiProdIndexList.size(), JSONUtil.toJsonStringWithoutNull(insertAoyiProdIndexList));
 
 
                     // 执行插入
                     // aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
 
-                    totalInsert = totalInsert + aoyiItemDetailResDtoList.size();
+                    totalInsert = totalInsert + insertAoyiProdIndexList.size();
                 }
 
                 // 3. 判断是否需要继续同步
