@@ -175,14 +175,4 @@ public class ThirdProdController {
         return service.syncStarProdPrice();
     }
 
-    @PutMapping("star/sku")
-    public OperaResponse updateStarSku(@RequestBody StarSku bean) {
-        return adminProdService.updateSkuPriceAndState(bean) ;
-    }
-
-    @PutMapping("batch/star/sku")
-    public OperaResponse batchUpdateStarSku(@RequestBody List<StarSku> beans) {
-        return adminProdService.batchUpdateSkuPriceAndState(beans) ;
-    }
-
 }
