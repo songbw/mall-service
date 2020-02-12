@@ -727,6 +727,22 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
+    public OperaResponse batchUpdateSkuPriceAndState(List<StarSku> beans) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        if (beans == null || beans.size() == 0) {
+            operaResponse.setCode(200200);
+            operaResponse.setMsg("数据不能为空");
+            return operaResponse ;
+        }
+        beans.forEach(bean -> {
+            starSkuMapper.updateByPrimaryKeySelective(bean) ;
+            operaResponse.setData(bean);
+        });
+        operaResponse.setData(beans);
+        return operaResponse;
+    }
+
+    @Override
     public OperaResponse updateSpuState(AoyiProdIndex bean) {
         OperaResponse operaResponse = new OperaResponse() ;
         if (bean == null || bean.getId() == null || bean.getId() <= 0) {

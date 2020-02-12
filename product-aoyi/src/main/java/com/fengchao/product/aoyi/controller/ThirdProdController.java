@@ -180,4 +180,9 @@ public class ThirdProdController {
         return adminProdService.updateSkuPriceAndState(bean) ;
     }
 
+    @PutMapping("batch/star/sku")
+    public OperaResponse batchUpdateStarSku(@RequestBody List<StarSku> beans) {
+        return adminProdService.batchUpdateSkuPriceAndState(beans) ;
+    }
+
 }

@@ -69,6 +69,7 @@ public interface AdminProdService {
     void fix();
 
     OperaResponse updateSkuPriceAndState(StarSku bean);
+    OperaResponse batchUpdateSkuPriceAndState(List<StarSku> beans);
 
     OperaResponse updateSpuState(AoyiProdIndex bean);
 
