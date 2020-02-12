@@ -283,6 +283,20 @@ public class AdminProdServiceImpl implements AdminProdService {
     public int update(AoyiProdIndex bean) throws ProductException {
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());
+            AoyiProdIndexWithBLOBs temp = mapper.selectByPrimaryKey(bean.getId()) ;
+            List<StarSku> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
+            if (starSkus != null && starSkus.size() > 0) {
+                StarSku starSku = starSkus.get(0) ;
+                if (StringUtils.isBlank(bean.getPrice())) {
+                    BigDecimal bigDecimalPrice = new BigDecimal(bean.getPrice()) ;
+                    int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
+                    starSku.setPrice(price);
+                }
+                if (StringUtils.isBlank(bean.getState())) {
+                    starSku.setStatus(Integer.valueOf(bean.getState()));
+                }
+                starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+            }
             productDao.updateAoyiProduct(bean) ;
 //            aoyiProdIndexXMapper.updateByPrimaryKeySelective(bean);
         } else {
