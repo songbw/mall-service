@@ -42,9 +42,10 @@ public interface AoyiClientService {
     OperaResponse findProdCategory(@RequestParam("categoryId") String categoryId);
 
     @RequestMapping(value = "/star/product/price", method = RequestMethod.GET)
-    OperaResponse findSkuSalePrice(@RequestParam("codes") String codes) ;
+    OperaResponse findSkuSalePrice(@RequestParam("codes") String codes);
 
     // 唯品会 begin
+
     /**
      * 唯品会品牌查询
      *
@@ -66,6 +67,17 @@ public interface AoyiClientService {
     @RequestMapping(value = "/weipinhui/getCategory", method = RequestMethod.GET)
     OperaResponse<List<CategoryResDto>> weipinhuiGetCategory(@RequestParam("pageNumber") Integer pageNumber,
                                                              @RequestParam("pageSize") Integer pageSize);
+
+    /**
+     * 唯品会itemId(spu)查询
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    @RequestMapping(value = "/weipinhui/queryItemsList", method = RequestMethod.GET)
+    OperaResponse<List<AoyiItemDetailResDto>> weipinhuiQueryItemsList(@RequestParam("pageNumber") Integer pageNumber,
+                                                                      @RequestParam("pageSize") Integer pageSize);
 
     /**
      * 唯品会商品详情查询

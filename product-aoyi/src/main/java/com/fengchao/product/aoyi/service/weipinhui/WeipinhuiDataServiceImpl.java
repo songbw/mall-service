@@ -220,6 +220,60 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         }
     }
 
+    @Override
+    public void syncItemIdList(Integer pageNumber, Integer maxPageCount) throws Exception {
+        try {
+            int pageCount = 0;
+            int totalInsert = 0; // 记录一下执行一共插入的数据数量
+
+
+            while (true) {
+                // 1. 获取数据
+                List<AoyiItemDetailResDto> aoyiItemDetailResDtoList
+                        = aoyiClientRpcService.weipinhuiQueryItemsList(pageNumber, PAGESIZE);
+
+                log.info("同步itemIdList 第{}页 共{}条数据 >>>> {}",
+                        pageNumber, aoyiItemDetailResDtoList.size(), JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
+
+                // 2. 入库处理
+                if (CollectionUtils.isNotEmpty(aoyiItemDetailResDtoList)) {
+                    for (AoyiItemDetailResDto aoyiItemDetailResDto : aoyiItemDetailResDtoList) {
+
+                    }
+
+
+
+                    // 执行插入
+                    // aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
+
+                    totalInsert = totalInsert + aoyiItemDetailResDtoList.size();
+                }
+
+                // 3. 判断是否需要继续同步
+                if (aoyiItemDetailResDtoList.size() == 0) {
+                    log.info("同步itemIdList 结束");
+                    break;
+                }
+
+                log.info("同步itemIdList 第{}页 累计插入数据{}条", pageNumber, totalInsert);
+
+                pageNumber++;
+                pageCount++;
+
+                //
+                if (maxPageCount != -1 && pageCount >= maxPageCount) {
+                    log.warn("同步itemIdList 达到最大页数{}限制 停止同步!", maxPageCount);
+
+                    break;
+                }
+
+
+            } // end while
+        } catch (Exception e) {
+            log.error("同步品牌 异常:{}", e.getMessage(), e);
+        }
+    }
+
     /**
      * {
      * "code": 200,

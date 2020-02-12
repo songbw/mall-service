@@ -114,6 +114,11 @@ public class AoyiClientServiceClientFallbackFactory implements FallbackFactory<A
             }
 
             @Override
+            public OperaResponse<List<AoyiItemDetailResDto>> weipinhuiQueryItemsList(Integer pageNumber, Integer pageSize) {
+                return HystrixDefaultFallback.defaultReponseFallback();
+            }
+
+            @Override
             public OperaResponse<AoyiItemDetailResDto> weipinhuiQueryItemDetial(String itemId) {
                 return HystrixDefaultFallback.defaultReponseFallback();
             }

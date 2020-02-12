@@ -26,6 +26,15 @@ public interface WeipinhuiDataService {
     void syncGetCategory(Integer pageNumber, Integer maxPageNumber) throws Exception;
 
     /**
+     * 同步itemIdList
+     *
+     * @param pageNumber
+     * @param maxPageCount
+     * @throws Exception
+     */
+    void syncItemIdList(Integer pageNumber, Integer maxPageCount) throws Exception;
+
+    /**
      * 同步spu和sku
      *
      * @param itemIdList

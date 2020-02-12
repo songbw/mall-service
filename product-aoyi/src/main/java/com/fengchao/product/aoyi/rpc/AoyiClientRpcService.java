@@ -89,6 +89,36 @@ public class AoyiClientRpcService {
     }
 
     /**
+     * 查询唯品会itemId列表信息
+     *
+     * @return
+     */
+    public List<AoyiItemDetailResDto> weipinhuiQueryItemsList(Integer pageNumber, Integer pageSize) {
+        // 返回值
+        List<AoyiItemDetailResDto> aoyiItemDetailResDtoList = new ArrayList<>();
+
+        // 执行rpc调用
+        log.info("查询唯品会itemId列表信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
+                pageNumber, pageSize);
+
+        // 将merchantIdList转成Long型
+        OperaResponse<List<AoyiItemDetailResDto>> resultObject = aoyiClientService.weipinhuiQueryItemsList(pageNumber, pageSize);
+        log.info("查询唯品会itemId列表信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonStringWithoutNull(resultObject));
+
+        // 处理返回
+        if (resultObject.getCode() == 200) {
+            aoyiItemDetailResDtoList = resultObject.getData();
+        } else {
+            log.warn("查询唯品会itemId列表信息 调用aoyi-client rpc服务 错误!");
+        }
+
+        log.info("AoyiClientRpcService#weipinhuiQueryItemsList 调用aoyi-client rpc服务 返回:{}",
+                JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
+
+        return aoyiItemDetailResDtoList;
+    }
+
+    /**
      * 查询唯品会商品详情
      *
      * @return
