@@ -649,7 +649,7 @@ public class AdminProdController {
     }
 
     @PutMapping("spu/state")
-    public OperaResponse updateBatchSpuState(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
+    public OperaResponse updateSpuState(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
         return prodService.updateSpuState(bean);
     }
 

@@ -184,21 +184,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdIndex> beans, String appId) {
         List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
-        beans.forEach(aoyiProdIndex -> {
-            AoyiProdIndex prodIndex = new AoyiProdIndex() ;
-            prodIndex.setCategory(aoyiProdIndex.getCategory());
-            prodIndex.setMpu(aoyiProdIndex.getMpu());
-            aoyiProdIndices.add(prodIndex) ;
-        });
-        OperaResult result = equityService.findCouponListByMpuList(aoyiProdIndices, appId) ;
-        if (result != null && result.getCode() == 200) {
-            Map<String, Object> data = result.getData();
-            Object object = data.get("result");
-            String jsonString = JSON.toJSONString(object);
-            List<CouponAndPromBean>  couponAndPromBeans = JSONObject.parseArray(jsonString, CouponAndPromBean.class);
-            return couponAndPromBeans;
-        } else {
-            log.error("批量查询优惠券和活动失败，返回结果： {}", JSONUtil.toJsonString(result));
+        if (beans != null && beans.size() > 0) {
+            beans.forEach(aoyiProdIndex -> {
+                AoyiProdIndex prodIndex = new AoyiProdIndex() ;
+                prodIndex.setCategory(aoyiProdIndex.getCategory());
+                prodIndex.setMpu(aoyiProdIndex.getMpu());
+                aoyiProdIndices.add(prodIndex) ;
+            });
+            OperaResult result = equityService.findCouponListByMpuList(aoyiProdIndices, appId) ;
+            if (result != null && result.getCode() == 200) {
+                Map<String, Object> data = result.getData();
+                Object object = data.get("result");
+                String jsonString = JSON.toJSONString(object);
+                List<CouponAndPromBean>  couponAndPromBeans = JSONObject.parseArray(jsonString, CouponAndPromBean.class);
+                return couponAndPromBeans;
+            } else {
+                log.error("批量查询优惠券和活动失败，返回结果： {}", JSONUtil.toJsonString(result));
+            }
         }
         return null ;
     }

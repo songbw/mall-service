@@ -9,6 +9,7 @@ import com.fengchao.product.aoyi.constants.ProductStatusEnum;
 import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.ProductExtendDao;
+import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
@@ -58,20 +59,18 @@ public class AdminProdServiceImpl implements AdminProdService {
     private AoyiBaseBrandMapper brandMapper;
     @Autowired
     private AoyiProdIndexMapper mapper ;
-
     @Autowired
     private ProductDao productDao;
-
     @Autowired
     private ProductExtendDao productExtendDao;
-
     @Autowired
     private VendorsRpcService vendorsRpcService;
-
     @Autowired
     private CategoryDao categoryDao;
     @Autowired
     private StarSkuMapper starSkuMapper ;
+    @Autowired
+    private StarSkuDao starSkuDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -741,6 +740,8 @@ public class AdminProdServiceImpl implements AdminProdService {
             return operaResponse ;
         }
         AoyiProdIndex aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
+        // TODO 查询是否有sku
+        starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
         if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
             operaResponse.setCode(200100);
             operaResponse.setMsg("类别不能为空");
