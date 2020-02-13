@@ -63,7 +63,7 @@
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
 
-        <table tableName="aoyi_base_brand">
+        <table tableName="star_sku">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
     </context>

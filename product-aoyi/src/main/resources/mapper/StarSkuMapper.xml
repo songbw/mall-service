@@ -15,6 +15,7 @@
     <result column="istatus" jdbcType="SMALLINT" property="istatus" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -76,7 +77,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, code, goods_logo, purchase_qty, sku_id, status, spu_id, advise_price, sprice, 
-    price, istatus, update_time, create_time
+    price, istatus, update_time, create_time, merchant_code
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.StarSkuExample" resultMap="BaseResultMap">
     select
@@ -112,13 +113,13 @@
     insert into star_sku (code, goods_logo, purchase_qty, 
       sku_id, status, spu_id, 
       advise_price, sprice, price, 
-      istatus, update_time, create_time
-      )
+      istatus, update_time, create_time, 
+      merchant_code)
     values (#{code,jdbcType=VARCHAR}, #{goodsLogo,jdbcType=VARCHAR}, #{purchaseQty,jdbcType=INTEGER}, 
       #{skuId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{spuId,jdbcType=VARCHAR}, 
       #{advisePrice,jdbcType=INTEGER}, #{sprice,jdbcType=INTEGER}, #{price,jdbcType=INTEGER}, 
-      #{istatus,jdbcType=SMALLINT}, #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}
-      )
+      #{istatus,jdbcType=SMALLINT}, #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{merchantCode,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.StarSku" useGeneratedKeys="true">
     insert into star_sku
@@ -159,6 +160,9 @@
       <if test="createTime != null">
         create_time,
       </if>
+      <if test="merchantCode != null">
+        merchant_code,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="code != null">
@@ -196,6 +200,9 @@
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="merchantCode != null">
+        #{merchantCode,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -247,6 +254,9 @@
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.merchantCode != null">
+        merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -266,7 +276,8 @@
       price = #{record.price,jdbcType=INTEGER},
       istatus = #{record.istatus,jdbcType=SMALLINT},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      merchant_code = #{record.merchantCode,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -310,6 +321,9 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="merchantCode != null">
+        merchant_code = #{merchantCode,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -326,7 +340,8 @@
       price = #{price,jdbcType=INTEGER},
       istatus = #{istatus,jdbcType=SMALLINT},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      merchant_code = #{merchantCode,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
