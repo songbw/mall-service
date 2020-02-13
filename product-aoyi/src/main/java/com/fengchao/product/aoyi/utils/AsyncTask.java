@@ -192,7 +192,7 @@ public class AsyncTask {
         String code = "" ;
         int i = 1 ;
         for (StarSku starSku: starSkus) {
-            if (i%200 == 0 || i >= starSkus.size()) {
+            if (i%200 == 0) {
                 codes.add(code) ;
                 code = "";
             }
@@ -202,6 +202,9 @@ public class AsyncTask {
             } else {
                 i = i + 1;
                 code = code + "," + starSku.getCode() ;
+            }
+            if (i > starSkus.size()) {
+                codes.add(code) ;
             }
         }
         codes.forEach(c -> {
