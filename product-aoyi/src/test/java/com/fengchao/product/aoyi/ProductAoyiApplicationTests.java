@@ -8,6 +8,7 @@ import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,6 +67,8 @@ public class ProductAoyiApplicationTests {
 	private AoyiProdIndexMapper aoyiProdIndexMapper;
 	@Autowired
 	private ProductService productService ;
+	@Autowired
+	private StarSkuDao starSkuDao ;
 
 	@Ignore
 	@Test
@@ -319,6 +323,19 @@ public class ProductAoyiApplicationTests {
 	public void testFindByMpu() {
 		AoyiProdIndexXWithBLOBs aoyiProdIndexXWithBLOBs = productService.findByMpu("6109515") ;
 		System.out.println(JSONUtil.toJsonString(aoyiProdIndexXWithBLOBs));
+	}
+
+	@Test
+	public void spuPrice() {
+		List<AoyiProdIndex> aoyiProdIndices = productDao.selectAoyiProdIndexListByMerchant(4) ;
+		aoyiProdIndices.forEach(aoyiProdIndex -> {
+			List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+			if (starSkus != null && starSkus.size() > 0) {
+				StarSku starSku = starSkus.get(0) ;
+				BigDecimal bigDecimalPrice = new BigDecimal(starSku.getPrice()) ;
+				bigDecimalPrice.divide(new BigDecimal(100)) ;
+			}
+		});
 	}
 
 }
