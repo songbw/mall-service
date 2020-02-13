@@ -188,25 +188,8 @@ public class AsyncTask {
     @Async
     public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao) {
         List<StarSku> starSkus = starSkuDao.selectAll() ;
-        List<String> codes = new ArrayList<>() ;
-        String code = "" ;
-        int i = 0 ;
-        for (StarSku starSku: starSkus) {
-            if (i > 200) {
-                codes.add(code) ;
-                i = 0 ;
-                code = "";
-            }
-            if (StringUtils.isEmpty(code)) {
-                i = i + 1;
-                code = starSku.getCode() ;
-            } else {
-                i = i + 1;
-                code = code + "," + starSku.getCode() ;
-            }
-        }
-        codes.forEach(c -> {
-            OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(c) ;
+        starSkus.forEach(temp -> {
+            OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(temp.getCode()) ;
             String skuPriceResString = JSON.toJSONString(priceResponse) ;
             JSONObject skuDetailResJson = JSONObject.parseObject(skuPriceResString) ;
             JSONArray skuPriceData = skuDetailResJson.getJSONArray("data") ;
