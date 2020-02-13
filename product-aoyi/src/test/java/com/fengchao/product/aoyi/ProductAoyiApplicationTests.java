@@ -333,7 +333,11 @@ public class ProductAoyiApplicationTests {
 			if (starSkus != null && starSkus.size() > 0) {
 				StarSku starSku = starSkus.get(0) ;
 				BigDecimal bigDecimalPrice = new BigDecimal(starSku.getPrice()) ;
-				bigDecimalPrice.divide(new BigDecimal(100)) ;
+				String price = bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString() ;
+				aoyiProdIndex.setPrice(price);
+				AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs() ;
+				BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexWithBLOBs);
+				aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs) ;
 			}
 		});
 	}

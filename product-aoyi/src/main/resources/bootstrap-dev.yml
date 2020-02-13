@@ -29,10 +29,12 @@ spring:
     druid:
       one:
         url: jdbc:mysql://122.112.211.218:33143/fc_mall?characterEncoding=utf8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useTimezone=true&serverTimezone=GMT%2B8
+#        url: jdbc:mysql://139.9.114.143:3306/fc_mall?characterEncoding=utf8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useTimezone=true&serverTimezone=GMT%2B8
         username: fengchao
         password: Smartautotech@123
       two:
         url: jdbc:mysql://122.112.211.218:33143/fc_mall?characterEncoding=utf8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useTimezone=true&serverTimezone=GMT%2B8
+#        url: jdbc:mysql://139.9.114.143:3306/fc_mall?characterEncoding=utf8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useTimezone=true&serverTimezone=GMT%2B8
         username: fengchao
         password: Smartautotech@123
       initial-size: 10
@@ -80,15 +82,6 @@ spring:
         max-idle: 8
         min-idle: 0
 
-eureka:
-  instance:
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 10
-  client:
-    registry-fetch-interval-seconds: 5
-    serviceUrl:
-      defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
-
 logging:
   file: ./logs/product/log.log
 
@@ -117,25 +110,6 @@ hystrix:
           thread:
             timeoutInMilliseconds: 10000
 
-lts:
-  jobclient:
-    cluster-name: test_cluster
-    registry-address: zookeeper://peer2:2181
-    node-group: test_jobClient
-    use-retry-client: true
-    configs:
-      job:
-        fail:
-          store: mapdb
-
-  tasktracker:
-    cluster-name: test_cluster
-    registry-address: zookeeper://peer2:2181
-    node-group: product_trade_TaskTracker
-    configs:
-      job:
-        fail:
-          store: mapdb
 management:
   loggers:
     enabled: true
