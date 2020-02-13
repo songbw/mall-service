@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.service.weipinhui;
 
 import com.fengchao.product.aoyi.ProductAoyiApplication;
+import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.dao.AoyiBaseBrandDao;
 import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
@@ -13,8 +14,10 @@ import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiSkuResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -115,7 +118,6 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             log.error("同步品牌 异常:{}", e.getMessage(), e);
         }
     }
-
 
     @Override
     public void syncGetCategory(Integer pageNumber, Integer maxPageCount) throws Exception {
@@ -338,52 +340,75 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
      * }
      * }
      *
-     * @param itemIdList
-     * @throws Exception
+     * @param pageNum
+     * @throws Exception alter table `star_sku` add column `merchant_code` varchar(16) not null default '141' comment '供应商code';
      */
     @Override
-    public void syncItemDetail(List<String> itemIdList, Integer maxCount) throws Exception {
+    public void syncItemDetail(Integer pageNum, Integer maxPageCount) throws Exception {
         try {
-            int totalSku = 0;
-            int totalItem = 0; // 记录一下本次执行一共插入的数据数量
+            // 1.分页查询itemId列表数据
+            ProductQueryBean productQueryBean = new ProductQueryBean();
+            productQueryBean.setPageSize(PAGESIZE);
+            productQueryBean.setMerchantId(2);
+            productQueryBean.setSkuProfix("3");
 
-            for (String itemId : itemIdList) {
-                // 1. 获取数据
-                AoyiItemDetailResDto aoyiItemDetailResDto = aoyiClientRpcService.weipinhuiQueryItemDetial(itemId);
-                log.info("同步商品itemId:{}  >>>>>> AoyiItemDetailResDto: {}",
-                        itemId, JSONUtil.toJsonString(aoyiItemDetailResDto));
+            while (true) {
+                // 数据库查询
+                productQueryBean.setPageNo(pageNum);
+                PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(productQueryBean);
 
-                // 2. 入库处理
-                int _tmpSkuCount = 0;
-                if (aoyiItemDetailResDto != null) {
-                    // 获取sku集合
-                    List<AoyiSkuResDto> aoyiSkuResDtoList = aoyiItemDetailResDto.getAoyiSkusResponses();
+                List<AoyiProdIndex> aoyiProdIndexList = pageInfo.getList();
 
-                    _tmpSkuCount = (aoyiSkuResDtoList == null ? 0 : aoyiSkuResDtoList.size());
-                    log.info("同步商品itemId:{} 获取到sku {}个",
-                            itemId, aoyiSkuResDtoList == null ? null : aoyiSkuResDtoList.size());
+                log.info("同步商品详情 获取itermId列表 第{}页{}条 >>>>> 数据:{}",
+                        pageNum, aoyiProdIndexList.size(), JSONUtil.toJsonStringWithoutNull(aoyiProdIndexList));
 
-                    if (CollectionUtils.isNotEmpty(aoyiSkuResDtoList)) {
-                        // 遍历sku
-                        for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) {
-
-                        }
-
-                        // 执行插入
-                        // aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
-                    }
-                }
-
-                totalSku = totalSku + _tmpSkuCount;
-                totalItem++;
-
-                log.info("同步商品itemId:{} <<<<<< 累计插入spu:{} 条 sku:{}条", itemId, totalItem, totalSku);
-
-                // 3. 判断是否需要继续同步
-                if (maxCount != -1 && totalItem >= maxCount) {
-                    log.info("同步商品itemId:{} 达到最大限制:{} 同步结束", itemId, maxCount);
+                if (CollectionUtils.isEmpty(aoyiProdIndexList)) {
+                    log.info("同步商品详情 获取itermId列表 第{}页 无数据 任务停止!");
                     break;
                 }
+
+                // 2. 遍历itemId列表，查询详情信息
+                for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
+                    String itemId = aoyiProdIndex.getSkuid();
+
+                    // 3. rpc 获取商品详情
+                    AoyiItemDetailResDto aoyiItemDetailResDto = aoyiClientRpcService.weipinhuiQueryItemDetial(itemId);
+                    log.info("同步商品详情 第{}页 itemId:{} rpc获取商品详情: {}",
+                            pageNum, itemId, JSONUtil.toJsonString(aoyiItemDetailResDto));
+
+                    if (aoyiItemDetailResDto == null) {
+                        log.warn("同步商品详情 第{}页 itemId:{} rpc获取商品详情为空 继续...", pageNum, itemId);
+                        continue;
+                    }
+
+                    // 4. 入库处理 分为两步 4.1 更新 spu， 4.2 插入 sku
+                    // 4.1 更新spu
+                    aoyiProdIndex.setName(aoyiItemDetailResDto.getItemTitle()); // 商品名称spu名称
+                    aoyiProdIndex.setState(aoyiItemDetailResDto.getCanSell() == "true" ? "1" : "0"); // 是否出售 "false" - 是否上架 0：下架；1：上架
+                    aoyiProdIndex.setBrandId(StringUtils.isNotBlank(aoyiItemDetailResDto.getBrandId())
+                            ? Integer.valueOf(aoyiItemDetailResDto.getBrandId()) : 0); // 品牌 id
+                    aoyiProdIndex.setCategory(aoyiItemDetailResDto.getCategoryId()); // 类目三级 id "50023439"
+                    aoyiProdIndex.setImagesUrl(aoyiItemDetailResDto.getItemImage()); // 商品主图 [http://pic.aoyi365.com/aoyi_tmall/50000550/ZT/1.jpg,http://pic.aoyi365.com/aoyi_tmall/50 000550/ZT/2.jpg,http://pic.aoyi365.com/aoyi_tmall/50000550/ZT/3.jpg,http://pic.aoyi365.co m/aoyi_tmall/50000550/ZT/4.jpg,]", // 商品主图
+                    aoyiProdIndex.setIntroductionUrl(aoyiItemDetailResDto.getItemDetailImage()); // 商品详情图 [http://pic.aoyi365
+
+                    log.info("同步商品详情 第{}页 itemId:{} 更新spu 数据库入参:{}", JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
+                    // 执行更新
+                    // productDao.updateByPrimaryKey(aoyiProdIndex);
+
+                    // 4.2 新增sku
+                    List<AoyiSkuResDto> aoyiSkuResDtoList = aoyiItemDetailResDto.getAoyiSkusResponses();
+                    if (CollectionUtils.isEmpty(aoyiSkuResDtoList)) {
+                        log.warn("同步商品详情 第{}页 itemId:{} 其商品详情为空 继续......", pageNum, itemId);
+                    }
+
+                    // 首先判断是否已存在sku
+                    List<String> skuIdList =
+                            aoyiSkuResDtoList.stream().map(a -> a.getSkuId()).collect(Collectors.toList());
+
+                    // 数据库查询
+
+                }// end while
+
             } // end for
         } catch (Exception e) {
             log.error("同步商品 异常:{}", e.getMessage(), e);

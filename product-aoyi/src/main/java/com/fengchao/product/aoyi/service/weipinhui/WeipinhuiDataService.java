@@ -37,9 +37,9 @@ public interface WeipinhuiDataService {
     /**
      * 同步spu和sku
      *
-     * @param itemIdList
-     * @param maxCount 同步最大的itemId的数量，当达到maxCount数量时，则停止同步，-1为无限
+     * @param pageNumber
+     * @param syncItemDetail 最大查询的页数，-1为无限
      * @throws Exception
      */
-    void syncItemDetail(List<String> itemIdList, Integer maxCount) throws Exception;
+    void syncItemDetail(Integer pageNumber, Integer syncItemDetail) throws Exception;
 }
