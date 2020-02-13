@@ -209,5 +209,35 @@ public class ProductController {
         return service.inventoryAdd(inventories);
     }
 
+    /**
+     * 根据mpuid,code集合查询product列表
+     *
+     * @param mpuIdList
+     * @return
+     * @throws ProductException
+     */
+    @PostMapping("/sku/mpuIds")
+    private OperaResponse selectByMpuIdListAndSkuCodes(@RequestBody List<AoyiProdIndex> mpuIdList) {
+        OperaResponse response = new OperaResponse() ;
+        if (mpuIdList.size() > 100) {
+            response.setCode(200001);
+            response.setMsg("mpu 列表数量超过50！");
+            return response ;
+        }
+        try {
+            // 查询
+            List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdListAndCode(mpuIdList);
+
+            response.setData(productInfoBeanList);
+        } catch (Exception e) {
+            log.error("根据mup集合查询产品信息 异常:{}", e.getMessage(), e);
+
+            response.setCode(500);
+            response.setMsg("根据mup集合查询产品信息 异常");
+        }
+
+        return response;
+    }
+
 
 }

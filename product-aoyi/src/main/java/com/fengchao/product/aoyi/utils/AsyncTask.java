@@ -190,11 +190,10 @@ public class AsyncTask {
         List<StarSku> starSkus = starSkuDao.selectAll() ;
         List<String> codes = new ArrayList<>() ;
         String code = "" ;
-        int i = 0 ;
+        int i = 1 ;
         for (StarSku starSku: starSkus) {
-            if (i > 200) {
+            if (i%200 == 0 || i >= starSkus.size()) {
                 codes.add(code) ;
-                i = 0 ;
                 code = "";
             }
             if (StringUtils.isEmpty(code)) {

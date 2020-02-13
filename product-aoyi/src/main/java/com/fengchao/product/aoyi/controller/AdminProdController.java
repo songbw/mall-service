@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -87,22 +88,18 @@ public class AdminProdController {
     public OperaResult create(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId,
                               OperaResult result) throws ProductException {
         log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
-
         try {
             // 入参校验
             if (bean.getMerchantId() <= 0) {
                 throw new Exception("参数merchantId不合法");
             }
-
             if (merchantId == 0) { // 平台需要校验销售价格
                 if (StringUtils.isBlank(bean.getPrice()) || Float.valueOf(bean.getPrice()) <= 0) {
                     throw new Exception("参数price不合法");
                 }
             }
-
             // 执行新增商品
             String id = prodService.add(bean);
-
             result.getData().put("result", id);
         } catch (Exception e) {
             log.error("创建商品 异常:{}", e.getMessage(), e);
@@ -110,40 +107,14 @@ public class AdminProdController {
             result.setCode(500);
             result.setMsg(e.getMessage());
         }
-
         log.info("创建商品 返回:{}", JSONUtil.toJsonString(result));
-
         return result;
     }
 
     @PutMapping
     public OperaResult update(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
 //        bean.setMerchantId(merchantId);
-        if (StringUtils.isEmpty(bean.getCategory())) {
-            result.setCode(200100);
-            result.setMsg("类别不能为空");
-            return result ;
-        }
-        if (StringUtils.isEmpty(bean.getPrice())) {
-            result.setCode(200101);
-            result.setMsg("销售价格不能为空");
-            return result ;
-        }
-        if (StringUtils.isEmpty(bean.getImage())) {
-            result.setCode(200102);
-            result.setMsg("封面图不能为空");
-            return result ;
-        }
-        if (StringUtils.isEmpty(bean.getImagesUrl())) {
-            result.setCode(200103);
-            result.setMsg("主图不能为空");
-            return result ;
-        }
-        if (StringUtils.isEmpty(bean.getIntroductionUrl())) {
-            result.setCode(200104);
-            result.setMsg("详情图不能为空");
-            return result ;
-        }
+
         int id = prodService.update(bean);
         result.getData().put("result", id);
         return result;
@@ -676,6 +647,27 @@ public class AdminProdController {
     @PutMapping("/inventory")
     private OperaResult inventoryUpdate(@RequestBody InventoryMpus inventory) throws ProductException {
         return prodService.inventoryUpdate(inventory);
+    }
+
+    @PutMapping("spu/state")
+    public OperaResponse updateSpuState(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        return prodService.updateSpuState(bean);
+    }
+
+    @PutMapping("batch")
+    public OperaResponse updateBatch(@RequestBody List<AoyiProdIndex> bean, @RequestHeader("merchant") Integer merchantId){
+//        bean.setMerchantId(merchantId);
+        return prodService.updateBatch(bean);
+    }
+
+    @PutMapping("star/sku")
+    public OperaResponse updateStarSku(@RequestBody StarSku bean) {
+        return prodService.updateSkuPriceAndState(bean) ;
+    }
+
+    @PutMapping("batch/star/sku")
+    public OperaResponse batchUpdateStarSku(@RequestBody List<StarSku> beans) {
+        return prodService.batchUpdateSkuPriceAndState(beans) ;
     }
 
 }

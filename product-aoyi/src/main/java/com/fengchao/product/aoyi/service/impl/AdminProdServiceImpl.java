@@ -9,6 +9,7 @@ import com.fengchao.product.aoyi.constants.ProductStatusEnum;
 import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.ProductExtendDao;
+import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
@@ -55,19 +56,21 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Autowired
     private AoyiBaseCategoryXMapper categoryMapper;
     @Autowired
-    private AoyiBaseBrandXMapper brandMapper;
-
+    private AoyiBaseBrandMapper brandMapper;
+    @Autowired
+    private AoyiProdIndexMapper mapper ;
     @Autowired
     private ProductDao productDao;
-
     @Autowired
     private ProductExtendDao productExtendDao;
-
     @Autowired
     private VendorsRpcService vendorsRpcService;
-
     @Autowired
     private CategoryDao categoryDao;
+    @Autowired
+    private StarSkuMapper starSkuMapper ;
+    @Autowired
+    private StarSkuDao starSkuDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -248,7 +251,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         aoyiProdIndexWithBLOBs.setState(String.valueOf(ProductStatusEnum.INIT.getValue()));
         // 设置品牌
         if (requestProdParams.getBrandId() != null && requestProdParams.getBrandId() > 0) {
-            AoyiBaseBrandX baseBrand = brandMapper.selectByPrimaryKey(requestProdParams.getBrandId());
+            AoyiBaseBrand baseBrand = brandMapper.selectByPrimaryKey(requestProdParams.getBrandId());
             if (baseBrand == null) {
                 aoyiProdIndexWithBLOBs.setBrandId(0);
             }
@@ -280,6 +283,20 @@ public class AdminProdServiceImpl implements AdminProdService {
     public int update(AoyiProdIndex bean) throws ProductException {
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());
+            AoyiProdIndexWithBLOBs temp = mapper.selectByPrimaryKey(bean.getId()) ;
+            List<StarSku> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
+            if (starSkus != null && starSkus.size() > 0) {
+                StarSku starSku = starSkus.get(0) ;
+                if (StringUtils.isNotBlank(bean.getPrice())) {
+                    BigDecimal bigDecimalPrice = new BigDecimal(bean.getPrice()) ;
+                    int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
+                    starSku.setPrice(price);
+                }
+                if (StringUtils.isNotBlank(bean.getState())) {
+                    starSku.setStatus(Integer.valueOf(bean.getState()));
+                }
+                starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+            }
             productDao.updateAoyiProduct(bean) ;
 //            aoyiProdIndexXMapper.updateByPrimaryKeySelective(bean);
         } else {
@@ -708,5 +725,116 @@ public class AdminProdServiceImpl implements AdminProdService {
             skuCode.setSkuValue(atomicInteger.get());
             skuCodeMapper.updateSkuValueByPrimaryKey(skuCode);
         });
+    }
+
+    @Override
+    public OperaResponse updateSkuPriceAndState(StarSku bean) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        if (bean == null || bean.getId() == null || bean.getId() <= 0) {
+            operaResponse.setCode(200200);
+            operaResponse.setMsg("ID不能为空");
+            return operaResponse ;
+        }
+        starSkuMapper.updateByPrimaryKeySelective(bean) ;
+        operaResponse.setData(bean);
+        return operaResponse;
+    }
+
+    @Override
+    public OperaResponse batchUpdateSkuPriceAndState(List<StarSku> beans) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        if (beans == null || beans.size() == 0) {
+            operaResponse.setCode(200200);
+            operaResponse.setMsg("数据不能为空");
+            return operaResponse ;
+        }
+        beans.forEach(bean -> {
+            starSkuMapper.updateByPrimaryKeySelective(bean) ;
+            operaResponse.setData(bean);
+        });
+        operaResponse.setData(beans);
+        return operaResponse;
+    }
+
+    @Override
+    public OperaResponse updateSpuState(AoyiProdIndex bean) {
+        OperaResponse operaResponse = new OperaResponse() ;
+        if (bean == null || bean.getId() == null || bean.getId() <= 0) {
+            operaResponse.setCode(200200);
+            operaResponse.setMsg("ID不能为空");
+            return operaResponse ;
+        }
+        if (bean.getState() == null) {
+            operaResponse.setCode(200201);
+            operaResponse.setMsg("state不能为空");
+            return operaResponse ;
+        }
+        AoyiProdIndex aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
+        if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
+            operaResponse.setCode(200100);
+            operaResponse.setMsg("类别不能为空");
+            return operaResponse ;
+        }
+        // 查询是否有sku
+        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+        if (starSkus == null || starSkus.size() == 0) {
+            if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
+                operaResponse.setCode(200101);
+                operaResponse.setMsg("销售价格不能为空");
+                return operaResponse ;
+            }
+            if (StringUtils.isEmpty(aoyiProdIndex.getImage())) {
+                operaResponse.setCode(200102);
+                operaResponse.setMsg("封面图不能为空");
+                return operaResponse ;
+            }
+            if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
+                operaResponse.setCode(200103);
+                operaResponse.setMsg("主图不能为空");
+                return operaResponse ;
+            }
+            if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl())) {
+                operaResponse.setCode(200104);
+                operaResponse.setMsg("详情图不能为空");
+                return operaResponse ;
+            }
+        } else {
+            for (StarSku starSku: starSkus) {
+
+            }
+        }
+
+        productDao.updateStateById(bean) ;
+        operaResponse.setData(bean);
+        return operaResponse;
+    }
+
+    @Override
+    public OperaResponse updateBatch(List<AoyiProdIndex> beans) {
+        OperaResponse response = new OperaResponse() ;
+        beans.forEach(bean -> {
+            if (bean.getId() != null) {
+                AoyiProdIndexWithBLOBs temp = mapper.selectByPrimaryKey(bean.getId()) ;
+                List<StarSku> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
+                if (starSkus != null && starSkus.size() > 0) {
+                    StarSku starSku = starSkus.get(0) ;
+                    if (StringUtils.isNotBlank(bean.getPrice())) {
+                        BigDecimal bigDecimalPrice = new BigDecimal(bean.getPrice()) ;
+                        int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
+                        starSku.setPrice(price);
+                    }
+                    if (StringUtils.isNotBlank(bean.getState())) {
+                        starSku.setStatus(Integer.valueOf(bean.getState()));
+                    }
+                    starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+                }
+                AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs() ;
+
+                BeanUtils.copyProperties(bean, aoyiProdIndexWithBLOBs);
+                mapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs) ;
+            }
+        });
+        response.setData(beans);
+        return response;
     }
 }

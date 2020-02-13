@@ -70,4 +70,6 @@ public interface ProductService {
 
     OperaResult inventoryAdd(List<InventoryMpus> inventories) ;
 
+    List<AoyiProdIndex> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) ;
+
 }

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -414,6 +415,33 @@ public class ProductServiceImpl implements ProductService {
         }
         log.info("添加库存，返回值{}", JSONUtil.toJsonString(result));
         return result;
+    }
+
+    @Override
+    public List<AoyiProdIndex> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) {
+        List<String> mpuIdList = new ArrayList<>() ;
+        List<String> codeList = new ArrayList<>() ;
+        bean.forEach(b -> {
+            mpuIdList.add(b.getMpu()) ;
+            codeList.add(b.getSkuid()) ;
+        });
+        // 根据code查询SKU表
+        List<StarSku> starSkus = starSkuDao.selectByCodeList(codeList) ;
+        // 根据MPU查询商品表
+        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
+        productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
+            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            for (StarSku starSku: starSkus) {
+                if (aoyiProdIndex.getSkuid().equals(starSku.getSpuId())) {
+                    BigDecimal bigDecimal = new BigDecimal(starSku.getPrice()) ;
+                    String price = bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString() ;
+                    aoyiProdIndex.setPrice(price);
+                }
+            }
+            aoyiProdIndexList.add(aoyiProdIndex);
+        });
+
+        return aoyiProdIndexList;
     }
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean, String appId) {

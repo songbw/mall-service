@@ -1,8 +1,10 @@
 package com.fengchao.order.feign.hystric;
 
 import com.fengchao.order.bean.InventoryMpus;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.ProductService;
+import com.fengchao.order.model.AoyiProdIndex;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
@@ -42,5 +44,10 @@ public class ProductServiceH implements ProductService {
     @Override
     public OperaResult selectPlatformByAppId(String appId) {
         return HystrixDefaultFallback.defaultFallback(cause);
+    }
+
+    @Override
+    public OperaResponse selectByMpuIdListAndSkuCodes(List<AoyiProdIndex> mpuIdList) {
+        return HystrixDefaultFallback.fallbackResponse(cause);
     }
 }
