@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.dao;
 
+import com.fengchao.product.aoyi.constants.IStatusEnum;
 import com.fengchao.product.aoyi.mapper.StarSkuMapper;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
@@ -58,6 +59,25 @@ public class StarSkuDao {
         StarSkuExample example = new StarSkuExample();
         List<StarSku> list = mapper.selectByExample(example);
         return list;
+    }
+
+    /**
+     * 根据skuId集合查询s
+     *
+     * @param skuIdList
+     * @return
+     */
+    public List<StarSku> selectBySkuIdList(List<String> skuIdList) {
+        StarSkuExample starSkuExample = new StarSkuExample();
+
+        StarSkuExample.Criteria criteria = starSkuExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.INVALID.getCode().shortValue());
+
+        criteria.andSkuIdIn(skuIdList);
+
+        List<StarSku> starSkuList = mapper.selectByExample(starSkuExample);
+
+        return starSkuList;
     }
 
     /**

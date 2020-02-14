@@ -1,19 +1,18 @@
 package com.fengchao.product.aoyi.service.weipinhui;
 
-import com.fengchao.product.aoyi.ProductAoyiApplication;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.dao.AoyiBaseBrandDao;
 import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.dao.ProductDao;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
-import com.fengchao.product.aoyi.model.AoyiBaseCategory;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.dao.StarSkuDao;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiSkuResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.fengchao.product.aoyi.utils.PriceUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,6 +31,8 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
     private static final Integer PAGESIZE = 20;
 
+    private static final String MERCHANT_CODE = "30";
+
     private AoyiClientRpcService aoyiClientRpcService;
 
     private AoyiBaseBrandDao aoyiBaseBrandDao;
@@ -40,14 +41,20 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
     private ProductDao productDao;
 
+    private StarSkuDao starSkuDao;
+
+
+
     public WeipinhuiDataServiceImpl(AoyiClientRpcService aoyiClientRpcService,
                                     AoyiBaseBrandDao aoyiBaseBrandDao,
                                     CategoryDao categoryDao,
-                                    ProductDao productDao) {
+                                    ProductDao productDao,
+                                    StarSkuDao starSkuDao) {
         this.aoyiClientRpcService = aoyiClientRpcService;
         this.aoyiBaseBrandDao = aoyiBaseBrandDao;
         this.categoryDao = categoryDao;
         this.productDao = productDao;
+        this.starSkuDao = starSkuDao;
     }
 
     @Override
@@ -406,12 +413,59 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             aoyiSkuResDtoList.stream().map(a -> a.getSkuId()).collect(Collectors.toList());
 
                     // 数据库查询
+                    List<StarSku> exsitStarSkuList = starSkuDao.selectBySkuIdList(skuIdList);
+                    List<String> exsitSkuIdList =
+                            exsitStarSkuList.stream().map(e -> e.getSkuId()).collect(Collectors.toList());
 
+
+                    List<StarSku> insertStarSkuList = new ArrayList<>();
+                    List<StarProperty> starPropertyList = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(exsitStarSkuList)) { // 如果有已存在的数据，则忽略
+                        for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) { // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
+                            if (!exsitSkuIdList.contains(aoyiSkuResDto.getSkuId())) { // 如果不存在
+                                StarSku starSku = new StarSku();
+                                // String code;
+                                // purchaseQty;
+
+                                starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
+                                starSku.setSkuId(aoyiSkuResDto.getSkuId());
+                                starSku.setStatus("false".equals(aoyiSkuResDto.getCanSell()) ? 0 : 1);
+                                starSku.setSpuId(itemId);
+                                starSku.setAdvisePrice(PriceUtil.convertYuanToFen(aoyiSkuResDto.getSellPrice())); // 建议销售价格 单位分
+                                starSku.setSprice(PriceUtil.convertYuanToFen(aoyiSkuResDto.getPriceCent())); // 采购价格 单位分
+                                // starSku.setPrice(); // 实际销售价格 单位分
+                                starSku.setMerchantCode(MERCHANT_CODE);
+
+                                insertStarSkuList.add(starSku);
+
+                                // 商品规格
+                                String sepca = aoyiSkuResDto.getSepca();
+                                String sepcb = aoyiSkuResDto.getSepcb();
+                                String sepcc = aoyiSkuResDto.getSepcc();
+
+                                if (StringUtils.isNotBlank(sepca)) {
+                                    StarProperty starProperty = new StarProperty();
+                                    starProperty.setType(1);
+                                    starProperty.setName("");
+                                    starProperty.setProductId(Integer.valueOf(aoyiSkuResDto.getSkuId()));
+                                    starProperty.setVal(sepca);
+
+                                    starPropertyList.add(starProperty);
+                                }
+
+                            }
+                        }
+                    }
                 }// end while
 
             } // end for
         } catch (Exception e) {
             log.error("同步商品 异常:{}", e.getMessage(), e);
         }
+    }
+
+
+    private List<StarProperty> addProdSepc(String sepca, String sepcb, String sepcc) {
+        return null;
     }
 }
