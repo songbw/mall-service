@@ -44,6 +44,7 @@ public class WeipinhuiTests {
     }
 
     @Test
+    @Ignore
     public void testQueryItemIdList() {
         try {
             weipinhuiDataService.syncItemIdList(1, 1);
@@ -61,7 +62,7 @@ public class WeipinhuiTests {
 
             List<String> itemIdList = JSON.parseArray(itemIds, String.class);
 
-            weipinhuiDataService.syncItemDetail(itemIdList, -1);
+            // weipinhuiDataService.syncItemDetail(itemIdList, -1);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
