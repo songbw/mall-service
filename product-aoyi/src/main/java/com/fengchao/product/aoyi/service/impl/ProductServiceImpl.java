@@ -307,13 +307,23 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public List<AoyiProdIndex> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
+    public List<AoyiProdIndexX> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
         // 1. 查询商品信息
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
-        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
+        List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
         productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
+            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
-            aoyiProdIndexList.add(aoyiProdIndex);
+            BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
+            List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+            List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+            starSkus.forEach(starSku -> {
+                StarSkuBean starSkuBean = new StarSkuBean() ;
+                BeanUtils.copyProperties(starSku, starSkuBean);
+                starSkuBeans.add(starSkuBean) ;
+            });
+            aoyiProdIndexX.setSkuList(starSkuBeans);
+            aoyiProdIndexList.add(aoyiProdIndexX);
         });
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;

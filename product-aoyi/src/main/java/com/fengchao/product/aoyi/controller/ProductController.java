@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.controller;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -138,7 +139,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList);
+            List<AoyiProdIndexX> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList);
 
             result.getData().put("result", productInfoBeanList);
         } catch (Exception e) {
