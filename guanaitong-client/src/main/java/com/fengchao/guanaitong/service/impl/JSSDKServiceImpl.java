@@ -51,9 +51,10 @@ public class JSSDKServiceImpl implements IJSSDKService {
     @Override
     public String getAccessToken(String iAppId) throws Exception{
         String _func = "getAccessToken";
-        String cacheToken = redisDAO.getValue(WeChatJSSDK.JS_SDK_TOKEN_KEY);
+        String cacheToken = redisDAO.getValue(iAppId+WeChatJSSDK.JS_SDK_TOKEN_KEY);
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            log.info("get cached JSSDK token: {" + cacheToken + "} ttl=" + redisDAO.ttl(WeChatJSSDK.JS_SDK_TOKEN_KEY) + "s");
+            log.info("get cached iAppId={}  JSSDK token: {} ttl={}s",
+                    iAppId, cacheToken, redisDAO.ttl(iAppId+WeChatJSSDK.JS_SDK_TOKEN_KEY));
             return cacheToken;
         }
 
@@ -97,7 +98,7 @@ public class JSSDKServiceImpl implements IJSSDKService {
         }
 
         String responseString = response.body().string();
-        log.info("get token from WeChat : " + responseString);
+        log.info("get token for iAppId={} from WeChat : {}" ,iAppId,responseString);
 
         json = JSONObject.parseObject(responseString);
 
@@ -108,9 +109,9 @@ public class JSSDKServiceImpl implements IJSSDKService {
                     return null;
             }
             Integer expires = json.getInteger("expires_in");
-            log.info("access_token: {}", token);
+            log.info("iAppId={} access_token: {}", iAppId,token);
             log.info("expires_in: {}" , expires.toString());
-            redisDAO.setValue(WeChatJSSDK.JS_SDK_TOKEN_KEY, token, expires - 5);
+            redisDAO.setValue(iAppId+WeChatJSSDK.JS_SDK_TOKEN_KEY, token, expires - 5);
             return token;
         } else {
             log.warn("data in response from Wechat-JSSDK is null");
@@ -166,9 +167,10 @@ url=http://mp.weixin.qq.com?params=value
     @Override
     public String getApiTicket(String iAppId) throws Exception {
         String _func = "getApiTicket";
-        String cacheTicket = redisDAO.getValue(WeChatJSSDK.JS_SDK_TICKET_KEY);
+        String cacheTicket = redisDAO.getValue(iAppId+WeChatJSSDK.JS_SDK_TICKET_KEY);
         if (null != cacheTicket && !cacheTicket.isEmpty()) {
-            log.info("get cached JSSDK ticket: {" + cacheTicket + "} ttl=" + redisDAO.ttl(WeChatJSSDK.JS_SDK_TICKET_KEY) + "s");
+            log.info("get cached iAppId={} JSSDK ticket: {} ttl={}s",
+                    iAppId, cacheTicket, redisDAO.ttl(iAppId+WeChatJSSDK.JS_SDK_TICKET_KEY));
             return cacheTicket;
         }
 
@@ -190,7 +192,7 @@ url=http://mp.weixin.qq.com?params=value
                 .url(urlBuilder.build())
                 .build();
 
-        log.info("{} request url={}",_func, request.url().toString());
+        log.info("{} iAppId={} request url={}",_func, iAppId,request.url().toString());
         Response response;
         try {
             response = client.newCall(request).execute();
@@ -222,9 +224,9 @@ url=http://mp.weixin.qq.com?params=value
                 return null;
             }
             Integer expires = json.getInteger("expires_in");
-            log.info("api ticket:" + ticket);
+            log.info("iAppId={} api ticket: {}",iAppId, ticket);
             log.info("expires_in:" + expires.toString());
-            redisDAO.setValue(WeChatJSSDK.JS_SDK_TICKET_KEY, ticket, expires - 5);
+            redisDAO.setValue(iAppId+WeChatJSSDK.JS_SDK_TICKET_KEY, ticket, expires - 5);
             return ticket;
         } else {
             log.warn("data in response from WeChat JSSDK is null");
