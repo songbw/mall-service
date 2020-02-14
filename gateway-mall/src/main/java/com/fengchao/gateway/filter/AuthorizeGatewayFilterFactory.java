@@ -117,6 +117,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
             }
 
             String method = request.getMethodValue();
+            log.info("请求方法：{}", method);
             if ("POST".equals(method) || "PUT".equals(method)) {
                 //从请求里获取Post请求体
                 String bodyStr = resolveBodyFromRequest(request);
