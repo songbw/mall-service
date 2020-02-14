@@ -25,6 +25,10 @@ public class CouponUseInfo {
 
     private Integer type;
 
+    private Date effectiveStartDate;
+
+    private Date effectiveEndDate;
+
     private String appId;
 
     private Integer deleteFlag;
@@ -115,6 +119,22 @@ public class CouponUseInfo {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Date getEffectiveStartDate() {
+        return effectiveStartDate;
+    }
+
+    public void setEffectiveStartDate(Date effectiveStartDate) {
+        this.effectiveStartDate = effectiveStartDate;
+    }
+
+    public Date getEffectiveEndDate() {
+        return effectiveEndDate;
+    }
+
+    public void setEffectiveEndDate(Date effectiveEndDate) {
+        this.effectiveEndDate = effectiveEndDate;
     }
 
     public String getAppId() {

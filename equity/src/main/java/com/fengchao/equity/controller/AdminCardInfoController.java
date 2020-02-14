@@ -32,7 +32,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/adminCardInfo", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/adminCard", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AdminCardInfoController {
 
 

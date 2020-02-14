@@ -32,6 +32,7 @@
     <result column="customer_type" jdbcType="INTEGER" property="customerType" />
     <result column="users" jdbcType="VARCHAR" property="users" />
     <result column="coupon_type" jdbcType="INTEGER" property="couponType" />
+    <result column="effective_days" jdbcType="INTEGER" property="effectiveDays" />
     <result column="coupon_rules" jdbcType="VARCHAR" property="couponRules" />
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="coupon_mpus" jdbcType="LONGVARCHAR" property="couponMpus" />
@@ -102,7 +103,7 @@
     release_start_date, release_end_date, status, effective_start_date, effective_end_date, 
     exclude_dates, description, url, create_date, category, tags, image_url, code, rules_description, 
     per_limited, scopes, scenario_type, categories, brands, collect_type, points, customer_type, 
-    users, coupon_type, coupon_rules, app_id, coupon_mpus, coupon_skus, exclude_mpus, exclude_skus
+    users, coupon_type, effective_days, coupon_rules, app_id, coupon_mpus, coupon_skus, exclude_mpus, exclude_skus
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.CouponExample" resultMap="BaseResultMap">
     select
@@ -144,9 +145,10 @@
       rules_description, per_limited, scopes, 
       scenario_type, categories, brands, 
       collect_type, points, customer_type, 
-      users, coupon_type, coupon_rules, 
-      app_id, coupon_mpus, coupon_skus, 
-      exclude_mpus, exclude_skus)
+      users, coupon_type, effective_days, 
+      coupon_rules, app_id, coupon_mpus, 
+      coupon_skus, exclude_mpus, exclude_skus
+      )
     values (#{name,jdbcType=VARCHAR}, #{supplierMerchantId,jdbcType=VARCHAR}, #{supplierMerchantName,jdbcType=VARCHAR}, 
       #{releaseTotal,jdbcType=INTEGER}, #{releaseNum,jdbcType=INTEGER}, #{releaseStartDate,jdbcType=TIMESTAMP}, 
       #{releaseEndDate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{effectiveStartDate,jdbcType=TIMESTAMP}, 
@@ -156,9 +158,10 @@
       #{rulesDescription,jdbcType=VARCHAR}, #{perLimited,jdbcType=INTEGER}, #{scopes,jdbcType=VARCHAR}, 
       #{scenarioType,jdbcType=INTEGER}, #{categories,jdbcType=VARCHAR}, #{brands,jdbcType=VARCHAR}, 
       #{collectType,jdbcType=INTEGER}, #{points,jdbcType=INTEGER}, #{customerType,jdbcType=INTEGER}, 
-      #{users,jdbcType=VARCHAR}, #{couponType,jdbcType=INTEGER}, #{couponRules,jdbcType=VARCHAR}, 
-      #{appId,jdbcType=VARCHAR}, #{couponMpus,jdbcType=LONGVARCHAR}, #{couponSkus,jdbcType=LONGVARCHAR}, 
-      #{excludeMpus,jdbcType=LONGVARCHAR}, #{excludeSkus,jdbcType=LONGVARCHAR})
+      #{users,jdbcType=VARCHAR}, #{couponType,jdbcType=INTEGER}, #{effectiveDays,jdbcType=INTEGER}, 
+      #{couponRules,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{couponMpus,jdbcType=LONGVARCHAR}, 
+      #{couponSkus,jdbcType=LONGVARCHAR}, #{excludeMpus,jdbcType=LONGVARCHAR}, #{excludeSkus,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.Coupon" useGeneratedKeys="true">
     insert into coupon
@@ -249,6 +252,9 @@
       </if>
       <if test="couponType != null">
         coupon_type,
+      </if>
+      <if test="effectiveDays != null">
+        effective_days,
       </if>
       <if test="couponRules != null">
         coupon_rules,
@@ -356,6 +362,9 @@
       </if>
       <if test="couponType != null">
         #{couponType,jdbcType=INTEGER},
+      </if>
+      <if test="effectiveDays != null">
+        #{effectiveDays,jdbcType=INTEGER},
       </if>
       <if test="couponRules != null">
         #{couponRules,jdbcType=VARCHAR},
@@ -476,6 +485,9 @@
       <if test="record.couponType != null">
         coupon_type = #{record.couponType,jdbcType=INTEGER},
       </if>
+      <if test="record.effectiveDays != null">
+        effective_days = #{record.effectiveDays,jdbcType=INTEGER},
+      </if>
       <if test="record.couponRules != null">
         coupon_rules = #{record.couponRules,jdbcType=VARCHAR},
       </if>
@@ -531,8 +543,13 @@
       customer_type = #{record.customerType,jdbcType=INTEGER},
       users = #{record.users,jdbcType=VARCHAR},
       coupon_type = #{record.couponType,jdbcType=INTEGER},
+      effective_days = #{record.effectiveDays,jdbcType=INTEGER},
       coupon_rules = #{record.couponRules,jdbcType=VARCHAR},
-      app_id = #{record.appId,jdbcType=VARCHAR}
+      app_id = #{record.appId,jdbcType=VARCHAR},
+    coupon_mpus = #{record.couponMpus,jdbcType=LONGVARCHAR},
+    coupon_skus = #{record.couponSkus,jdbcType=LONGVARCHAR},
+    exclude_mpus = #{record.excludeMpus,jdbcType=LONGVARCHAR},
+    exclude_skus = #{record.excludeSkus,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -627,6 +644,9 @@
       <if test="couponType != null">
         coupon_type = #{couponType,jdbcType=INTEGER},
       </if>
+      <if test="effectiveDays != null">
+        effective_days = #{effectiveDays,jdbcType=INTEGER},
+      </if>
       <if test="couponRules != null">
         coupon_rules = #{couponRules,jdbcType=VARCHAR},
       </if>
@@ -679,6 +699,7 @@
       customer_type = #{customerType,jdbcType=INTEGER},
       users = #{users,jdbcType=VARCHAR},
       coupon_type = #{couponType,jdbcType=INTEGER},
+      effective_days = #{effectiveDays,jdbcType=INTEGER},
       coupon_rules = #{couponRules,jdbcType=VARCHAR},
       app_id = #{appId,jdbcType=VARCHAR},
       coupon_mpus = #{couponMpus,jdbcType=LONGVARCHAR},

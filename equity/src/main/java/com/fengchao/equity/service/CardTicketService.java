@@ -4,6 +4,7 @@ import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
+import com.fengchao.equity.model.CardTicketX;
 
 import java.util.List;
 
@@ -13,4 +14,14 @@ public interface CardTicketService {
     int activatesCardTicket(List<CardTicket> beans);
 
     List<CardInfoX> exportCardTicket(ExportCardBean bean);
+
+    int verifyCardTicket(CardTicketBean bean) throws Exception;
+
+    int exchangeCardTicket(CardTicketBean bean) throws Exception;
+
+    List<CardTicketX> getCardTicket(String openId);
+
+    CardTicket findById(int id);
+
+    int invalid(int id);
 }

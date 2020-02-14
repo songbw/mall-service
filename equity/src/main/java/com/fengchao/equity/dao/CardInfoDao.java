@@ -33,6 +33,10 @@ public class CardInfoDao {
         return mapperX.selectByPrimaryKey(id);
     }
 
+    public CardInfo findById(Integer id) {
+        return mapper.selectByPrimaryKey(id);
+    }
+
     public PageInfo<CardInfo> findCardTicket(Integer pageNo, Integer pageSize) {
         CardInfoExample example = new CardInfoExample();
         CardInfoExample.Criteria criteria = example.createCriteria();

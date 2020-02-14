@@ -64,4 +64,15 @@ public class CouponDao {
 
         return couponList;
     }
+
+    /**
+     * 根据id查询
+     *
+     * @param id
+     * @return
+     */
+    public Coupon selectCouponById(Integer id) {
+
+        return couponMapper.selectByPrimaryKey(id);
+    }
 }

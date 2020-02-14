@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fengchao.equity.mapper.CardTicketMapperX">
-    <resultMap id="BaseResultMap" type="com.fengchao.equity.model.CardTicket">
+    <resultMap id="BaseResultMap" type="com.fengchao.equity.model.CardTicketX">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="card_id" jdbcType="INTEGER" property="cardId" />
         <result column="card" jdbcType="VARCHAR" property="card" />
@@ -108,7 +108,7 @@
             <include refid="Example_Where_Clause" />
         </if>
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardTicket" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardTicketX" useGeneratedKeys="true">
     insert into card_ticket (card_id, card, password,
       open_id, create_time, update_time,
       activate_time, consumed_time, end_time,
@@ -120,7 +120,7 @@
       #{status,jdbcType=SMALLINT}, #{remark,jdbcType=VARCHAR}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardTicket" useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardTicketX" useGeneratedKeys="true">
         insert into card_ticket
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="cardId != null">
@@ -271,7 +271,7 @@
             <include refid="Update_By_Example_Where_Clause" />
         </if>
     </update>
-    <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.CardTicket">
+    <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.equity.model.CardTicketX">
         update card_ticket
         <set>
             <if test="cardId != null">
@@ -313,7 +313,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.CardTicket">
+    <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.CardTicketX">
     update card_ticket
     set card_id = #{cardId,jdbcType=INTEGER},
       card = #{card,jdbcType=VARCHAR},

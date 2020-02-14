@@ -2,7 +2,7 @@ package com.fengchao.equity.model;
 
 import java.util.Date;
 
-public class CardTicket {
+public class CardTicketX {
     private Integer id;
 
     private Integer cardId;
@@ -30,6 +30,8 @@ public class CardTicket {
     private String remark;
 
     private Short isDelete;
+
+    private CardInfo cardInfo;
 
     public Integer getId() {
         return id;
@@ -141,5 +143,13 @@ public class CardTicket {
 
     public void setIsDelete(Short isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public CardInfo getCardInfo() {
+        return cardInfo;
+    }
+
+    public void setCardInfo(CardInfo cardInfo) {
+        this.cardInfo = cardInfo;
     }
 }

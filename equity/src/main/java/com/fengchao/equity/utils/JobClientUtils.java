@@ -99,7 +99,7 @@ public class JobClientUtils {
     public static void virtualTicketsInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("virtual_invalid_trigger_" + id);
-        job.setParam("type", "virtualEnd");
+        job.setParam("type", "virtualInvalid");
         job.setParam("virtualId", id + "");
         job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
@@ -121,6 +121,38 @@ public class JobClientUtils {
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(DateUtils.addMinute(new Date(), 30).getTime());   // 半小时之后执行
+        jobClient.submitJob(job);
+    }
+
+    /**
+     * 礼券卡失效任务
+     * @param id
+     */
+    public static void cardInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
+        Job job = new Job();
+        job.setTaskId("card_invalid_trigger_" + id);
+        job.setParam("type", "cardInvalid");
+        job.setParam("cardId", id + "");
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setNeedFeedback(true);
+        job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
+        job.setTriggerTime(triggerTime.getTime());
+        jobClient.submitJob(job);
+    }
+
+    /**
+     * 礼品卡绑定优惠券失效任务
+     * @param id
+     */
+    public static void couponUseInfoInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
+        Job job = new Job();
+        job.setTaskId("coupon_use_invalid_trigger_" + id);
+        job.setParam("type", "couponUseInvalid");
+        job.setParam("couponUseId", id + "");
+        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setNeedFeedback(true);
+        job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
+        job.setTriggerTime(triggerTime.getTime());
         jobClient.submitJob(job);
     }
 }

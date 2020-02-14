@@ -10,4 +10,10 @@ public class CardTicketBean {
     private int cardId;
     private int num = 1;
     private String remark;
+    private String card;
+    private String password;
+    private String openId;
+    private Integer couponId;
+    private Integer id;
+
 }
