@@ -158,8 +158,12 @@ public class AdminCouponController {
     }
 
     @GetMapping("release")
-    public OperaResult findReleaseCoupon(Integer pageNo, Integer pageSize, String appId, OperaResult result){
-        PageableData<Coupon> releaseCoupon = couponService.findReleaseCoupon(pageNo, pageSize, appId);
+    public OperaResult findReleaseCoupon(Integer pageNo,
+                                         Integer pageSize,
+                                         String appId,
+                                         Integer couponType,
+                                         OperaResult result){
+        PageableData<Coupon> releaseCoupon = couponService.findReleaseCoupon(pageNo, pageSize, appId, couponType);
         result.getData().put("result", releaseCoupon);
         return result;
     }

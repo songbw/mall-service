@@ -497,9 +497,9 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId) {
+    public PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId, Integer couponType) {
         PageableData<Coupon> pageableData = new PageableData<>();
-        PageInfo<Coupon> releaseCoupon = couponDao.findReleaseCoupon(pageNo, pageSize, appId);
+        PageInfo<Coupon> releaseCoupon = couponDao.findReleaseCoupon(pageNo, pageSize, appId, couponType);
         PageVo pageVo = ConvertUtil.convertToPageVo(releaseCoupon);
         List<Coupon> groupInfoList = releaseCoupon.getList();
         pageableData.setList(groupInfoList);

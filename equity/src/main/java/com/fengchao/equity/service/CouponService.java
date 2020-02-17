@@ -49,7 +49,7 @@ public interface CouponService {
 
     List<Object> giftCoupon(String openId, String iAppId);
 
-    PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId);
+    PageableData<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId, Integer couponType);
 
     List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId, String appId);
 
