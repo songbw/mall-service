@@ -21,4 +21,10 @@ public class CardInfoBean {
     private List<Integer> couponIds;
 
     private Integer cardId;
+
+    private Short status;
+
+    private Integer pageNo = 1;
+
+    private Integer pageSize = 10;
 }

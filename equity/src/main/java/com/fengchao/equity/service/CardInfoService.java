@@ -12,7 +12,7 @@ public interface CardInfoService {
 
     CardInfoX findByCardId(Integer id);
 
-    PageableData<CardInfo> findCardInfo(Integer pageNo, Integer pageSize);
+    PageableData<CardInfo> findCardInfo(CardInfoBean bean);
 
     int deleteCardInfo(Integer id);
 }

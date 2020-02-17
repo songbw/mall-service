@@ -103,10 +103,7 @@
     release_start_date, release_end_date, status, effective_start_date, effective_end_date,
     exclude_dates, description, url, create_date, category, tags, image_url, code, rules_description,
     per_limited, scopes, scenario_type, categories, brands, collect_type, points, customer_type,
-    users, coupon_type, effective_days, coupon_rules, app_id
-  </sql>
-  <sql id="Blob_Column_List">
-    coupon_mpus, coupon_skus, exclude_mpus, exclude_skus
+    users, coupon_type, effective_days, coupon_rules, app_id,coupon_mpus, coupon_skus, exclude_mpus, exclude_skus
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.CouponExample" resultMap="BaseResultMap">
     select
@@ -125,8 +122,6 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from coupon
     where id = #{id,jdbcType=INTEGER}
   </select>
@@ -759,4 +754,194 @@
     <update id="couponEnd" parameterType="java.lang.Integer" >
     update coupon set status = 5 where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectByCodeKey" parameterType="com.fengchao.equity.model.CouponX" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    where code = #{code,jdbcType=VARCHAR} and app_id = #{appId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from coupon where 1=1
+    <if test="status != null">
+      and status = #{status,jdbcType=INTEGER}
+    </if>
+    <if test="releaseTotal != null" >
+      and release_total = #{releaseTotal,jdbcType=INTEGER}
+    </if>
+    <if test="name != null" >
+      <bind name="patternName" value="'%' + name + '%'" />
+      and name LIKE #{patternName}
+    </if>
+    <if test="releaseStartDate != null" >
+      <![CDATA[ and release_start_date >= #{releaseStartDate,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="releaseEndDate != null" >
+      <![CDATA[ and release_end_date <= #{releaseEndDate,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="couponType != null" >
+      and coupon_type = #{couponType,jdbcType=INTEGER}
+    </if>
+    <if test="scenarioType != null" >
+      and scenario_type = #{scenarioType,jdbcType=INTEGER}
+    </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="selectLimit" resultType="com.fengchao.equity.bean.CouponResultBean" parameterType="Map">
+    select
+    id, name,  supplier_merchant_id supplierMerchantId, supplier_merchant_name supplierMerchantName, release_total releaseTotal, release_num releaseNum, release_start_date releaseStartDate,
+    release_end_date releaseEndDate, collect_type collectType, coupon_type couponType, status, app_id appId
+    from coupon where 1=1
+    <if test="status != null" >
+      and status = #{status,jdbcType=INTEGER}
+    </if>
+    <if test="releaseTotal != null" >
+      and release_total = #{releaseTotal,jdbcType=INTEGER}
+    </if>
+    <if test="name != null" >
+      <bind name="patternName" value="'%' + name + '%'" />
+      and name LIKE #{patternName}
+    </if>
+    <if test="releaseStartDate != null" >
+      <![CDATA[ and release_start_date >= #{releaseStartDate,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="releaseEndDate != null" >
+      <![CDATA[ and release_end_date <= #{releaseEndDate,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="couponType != null" >
+      and coupon_type = #{couponType,jdbcType=INTEGER}
+    </if>
+    <if test="scenarioType != null" >
+      and scenario_type = #{scenarioType,jdbcType=INTEGER}
+    </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+    order by create_date desc
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectActiveCouponLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
+    where status = 4 and customer_type = 0 and collect_type != 4
+    <if test="categoryName != null" >
+      <bind name="patternName" value="'%' + categoryName + '%'" />
+      and aoyi_base_category.category_name LIKE #{patternName}
+    </if>
+    <if test="categoryId != null" >
+      and category = #{categoryId,jdbcType=INTEGER}
+    </if>
+    <if test="tagId != null" >
+      and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
+    </if>
+    <if test="collectType != null" >
+      and collect_type = #{collectType,jdbcType=INTEGER}
+    </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+    order by create_date desc
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectActiveCouponCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(id)
+    from coupon
+    left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
+    where status = 4 and customer_type = 0 and collect_type != 4
+    <if test="categoryName != null" >
+      <bind name="patternName" value="'%' + categoryName + '%'" />
+      and aoyi_base_category.category_name LIKE #{patternName}
+    </if>
+    <if test="categoryId != null" >
+      and category = #{categoryId,jdbcType=INTEGER}
+    </if>
+    <if test="tagId != null" >
+      and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
+    </if>
+    <if test="collectType != null" >
+      and collect_type = #{collectType,jdbcType=INTEGER}
+    </if>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="selectActiveCategories" resultType="java.lang.String" >
+    select distinct category from coupon
+    where status = 4
+    and customer_type = 0
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="selectTags" resultType="java.lang.String" >
+    select distinct tags from coupon
+    where tags != ""
+    and status = 4
+    and customer_type = 0
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="selectCouponByMpu" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.PageBean">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    where
+    <trim prefix="(" suffix=")">
+      1=1
+      <if test="mpu != null and mpu != ''" >
+        and find_in_set(#{mpu,jdbcType=VARCHAR}, coupon_mpus) and scenario_type = 1
+      </if>
+      <if test="mpu != null and mpu != ''" >
+        or locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0 and scenario_type = 2
+      </if>
+      <if test="category != null and category != ''" >
+        or find_in_set(#{category,jdbcType=VARCHAR}, category)
+        <if test="mpu != null and mpu != ''" >
+          and locate(#{mpu,jdbcType=VARCHAR},exclude_mpus) = 0
+        </if>
+        and scenario_type = 3
+      </if>
+    </trim>
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+    and status = 4
+  </select>
+  <select id="selectGrantCoupon" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    where status = 4
+    and collect_type = 2
+    and app_id = #{appId,jdbcType=VARCHAR}
+    order by create_date desc
+  </select>
+  <select id="selectActiveTagsCoupon" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    select id from coupon where status in (1, 3, 4) and find_in_set(#{tagId,jdbcType=INTEGER}, tags)
+  </select>
+  <select id="selectGiftCoupon" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    where status = 4 and customer_type = 1
+    <if test="appId != null" >
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="selectCouponListByIdList"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from coupon
+    where status in (3, 4) and id  in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

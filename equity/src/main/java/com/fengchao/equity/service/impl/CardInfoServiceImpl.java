@@ -63,10 +63,10 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public PageableData<CardInfo> findCardInfo(Integer pageNo, Integer pageSize) {
+    public PageableData<CardInfo> findCardInfo(CardInfoBean bean) {
         PageableData<CardInfo> pageableData = new PageableData<>();
 
-        PageInfo<CardInfo> cardTicket = dao.findCardTicket(pageNo, pageSize);
+        PageInfo<CardInfo> cardTicket = dao.findCardTicket(bean);
         // 2.处理结果
         PageVo pageVo = ConvertUtil.convertToPageVo(cardTicket);
         List<CardInfo> cardTicketList = cardTicket.getList();
