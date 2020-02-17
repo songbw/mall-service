@@ -2055,6 +2055,66 @@ public class CouponExample {
             return (Criteria) this;
         }
 
+        public Criteria andEffectiveDaysIsNull() {
+            addCriterion("effective_days is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysIsNotNull() {
+            addCriterion("effective_days is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysEqualTo(Integer value) {
+            addCriterion("effective_days =", value, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysNotEqualTo(Integer value) {
+            addCriterion("effective_days <>", value, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysGreaterThan(Integer value) {
+            addCriterion("effective_days >", value, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysGreaterThanOrEqualTo(Integer value) {
+            addCriterion("effective_days >=", value, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysLessThan(Integer value) {
+            addCriterion("effective_days <", value, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysLessThanOrEqualTo(Integer value) {
+            addCriterion("effective_days <=", value, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysIn(List<Integer> values) {
+            addCriterion("effective_days in", values, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysNotIn(List<Integer> values) {
+            addCriterion("effective_days not in", values, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysBetween(Integer value1, Integer value2) {
+            addCriterion("effective_days between", value1, value2, "effectiveDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveDaysNotBetween(Integer value1, Integer value2) {
+            addCriterion("effective_days not between", value1, value2, "effectiveDays");
+            return (Criteria) this;
+        }
+
         public Criteria andCouponRulesIsNull() {
             addCriterion("coupon_rules is null");
             return (Criteria) this;

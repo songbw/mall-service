@@ -12,6 +12,7 @@ import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.service.CardTicketService;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/adminCardInfo", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/adminCard", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AdminCardInfoController {
 
 
@@ -49,8 +50,8 @@ public class AdminCardInfoController {
     }
 
     @GetMapping("find")
-    public OperaResult findCardInfo(Integer pageNo, Integer pageSize, OperaResult result){
-        PageableData<CardInfo> coupon = service.findCardInfo(pageNo, pageSize);
+    public OperaResult findCardInfo(CardInfoBean bean, OperaResult result){
+        PageableData<CardInfo> coupon = service.findCardInfo(bean);
         result.getData().put("result", coupon);
         return result;
     }
@@ -104,6 +105,7 @@ public class AdminCardInfoController {
         try{
             log.info("导出提货卡信息 入参:{}", JSONUtil.toJsonString(bean));
             List<CardInfoX> infoXList = ticketService.exportCardTicket(bean);
+            Map<String, String> platformMap = ticketService.selectPlatformAll();
 
             // 创建HSSFWorkbook对象
             workbook = new HSSFWorkbook();
@@ -162,6 +164,9 @@ public class AdminCardInfoController {
 
             HSSFCell titleCell16 = titleRow.createCell(16);
             titleCell16.setCellValue("备注信息");
+
+            HSSFCell titleCell17 = titleRow.createCell(17);
+            titleCell17.setCellValue("运营平台");
 
             //组装内容
             int currentRowNum = 1;
@@ -238,6 +243,12 @@ public class AdminCardInfoController {
                         HSSFCell cell16 = currentRow.createCell(16); // 备注信息
                         cell16.setCellValue(ticket.getRemark());
 
+                        HSSFCell cell17 = currentRow.createCell(17); // 运营平台
+                        if(StringUtils.isNotEmpty(cardInfo.getAppId())){
+                            String platformName = platformMap.get(cardInfo.getAppId());
+                            cell17.setCellValue(platformName);
+                        }
+
                         // 如果子订单数大于1， 并且子订单已遍历完，则需要合并'主订单号'和'运费' 列
                         if (count > 1 && (num + 1) == count) { //
                             // 该子订单记录集合在excel中的起始行
@@ -269,8 +280,7 @@ public class AdminCardInfoController {
                 response.setContentType("application/octet-stream");
                 response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-//                outputStream = response.getOutputStream();
-                outputStream = new FileOutputStream("D://" + fileName);
+                outputStream = response.getOutputStream();
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {

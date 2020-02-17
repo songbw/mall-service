@@ -805,6 +805,126 @@ public class CouponUseInfoExample {
             return (Criteria) this;
         }
 
+        public Criteria andEffectiveStartDateIsNull() {
+            addCriterion("effective_start_date is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateIsNotNull() {
+            addCriterion("effective_start_date is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateEqualTo(Date value) {
+            addCriterion("effective_start_date =", value, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateNotEqualTo(Date value) {
+            addCriterion("effective_start_date <>", value, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateGreaterThan(Date value) {
+            addCriterion("effective_start_date >", value, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateGreaterThanOrEqualTo(Date value) {
+            addCriterion("effective_start_date >=", value, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateLessThan(Date value) {
+            addCriterion("effective_start_date <", value, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateLessThanOrEqualTo(Date value) {
+            addCriterion("effective_start_date <=", value, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateIn(List<Date> values) {
+            addCriterion("effective_start_date in", values, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateNotIn(List<Date> values) {
+            addCriterion("effective_start_date not in", values, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateBetween(Date value1, Date value2) {
+            addCriterion("effective_start_date between", value1, value2, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveStartDateNotBetween(Date value1, Date value2) {
+            addCriterion("effective_start_date not between", value1, value2, "effectiveStartDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateIsNull() {
+            addCriterion("effective_end_date is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateIsNotNull() {
+            addCriterion("effective_end_date is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateEqualTo(Date value) {
+            addCriterion("effective_end_date =", value, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateNotEqualTo(Date value) {
+            addCriterion("effective_end_date <>", value, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateGreaterThan(Date value) {
+            addCriterion("effective_end_date >", value, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateGreaterThanOrEqualTo(Date value) {
+            addCriterion("effective_end_date >=", value, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateLessThan(Date value) {
+            addCriterion("effective_end_date <", value, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateLessThanOrEqualTo(Date value) {
+            addCriterion("effective_end_date <=", value, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateIn(List<Date> values) {
+            addCriterion("effective_end_date in", values, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateNotIn(List<Date> values) {
+            addCriterion("effective_end_date not in", values, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateBetween(Date value1, Date value2) {
+            addCriterion("effective_end_date between", value1, value2, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andEffectiveEndDateNotBetween(Date value1, Date value2) {
+            addCriterion("effective_end_date not between", value1, value2, "effectiveEndDate");
+            return (Criteria) this;
+        }
+
         public Criteria andAppIdIsNull() {
             addCriterion("app_id is null");
             return (Criteria) this;

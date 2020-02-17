@@ -365,6 +365,76 @@ public class CardTicketExample {
             return (Criteria) this;
         }
 
+        public Criteria andUserCouponCodeIsNull() {
+            addCriterion("user_coupon_code is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeIsNotNull() {
+            addCriterion("user_coupon_code is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeEqualTo(String value) {
+            addCriterion("user_coupon_code =", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeNotEqualTo(String value) {
+            addCriterion("user_coupon_code <>", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeGreaterThan(String value) {
+            addCriterion("user_coupon_code >", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeGreaterThanOrEqualTo(String value) {
+            addCriterion("user_coupon_code >=", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeLessThan(String value) {
+            addCriterion("user_coupon_code <", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeLessThanOrEqualTo(String value) {
+            addCriterion("user_coupon_code <=", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeLike(String value) {
+            addCriterion("user_coupon_code like", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeNotLike(String value) {
+            addCriterion("user_coupon_code not like", value, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeIn(List<String> values) {
+            addCriterion("user_coupon_code in", values, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeNotIn(List<String> values) {
+            addCriterion("user_coupon_code not in", values, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeBetween(String value1, String value2) {
+            addCriterion("user_coupon_code between", value1, value2, "userCouponCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserCouponCodeNotBetween(String value1, String value2) {
+            addCriterion("user_coupon_code not between", value1, value2, "userCouponCode");
+            return (Criteria) this;
+        }
+
         public Criteria andOpenIdIsNull() {
             addCriterion("open_id is null");
             return (Criteria) this;

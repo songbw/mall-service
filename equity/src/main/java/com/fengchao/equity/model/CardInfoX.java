@@ -22,6 +22,8 @@ public class CardInfoX {
 
     private Short isDelete;
 
+    private String appId;
+
     private List<Integer> couponIds;
 
     private List<CardTicket> tickets;
@@ -112,5 +114,13 @@ public class CardInfoX {
 
     public void setTickets(List<CardTicket> tickets) {
         this.tickets = tickets;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

@@ -51,4 +51,8 @@ public interface CouponUseInfoService {
     int triggerRelease(int couponUserId);
 
     PageableData<CouponUseInfo> findUnCollect(CouponUseInfoBean bean);
+
+    CouponUseInfo findBycouponUseId(int couponUseId);
+
+    int couponUseInvalid(int couponUseId);
 }

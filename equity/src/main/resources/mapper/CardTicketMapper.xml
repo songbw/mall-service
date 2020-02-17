@@ -6,6 +6,7 @@
     <result column="card_id" jdbcType="INTEGER" property="cardId" />
     <result column="card" jdbcType="VARCHAR" property="card" />
     <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="user_coupon_code" jdbcType="VARCHAR" property="userCouponCode" />
     <result column="open_id" jdbcType="VARCHAR" property="openId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -75,8 +76,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, card_id, card, password, open_id, create_time, update_time, activate_time, consumed_time, 
-    end_time, status, remark, is_delete
+    id, card_id, card, password, user_coupon_code, open_id, create_time, update_time, 
+    activate_time, consumed_time, end_time, status, remark, is_delete
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.CardTicketExample" resultMap="BaseResultMap">
     select
@@ -110,15 +111,15 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardTicket" useGeneratedKeys="true">
     insert into card_ticket (card_id, card, password, 
-      open_id, create_time, update_time, 
-      activate_time, consumed_time, end_time, 
-      status, remark, is_delete
-      )
+      user_coupon_code, open_id, create_time, 
+      update_time, activate_time, consumed_time, 
+      end_time, status, remark, 
+      is_delete)
     values (#{cardId,jdbcType=INTEGER}, #{card,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{openId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{activateTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
-      #{status,jdbcType=SMALLINT}, #{remark,jdbcType=VARCHAR}, #{isDelete,jdbcType=SMALLINT}
-      )
+      #{userCouponCode,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{activateTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{status,jdbcType=SMALLINT}, #{remark,jdbcType=VARCHAR}, 
+      #{isDelete,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardTicket" useGeneratedKeys="true">
     insert into card_ticket
@@ -131,6 +132,9 @@
       </if>
       <if test="password != null">
         password,
+      </if>
+      <if test="userCouponCode != null">
+        user_coupon_code,
       </if>
       <if test="openId != null">
         open_id,
@@ -169,6 +173,9 @@
       </if>
       <if test="password != null">
         #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="userCouponCode != null">
+        #{userCouponCode,jdbcType=VARCHAR},
       </if>
       <if test="openId != null">
         #{openId,jdbcType=VARCHAR},
@@ -220,6 +227,9 @@
       <if test="record.password != null">
         password = #{record.password,jdbcType=VARCHAR},
       </if>
+      <if test="record.userCouponCode != null">
+        user_coupon_code = #{record.userCouponCode,jdbcType=VARCHAR},
+      </if>
       <if test="record.openId != null">
         open_id = #{record.openId,jdbcType=VARCHAR},
       </if>
@@ -258,6 +268,7 @@
       card_id = #{record.cardId,jdbcType=INTEGER},
       card = #{record.card,jdbcType=VARCHAR},
       password = #{record.password,jdbcType=VARCHAR},
+      user_coupon_code = #{record.userCouponCode,jdbcType=VARCHAR},
       open_id = #{record.openId,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
@@ -282,6 +293,9 @@
       </if>
       <if test="password != null">
         password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="userCouponCode != null">
+        user_coupon_code = #{userCouponCode,jdbcType=VARCHAR},
       </if>
       <if test="openId != null">
         open_id = #{openId,jdbcType=VARCHAR},
@@ -318,6 +332,7 @@
     set card_id = #{cardId,jdbcType=INTEGER},
       card = #{card,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},
+      user_coupon_code = #{userCouponCode,jdbcType=VARCHAR},
       open_id = #{openId,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},

@@ -63,6 +63,8 @@ public class Coupon {
 
     private Integer couponType;
 
+    private Integer effectiveDays;
+
     private String couponRules;
 
     private String appId;
@@ -106,6 +108,7 @@ public class Coupon {
     public void setExcludeSkus(String excludeSkus) {
         this.excludeSkus = excludeSkus == null ? null : excludeSkus.trim();
     }
+
     public Integer getId() {
         return id;
     }
@@ -344,6 +347,14 @@ public class Coupon {
 
     public void setCouponType(Integer couponType) {
         this.couponType = couponType;
+    }
+
+    public Integer getEffectiveDays() {
+        return effectiveDays;
+    }
+
+    public void setEffectiveDays(Integer effectiveDays) {
+        this.effectiveDays = effectiveDays;
     }
 
     public String getCouponRules() {

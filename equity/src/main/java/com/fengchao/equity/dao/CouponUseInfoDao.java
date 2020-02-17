@@ -59,4 +59,12 @@ public class CouponUseInfoDao {
 
         return new PageInfo<>(couponUseInfoList);
     }
+
+    public int insert(CouponUseInfo couponUseInfo) {
+        return couponUseInfoMapper.insertSelective(couponUseInfo);
+    }
+
+    public int update(CouponUseInfo couponUseInfo) {
+        return couponUseInfoMapper.updateByPrimaryKeySelective(couponUseInfo);
+    }
 }

@@ -35,6 +35,7 @@ public class CardInfoServiceImpl implements CardInfoService {
         cardInfo.setName(bean.getName());
         cardInfo.setEffectiveDays(bean.getEffectiveDays());
         cardInfo.setType(bean.getType());
+        cardInfo.setAppId(bean.getAppId());
         int cardTicket = dao.createCardTicket(cardInfo);
         if(cardTicket == 1){
             for (int i = 0; i < bean.getCouponIds().size(); i++){
@@ -63,10 +64,10 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public PageableData<CardInfo> findCardInfo(Integer pageNo, Integer pageSize) {
+    public PageableData<CardInfo> findCardInfo(CardInfoBean bean) {
         PageableData<CardInfo> pageableData = new PageableData<>();
 
-        PageInfo<CardInfo> cardTicket = dao.findCardTicket(pageNo, pageSize);
+        PageInfo<CardInfo> cardTicket = dao.findCardTicket(bean);
         // 2.处理结果
         PageVo pageVo = ConvertUtil.convertToPageVo(cardTicket);
         List<CardInfo> cardTicketList = cardTicket.getList();

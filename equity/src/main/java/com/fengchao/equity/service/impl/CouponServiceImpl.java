@@ -95,16 +95,22 @@ public class CouponServiceImpl implements CouponService {
                 coupon.setStatus(3);
                 JobClientUtils.couponEffectiveTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseStartDate());
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                if(coupon.getCouponType() != 4){
+                    JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                }
             }else if(couponById.getReleaseStartDate().before(now)  && couponById.getReleaseEndDate().after(now)){
 
                 coupon.setStatus(4);
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                if(coupon.getCouponType() != 4){
+                    JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                }
             }else if(couponById.getReleaseEndDate().before(now)){
 
                 coupon.setStatus(5);
-                JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                if(coupon.getCouponType() != 4){
+                    JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
+                }
             }
         }
         return mapper.updateByPrimaryKeySelective(coupon);
@@ -288,6 +294,7 @@ public class CouponServiceImpl implements CouponService {
         coupon.setEffectiveEndDate(bean.getEffectiveEndDate());
         coupon.setDescription(bean.getDescription());
         coupon.setAppId(bean.getAppId());
+        coupon.setEffectiveDays(bean.getEffectiveDays());
         if(bean.getExcludeDates()!= null && !"".equals(bean.getExcludeDates())){
             List<Object> excludeDates = bean.getExcludeDates();
             JSONArray json = new JSONArray();
@@ -349,6 +356,7 @@ public class CouponServiceImpl implements CouponService {
         couponBean.setEffectiveStartDate(coupon.getEffectiveStartDate());
         couponBean.setEffectiveEndDate(coupon.getEffectiveEndDate());
         couponBean.setDescription(coupon.getDescription());
+        couponBean.setEffectiveDays(coupon.getEffectiveDays());
         couponBean.setUserCollectNum(coupon.getUserCollectNum());
         if(coupon.getExcludeDates()!= null && !"".equals(coupon.getExcludeDates())) {
             couponBean.setExcludeDates(JSONArray.parseArray(coupon.getExcludeDates()));
@@ -447,9 +455,9 @@ public class CouponServiceImpl implements CouponService {
         }
 
         if(couponUseInfo != null){
-            CouponX couponX = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+//            CouponX couponX = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
             Date date = new Date();
-            if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().before(date)){
+            if(couponUseInfo.getEffectiveStartDate().after(date) || couponUseInfo.getEffectiveEndDate().before(date)){
                 couponUseInfo.setStatus(4);
                 return couponUseInfo;
             }

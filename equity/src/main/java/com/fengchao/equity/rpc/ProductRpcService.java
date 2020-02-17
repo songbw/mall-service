@@ -81,7 +81,7 @@ public class ProductRpcService {
         List<Platform> platformBeanList = new ArrayList<>();
         PageVo pageVo = new PageVo();
         pageVo.setPageNo(1);
-        pageVo.setPageSize(10);
+        pageVo.setPageSize(50);
         OperaResult operaResult = productService.selectPlatformAll(pageVo);
         // 处理返回
         if (operaResult.getCode() == 200) {
