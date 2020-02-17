@@ -1,11 +1,14 @@
 package com.fengchao.equity.dao;
 
+import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.mapper.CardTicketMapper;
 import com.fengchao.equity.mapper.CardTicketMapperX;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketExample;
 import com.fengchao.equity.model.CardTicketX;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,4 +65,23 @@ public class CardTicketDao {
         return mapper.selectByPrimaryKey(id);
     }
 
+    public PageInfo<CardTicket> searchCardTicket(CardInfoBean bean) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andCardIdEqualTo(bean.getId());
+        criteria.andIsDeleteEqualTo((short) 1);
+
+        if(bean.getStatus() != null){
+            criteria.andStatusEqualTo(bean.getStatus());
+        }
+        if(bean.getActivateStartTime() != null){
+            criteria.andActivateTimeGreaterThanOrEqualTo(bean.getActivateStartTime());
+        }
+        if(bean.getActivateEndTime() != null){
+            criteria.andActivateTimeLessThanOrEqualTo(bean.getActivateEndTime());
+        }
+        PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
+        List<CardTicket> tickets = mapper.selectByExample(example);
+        return  new PageInfo<>(tickets);
+    }
 }

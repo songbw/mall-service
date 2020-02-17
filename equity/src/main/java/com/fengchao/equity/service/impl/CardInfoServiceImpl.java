@@ -1,5 +1,6 @@
 package com.fengchao.equity.service.impl;
 
+import com.fengchao.equity.bean.CardBean;
 import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
@@ -54,13 +55,22 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public CardInfoX findByCardId(Integer id) {
-        CardInfoX cardTicket = dao.findByCardId(id);
-        List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(id);
-        cardTicket.setCouponIds(couponIds);
-        List<CardTicket> tickets = assignsDao.findbyCardId(id);
-        cardTicket.setTickets(tickets);
-        return cardTicket;
+    public CardBean findByCardId(CardInfoBean bean) {
+        CardBean cardBean = new CardBean();
+        List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(bean.getId());
+        cardBean.setCouponIds(couponIds);
+
+        PageableData<CardTicket> pageableData = new PageableData<>();
+        PageInfo<CardTicket> cardTicketPageInfo = assignsDao.searchCardTicket(bean);
+        // 2.处理结果
+        PageVo pageVo = ConvertUtil.convertToPageVo(cardTicketPageInfo);
+        List<CardTicket> cardTicketList = cardTicketPageInfo.getList();
+        pageableData.setList(cardTicketList);
+        pageableData.setPageInfo(pageVo);
+
+        cardBean.setTickets(pageableData);
+
+        return cardBean;
     }
 
     @Override

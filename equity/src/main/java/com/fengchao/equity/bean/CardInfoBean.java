@@ -3,6 +3,7 @@ package com.fengchao.equity.bean;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Setter
@@ -25,6 +26,10 @@ public class CardInfoBean {
     private Short status;
 
     private String appId;
+
+    private Date activateStartTime;
+
+    private Date activateEndTime;
 
     private Integer pageNo = 1;
 

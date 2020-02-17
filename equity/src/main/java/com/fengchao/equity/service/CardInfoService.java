@@ -1,5 +1,6 @@
 package com.fengchao.equity.service;
 
+import com.fengchao.equity.bean.CardBean;
 import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.CardInfo;
@@ -10,7 +11,7 @@ public interface CardInfoService {
 
     int updateCardInfo(CardInfo bean);
 
-    CardInfoX findByCardId(Integer id);
+    CardBean findByCardId(CardInfoBean id);
 
     PageableData<CardInfo> findCardInfo(CardInfoBean bean);
 

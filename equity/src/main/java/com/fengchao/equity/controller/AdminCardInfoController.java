@@ -64,8 +64,8 @@ public class AdminCardInfoController {
 //    }
 
     @GetMapping("findById")
-    public OperaResult findByCardId(Integer id, OperaResult result){
-        result.getData().put("result",service.findByCardId(id));
+    public OperaResult findByCardId(CardInfoBean bean, OperaResult result){
+        result.getData().put("result",service.findByCardId(bean));
         return result;
     }
 
