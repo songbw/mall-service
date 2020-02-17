@@ -1439,10 +1439,11 @@ public class OrderServiceImpl implements OrderService {
             JSONArray resJsonArray = JSONObject.parseArray(resJsonString) ;
             JSONObject resJson = resJsonArray.getJSONObject(0) ;
             String orderSn = resJson.getString("orderSn") ;
-            orderIds.forEach(id -> {
+            orderDetails.forEach(orderDetail -> {
                 Orders temp = new Orders() ;
-                temp.setId(id);
+                temp.setId(orderDetail.getOrderId());
                 temp.setAoyiId(orderSn);
+                temp.setUpdatedAt(new Date());
                 mapper.updateByPrimaryKeySelective(temp) ;
             });
         }
