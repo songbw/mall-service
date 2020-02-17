@@ -69,7 +69,7 @@ public class CardTicketServiceImpl implements CardTicketService {
 
         List<CardInfoX> infoXES = infoDao.findByIds(bean.getIds());
         for (CardInfoX infoX: infoXES){
-            List<Integer> couponIds= cardAndCouponDao.findCouponIdByCardId(infoX.getId());
+            List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(infoX.getId());
             infoX.setCouponIds(couponIds);
             List<CardTicket> tickets = ticketDao.findbyCardId(infoX.getId());
             infoX.setTickets(tickets);

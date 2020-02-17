@@ -56,7 +56,7 @@ public class CardInfoServiceImpl implements CardInfoService {
     @Override
     public CardInfoX findByCardId(Integer id) {
         CardInfoX cardTicket = dao.findByCardId(id);
-        List<Integer> couponIds= cardAndCouponDao.findCouponIdByCardId(id);
+        List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(id);
         cardTicket.setCouponIds(couponIds);
         List<CardTicket> tickets = assignsDao.findbyCardId(id);
         cardTicket.setTickets(tickets);
