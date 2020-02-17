@@ -38,3 +38,6 @@ send "./stop.sh\n"
 expect "]$ "
 send "./start.sh\n"
 expect "]$ "
+
+send "./wuxi.sh\n"
+expect "]$ "
