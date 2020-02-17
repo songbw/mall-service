@@ -15,5 +15,6 @@ public class CardTicketBean {
     private String openId;
     private Integer couponId;
     private Integer id;
+    private String appId;
 
 }

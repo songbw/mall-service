@@ -12,6 +12,7 @@ import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.service.CardTicketService;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -104,6 +105,7 @@ public class AdminCardInfoController {
         try{
             log.info("导出提货卡信息 入参:{}", JSONUtil.toJsonString(bean));
             List<CardInfoX> infoXList = ticketService.exportCardTicket(bean);
+            Map<String, String> platformMap = ticketService.selectPlatformAll();
 
             // 创建HSSFWorkbook对象
             workbook = new HSSFWorkbook();
@@ -162,6 +164,9 @@ public class AdminCardInfoController {
 
             HSSFCell titleCell16 = titleRow.createCell(16);
             titleCell16.setCellValue("备注信息");
+
+            HSSFCell titleCell17 = titleRow.createCell(17);
+            titleCell17.setCellValue("运营平台");
 
             //组装内容
             int currentRowNum = 1;
@@ -237,6 +242,12 @@ public class AdminCardInfoController {
 
                         HSSFCell cell16 = currentRow.createCell(16); // 备注信息
                         cell16.setCellValue(ticket.getRemark());
+
+                        HSSFCell cell17 = currentRow.createCell(17); // 运营平台
+                        if(StringUtils.isNotEmpty(cardInfo.getAppId())){
+                            String platformName = platformMap.get(cardInfo.getAppId());
+                            cell17.setCellValue(platformName);
+                        }
 
                         // 如果子订单数大于1， 并且子订单已遍历完，则需要合并'主订单号'和'运费' 列
                         if (count > 1 && (num + 1) == count) { //

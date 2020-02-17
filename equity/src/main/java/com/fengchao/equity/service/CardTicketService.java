@@ -7,6 +7,7 @@ import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketX;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CardTicketService {
     int assignsCardTicket(CardTicketBean bean);
@@ -24,4 +25,6 @@ public interface CardTicketService {
     CardTicket findById(int id);
 
     int invalid(int id);
+
+    Map<String, String> selectPlatformAll();
 }

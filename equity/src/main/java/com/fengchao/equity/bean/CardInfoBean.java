@@ -24,6 +24,8 @@ public class CardInfoBean {
 
     private Short status;
 
+    private String appId;
+
     private Integer pageNo = 1;
 
     private Integer pageSize = 10;

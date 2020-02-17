@@ -21,6 +21,8 @@ public class CardInfo {
 
     private Short isDelete;
 
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -91,5 +93,13 @@ public class CardInfo {
 
     public void setIsDelete(Short isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 }

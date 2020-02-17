@@ -4,6 +4,7 @@ import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.dao.*;
 import com.fengchao.equity.model.*;
+import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CardTicketService;
 import com.fengchao.equity.utils.DataUtils;
 import com.fengchao.equity.utils.JobClientUtils;
@@ -14,9 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CardTicketServiceImpl implements CardTicketService {
@@ -35,6 +34,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     private JobClient jobClient;
     @Autowired
     private Environment environment;
+    @Autowired
+    private ProductRpcService prodService;
 
     @Override
     public int assignsCardTicket(CardTicketBean bean) {
@@ -157,5 +158,17 @@ public class CardTicketServiceImpl implements CardTicketService {
         ticket.setId(id);
         ticket.setStatus((short) 4);
         return ticketDao.update(ticket);
+    }
+
+    @Override
+    public Map<String, String> selectPlatformAll() {
+        Map<String, String> platformMap = new HashMap<String, String>();
+        List<Platform> platformAll = prodService.findPlatformAll();
+        for (Platform platform : platformAll) {
+            if (platform != null) {
+                platformMap.put(platform.getAppId(), platform.getName());
+            }
+        }
+        return platformMap;
     }
 }

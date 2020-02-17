@@ -35,6 +35,7 @@ public class CardInfoServiceImpl implements CardInfoService {
         cardInfo.setName(bean.getName());
         cardInfo.setEffectiveDays(bean.getEffectiveDays());
         cardInfo.setType(bean.getType());
+        cardInfo.setAppId(bean.getAppId());
         int cardTicket = dao.createCardTicket(cardInfo);
         if(cardTicket == 1){
             for (int i = 0; i < bean.getCouponIds().size(); i++){

@@ -48,6 +48,9 @@ public class CardInfoDao {
         if(bean.getStatus() != null){
             criteria.andStatusEqualTo(bean.getStatus());
         }
+        if(bean.getAppId() != null){
+            criteria.andAppIdEqualTo(bean.getAppId());
+        }
         if(bean.getName() != null){
             criteria.andNameLike("%" +bean.getName()+ "%");
         }

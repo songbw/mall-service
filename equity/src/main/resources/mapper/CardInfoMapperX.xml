@@ -11,6 +11,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <result column="status" jdbcType="SMALLINT" property="status" />
         <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+        <result column="app_id" jdbcType="VARCHAR" property="appId" />
     </resultMap>
     <sql id="Example_Where_Clause">
         <where>
@@ -71,7 +72,7 @@
         </where>
     </sql>
     <sql id="Base_Column_List">
-    id, name, amount, type, effective_days, create_time, update_time, status, is_delete
+    id, name, amount, type, effective_days, create_time, update_time, status, is_delete, app_id
   </sql>
     <select id="selectByExample" parameterType="com.fengchao.equity.model.CardInfoExample" resultMap="BaseResultMap">
         select
@@ -106,10 +107,12 @@
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardInfoX" useGeneratedKeys="true">
     insert into card_info (name, amount, type,
       effective_days, create_time, update_time,
-      status, is_delete)
+      status, is_delete, app_id
+      )
     values (#{name,jdbcType=VARCHAR}, #{amount,jdbcType=VARCHAR}, #{type,jdbcType=SMALLINT},
       #{effectiveDays,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
-      #{status,jdbcType=SMALLINT}, #{isDelete,jdbcType=SMALLINT})
+      #{status,jdbcType=SMALLINT}, #{isDelete,jdbcType=SMALLINT}, #{appId,jdbcType=VARCHAR}
+      )
   </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.equity.model.CardInfoX" useGeneratedKeys="true">
         insert into card_info
@@ -138,6 +141,9 @@
             <if test="isDelete != null">
                 is_delete,
             </if>
+            <if test="appId != null">
+                app_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">
@@ -163,6 +169,9 @@
             </if>
             <if test="isDelete != null">
                 #{isDelete,jdbcType=SMALLINT},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -202,6 +211,9 @@
             <if test="record.isDelete != null">
                 is_delete = #{record.isDelete,jdbcType=SMALLINT},
             </if>
+            <if test="record.appId != null">
+                app_id = #{record.appId,jdbcType=VARCHAR},
+            </if>
         </set>
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause" />
@@ -217,7 +229,8 @@
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
         update_time = #{record.updateTime,jdbcType=TIMESTAMP},
         status = #{record.status,jdbcType=SMALLINT},
-        is_delete = #{record.isDelete,jdbcType=SMALLINT}
+        is_delete = #{record.isDelete,jdbcType=SMALLINT},
+        app_id = #{record.appId,jdbcType=VARCHAR}
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause" />
         </if>
@@ -249,6 +262,9 @@
             <if test="isDelete != null">
                 is_delete = #{isDelete,jdbcType=SMALLINT},
             </if>
+            <if test="appId != null">
+                app_id = #{appId,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -261,7 +277,8 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=SMALLINT},
-      is_delete = #{isDelete,jdbcType=SMALLINT}
+      is_delete = #{isDelete,jdbcType=SMALLINT},
+      app_id = #{appId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
