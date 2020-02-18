@@ -95,20 +95,20 @@ public class CouponServiceImpl implements CouponService {
                 coupon.setStatus(3);
                 JobClientUtils.couponEffectiveTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseStartDate());
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                if(coupon.getCouponType() != 4){
+                if(coupon.getCouponType()!= null && coupon.getCouponType() != 4){
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }else if(couponById.getReleaseStartDate().before(now)  && couponById.getReleaseEndDate().after(now)){
 
                 coupon.setStatus(4);
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                if(coupon.getCouponType() != 4){
+                if(coupon.getCouponType()!= null && coupon.getCouponType() != 4){
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }else if(couponById.getReleaseEndDate().before(now)){
 
                 coupon.setStatus(5);
-                if(coupon.getCouponType() != 4){
+                if(coupon.getCouponType()!= null && coupon.getCouponType() != 4){
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }
