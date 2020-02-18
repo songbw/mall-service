@@ -49,4 +49,19 @@ public class StarPropertyDao {
         List<StarProperty> list = starPropertyMapper.selectByExample(example);
         return list;
     }
+
+    /**
+     * 根据productId和type查询属性信息
+     *
+     * @return
+     */
+    public List<StarProperty> selectByProductIds(List<Integer> productIdList) {
+        StarPropertyExample example = new StarPropertyExample();
+        StarPropertyExample.Criteria criteria = example.createCriteria();
+
+        criteria.andProductIdIn(productIdList) ;
+
+        List<StarProperty> list = starPropertyMapper.selectByExample(example);
+        return list;
+    }
 }

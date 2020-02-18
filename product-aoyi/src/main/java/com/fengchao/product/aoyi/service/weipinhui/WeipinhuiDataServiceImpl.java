@@ -434,7 +434,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     // 4.2.2 过滤掉已经存在sku
                     List<StarSku> insertStarSkuList = new ArrayList<>(); // 过滤掉已存在的sku之后，剩下的需要插入的sku信息
-                    List<StarProperty> starPropertyList = new ArrayList<>(); // 需要插入的商品规格列表信息
+                    List<StarProperty> candidateStarPropertyList = new ArrayList<>(); // 待插入的商品规格列表信息
                     // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                     for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) { // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                         if (!exsitSkuIdList.contains(aoyiSkuResDto.getSkuId())) { // 如果不存在
@@ -459,12 +459,13 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                                     aoyiSkuResDto.getSepca(), aoyiSkuResDto.getSepcb(), aoyiSkuResDto.getSepcc());
 
                             if (CollectionUtils.isNotEmpty(_starPropertyList)) {
-                                starPropertyList.addAll(_starPropertyList);
+                                candidateStarPropertyList.addAll(_starPropertyList);
                             }
                         }
                     }
 
                     // 4.3 批量插入 sku 和 sku的商品规格
+                    // 4.3.1 批量插入 sku
                     log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入sku列表:{}个 数据:{}",
                             pageNum, itemIdIndex, itemId, insertStarSkuList.size(), JSONUtil.toJsonStringWithoutNull(insertStarSkuList));
                     if (CollectionUtils.isNotEmpty(insertStarSkuList)) {
@@ -472,11 +473,34 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         totalSkuCount = totalSkuCount + insertStarSkuList.size();
                     }
 
-                    log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入proerty列表:{}个 数据:{}",
-                            pageNum, itemIdIndex, itemId, starPropertyList.size(), JSONUtil.toJsonStringWithoutNull(starPropertyList));
-                    if (CollectionUtils.isNotEmpty(starPropertyList)) {
-                        starPropertyDao.batchInsert(starPropertyList);
-                        totalPropertyCount = totalPropertyCount + starPropertyList.size();
+                    // 4.3.2 批量插入 sku的商品规格
+                    log.info("同步商品详情 第{}页 第{}个itemId:{}, 待处理的proerty列表:{}个 数据:{}",
+                            pageNum, itemIdIndex, itemId, candidateStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(candidateStarPropertyList));
+
+                    if (CollectionUtils.isNotEmpty(candidateStarPropertyList)) {
+                        // 首先查询数据库是否已经存在
+                        List<Integer> candidateProductionIdList = // 待插入的productionid集合
+                                candidateStarPropertyList.stream().map(s -> s.getProductId()).collect(Collectors.toList());
+
+                        // 已存在的数据
+                        List<StarProperty> exsitStarPropertyList = starPropertyDao.selectByProductIds(candidateProductionIdList);
+                        List<Integer> exsitPropertyIdList = exsitStarPropertyList.stream().map(e -> e.getProductId()).collect(Collectors.toList());
+
+                        // 需要出入的数据
+                        List<StarProperty> insertStarPropertyList = new ArrayList<>();
+
+                        // 过滤
+                        for (StarProperty candidateStarProperty : candidateStarPropertyList) {
+                            if (!exsitPropertyIdList.contains(candidateStarProperty.getProductId())) {
+                                insertStarPropertyList.add(candidateStarProperty);
+                            }
+                        }
+
+                        log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入的proerty列表:{}个 数据:{}",
+                                pageNum, itemIdIndex, itemId, insertStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(insertStarPropertyList));
+                        //
+                        starPropertyDao.batchInsert(insertStarPropertyList);
+                        totalPropertyCount = totalPropertyCount + insertStarPropertyList.size();
                     }
                 }// end for
 
@@ -513,7 +537,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         if (StringUtils.isNotBlank(sepca)) {
             StarProperty starProperty = new StarProperty();
             starProperty.setType(0);
-            starProperty.setName("");
+            starProperty.setName("sepca");
             starProperty.setProductId(Integer.valueOf(skuId));
             starProperty.setVal(sepca);
 
@@ -523,7 +547,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         if (StringUtils.isNotBlank(sepcb)) {
             StarProperty starProperty = new StarProperty();
             starProperty.setType(0);
-            starProperty.setName("");
+            starProperty.setName("sepcb");
             starProperty.setProductId(Integer.valueOf(skuId));
             starProperty.setVal(sepcb);
 
@@ -533,7 +557,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         if (StringUtils.isNotBlank(sepcc)) {
             StarProperty starProperty = new StarProperty();
             starProperty.setType(0);
-            starProperty.setName("");
+            starProperty.setName("sepcc");
             starProperty.setProductId(Integer.valueOf(skuId));
             starProperty.setVal(sepcc);
 
