@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.constants.IStatusEnum;
 import com.fengchao.product.aoyi.mapper.StarSkuMapper;
+import com.fengchao.product.aoyi.mapper.StarSkuXMapper;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,24 @@ import java.util.List;
 @Component
 public class StarSkuDao {
 
-    private StarSkuMapper mapper;
+    private StarSkuMapper starSkuMapper;
+
+    private StarSkuXMapper starSkuXMapper;
 
     @Autowired
-    public StarSkuDao(StarSkuMapper mapper) {
-        this.mapper = mapper;
+    public StarSkuDao(StarSkuMapper starSkuMapper,
+                      StarSkuXMapper starSkuXMapper) {
+        this.starSkuMapper = starSkuMapper;
+        this.starSkuXMapper = starSkuXMapper;
+    }
+
+    /**
+     * 批量插入
+     *
+     * @param starSkuList
+     */
+    public void batchInsert(List<StarSku> starSkuList) {
+        starSkuXMapper.batchInsert(starSkuList);
     }
 
     /**
@@ -32,7 +46,7 @@ public class StarSkuDao {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdEqualTo(spuId) ;
-        List<StarSku> list = mapper.selectByExample(example);
+        List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -46,7 +60,7 @@ public class StarSkuDao {
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdEqualTo(spuId) ;
         criteria.andCodeEqualTo(code) ;
-        List<StarSku> list = mapper.selectByExample(example);
+        List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -57,7 +71,7 @@ public class StarSkuDao {
      */
     public List<StarSku> selectAll() {
         StarSkuExample example = new StarSkuExample();
-        List<StarSku> list = mapper.selectByExample(example);
+        List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -75,7 +89,7 @@ public class StarSkuDao {
 
         criteria.andSkuIdIn(skuIdList);
 
-        List<StarSku> starSkuList = mapper.selectByExample(starSkuExample);
+        List<StarSku> starSkuList = starSkuMapper.selectByExample(starSkuExample);
 
         return starSkuList;
     }
@@ -88,7 +102,7 @@ public class StarSkuDao {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeEqualTo(starSku.getCode()) ;
-        mapper.updateByExampleSelective(starSku, example);
+        starSkuMapper.updateByExampleSelective(starSku, example);
     }
 
     /**
@@ -100,7 +114,7 @@ public class StarSkuDao {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeIn(codeList) ;
-        List<StarSku> list = mapper.selectByExample(example);
+        List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }
 

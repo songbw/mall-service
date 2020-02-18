@@ -11,7 +11,7 @@
 
 
   <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
-    insert into star_sku
+    insert into star_property
     (type, product_id, name, val)
     values
     <foreach collection="list" item="item" index="index" separator=",">

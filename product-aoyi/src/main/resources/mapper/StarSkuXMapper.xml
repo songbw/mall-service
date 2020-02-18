@@ -30,7 +30,7 @@
       #{item.spuId},
       #{item.advisePrice},
       #{item.sprice},
-      #{item.merchantCode},
+      #{item.merchantCode}
       )
     </foreach>
   </insert>
