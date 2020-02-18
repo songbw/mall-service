@@ -166,6 +166,7 @@
     pay_status payStatus, pay_order_category payOrderCategory, coupon_id couponId, coupon_code couponCode, coupon_discount couponDiscount, sale_amount saleAmount,
     sub_order_id subOrderId, sku_id skuId, mpu, num,unit_price unitPrice, image, name, model, promotion_id promotionId, promotion_discount promotionDiscount,order_detail.id subId,
     order_detail.created_at createdAt, order_detail.updated_at updatedAt, order_detail.logistics_id logisticsId, order_detail.logistics_content logisticsContent, order_detail.sale_price salePrice, order_detail.status subStatus, order_detail.mpu, order_detail.comcode, order_detail.sku_coupon_discount skuCouponDiscount, order_detail.complete_time completeTime
+    , order_detail.third_order_sn thirdOrderSn
     from orders
     RIGHT JOIN order_detail on order_detail.order_id = orders.id
     where 1 = 1

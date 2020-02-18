@@ -286,6 +286,76 @@ public class OrderDetailExample {
             return (Criteria) this;
         }
 
+        public Criteria andThirdOrderSnIsNull() {
+            addCriterion("third_order_sn is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnIsNotNull() {
+            addCriterion("third_order_sn is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnEqualTo(String value) {
+            addCriterion("third_order_sn =", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnNotEqualTo(String value) {
+            addCriterion("third_order_sn <>", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnGreaterThan(String value) {
+            addCriterion("third_order_sn >", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnGreaterThanOrEqualTo(String value) {
+            addCriterion("third_order_sn >=", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnLessThan(String value) {
+            addCriterion("third_order_sn <", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnLessThanOrEqualTo(String value) {
+            addCriterion("third_order_sn <=", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnLike(String value) {
+            addCriterion("third_order_sn like", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnNotLike(String value) {
+            addCriterion("third_order_sn not like", value, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnIn(List<String> values) {
+            addCriterion("third_order_sn in", values, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnNotIn(List<String> values) {
+            addCriterion("third_order_sn not in", values, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnBetween(String value1, String value2) {
+            addCriterion("third_order_sn between", value1, value2, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
+        public Criteria andThirdOrderSnNotBetween(String value1, String value2) {
+            addCriterion("third_order_sn not between", value1, value2, "thirdOrderSn");
+            return (Criteria) this;
+        }
+
         public Criteria andSubOrderIdIsNull() {
             addCriterion("sub_order_id is null");
             return (Criteria) this;

@@ -57,6 +57,8 @@ public class OrderDetailX implements Serializable {
 
     private Integer productType ;
 
+    private String thirdOrderSn;
+
     public Integer getId() {
         return id;
     }
@@ -263,5 +265,13 @@ public class OrderDetailX implements Serializable {
 
     public void setProductType(Integer productType) {
         this.productType = productType;
+    }
+
+    public String getThirdOrderSn() {
+        return thirdOrderSn;
+    }
+
+    public void setThirdOrderSn(String thirdOrderSn) {
+        this.thirdOrderSn = thirdOrderSn;
     }
 }
