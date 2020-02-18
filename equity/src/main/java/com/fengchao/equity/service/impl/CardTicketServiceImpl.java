@@ -68,7 +68,7 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public List<CardInfoX> exportCardTicket(ExportCardBean bean) {
 
-        List<CardInfoX> infoXES = infoDao.findByIds(bean.getIds());
+        List<CardInfoX> infoXES = infoDao.findByIds(bean);
         for (CardInfoX infoX: infoXES){
             List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(infoX.getId());
             infoX.setCouponIds(couponIds);

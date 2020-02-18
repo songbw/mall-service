@@ -211,7 +211,7 @@ public class AdminCardInfoController {
                 List<CardAndCoupon> couponList = cardInfo.getCouponIds();
                 String couponIds = "";
                 for (CardAndCoupon coupon: couponList){
-                    couponIds += coupon.getCouponId() + "，";
+                    couponIds += coupon.getCouponId() + ", ";
                 }
                 if(StringUtils.isNotEmpty(couponIds) ){
                     cell7.setCellValue(couponIds.substring(0, couponIds.length()-1));
