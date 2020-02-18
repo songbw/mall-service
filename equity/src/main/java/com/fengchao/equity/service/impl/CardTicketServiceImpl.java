@@ -172,4 +172,14 @@ public class CardTicketServiceImpl implements CardTicketService {
         }
         return platformMap;
     }
+
+    @Override
+    public CardTicketX getCardTicketByCard(String openId, String card) {
+        CardTicketX ticket = ticketDao.seleteCardTicketByCard(openId, card);
+        if(ticket != null){
+            CardInfo infoX = infoDao.findById(ticket.getCardId());
+            ticket.setCardInfo(infoX);
+        }
+        return ticket;
+    }
 }

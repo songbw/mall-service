@@ -356,6 +356,12 @@
         select
         <include refid="Base_Column_List" />
         from card_ticket
-        where card = #{card,jdbcType=VARCHAR}
+        where is_delete = 1 and card = #{card,jdbcType=VARCHAR}
+    </select>
+    <select id="seleteCardTicketByCard" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from card_ticket
+        where is_delete = 1 and card = #{card,jdbcType=VARCHAR} and open_id = #{openId,jdbcType=VARCHAR}
     </select>
 </mapper>

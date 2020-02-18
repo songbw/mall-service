@@ -91,4 +91,8 @@ public class CardTicketDao {
     public CardTicketX findbyCard(String card) {
         return mapperX.selectByCard(card);
     }
+
+    public CardTicketX seleteCardTicketByCard(String openId, String card) {
+        return mapperX.seleteCardTicketByCard(openId, card);
+    }
 }
