@@ -17,10 +17,14 @@ public class ProductConfig {
     @Value("${weipinhui.imagePrefix}")
     private String weipinhuiImagePrefix;
 
+    @Value("${fengchao.imagePrefix}")
+    private String fengchaoImagePrefix;
+
     @PostConstruct
-    private void init(){
+    private void init() {
         log.info("config properties start!");
 
         log.info("weipinhui.imagePrefix = {}", weipinhuiImagePrefix);
+        log.info("fengchao.imagePrefix = {}", fengchaoImagePrefix);
     }
 }

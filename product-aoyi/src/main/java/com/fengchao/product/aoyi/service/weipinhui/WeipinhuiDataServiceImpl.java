@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.service.weipinhui;
 
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
+import com.fengchao.product.aoyi.config.ProductConfig;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
@@ -26,9 +27,21 @@ import java.util.stream.Collectors;
 @Service
 public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
+    /**
+     * 主图
+     */
+    private static final String IMAGE_TYPE_ZT = "WEIPINHUI_ZT";
+
+    /**
+     * 详情
+     */
+    private static final String IMAGE_TYPE_XQ = "WEIPINHUI_XQ";
+
     private static final Integer PAGESIZE = 20;
 
     private static final String MERCHANT_CODE = "30";
+
+    private ProductConfig productConfig;
 
     private AoyiClientRpcService aoyiClientRpcService;
 
@@ -42,18 +55,24 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
     private StarPropertyDao starPropertyDao;
 
+    private AyFcImagesDao ayFcImagesDao;
+
     public WeipinhuiDataServiceImpl(AoyiClientRpcService aoyiClientRpcService,
                                     AoyiBaseBrandDao aoyiBaseBrandDao,
                                     CategoryDao categoryDao,
                                     ProductDao productDao,
                                     StarSkuDao starSkuDao,
-                                    StarPropertyDao starPropertyDao) {
+                                    StarPropertyDao starPropertyDao,
+                                    ProductConfig productConfig,
+                                    AyFcImagesDao ayFcImagesDao) {
         this.aoyiClientRpcService = aoyiClientRpcService;
         this.aoyiBaseBrandDao = aoyiBaseBrandDao;
         this.categoryDao = categoryDao;
         this.productDao = productDao;
         this.starSkuDao = starSkuDao;
         this.starPropertyDao = starPropertyDao;
+        this.productConfig = productConfig;
+        this.ayFcImagesDao = ayFcImagesDao;
     }
 
     @Override
@@ -347,11 +366,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
      * }
      *
      * @param pageNum
-     * @throws Exception
-     *
-     * alter table `star_sku` add column `merchant_code` varchar(16) not null default '141' comment '供应商code';
-     *
-     * alter table `star_sku` add column `merchant_code` varchar(16) not null default '141' comment '供应商code';
+     * @throws Exception alter table `star_sku` add column `merchant_code` varchar(16) not null default '141' comment '供应商code';
+     *                   <p>
+     *                   alter table `star_sku` add column `merchant_code` varchar(16) not null default '141' comment '供应商code';
      */
     @Override
     public void syncItemDetail(Integer pageNum, Integer maxPageCount) throws Exception {
@@ -369,7 +386,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
             //
             while (true) {
-                // 数据库查询
+                // 数据库查询一批spu
                 productQueryBean.setPageNo(pageNum);
                 PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(productQueryBean);
 
@@ -385,7 +402,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                 // 2. 遍历itemId列表，查询详情信息
                 int itemIdIndex = 0; // 该for需要的itemId的计数
-                for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
+                for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) { // 遍历itemId列表
                     String itemId = aoyiProdIndex.getSkuid();
                     totalItemIdCount++;
                     itemIdIndex++;
@@ -402,13 +419,33 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     // 4. 入库处理 分为两步 4.1 更新 spu， 4.2 插入 sku
                     // 4.1 更新spu
+                    // 获取brand名称
+                    AoyiBaseBrand aoyiBaseBrand =
+                            aoyiBaseBrandDao.selectByBrandId(Integer.valueOf(aoyiItemDetailResDto.getBrandId()));
+
                     aoyiProdIndex.setName(aoyiItemDetailResDto.getItemTitle()); // 商品名称spu名称
                     aoyiProdIndex.setState(aoyiItemDetailResDto.getCanSell() == "true" ? "1" : "0"); // 是否出售 "false" - 是否上架 0：下架；1：上架
+                    aoyiProdIndex.setBrand(aoyiBaseBrand == null ? "" : aoyiBaseBrand.getBrandName());
                     aoyiProdIndex.setBrandId(StringUtils.isNotBlank(aoyiItemDetailResDto.getBrandId())
                             ? Integer.valueOf(aoyiItemDetailResDto.getBrandId()) : 0); // 品牌 id
                     aoyiProdIndex.setCategory(aoyiItemDetailResDto.getCategoryId()); // 类目三级 id "50023439"
-                    aoyiProdIndex.setImagesUrl(aoyiItemDetailResDto.getItemImage()); // 商品主图 [http://pic.aoyi365.com/aoyi_tmall/50000550/ZT/1.jpg,http://pic.aoyi365.com/aoyi_tmall/50 000550/ZT/2.jpg,http://pic.aoyi365.com/aoyi_tmall/50000550/ZT/3.jpg,http://pic.aoyi365.co m/aoyi_tmall/50000550/ZT/4.jpg,]", // 商品主图
-                    aoyiProdIndex.setIntroductionUrl(aoyiItemDetailResDto.getItemDetailImage()); // 商品详情图 [http://pic.aoyi365
+
+                    // 处理spu主图
+                    List<String> imageUrlList = JSONUtil.parse(aoyiItemDetailResDto.getItemImage(), List.class);
+                    List<AyFcImages> mainSpuImageList =
+                            handleAyFcImages(imageUrlList, aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_ZT);
+
+                    String imagesUrl =
+                            String.join(":", mainSpuImageList.stream().map(m -> m.getFcImage()).collect(Collectors.toList()));
+                    aoyiProdIndex.setImagesUrl(imagesUrl); // 商品主图 [http://pic.aoyi365.com/aoyi_tmall/50000550/ZT/1.jpg,http://pic.aoyi365.com/aoyi_tmall/50 000550/ZT/2.jpg,http://pic.aoyi365.com/aoyi_tmall/50000550/ZT/3.jpg,http://pic.aoyi365.co m/aoyi_tmall/50000550/ZT/4.jpg,]", // 商品主图
+
+                    // 处理spu详情图
+                    List<String> detailImageUrlList = JSONUtil.parse(aoyiItemDetailResDto.getItemDetailImage(), List.class);
+                    List<AyFcImages> detailSpuImageList =
+                            handleAyFcImages(detailImageUrlList, aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
+                    String introductionUrl =
+                            String.join(":", detailSpuImageList.stream().map(d -> d.getFcImage()).collect(Collectors.toList()));
+                    aoyiProdIndex.setIntroductionUrl(introductionUrl); // 商品详情图 [http://pic.aoyi365
 
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
                             pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
@@ -435,6 +472,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     // 4.2.2 过滤掉已经存在sku
                     List<StarSku> insertStarSkuList = new ArrayList<>(); // 过滤掉已存在的sku之后，剩下的需要插入的sku信息
                     List<StarProperty> candidateStarPropertyList = new ArrayList<>(); // 待插入的商品规格列表信息
+                    List<AyFcImages> skuImageList = new ArrayList<>();
                     // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                     for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) { // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                         if (!exsitSkuIdList.contains(aoyiSkuResDto.getSkuId())) { // 如果不存在
@@ -443,7 +481,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             // String code;
                             // purchaseQty;
 
-                            starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
+                            // starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
                             starSku.setSkuId(aoyiSkuResDto.getSkuId());
                             starSku.setStatus("false".equals(aoyiSkuResDto.getCanSell()) ? 0 : 1);
                             starSku.setSpuId(itemId);
@@ -461,6 +499,13 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             if (CollectionUtils.isNotEmpty(_starPropertyList)) {
                                 candidateStarPropertyList.addAll(_starPropertyList);
                             }
+
+                            // c. 组装该sku的图片信息
+                            List<AyFcImages> _ayFcImagesList = handleAyFcImages(Arrays.asList(aoyiSkuResDto.getSkuImageUrl()),
+                                    aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
+                            skuImageList.addAll(_ayFcImagesList);
+
+                            starSku.setGoodsLogo(_ayFcImagesList.get(0).getFcImage());
                         }
                     }
 
@@ -499,12 +544,22 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入的proerty列表:{}个 数据:{}",
                                 pageNum, itemIdIndex, itemId, insertStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(insertStarPropertyList));
                         //
-                        starPropertyDao.batchInsert(insertStarPropertyList);
+                        if (CollectionUtils.isNotEmpty(insertStarPropertyList)) {
+                            starPropertyDao.batchInsert(insertStarPropertyList);
+                        }
                         totalPropertyCount = totalPropertyCount + insertStarPropertyList.size();
                     }
+
+                    // 5. 处理图片信息: mainSpuImageList detailSpuImageList skuImageList
+                    mainSpuImageList.addAll(detailSpuImageList);
+                    mainSpuImageList.addAll(skuImageList);
+
+                    log.info("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
+                            pageNum, itemIdIndex, itemId, mainSpuImageList.size(), JSONUtil.toJsonStringWithoutNull(mainSpuImageList));
+                    ayFcImagesDao.batchInsert(mainSpuImageList);
                 }// end for
 
-                // 5. 停止条件
+                // 6. 停止条件
                 if (maxPageCount != -1 && pageNum >= maxPageCount) {
                     log.info("同步商品详情 第{}页 达到最大查询页数限制:{} 停止!", pageNum, maxPageCount);
 
@@ -566,4 +621,32 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
         return starPropertyList;
     }
+
+    /**
+     * 处理图片地址
+     *
+     * @param urlList ["aoyi_vip/aoyi30010k/30008601/ZT/30014191/1.jpg","aoyi_vip/aoyi30010k/30008601/ZT/30014191/2.jpg","aoyi_vip/aoyi30010k/30008601/ZT/30014191/3.jpg"aoyi_vip/aoyi30010k/30008601/ZT/30014191/4.jpg","aoyi_vip/aoyi30010k/30008601/ZT/30014191/6.jpg"]
+     * @return
+     */
+    private List<AyFcImages> handleAyFcImages(List<String> urlList, String categoryId, String spuId, String type) {
+        List<AyFcImages> ayFcImagesList = new ArrayList<>();
+
+        for (String imageUrl : urlList) {
+            String path = "/" + categoryId + "/" + spuId + "/";
+            String name = imageUrl.substring(imageUrl.lastIndexOf("/") + 1, imageUrl.length());
+
+            AyFcImages ayFcImages = new AyFcImages();
+            ayFcImages.setFcImage(path + type + "/" + name); //
+            ayFcImages.setAyImage(productConfig.getWeipinhuiImagePrefix() + imageUrl);
+            ayFcImages.setPath(path);
+            ayFcImages.setType(type);
+            ayFcImages.setCreatedAt(new Date());
+            ayFcImages.setUpdatedAt(new Date());
+
+            ayFcImagesList.add(ayFcImages);
+        }
+
+        return ayFcImagesList;
+    }
+
 }

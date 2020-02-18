@@ -44,4 +44,25 @@ public class JSONUtil {
 
         return json;
     }
+
+    /**
+     *
+     * @param json
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T parse(String json, Class<T> clazz) {
+        T object = null;
+
+        try {
+            object = JSON.parseObject(json, clazz);
+        } catch (Exception e) {
+            log.error("JSONUtil#parse 异常:{}", e.getMessage(), e);
+
+            object = null;
+        }
+
+        return object;
+    }
 }
