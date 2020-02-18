@@ -5,11 +5,13 @@ import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.model.CardAndCoupon;
 import com.fengchao.equity.model.CardInfo;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.service.CardTicketService;
+import com.fengchao.equity.utils.DataUtils;
 import com.fengchao.equity.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -26,10 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -69,6 +70,12 @@ public class AdminCardInfoController {
         return result;
     }
 
+    @GetMapping("details")
+    public OperaResult details(CardInfoBean bean, OperaResult result){
+        result.getData().put("result",service.details(bean));
+        return result;
+    }
+
     @PutMapping("update")
     public OperaResult updateCardInfo(@RequestBody CardInfo bean, OperaResult result){
         result.getData().put("result",service.updateCardInfo(bean));
@@ -83,12 +90,14 @@ public class AdminCardInfoController {
 
     @PostMapping("assigns")
     public OperaResult assignsCardTicket(@RequestBody CardTicketBean bean, OperaResult result){
+        log.info("分配createCardTicket礼品券参数 入参:{}", JSONUtil.toJsonString(bean));
         result.getData().put("result",ticketService.assignsCardTicket(bean));
         return result;
     }
 
     @PutMapping("activate")
     public OperaResult activateCardTicket(@RequestBody List<CardTicket> beans, OperaResult result){
+        log.info("激活createCardTicket礼品券参数 入参:{}", JSONUtil.toJsonString(beans));
         result.getData().put("result",ticketService.activatesCardTicket(beans));
         return result;
     }
@@ -99,8 +108,6 @@ public class AdminCardInfoController {
         OutputStream outputStream = null;
         // 创建HSSFWorkbook对象
         HSSFWorkbook workbook = null;
-
-        SimpleDateFormat sf=new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
 
         try{
             log.info("导出提货卡信息 入参:{}", JSONUtil.toJsonString(bean));
@@ -197,8 +204,16 @@ public class AdminCardInfoController {
                     cell4.setCellValue("已发布");
                 }
                 cell5.setCellValue(cardInfo.getEffectiveDays() == null ? "" : String.valueOf(cardInfo.getEffectiveDays()));
-                cell6.setCellValue(cardInfo.getCreateTime() == null ? "" : sf.format(cardInfo.getCreateTime()));
-                cell7.setCellValue(cardInfo.getCouponIds().toString());
+                cell6.setCellValue(cardInfo.getCreateTime() == null ? "" : DataUtils.dateTimeFormat(cardInfo.getCreateTime()));
+
+                List<CardAndCoupon> couponList = cardInfo.getCouponIds();
+                String couponIds = "";
+                for (CardAndCoupon coupon: couponList){
+                    couponIds += coupon.getCouponId() + ", ";
+                }
+                if(StringUtils.isNotEmpty(couponIds) ){
+                    cell7.setCellValue(couponIds.substring(0, couponIds.length()-1));
+                }
 
                 int count = cardInfo.getTickets().size();
                 if(count < 1){
@@ -219,7 +234,7 @@ public class AdminCardInfoController {
                         HSSFCell cell11 = currentRow.createCell(11); // 卡券状态
                         Short statusTicket = ticket.getStatus();
                         if(statusTicket == 1){
-                            cell11.setCellValue("创建");
+                            cell11.setCellValue("未激活");
                         }else if(statusTicket == 2){
                             cell11.setCellValue("已激活");
                         }else if(statusTicket == 3){
@@ -232,13 +247,13 @@ public class AdminCardInfoController {
                         cell12.setCellValue(ticket.getOpenId());
 
                         HSSFCell cell13 = currentRow.createCell(13); // 创建时间
-                        cell13.setCellValue(ticket.getCreateTime() == null ? "" : sf.format(ticket.getCreateTime()));
+                        cell13.setCellValue(ticket.getCreateTime() == null ? "" :  DataUtils.dateTimeFormat(ticket.getCreateTime()));
 
                         HSSFCell cell14 = currentRow.createCell(14); // 激活时间
-                        cell14.setCellValue(ticket.getActivateTime() == null ? "" : sf.format(ticket.getActivateTime()));
+                        cell14.setCellValue(ticket.getActivateTime() == null ? "" :  DataUtils.dateTimeFormat(ticket.getActivateTime()));
 
                         HSSFCell cell15 = currentRow.createCell(15); // 使用时间
-                        cell15.setCellValue(ticket.getConsumedTime() == null ? "" : sf.format(ticket.getConsumedTime()));
+                        cell15.setCellValue(ticket.getConsumedTime() == null ? "" :  DataUtils.dateTimeFormat(ticket.getConsumedTime()));
 
                         HSSFCell cell16 = currentRow.createCell(16); // 备注信息
                         cell16.setCellValue(ticket.getRemark());

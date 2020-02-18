@@ -10,5 +10,6 @@ import java.util.List;
 public class ExportCardBean {
 
     private List<Integer> ids;
-    private Integer status;
+    private Short status;
+    private String appId;
 }

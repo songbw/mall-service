@@ -1,6 +1,7 @@
 package com.fengchao.equity.dao;
 
 import com.fengchao.equity.bean.CardInfoBean;
+import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.mapper.CardInfoMapper;
 import com.fengchao.equity.mapper.CardInfoMapperX;
 import com.fengchao.equity.model.CardInfo;
@@ -60,12 +61,15 @@ public class CardInfoDao {
         return new PageInfo<>(cardTickets);
     }
 
-    public List<CardInfoX> findByIds(List<Integer> ids) {
+    public List<CardInfoX> findByIds(ExportCardBean bean) {
         CardInfoExample example = new CardInfoExample();
         CardInfoExample.Criteria criteria = example.createCriteria();
         criteria.andIsDeleteEqualTo((short) 1);
-        if(ids != null && !ids.isEmpty()){
-            criteria.andIdIn(ids);
+        if(bean.getIds() != null && !bean.getIds().isEmpty()){
+            criteria.andIdIn(bean.getIds());
+        }
+        if(bean.getAppId() != null){
+            criteria.andAppIdEqualTo(bean.getAppId());
         }
 
         return mapperX.selectByExample(example);

@@ -39,4 +39,10 @@ public class CardController {
         result.getData().put("result",ticketService.getCardTicket(openId));
         return result;
     }
+
+    @GetMapping("findByCard")
+    public OperaResult getCardTicketByCard(String openId, String card, OperaResult result){
+        result.getData().put("result",ticketService.getCardTicketByCard(openId, card));
+        return result;
+    }
 }

@@ -33,4 +33,8 @@ public interface CardTicketMapperX {
     int inserBatch(List<CardTicket> tickets);
 
     int activatesCardTicket(List<CardTicket> beans);
+
+    CardTicketX selectByCard(String card);
+
+    CardTicketX seleteCardTicketByCard(@Param("openId") String openId, @Param("card") String card);
 }

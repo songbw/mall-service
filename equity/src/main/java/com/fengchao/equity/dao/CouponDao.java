@@ -41,12 +41,14 @@ public class CouponDao {
         return couponList;
     }
 
-    public PageInfo<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId) {
+    public PageInfo<Coupon> findReleaseCoupon(Integer pageNo, Integer pageSize, String appId, Integer couponType) {
         CouponExample couponExample = new CouponExample();
         CouponExample.Criteria criteria = couponExample.createCriteria();
         criteria.andStatusBetween(3,4);
         criteria.andAppIdEqualTo(appId);
-
+        if(couponType != null){
+            criteria.andCouponTypeEqualTo(couponType);
+        }
         PageHelper.startPage(pageNo, pageSize);
         List<Coupon> couponList = couponMapper.selectByExample(couponExample);
 

@@ -27,4 +27,6 @@ public interface CardTicketService {
     int invalid(int id);
 
     Map<String, String> selectPlatformAll();
+
+    CardTicketX getCardTicketByCard(String openId, String card);
 }

@@ -56,7 +56,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     public int activatesCardTicket(List<CardTicket> beans) {
         Date date = new Date();
         for(CardTicket ticket: beans){
-            CardInfoX cardInfoX = infoDao.findByCardId(ticket.getCardId());
+            CardTicketX cardTicketX = ticketDao.findbyCard(ticket.getCard());
+            CardInfoX cardInfoX = infoDao.findByCardId(cardTicketX.getCardId());
             Date fetureDate = DataUtils.getFetureDate(date, cardInfoX.getEffectiveDays());
             ticket.setEndTime(fetureDate);
             JobClientUtils.cardInvalidTrigger(environment, jobClient, ticket.getId(), fetureDate);
@@ -67,11 +68,11 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public List<CardInfoX> exportCardTicket(ExportCardBean bean) {
 
-        List<CardInfoX> infoXES = infoDao.findByIds(bean.getIds());
+        List<CardInfoX> infoXES = infoDao.findByIds(bean);
         for (CardInfoX infoX: infoXES){
-            List<Integer> couponIds= cardAndCouponDao.findCouponIdByCardId(infoX.getId());
+            List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(infoX.getId());
             infoX.setCouponIds(couponIds);
-            List<CardTicket> tickets = ticketDao.findbyCardId(infoX.getId());
+            List<CardTicket> tickets = ticketDao.findbyCardId(infoX.getId(), bean.getStatus());
             infoX.setTickets(tickets);
         }
         return infoXES;
@@ -170,5 +171,15 @@ public class CardTicketServiceImpl implements CardTicketService {
             }
         }
         return platformMap;
+    }
+
+    @Override
+    public CardTicketX getCardTicketByCard(String openId, String card) {
+        CardTicketX ticket = ticketDao.seleteCardTicketByCard(openId, card);
+        if(ticket != null){
+            CardInfo infoX = infoDao.findById(ticket.getCardId());
+            ticket.setCardInfo(infoX);
+        }
+        return ticket;
     }
 }

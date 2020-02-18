@@ -5,6 +5,10 @@ import org.apache.commons.lang.StringUtils;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -87,6 +91,23 @@ public class DataUtils {
         calendar.add(Calendar.DATE, past);
         Date today = calendar.getTime();
         return today;
+    }
+
+    /**
+     * 将Date类型的日期按照format转换
+     *
+     * @param date
+     * @return
+     */
+    public static String dateTimeFormat(Date date) {
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+
+        String dateTime = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        return dateTime;
     }
 
     public static void main(String[] args) {

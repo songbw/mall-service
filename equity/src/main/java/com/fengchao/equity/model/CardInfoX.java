@@ -24,7 +24,7 @@ public class CardInfoX {
 
     private String appId;
 
-    private List<Integer> couponIds;
+    private List<CardAndCoupon> couponIds;
 
     private List<CardTicket> tickets;
 
@@ -100,11 +100,11 @@ public class CardInfoX {
         this.isDelete = isDelete;
     }
 
-    public List<Integer> getCouponIds() {
+    public List<CardAndCoupon> getCouponIds() {
         return couponIds;
     }
 
-    public void setCouponIds(List<Integer> couponIds) {
+    public void setCouponIds(List<CardAndCoupon> couponIds) {
         this.couponIds = couponIds;
     }
 
