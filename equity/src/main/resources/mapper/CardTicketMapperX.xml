@@ -349,7 +349,13 @@
             activate_time = current_timestamp
         where
         <foreach collection="list" item="item" open="( " separator=") or (" close=" )">
-        id = #{item.id,jdbcType=INTEGER} and card = #{item.card,jdbcType=VARCHAR}
+        card = #{item.card,jdbcType=VARCHAR}
         </foreach>
     </insert>
+    <select id="selectByCard" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from card_ticket
+        where card = #{card,jdbcType=VARCHAR}
+    </select>
 </mapper>

@@ -56,7 +56,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     public int activatesCardTicket(List<CardTicket> beans) {
         Date date = new Date();
         for(CardTicket ticket: beans){
-            CardInfoX cardInfoX = infoDao.findByCardId(ticket.getCardId());
+            CardTicketX cardTicketX = ticketDao.findbyCard(ticket.getCard());
+            CardInfoX cardInfoX = infoDao.findByCardId(cardTicketX.getCardId());
             Date fetureDate = DataUtils.getFetureDate(date, cardInfoX.getEffectiveDays());
             ticket.setEndTime(fetureDate);
             JobClientUtils.cardInvalidTrigger(environment, jobClient, ticket.getId(), fetureDate);

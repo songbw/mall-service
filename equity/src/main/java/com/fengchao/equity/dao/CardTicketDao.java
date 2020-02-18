@@ -84,4 +84,8 @@ public class CardTicketDao {
         List<CardTicket> tickets = mapper.selectByExample(example);
         return  new PageInfo<>(tickets);
     }
+
+    public CardTicketX findbyCard(String card) {
+        return mapperX.selectByCard(card);
+    }
 }
