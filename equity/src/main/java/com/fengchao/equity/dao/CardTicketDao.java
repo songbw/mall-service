@@ -21,11 +21,14 @@ public class CardTicketDao {
     @Autowired
     private CardTicketMapperX mapperX;
 
-    public List<CardTicket> findbyCardId(Integer id) {
+    public List<CardTicket> findbyCardId(Integer id, Short status) {
         CardTicketExample example = new CardTicketExample();
         CardTicketExample.Criteria criteria = example.createCriteria();
         criteria.andCardIdEqualTo(id);
         criteria.andIsDeleteEqualTo((short) 1);
+        if(status != null){
+            criteria.andStatusEqualTo(status);
+        }
 
         return mapper.selectByExample(example);
     }
