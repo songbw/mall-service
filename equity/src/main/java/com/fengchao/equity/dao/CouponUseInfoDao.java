@@ -2,8 +2,10 @@ package com.fengchao.equity.dao;
 
 import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
+import com.fengchao.equity.mapper.CouponUseInfoXMapper;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoExample;
+import com.fengchao.equity.model.CouponUseInfoX;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,13 @@ import java.util.List;
 public class CouponUseInfoDao {
 
     private CouponUseInfoMapper couponUseInfoMapper;
+    private CouponUseInfoXMapper couponUseInfoXMapper;
 
     @Autowired
-    public CouponUseInfoDao(CouponUseInfoMapper couponUseInfoMapper) {
+    public CouponUseInfoDao(CouponUseInfoMapper couponUseInfoMapper,
+                            CouponUseInfoXMapper couponUseInfoXMapper) {
         this.couponUseInfoMapper = couponUseInfoMapper;
+        this.couponUseInfoXMapper = couponUseInfoXMapper;
     }
 
     /**
@@ -66,5 +71,9 @@ public class CouponUseInfoDao {
 
     public int update(CouponUseInfo couponUseInfo) {
         return couponUseInfoMapper.updateByPrimaryKeySelective(couponUseInfo);
+    }
+
+    public CouponUseInfoX findByUserCouponCode(String userCouponCode) {
+        return couponUseInfoXMapper.selectByUserCode(userCouponCode);
     }
 }
