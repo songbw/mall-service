@@ -1,6 +1,9 @@
 package com.fengchao.equity.model;
 
+import com.fengchao.equity.bean.CouponBean;
+
 import java.util.Date;
+import java.util.List;
 
 public class CardTicketX {
     private Integer id;
@@ -32,6 +35,8 @@ public class CardTicketX {
     private Short isDelete;
 
     private CardInfo cardInfo;
+
+    private List<CouponBean> Coupons;
 
     public Integer getId() {
         return id;
@@ -151,5 +156,13 @@ public class CardTicketX {
 
     public void setCardInfo(CardInfo cardInfo) {
         this.cardInfo = cardInfo;
+    }
+
+    public List<CouponBean> getCoupons() {
+        return Coupons;
+    }
+
+    public void setCoupons(List<CouponBean> coupons) {
+        Coupons = coupons;
     }
 }
