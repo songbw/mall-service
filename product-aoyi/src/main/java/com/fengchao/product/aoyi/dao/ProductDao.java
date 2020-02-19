@@ -200,6 +200,7 @@ public class ProductDao {
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         BeanUtils.copyProperties(bean, aoyiProdIndex);
+        aoyiProdIndex.setState(null);
         aoyiProdIndex.setUpdatedAt(new Date());
 
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
