@@ -196,16 +196,12 @@ public class OrdersDao {
         return orders;
     }
 
-    public Orders selectOrdersByTradeNoAndAoyiId(Orders orders) {
+    public List<Orders> selectOrdersByTradeNoAndAoyiId(Orders orders) {
         OrdersExample ordersExample = new OrdersExample();
         OrdersExample.Criteria criteria = ordersExample.createCriteria();
-        criteria.andAoyiIdEqualTo(orders.getAoyiId()) ;
         criteria.andTradeNoLike("%" + orders.getTradeNo());
 
         List<Orders> list = ordersMapper.selectByExample(ordersExample);
-        if (list != null && list.size() > 0) {
-            return list.get(0) ;
-        }
-        return null;
+        return list;
     }
 }

@@ -10,6 +10,8 @@ public class OrderDetail {
 
     private Integer orderId;
 
+    private String thirdOrderSn;
+
     private String subOrderId;
 
     private String mpu;
@@ -80,6 +82,14 @@ public class OrderDetail {
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
+    }
+
+    public String getThirdOrderSn() {
+        return thirdOrderSn;
+    }
+
+    public void setThirdOrderSn(String thirdOrderSn) {
+        this.thirdOrderSn = thirdOrderSn == null ? null : thirdOrderSn.trim();
     }
 
     public String getSubOrderId() {

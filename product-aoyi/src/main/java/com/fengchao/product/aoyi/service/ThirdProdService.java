@@ -18,7 +18,7 @@ public interface ThirdProdService {
 
     void updatePrice(PriceBean bean);
 
-    void updateState(StateBean bean);
+    OperaResponse updateState(StateBean bean);
 
     void delete(Integer merchantId, Integer id) throws ProductException;
 

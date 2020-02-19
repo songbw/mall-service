@@ -5,6 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
     <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="third_order_sn" jdbcType="VARCHAR" property="thirdOrderSn" />
     <result column="sub_order_id" jdbcType="VARCHAR" property="subOrderId" />
     <result column="mpu" jdbcType="VARCHAR" property="mpu" />
     <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
@@ -89,10 +90,10 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, merchant_id, order_id, sub_order_id, mpu, sku_id, num, promotion_id, promotion_discount, 
-    sale_price, unit_price, image, model, name, status, created_at, updated_at, logistics_id, 
-    logistics_content, comcode, sku_coupon_discount, category, remark, complete_time, 
-    checked_price, sprice, product_type
+    id, merchant_id, order_id, third_order_sn, sub_order_id, mpu, sku_id, num, promotion_id, 
+    promotion_discount, sale_price, unit_price, image, model, name, status, created_at, 
+    updated_at, logistics_id, logistics_content, comcode, sku_coupon_discount, category, 
+    remark, complete_time, checked_price, sprice, product_type
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.order.model.OrderDetailExample" resultMap="BaseResultMap">
     select
@@ -125,24 +126,26 @@
     </if>
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderDetail" useGeneratedKeys="true">
-    insert into order_detail (merchant_id, order_id, sub_order_id, 
-      mpu, sku_id, num, promotion_id, 
-      promotion_discount, sale_price, unit_price, 
-      image, model, name, 
-      status, created_at, updated_at, 
-      logistics_id, logistics_content, comcode, 
-      sku_coupon_discount, category, remark, 
-      complete_time, checked_price, sprice, 
-      product_type)
-    values (#{merchantId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{subOrderId,jdbcType=VARCHAR}, 
-      #{mpu,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{num,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, 
-      #{promotionDiscount,jdbcType=REAL}, #{salePrice,jdbcType=DECIMAL}, #{unitPrice,jdbcType=DECIMAL}, 
-      #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
-      #{logisticsId,jdbcType=VARCHAR}, #{logisticsContent,jdbcType=VARCHAR}, #{comcode,jdbcType=VARCHAR}, 
-      #{skuCouponDiscount,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
-      #{completeTime,jdbcType=TIMESTAMP}, #{checkedPrice,jdbcType=DECIMAL}, #{sprice,jdbcType=DECIMAL}, 
-      #{productType,jdbcType=INTEGER})
+    insert into order_detail (merchant_id, order_id, third_order_sn, 
+      sub_order_id, mpu, sku_id, 
+      num, promotion_id, promotion_discount, 
+      sale_price, unit_price, image, 
+      model, name, status, 
+      created_at, updated_at, logistics_id, 
+      logistics_content, comcode, sku_coupon_discount, 
+      category, remark, complete_time, 
+      checked_price, sprice, product_type
+      )
+    values (#{merchantId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{thirdOrderSn,jdbcType=VARCHAR}, 
+      #{subOrderId,jdbcType=VARCHAR}, #{mpu,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, 
+      #{num,jdbcType=INTEGER}, #{promotionId,jdbcType=INTEGER}, #{promotionDiscount,jdbcType=REAL}, 
+      #{salePrice,jdbcType=DECIMAL}, #{unitPrice,jdbcType=DECIMAL}, #{image,jdbcType=VARCHAR}, 
+      #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{logisticsId,jdbcType=VARCHAR}, 
+      #{logisticsContent,jdbcType=VARCHAR}, #{comcode,jdbcType=VARCHAR}, #{skuCouponDiscount,jdbcType=INTEGER}, 
+      #{category,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{completeTime,jdbcType=TIMESTAMP}, 
+      #{checkedPrice,jdbcType=DECIMAL}, #{sprice,jdbcType=DECIMAL}, #{productType,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.order.model.OrderDetail" useGeneratedKeys="true">
     insert into order_detail
@@ -152,6 +155,9 @@
       </if>
       <if test="orderId != null">
         order_id,
+      </if>
+      <if test="thirdOrderSn != null">
+        third_order_sn,
       </if>
       <if test="subOrderId != null">
         sub_order_id,
@@ -232,6 +238,9 @@
       </if>
       <if test="orderId != null">
         #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="thirdOrderSn != null">
+        #{thirdOrderSn,jdbcType=VARCHAR},
       </if>
       <if test="subOrderId != null">
         #{subOrderId,jdbcType=VARCHAR},
@@ -325,6 +334,9 @@
       <if test="record.orderId != null">
         order_id = #{record.orderId,jdbcType=INTEGER},
       </if>
+      <if test="record.thirdOrderSn != null">
+        third_order_sn = #{record.thirdOrderSn,jdbcType=VARCHAR},
+      </if>
       <if test="record.subOrderId != null">
         sub_order_id = #{record.subOrderId,jdbcType=VARCHAR},
       </if>
@@ -407,6 +419,7 @@
     set id = #{record.id,jdbcType=INTEGER},
       merchant_id = #{record.merchantId,jdbcType=INTEGER},
       order_id = #{record.orderId,jdbcType=INTEGER},
+      third_order_sn = #{record.thirdOrderSn,jdbcType=VARCHAR},
       sub_order_id = #{record.subOrderId,jdbcType=VARCHAR},
       mpu = #{record.mpu,jdbcType=VARCHAR},
       sku_id = #{record.skuId,jdbcType=VARCHAR},
@@ -443,6 +456,9 @@
       </if>
       <if test="orderId != null">
         order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="thirdOrderSn != null">
+        third_order_sn = #{thirdOrderSn,jdbcType=VARCHAR},
       </if>
       <if test="subOrderId != null">
         sub_order_id = #{subOrderId,jdbcType=VARCHAR},
@@ -523,6 +539,7 @@
     update order_detail
     set merchant_id = #{merchantId,jdbcType=INTEGER},
       order_id = #{orderId,jdbcType=INTEGER},
+      third_order_sn = #{thirdOrderSn,jdbcType=VARCHAR},
       sub_order_id = #{subOrderId,jdbcType=VARCHAR},
       mpu = #{mpu,jdbcType=VARCHAR},
       sku_id = #{skuId,jdbcType=VARCHAR},

@@ -429,4 +429,23 @@ public class OrderDetailDao {
         return orderDetailList;
     }
 
+    /**
+     * 根据主订单ids和第三方子订单号查询子订单集合
+     *
+     * @param ordersIds
+     * @param thirdOrderSn
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailsByOrdersIdsAndThirdOrderSn(List<Integer> ordersIds, String thirdOrderSn) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdIn(ordersIds) ;
+        criteria.andThirdOrderSnEqualTo(thirdOrderSn) ;
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
 }

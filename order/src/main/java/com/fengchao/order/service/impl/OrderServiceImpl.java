@@ -1437,29 +1437,44 @@ public class OrderServiceImpl implements OrderService {
         if (response.getCode() == 200) {
             String resJsonString = JSON.toJSONString(response.getData()) ;
             JSONArray resJsonArray = JSONObject.parseArray(resJsonString) ;
-            JSONObject resJson = resJsonArray.getJSONObject(0) ;
-            String orderSn = resJson.getString("orderSn") ;
-            orderDetails.forEach(orderDetail -> {
-                Orders temp = new Orders() ;
-                temp.setId(orderDetail.getOrderId());
-                temp.setAoyiId(orderSn);
-                temp.setUpdatedAt(new Date());
-                mapper.updateByPrimaryKeySelective(temp) ;
-            });
+            for (int i = 0; i < resJsonArray.size(); i++) {
+                JSONObject resJson = resJsonArray.getJSONObject(i) ;
+                String orderSn = resJson.getString("orderSn") ;
+                // 解析skuList
+                JSONArray skuListJ = resJson.getJSONArray("skuList") ;
+                // 根据code和
+                orderDetails.forEach(orderDetail -> {
+                    for (int j = 0; j < skuListJ.size(); j++) {
+                        JSONObject sku = skuListJ.getJSONObject(j) ;
+                        if (orderDetail.getSkuId().equals(sku.getString("code"))) {
+                            // 设置orderSn
+                            orderDetail.setThirdOrderSn(orderSn);
+                            orderDetail.setUpdatedAt(new Date());
+                            orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
+                        }
+                    }
+                });
+            }
+
         }
         return response;
     }
 
     @Override
     public OperaResponse deliverStatus(Orders orders) {
-        Orders bean = ordersDao.selectOrdersByTradeNoAndAoyiId(orders) ;
         OperaResponse response = new OperaResponse() ;
-        if (bean != null && bean.getStatus() == 1) {
-            List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersId(bean.getId()) ;
+        List<Orders> ordersList = ordersDao.selectOrdersByTradeNoAndAoyiId(orders) ;
+        List<Integer> ids = new ArrayList<>() ;
+        if (ordersList != null && ordersList.size() > 0) {
+            ordersList.forEach(temp -> {
+                ids.add(temp.getId()) ;
+            });
+            List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndThirdOrderSn(ids, orders.getAoyiId()) ;
             if (orderDetails != null && orderDetails.size() > 0) {
                 orderDetails.forEach(orderDetail -> {
                     if (orderDetail.getStatus() == 1) {
                         orderDetail.setStatus(2);
+                        orderDetail.setUpdatedAt(new Date());
                         orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
                         JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
                     }
