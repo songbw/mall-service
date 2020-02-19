@@ -43,7 +43,8 @@ public class UploadServiceImpl implements UploadService {
         log.info("下载上传图片入口参数 {}", JSONUtil.toJsonString(img));
         String base = "aoyi";
         String array1[] = img.getAyImage().split(img.getType());
-        String fileName = array1[1];
+        // String fileName = array1[1];
+        String fileName = img.getAyImage().substring(img.getAyImage().lastIndexOf("/") + 1);
         try {
             URLConnectionDownloader.download(img.getAyImage(), fileName, base + img.getPath() + img.getType());
         } catch (Exception e) {
