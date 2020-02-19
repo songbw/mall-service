@@ -505,7 +505,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                                     aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
                             skuImageList.addAll(_ayFcImagesList);
 
-                            starSku.setGoodsLogo(_ayFcImagesList.get(0).getFcImage());
+                            starSku.setGoodsLogo(productConfig.getFengchaoImagePrefix() + _ayFcImagesList.get(0).getFcImage());
                         }
                     }
 
@@ -556,7 +556,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
                             pageNum, itemIdIndex, itemId, mainSpuImageList.size(), JSONUtil.toJsonStringWithoutNull(mainSpuImageList));
-                    ayFcImagesDao.batchInsert(mainSpuImageList);
+                    if (CollectionUtils.isNotEmpty(mainSpuImageList)) {
+                        ayFcImagesDao.batchInsert(mainSpuImageList);
+                    }
                 }// end for
 
                 // 6. 停止条件
