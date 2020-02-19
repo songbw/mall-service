@@ -2,7 +2,9 @@ package com.fengchao.equity.bean;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Date;
 import java.util.List;
 
 @Setter
@@ -21,4 +23,16 @@ public class CardInfoBean {
     private List<Integer> couponIds;
 
     private Integer cardId;
+
+    private Short status;
+
+    private String appId;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date activateStartTime;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date activateEndTime;
+
+    private Integer pageNo = 1;
+
+    private Integer pageSize = 10;
 }

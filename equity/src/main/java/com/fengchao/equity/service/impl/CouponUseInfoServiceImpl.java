@@ -94,14 +94,6 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             num = mapper.insertSelective(couponUseInfo);
             couponUseInfoBean.setUserCouponCode(user_coupon_code);
         }else if(coupon.getCollectType() == 4){
-//            List<CouponUseInfoX> couponUseInfos = mapper.selectBybatchCode(couponUseInfo);
-//            if(couponUseInfos != null){
-//                CouponUseInfoX useInfo = couponUseInfos.get(0);
-//                useInfo.setUserOpenId(bean.getUserOpenId());
-//                useInfo.setCollectedTime(new Date());
-//                num= mapper.updateByPrimaryKeySelective(useInfo);
-//                couponUseInfoBean.setUserCouponCode(useInfo.getUserCouponCode());
-//            }
             couponUseInfoBean.setUserCouponCode("3");
             return couponUseInfoBean;
         }else{
@@ -109,6 +101,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCollectedTime(new Date());
             couponUseInfo.setUserCouponCode(userCouponCode);
+            couponUseInfo.setEffectiveStartDate(coupon.getEffectiveStartDate());
+            couponUseInfo.setEffectiveEndDate(coupon.getEffectiveEndDate());
             num = mapper.insertSelective(couponUseInfo);
             couponUseInfoBean.setUserCouponCode(userCouponCode);
         }
@@ -291,6 +285,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             CouponUseInfoX couponUseInfo = new CouponUseInfoX();
             String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setCode(coupon.getCode());
+            couponUseInfo.setEffectiveStartDate(coupon.getEffectiveStartDate());
+            couponUseInfo.setEffectiveEndDate(coupon.getEffectiveEndDate());
             couponUseInfo.setUserCouponCode(coupon.getAppId() + userCouponCode);
             couponUseInfo.setCouponId(bean.getCouponId());
             couponUseInfo.setAppId(coupon.getAppId());
@@ -414,8 +410,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
         Date date = new Date();
         if(couponUseInfo.getType() == 0){
-            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
-            if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().before(date)){
+//            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            if(couponUseInfo.getEffectiveStartDate().after(date) || couponUseInfo.getEffectiveEndDate().before(date)){
                 return 2;
             }
         }else{
@@ -439,9 +435,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
         if(couponUseInfo != null){
-            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+//            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
             Date date = new Date();
-            if(couponX.getEffectiveEndDate().before(date)){
+            if(couponUseInfo.getEffectiveEndDate().before(date)){
                 useInfo.setStatus(4);
             }else{
                 useInfo.setStatus(1);
@@ -567,9 +563,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     public int verifyCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
             if(couponUseInfo != null){
-                CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+//                CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
                 Date date = new Date();
-                if(couponX.getEffectiveStartDate().after(date) || couponX.getEffectiveEndDate().before(date)){
+                if(couponUseInfo.getEffectiveStartDate().after(date) || couponUseInfo.getEffectiveEndDate().before(date)){
                     return 2;
                 }else{
                     return 1;
@@ -599,9 +595,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfo couponUseInfo = couponUseInfoDao.findBycouponUserId(couponUserId);
         if(couponUseInfo != null){
-            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+//            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
             Date date = new Date();
-            if(couponX.getEffectiveEndDate().before(date)){
+            if(couponUseInfo.getEffectiveEndDate().before(date)){
                 useInfo.setStatus(4);
             }else{
                 useInfo.setStatus(1);
@@ -621,6 +617,19 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         pageableData.setList(groupInfoList);
         pageableData.setPageInfo(pageVo);
         return pageableData;
+    }
+
+    @Override
+    public CouponUseInfo findBycouponUseId(int couponUseId) {
+        return couponUseInfoDao.findBycouponUserId(couponUseId);
+    }
+
+    @Override
+    public int couponUseInvalid(int couponUseId) {
+        CouponUseInfo couponUseInfo = new CouponUseInfo();
+        couponUseInfo.setId(couponUseId);
+        couponUseInfo.setStatus(4);
+        return couponUseInfoDao.update(couponUseInfo);
     }
 
     // ========================= private =====================================

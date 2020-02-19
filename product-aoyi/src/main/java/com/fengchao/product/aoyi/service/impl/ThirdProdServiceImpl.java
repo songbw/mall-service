@@ -223,8 +223,38 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     }
 
     @Override
-    public void updateState(StateBean bean) {
+    public OperaResponse updateState(StateBean bean) {
+        OperaResponse operaResponse = new OperaResponse();
+        if ("1".equals(bean.getState())) {
+            AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(bean.getSkuId()) ;
+            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
+                operaResponse.setCode(200100);
+                operaResponse.setMsg("类别不能为空");
+                return operaResponse ;
+            }
+            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
+                operaResponse.setCode(200101);
+                operaResponse.setMsg("销售价格不能为空");
+                return operaResponse ;
+            }
+            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImage())) {
+                operaResponse.setCode(200102);
+                operaResponse.setMsg("封面图不能为空");
+                return operaResponse ;
+            }
+            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
+                operaResponse.setCode(200103);
+                operaResponse.setMsg("主图不能为空");
+                return operaResponse ;
+            }
+            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl())) {
+                operaResponse.setCode(200104);
+                operaResponse.setMsg("详情图不能为空");
+                return operaResponse ;
+            }
+        }
         productDao.updateState(bean);
+        return operaResponse ;
     }
 
     @Override

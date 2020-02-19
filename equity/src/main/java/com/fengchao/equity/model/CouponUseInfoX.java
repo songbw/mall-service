@@ -25,6 +25,10 @@ public class CouponUseInfoX {
 
     private String url;
 
+    private Date effectiveStartDate;
+
+    private Date effectiveEndDate;
+
     private Integer type;
 
     private String appId;
@@ -119,6 +123,22 @@ public class CouponUseInfoX {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Date getEffectiveStartDate() {
+        return effectiveStartDate;
+    }
+
+    public void setEffectiveStartDate(Date effectiveStartDate) {
+        this.effectiveStartDate = effectiveStartDate;
+    }
+
+    public Date getEffectiveEndDate() {
+        return effectiveEndDate;
+    }
+
+    public void setEffectiveEndDate(Date effectiveEndDate) {
+        this.effectiveEndDate = effectiveEndDate;
     }
 
     public String getAppId() {

@@ -22,7 +22,9 @@ public class CardInfoX {
 
     private Short isDelete;
 
-    private List<Integer> couponIds;
+    private String appId;
+
+    private List<CardAndCoupon> couponIds;
 
     private List<CardTicket> tickets;
 
@@ -98,11 +100,11 @@ public class CardInfoX {
         this.isDelete = isDelete;
     }
 
-    public List<Integer> getCouponIds() {
+    public List<CardAndCoupon> getCouponIds() {
         return couponIds;
     }
 
-    public void setCouponIds(List<Integer> couponIds) {
+    public void setCouponIds(List<CardAndCoupon> couponIds) {
         this.couponIds = couponIds;
     }
 
@@ -112,5 +114,13 @@ public class CardInfoX {
 
     public void setTickets(List<CardTicket> tickets) {
         this.tickets = tickets;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

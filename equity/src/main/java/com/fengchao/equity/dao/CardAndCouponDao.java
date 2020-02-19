@@ -29,12 +29,12 @@ public class CardAndCouponDao {
         return mapper.updateByExampleSelective(cardAndCoupon, example);
     }
 
-    public List<Integer> findCouponIdByCardId(Integer id) {
+    public List<CardAndCoupon> findCouponIdByCardId(Integer id) {
         CardAndCouponExample example = new CardAndCouponExample();
         CardAndCouponExample.Criteria criteria = example.createCriteria();
         criteria.andCardIdEqualTo(id);
         criteria.andIsDeleteEqualTo((short) 1);
 
-        return mapper.selectCouponIdByExample(example);
+        return mapper.selectByExample(example);
     }
 }

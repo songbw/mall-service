@@ -77,6 +77,8 @@ public class CouponX {
 
     private String excludeSkus;
 
+    private Integer effectiveDays;
+
     public String getCouponMpus() {
         return couponMpus;
     }
@@ -370,5 +372,14 @@ public class CouponX {
 
     public void setUserCollectNum(int userCollectNum) {
         this.userCollectNum = userCollectNum;
+    }
+
+
+    public Integer getEffectiveDays() {
+        return effectiveDays;
+    }
+
+    public void setEffectiveDays(Integer effectiveDays) {
+        this.effectiveDays = effectiveDays;
     }
 }

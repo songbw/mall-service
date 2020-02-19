@@ -13,12 +13,14 @@
       <result column="status" jdbcType="INTEGER" property="status" />
       <result column="url" jdbcType="VARCHAR" property="url" />
       <result column="type" jdbcType="INTEGER" property="type" />
+      <result column="effective_start_date" jdbcType="TIMESTAMP" property="effectiveStartDate" />
+      <result column="effective_end_date" jdbcType="TIMESTAMP" property="effectiveEndDate" />
       <result column="app_id" jdbcType="VARCHAR" property="appId" />
       <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, coupon_id, user_coupon_code, user_open_id, code, collected_time, consumed_time,
-    order_id, status, url, type, app_id, delete_flag
+     id, coupon_id, user_coupon_code, user_open_id, code, collected_time, consumed_time,
+    order_id, status, url, type, effective_start_date, effective_end_date, app_id, delete_flag
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.CouponUseInfoBean" >
     select 
@@ -167,16 +169,16 @@
       </if>
   </delete>
   <insert id="insert" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
-     insert into coupon_use_info (coupon_id, user_coupon_code, user_open_id,
+      insert into coupon_use_info (coupon_id, user_coupon_code, user_open_id,
       code, collected_time, consumed_time,
       order_id, status, url,
-      type, app_id, delete_flag
-      )
+      type, effective_start_date, effective_end_date,
+      app_id, delete_flag)
     values (#{couponId,jdbcType=INTEGER}, #{userCouponCode,jdbcType=VARCHAR}, #{userOpenId,jdbcType=VARCHAR},
       #{code,jdbcType=VARCHAR}, #{collectedTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP},
       #{orderId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},
-      #{type,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER}
-      )
+      #{type,jdbcType=INTEGER}, #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP},
+      #{appId,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective"  keyProperty="id" useGeneratedKeys="true" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
       insert into coupon_use_info
@@ -210,6 +212,12 @@
           </if>
           <if test="type != null">
               type,
+          </if>
+          <if test="effectiveStartDate != null">
+              effective_start_date,
+          </if>
+          <if test="effectiveEndDate != null">
+              effective_end_date,
           </if>
           <if test="appId != null">
               app_id,
@@ -248,6 +256,12 @@
           </if>
           <if test="type != null">
               #{type,jdbcType=INTEGER},
+          </if>
+          <if test="effectiveStartDate != null">
+              #{effectiveStartDate,jdbcType=TIMESTAMP},
+          </if>
+          <if test="effectiveEndDate != null">
+              #{effectiveEndDate,jdbcType=TIMESTAMP},
           </if>
           <if test="appId != null">
               #{appId,jdbcType=VARCHAR},
@@ -313,6 +327,12 @@
           <if test="type != null">
               type = #{type,jdbcType=INTEGER},
           </if>
+          <if test="effectiveStartDate != null">
+              effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+          </if>
+          <if test="effectiveEndDate != null">
+              effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
+          </if>
           <if test="appId != null">
               app_id = #{appId,jdbcType=VARCHAR},
           </if>
@@ -320,7 +340,7 @@
               delete_flag = #{deleteFlag,jdbcType=INTEGER},
           </if>
       </set>
-    where id = #{id,jdbcType=INTEGER}
+      where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
     update coupon_use_info
@@ -333,8 +353,11 @@
       order_id = #{orderId,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+      effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
       app_id = #{appId,jdbcType=VARCHAR},
-      type = #{type,jdbcType=INTEGER}
+      delete_flag = #{deleteFlag,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByUserCode" parameterType="com.fengchao.equity.model.CouponUseInfoX" >

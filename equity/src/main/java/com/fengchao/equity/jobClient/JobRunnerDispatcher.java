@@ -30,6 +30,8 @@ public class JobRunnerDispatcher implements JobRunner {
         JOB_RUNNER_MAP.put("couponInvalid", new CouponInvalidRunnerJobImpl());
         JOB_RUNNER_MAP.put("virtualInvalid", new VirtualInvalidRunnerJobImpl());
         JOB_RUNNER_MAP.put("couponRelease", new CouponReleaseRunnerJobImpl());
+        JOB_RUNNER_MAP.put("cardInvalid", new CardInvalidRunnerJobImpl());
+        JOB_RUNNER_MAP.put("couponUseInvalid", new CouponUseInfoInvalidRunnerJobImpl());
     }
 
     @Override

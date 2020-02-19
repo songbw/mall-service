@@ -138,13 +138,12 @@ public class ThirdProdController {
             return result;
         }
         if ("1".equals(bean.getState()) || "0".equals(bean.getState())) {
-            service.updateState(bean);
+            return service.updateState(bean);
         } else {
             result.setCode(210002);
             result.setMsg("state 错误");
             return result;
         }
-        return result;
     }
 
     @DeleteMapping

@@ -35,6 +35,7 @@ public class CardInfoServiceImpl implements CardInfoService {
         cardInfo.setName(bean.getName());
         cardInfo.setEffectiveDays(bean.getEffectiveDays());
         cardInfo.setType(bean.getType());
+        cardInfo.setAppId(bean.getAppId());
         int cardTicket = dao.createCardTicket(cardInfo);
         if(cardTicket == 1){
             for (int i = 0; i < bean.getCouponIds().size(); i++){
@@ -54,19 +55,18 @@ public class CardInfoServiceImpl implements CardInfoService {
 
     @Override
     public CardInfoX findByCardId(Integer id) {
-        CardInfoX cardTicket = dao.findByCardId(id);
-        List<Integer> couponIds= cardAndCouponDao.findCouponIdByCardId(id);
-        cardTicket.setCouponIds(couponIds);
-        List<CardTicket> tickets = assignsDao.findbyCardId(id);
-        cardTicket.setTickets(tickets);
-        return cardTicket;
+        CardInfoX cardInfoX = dao.findByCardId(id);
+        List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(id);
+        cardInfoX.setCouponIds(couponIds);
+
+        return cardInfoX;
     }
 
     @Override
-    public PageableData<CardInfo> findCardInfo(Integer pageNo, Integer pageSize) {
+    public PageableData<CardInfo> findCardInfo(CardInfoBean bean) {
         PageableData<CardInfo> pageableData = new PageableData<>();
 
-        PageInfo<CardInfo> cardTicket = dao.findCardTicket(pageNo, pageSize);
+        PageInfo<CardInfo> cardTicket = dao.findCardTicket(bean);
         // 2.处理结果
         PageVo pageVo = ConvertUtil.convertToPageVo(cardTicket);
         List<CardInfo> cardTicketList = cardTicket.getList();
@@ -89,5 +89,17 @@ public class CardInfoServiceImpl implements CardInfoService {
             cardAndCouponDao.updateCardAndCoupon(cardAndCoupon);
         }
         return dao.updateCardTicket(cardInfo);
+    }
+
+    @Override
+    public PageableData<CardTicket> details(CardInfoBean bean) {
+        PageableData<CardTicket> pageableData = new PageableData<>();
+        PageInfo<CardTicket> cardTicketPageInfo = assignsDao.searchCardTicket(bean);
+        // 2.处理结果
+        PageVo pageVo = ConvertUtil.convertToPageVo(cardTicketPageInfo);
+        List<CardTicket> cardTicketList = cardTicketPageInfo.getList();
+        pageableData.setList(cardTicketList);
+        pageableData.setPageInfo(pageVo);
+        return pageableData;
     }
 }
