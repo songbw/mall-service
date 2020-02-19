@@ -757,55 +757,57 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public OperaResponse updateSpuState(AoyiProdIndex bean) {
+    public OperaResponse updateSpuState(List<AoyiProdIndex> beans) {
         OperaResponse operaResponse = new OperaResponse() ;
-        if (bean == null || bean.getId() == null || bean.getId() <= 0) {
-            operaResponse.setCode(200200);
-            operaResponse.setMsg("ID不能为空");
+        List<Integer> ids = new ArrayList<>() ;
+        for (int i = 0; i < beans.size(); i++) {
+            AoyiProdIndex bean = beans.get(i) ;
+            if (bean == null || bean.getId() == null || bean.getId() <= 0) {
+                continue;
+            }
+            if (bean.getState() == null) {
+                ids.add(bean.getId()) ;
+                continue;
+            }
+            AoyiProdIndex aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
+            if ("1".equals(bean.getState())) {
+                if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
+                if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
+                if (StringUtils.isEmpty(aoyiProdIndex.getImage())) {
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
+                if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
+                if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl())) {
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
+            }
+            productDao.updateStateById(bean) ;
+            // 查询是否有sku
+            List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+            if (starSkus != null || starSkus.size() > 0) {
+                StarSku starSku = starSkus.get(0) ;
+                starSku.setStatus(Integer.valueOf(bean.getState()));
+                starSku.setUpdateTime(new Date());
+                starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+            }
+        }
+        if (ids != null && ids.size() > 0) {
+            operaResponse.setCode(200104);
+            operaResponse.setMsg("存在有问题的id列表");
+            operaResponse.setData(ids);
             return operaResponse ;
         }
-        if (bean.getState() == null) {
-            operaResponse.setCode(200201);
-            operaResponse.setMsg("state不能为空");
-            return operaResponse ;
-        }
-        AoyiProdIndex aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
-        if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
-            operaResponse.setCode(200100);
-            operaResponse.setMsg("类别不能为空");
-            return operaResponse ;
-        }
-        // 查询是否有sku
-        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
-        if (starSkus == null || starSkus.size() == 0) {
-            if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
-                operaResponse.setCode(200101);
-                operaResponse.setMsg("销售价格不能为空");
-                return operaResponse ;
-            }
-            if (StringUtils.isEmpty(aoyiProdIndex.getImage())) {
-                operaResponse.setCode(200102);
-                operaResponse.setMsg("封面图不能为空");
-                return operaResponse ;
-            }
-            if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
-                operaResponse.setCode(200103);
-                operaResponse.setMsg("主图不能为空");
-                return operaResponse ;
-            }
-            if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl())) {
-                operaResponse.setCode(200104);
-                operaResponse.setMsg("详情图不能为空");
-                return operaResponse ;
-            }
-        } else {
-            for (StarSku starSku: starSkus) {
-
-            }
-        }
-
-        productDao.updateStateById(bean) ;
-        operaResponse.setData(bean);
         return operaResponse;
     }
 
