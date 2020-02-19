@@ -1,7 +1,7 @@
 package com.fengchao.equity.service.impl;
 
-import com.fengchao.equity.bean.CardTicketBean;
-import com.fengchao.equity.bean.ExportCardBean;
+import com.alibaba.fastjson.JSONArray;
+import com.fengchao.equity.bean.*;
 import com.fengchao.equity.dao.*;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
@@ -144,6 +144,15 @@ public class CardTicketServiceImpl implements CardTicketService {
         for(CardTicketX ticket: tickets){
             CardInfo infoX = infoDao.findById(ticket.getCardId());
             ticket.setCardInfo(infoX);
+
+            List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
+            List<CouponBean> couponBeanList = new ArrayList();
+            for (CardAndCoupon cardAndCoupon: cardAndCoupons){
+                CouponX couponX = couponDao.selectCouponXById(cardAndCoupon.getCouponId());
+                CouponBean couponBean = couponToBean(couponX);
+                couponBeanList.add(couponBean);
+            }
+            ticket.setCoupons(couponBeanList);
         }
         return tickets;
     }
@@ -179,7 +188,94 @@ public class CardTicketServiceImpl implements CardTicketService {
         if(ticket != null){
             CardInfo infoX = infoDao.findById(ticket.getCardId());
             ticket.setCardInfo(infoX);
+
+            List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
+            List<CouponBean> couponBeanList = new ArrayList();
+            for (CardAndCoupon cardAndCoupon: cardAndCoupons){
+                CouponX couponX = couponDao.selectCouponXById(cardAndCoupon.getCouponId());
+                CouponBean couponBean = couponToBean(couponX);
+                couponBeanList.add(couponBean);
+            }
+            ticket.setCoupons(couponBeanList);
         }
         return ticket;
+    }
+
+    private CouponBean couponToBean(CouponX coupon){
+
+        CouponBean couponBean = new CouponBean();
+
+        couponBean.setId(coupon.getId());
+        couponBean.setName(coupon.getName());
+        couponBean.setSupplierMerchantId(coupon.getSupplierMerchantId());
+        couponBean.setSupplierMerchantName(coupon.getSupplierMerchantName());
+        couponBean.setReleaseTotal(coupon.getReleaseTotal());
+        couponBean.setReleaseNum(coupon.getReleaseNum());
+        couponBean.setReleaseStartDate(coupon.getReleaseStartDate());
+        couponBean.setReleaseEndDate(coupon.getReleaseEndDate());
+        couponBean.setStatus(coupon.getStatus());
+        couponBean.setEffectiveStartDate(coupon.getEffectiveStartDate());
+        couponBean.setEffectiveEndDate(coupon.getEffectiveEndDate());
+        couponBean.setDescription(coupon.getDescription());
+        couponBean.setEffectiveDays(coupon.getEffectiveDays());
+        couponBean.setUserCollectNum(coupon.getUserCollectNum());
+        if(coupon.getExcludeDates()!= null && !"".equals(coupon.getExcludeDates())) {
+            couponBean.setExcludeDates(JSONArray.parseArray(coupon.getExcludeDates()));
+        }
+        couponBean.setUrl(coupon.getUrl());
+        couponBean.setCreateDate(coupon.getCreateDate());
+        couponBean.setCategory(coupon.getCategory());
+        if(coupon.getTags() != null && !"".equals(coupon.getTags())){
+            String[] tagsStr = coupon.getTags().split(", ");
+            int[] tagsNum = new int[tagsStr.length];
+            for (int i = 0; i < tagsStr.length; i++) {
+                tagsNum[i] = Integer.parseInt(tagsStr[i]);
+            }
+            couponBean.setTags(tagsNum);
+        }
+        couponBean.setImageUrl(coupon.getImageUrl());
+        couponBean.setAppId(coupon.getAppId());
+        Rules rules = new Rules();
+        Scenario scenario = new Scenario();
+        rules.setScenario(scenario);
+        Collect collect = new Collect();
+        rules.setCollect(collect);
+        Customer customer = new Customer();
+        rules.setCustomer(customer);
+        couponBean.setRules(rules);
+        if(couponBean.getRules() != null){
+            couponBean.getRules().setCode(coupon.getCode());
+            couponBean.getRules().setRulesDescription(coupon.getRulesDescription());
+            couponBean.getRules().setPerLimited(coupon.getPerLimited());
+            if(coupon.getScopes() != null){
+                couponBean.getRules().setScopes(coupon.getScopes().split(","));
+            }
+            couponBean.getRules().getScenario().setType(coupon.getScenarioType());
+            if(coupon.getCouponMpus() != null){
+                couponBean.getRules().getScenario().setCouponMpus(coupon.getCouponMpus().split(","));
+            }
+            if(coupon.getExcludeMpus() != null){
+                couponBean.getRules().getScenario().setExcludeMpus(coupon.getExcludeMpus().split(","));
+            }
+            if(coupon.getCategories() != null){
+                couponBean.getRules().getScenario().setCategories(coupon.getCategories().split(","));
+            }
+            if(coupon.getBrands() != null){
+                couponBean.getRules().getScenario().setBrands(coupon.getBrands().split(","));
+            }
+            couponBean.getRules().getCollect().setType(coupon.getCollectType());
+            if(coupon.getPoints() != null){
+                couponBean.getRules().getCollect().setPoints(coupon.getPoints());
+            }
+            couponBean.getRules().getCustomer().setType(coupon.getCustomerType());
+            if(coupon.getUsers() != null){
+                couponBean.getRules().getCustomer().setUsers(coupon.getUsers().split(","));
+            }
+            if(coupon.getCouponRules()!= null && !"".equals(coupon.getCouponRules())) {
+                couponBean.getRules().setCouponRules(JSONArray.parseObject(coupon.getCouponRules()));
+            }
+        }
+
+        return couponBean;
     }
 }
