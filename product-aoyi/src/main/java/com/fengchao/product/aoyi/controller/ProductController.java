@@ -227,7 +227,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdListAndCode(mpuIdList);
+            List<AoyiProdIndexX> productInfoBeanList = service.selectProductListByMpuIdListAndCode(mpuIdList);
 
             response.setData(productInfoBeanList);
         } catch (Exception e) {

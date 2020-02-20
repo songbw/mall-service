@@ -94,6 +94,8 @@ public class AoyiProdIndexX implements Serializable {
      */
     private List<StarSkuBean> skuList ;
 
+    private StarSku starSku ;
+
     public String getSubTitle() {
         return subTitle;
     }
@@ -380,5 +382,13 @@ public class AoyiProdIndexX implements Serializable {
 
     public void setSkuList(List<StarSkuBean> skuList) {
         this.skuList = skuList;
+    }
+
+    public StarSku getStarSku() {
+        return starSku;
+    }
+
+    public void setStarSku(StarSku starSku) {
+        this.starSku = starSku;
     }
 }

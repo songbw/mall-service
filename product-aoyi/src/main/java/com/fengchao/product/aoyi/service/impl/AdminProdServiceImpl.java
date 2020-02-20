@@ -769,7 +769,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                 ids.add(bean.getId()) ;
                 continue;
             }
-            AoyiProdIndex aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
+            AoyiProdIndexWithBLOBs aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
             if ("1".equals(bean.getState())) {
                 if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                     ids.add(bean.getId()) ;
@@ -787,7 +787,11 @@ public class AdminProdServiceImpl implements AdminProdService {
                     ids.add(bean.getId()) ;
                     continue;
                 }
-                if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl())) {
+                if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl()) && aoyiProdIndex.getMerchantId() != 4) {
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
+                if (StringUtils.isEmpty(aoyiProdIndex.getIntroduction()) && aoyiProdIndex.getMerchantId() == 4) {
                     ids.add(bean.getId()) ;
                     continue;
                 }
