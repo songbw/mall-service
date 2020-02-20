@@ -6,6 +6,7 @@
         <result column="card_id" jdbcType="INTEGER" property="cardId" />
         <result column="card" jdbcType="VARCHAR" property="card" />
         <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="user_coupon_code" jdbcType="VARCHAR" property="userCouponCode" />
         <result column="open_id" jdbcType="VARCHAR" property="openId" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -364,5 +365,11 @@
         <include refid="Base_Column_List" />
         from card_ticket
         where is_delete = 1 and card = #{card,jdbcType=VARCHAR} and open_id = #{openId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByUseCouponCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from card_ticket
+        where is_delete = 1 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
     </select>
 </mapper>

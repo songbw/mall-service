@@ -99,6 +99,7 @@ public class CardTicketServiceImpl implements CardTicketService {
         CardTicket ticket = new CardTicket();
         ticket.setOpenId(bean.getOpenId());
         ticket.setId(cardTicket.getId());
+        ticket.setStatus((short) 3);
 
         return ticketDao.update(ticket);
     }
@@ -107,7 +108,7 @@ public class CardTicketServiceImpl implements CardTicketService {
     public int exchangeCardTicket(CardTicketBean bean)  throws Exception{
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicket cardTicket = ticketDao.findById(bean.getId());
-        if(coupon.getCouponType() == 3 && cardTicket.getStatus() == 2){
+        if(coupon.getCouponType() == 3 && cardTicket.getStatus() == 3){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
             CouponUseInfo couponUseInfo = new CouponUseInfo();
@@ -125,10 +126,9 @@ public class CardTicketServiceImpl implements CardTicketService {
             if(insert == 1){
                 JobClientUtils.couponUseInfoInvalidTrigger(environment, jobClient, couponUseInfo.getId(), fetureDate);
                 CardTicket ticket = new CardTicket();
-                ticket.setStatus((short)3);
+                ticket.setStatus((short)4);
                 ticket.setId(bean.getId());
                 ticket.setUserCouponCode(userCouponCode);
-                ticket.setConsumedTime(date);
                 return ticketDao.update(ticket);
             }else{
                 throw new Exception("兑换失败");
@@ -145,12 +145,21 @@ public class CardTicketServiceImpl implements CardTicketService {
             CardInfo infoX = infoDao.findById(ticket.getCardId());
             ticket.setCardInfo(infoX);
 
-            List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
             List<CouponBean> couponBeanList = new ArrayList();
-            for (CardAndCoupon cardAndCoupon: cardAndCoupons){
-                CouponX couponX = couponDao.selectCouponXById(cardAndCoupon.getCouponId());
-                CouponBean couponBean = couponToBean(couponX);
+            if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
+                CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
+                CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
+                CouponBean couponBean = couponToBean(coupon);
                 couponBeanList.add(couponBean);
+            }else{
+                List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
+                for (CardAndCoupon cardAndCoupon: cardAndCoupons){
+                    CouponX couponX = couponDao.selectCouponXById(cardAndCoupon.getCouponId());
+                    if(couponX != null){
+                        CouponBean couponBean = couponToBean(couponX);
+                        couponBeanList.add(couponBean);
+                    }
+                }
             }
             ticket.setCoupons(couponBeanList);
         }
@@ -166,7 +175,7 @@ public class CardTicketServiceImpl implements CardTicketService {
     public int invalid(int id) {
         CardTicket ticket = new CardTicket();
         ticket.setId(id);
-        ticket.setStatus((short) 4);
+        ticket.setStatus((short) 7);
         return ticketDao.update(ticket);
     }
 
@@ -189,12 +198,21 @@ public class CardTicketServiceImpl implements CardTicketService {
             CardInfo infoX = infoDao.findById(ticket.getCardId());
             ticket.setCardInfo(infoX);
 
-            List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
             List<CouponBean> couponBeanList = new ArrayList();
-            for (CardAndCoupon cardAndCoupon: cardAndCoupons){
-                CouponX couponX = couponDao.selectCouponXById(cardAndCoupon.getCouponId());
-                CouponBean couponBean = couponToBean(couponX);
+            if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
+                CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
+                CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
+                CouponBean couponBean = couponToBean(coupon);
                 couponBeanList.add(couponBean);
+            }else{
+                List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
+                for (CardAndCoupon cardAndCoupon: cardAndCoupons){
+                    CouponX couponX = couponDao.selectCouponXById(cardAndCoupon.getCouponId());
+                    if(couponX != null){
+                        CouponBean couponBean = couponToBean(couponX);
+                        couponBeanList.add(couponBean);
+                    }
+                }
             }
             ticket.setCoupons(couponBeanList);
         }
