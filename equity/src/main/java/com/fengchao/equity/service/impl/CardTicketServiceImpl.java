@@ -107,7 +107,7 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public int exchangeCardTicket(CardTicketBean bean)  throws Exception{
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
-        CardTicket cardTicket = ticketDao.findById(bean.getId());
+        CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
         if(coupon.getCouponType() == 3 && cardTicket.getStatus() == 3){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
@@ -127,7 +127,7 @@ public class CardTicketServiceImpl implements CardTicketService {
                 JobClientUtils.couponUseInfoInvalidTrigger(environment, jobClient, couponUseInfo.getId(), fetureDate);
                 CardTicket ticket = new CardTicket();
                 ticket.setStatus((short)4);
-                ticket.setId(bean.getId());
+                ticket.setId(cardTicket.getId());
                 ticket.setUserCouponCode(userCouponCode);
                 return ticketDao.update(ticket);
             }else{

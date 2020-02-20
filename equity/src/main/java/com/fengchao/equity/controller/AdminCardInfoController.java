@@ -193,9 +193,9 @@ public class AdminCardInfoController {
                 cell2.setCellValue(cardInfo.getAmount());
                 Short type = cardInfo.getType();
                 if(type == 1){
-                    cell3.setCellValue("礼包券");
+                    cell3.setCellValue("礼包卡");
                 }else if(type == 2){
-                    cell3.setCellValue("代金券");
+                    cell3.setCellValue("代金卡");
                 }
                 Short status = cardInfo.getStatus();
                 if(status == 1){
