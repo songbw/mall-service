@@ -105,7 +105,7 @@ public class CardTicketServiceImpl implements CardTicketService {
     }
 
     @Override
-    public String exchangeCardTicket(CardTicketBean bean)  throws Exception{
+    public CouponUseInfo exchangeCardTicket(CardTicketBean bean)  throws Exception{
         String userCouponCode = "";
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
@@ -131,7 +131,7 @@ public class CardTicketServiceImpl implements CardTicketService {
                 ticket.setId(cardTicket.getId());
                 ticket.setUserCouponCode(userCouponCode);
                 ticketDao.update(ticket);
-                return userCouponCode;
+                return couponUseInfo;
             }else{
                 throw new Exception("兑换失败");
             }

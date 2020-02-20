@@ -5,6 +5,7 @@ import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketX;
+import com.fengchao.equity.model.CouponUseInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ public interface CardTicketService {
 
     int verifyCardTicket(CardTicketBean bean) throws Exception;
 
-    String exchangeCardTicket(CardTicketBean bean) throws Exception;
+    CouponUseInfo exchangeCardTicket(CardTicketBean bean) throws Exception;
 
     List<CardTicketX> getCardTicket(String openId);
 

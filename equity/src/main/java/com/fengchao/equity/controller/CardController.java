@@ -30,7 +30,7 @@ public class CardController {
     @PostMapping("exchange")
     public OperaResult exchangeCardTicket(@RequestBody CardTicketBean bean, OperaResult result) throws Exception {
         log.info("兑换礼品券参数 入参:{}", JSONUtil.toJsonString(bean));
-        result.getData().put("userCouponCode",ticketService.exchangeCardTicket(bean));
+        result.getData().put("result",ticketService.exchangeCardTicket(bean));
         return result;
     }
 
