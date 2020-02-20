@@ -795,7 +795,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             productDao.updateStateById(bean) ;
             // 查询是否有sku
             List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
-            if (starSkus != null || starSkus.size() > 0) {
+            if (starSkus != null && starSkus.size() > 0) {
                 StarSku starSku = starSkus.get(0) ;
                 starSku.setStatus(Integer.valueOf(bean.getState()));
                 starSku.setUpdateTime(new Date());
