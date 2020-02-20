@@ -37,4 +37,6 @@ public interface CardTicketMapperX {
     CardTicketX selectByCard(String card);
 
     CardTicketX seleteCardTicketByCard(@Param("openId") String openId, @Param("card") String card);
+
+    CardTicketX selectByUseCouponCode(String userCouponCode);
 }

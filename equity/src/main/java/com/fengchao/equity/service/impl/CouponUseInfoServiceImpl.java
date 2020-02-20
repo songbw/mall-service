@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
+import com.fengchao.equity.dao.CardTicketDao;
 import com.fengchao.equity.dao.CouponDao;
 import com.fengchao.equity.dao.CouponUseInfoDao;
 import com.fengchao.equity.exception.EquityException;
@@ -44,6 +45,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     private CouponUseInfoDao couponUseInfoDao;
     @Autowired
     private CouponDao couponDao;
+    @Autowired
+    private CardTicketDao ticketDao;
     @Autowired
     private JobClient jobClient;
     @Autowired
@@ -425,6 +428,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         useInfo.setStatus(2);
         int num = mapper.updateStatusByUserCode(useInfo);
         if(num == 1){
+            Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
+            if(coupon.getCouponType() != null && coupon.getCouponType() == 3){
+                ticketDao.occupyCard(bean.getUserCouponCode());
+            }
             JobClientUtils.couponReleaseTrigger(environment, jobClient, bean.getId());
         }
         return num;
@@ -594,9 +601,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     public int triggerRelease(int couponUserId) {
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfo couponUseInfo = couponUseInfoDao.findBycouponUserId(couponUserId);
+        Date date = new Date();
         if(couponUseInfo != null){
 //            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
-            Date date = new Date();
+
             if(couponUseInfo.getEffectiveEndDate().before(date)){
                 useInfo.setStatus(4);
             }else{
@@ -604,6 +612,18 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             }
         }
         useInfo.setId(couponUserId);
+
+        CardTicketX cardTicketX = ticketDao.findByuseCouponCode(couponUseInfo.getUserCouponCode());
+        CardTicket ticket = new CardTicket();
+        if(cardTicketX != null){
+            ticket.setId(cardTicketX.getId());
+            if(cardTicketX.getEndTime().before(date)){
+                ticket.setStatus((short)7);
+            }else{
+                ticket.setStatus((short) 4);
+            }
+        }
+        ticketDao.update(ticket);
         return mapper.updateByPrimaryKeySelective(useInfo);
     }
 
