@@ -105,7 +105,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     }
 
     @Override
-    public int exchangeCardTicket(CardTicketBean bean)  throws Exception{
+    public String exchangeCardTicket(CardTicketBean bean)  throws Exception{
+        String userCouponCode = "";
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
         if(coupon.getCouponType() == 3 && cardTicket.getStatus() == 3){
@@ -119,7 +120,7 @@ public class CardTicketServiceImpl implements CardTicketService {
             couponUseInfo.setEffectiveEndDate(fetureDate);
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserOpenId(cardTicket.getOpenId());
-            String userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
+            userCouponCode = df.format(Integer.parseInt(coupon.getSupplierMerchantId())) + System.currentTimeMillis() + (int)((Math.random()*9+1)*100000);
             couponUseInfo.setUserCouponCode(userCouponCode);
             couponUseInfo.setAppId(coupon.getAppId());
             int insert = useInfoDao.insert(couponUseInfo);
@@ -129,7 +130,8 @@ public class CardTicketServiceImpl implements CardTicketService {
                 ticket.setStatus((short)4);
                 ticket.setId(cardTicket.getId());
                 ticket.setUserCouponCode(userCouponCode);
-                return ticketDao.update(ticket);
+                ticketDao.update(ticket);
+                return userCouponCode;
             }else{
                 throw new Exception("兑换失败");
             }

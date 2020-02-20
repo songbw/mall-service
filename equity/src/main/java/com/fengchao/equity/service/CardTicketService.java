@@ -18,7 +18,7 @@ public interface CardTicketService {
 
     int verifyCardTicket(CardTicketBean bean) throws Exception;
 
-    int exchangeCardTicket(CardTicketBean bean) throws Exception;
+    String exchangeCardTicket(CardTicketBean bean) throws Exception;
 
     List<CardTicketX> getCardTicket(String openId);
 
