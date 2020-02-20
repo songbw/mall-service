@@ -27,6 +27,8 @@ public class ShoppingCartBean extends AoyiProdIndex {
 
     private Integer perLimited = -1;
 
+    private StarSku starSku ;
+
     public Integer getId() {
         return id;
     }
@@ -113,5 +115,15 @@ public class ShoppingCartBean extends AoyiProdIndex {
 
     public void setSkuId(String skuId) {
         this.skuId = skuId;
+    }
+
+    @Override
+    public StarSku getStarSku() {
+        return starSku;
+    }
+
+    @Override
+    public void setStarSku(StarSku starSku) {
+        this.starSku = starSku;
     }
 }
