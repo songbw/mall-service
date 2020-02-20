@@ -205,6 +205,9 @@ public class CardTicketServiceImpl implements CardTicketService {
 
         CouponBean couponBean = new CouponBean();
 
+        if(coupon == null){
+            return couponBean;
+        }
         couponBean.setId(coupon.getId());
         couponBean.setName(coupon.getName());
         couponBean.setSupplierMerchantId(coupon.getSupplierMerchantId());
