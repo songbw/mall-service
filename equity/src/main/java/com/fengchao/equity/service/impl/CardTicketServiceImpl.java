@@ -109,6 +109,7 @@ public class CardTicketServiceImpl implements CardTicketService {
         String userCouponCode = "";
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
+        CardInfoX cardInfoX = infoDao.findByCardId(cardTicket.getCardId());
         if(coupon.getCouponType() == 4 && cardTicket.getStatus() == 3){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
@@ -116,7 +117,7 @@ public class CardTicketServiceImpl implements CardTicketService {
             couponUseInfo.setCollectedTime(date);
             couponUseInfo.setCouponId(coupon.getId());
             couponUseInfo.setEffectiveStartDate(date);
-            Date fetureDate = DataUtils.getFetureDate(date, coupon.getEffectiveDays());
+            Date fetureDate = DataUtils.getFetureDate(date, cardInfoX.getEffectiveDays());
             couponUseInfo.setEffectiveEndDate(fetureDate);
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserOpenId(cardTicket.getOpenId());
