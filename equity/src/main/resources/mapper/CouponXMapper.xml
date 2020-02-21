@@ -829,7 +829,7 @@
     from coupon
     left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
     where status = 4 and customer_type = 0
-    and collect_type != 4 and coupon_type != 3
+    and collect_type != 4 and coupon_type != 4
     <if test="categoryName != null" >
       <bind name="patternName" value="'%' + categoryName + '%'" />
       and aoyi_base_category.category_name LIKE #{patternName}
@@ -855,7 +855,7 @@
     from coupon
     left join aoyi_base_category on aoyi_base_category.category_id = coupon.category
     where status = 4 and customer_type = 0
-    and collect_type != 4 and coupon_type != 3
+    and collect_type != 4 and coupon_type != 4
     <if test="categoryName != null" >
       <bind name="patternName" value="'%' + categoryName + '%'" />
       and aoyi_base_category.category_name LIKE #{patternName}
@@ -877,7 +877,7 @@
     select distinct category from coupon
     where status = 4
     and customer_type = 0
-    and coupon_type != 3
+    and coupon_type != 4
     <if test="appId != null" >
       and app_id = #{appId,jdbcType=VARCHAR}
     </if>
@@ -887,7 +887,7 @@
     where tags != ""
     and status = 4
     and customer_type = 0
-    and coupon_type != 3
+    and coupon_type != 4
     <if test="appId != null" >
       and app_id = #{appId,jdbcType=VARCHAR}
     </if>
@@ -916,7 +916,7 @@
     <if test="appId != null" >
       and app_id = #{appId,jdbcType=VARCHAR}
     </if>
-    and status = 4 and coupon_type != 3
+    and status = 4 and coupon_type != 4
   </select>
   <select id="selectGrantCoupon" resultMap="BaseResultMap">
     select

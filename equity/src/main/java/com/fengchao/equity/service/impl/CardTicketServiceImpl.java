@@ -109,7 +109,7 @@ public class CardTicketServiceImpl implements CardTicketService {
         String userCouponCode = "";
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
-        if(coupon.getCouponType() == 3 && cardTicket.getStatus() == 3){
+        if(coupon.getCouponType() == 4 && cardTicket.getStatus() == 3){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
             CouponUseInfo couponUseInfo = new CouponUseInfo();
