@@ -42,19 +42,25 @@ public class OrderController {
 
     @PostMapping
     private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result, @RequestHeader("appId") String appId) {
-        if (StringUtils.isEmpty(appId)) {
-            result.setCode(4000002);
-            result.setMsg("appId 不能为空");
-            return result ;
+        try {
+            if (StringUtils.isEmpty(appId)) {
+                result.setCode(4000002);
+                result.setMsg("appId 不能为空");
+                return result;
+            }
+            bean.setAppId(appId);
+            log.debug("创建订单 入参:{}", JSONUtil.toJsonString(bean));
+
+            OperaResult operaResult = service.add2(bean);
+
+            log.debug("创建订单 返回:{}", JSONUtil.toJsonString(operaResult));
+
+            return operaResult;
+        } catch (Exception e) {
+            log.error("创建订单 异常:{}", e.getMessage(), e);
+
+            throw new RuntimeException(e);
         }
-        bean.setAppId(appId);
-        log.debug("创建订单 入参:{}", JSONUtil.toJsonString(bean));
-
-        OperaResult operaResult = service.add2(bean);
-
-        log.debug("创建订单 返回:{}", JSONUtil.toJsonString(operaResult));
-
-        return operaResult;
     }
 
     @DeleteMapping

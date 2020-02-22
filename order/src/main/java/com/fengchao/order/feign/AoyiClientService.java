@@ -1,7 +1,8 @@
 package com.fengchao.order.feign;
 
 import com.fengchao.order.bean.*;
-import com.fengchao.order.feign.hystric.AoyiClientServiceH;
+import com.fengchao.order.feign.hystric.AoyiClientServiceClientFallbackFactory;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient(value = "aoyi-client", fallback = AoyiClientServiceH.class)
+@FeignClient(value = "aoyi-client", url = "${rpc.feign.client.aoyiclient.url:}", fallbackFactory = AoyiClientServiceClientFallbackFactory.class)
 public interface AoyiClientService {
 
     @RequestMapping(value = "/order", method = RequestMethod.POST)
@@ -35,5 +36,10 @@ public interface AoyiClientService {
 
     @RequestMapping(value = "/star/orders", method = RequestMethod.POST)
     OperaResponse addOrder(@RequestBody StarOrderBean bean);
+
+    // 唯品会相关 begin
+    @RequestMapping(value = "/weipinhui/renderOrder", method = RequestMethod.POST)
+    OperaResponse weipinhuiRenderOrder(@RequestBody AoyiRenderOrderRequest aoyiRenderOrderRequest);
+    // 唯品会相关 end
 
 }

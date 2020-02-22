@@ -17,7 +17,7 @@ public class OrderMerchantBean implements Serializable {
     private String remark;
     private Integer invoiceId;
     private String payment;
-    private Float servFee;
+    private Float servFee; // 运费
     private Float amount;
     private Float saleAmount;
     private Integer status;

@@ -21,6 +21,7 @@ import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
 import com.fengchao.order.service.OrderService;
+import com.fengchao.order.service.weipinhui.WeipinhuiOrderService;
 import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
@@ -89,9 +90,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrdersMapper mapper ;
 
+    @Autowired
+    private WeipinhuiOrderService weipinhuiOrderService;
+
     @Transactional
     @Override
     public OperaResult add2(OrderParamBean orderBean){
+        // 1. 校验参数
         OperaResult operaResult = new OperaResult();
         if (orderBean == null) {
             operaResult.setCode(400501);
@@ -105,6 +110,8 @@ public class OrderServiceImpl implements OrderService {
             operaResult.setMsg("receiverId 不能为空。");
             return operaResult;
         }
+
+        // 2. 获取该用户的地址
         Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
         if (receiver == null) {
             operaResult.setCode(400501);
@@ -112,18 +119,7 @@ public class OrderServiceImpl implements OrderService {
             return operaResult;
         }
         receiver = handleBean(receiver);
-        orderBean.setReceiverName(receiver.getReceiverName());
-        orderBean.setTelephone(receiver.getTelephone());
-        orderBean.setMobile(receiver.getMobile());
-        orderBean.setEmail(receiver.getEmail());
-        orderBean.setProvinceId(receiver.getProvinceId());
-        orderBean.setCityId(receiver.getCityId());
-        orderBean.setCountyId(receiver.getCountyId());
-        orderBean.setTownId(receiver.getTownId());
-        orderBean.setAddress(receiver.getAddress());
-        orderBean.setZip(receiver.getZip());
-        orderBean.setInvoiceState("1");
-        orderBean.setInvoiceType("4");
+        evaluateAddress(orderBean, receiver);
 
         // TODO 验证数据有效性
         // TODO 验证业务逻辑有效性
@@ -131,44 +127,14 @@ public class OrderServiceImpl implements OrderService {
          * TODO
          * 检查商品库存、检查商品价格
          * 验证优惠券有效性、验证活动有效性
-         *
          * 验证商品总价，验证支付总价
          */
 
         // TODO 存库
         // TODO 通知奥义 (如果成功则正常返回，如果失败则回滚数据库)
+        Order bean = createOrder(orderBean, receiver);
 
-        Order bean = new Order();
-        bean.setOpenId(orderBean.getOpenId());
-        bean.setCompanyCustNo(orderBean.getCompanyCustNo());
-        bean.setInvoiceTitle(orderBean.getInvoiceTitleName());
-        bean.setTaxNo(orderBean.getInvoiceEnterpriseNumber());
-        bean.setInvoiceContent(orderBean.getInvoiceTitleName());
-        bean.setPayment(orderBean.getPayment());
-        bean.setReceiverName(receiver.getReceiverName());
-        bean.setRegionId(orderBean.getRegionId());
-        bean.setTelephone(receiver.getTelephone());
-        bean.setMobile(receiver.getMobile());
-        bean.setEmail(receiver.getEmail());
-        bean.setProvinceId(receiver.getProvinceId());
-        bean.setCityId(receiver.getCityId());
-        bean.setCountyId(receiver.getCountyId());
-        bean.setTownId(receiver.getTownId());
-        bean.setAddress(receiver.getAddress());
-        bean.setZip(receiver.getZip());
-        bean.setProvinceName(receiver.getProvinceName());
-        bean.setCityName(receiver.getCityName());
-        bean.setCountyName(receiver.getCountyName());
-        bean.setInvoiceState("1");
-        bean.setInvoiceType("4");
-        bean.setStatus(0);
-        bean.setType(1);
-        Date date = new Date() ;
-        bean.setCreatedAt(date);
-        bean.setUpdatedAt(date);
-        bean.setAppId(orderBean.getAppId());
-
-        // 优惠券
+        // 3. 优惠券 - 预占优惠券
         OrderCouponBean coupon = orderBean.getCoupon();
         List<OrderCouponMerchantBean> orderCouponMerchants = null;
         if (coupon != null) {
@@ -180,12 +146,12 @@ public class OrderServiceImpl implements OrderService {
             OperaResult occupyResult = equityService.occupy(couponUseInfoBean);
             if (occupyResult.getCode() != 200) {
                 // 优惠券预占失败的话，订单失败
-                logger.info("订单" + bean.getId() + "优惠券预占失败");
+                logger.warn("opendid:{} 下单优惠券预占失败!", bean.getOpenId());
                 operaResult.setCode(400601);
                 operaResult.setMsg(occupyResult.getMsg());
                 return operaResult;
             } else {
-                bean.setCouponStatus(2);
+                bean.setCouponStatus(2); // 优惠券状态1： 未使用， 2：已占用，3：已使用
             }
         }
 
@@ -204,7 +170,7 @@ public class OrderServiceImpl implements OrderService {
             return verifyLimitResult ;
         }
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
-        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) { // 遍历商户(商户单)
             bean.setTradeNo(orderMerchantBean.getTradeNo() + orderBean.getTradeNo());
             orderMerchantBean.setTradeNo(bean.getTradeNo());
             bean.setMerchantNo(orderMerchantBean.getMerchantNo());
@@ -213,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
             bean.setAmount(orderMerchantBean.getAmount());
             bean.setSaleAmount(orderMerchantBean.getSaleAmount());
             bean.setSkus(orderMerchantBean.getSkus());
-            if (orderCouponMerchants != null && orderCouponMerchants.size() > 0) {
+            if (orderCouponMerchants != null && orderCouponMerchants.size() > 0) { // TODO : 逻辑不太清晰
                 for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
                     if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
                         bean.setCouponId(coupon.getId());
@@ -225,8 +191,10 @@ public class OrderServiceImpl implements OrderService {
             // 添加主订单
             logger.info("创建订单 新增主订单:{}", JSONUtil.toJsonString(bean));
             orderMapper.insert(bean);
-            AtomicInteger i= new AtomicInteger(1);
-            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+
+            //
+            AtomicInteger atomicInteger = new AtomicInteger(1);
+            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) { // 遍历该商户的sku列表
                 AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu(), orderBean.getAppId());
 
                 // 判断产品上下架状态
@@ -245,35 +213,12 @@ public class OrderServiceImpl implements OrderService {
                     inventories.add(inventoryMpus) ;
                 }
 
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setPromotionId(orderSku.getPromotionId());
-                orderDetail.setSalePrice(orderSku.getSalePrice());
-                orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
-                // orderDetail.setCreatedAt(date);
-                // orderDetail.setUpdatedAt(date);
-                orderDetail.setOrderId(bean.getId());
-                orderDetail.setImage(prodIndexWithBLOBs.getImage());
-                orderDetail.setModel(prodIndexWithBLOBs.getModel());
-                orderDetail.setName(prodIndexWithBLOBs.getName());
-                orderDetail.setProductType(prodIndexWithBLOBs.getType());
-                if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
-                    BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
-                    orderDetail.setSprice(bigDecimal);
-                }
-                orderDetail.setStatus(0);
-                orderDetail.setSkuId(orderSku.getSkuId());
-                orderDetail.setMpu(orderSku.getMpu());
-                orderDetail.setMerchantId(orderSku.getMerchantId());
-                orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
-                orderDetail.setUnitPrice(orderSku.getUnitPrice());
-                orderDetail.setCheckedPrice(orderSku.getCheckedPrice());
-                orderDetail.setNum(orderSku.getNum());
-                orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
-                orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
-                // 添加子订单
+                // 创建 子订单
+                OrderDetail orderDetail = createOrderDetail(bean, orderSku, prodIndexWithBLOBs, atomicInteger);
+
+                // 保存添加子订单
                 logger.debug("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
                 orderDetailDao.insert(orderDetail);
-//                orderDetailXMapper.insert(orderDetailX) ;
 
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
@@ -297,28 +242,42 @@ public class OrderServiceImpl implements OrderService {
         // 传数据给奥义
         // 滤掉非aoyi商品的数据
         List<OrderMerchantBean> orderMerchantBeanList = new ArrayList<>(); // aoyi的商品数据
-        //STAR商品的数据
+        // STAR商品的数据
         List<OrderMerchantBean> starOrderMerchantBeanList = new ArrayList<>();
-        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+        // 唯品会商品的数据
+        List<OrderMerchantBean> weipinhuiOrderMerchantBeanList = new ArrayList<>();
+
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) { // 遍历商户(商户单)
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
-                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
-                orderMerchantBean.getSkus().forEach(orderDetailX -> {
-                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
-                    aoyiOrderDetail.add(orderDetailX) ;
-                });
-                orderMerchantBean.setSkus(aoyiOrderDetail);
-                orderMerchantBeanList.add(orderMerchantBean);
+                if (orderMerchantBean.getMerchantNo().equals(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的商品
+                    handleUnitPrice(orderMerchantBean);
+                    weipinhuiOrderMerchantBeanList.add(orderMerchantBean);
+                } else {
+                    handleUnitPrice(orderMerchantBean);
+                    orderMerchantBeanList.add(orderMerchantBean);
+                }
             }
+
             if (orderMerchantBean.getMerchantId() == OrderConstants.STAR_MERCHANG_CODE) {
-                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
-                orderMerchantBean.getSkus().forEach(orderDetailX -> {
-                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
-                    aoyiOrderDetail.add(orderDetailX) ;
-                });
-                orderMerchantBean.setSkus(aoyiOrderDetail);
+                handleUnitPrice(orderMerchantBean);
                 starOrderMerchantBeanList.add(orderMerchantBean);
             }
         }
+
+        // 唯品会
+        logger.info("订单唯品会商品信息, {}", JSONUtil.toJsonString(weipinhuiOrderMerchantBeanList));
+        if (CollectionUtils.isNotEmpty(weipinhuiOrderMerchantBeanList)) {
+            OperaResponse<String> weipinhuiResult = weipinhuiOrderService.renderOrder(orderBean, weipinhuiOrderMerchantBeanList.get(0), coupon, inventories);
+
+            if (weipinhuiResult.getCode() != 200) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+                operaResult.setCode(weipinhuiResult.getCode());
+                operaResult.setMsg(weipinhuiResult.getMsg());
+                return operaResult ;
+            }
+        }
+
         // 调用预占商品库存星链模块接口
         logger.info("订单怡亚通商品信息, {}", JSONUtil.toJsonString(starOrderMerchantBeanList));
         if (starOrderMerchantBeanList != null && starOrderMerchantBeanList.size() > 0) {
@@ -387,6 +346,121 @@ public class OrderServiceImpl implements OrderService {
             logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
+    }
+
+    /**
+     * 赋值-地址
+     */
+    private void evaluateAddress(OrderParamBean orderParamBean, Receiver receiver) {
+        orderParamBean.setReceiverName(receiver.getReceiverName());
+        orderParamBean.setTelephone(receiver.getTelephone());
+        orderParamBean.setMobile(receiver.getMobile());
+        orderParamBean.setEmail(receiver.getEmail());
+        orderParamBean.setProvinceId(receiver.getProvinceId());
+        orderParamBean.setCityId(receiver.getCityId());
+        orderParamBean.setCountyId(receiver.getCountyId());
+        orderParamBean.setTownId(receiver.getTownId());
+        orderParamBean.setAddress(receiver.getAddress());
+        orderParamBean.setZip(receiver.getZip());
+        orderParamBean.setInvoiceState("1");
+        orderParamBean.setInvoiceType("4");
+    }
+
+    /**
+     *
+     *
+     * @param orderMerchantBean
+     * @return
+     */
+    private void handleUnitPrice(OrderMerchantBean orderMerchantBean) {
+        List<OrderDetailX> aoyiOrderDetail = new ArrayList<>();
+        orderMerchantBean.getSkus().forEach(orderDetailX -> {
+            orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+            aoyiOrderDetail.add(orderDetailX) ;
+        });
+        orderMerchantBean.setSkus(aoyiOrderDetail);
+    }
+
+    /**
+     *
+     * @param order
+     * @param orderDetailX
+     * @param aoyiProdIndex
+     * @param atomicInteger
+     * @return
+     */
+    private OrderDetail createOrderDetail(Order order, OrderDetailX orderDetailX,
+                                          AoyiProdIndex aoyiProdIndex,  AtomicInteger atomicInteger) {
+        OrderDetail orderDetail = new OrderDetail();
+
+        orderDetail.setPromotionId(orderDetailX.getPromotionId());
+        orderDetail.setSalePrice(orderDetailX.getSalePrice());
+        orderDetail.setPromotionDiscount(orderDetailX.getPromotionDiscount());
+        // orderDetail.setCreatedAt(date);
+        // orderDetail.setUpdatedAt(date);
+        orderDetail.setOrderId(order.getId());
+        orderDetail.setImage(aoyiProdIndex.getImage());
+        orderDetail.setModel(aoyiProdIndex.getModel());
+        orderDetail.setName(aoyiProdIndex.getName());
+        orderDetail.setProductType(aoyiProdIndex.getType());
+        if (!StringUtils.isEmpty(aoyiProdIndex.getSprice())) {
+            BigDecimal bigDecimal = new BigDecimal(aoyiProdIndex.getSprice()) ;
+            orderDetail.setSprice(bigDecimal);
+        }
+        orderDetail.setStatus(0);
+        orderDetail.setSkuId(orderDetailX.getSkuId());
+        orderDetail.setMpu(orderDetailX.getMpu());
+        orderDetail.setMerchantId(orderDetailX.getMerchantId());
+        orderDetail.setSubOrderId(order.getTradeNo() + String.format("%03d", atomicInteger.getAndIncrement()));
+        orderDetail.setUnitPrice(orderDetailX.getUnitPrice());
+        orderDetail.setCheckedPrice(orderDetailX.getCheckedPrice());
+        orderDetail.setNum(orderDetailX.getNum());
+        orderDetail.setCategory(aoyiProdIndex.getCategory());
+        orderDetail.setSkuCouponDiscount((int) (orderDetailX.getSkuCouponDiscount() * 100)) ;
+
+        return orderDetail;
+    }
+
+    /**
+     * 生成用户单
+     *
+     * @param orderParamBean
+     * @param receiver
+     * @return
+     */
+    private Order createOrder(OrderParamBean orderParamBean, Receiver receiver) {
+        Order bean = new Order();
+
+        bean.setOpenId(orderParamBean.getOpenId());
+        bean.setCompanyCustNo(orderParamBean.getCompanyCustNo());
+        bean.setInvoiceTitle(orderParamBean.getInvoiceTitleName());
+        bean.setTaxNo(orderParamBean.getInvoiceEnterpriseNumber());
+        bean.setInvoiceContent(orderParamBean.getInvoiceTitleName());
+        bean.setPayment(orderParamBean.getPayment());
+        bean.setReceiverName(receiver.getReceiverName());
+        bean.setRegionId(orderParamBean.getRegionId());
+        bean.setTelephone(receiver.getTelephone());
+        bean.setMobile(receiver.getMobile());
+        bean.setEmail(receiver.getEmail());
+        bean.setProvinceId(receiver.getProvinceId());
+        bean.setCityId(receiver.getCityId());
+        bean.setCountyId(receiver.getCountyId());
+        bean.setTownId(receiver.getTownId());
+        bean.setAddress(receiver.getAddress());
+        bean.setZip(receiver.getZip());
+        bean.setProvinceName(receiver.getProvinceName());
+        bean.setCityName(receiver.getCityName());
+        bean.setCountyName(receiver.getCountyName());
+        bean.setInvoiceState("1");
+        bean.setInvoiceType("4");
+        bean.setStatus(0);
+        bean.setType(1);
+        Date date = new Date() ;
+        bean.setCreatedAt(date);
+        bean.setUpdatedAt(date);
+        bean.setAppId(orderParamBean.getAppId());
+
+        return bean;
     }
 
     /**

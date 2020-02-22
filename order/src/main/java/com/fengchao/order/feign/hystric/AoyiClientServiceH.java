@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.AoyiClientService;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+@Deprecated
 public class AoyiClientServiceH implements AoyiClientService {
     @Override
     public OperaResponse order(OrderParamBean orderParamBean) {
@@ -61,5 +62,8 @@ public class AoyiClientServiceH implements AoyiClientService {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 
-
+    @Override
+    public OperaResponse weipinhuiRenderOrder(AoyiRenderOrderRequest aoyiRenderOrderRequest) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
 }
