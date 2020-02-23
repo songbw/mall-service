@@ -1,9 +1,11 @@
 package com.fengchao.order.service.weipinhui;
 
 import com.fengchao.order.bean.*;
+import com.fengchao.order.dao.WeipinhuiAddressDao;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.model.OrderDetailX;
+import com.fengchao.order.model.WeipinhuiAddress;
 import com.fengchao.order.rpc.AoyiRpcService;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiDeliverAddress;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiItem;
@@ -11,9 +13,9 @@ import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.order.utils.AlarmUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
     private ProductService productService;
 
     private EquityServiceClient equityService;
+
+    private WeipinhuiAddressDao weipinhuiAddressDao;
 
     @Autowired
     public WeipinhuiOrderServiceImpl(AoyiRpcService aoyiRpcService,
@@ -103,19 +107,28 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
             aoyiRenderOrderRequest.setItems(items); // 商品信息
 
             // 3.处理地址信息
-            AoyiDeliverAddress aoyiDeliverAddress = new AoyiDeliverAddress();
+            // 获取唯品会地址(3级)的code
+            WeipinhuiAddress weipinhuiAddress =
+                    weipinhuiAddressDao.selectBySuningAddress(orderParamBean.getTownId(), orderParamBean.getCityId(), 3);
+            if (weipinhuiAddress != null && StringUtils.isNotBlank(weipinhuiAddress.getSnCode())) {
+                AoyiDeliverAddress aoyiDeliverAddress = new AoyiDeliverAddress();
 
-            aoyiDeliverAddress.setDivisionCode(orderParamBean.getTownId()); // 地址 Code 只能识别区级别地址代码 3级地址
-            aoyiDeliverAddress.setFullName(orderParamBean.getReceiverName()); // 收件人名称
-            aoyiDeliverAddress.setMobile(orderParamBean.getMobile()); // 收件人手机号
-            aoyiDeliverAddress.setAddressDetail(orderParamBean.getAddress()); // 收件人详细地址
+                //
+                aoyiDeliverAddress.setDivisionCode(weipinhuiAddress.getWphCode()); // 地址 Code 只能识别区级别地址代码 3级地址
+                aoyiDeliverAddress.setFullName(orderParamBean.getReceiverName()); // 收件人名称
+                aoyiDeliverAddress.setMobile(orderParamBean.getMobile()); // 收件人手机号
+                aoyiDeliverAddress.setAddressDetail(orderParamBean.getAddress()); // 收件人详细地址
 
-            //
-            aoyiRenderOrderRequest.setDeliveryAddress(aoyiDeliverAddress);
+                //
+                aoyiRenderOrderRequest.setDeliveryAddress(aoyiDeliverAddress);
 
-            // 4. 执行rpc请求
-            log.info("唯品会预下单 组装AoyiRenderOrderRequest:{}", JSONUtil.toJsonStringWithoutNull(aoyiRenderOrderRequest));
-            rpcResult = aoyiRpcService.weipinhuiRend(aoyiRenderOrderRequest);
+                // 4. 执行rpc请求
+                log.info("唯品会预下单 组装AoyiRenderOrderRequest:{}", JSONUtil.toJsonStringWithoutNull(aoyiRenderOrderRequest));
+                rpcResult = aoyiRpcService.weipinhuiRend(aoyiRenderOrderRequest);
+            } else {
+                rpcResult.setCode(500);
+                rpcResult.setMsg("未找到对应的唯品会地址 sncode:" + orderParamBean.getTownId() + "snpcode:" + orderParamBean.getCityId() + "level:3");
+            }
 
             // 5. 回滚
             if (rpcResult.getCode() != 200) {
@@ -134,7 +147,7 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
                     log.warn("唯品会预下单失败; 回滚库存, 返回结果:{}", JSONUtil.toJsonString(inventoryAddResult));
                 }
 
-                throw new Exception(rpcResult.getMessage());
+                throw new Exception(rpcResult.getMsg());
             }
         } catch (Exception e) {
 
