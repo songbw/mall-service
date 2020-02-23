@@ -2,6 +2,7 @@ package com.fengchao.order.feign;
 
 import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.hystric.AoyiClientServiceClientFallbackFactory;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,8 +39,24 @@ public interface AoyiClientService {
     OperaResponse addOrder(@RequestBody StarOrderBean bean);
 
     // 唯品会相关 begin
+
+    /**
+     * 预下单
+     *
+     * @param aoyiRenderOrderRequest
+     * @return
+     */
     @RequestMapping(value = "/weipinhui/renderOrder", method = RequestMethod.POST)
     OperaResponse weipinhuiRenderOrder(@RequestBody AoyiRenderOrderRequest aoyiRenderOrderRequest);
+
+    /**
+     * 创建订单
+     *
+     * @param aoyiConfirmOrderRequest
+     * @return
+     */
+    @RequestMapping(value = "/weipinhui/createOrder", method = RequestMethod.POST)
+    OperaResponse weipinhuiCreateOrder(@RequestBody AoyiConfirmOrderRequest aoyiConfirmOrderRequest);
     // 唯品会相关 end
 
 }

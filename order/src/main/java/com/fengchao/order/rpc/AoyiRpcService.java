@@ -4,6 +4,7 @@ import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.AoyiClientService;
 import com.fengchao.order.rpc.extmodel.Email;
 import com.fengchao.order.rpc.extmodel.SMSPostBean;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiDeliverAddress;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiItem;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
@@ -69,7 +70,34 @@ public class AoyiRpcService {
             operaResponse.setMessage(e.getMessage());
         }
 
-        log.info("唯品会预下单 调用aoyiClient rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+        log.info("唯品会预下单 AoyiRpcService#weipinhuiRend 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        return operaResponse;
+    }
+
+    /**
+     * 唯品会确认订单
+     *
+     * @param aoyiConfirmOrderRequest
+     * @return
+     */
+    public OperaResponse<String> weipinhuiCreateOrder(AoyiConfirmOrderRequest aoyiConfirmOrderRequest) {
+        // 返回值
+        OperaResponse<String> operaResponse = null;
+
+        try {
+            log.info("唯品会确认订单 调用aoyiClient rpc服务 入参:{}", JSONUtil.toJsonString(aoyiConfirmOrderRequest));
+
+            operaResponse = aoyiClientService.weipinhuiCreateOrder(aoyiConfirmOrderRequest);
+            log.info("唯品会确认订单 调用aoyiClient rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+        } catch (Exception e) {
+            log.error("唯品会确认订单 异常:{}", e.getMessage(), e);
+
+            operaResponse.setCode(500);
+            operaResponse.setMessage(e.getMessage());
+        }
+
+        log.info("唯品会确认订单 AoyiRpcService#weipinhuiCreateOrder 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         return operaResponse;
     }

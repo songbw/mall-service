@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.AoyiClientService;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +65,11 @@ public class AoyiClientServiceH implements AoyiClientService {
 
     @Override
     public OperaResponse weipinhuiRenderOrder(AoyiRenderOrderRequest aoyiRenderOrderRequest) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse weipinhuiCreateOrder(AoyiConfirmOrderRequest aoyiConfirmOrderRequest) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 }
