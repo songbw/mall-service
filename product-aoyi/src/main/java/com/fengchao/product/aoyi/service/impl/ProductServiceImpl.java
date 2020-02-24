@@ -442,12 +442,12 @@ public class ProductServiceImpl implements ProductService {
         productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
             aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+            BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
             for (StarSku starSku: starSkus) {
                 if (aoyiProdIndex.getSkuid().equals(starSku.getSpuId())) {
                     BigDecimal bigDecimal = new BigDecimal(starSku.getPrice()) ;
                     String price = bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString() ;
-                    aoyiProdIndex.setPrice(price);
-                    BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
+                    aoyiProdIndexX.setPrice(price);
                     aoyiProdIndexX.setStarSku(starSku);
                 }
             }
