@@ -2,18 +2,12 @@ package com.fengchao.order.rpc;
 
 import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.AoyiClientService;
-import com.fengchao.order.rpc.extmodel.Email;
-import com.fengchao.order.rpc.extmodel.SMSPostBean;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
-import com.fengchao.order.rpc.extmodel.weipinhui.AoyiDeliverAddress;
-import com.fengchao.order.rpc.extmodel.weipinhui.AoyiItem;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
