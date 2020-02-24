@@ -124,4 +124,14 @@ public class CardTicketDao {
     public CardTicketX findByuseCouponCode(String userCouponCode) {
         return mapperX.selectByUseCouponCode(userCouponCode);
     }
+
+    public List<CardTicket> findActivateTicket(List<String> cards) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andCardIn(cards);
+        criteria.andStatusNotEqualTo((short) 1);
+
+        return mapper.selectByExample(example);
+    }
 }

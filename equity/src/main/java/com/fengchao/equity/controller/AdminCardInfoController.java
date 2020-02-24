@@ -98,7 +98,7 @@ public class AdminCardInfoController {
     @PutMapping("activate")
     public OperaResult activateCardTicket(@RequestBody List<CardTicket> beans, OperaResult result){
         log.info("激活createCardTicket礼品券参数 入参:{}", JSONUtil.toJsonString(beans));
-        result.getData().put("result",ticketService.activatesCardTicket(beans));
+        result.getData().put("激活失败cards:",ticketService.activatesCardTicket(beans));
         return result;
     }
 
