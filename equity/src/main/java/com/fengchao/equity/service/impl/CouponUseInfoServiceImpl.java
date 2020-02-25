@@ -429,7 +429,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         int num = mapper.updateStatusByUserCode(useInfo);
         if(num == 1){
             Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
-            if(coupon.getCouponType() != null && coupon.getCouponType() == 3){
+            if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
                 ticketDao.occupyCard(bean.getUserCouponCode());
             }
             JobClientUtils.couponReleaseTrigger(environment, jobClient, bean.getId());

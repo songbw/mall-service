@@ -230,7 +230,7 @@ public class CouponServiceImpl implements CouponService {
         }
 
         Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
-        if(coupon.getCouponType() != null && coupon.getCouponType() == 3){
+        if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
             ticketDao.consumeCard(bean.getUserCouponCode());
         }
         useInfo.setId(bean.getId());
