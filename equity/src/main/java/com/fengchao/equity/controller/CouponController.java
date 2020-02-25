@@ -129,6 +129,7 @@ public class CouponController {
     @PostMapping("consume")
     public OperaResult consume(@RequestBody CouponUseInfoBean bean,
                                OperaResult result){
+        log.info("创建核销优惠券参数 入参:{}", JSONUtil.toJsonString(bean));
         CouponUseInfoX coupon = couponService.consumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
@@ -140,6 +141,7 @@ public class CouponController {
             result.getData().put("id",coupon.getCouponId());
             result.getData().put("code",coupon.getCode());
         }
+        log.info("创建核销优惠券参数 出参:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
@@ -155,6 +157,12 @@ public class CouponController {
         if(num == 2){
             result.setCode(700001);
             result.setMsg("优惠券不在有效期，不能使用");
+        }else if(num == 3){
+            result.setCode(700002);
+            result.setMsg("优惠券存在");
+        }else if(num == 4){
+            result.setCode(700003);
+            result.setMsg("优惠券已使用");
         }else {
             result.getData().put("result",num);
         }

@@ -412,6 +412,14 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
         Date date = new Date();
+
+        if(couponUseInfo == null){
+            return 3;
+        }else if (couponUseInfo.getStatus() == 3){
+            log.info("优惠券已使用参数:{}", JSONUtil.toJsonString(couponUseInfo));
+            return 4;
+        }
+
         if(couponUseInfo.getType() == 0){
 //            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
             if(couponUseInfo.getEffectiveStartDate().after(date) || couponUseInfo.getEffectiveEndDate().before(date)){

@@ -226,6 +226,7 @@ public class CouponServiceImpl implements CouponService {
         if(couponUseInfo == null){
             return null;
         }else if (couponUseInfo.getStatus() == 3){
+            log.info("优惠券已使用参数:{}", JSONUtil.toJsonString(couponUseInfo));
             return couponUseInfo;
         }
 
