@@ -20,7 +20,6 @@ public class WeipinhuiTests {
     private WeipinhuiDataService weipinhuiDataService;
 
     @Test
-    @Ignore
     public void testGetBrand() {
         try {
             weipinhuiDataService.syncGetBrand(2, 1);

@@ -1,18 +1,24 @@
 package com.fengchao.order.service.weipinhui;
 
 import com.fengchao.order.bean.*;
+import com.fengchao.order.dao.OrderDetailDao;
+import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.dao.WeipinhuiAddressDao;
 import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
+import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.OrderDetailX;
+import com.fengchao.order.model.Orders;
 import com.fengchao.order.model.WeipinhuiAddress;
 import com.fengchao.order.rpc.AoyiRpcService;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiDeliverAddress;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiItem;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.order.utils.AlarmUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,13 +39,23 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
 
     private WeipinhuiAddressDao weipinhuiAddressDao;
 
+    private OrderDetailDao orderDetailDao;
+
+    private OrdersDao ordersDao;
+
     @Autowired
     public WeipinhuiOrderServiceImpl(AoyiRpcService aoyiRpcService,
                                      ProductService productService,
-                                     EquityServiceClient equityService) {
+                                     EquityServiceClient equityService,
+                                     WeipinhuiAddressDao weipinhuiAddressDao,
+                                     OrderDetailDao orderDetailDao,
+                                     OrdersDao ordersDao) {
         this.aoyiRpcService = aoyiRpcService;
         this.productService = productService;
         this.equityService = equityService;
+        this.weipinhuiAddressDao = weipinhuiAddressDao;
+        this.orderDetailDao = orderDetailDao;
+        this.ordersDao = ordersDao;
     }
 
     /**
@@ -109,7 +125,7 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
             // 3.处理地址信息
             // 获取唯品会地址(3级)的code
             WeipinhuiAddress weipinhuiAddress =
-                    weipinhuiAddressDao.selectBySuningAddress(orderParamBean.getTownId(), orderParamBean.getCityId(), 3);
+                    weipinhuiAddressDao.selectBySuningAddress(orderParamBean.getCountyId(), orderParamBean.getCityId(), 3);
             if (weipinhuiAddress != null && StringUtils.isNotBlank(weipinhuiAddress.getSnCode())) {
                 AoyiDeliverAddress aoyiDeliverAddress = new AoyiDeliverAddress();
 
@@ -164,7 +180,47 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
         return rpcResult;
     }
 
-    //========
+    @Override
+    public OperaResponse<String> createOrder(List<Integer> orderIds) {
+        OperaResponse<String> rpcResult = new OperaResponse();
+        rpcResult.setCode(200);
+
+        try {
+            // 1. 筛选出唯品会的主订单ID
+            List<OrderDetail> orderDetailList = orderDetailDao.selectWeipinhuiOrderDetails(orderIds);
+
+            if (CollectionUtils.isNotEmpty(orderDetailList)) { // 如果有唯品会的单子
+                Integer orderId = orderDetailList.get(0).getOrderId(); // 主订单id
+
+                // 查询主订单
+                Orders orders = ordersDao.selectByPrimaryKey(orderId);
+                if (orders != null) {
+                    AoyiConfirmOrderRequest aoyiConfirmOrderRequest = new AoyiConfirmOrderRequest();
+                    aoyiConfirmOrderRequest.setOrderNo(orders.getTradeNo());
+
+                    log.info("唯品会确认订单 发起rpc调用 入参:{}", JSONUtil.toJsonStringWithoutNull(aoyiConfirmOrderRequest));
+
+                    // 2. 发起rpc调用
+                    rpcResult = aoyiRpcService.weipinhuiCreateOrder(aoyiConfirmOrderRequest);
+                } else {
+                    log.warn("唯品会确认订单 根据{}没有找到主订单", orderId);
+
+                    throw new Exception("唯品会确认订单 根据" + orderId + "没有找到主订单");
+                }
+            } else {
+                log.warn("唯品会确认订单 无唯品会订单 无需处理");
+            }
+        } catch (Exception e) {
+            log.error("唯品会确认订单异常");
+
+            rpcResult.setCode(500);
+            rpcResult.setMsg(e.getMessage());
+        }
+
+        return rpcResult;
+    }
+
+    //======================================================== private ===========================================
 
     private boolean release(int id, String code) {
         CouponUseInfoBean bean = new CouponUseInfoBean();

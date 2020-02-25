@@ -578,6 +578,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         }
     }
 
+    ///======================================== private ===================================================
 
     /**
      * 组装sku的商品规格

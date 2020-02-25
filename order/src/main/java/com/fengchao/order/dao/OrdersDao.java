@@ -34,6 +34,12 @@ public class OrdersDao {
         this.orderDetailXMapper = orderDetailXMapper ;
     }
 
+    public Orders selectByPrimaryKey(Integer id) {
+        Orders orders = ordersMapper.selectByPrimaryKey(id);
+
+        return orders;
+    }
+
     /**
      * 根據ordersIdList 查詢 已支付的訂單
      *

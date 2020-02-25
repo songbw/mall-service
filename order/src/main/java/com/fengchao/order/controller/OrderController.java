@@ -5,6 +5,8 @@ import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.OrderService;
+import com.fengchao.order.service.weipinhui.WeipinhuiOrderService;
+import com.fengchao.order.utils.AlarmUtil;
 import com.fengchao.order.utils.JSONUtil;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,9 @@ public class OrderController {
 
     @Autowired
     private OrderService service;
+
+    @Autowired
+    private WeipinhuiOrderService weipinhuiOrderService;
 
 
     @PostMapping("/all")
@@ -212,6 +217,7 @@ public class OrderController {
         OperaResponse operaResponse = new OperaResponse();
         log.info("根据主订单id集合批量更新子订单的状态 入参 orderIdList:{}, status:{}", orderIdList, status);
 
+        // 1. 更新子订单状态
         try {
             int count = service.batchUpdateOrderDetailStatus(orderIdList, status);
             operaResponse.setData(count);
@@ -220,13 +226,26 @@ public class OrderController {
 
             operaResponse.setCode(500);
             operaResponse.setMsg("根据主订单id集合批量更新子订单的状态异常" + e.getMessage());
+
+            AlarmUtil.alarmAsync("确认订单警告", "更新子订单状态失败 orderIdList:" + JSONUtil.toJsonString(orderIdList));
         }
 
         log.info("根据主订单id集合批量更新子订单的状态 返回:{}", JSONUtil.toJsonString(operaResponse));
 
-        OperaResponse operaResponse1 = service.confirmStarOrder(orderIdList) ;
-        if (operaResponse1.getCode() != 200) {
-            log.info("怡亚通订单下单结果：{}", JSONUtil.toJsonString(operaResponse1));
+        // 2. 更新
+        // 星链 确认订单
+        OperaResponse operaResponseStar = service.confirmStarOrder(orderIdList) ;
+        if (operaResponseStar.getCode() != 200) {
+            log.warn("怡亚通订单下单结果：{}", JSONUtil.toJsonString(operaResponseStar));
+            AlarmUtil.alarmAsync("怡亚通确认订单失败", operaResponseStar.getMsg());
+        }
+
+        // 唯品会 确认订单
+        OperaResponse operaResponseWeipinhui = weipinhuiOrderService.createOrder(orderIdList);
+        if (operaResponseWeipinhui.getCode() != 200) {
+            log.warn("唯品会订单确认订单结果：{}", JSONUtil.toJsonString(operaResponseStar));
+            AlarmUtil.alarmAsync("唯品会确认订单失败",
+                    operaResponseStar.getMsg() + "; 本次处理的订单id:" + JSONUtil.toJsonString(orderIdList));
         }
 
         return operaResponse;
