@@ -227,7 +227,7 @@ public class OrderServiceImpl implements OrderService {
             orderMapper.insert(bean);
             AtomicInteger i= new AtomicInteger(1);
             for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
-                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu(), orderBean.getAppId());
+                AoyiProdIndex prodIndexWithBLOBs = findProductSpu(orderSku.getMpu(), orderSku.getSkuId());
 
                 // 判断产品上下架状态
                 if ("0".equals(prodIndexWithBLOBs.getState())) {
@@ -256,10 +256,18 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setModel(prodIndexWithBLOBs.getModel());
                 orderDetail.setName(prodIndexWithBLOBs.getName());
                 orderDetail.setProductType(prodIndexWithBLOBs.getType());
-                if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
-                    BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
-                    orderDetail.setSprice(bigDecimal);
+                if (prodIndexWithBLOBs.getStarSku() == null) {
+                    if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                        orderDetail.setSprice(bigDecimal);
+                    }
+                } else {
+                    if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
+                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                        orderDetail.setSprice(bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
+                    }
                 }
+
                 orderDetail.setStatus(0);
                 orderDetail.setSkuId(orderSku.getSkuId());
                 orderDetail.setMpu(orderSku.getMpu());
@@ -1495,6 +1503,19 @@ public class OrderServiceImpl implements OrderService {
     private AoyiProdIndex findProduct(String skuId, String appId) {
         OperaResult result = productService.find(skuId, appId);
         logger.info("根据MPU：" + skuId + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
+        if (result.getCode() == 200) {
+            Map<String, Object> data = result.getData() ;
+            Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
+            return aoyiProdIndex;
+        }
+        return null;
+    }
+
+    private AoyiProdIndex findProductSpu(String mpu, String code) {
+        OperaResult result = productService.findSpu(mpu, code);
+        logger.info("根据MPU：" + mpu + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
