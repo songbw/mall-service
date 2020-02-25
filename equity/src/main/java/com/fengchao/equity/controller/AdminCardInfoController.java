@@ -98,7 +98,7 @@ public class AdminCardInfoController {
     @PutMapping("activate")
     public OperaResult activateCardTicket(@RequestBody List<CardTicket> beans, OperaResult result){
         log.info("激活createCardTicket礼品券参数 入参:{}", JSONUtil.toJsonString(beans));
-        result.getData().put("result",ticketService.activatesCardTicket(beans));
+        result.getData().put("激活失败cards:",ticketService.activatesCardTicket(beans));
         return result;
     }
 
@@ -131,7 +131,7 @@ public class AdminCardInfoController {
             titleCell2.setCellValue("金额(元)"); // 卡金额
 
             HSSFCell titleCell3 = titleRow.createCell(3);
-            titleCell3.setCellValue("代金卡、礼包卡"); // 卡类型
+            titleCell3.setCellValue("提货卡类型"); // 卡类型
 
             HSSFCell titleCell4 = titleRow.createCell(4);
             titleCell4.setCellValue("提货卡状态"); // 状态
@@ -149,7 +149,7 @@ public class AdminCardInfoController {
             titleCell8.setCellValue("提货券编号"); // 卡券ID
 
             HSSFCell titleCell9 = titleRow.createCell(9);
-            titleCell9.setCellValue("提货券编号"); // 卡号
+            titleCell9.setCellValue("提货券编码"); // 卡号
 
             HSSFCell titleCell10 = titleRow.createCell(10);
             titleCell10.setCellValue("提货券密码"); // 密码

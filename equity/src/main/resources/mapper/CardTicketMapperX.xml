@@ -352,6 +352,7 @@
             end_time = #{item.endTime,jdbcType=TIMESTAMP}
         where
             card = #{item.card,jdbcType=VARCHAR}
+            and status = 1
         </foreach>
     </insert>
     <select id="selectByCard" parameterType="java.lang.String" resultMap="BaseResultMap">

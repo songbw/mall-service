@@ -53,7 +53,20 @@ public class CardTicketServiceImpl implements CardTicketService {
     }
 
     @Override
-    public int activatesCardTicket(List<CardTicket> beans) {
+    public List<String> activatesCardTicket(List<CardTicket> beans) {
+        List<String> resultCards = new ArrayList();
+        List<String> cards = new ArrayList();
+        for (CardTicket ticket: beans){
+            cards.add(ticket.getCard());
+        }
+
+        List<CardTicket> activateTicket = ticketDao.findActivateTicket(cards);
+        if(!activateTicket.isEmpty()){
+            for (CardTicket ticket: activateTicket){
+                resultCards.add(ticket.getCard());
+            }
+        }
+
         Date date = new Date();
         for(CardTicket ticket: beans){
             CardTicketX cardTicketX = ticketDao.findbyCard(ticket.getCard());
@@ -62,7 +75,8 @@ public class CardTicketServiceImpl implements CardTicketService {
             ticket.setEndTime(fetureDate);
             JobClientUtils.cardInvalidTrigger(environment, jobClient, ticket.getId(), fetureDate);
         }
-        return ticketDao.activatesCardTicket(beans);
+        ticketDao.activatesCardTicket(beans);
+        return resultCards;
     }
 
     @Override

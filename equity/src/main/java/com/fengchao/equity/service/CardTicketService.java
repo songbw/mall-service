@@ -13,7 +13,7 @@ import java.util.Map;
 public interface CardTicketService {
     int assignsCardTicket(CardTicketBean bean);
 
-    int activatesCardTicket(List<CardTicket> beans);
+    List<String> activatesCardTicket(List<CardTicket> beans);
 
     List<CardInfoX> exportCardTicket(ExportCardBean bean);
 
