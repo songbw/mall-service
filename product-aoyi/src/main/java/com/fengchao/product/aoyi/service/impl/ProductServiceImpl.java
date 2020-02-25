@@ -461,6 +461,7 @@ public class ProductServiceImpl implements ProductService {
     public OperaResponse findSpuAndSku(String mpu, String code) {
         OperaResponse response = new OperaResponse() ;
         AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(mpu) ;
+        aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
         AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
         BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
         List<String> codes = new ArrayList<>();
