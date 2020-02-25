@@ -263,7 +263,7 @@ public class OrderServiceImpl implements OrderService {
                     }
                 } else {
                     if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
-                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
                         orderDetail.setSprice(bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
                     }
                 }
