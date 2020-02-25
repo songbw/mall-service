@@ -50,4 +50,9 @@ public class ProductServiceH implements ProductService {
     public OperaResponse selectByMpuIdListAndSkuCodes(List<AoyiProdIndex> mpuIdList) {
         return HystrixDefaultFallback.fallbackResponse(cause);
     }
+
+    @Override
+    public OperaResponse findSpu(String mpu, String code) {
+        return HystrixDefaultFallback.fallbackResponse(cause);
+    }
 }

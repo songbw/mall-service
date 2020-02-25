@@ -114,6 +114,8 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("state",bean.getState());
         map.put("brand",bean.getBrand());
         map.put("order",bean.getOrder());
+        map.put("minPrice",bean.getMinPrice());
+        map.put("maxPrice",bean.getMaxPrice());
         if (bean.getMerchantHeader() == 0) {
             map.put("merchantId", bean.getMerchantId());
         } else if (bean.getMerchantHeader().equals(bean.getMerchantId())) {
@@ -121,10 +123,20 @@ public class AdminProdServiceImpl implements AdminProdService {
         } else {
             return PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
         }
+        List<String> spus = new ArrayList<>() ;
         total = aoyiProdIndexXMapper.selectSearchCount(map);
         if (total > 0) {
             aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
+                spus.add(aoyiProdIndex.getSkuid()) ;
                 aoyiProdIndex = ProductHandle.updateImageWithBLOBS(aoyiProdIndex) ;
+                List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+                List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+                starSkus.forEach(starSku -> {
+                    StarSkuBean starSkuBean = new StarSkuBean() ;
+                    BeanUtils.copyProperties(starSku, starSkuBean);
+                    starSkuBeans.add(starSkuBean) ;
+                });
+                aoyiProdIndex.setSkuList(starSkuBeans);
                 prods.add(aoyiProdIndex);
             });
         }

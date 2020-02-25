@@ -84,4 +84,17 @@ public class StarSkuDao {
         return list;
     }
 
+    /**
+     * 根据spuId查询SKU信息
+     *
+     * @return
+     */
+    public List<StarSku> selectBySpuIds(List<String> spuIds) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andSpuIdIn(spuIds) ;
+        List<StarSku> list = mapper.selectByExample(example);
+        return list;
+    }
+
 }

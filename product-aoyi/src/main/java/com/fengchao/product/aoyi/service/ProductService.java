@@ -72,4 +72,6 @@ public interface ProductService {
 
     List<AoyiProdIndexX> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) ;
 
+    OperaResponse findSpuAndSku(String mpu, String code) ;
+
 }
