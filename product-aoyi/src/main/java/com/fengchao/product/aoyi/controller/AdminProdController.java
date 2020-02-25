@@ -649,9 +649,9 @@ public class AdminProdController {
         return prodService.inventoryUpdate(inventory);
     }
 
-    @PutMapping("spu/state")
-    public OperaResponse updateSpuState(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result){
-        return prodService.updateSpuState(bean);
+    @PutMapping("batchState")
+    public OperaResponse updateSpuState(@RequestBody List<AoyiProdIndex> beans, @RequestHeader("merchant") Integer merchantId, OperaResult result){
+        return prodService.updateSpuState(beans);
     }
 
     @PutMapping("batch")

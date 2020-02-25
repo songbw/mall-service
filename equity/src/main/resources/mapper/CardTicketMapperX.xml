@@ -6,6 +6,7 @@
         <result column="card_id" jdbcType="INTEGER" property="cardId" />
         <result column="card" jdbcType="VARCHAR" property="card" />
         <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="user_coupon_code" jdbcType="VARCHAR" property="userCouponCode" />
         <result column="open_id" jdbcType="VARCHAR" property="openId" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -75,8 +76,8 @@
         </where>
     </sql>
     <sql id="Base_Column_List">
-    id, card_id, card, password, open_id, create_time, update_time, activate_time, consumed_time,
-    end_time, status, remark, is_delete
+    id, card_id, card, password, user_coupon_code, open_id, create_time, update_time,
+    activate_time, consumed_time, end_time, status, remark, is_delete
   </sql>
     <select id="selectByExample" parameterType="com.fengchao.equity.model.CardTicketExample" resultMap="BaseResultMap">
         select
@@ -344,12 +345,14 @@
     </foreach>
     </insert>
     <insert id="activatesCardTicket" parameterType="java.util.List" >
+        <foreach collection="list" item="item" index="index" separator=";">
         update card_ticket
         set status = 2,
-            activate_time = current_timestamp
+            activate_time = current_timestamp,
+            end_time = #{item.endTime,jdbcType=TIMESTAMP}
         where
-        <foreach collection="list" item="item" open="( " separator=") or (" close=" )">
-        card = #{item.card,jdbcType=VARCHAR}
+            card = #{item.card,jdbcType=VARCHAR}
+            and status = 1
         </foreach>
     </insert>
     <select id="selectByCard" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -363,5 +366,11 @@
         <include refid="Base_Column_List" />
         from card_ticket
         where is_delete = 1 and card = #{card,jdbcType=VARCHAR} and open_id = #{openId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByUseCouponCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from card_ticket
+        where is_delete = 1 and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
     </select>
 </mapper>

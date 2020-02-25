@@ -195,7 +195,8 @@ public class OrderServiceImpl implements OrderService {
             //
             AtomicInteger atomicInteger = new AtomicInteger(1);
             for (OrderDetailX orderSku : orderMerchantBean.getSkus()) { // 遍历该商户的sku列表
-                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu(), orderBean.getAppId());
+                AoyiProdIndex prodIndexWithBLOBs = findProductSpu(orderSku.getMpu(), orderSku.getSkuId());
+
 
                 // 判断产品上下架状态
                 if ("0".equals(prodIndexWithBLOBs.getState())) {
@@ -216,7 +217,7 @@ public class OrderServiceImpl implements OrderService {
                 // 创建 子订单
                 OrderDetail orderDetail = createOrderDetail(bean, orderSku, prodIndexWithBLOBs, atomicInteger);
 
-                // 保存添加子订单
+                // 添加子订单
                 logger.debug("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
                 orderDetailDao.insert(orderDetail);
 
@@ -383,40 +384,48 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      *
-     * @param order
-     * @param orderDetailX
-     * @param aoyiProdIndex
+     * @param bean
+     * @param orderSku
+     * @param prodIndexWithBLOBs
      * @param atomicInteger
      * @return
      */
-    private OrderDetail createOrderDetail(Order order, OrderDetailX orderDetailX,
-                                          AoyiProdIndex aoyiProdIndex,  AtomicInteger atomicInteger) {
+    private OrderDetail createOrderDetail(Order bean, OrderDetailX orderSku,
+                                          AoyiProdIndex prodIndexWithBLOBs,  AtomicInteger atomicInteger) {
         OrderDetail orderDetail = new OrderDetail();
 
-        orderDetail.setPromotionId(orderDetailX.getPromotionId());
-        orderDetail.setSalePrice(orderDetailX.getSalePrice());
-        orderDetail.setPromotionDiscount(orderDetailX.getPromotionDiscount());
+        orderDetail.setPromotionId(orderSku.getPromotionId());
+        orderDetail.setSalePrice(orderSku.getSalePrice());
+        orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
         // orderDetail.setCreatedAt(date);
         // orderDetail.setUpdatedAt(date);
-        orderDetail.setOrderId(order.getId());
-        orderDetail.setImage(aoyiProdIndex.getImage());
-        orderDetail.setModel(aoyiProdIndex.getModel());
-        orderDetail.setName(aoyiProdIndex.getName());
-        orderDetail.setProductType(aoyiProdIndex.getType());
-        if (!StringUtils.isEmpty(aoyiProdIndex.getSprice())) {
-            BigDecimal bigDecimal = new BigDecimal(aoyiProdIndex.getSprice()) ;
-            orderDetail.setSprice(bigDecimal);
+        orderDetail.setOrderId(bean.getId());
+        orderDetail.setImage(prodIndexWithBLOBs.getImage());
+        orderDetail.setModel(prodIndexWithBLOBs.getModel());
+        orderDetail.setName(prodIndexWithBLOBs.getName());
+        orderDetail.setProductType(prodIndexWithBLOBs.getType());
+        if (prodIndexWithBLOBs.getStarSku() == null) {
+            if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                orderDetail.setSprice(bigDecimal);
+            }
+        } else {
+            if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
+                BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
+                orderDetail.setSprice(bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
+            }
         }
+
         orderDetail.setStatus(0);
-        orderDetail.setSkuId(orderDetailX.getSkuId());
-        orderDetail.setMpu(orderDetailX.getMpu());
-        orderDetail.setMerchantId(orderDetailX.getMerchantId());
-        orderDetail.setSubOrderId(order.getTradeNo() + String.format("%03d", atomicInteger.getAndIncrement()));
-        orderDetail.setUnitPrice(orderDetailX.getUnitPrice());
-        orderDetail.setCheckedPrice(orderDetailX.getCheckedPrice());
-        orderDetail.setNum(orderDetailX.getNum());
-        orderDetail.setCategory(aoyiProdIndex.getCategory());
-        orderDetail.setSkuCouponDiscount((int) (orderDetailX.getSkuCouponDiscount() * 100)) ;
+        orderDetail.setSkuId(orderSku.getSkuId());
+        orderDetail.setMpu(orderSku.getMpu());
+        orderDetail.setMerchantId(orderSku.getMerchantId());
+        orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", atomicInteger.getAndIncrement()));
+        orderDetail.setUnitPrice(orderSku.getUnitPrice());
+        orderDetail.setCheckedPrice(orderSku.getCheckedPrice());
+        orderDetail.setNum(orderSku.getNum());
+        orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
+        orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
 
         return orderDetail;
     }
@@ -1572,6 +1581,18 @@ public class OrderServiceImpl implements OrderService {
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
+            return aoyiProdIndex;
+        }
+        return null;
+    }
+
+    private AoyiProdIndex findProductSpu(String mpu, String code) {
+        OperaResponse result = productService.findSpu(mpu, code);
+        logger.info("根据MPU：" + mpu + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
+        if (result.getCode() == 200) {
+            Object object = result.getData();
             String jsonString = JSON.toJSONString(object);
             AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
             return aoyiProdIndex;

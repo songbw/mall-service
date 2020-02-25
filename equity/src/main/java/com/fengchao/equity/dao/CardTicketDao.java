@@ -12,6 +12,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 @Component
 public class CardTicketDao {
@@ -94,5 +95,43 @@ public class CardTicketDao {
 
     public CardTicketX seleteCardTicketByCard(String openId, String card) {
         return mapperX.seleteCardTicketByCard(openId, card);
+    }
+
+    public int consumeCard(String userCouponCode) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andUserCouponCodeEqualTo(userCouponCode);
+
+        Date date = new Date();
+        CardTicket ticket = new CardTicket();
+        ticket.setStatus((short) 6);
+        ticket.setConsumedTime(date);
+        return mapper.updateByExampleSelective(ticket, example);
+    }
+
+    public int occupyCard(String userCouponCode) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andUserCouponCodeEqualTo(userCouponCode);
+
+        CardTicket ticket = new CardTicket();
+        ticket.setStatus((short) 5);
+        return mapper.updateByExampleSelective(ticket, example);
+    }
+
+    public CardTicketX findByuseCouponCode(String userCouponCode) {
+        return mapperX.selectByUseCouponCode(userCouponCode);
+    }
+
+    public List<CardTicket> findActivateTicket(List<String> cards) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andCardIn(cards);
+        criteria.andStatusNotEqualTo((short) 1);
+
+        return mapper.selectByExample(example);
     }
 }

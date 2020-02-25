@@ -7,6 +7,7 @@ import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
+import com.fengchao.equity.dao.CardTicketDao;
 import com.fengchao.equity.dao.CouponDao;
 import com.fengchao.equity.dao.PromotionScheduleDao;
 import com.fengchao.equity.feign.ProdService;
@@ -49,6 +50,8 @@ public class CouponServiceImpl implements CouponService {
     private PromotionXMapper promotionXMapper;
     @Autowired
     private PromotionScheduleDao scheduleDao;
+    @Autowired
+    private CardTicketDao ticketDao;
     @Autowired
     private Environment environment;
 
@@ -223,7 +226,13 @@ public class CouponServiceImpl implements CouponService {
         if(couponUseInfo == null){
             return null;
         }else if (couponUseInfo.getStatus() == 3){
+            log.info("优惠券已使用参数:{}", JSONUtil.toJsonString(couponUseInfo));
             return couponUseInfo;
+        }
+
+        Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
+        if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
+            ticketDao.consumeCard(bean.getUserCouponCode());
         }
         useInfo.setId(bean.getId());
         useInfo.setConsumedTime(new Date());

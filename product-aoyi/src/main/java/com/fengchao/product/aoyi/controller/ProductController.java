@@ -227,7 +227,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndex> productInfoBeanList = service.selectProductListByMpuIdListAndCode(mpuIdList);
+            List<AoyiProdIndexX> productInfoBeanList = service.selectProductListByMpuIdListAndCode(mpuIdList);
 
             response.setData(productInfoBeanList);
         } catch (Exception e) {
@@ -238,6 +238,17 @@ public class ProductController {
         }
 
         return response;
+    }
+
+    @GetMapping("spu")
+    private OperaResponse findSpuAndSkuByMpuAndCode(String mpu, String code){
+        OperaResponse result = new OperaResponse() ;
+        if (StringUtils.isEmpty(mpu)) {
+            result.setCode(200501);
+            result.setMsg("mpu 不能为空");
+            return result;
+        }
+        return service.findSpuAndSku(mpu, code);
     }
 
 
