@@ -457,6 +457,22 @@ public class ProductServiceImpl implements ProductService {
         return aoyiProdIndexList;
     }
 
+    @Override
+    public OperaResponse findSpuAndSku(String mpu, String code) {
+        OperaResponse response = new OperaResponse() ;
+        AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(mpu) ;
+        AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+        BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
+        List<String> codes = new ArrayList<>();
+        codes.add(code);
+        List<StarSku> starSkus = starSkuDao.selectByCodeList(codes) ;
+        if (starSkus != null && starSkus.size() > 0) {
+            aoyiProdIndexX.setStarSku(starSkus.get(0));
+        }
+        response.setData(aoyiProdIndexX);
+        return response;
+    }
+
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean, String appId) {
         OperaResult result = equityService.selectCouponBySku(bean, appId);
         log.info(JSON.toJSONString(result));
