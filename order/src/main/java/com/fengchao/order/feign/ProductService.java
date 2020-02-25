@@ -67,6 +67,6 @@ public interface ProductService {
     OperaResponse selectByMpuIdListAndSkuCodes(@RequestBody List<AoyiProdIndex> mpuIdList);
 
     @RequestMapping(value = "/prod/spu", method = RequestMethod.GET)
-    OperaResult findSpu(@RequestParam("mpu") String mpu, @RequestParam("code") String code);
+    OperaResponse findSpu(@RequestParam("mpu") String mpu, @RequestParam("code") String code);
 
 }

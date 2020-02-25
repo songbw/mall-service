@@ -1514,11 +1514,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private AoyiProdIndex findProductSpu(String mpu, String code) {
-        OperaResult result = productService.findSpu(mpu, code);
+        OperaResponse result = productService.findSpu(mpu, code);
         logger.info("根据MPU：" + mpu + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
-            Map<String, Object> data = result.getData() ;
-            Object object = data.get("result");
+            Object object = result.getData();
             String jsonString = JSON.toJSONString(object);
             AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
             return aoyiProdIndex;
