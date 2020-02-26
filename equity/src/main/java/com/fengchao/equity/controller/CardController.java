@@ -45,4 +45,10 @@ public class CardController {
         result.getData().put("result",ticketService.getCardTicketByCard(openId, card));
         return result;
     }
+
+    @DeleteMapping("delete")
+    public OperaResult deleteCardTicket(Integer id, OperaResult result){
+        result.getData().put("result",ticketService.deleteCardTicket(id));
+        return result;
+    }
 }

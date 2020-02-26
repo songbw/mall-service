@@ -30,4 +30,6 @@ public interface CardTicketService {
     Map<String, String> selectPlatformAll();
 
     CardTicketX getCardTicketByCard(String openId, String card);
+
+    int deleteCardTicket(Integer id);
 }

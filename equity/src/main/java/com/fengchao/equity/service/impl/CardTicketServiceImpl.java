@@ -242,6 +242,11 @@ public class CardTicketServiceImpl implements CardTicketService {
         return ticket;
     }
 
+    @Override
+    public int deleteCardTicket(Integer id) {
+        return ticketDao.deleteCardTicket(id);
+    }
+
     private CouponBean couponToBean(CouponX coupon){
 
         CouponBean couponBean = new CouponBean();
