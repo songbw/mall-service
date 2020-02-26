@@ -385,7 +385,7 @@
       and merchant_id = #{merchantId}
     </if>
     <if test="minPrice != null and minPrice !='' and maxPrice != null and maxPrice !=''">
-      and price between #{minPrice} and #{maxPrice}
+      and price between #{minPrice, jdbcType=INTEGER} and #{maxPrice, jdbcType=INTEGER}
     </if>
   </select>
   <select id="selectSearchLimit" resultMap="ResultMapWithBLOBs" parameterType="Map">
