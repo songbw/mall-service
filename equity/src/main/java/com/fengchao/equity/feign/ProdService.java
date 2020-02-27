@@ -21,7 +21,7 @@ public interface ProdService {
     OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList);
 
     @RequestMapping(value = "/adminProd/search", method = RequestMethod.POST)
-    OperaResult searchProd(@RequestBody QueryProdBean queryProdBean);
+    OperaResult searchProd(@RequestBody QueryProdBean queryProdBean, @RequestHeader("merchant") Integer merchantHeader);
 
     /**
      * 获取平台信息

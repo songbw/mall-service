@@ -37,13 +37,14 @@ public class ProdServiceH implements ProdService {
     }
 
     @Override
-    public OperaResult searchProd(QueryProdBean queryProdBean) {
+    public OperaResult searchProd(QueryProdBean queryProdBean, Integer merchantHeader) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         result.setCode(404);
         result.setMsg("获取商品信息失败 " + queryProdBean.getCategoryID());
         return result;
     }
+
 
     @Override
     public OperaResult selectPlatformAll(PageVo pageVo) {

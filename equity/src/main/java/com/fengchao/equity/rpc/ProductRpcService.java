@@ -100,14 +100,14 @@ public class ProductRpcService {
     public List<AoyiProdIndex> searchProd(QueryProdBean queryProdBean) {
         List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
         queryProdBean.setOffset(1);
-        queryProdBean.setLimit(100);
-        OperaResult result = productService.searchProd(queryProdBean);
+        queryProdBean.setLimit(50);
+        OperaResult result = productService.searchProd(queryProdBean, 0);
         if (result.getCode() == 200) {
             PageBean pageBean = (PageBean) result.getData().get("result");
             aoyiProdIndexList = JSON.parseArray(JSON.toJSONString(pageBean.getList()), AoyiProdIndex.class);
             for(int i = 2; i <= pageBean.getPages(); i++){
                 queryProdBean.setLimit(i);
-                result = productService.searchProd(queryProdBean);
+                result = productService.searchProd(queryProdBean, 0);
                 List<AoyiProdIndex> list = JSON.parseArray(JSON.toJSONString(((PageBean) result.getData().get("result")).getList()), AoyiProdIndex.class);
                 aoyiProdIndexList.addAll(list);
             }
