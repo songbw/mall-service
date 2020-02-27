@@ -212,6 +212,21 @@ public class CouponServiceImpl implements CouponService {
         List<AoyiProdIndex> productList = new ArrayList<>();
         if(coupon.getScenarioType() == 1){
             productList = prodService.findProductListByMpuIdList(Arrays.asList(coupon.getCouponMpus().split(",")));
+            if(!map.isEmpty()){
+                for(AoyiProdIndex product: productList){
+                    String skuId = map.get(product.getMpu());
+                    List<StarSkuBean> skuList = product.getSkuList();
+                    if(!skuList.isEmpty() && skuList.size() > 1){
+                        for(StarSkuBean skuBean: skuList){
+                            if(skuBean.getCode().equals(skuId)){
+                                List<StarSkuBean> skus = new ArrayList<>();
+                                skus.add(skuBean);
+                                product.setSkuList(skus);
+                            }
+                        }
+                    }
+                }
+            }
         }else if(coupon.getScenarioType() == 3){
             List<String> categories = Arrays.asList(coupon.getCategories().split(","));
             for (String categoryID : categories) {
@@ -220,14 +235,6 @@ public class CouponServiceImpl implements CouponService {
             }
         }
 
-        if(!map.isEmpty()){
-            for(AoyiProdIndex product: productList){
-                String skuId = map.get(product.getMpu());
-                if(skuId != null){
-                    product.setSkuid(skuId);
-                }
-            }
-        }
         PageBean pageBean = new PageBean();
         pageBean.setPages(1);
         pageBean.setPageNo(1);
