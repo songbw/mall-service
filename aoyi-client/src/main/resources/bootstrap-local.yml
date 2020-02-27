@@ -5,7 +5,8 @@ weipinhui:
   appid: 36402f98-d0fb-4466-8e0e-610f7d81ce9a
   appSecret: BD0A589C139D536F0FE402060775E35F
   url:
-    getBrand: http://47.110.135.104:8080/aoyi/rest/brand/getBrand
+    # http://47.110.135.104:8080/aoyi/rest/brand/getBrand
+    getBrand: https://oa.aoyi365.com/aoyi/rest/brand/getBrand
     getCategory: http://47.110.135.104:8080/aoyi/rest/category/getCategory
     queryItemsList: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemsList
     queryItemDetial: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemDetail
