@@ -37,4 +37,19 @@ public class WSPayClientServiceH implements WSPayClientService {
         result.setMessage("payment服务失败" + msg);
         return result;
     }
+
+    @Override
+    public CommonResult<String> aggRefundBack(AggPayBackBean aggPayBackBean) {
+        CommonResult result = new CommonResult();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = "";
+        try {
+            msg = objectMapper.writeValueAsString(aggPayBackBean);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        result.setCode(404);
+        result.setMessage("wk payment服务失败" + msg);
+        return result;
+    }
 }

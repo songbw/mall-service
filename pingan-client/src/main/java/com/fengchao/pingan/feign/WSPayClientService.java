@@ -16,4 +16,7 @@ public interface WSPayClientService {
 
     @RequestMapping(value = "/wspay_notify/bj/weesharing_pay", method = RequestMethod.POST)
     CommonResult<String> aggPayBack(@RequestBody AggPayBackBean aggPayBackBean);
+
+    @RequestMapping(value = "/wspay_notify/bj/weesharing_refund", method = RequestMethod.POST)
+    CommonResult<String> aggRefundBack(@RequestBody AggPayBackBean aggPayBackBean);
 }

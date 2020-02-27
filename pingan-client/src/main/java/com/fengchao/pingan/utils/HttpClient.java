@@ -32,6 +32,10 @@ public class HttpClient {
     public static final String QUERY_PAYMENT_ORDER = "/queryPaymentOrder" ;
     public static final String ORDER_REFUND = "/orderRefund" ;
 
+    // 万科云城接口
+    public static final String WK_USER_INFO_URL = "/uaa/sns/userinfo" ;
+    public static final String WK_PAYMENT_REFUND = "/payment/adapt/order/refund" ;
+
 
     public static final String PAY_BILL = "http://citycard-stg.pingan.com.cn/nanning-gateway/appfront/download_bill";
 
