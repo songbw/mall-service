@@ -109,6 +109,8 @@ public class LoginServiceImpl implements ILoginService {
     @Override
     public TokenBean thirdLogin(ThirdLoginBean loginBean) {
         log.info("第三方登录，入参：{}", JSONUtil.toJsonString(loginBean));
+        // 获取用户信息
+        getUserInfo(loginBean) ;
         String token = JwtTokenUtil.generateToken(loginBean);
         log.info("第三方登录，token ：{}", token);
         TokenBean bean = new TokenBean();
@@ -151,6 +153,42 @@ public class LoginServiceImpl implements ILoginService {
         redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
         log.info("第三方登录，返回结果 ：{}", JSONUtil.toJsonString(bean));
         return bean;
+    }
+
+    /**
+     * 获取用户信息
+     * @param loginBean
+     */
+    private void getUserInfo(ThirdLoginBean loginBean) {
+        User tempU = new User();
+        tempU.setOpenId(loginBean.getOpenId());
+        tempU.setiAppId(loginBean.getiAppId());
+        User user = userMapper.selectByOpenId(tempU);
+        if (user == null) {
+            if ("14".equals(loginBean.getiAppId())) {
+                // 获取万科云城用户信息
+                OperaResponse response = pinganClientService.findWKUser(loginBean.getOpenId(), loginBean.getAccessToken()) ;
+                if (response.getCode() == 200) {
+                    Object object = response.getData() ;
+                    String jsonString = JSON.toJSONString(object);
+                    JSONObject jsonObject = JSONObject.parseObject(jsonString, JSONObject.class) ;
+                    user = new User() ;
+                    user.setOpenId(loginBean.getOpenId());
+                    user.setiAppId(loginBean.getiAppId());
+                    if (StringUtils.isEmpty(jsonObject.getString("aliasName"))) {
+                        String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
+                        user.setNickname(nickname);
+                    } else {
+                        user.setNickname(jsonObject.getString("aliasName"));
+                    }
+                    user.setTelephone(jsonObject.getString("mobilePhone"));
+                    user.setName(jsonObject.getString("userName"));
+                    user.setHeadImg(jsonObject.getString("headIconUrl"));
+                    userMapper.insertSelective(user);
+                }
+            }
+        }
+
     }
 
     private TokenBean verifyNewUser(ThirdLoginBean loginBean) {
