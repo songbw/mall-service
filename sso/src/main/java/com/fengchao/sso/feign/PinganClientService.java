@@ -30,4 +30,7 @@ public interface PinganClientService {
 
     @RequestMapping(value = "/pingan/checkRequestCode", method = RequestMethod.GET)
     OperaResponse<AuthUserBean> checkRequestCode(@RequestParam("requestCode") String requestCode, @RequestParam("appId") String appId) ;
+
+    @RequestMapping(value = "/wkyc/userInfo", method = RequestMethod.GET)
+    OperaResponse findWKUser(@RequestParam("openId") String openId, @RequestParam("accessToken") String accessToken);
 }
