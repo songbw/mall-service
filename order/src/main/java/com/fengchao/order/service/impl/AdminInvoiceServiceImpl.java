@@ -260,7 +260,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 }
 
                 // 获取指定退款方式下的退款金额
-                Integer refundAmount =calcRefundAmount(receiptTypeEnum, refundInfoMapList);
+                Integer refundAmount = calcRefundAmount(receiptTypeEnum, refundInfoMapList);
                 if (refundAmount >= 0) { // 说明该退款信息中 含有指定方式下的退款金额
                     OrderDetail _orderDetail = orderDetailMap.get(workOrder.getOrderId());
                     if (_orderDetail == null) {
@@ -568,6 +568,8 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.WOA);
             case BANK:
                 return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.BANK);
+            case WUXI_ALIPAY:
+                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.FCALIPAY);
 
             default:
                 log.warn("获取用户单该在 该'开票类型' 下的支付方式的支付总额 未找到有效的发票类型!");
@@ -626,6 +628,8 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 return judageOutAmount(refundInfoList, PaymentTypeEnum.WOA);
             case BANK:
                 return judageOutAmount(refundInfoList, PaymentTypeEnum.BANK);
+            case WUXI_ALIPAY:
+                return judageOutAmount(refundInfoList, PaymentTypeEnum.FCALIPAY);
 
             default:
                 log.warn("获取用户单该在 该'开票类型' 下的退款方式的退款总额 未找到有效的发票类型!");
