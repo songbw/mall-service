@@ -203,9 +203,11 @@ public class CouponServiceImpl implements CouponService {
         CouponBean couponBean = couponToBean(coupon);
         HashMap<String, String> map = new HashMap<>();
         JSONArray couponSkus = couponBean.getRules().getScenario().getCouponSkus();
-        for (int i = 0; i < couponSkus.size(); i++){
-            JSONObject object = couponSkus.getJSONObject(i);
-            map.put(object.getString("mpu"), object.getString("skuId"));
+        if(couponSkus != null){
+            for (int i = 0; i < couponSkus.size(); i++){
+                JSONObject object = couponSkus.getJSONObject(i);
+                map.put(object.getString("mpu"), object.getString("skuId"));
+            }
         }
         List<AoyiProdIndex> productList = new ArrayList<>();
         if(coupon.getScenarioType() == 1){
