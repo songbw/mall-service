@@ -460,6 +460,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
         useInfo.setId(bean.getId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
+        Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
+        if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
+            ticketDao.releaseCard(bean.getUserCouponCode());
+        }
         return mapper.updateStatusByUserCode(useInfo);
     }
 

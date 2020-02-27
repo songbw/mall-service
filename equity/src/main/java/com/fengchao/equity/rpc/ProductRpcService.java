@@ -2,6 +2,8 @@ package com.fengchao.equity.rpc;
 
 import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.bean.PageBean;
+import com.fengchao.equity.bean.QueryProdBean;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.model.AoyiProdIndex;
@@ -93,5 +95,26 @@ public class ProductRpcService {
             log.warn("获取平台信息 调用product rpc服务 错误!");
         }
         return platformBeanList ;
+    }
+
+    public List<AoyiProdIndex> searchProd(QueryProdBean queryProdBean) {
+        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
+        queryProdBean.setOffset(1);
+        queryProdBean.setLimit(100);
+        OperaResult result = productService.searchProd(queryProdBean);
+        if (result.getCode() == 200) {
+            PageBean pageBean = (PageBean) result.getData().get("result");
+            aoyiProdIndexList = JSON.parseArray(JSON.toJSONString(pageBean.getList()), AoyiProdIndex.class);
+            for(int i = 2; i <= pageBean.getPages(); i++){
+                queryProdBean.setLimit(i);
+                result = productService.searchProd(queryProdBean);
+                List<AoyiProdIndex> list = JSON.parseArray(JSON.toJSONString(((PageBean) result.getData().get("result")).getList()), AoyiProdIndex.class);
+                aoyiProdIndexList.addAll(list);
+            }
+//
+        } else {
+            log.warn("根据categoryID查询产品信息 调用product rpc服务 错误!");
+        }
+        return aoyiProdIndexList;
     }
 }
