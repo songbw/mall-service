@@ -162,8 +162,9 @@ public class PaymentServiceImpl implements IPaymentService {
             updatePaymentByOutTradeNoAndPaymentNo(order1);
 
             // aoyi确认订单
-            confirmOrder(order1.getTradeNo());
-
+            if (order1.getMerchantId() == 2) {
+                confirmOrder(order1.getTradeNo());
+            }
             orderIdList.add(order1.getId());
         });
 
