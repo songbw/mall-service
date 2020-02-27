@@ -1,6 +1,7 @@
 package com.fengchao.equity.rpc;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.QueryProdBean;
@@ -103,12 +104,14 @@ public class ProductRpcService {
         queryProdBean.setLimit(50);
         OperaResult result = productService.searchProd(queryProdBean, 0);
         if (result.getCode() == 200) {
-            PageBean pageBean = (PageBean) result.getData().get("result");
+            Object object = result.getData().get("result");
+            PageBean pageBean = JSONObject.parseObject(JSON.toJSONString(object), PageBean.class);
             aoyiProdIndexList = JSON.parseArray(JSON.toJSONString(pageBean.getList()), AoyiProdIndex.class);
             for(int i = 2; i <= pageBean.getPages(); i++){
                 queryProdBean.setLimit(i);
                 result = productService.searchProd(queryProdBean, 0);
-                List<AoyiProdIndex> list = JSON.parseArray(JSON.toJSONString(((PageBean) result.getData().get("result")).getList()), AoyiProdIndex.class);
+                PageBean bean = JSONObject.parseObject(JSON.toJSONString(result.getData().get("result")), PageBean.class);
+                List<AoyiProdIndex> list = JSON.parseArray(JSON.toJSONString(bean.getList()), AoyiProdIndex.class);
                 aoyiProdIndexList.addAll(list);
             }
 //
