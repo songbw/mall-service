@@ -16,6 +16,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.math.BigDecimal;
 
 /**
  * @author song
@@ -47,9 +48,9 @@ public class WKPaymentServiceImpl implements WKPaymentService {
         // 聚合支付服务
         if ("1".equals(bean.getStatus())) {
             AggPayBackBean aggPayBackBean = new AggPayBackBean() ;
-            aggPayBackBean.setTradeNo(bean.getOrderNo());
-            aggPayBackBean.setOrderNo(bean.getPaymentNo());
-            aggPayBackBean.setPayFee(bean.getOrderAmount().toString());
+            aggPayBackBean.setTradeNo(bean.getPaymentNo());
+            aggPayBackBean.setOrderNo(bean.getOrderNo());
+            aggPayBackBean.setPayFee(bean.getOrderAmount().multiply(new BigDecimal(100)).toString());
             aggPayBackBean.setTradeDate(bean.getPaymentTime());
             CommonResult<String> aggPayBackResult = payClientService.aggPayBack(aggPayBackBean) ;
             if (aggPayBackResult.getCode() == 200) {
