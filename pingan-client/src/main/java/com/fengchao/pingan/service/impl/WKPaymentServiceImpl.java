@@ -50,8 +50,9 @@ public class WKPaymentServiceImpl implements WKPaymentService {
             AggPayBackBean aggPayBackBean = new AggPayBackBean() ;
             aggPayBackBean.setTradeNo(bean.getPaymentNo());
             aggPayBackBean.setOrderNo(bean.getOrderNo());
-            aggPayBackBean.setPayFee(bean.getOrderAmount().multiply(new BigDecimal(100)).toString());
+            aggPayBackBean.setPayFee(bean.getOrderAmount().multiply(new BigDecimal(100)).intValue() + "");
             aggPayBackBean.setTradeDate(bean.getPaymentTime());
+            aggPayBackBean.setPayType("yuncheng");
             CommonResult<String> aggPayBackResult = payClientService.aggPayBack(aggPayBackBean) ;
             if (aggPayBackResult.getCode() == 200) {
                 return "SUCCESS" ;
