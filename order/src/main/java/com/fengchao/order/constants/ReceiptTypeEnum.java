@@ -16,7 +16,8 @@ public enum ReceiptTypeEnum {
     BALANCE(1, "BALANCE", "balance 支付方式的发票"), // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户
     CARD(2, "CARD", "card 支付方式的发票"),
     WOA(3, "WOA", "woa 支付方式的发票"),
-    BANK(4, "BANK", "中投快捷支付的发票");
+    BANK(4, "BANK", "中投快捷支付的发票"),
+    WUXI_ALIPAY(5, "WUXI_ALIPAY", "无锡支付宝方式的发票");
 
 
     private Integer code;
@@ -56,6 +57,8 @@ public enum ReceiptTypeEnum {
                 return WOA;
             case 4:
                 return BANK;
+            case 5:
+                return WUXI_ALIPAY;
             default:
                 log.warn("未获取到有效的ReceiptTypeEnum枚举值 code:{}", code);
 
