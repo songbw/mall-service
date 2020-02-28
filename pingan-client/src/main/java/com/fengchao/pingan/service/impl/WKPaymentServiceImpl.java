@@ -73,7 +73,7 @@ public class WKPaymentServiceImpl implements WKPaymentService {
             aggPayBackBean.setTradeNo(bean.getOrderNo());
             aggPayBackBean.setOrderNo(bean.getOrderNo());
             aggPayBackBean.setRefundNo(bean.getRefundNo());
-            aggPayBackBean.setRefundFee(bean.getRefundAmount().toString());
+            aggPayBackBean.setRefundFee(bean.getRefundAmount().multiply(new BigDecimal(100)).intValue() + "");
             aggPayBackBean.setTradeDate(bean.getRefundTime());
             CommonResult<String> aggPayBackResult = payClientService.aggPayBack(aggPayBackBean) ;
             if (aggPayBackResult.getCode() == 200) {
