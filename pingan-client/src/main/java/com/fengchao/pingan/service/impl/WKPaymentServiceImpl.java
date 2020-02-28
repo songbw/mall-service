@@ -1,5 +1,7 @@
 package com.fengchao.pingan.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.pingan.bean.*;
 import com.fengchao.pingan.config.PingAnClientConfig;
 import com.fengchao.pingan.feign.WSPayClientService;
@@ -36,9 +38,11 @@ public class WKPaymentServiceImpl implements WKPaymentService {
     public WKOperaResponse<WKRefund> refundApply(WKRefundRequestBean bean) {
         log.info("万科云城退款 请求 参数： {}", JSONUtil.toJsonString(bean));
         WKOperaResponse<WKAccessToken>  tokenResponse = getWKAccessToken() ;
-        WKAccessToken token = tokenResponse.getData() ;
+        Object token = tokenResponse.getData() ;
+        String jsonString = JSON.toJSONString(token);
+        JSONObject jsonObject = JSONObject.parseObject(jsonString, JSONObject.class) ;
         log.info("万科云城token 返回结果： {}", JSONUtil.toJsonString(token));
-        WebTarget webTarget = HttpClient.createClient().target(config.getWkBaseUrl() + HttpClient.WK_PAYMENT_REFUND).queryParam("access_token", token.getAccess_token());
+        WebTarget webTarget = HttpClient.createClient().target(config.getWkBaseUrl() + HttpClient.WK_PAYMENT_REFUND).queryParam("access_token", jsonObject.getString("access_token"));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         WKOperaResponse result = response.readEntity(WKOperaResponse.class);
