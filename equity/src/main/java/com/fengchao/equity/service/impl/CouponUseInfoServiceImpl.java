@@ -203,9 +203,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         map.put("deleteFlag",0);
         map.put("appId",bean.getAppId());
         List<CouponUseInfoX> couponUseInfos = new ArrayList<>();
-        total = mapper.selectCount(map);
+        total = mapper.selectCountByOpenId(map);
         if (total > 0) {
-            couponUseInfos = mapper.selectLimit(map);
+            couponUseInfos = mapper.selectLimitByOpenId(map);
             couponUseInfos.forEach(couponUseInfo -> {
                 CouponBean couponBean = new CouponBean();
                 if(couponUseInfo.getType() == 1){
