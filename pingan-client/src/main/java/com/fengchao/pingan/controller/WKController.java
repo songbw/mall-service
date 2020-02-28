@@ -44,7 +44,7 @@ public class WKController {
             operaResponse.setData(wkOperaResponse.getData());
         } else {
             operaResponse.setCode(800100);
-            operaResponse.setMsg(wkOperaResponse.getErrorCode());
+            operaResponse.setMsg(wkOperaResponse.getMsg());
             operaResponse.setMessage(wkOperaResponse.getSmsg());
         }
         return operaResponse;
