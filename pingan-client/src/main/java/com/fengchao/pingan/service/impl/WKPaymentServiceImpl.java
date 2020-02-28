@@ -34,6 +34,7 @@ public class WKPaymentServiceImpl implements WKPaymentService {
 
     @Override
     public WKOperaResponse<WKRefund> refundApply(WKRefundRequestBean bean) {
+        log.info("万科云城退款 请求 参数： {}", JSONUtil.toJsonString(bean));
         WebTarget webTarget = HttpClient.createClient().target(config.getWkBaseUrl() + HttpClient.WK_PAYMENT_REFUND);
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
