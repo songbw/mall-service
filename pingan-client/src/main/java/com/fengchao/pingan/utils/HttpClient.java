@@ -34,6 +34,7 @@ public class HttpClient {
 
     // 万科云城接口
     public static final String WK_USER_INFO_URL = "/uaa/sns/userinfo" ;
+    public static final String WK_ACCESS_TOKEN_URL = "/uaa/cgi-bin/token" ;
     public static final String WK_PAYMENT_REFUND = "/payservice/payment/adapt/order/refund" ;
 
 
