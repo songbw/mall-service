@@ -99,7 +99,7 @@
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     <include refid="Base_Column_List" />
-    from coupon
+    from coupon_use_info
     WHERE 1=1
     <if test="id != null" >
       and coupon_id = #{id,jdbcType=INTEGER}
