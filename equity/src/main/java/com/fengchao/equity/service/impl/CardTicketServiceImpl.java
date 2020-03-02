@@ -104,7 +104,7 @@ public class CardTicketServiceImpl implements CardTicketService {
 
         CardTicket cardTicket = tickets.get(0);
         if(StringUtils.isNotEmpty(cardTicket.getOpenId())){
-            throw new Exception("该卡已被绑定");
+            throw new Exception("兑换失败,券已被兑换");
         }
         CardInfo cardInfo;
         try {
@@ -122,7 +122,7 @@ public class CardTicketServiceImpl implements CardTicketService {
 
         int status = (int)cardTicket.getStatus();
         if (CardTicketStatusEnum.ACTIVE.getCode() != status) {
-            throw new Exception("绑卡失败，该卡"+CardTicketStatusEnum.Int2String(status));
+            throw new Exception("兑换失败,该提货券"+CardTicketStatusEnum.int2msg(status));
         }
 
         CardTicket ticket = new CardTicket();

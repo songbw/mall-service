@@ -47,5 +47,16 @@ public enum CardTicketStatusEnum {
         }
         return "";
     }
+    public static String int2msg(int code){
+        if (0 != code) {
+            int i;
+            for (i = 0; i < CardTicketStatusEnum.values().length; i++) {
+                if (CardTicketStatusEnum.values()[i].getCode() == code) {
+                    return CardTicketStatusEnum.values()[i].getMsg();
+                }
+            }
+        }
+        return "";
+    }
 
 }
