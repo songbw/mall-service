@@ -6,9 +6,11 @@ import com.fengchao.equity.dao.*;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CardTicketService;
+import com.fengchao.equity.utils.CardTicketStatusEnum;
 import com.fengchao.equity.utils.DataUtils;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.text.DecimalFormat;
 import java.util.*;
 
+@Slf4j
 @Service
 public class CardTicketServiceImpl implements CardTicketService {
 
@@ -102,29 +105,47 @@ public class CardTicketServiceImpl implements CardTicketService {
         CardTicket cardTicket = tickets.get(0);
         if(StringUtils.isNotEmpty(cardTicket.getOpenId())){
             throw new Exception("该卡已被绑定");
-        }else if(cardTicket.getStatus() == 1){
-            throw new Exception("该卡未被激活");
-        }else if(cardTicket.getStatus() == 3){
-            throw new Exception("该卡已使用");
-        }else if(cardTicket.getStatus() == 3){
-            throw new Exception("该卡已过期");
+        }
+        CardInfo cardInfo;
+        try {
+            cardInfo = infoDao.findById(cardTicket.getCardId());
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw new Exception("内部错误,未找到提货券信息");
+        }
+        if (null == cardInfo || null == cardInfo.getAppId()){
+            throw new Exception("内部错误,未找到提货券或提货券渠道信息");
+        }
+        if (!cardInfo.getAppId().equals(bean.getAppId())){
+            throw new Exception("内部错误,应用渠道与提货券渠道不符");
+        }
+
+        int status = (int)cardTicket.getStatus();
+        if (CardTicketStatusEnum.ACTIVE.getCode() != status) {
+            throw new Exception("绑卡失败，该卡"+CardTicketStatusEnum.Int2String(status));
         }
 
         CardTicket ticket = new CardTicket();
         ticket.setOpenId(bean.getOpenId());
         ticket.setId(cardTicket.getId());
-        ticket.setStatus((short) 3);
+        ticket.setStatus((short)CardTicketStatusEnum.BOUND.getCode());
 
         return ticketDao.update(ticket);
     }
 
     @Override
     public CouponUseInfo exchangeCardTicket(CardTicketBean bean)  throws Exception{
+        if (null == bean.getAppId()){
+            throw new Exception("兑换失败,应用缺失渠道信息");
+        }
         String userCouponCode = "";
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
         CardInfoX cardInfoX = infoDao.findByCardId(cardTicket.getCardId());
-        if(coupon.getCouponType() == 4 && cardTicket.getStatus() == 3){
+        if (!bean.getAppId().equals(cardInfoX.getAppId())){
+            throw new Exception("兑换失败,应用渠道与提货券渠道不符");
+        }
+        if(coupon.getCouponType() == 4 && cardTicket.getStatus() == CardTicketStatusEnum.BOUND.getCode()){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
             CouponUseInfo couponUseInfo = new CouponUseInfo();
@@ -197,7 +218,7 @@ public class CardTicketServiceImpl implements CardTicketService {
     public int invalid(int id) {
         CardTicket ticket = new CardTicket();
         ticket.setId(id);
-        ticket.setStatus((short) 7);
+        ticket.setStatus((short)CardTicketStatusEnum.TIMEOUT.getCode());
         return ticketDao.update(ticket);
     }
 
