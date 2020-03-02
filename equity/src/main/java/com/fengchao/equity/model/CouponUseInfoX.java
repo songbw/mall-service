@@ -19,7 +19,7 @@ public class CouponUseInfoX {
 
     private Date consumedTime;
 
-    private Integer orderId;
+    private String orderId;
 
     private Integer status;
 
@@ -93,11 +93,11 @@ public class CouponUseInfoX {
         this.consumedTime = consumedTime;
     }
 
-    public Integer getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Integer orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 

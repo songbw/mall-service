@@ -28,6 +28,7 @@ public class CouponUseInfoBean  extends QueryBean{
     private String supplierMerchantId;
     private String couponCode;
     private String appId;
+    private Integer orderId;
 
     /**
      * 券来源

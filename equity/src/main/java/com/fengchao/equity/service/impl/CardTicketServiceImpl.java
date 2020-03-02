@@ -3,6 +3,7 @@ package com.fengchao.equity.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.dao.*;
+import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CardTicketService;
@@ -28,6 +29,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     private CardAndCouponDao cardAndCouponDao;
     @Autowired
     private CouponDao couponDao;
+    @Autowired
+    private CouponXMapper couponXMapper;
     @Autowired
     private CouponUseInfoDao useInfoDao;
     @Autowired
@@ -121,6 +124,7 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public CouponUseInfo exchangeCardTicket(CardTicketBean bean)  throws Exception{
         String userCouponCode = "";
+        CouponX couponNew = new CouponX();
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
         CardInfoX cardInfoX = infoDao.findByCardId(cardTicket.getCardId());
@@ -140,6 +144,9 @@ public class CardTicketServiceImpl implements CardTicketService {
             couponUseInfo.setAppId(coupon.getAppId());
             int insert = useInfoDao.insert(couponUseInfo);
             if(insert == 1){
+                couponNew.setId(coupon.getId());
+                couponNew.setReleaseNum(coupon.getReleaseNum() + 1);
+                couponXMapper.updateByPrimaryKeySelective(couponNew);
                 JobClientUtils.couponUseInfoInvalidTrigger(environment, jobClient, couponUseInfo.getId(), fetureDate);
                 CardTicket ticket = new CardTicket();
                 ticket.setStatus((short)4);

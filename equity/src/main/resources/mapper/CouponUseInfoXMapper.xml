@@ -9,7 +9,7 @@
       <result column="code" jdbcType="VARCHAR" property="code" />
       <result column="collected_time" jdbcType="TIMESTAMP" property="collectedTime" />
       <result column="consumed_time" jdbcType="TIMESTAMP" property="consumedTime" />
-      <result column="order_id" jdbcType="INTEGER" property="orderId" />
+      <result column="order_id" jdbcType="VARCHAR" property="orderId" />
       <result column="status" jdbcType="INTEGER" property="status" />
       <result column="url" jdbcType="VARCHAR" property="url" />
       <result column="type" jdbcType="INTEGER" property="type" />
@@ -99,7 +99,7 @@
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     <include refid="Base_Column_List" />
-    from coupon
+    from coupon_use_info
     WHERE 1=1
     <if test="id != null" >
       and coupon_id = #{id,jdbcType=INTEGER}
@@ -178,7 +178,7 @@
       app_id, delete_flag)
     values (#{couponId,jdbcType=INTEGER}, #{userCouponCode,jdbcType=VARCHAR}, #{userOpenId,jdbcType=VARCHAR},
       #{code,jdbcType=VARCHAR}, #{collectedTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP},
-      #{orderId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},
+      #{orderId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},
       #{type,jdbcType=INTEGER}, #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP},
       #{appId,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER})
   </insert>
@@ -248,7 +248,7 @@
               #{consumedTime,jdbcType=TIMESTAMP},
           </if>
           <if test="orderId != null">
-              #{orderId,jdbcType=INTEGER},
+              #{orderId,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
               #{status,jdbcType=INTEGER},
@@ -318,7 +318,7 @@
               consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
           </if>
           <if test="orderId != null">
-              order_id = #{orderId,jdbcType=INTEGER},
+              order_id = #{orderId,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
               status = #{status,jdbcType=INTEGER},
@@ -352,7 +352,7 @@
       code = #{code,jdbcType=VARCHAR},
       collected_time = #{collectedTime,jdbcType=TIMESTAMP},
       consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
-      order_id = #{orderId,jdbcType=INTEGER},
+      order_id = #{orderId,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},

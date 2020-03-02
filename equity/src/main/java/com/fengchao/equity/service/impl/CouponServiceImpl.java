@@ -257,6 +257,16 @@ public class CouponServiceImpl implements CouponService {
             return null;
         }else if (couponUseInfo.getStatus() == 3){
             log.info("优惠券已使用参数:{}", JSONUtil.toJsonString(couponUseInfo));
+            if (bean.getOrderId() != null) {
+                useInfo.setId(bean.getId());
+                String orderId = couponUseInfo.getOrderId();
+                if (orderId != null && !"".equals(orderId)) {
+                    useInfo.setOrderId(orderId + "," + String.valueOf(bean.getOrderId()));
+                } else {
+                    useInfo.setOrderId(String.valueOf(bean.getOrderId()));
+                }
+                useInfoMapper.updateStatusByUserCode(useInfo);
+            }
             return couponUseInfo;
         }
 
@@ -267,6 +277,9 @@ public class CouponServiceImpl implements CouponService {
         useInfo.setId(bean.getId());
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
+        if (bean.getOrderId() != null) {
+            useInfo.setOrderId(String.valueOf(bean.getOrderId()));
+        }
         useInfo.setStatus(3);
         useInfoMapper.updateStatusByUserCode(useInfo);
         return couponUseInfo;
