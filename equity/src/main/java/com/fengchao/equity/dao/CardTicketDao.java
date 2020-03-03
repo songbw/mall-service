@@ -7,6 +7,7 @@ import com.fengchao.equity.mapper.CardTicketMapperX;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketExample;
 import com.fengchao.equity.model.CardTicketX;
+import com.fengchao.equity.utils.CardTicketStatusEnum;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,7 @@ public class CardTicketDao {
 
         Date date = new Date();
         CardTicket ticket = new CardTicket();
-        ticket.setStatus((short) 6);
+        ticket.setStatus((short) CardTicketStatusEnum.USED.getCode());
         ticket.setConsumedTime(date);
         return mapper.updateByExampleSelective(ticket, example);
     }
@@ -117,7 +118,7 @@ public class CardTicketDao {
         criteria.andUserCouponCodeEqualTo(userCouponCode);
 
         CardTicket ticket = new CardTicket();
-        ticket.setStatus((short) 5);
+        ticket.setStatus((short)CardTicketStatusEnum.OCCUPIED.getCode());
         return mapper.updateByExampleSelective(ticket, example);
     }
 

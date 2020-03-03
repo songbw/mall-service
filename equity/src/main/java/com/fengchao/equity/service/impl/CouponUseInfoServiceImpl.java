@@ -31,6 +31,9 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author fengchao
+ * */
 @Service
 @Slf4j
 public class CouponUseInfoServiceImpl implements CouponUseInfoService {

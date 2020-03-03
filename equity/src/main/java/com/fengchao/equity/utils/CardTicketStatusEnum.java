@@ -1,6 +1,7 @@
 package com.fengchao.equity.utils;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public enum CardTicketStatusEnum {
