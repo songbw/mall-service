@@ -46,7 +46,8 @@
       and status = #{status,jdbcType=INTEGER}
     </if>
     <if test="userOpenId != null" >
-      and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+       <bind name="patternName" value="'%' + userOpenId + '%'" />
+       and user_open_id LIKE #{patternName}
     </if>
     <if test="deleteFlag != null" >
       and delete_flag = 0
@@ -98,7 +99,7 @@
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     <include refid="Base_Column_List" />
-    from coupon_use_info
+    from coupon
     WHERE 1=1
     <if test="id != null" >
       and coupon_id = #{id,jdbcType=INTEGER}
@@ -107,7 +108,8 @@
       and status = #{status,jdbcType=INTEGER}
     </if>
     <if test="userOpenId != null" >
-      and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+       <bind name="patternName" value="'%' + userOpenId + '%'" />
+       and user_open_id LIKE #{patternName}
     </if>
     <if test="deleteFlag != null" >
       and delete_flag = 0
@@ -411,4 +413,41 @@
     </if>
   </update>
 
+    <select id="selectCountByOpenId" resultType="java.lang.Integer" parameterType="Map">
+        select
+        count(*)
+        from coupon p
+        left join coupon_use_info c on c.coupon_id = p.id
+        WHERE delete_flag = 0 and p.coupon_type != 4
+        <if test="status != null" >
+            and c.status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="userOpenId != null" >
+            <bind name="patternName" value="'%' + userOpenId + '%'" />
+            and c.user_open_id LIKE #{patternName}
+        </if>
+        <if test="appId != null" >
+            and c.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+    </select>
+    <select id="selectLimitByOpenId" resultMap="BaseResultMap" parameterType="Map">
+        select
+        c.id, coupon_id, user_coupon_code, user_open_id, c.code, collected_time, consumed_time,
+        order_id, c.status, c.url, c.type, c.effective_start_date, c.effective_end_date, c.app_id, c.delete_flag
+        from coupon p
+        left join coupon_use_info c on c.coupon_id = p.id
+        WHERE delete_flag = 0 and p.coupon_type != 4
+        <if test="status != null" >
+            and c.status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="userOpenId != null" >
+            <bind name="patternName" value="'%' + userOpenId + '%'" />
+            and c.user_open_id LIKE #{patternName}
+        </if>
+        <if test="appId != null" >
+            and c.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        order by collected_time desc
+        limit #{pageNo},#{pageSize}
+    </select>
 </mapper>

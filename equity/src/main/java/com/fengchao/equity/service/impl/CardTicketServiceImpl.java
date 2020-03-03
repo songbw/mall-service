@@ -166,11 +166,13 @@ public class CardTicketServiceImpl implements CardTicketService {
             if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
                 ArrayList<CouponUseInfoX> useInfoXList = new ArrayList<>();
                 CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
-                CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
-                CouponBean couponBean = couponToBean(coupon);
+                if(userCouponCode != null){
+                    CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
+                    CouponBean couponBean = couponToBean(coupon);
+                    couponBean.setCouponUseInfo(useInfoXList);
+                    couponBeanList.add(couponBean);
+                }
                 useInfoXList.add(userCouponCode);
-                couponBean.setCouponUseInfo(useInfoXList);
-                couponBeanList.add(couponBean);
             }else{
                 List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
                 for (CardAndCoupon cardAndCoupon: cardAndCoupons){
@@ -222,11 +224,13 @@ public class CardTicketServiceImpl implements CardTicketService {
             if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
                 ArrayList<CouponUseInfoX> useInfoXList = new ArrayList<>();
                 CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
-                CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
-                CouponBean couponBean = couponToBean(coupon);
+                if(userCouponCode != null){
+                    CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
+                    CouponBean couponBean = couponToBean(coupon);
+                    couponBean.setCouponUseInfo(useInfoXList);
+                    couponBeanList.add(couponBean);
+                }
                 useInfoXList.add(userCouponCode);
-                couponBean.setCouponUseInfo(useInfoXList);
-                couponBeanList.add(couponBean);
             }else{
                 List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
                 for (CardAndCoupon cardAndCoupon: cardAndCoupons){
@@ -240,6 +244,11 @@ public class CardTicketServiceImpl implements CardTicketService {
             ticket.setCoupons(couponBeanList);
         }
         return ticket;
+    }
+
+    @Override
+    public int deleteCardTicket(Integer id) {
+        return ticketDao.deleteCardTicket(id);
     }
 
     private CouponBean couponToBean(CouponX coupon){

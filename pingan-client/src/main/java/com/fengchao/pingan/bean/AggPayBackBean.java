@@ -11,7 +11,9 @@ import lombok.Setter;
 @Setter
 public class AggPayBackBean {
     private String orderNo ;
+    private String refundFee ;
     private String payFee ;
+    private String refundNo ;
     private String payType = "pingan" ;
     private String tradeDate ;
     private String tradeNo ;

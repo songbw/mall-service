@@ -134,4 +134,22 @@ public class CardTicketDao {
 
         return mapper.selectByExample(example);
     }
+
+    public int deleteCardTicket(Integer id) {
+        CardTicket ticket = new CardTicket();
+        ticket.setId(id);
+        ticket.setIsDelete((short) 2);
+        return mapper.updateByPrimaryKeySelective(ticket);
+    }
+
+    public int releaseCard(String userCouponCode) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andUserCouponCodeEqualTo(userCouponCode);
+
+        CardTicket ticket = new CardTicket();
+        ticket.setStatus((short) 4);
+        return mapper.updateByExampleSelective(ticket, example);
+    }
 }

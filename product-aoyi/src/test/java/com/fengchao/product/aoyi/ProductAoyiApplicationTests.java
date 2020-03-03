@@ -8,6 +8,7 @@ import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.dao.ProductDao;
+import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
@@ -30,6 +31,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -68,6 +70,8 @@ public class ProductAoyiApplicationTests {
 	private AoyiProdIndexMapper aoyiProdIndexMapper;
 	@Autowired
 	private ProductService productService ;
+	@Autowired
+	private StarSkuDao starSkuDao ;
 
 	@Autowired
 	private WeipinhuiDataService weipinhuiDataService;
@@ -327,9 +331,22 @@ public class ProductAoyiApplicationTests {
 		System.out.println(JSONUtil.toJsonString(aoyiProdIndexXWithBLOBs));
 	}
 
+	@Ignore
 	@Test
-	public void testWeipinhui() {
-
-
+	public void spuPrice() {
+		List<AoyiProdIndex> aoyiProdIndices = productDao.selectAoyiProdIndexListByMerchant(4) ;
+		aoyiProdIndices.forEach(aoyiProdIndex -> {
+			List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+			if (starSkus != null && starSkus.size() > 0) {
+				StarSku starSku = starSkus.get(0) ;
+				BigDecimal bigDecimalPrice = new BigDecimal(starSku.getPrice()) ;
+				String price = bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString() ;
+				aoyiProdIndex.setPrice(price);
+				AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs() ;
+				BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexWithBLOBs);
+				aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs) ;
+			}
+		});
 	}
+
 }

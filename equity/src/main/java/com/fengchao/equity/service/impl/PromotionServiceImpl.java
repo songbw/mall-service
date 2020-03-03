@@ -281,19 +281,15 @@ public class PromotionServiceImpl implements PromotionService {
         if (promotion == null) {
             return promotion;
         }
-        List<PromotionMpuX> promotionMpus = null;
-        promotionMpus = mpuXMapper.selectByPrimaryMpu(promotion.getId());
+        List<PromotionMpuX> promotionMpus = mpuXMapper.selectByPrimaryMpu(promotion.getId());
         List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
 //        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
-
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
         if (!mpuIdList.isEmpty()) {
-            for (int i = 0; i < mpuIdList.size(); i++) {
-                List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
-                for (AoyiProdIndex prod : aoyiProdIndices) {
-                    if (prod != null) {
-                        aoyiProdMap.put(prod.getMpu(), prod);
-                    }
+            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+            for (AoyiProdIndex prod : aoyiProdIndices) {
+                if (prod != null) {
+                    aoyiProdMap.put(prod.getMpu(), prod);
                 }
             }
         }

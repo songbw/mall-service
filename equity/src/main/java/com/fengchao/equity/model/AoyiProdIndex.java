@@ -1,6 +1,9 @@
 package com.fengchao.equity.model;
 
+import com.fengchao.equity.bean.StarSkuBean;
+
 import java.util.Date;
+import java.util.List;
 
 public class AoyiProdIndex {
     private Integer id;
@@ -58,6 +61,12 @@ public class AoyiProdIndex {
     private String comparePrice;
 
     private String taxRate;
+
+    /**
+     * sku信息
+     */
+    private List<StarSkuBean> skuList ;
+
 
     public Integer getId() {
         return id;
@@ -281,5 +290,13 @@ public class AoyiProdIndex {
 
     public void setTaxRate(String taxRate) {
         this.taxRate = taxRate == null ? null : taxRate.trim();
+    }
+
+    public List<StarSkuBean> getSkuList() {
+        return skuList;
+    }
+
+    public void setSkuList(List<StarSkuBean> skuList) {
+        this.skuList = skuList;
     }
 }

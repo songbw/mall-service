@@ -20,6 +20,9 @@ public interface ProdService {
     @RequestMapping(value = "/prod/mpuIds", method = RequestMethod.GET)
     OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList);
 
+    @RequestMapping(value = "/adminProd/search", method = RequestMethod.POST)
+    OperaResult searchProd(@RequestBody QueryProdBean queryProdBean, @RequestHeader("merchant") Integer merchantHeader);
+
     /**
      * 获取平台信息
      * @return

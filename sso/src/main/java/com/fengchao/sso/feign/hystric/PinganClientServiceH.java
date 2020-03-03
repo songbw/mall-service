@@ -87,4 +87,19 @@ public class PinganClientServiceH implements PinganClientService {
         result.setMsg("根据request code 获取用户服务失败" + msg);
         return result;
     }
+
+    @Override
+    public OperaResponse findWKUser(String openId, String accessToken) {
+        OperaResponse result = new OperaResponse();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = "";
+        try {
+            msg = objectMapper.writeValueAsString(openId);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        result.setCode(404);
+        result.setMsg("根据wk user 获取用户服务失败" + msg);
+        return result;
+    }
 }
