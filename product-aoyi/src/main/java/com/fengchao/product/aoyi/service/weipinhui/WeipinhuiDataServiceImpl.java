@@ -116,7 +116,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             pageNumber, newBrandIdList.size(), JSONUtil.toJsonString(newBrandIdList));
 
                     // 执行插入
-                    // aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
+                    if (CollectionUtils.isNotEmpty(insertAoyiBaseBrandList)) {
+                        aoyiBaseBrandDao.batchInsert(insertAoyiBaseBrandList);
+                    }
 
                     totalInsert = totalInsert + newBrandIdList.size();
                 }
