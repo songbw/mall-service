@@ -463,11 +463,11 @@ public class Order implements Serializable {
         this.payStatus = payStatus;
     }
 
-    public int getPayOrderCategory() {
+    public Integer getPayOrderCategory() {
         return payOrderCategory;
     }
 
-    public void setPayOrderCategory(int payOrderCategory) {
+    public void setPayOrderCategory(Integer payOrderCategory) {
         this.payOrderCategory = payOrderCategory;
     }
 
