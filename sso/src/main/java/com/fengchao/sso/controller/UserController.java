@@ -79,7 +79,7 @@ public class UserController {
         if (pageSize == null || pageSize > 200) {
             pageNo = 10;
         }
-        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone));
+        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone, appId, openId));
         return result;
     }
 
