@@ -145,4 +145,6 @@ public interface OrderService {
     OperaResponse confirmStarOrder(List<Integer> orderIds) ;
 
     OperaResponse deliverStatus(Orders orders) ;
+
+    OperaResponse batchSelectByIds(List<Integer> orderIds) ;
 }

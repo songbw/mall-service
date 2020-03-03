@@ -25,8 +25,10 @@ import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -1489,6 +1491,22 @@ public class OrderServiceImpl implements OrderService {
                 });
             }
         }
+        return response;
+    }
+
+    @Override
+    public OperaResponse batchSelectByIds(List<Integer> orderIds) {
+        OperaResponse response = new OperaResponse() ;
+        List<Order> orders = new ArrayList<>();
+        List<Orders> list = ordersDao.selectOrdersByIds(orderIds) ;
+        list.forEach(temp -> {
+            Order order = new Order() ;
+            BeanUtils.copyProperties(temp, order);
+            List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersId(temp.getId()) ;
+            order.setOrderDetails(orderDetails);
+            orders.add(order) ;
+        });
+        response.setData(orders);
         return response;
     }
 

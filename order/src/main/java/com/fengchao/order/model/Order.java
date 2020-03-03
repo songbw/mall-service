@@ -117,6 +117,8 @@ public class Order implements Serializable {
 
     private String regionId;
 
+    private List<OrderDetail> orderDetails;
+
     public Integer getId() {
         return id;
     }
@@ -555,5 +557,13 @@ public class Order implements Serializable {
 
     public void setRegionId(String regionId) {
         this.regionId = regionId;
+    }
+
+    public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 }
