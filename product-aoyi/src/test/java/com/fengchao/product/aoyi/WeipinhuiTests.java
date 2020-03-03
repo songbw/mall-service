@@ -20,6 +20,7 @@ public class WeipinhuiTests {
     private WeipinhuiDataService weipinhuiDataService;
 
     @Test
+    @Ignore
     public void testGetBrand() {
         try {
             weipinhuiDataService.syncGetBrand(1, -1);
@@ -32,7 +33,7 @@ public class WeipinhuiTests {
     @Ignore
     public void testGetCategory() {
         try {
-            weipinhuiDataService.syncGetCategory(1, 2);
+            weipinhuiDataService.syncGetCategory(1, -1);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -42,7 +43,7 @@ public class WeipinhuiTests {
     @Ignore
     public void testQueryItemIdList() {
         try {
-            weipinhuiDataService.syncItemIdList(1, 1);
+            weipinhuiDataService.syncItemIdList(1, -1);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -50,10 +51,9 @@ public class WeipinhuiTests {
 
 
     @Test
-    @Ignore
     public void testQueryItemDetail() {
         try {
-            weipinhuiDataService.syncItemDetail(1, 1);
+            weipinhuiDataService.syncItemDetail(1, -1);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

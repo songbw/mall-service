@@ -451,7 +451,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
                             pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
-                    // 执行更新
+                    // x..执行更新spu
                     productDao.updateByPrimaryKey(aoyiProdIndex);
 
                     // 4.2 新增sku
@@ -474,7 +474,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     // 4.2.2 过滤掉已经存在sku
                     List<StarSku> insertStarSkuList = new ArrayList<>(); // 过滤掉已存在的sku之后，剩下的需要插入的sku信息
                     List<StarProperty> candidateStarPropertyList = new ArrayList<>(); // 待插入的商品规格列表信息
-                    List<AyFcImages> skuImageList = new ArrayList<>();
+                    List<AyFcImages> skuImageList = new ArrayList<>(); // 待插入ay_fc_images表的信息
                     // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                     for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) { // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                         if (!exsitSkuIdList.contains(aoyiSkuResDto.getSkuId())) { // 如果不存在
@@ -507,6 +507,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                                     aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
                             skuImageList.addAll(_ayFcImagesList);
 
+                            //
                             starSku.setGoodsLogo(productConfig.getFengchaoImagePrefix() + _ayFcImagesList.get(0).getFcImage());
                         }
                     }
