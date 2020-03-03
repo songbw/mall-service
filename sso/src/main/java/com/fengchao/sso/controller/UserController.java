@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    public OperaResult getProfileList(Integer pageNo, Integer pageSize, String name, String sex, String telephone, OperaResult result){
+    public OperaResult getProfileList(Integer pageNo, Integer pageSize, String name, String sex, String telephone, String appId, String openId, OperaResult result){
         if(pageNo == null || pageNo <= 0){
             pageNo = 1;
         }
