@@ -27,5 +27,6 @@ public class CouponUseInfoBean {
     private String couponCode;
     private Integer offset;
     private Integer limit;
+    private Integer orderId;
 
 }

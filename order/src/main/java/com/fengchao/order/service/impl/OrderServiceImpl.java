@@ -943,7 +943,7 @@ public class OrderServiceImpl implements OrderService {
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
         // 核销优惠券
         if (order.getCouponId() != null && order.getCouponId() > 0 && order.getCouponCode() != null && (!"".equals(order.getCouponCode()))) {
-            consume(order.getCouponId(), order.getCouponCode()) ;
+            consume(order.getCouponId(), order.getCouponCode(), order.getId()) ;
             order.setCouponStatus(3);
         }
         int id = orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
@@ -1575,10 +1575,11 @@ public class OrderServiceImpl implements OrderService {
 //        return false;
 //    }
 
-    private boolean consume(int id, String code) {
+    private boolean consume(int id, String code, int orderId) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
         bean.setUserCouponCode(code);
         bean.setId(id);
+        bean.setOrderId(orderId);
         OperaResult result = equityService.consume(bean);
         if (result.getCode() == 200) {
             return true;
