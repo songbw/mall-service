@@ -385,7 +385,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     public OperaResponse syncStarProdPrice() {
         logger.info("syncStarProdPrice");
         OperaResponse response = new OperaResponse() ;
-        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao);
+        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao, productDao);
         return response;
     }
 
