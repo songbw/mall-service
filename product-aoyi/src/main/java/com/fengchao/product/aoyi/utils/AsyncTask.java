@@ -229,7 +229,7 @@ public class AsyncTask {
                 starSku.setAdvisePrice(advisePrice);
                 starSku.setPrice(advisePrice);
                 starSkuDao.updatePriceByCode(starSku);
-                List<StarSku> starSkus1 = starSkuDao.selectByCode(c) ;
+                List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
                 if (!starSkus1.isEmpty()) {
                     String spuId = starSkus1.get(0).getSpuId() ;
                     log.info("spu id is : {}", spuId);
