@@ -230,7 +230,9 @@ public class AsyncTask {
                 starSku.setPrice(advisePrice);
                 starSkuDao.updatePriceByCode(starSku);
                 List<StarSku> starSkus1 = starSkuDao.selectByCode(c) ;
-                if (!spus.contains(starSkus1.get(0).getSpuId())) {
+                String spuId = starSkus1.get(0).getSpuId() ;
+                log.info("spu id is : {}", spuId);
+                if (!spus.contains(spuId)) {
                     spus.add(starSkus1.get(0).getSpuId()) ;
                     // 更新spu表价格
                     PriceBean priceBean = new PriceBean() ;
