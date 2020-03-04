@@ -230,17 +230,19 @@ public class AsyncTask {
                 starSku.setPrice(advisePrice);
                 starSkuDao.updatePriceByCode(starSku);
                 List<StarSku> starSkus1 = starSkuDao.selectByCode(c) ;
-                String spuId = starSkus1.get(0).getSpuId() ;
-                log.info("spu id is : {}", spuId);
-                if (!spus.contains(spuId)) {
-                    spus.add(starSkus1.get(0).getSpuId()) ;
-                    // 更新spu表价格
-                    PriceBean priceBean = new PriceBean() ;
-                    priceBean.setSkuId(starSkus1.get(0).getSpuId());
-                    priceBean.setMerchantId(4);
-                    priceBean.setPrice(retailPrice);
-                    priceBean.setSPrice(channelPrice);
-                    productDao.updatePrice(priceBean) ;
+                if (!starSkus1.isEmpty()) {
+                    String spuId = starSkus1.get(0).getSpuId() ;
+                    log.info("spu id is : {}", spuId);
+                    if (!spus.contains(spuId)) {
+                        spus.add(starSkus1.get(0).getSpuId()) ;
+                        // 更新spu表价格
+                        PriceBean priceBean = new PriceBean() ;
+                        priceBean.setSkuId(starSkus1.get(0).getSpuId());
+                        priceBean.setMerchantId(4);
+                        priceBean.setPrice(retailPrice);
+                        priceBean.setSPrice(channelPrice);
+                        productDao.updatePrice(priceBean) ;
+                    }
                 }
             }
         });
