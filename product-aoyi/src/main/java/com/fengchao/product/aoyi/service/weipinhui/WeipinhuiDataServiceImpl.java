@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.service.weipinhui;
 
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.config.ProductConfig;
+import com.fengchao.product.aoyi.constants.ProductStatusEnum;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
@@ -281,6 +282,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         aoyiProdIndex.setSkuid(aoyiItemDetailResDto.getItemId());
                         aoyiProdIndex.setMpu(aoyiItemDetailResDto.getItemId());
                         aoyiProdIndex.setMerchantId(2);
+                        aoyiProdIndex.setState(String.valueOf(ProductStatusEnum.PUT_ON.getValue())); // 下架状态
 
                         itemIdList.add(aoyiItemDetailResDto.getItemId());
                         aoyiProdIndexList.add(aoyiProdIndex);
@@ -426,7 +428,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             aoyiBaseBrandDao.selectByBrandId(Integer.valueOf(aoyiItemDetailResDto.getBrandId()));
 
                     aoyiProdIndex.setName(aoyiItemDetailResDto.getItemTitle()); // 商品名称spu名称
-                    aoyiProdIndex.setState(aoyiItemDetailResDto.getCanSell() == "true" ? "1" : "0"); // 是否出售 "false" - 是否上架 0：下架；1：上架
+                    // aoyiProdIndex.setState(aoyiItemDetailResDto.getCanSell() == "true" ? "1" : "0"); // 是否出售 "false" - 是否上架 0：下架；1：上架
                     aoyiProdIndex.setBrand(aoyiBaseBrand == null ? "" : aoyiBaseBrand.getBrandName());
                     aoyiProdIndex.setBrandId(StringUtils.isNotBlank(aoyiItemDetailResDto.getBrandId())
                             ? Integer.valueOf(aoyiItemDetailResDto.getBrandId()) : 0); // 品牌 id
@@ -452,7 +454,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
                             pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
                     // x..执行更新spu
-                    productDao.updateByPrimaryKey(aoyiProdIndex);
+                    productDao.updateByPrimaryKey((AoyiProdIndexWithBLOBs) aoyiProdIndex);
 
                     // 4.2 新增sku
                     List<AoyiSkuResDto> aoyiSkuResDtoList = aoyiItemDetailResDto.getAoyiSkusResponses(); // rpc获取到的sku集合

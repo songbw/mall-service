@@ -248,11 +248,11 @@ public class ProductDao {
     /**
      * 更新产品信息
      *
-     * @param aoyiProdIndex
+     * @param aoyiProdIndexWithBLOBs
      */
-    public int updateByPrimaryKey(AoyiProdIndex aoyiProdIndex) {
+    public int updateByPrimaryKey(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
 
-        int count = aoyiProdIndexMapper.updateByPrimaryKey(aoyiProdIndex) ;
+        int count = aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
 
         return count;
     }
