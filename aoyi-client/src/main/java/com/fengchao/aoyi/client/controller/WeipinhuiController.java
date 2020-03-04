@@ -34,6 +34,8 @@ public class WeipinhuiController {
      *
      * 每页20， 大约537页，最后一页6条
      *
+     * 557 pages, 4 items in last page
+     *
      * @param pageNumber
      * @param pageSize
      * @return
@@ -69,6 +71,8 @@ public class WeipinhuiController {
      *
      * 每页20， 大约67页 最后一页8条数据
      *
+     * 67 pages , 8 in last page
+     *
      * @param pageNumber
      * @param pageSize
      * @return
@@ -102,6 +106,10 @@ public class WeipinhuiController {
      * <p>
      * http://localhost:8001/weipinhui/queryItemsList?pageNumber=1&pageSize=20
      * 3页，每页20条 最后一页 7 条数据
+     *
+     *
+     *
+     *
      * @param pageNumber
      * @param pageSize
      * @return
