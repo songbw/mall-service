@@ -210,4 +210,18 @@ public class OrdersDao {
         List<Orders> list = ordersMapper.selectByExample(ordersExample);
         return list;
     }
+
+    /**
+     * 根据订单id列表查询订单
+     * @param ids
+     * @return
+     */
+    public List<Orders> selectOrdersByIds(List<Integer> ids) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andIdIn(ids);
+
+        List<Orders> list = ordersMapper.selectByExample(ordersExample);
+        return list;
+    }
 }
