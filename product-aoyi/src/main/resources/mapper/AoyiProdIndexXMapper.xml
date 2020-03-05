@@ -565,13 +565,14 @@
 
   <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
     insert into aoyi_prod_index
-    (skuId, merchant_id, mpu)
+    (skuId, merchant_id, mpu, state)
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
       #{item.skuid},
       #{item.merchantId},
-      #{item.mpu}
+      #{item.mpu},
+      #{item.state}
       )
     </foreach>
   </insert>

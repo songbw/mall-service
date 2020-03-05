@@ -8,7 +8,7 @@ weipinhui:
   url:
     # http://47.110.135.104:8080/aoyi/rest/brand/getBrand
     # https://oa.aoyi365.com/aoyi/rest/brand/getBrand
-    getBrand: https://47.110.135.104/aoyi/rest/brand/getBrand
+    getBrand: https://47.110.135.104:8080/aoyi/rest/brand/getBrand
     getCategory: http://47.110.135.104:8080/aoyi/rest/category/getCategory
     queryItemsList: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemsList
     queryItemDetial: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemDetail

@@ -454,7 +454,8 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
                             pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
                     // x..执行更新spu
-                    productDao.updateByPrimaryKey((AoyiProdIndexWithBLOBs) aoyiProdIndex);
+                    AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
+                    productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
 
                     // 4.2 新增sku
                     List<AoyiSkuResDto> aoyiSkuResDtoList = aoyiItemDetailResDto.getAoyiSkusResponses(); // rpc获取到的sku集合
@@ -655,6 +656,45 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         }
 
         return ayFcImagesList;
+    }
+
+    /**
+     *
+     * @param aoyiProdIndex
+     * @return
+     */
+    private AoyiProdIndexWithBLOBs convertToAoyiProdIndexWithBLOBs(AoyiProdIndex aoyiProdIndex) {
+        AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs();
+
+        aoyiProdIndexWithBLOBs.setId(aoyiProdIndex.getId());
+        aoyiProdIndexWithBLOBs.setSkuid(aoyiProdIndex.getSkuid());
+        aoyiProdIndexWithBLOBs.setBrand(aoyiProdIndex.getBrand());
+        aoyiProdIndexWithBLOBs.setCategory(aoyiProdIndex.getCategory());
+        aoyiProdIndexWithBLOBs.setImage(aoyiProdIndex.getImage());
+        aoyiProdIndexWithBLOBs.setModel(aoyiProdIndex.getModel());
+        aoyiProdIndexWithBLOBs.setName(aoyiProdIndex.getName());
+        aoyiProdIndexWithBLOBs.setWeight(aoyiProdIndex.getWeight());
+        aoyiProdIndexWithBLOBs.setUpc(aoyiProdIndex.getUpc());
+        aoyiProdIndexWithBLOBs.setSaleunit(aoyiProdIndex.getSaleunit());
+        aoyiProdIndexWithBLOBs.setState(aoyiProdIndex.getState());
+        aoyiProdIndexWithBLOBs.setPrice(aoyiProdIndex.getPrice());
+        aoyiProdIndexWithBLOBs.setIprice(aoyiProdIndex.getIprice());
+        aoyiProdIndexWithBLOBs.setSprice(aoyiProdIndex.getSprice());
+        aoyiProdIndexWithBLOBs.setImagesUrl(aoyiProdIndex.getImagesUrl());
+        aoyiProdIndexWithBLOBs.setIntroductionUrl(aoyiProdIndex.getIntroductionUrl());
+        aoyiProdIndexWithBLOBs.setMerchantId(aoyiProdIndex.getMerchantId());
+        aoyiProdIndexWithBLOBs.setInventory(aoyiProdIndex.getInventory());
+        aoyiProdIndexWithBLOBs.setBrandId(aoyiProdIndex.getBrandId());
+        aoyiProdIndexWithBLOBs.setMpu(aoyiProdIndex.getMpu());
+        aoyiProdIndexWithBLOBs.setType(aoyiProdIndex.getType());
+        aoyiProdIndexWithBLOBs.setCompareUrl(aoyiProdIndex.getCompareUrl());
+        aoyiProdIndexWithBLOBs.setSubTitle(aoyiProdIndex.getSubTitle());
+        aoyiProdIndexWithBLOBs.setComparePrice(aoyiProdIndex.getComparePrice());
+        aoyiProdIndexWithBLOBs.setTaxRate(aoyiProdIndex.getTaxRate());
+        aoyiProdIndexWithBLOBs.setFloorPrice(aoyiProdIndex.getFloorPrice());
+        aoyiProdIndexWithBLOBs.setCrossBorder(aoyiProdIndex.getCrossBorder());
+
+        return aoyiProdIndexWithBLOBs;
     }
 
 }

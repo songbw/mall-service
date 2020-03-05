@@ -250,7 +250,7 @@ public class ProductDao {
      *
      * @param aoyiProdIndexWithBLOBs
      */
-    public int updateByPrimaryKey(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
+    public int updateByPrimaryKeySelective(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
 
         int count = aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
 
