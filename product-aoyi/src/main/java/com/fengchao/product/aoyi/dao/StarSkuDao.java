@@ -140,7 +140,7 @@ public class StarSkuDao {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeEqualTo(code) ;
-        List<StarSku> list = mapper.selectByExample(example);
+        List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
