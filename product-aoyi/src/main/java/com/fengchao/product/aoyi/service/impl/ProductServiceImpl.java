@@ -19,6 +19,7 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.poi.util.StringUtil;
@@ -281,9 +282,19 @@ public class ProductServiceImpl implements ProductService {
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
 
         // 2. 查询商品品类信息
-        List<Integer> categoryIdList =
-                aoyiProdIndexList.stream().map(p -> Integer.valueOf(p.getCategory())).collect(Collectors.toList());
-        List<CategoryBean> categoryBeanList =  categoryService.queryCategoryListByCategoryIdList(categoryIdList);
+        List<Integer> categoryIdList = new ArrayList<>();
+        for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
+            String category = aoyiProdIndex.getCategory();
+
+            if (StringUtils.isNotBlank(category)) {
+                categoryIdList.add(Integer.valueOf(category));
+            }
+        }
+
+        List<CategoryBean> categoryBeanList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(categoryIdList)) {
+            categoryBeanList = categoryService.queryCategoryListByCategoryIdList(categoryIdList);
+        }
 
         // 转map key：categoryId, value: CategoryBean
         Map<Integer, CategoryBean> categoryBeanMap =
