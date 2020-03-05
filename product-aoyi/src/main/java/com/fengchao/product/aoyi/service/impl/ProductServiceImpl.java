@@ -244,11 +244,10 @@ public class ProductServiceImpl implements ProductService {
             String imageUrl = "" ;
             if (starDetailImgs != null && starDetailImgs.size() > 0) {
                 for (int i = 0; i < starDetailImgs.size(); i++) {
-                    StarDetailImg starDetailImg = starDetailImgs.get(0) ;
                     if (i == 0) {
-                        imageUrl = starDetailImg.getImgUrl() ;
+                        imageUrl = starDetailImgs.get(i).getImgUrl() ;
                     } else {
-                        imageUrl = imageUrl + ";" + starDetailImg.getImgUrl() ;
+                        imageUrl = imageUrl + ";" + starDetailImgs.get(i).getImgUrl() ;
                     }
                 }
                 aoyiProdIndexX.setImagesUrl(imageUrl);
