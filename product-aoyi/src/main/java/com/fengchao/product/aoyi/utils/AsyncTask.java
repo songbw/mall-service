@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
+import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.StarSkuDao;
@@ -186,7 +187,7 @@ public class AsyncTask {
     }
 
     @Async
-    public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao) {
+    public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
         List<StarSku> starSkus = starSkuDao.selectAll() ;
         List<String> codes = new ArrayList<>() ;
         String code = "" ;
@@ -207,6 +208,7 @@ public class AsyncTask {
                 codes.add(code) ;
             }
         }
+        List<String> spus = new ArrayList<>();
         codes.forEach(c -> {
             OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(c) ;
             String skuPriceResString = JSON.toJSONString(priceResponse) ;
@@ -225,7 +227,23 @@ public class AsyncTask {
                 starSku.setCode(skuCode);
                 starSku.setSprice(sprice);
                 starSku.setAdvisePrice(advisePrice);
+                starSku.setPrice(advisePrice);
                 starSkuDao.updatePriceByCode(starSku);
+                List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
+                if (!starSkus1.isEmpty()) {
+                    String spuId = starSkus1.get(0).getSpuId() ;
+                    log.info("spu id is : {}", spuId);
+                    if (!spus.contains(spuId)) {
+                        spus.add(starSkus1.get(0).getSpuId()) ;
+                        // 更新spu表价格
+                        PriceBean priceBean = new PriceBean() ;
+                        priceBean.setSkuId(starSkus1.get(0).getSpuId());
+                        priceBean.setMerchantId(4);
+                        priceBean.setPrice(retailPrice);
+                        priceBean.setSPrice(channelPrice);
+                        productDao.updatePrice(priceBean) ;
+                    }
+                }
             }
         });
     }

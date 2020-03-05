@@ -131,4 +131,17 @@ public class StarSkuDao {
         return list;
     }
 
+    /**
+     * 根据code查询SKU信息
+     *
+     * @return
+     */
+    public List<StarSku> selectByCode(String code) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andCodeEqualTo(code) ;
+        List<StarSku> list = mapper.selectByExample(example);
+        return list;
+    }
+
 }
