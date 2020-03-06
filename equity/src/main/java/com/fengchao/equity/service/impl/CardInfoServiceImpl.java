@@ -1,22 +1,25 @@
 package com.fengchao.equity.service.impl;
 
+import com.fengchao.equity.bean.CardDetailsBean;
 import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.CardAndCouponDao;
 import com.fengchao.equity.dao.CardTicketDao;
 import com.fengchao.equity.dao.CardInfoDao;
-import com.fengchao.equity.model.CardAndCoupon;
-import com.fengchao.equity.model.CardInfo;
-import com.fengchao.equity.model.CardInfoX;
-import com.fengchao.equity.model.CardTicket;
+import com.fengchao.equity.dao.CouponUseInfoDao;
+import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.utils.ConvertUtil;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CardInfoServiceImpl implements CardInfoService {
@@ -27,6 +30,8 @@ public class CardInfoServiceImpl implements CardInfoService {
     private CardTicketDao assignsDao;
     @Autowired
     private CardAndCouponDao cardAndCouponDao;
+    @Autowired
+    private CouponUseInfoDao couponUseInfoDao;
 
     @Override
     public int createCardInfo(CardInfoBean bean) {
@@ -92,14 +97,33 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public PageableData<CardTicket> details(CardInfoBean bean) {
-        PageableData<CardTicket> pageableData = new PageableData<>();
+    public PageableData<CardDetailsBean> details(CardInfoBean bean) {
+        PageableData<CardDetailsBean> pageableData = new PageableData<>();
         PageInfo<CardTicket> cardTicketPageInfo = assignsDao.searchCardTicket(bean);
-        // 2.处理结果
         PageVo pageVo = ConvertUtil.convertToPageVo(cardTicketPageInfo);
-        List<CardTicket> cardTicketList = cardTicketPageInfo.getList();
-        pageableData.setList(cardTicketList);
         pageableData.setPageInfo(pageVo);
+
+        List<CardTicket> cardTicketList = cardTicketPageInfo.getList();
+        List<String> userCouponCodeList = new ArrayList<>();
+        for(CardTicket ticket: cardTicketList){
+            userCouponCodeList.add(ticket.getUserCouponCode());
+        }
+        List<CouponUseInfo> couponUseInfos = couponUseInfoDao.selectByUserCouponCodeList(userCouponCodeList);
+        Map<String,String> codeOrderMap = new HashMap<>();
+        for (CouponUseInfo info: couponUseInfos){
+            codeOrderMap.put(info.getUserCouponCode(),info.getOrderId());
+        }
+
+        List<CardDetailsBean> beans = new ArrayList<>();
+        for(CardTicket ticket: cardTicketList){
+            CardDetailsBean detailsBean = new CardDetailsBean();
+            BeanUtils.copyProperties(ticket,detailsBean);
+            detailsBean.setOrderId(codeOrderMap.get(ticket.getUserCouponCode()));
+            beans.add(detailsBean);
+        }
+
+        pageableData.setList(beans);
+
         return pageableData;
     }
 }

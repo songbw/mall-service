@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.dao.*;
 import com.fengchao.equity.exception.EquityException;
+import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CardTicketService;
@@ -37,6 +38,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     private CardAndCouponDao cardAndCouponDao;
     @Autowired
     private CouponDao couponDao;
+    @Autowired
+    private CouponXMapper couponXMapper;
     @Autowired
     private CouponUseInfoDao useInfoDao;
     @Autowired
@@ -145,7 +148,9 @@ public class CardTicketServiceImpl implements CardTicketService {
         if (null == bean.getAppId()){
             throw new EquityException(MyErrorEnum.CARD_TICKET_HEADER_APP_ID_BLANK);
         }
-        String userCouponCode;
+
+        String userCouponCode = "";
+
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
         CardInfoX cardInfoX = infoDao.findByCardId(cardTicket.getCardId());
@@ -168,6 +173,7 @@ public class CardTicketServiceImpl implements CardTicketService {
             couponUseInfo.setAppId(coupon.getAppId());
             int insert = useInfoDao.insert(couponUseInfo);
             if(insert == 1){
+                couponXMapper.increaseReleaseNumById(coupon.getId());
                 JobClientUtils.couponUseInfoInvalidTrigger(environment, jobClient, couponUseInfo.getId(), fetureDate);
                 CardTicket ticket = new CardTicket();
                 ticket.setStatus((short)CardTicketStatusEnum.EXCHANGED.getCode());
@@ -277,6 +283,33 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public int deleteCardTicket(Integer id) {
         return ticketDao.deleteCardTicket(id);
+    }
+
+    @Override
+    public List<Integer>
+    getOrderIdByCouponId(List<Integer> couponIdList){
+
+        List<CouponUseInfo> infoList = useInfoDao.selectByCouponIdList(couponIdList);
+        List<Integer> orderIdList = new ArrayList<>();
+
+        for(CouponUseInfo info: infoList){
+            String[] idArray = info.getOrderId().split(",");
+            for(String idString: idArray){
+                Integer id = Integer.valueOf(idString);
+                if (!orderIdList.contains(id)) {
+                    orderIdList.add(id);
+                }
+            }
+        }
+
+        return orderIdList;
+    }
+
+    @Override
+    public List<CouponUseInfo>
+    selectByUserCouponCodeList(List<String> codeList){
+
+        return useInfoDao.selectByUserCouponCodeList(codeList);
     }
 
     private CouponBean couponToBean(CouponX coupon){

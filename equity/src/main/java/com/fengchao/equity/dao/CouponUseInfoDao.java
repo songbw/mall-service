@@ -6,6 +6,7 @@ import com.fengchao.equity.mapper.CouponUseInfoXMapper;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoExample;
 import com.fengchao.equity.model.CouponUseInfoX;
+import com.fengchao.equity.utils.CouponUseStatusEnum;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,5 +76,31 @@ public class CouponUseInfoDao {
 
     public CouponUseInfoX findByUserCouponCode(String userCouponCode) {
         return couponUseInfoXMapper.selectByUserCode(userCouponCode);
+    }
+
+    public List<CouponUseInfo> selectByCouponIdList(List<Integer> idList) {
+        CouponUseInfoExample example = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteFlagEqualTo(0);
+        criteria.andStatusEqualTo(CouponUseStatusEnum.USED.getCode());
+        criteria.andOrderIdIsNotNull();
+        criteria.andCouponIdIn(idList);
+
+        List<CouponUseInfo> couponUseInfoList = couponUseInfoMapper.selectByExample(example);
+
+        return couponUseInfoList;
+    }
+
+    public List<CouponUseInfo> selectByUserCouponCodeList(List<String> codeLst) {
+        CouponUseInfoExample example = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteFlagEqualTo(0);
+        criteria.andStatusEqualTo(CouponUseStatusEnum.USED.getCode());
+        criteria.andOrderIdIsNotNull();
+        criteria.andUserCouponCodeIn(codeLst);
+
+        List<CouponUseInfo> couponUseInfoList = couponUseInfoMapper.selectByExample(example);
+
+        return couponUseInfoList;
     }
 }

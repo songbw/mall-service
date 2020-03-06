@@ -23,6 +23,8 @@ public interface CouponXMapper {
 
     int updateByPrimaryKeySelective(CouponX record);
 
+    int increaseReleaseNumById(Integer id);
+
     int updateByPrimaryKey(CouponX record);
 
     int selectCount(HashMap map);
