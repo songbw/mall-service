@@ -1,21 +1,22 @@
-spring.cloud.service-registry.auto-registration.enabled: false
-
 ## aoyitest.aoyi365.com
 weipinhui:
-  appid: 36402f98-d0fb-4466-8e0e-610f7d81ce9a
-  appSecret: BD0A589C139D536F0FE402060775E35F
+  appid: 36402f98-d0fb-4466-8e0e-610f7d81ce9a  # 测试
+  appSecret: BD0A589C139D536F0FE402060775E35F  # 测试
+
   url:
-    getBrand: https://47.98.236.72/aoyi/rest/brand/getBrand
-    getCategory: https://oa.aoyi365.com/aoyi/rest/category/getCategory
-    queryItemsList: https://oa.aoyi365.com/aoyi/rest/prodcut/queryItemsList
-    queryItemDetial: https://oa.aoyi365.com/aoyi/rest/prodcut/queryItemDetail
-    queryItemInventory: https://oa.aoyi365.com/aoyi/rest/order/queryItemInventory
-    renderOrder: https://oa.aoyi365.com/aoyi/rest/order/renderOrder
-    createOrder: https://oa.aoyi365.com/aoyi/rest/order/confirmOrder
-    releaseOrder: https://oa.aoyi365.com/aoyi/rest/order/releaseOrder
-    queryAddress: https://oa.aoyi365.com/aoyi/rest/order/queryAddress
+    # http://47.110.135.104:8080/aoyi/rest/brand/getBrand
+    # https://oa.aoyi365.com/aoyi/rest/brand/getBrand
+    getBrand: https://47.110.135.104:8080/aoyi/rest/brand/getBrand
+    getCategory: http://47.110.135.104:8080/aoyi/rest/category/getCategory
+    queryItemsList: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemsList
+    queryItemDetial: http://47.110.135.104:8080/aoyi/rest/prodcut/queryItemDetail
+    queryItemInventory: http://47.110.135.104:8080/aoyi/rest/order/queryItemInventory
+    renderOrder: http://47.110.135.104:8080/aoyi/rest/order/renderOrder
+    createOrder: http://47.110.135.104:8080/aoyi/rest/order/confirmOrder
+    releaseOrder: http://47.110.135.104:8080/aoyi/rest/order/releaseOrder
+    queryAddress: http://47.110.135.104:8080/aoyi/rest/order/queryAddress
     ## 物流信息
-    queryOrderLogistics: http://47.98.236.72/aoyi/rest/order/queryOrderLogistics
+    queryOrderLogistics: http://aoyitest.aoyi365.com:8080/aoyi/rest/order/queryOrderLogistics
 
 
   privateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDApPEzql843P16

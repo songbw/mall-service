@@ -40,7 +40,6 @@ public class WeipinhuiTests {
     }
 
     @Test
-    @Ignore
     public void testQueryItemIdList() {
         try {
             weipinhuiDataService.syncItemIdList(1, -1);
