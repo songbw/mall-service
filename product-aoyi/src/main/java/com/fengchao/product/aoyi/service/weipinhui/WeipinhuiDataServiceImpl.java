@@ -376,17 +376,17 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
      */
     @Override
     public void syncItemDetail(Integer pageNum, Integer maxPageCount) throws Exception {
+        //
+        Integer totalItemIdCount = 0; // 累计处理的itemId数量
+        Integer totalSkuCount = 0; // 累计处理的sku数量
+        Integer totalPropertyCount = 0; // 累计处理的商品属性数量
+
         try {
             // 1.分页查询itemId列表数据
             ProductQueryBean productQueryBean = new ProductQueryBean();
             productQueryBean.setPageSize(10);
             productQueryBean.setMerchantId(2);
             productQueryBean.setSkuProfix("3");
-
-            //
-            Integer totalItemIdCount = 0; // 累计处理的itemId数量
-            Integer totalSkuCount = 0; // 累计处理的sku数量
-            Integer totalPropertyCount = 0; // 累计处理的商品属性数量
 
             //
             while (true) {
@@ -451,19 +451,22 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             String.join(":", detailSpuImageList.stream().map(d -> d.getFcImage()).collect(Collectors.toList()));
                     aoyiProdIndex.setIntroductionUrl(introductionUrl); // 商品详情图 [http://pic.aoyi365
 
-                    log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
-                            pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
-                    // x..执行更新spu
-                    AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
-                    productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
-
-                    // 4.2 新增sku
+                    // x.. 获取sku list
                     List<AoyiSkuResDto> aoyiSkuResDtoList = aoyiItemDetailResDto.getAoyiSkusResponses(); // rpc获取到的sku集合
                     if (CollectionUtils.isEmpty(aoyiSkuResDtoList)) {
                         log.warn("同步商品详情 第{}页 第{}个itemId:{} 其商品详情为空 继续......", pageNum, itemIdIndex, itemId);
                         continue;
                     }
+                    // 处理销售价格
+                    aoyiProdIndex.setPrice(aoyiSkuResDtoList.get(0).getSellPrice());
 
+                    // x..执行更新spu
+                    log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
+                            pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
+                    AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
+                    productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
+
+                    // 4.2 新增sku
                     // 4.2.1 首先判断是否已存在sku
                     // skuId集合
                     List<String> skuIdList =
@@ -492,7 +495,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             starSku.setSpuId(itemId);
                             starSku.setAdvisePrice(PriceUtil.convertYuanToFen(aoyiSkuResDto.getSellPrice())); // 建议销售价格 单位分
                             starSku.setSprice(PriceUtil.convertYuanToFen(aoyiSkuResDto.getPriceCent())); // 采购价格 单位分
-                            // starSku.setPrice(); // 实际销售价格 单位分
+                            starSku.setPrice(PriceUtil.convertYuanToFen(aoyiSkuResDto.getSellPrice())); // 实际销售价格 单位分
                             starSku.setMerchantCode(MERCHANT_CODE);
 
                             insertStarSkuList.add(starSku); //
@@ -580,6 +583,8 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             log.info("同步商品详情 结束<<<<<< 共处理 itemId:{}个, 插入sku:{}个, property:{}个",
                     totalItemIdCount, totalSkuCount, totalPropertyCount);
         } catch (Exception e) {
+            log.info("同步商品详情 结束<<<<<<===== 共处理 itemId:{}个, 插入sku:{}个, property:{}个",
+                    totalItemIdCount, totalSkuCount, totalPropertyCount);
             log.error("同步商品 异常:{}", e.getMessage(), e);
         }
     }

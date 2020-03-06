@@ -123,7 +123,7 @@ public class AoyiClientRpcService {
      *
      * @return
      */
-    public AoyiItemDetailResDto weipinhuiQueryItemDetial(String itemId) {
+    public AoyiItemDetailResDto weipinhuiQueryItemDetial(String itemId) throws Exception {
         // 返回值
         AoyiItemDetailResDto aoyiItemDetailResDto = null;
 
@@ -139,6 +139,8 @@ public class AoyiClientRpcService {
             aoyiItemDetailResDto = resultObject.getData();
         } else {
             log.warn("查询唯品会商品详情 调用aoyi-client rpc服务 错误!");
+
+            throw new Exception("查询唯品会商品详情 调用aoyi-client rpc服务 错误!!");
         }
 
         log.info("AoyiClientRpcService#weipinhuiQueryItemDetial 调用aoyi-client rpc服务 返回:{}",
