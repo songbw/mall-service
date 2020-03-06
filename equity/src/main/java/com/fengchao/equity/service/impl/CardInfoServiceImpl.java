@@ -68,14 +68,22 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public PageableData<CardInfo> findCardInfo(CardInfoBean bean) {
-        PageableData<CardInfo> pageableData = new PageableData<>();
+    public PageableData<CardInfoX> findCardInfo(CardInfoBean bean) {
+        PageableData<CardInfoX> pageableData = new PageableData<>();
 
         PageInfo<CardInfo> cardTicket = dao.findCardTicket(bean);
         // 2.处理结果
         PageVo pageVo = ConvertUtil.convertToPageVo(cardTicket);
         List<CardInfo> cardTicketList = cardTicket.getList();
-        pageableData.setList(cardTicketList);
+        List<CardInfoX> infoXList = new ArrayList<>();
+        for(CardInfo info: cardTicketList){
+            CardInfoX cardInfoX = new CardInfoX();
+            BeanUtils.copyProperties(info,cardInfoX);
+            List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(info.getId());
+            cardInfoX.setCouponIds(couponIds);
+            infoXList.add(cardInfoX);
+        }
+        pageableData.setList(infoXList);
         pageableData.setPageInfo(pageVo);
 
         return pageableData;
@@ -110,15 +118,18 @@ public class CardInfoServiceImpl implements CardInfoService {
         }
         List<CouponUseInfo> couponUseInfos = couponUseInfoDao.selectByUserCouponCodeList(userCouponCodeList);
         Map<String,String> codeOrderMap = new HashMap<>();
-        for (CouponUseInfo info: couponUseInfos){
-            codeOrderMap.put(info.getUserCouponCode(),info.getOrderId());
+        if (null != couponUseInfos && 0 < couponUseInfos.size()) {
+            for (CouponUseInfo info : couponUseInfos) {
+                codeOrderMap.put(info.getUserCouponCode(), info.getOrderId());
+            }
         }
-
         List<CardDetailsBean> beans = new ArrayList<>();
         for(CardTicket ticket: cardTicketList){
             CardDetailsBean detailsBean = new CardDetailsBean();
             BeanUtils.copyProperties(ticket,detailsBean);
-            detailsBean.setOrderId(codeOrderMap.get(ticket.getUserCouponCode()));
+            if (null != codeOrderMap) {
+                detailsBean.setOrderId(codeOrderMap.get(ticket.getUserCouponCode()));
+            }
             beans.add(detailsBean);
         }
 

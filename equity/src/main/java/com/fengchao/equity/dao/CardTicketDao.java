@@ -74,7 +74,9 @@ public class CardTicketDao {
         CardTicketExample example = new CardTicketExample();
         CardTicketExample.Criteria criteria = example.createCriteria();
         criteria.andCardIdEqualTo(bean.getId());
-        criteria.andIsDeleteEqualTo((short) 1);
+        //删除标记对用户来说只是逻辑显示，运营后台是需要查看的，所以此处不过滤了
+        //criteria.andIsDeleteEqualTo((short) 1);
+        example.setOrderByClause("update_time DESC");
 
         if(bean.getStatus() != null){
             criteria.andStatusEqualTo(bean.getStatus());

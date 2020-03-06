@@ -57,7 +57,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
     @Override
     public CouponUseInfoBean collectCoupon(CouponUseInfoBean bean) throws EquityException {
-        CouponX couponNew = new CouponX();
+
         CouponUseInfoX couponUseInfo = new CouponUseInfoX();
         CouponUseInfoBean couponUseInfoBean = new CouponUseInfoBean();
 
@@ -115,9 +115,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
 
         if(num == 1){
-            couponNew.setId(coupon.getId());
-            couponNew.setReleaseNum(coupon.getReleaseNum() + 1);
-            couponXMapper.updateByPrimaryKeySelective(couponNew);
+            couponXMapper.increaseReleaseNumById(coupon.getId());
 
             couponUseInfoBean.setCouponCollectNum(collectNum + 1);
             return couponUseInfoBean;
@@ -375,10 +373,10 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
         int num= mapper.updateByUserCode(useInfo);
         if(num == 1){
-            coupon.setReleaseNum(coupon.getReleaseNum() + 1);
-            couponXMapper.updateByPrimaryKeySelective(coupon);
+            couponXMapper.increaseReleaseNumById(coupon.getId());
             bean.setCouponCode(coupon.getCode());
-            bean.setCouponCollectNum(coupon.getReleaseNum() + 1);
+            Coupon tmpCoupon = couponDao.selectCouponById(coupon.getId());
+            bean.setCouponCollectNum(tmpCoupon.getReleaseNum());
             return bean;
         }else{
             bean.setUserCouponCode("5");

@@ -14,7 +14,7 @@ public interface CardInfoService {
 
     CardInfoX findByCardId(Integer id);
 
-    PageableData<CardInfo> findCardInfo(CardInfoBean bean);
+    PageableData<CardInfoX> findCardInfo(CardInfoBean bean);
 
     int deleteCardInfo(Integer id);
 

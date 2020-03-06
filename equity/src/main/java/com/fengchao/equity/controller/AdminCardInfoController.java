@@ -64,7 +64,7 @@ public class AdminCardInfoController {
 
     @GetMapping("find")
     public OperaResult findCardInfo(CardInfoBean bean, OperaResult result){
-        PageableData<CardInfo> coupon = service.findCardInfo(bean);
+        PageableData<CardInfoX> coupon = service.findCardInfo(bean);
         result.getData().put("result", coupon);
         return result;
     }
