@@ -10,6 +10,7 @@ import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
+import com.fengchao.product.aoyi.utils.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,6 +270,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Override
     public void uploadProdImage() {
         List<AyFcImages> ayFcImages = ayFcImagesDao.findNoUploadImage();
+        logger.info("下载图片任务 数据为:{}", JSONUtil.toJsonString(ayFcImages));
         if (ayFcImages != null && ayFcImages.size() > 0) {
             ayFcImages.forEach(image -> {
                 OperaResult result = baseService.downUpload(image);

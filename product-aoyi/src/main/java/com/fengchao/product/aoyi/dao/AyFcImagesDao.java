@@ -57,7 +57,7 @@ public class AyFcImagesDao {
         AyFcImagesExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(0);
 
-        PageHelper.startPage(1, 5000);
+        PageHelper.startPage(1, 100);
         List<AyFcImages> images = fcImagesMapper.selectByExample(example);
         PageInfo<AyFcImages> pageInfo = new PageInfo(images);
         return images;
