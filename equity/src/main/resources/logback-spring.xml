@@ -8,7 +8,7 @@
         <property name="log_dir" value="/data/logs/equity"/>
     </springProfile>
 
-    <springProfile name="dev,local">
+    <springProfile name="dev,local,localTest">
         <property name="log_dir" value="./logs/"/>
     </springProfile>
 
@@ -126,7 +126,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="dev,local">
+    <springProfile name="dev,local,localTest">
         <root level="INFO" additivity="false">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="INFO"/>

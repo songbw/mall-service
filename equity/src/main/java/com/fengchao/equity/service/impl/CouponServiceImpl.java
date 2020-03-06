@@ -17,6 +17,7 @@ import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.utils.ConvertUtil;
+import com.fengchao.equity.utils.CouponUseStatusEnum;
 import com.fengchao.equity.utils.JSONUtil;
 import com.fengchao.equity.utils.JobClientUtils;
 import com.github.ltsopensource.jobclient.JobClient;
@@ -255,11 +256,24 @@ public class CouponServiceImpl implements CouponService {
         CouponUseInfoX couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
-        }else if (couponUseInfo.getStatus() == 3){
+        }else if (couponUseInfo.getStatus() == CouponUseStatusEnum.USED.getCode()){
+            //非首次核销单独处理
             log.info("优惠券已使用参数:{}", JSONUtil.toJsonString(couponUseInfo));
+            if (null != bean.getOrderId()) {
+                useInfo.setId(bean.getId());
+                String orderId = couponUseInfo.getOrderId();
+                if (orderId != null && !orderId.isEmpty()) {
+                    //多个主订单号以逗号分割的字符串
+                    useInfo.setOrderId(orderId + "," + String.valueOf(bean.getOrderId()));
+                } else {
+                    useInfo.setOrderId(String.valueOf(bean.getOrderId()));
+                }
+                useInfoMapper.updateStatusByUserCode(useInfo);
+            }
             return couponUseInfo;
         }
 
+        log.info("首次核销 {}",JSON.toJSONString(couponUseInfo));
         Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
         if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
             ticketDao.consumeCard(bean.getUserCouponCode());
@@ -267,7 +281,14 @@ public class CouponServiceImpl implements CouponService {
         useInfo.setId(bean.getId());
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setStatus(3);
+        if (bean.getOrderId() != null) {
+            if (couponUseInfo.getOrderId().isEmpty()) {
+                useInfo.setOrderId(String.valueOf(bean.getOrderId()));
+            }else{
+                useInfo.setOrderId(couponUseInfo.getOrderId() + "," + String.valueOf(bean.getOrderId()));
+            }
+        }
+        useInfo.setStatus(CouponUseStatusEnum.USED.getCode());
         useInfoMapper.updateStatusByUserCode(useInfo);
         return couponUseInfo;
     }
