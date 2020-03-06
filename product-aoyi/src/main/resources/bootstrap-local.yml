@@ -140,9 +140,3 @@ management:
     health:
       show-details: ALWAYS
 
-
-weipinhui:
-  imagePrefix: http://pic.aoyi365.com
-
-fengchao:
-  imagePrefix: http://iwallet-1258175138.file.myqcloud.com
