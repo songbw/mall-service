@@ -1,18 +1,25 @@
 package com.fengchao.equity.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.feign.OrderService;
 import com.fengchao.equity.model.CardAndCoupon;
 import com.fengchao.equity.model.CardInfo;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
+import com.fengchao.equity.service.CardAndCouponService;
 import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.service.CardTicketService;
 import com.fengchao.equity.utils.DataUtils;
 import com.fengchao.equity.utils.JSONUtil;
+import com.fengchao.equity.utils.MyErrorEnum;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -42,6 +49,11 @@ public class AdminCardInfoController {
     private CardInfoService service;
     @Autowired
     private CardTicketService ticketService;
+    @Autowired
+    private CardAndCouponService cardAndCouponService;
+
+    @Autowired
+    private OrderService orderService;
 
     @PostMapping("create")
     public OperaResult createCardInfo(@RequestBody CardInfoBean bean, OperaResult result){
@@ -52,7 +64,7 @@ public class AdminCardInfoController {
 
     @GetMapping("find")
     public OperaResult findCardInfo(CardInfoBean bean, OperaResult result){
-        PageableData<CardInfo> coupon = service.findCardInfo(bean);
+        PageableData<CardInfoX> coupon = service.findCardInfo(bean);
         result.getData().put("result", coupon);
         return result;
     }
@@ -343,4 +355,33 @@ public class AdminCardInfoController {
             }
         }
     }
+
+    /*
+    @GetMapping("orderListById")
+    public OperaResult findOrderListById(Integer pageNo, Integer pageSize,Integer id, OperaResult result){
+
+        result.setCode(MyErrorEnum.RESPONSE_SUCCESS.getCode());
+        result.setMsg(MyErrorEnum.RESPONSE_SUCCESS.getMsg());
+        List<CardAndCoupon> cardAndCoupons = cardAndCouponService.getCouponIdList(id);
+
+        List<Integer> orderIdList = ticketService.getOrderIdByCouponId(couponIdPages.getList());
+
+        String response = orderService.getOrderList(orderIdList);
+        log.info("获取订单列表 response：{}", response);
+        JSONObject json = JSON.parseObject(response);
+        Integer code = json.getInteger("code");
+        if (!MyErrorEnum.RESPONSE_SUCCESS.getCode().equals(code)){
+            log.error("获取订单列表失败");
+            return result;
+        }
+        JSONArray jsonArray = json.getJSONArray("data");
+        if (null == jsonArray){
+            log.error("获取订单列表为空");
+            return result;
+        }
+
+        result.getData().put("result", coupon);
+        return result;
+    }
+*/
 }

@@ -3,12 +3,17 @@ package com.fengchao.equity.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.dao.*;
+import com.fengchao.equity.exception.EquityException;
+import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CardTicketService;
+import com.fengchao.equity.utils.CardTicketStatusEnum;
 import com.fengchao.equity.utils.DataUtils;
 import com.fengchao.equity.utils.JobClientUtils;
+import com.fengchao.equity.utils.MyErrorEnum;
 import com.github.ltsopensource.jobclient.JobClient;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -17,6 +22,11 @@ import org.springframework.stereotype.Service;
 import java.text.DecimalFormat;
 import java.util.*;
 
+/**
+ * @author fengchao
+ * */
+
+@Slf4j
 @Service
 public class CardTicketServiceImpl implements CardTicketService {
 
@@ -28,6 +38,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     private CardAndCouponDao cardAndCouponDao;
     @Autowired
     private CouponDao couponDao;
+    @Autowired
+    private CouponXMapper couponXMapper;
     @Autowired
     private CouponUseInfoDao useInfoDao;
     @Autowired
@@ -54,8 +66,8 @@ public class CardTicketServiceImpl implements CardTicketService {
 
     @Override
     public List<String> activatesCardTicket(List<CardTicket> beans) {
-        List<String> resultCards = new ArrayList();
-        List<String> cards = new ArrayList();
+        List<String> resultCards = new ArrayList<>();
+        List<String> cards = new ArrayList<>();
         for (CardTicket ticket: beans){
             cards.add(ticket.getCard());
         }
@@ -82,49 +94,70 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public List<CardInfoX> exportCardTicket(ExportCardBean bean) {
 
-        List<CardInfoX> infoXES = infoDao.findByIds(bean);
-        for (CardInfoX infoX: infoXES){
+        List<CardInfoX> list = infoDao.findByIds(bean);
+        for (CardInfoX infoX: list){
             List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(infoX.getId());
             infoX.setCouponIds(couponIds);
             List<CardTicket> tickets = ticketDao.findbyCardId(infoX.getId(), bean.getStatus());
             infoX.setTickets(tickets);
         }
-        return infoXES;
+        return list;
     }
 
     @Override
-    public int verifyCardTicket(CardTicketBean bean) throws Exception{
+    public int verifyCardTicket(CardTicketBean bean) {
         List<CardTicket> tickets = ticketDao.selectCardTicketByCard(bean);
         if(tickets.isEmpty()){
-            throw new Exception("账号或密码错误");
+            throw new EquityException(MyErrorEnum.ACCOUNT_PASSWORD_WRONG);
         }
 
         CardTicket cardTicket = tickets.get(0);
         if(StringUtils.isNotEmpty(cardTicket.getOpenId())){
-            throw new Exception("该卡已被绑定");
-        }else if(cardTicket.getStatus() == 1){
-            throw new Exception("该卡未被激活");
-        }else if(cardTicket.getStatus() == 3){
-            throw new Exception("该卡已使用");
-        }else if(cardTicket.getStatus() == 3){
-            throw new Exception("该卡已过期");
+            throw new EquityException(MyErrorEnum.CARD_TICKET_STATUS_EXCHANGED);
+        }
+        CardInfo cardInfo;
+        try {
+            cardInfo = infoDao.findById(cardTicket.getCardId());
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw new EquityException(MyErrorEnum.CARD_TICKET_MISSING);
+        }
+        if (null == cardInfo || null == cardInfo.getAppId()){
+            throw new EquityException(MyErrorEnum.CARD_TICKET_MISSING);
+        }
+        if (!cardInfo.getAppId().equals(bean.getAppId())){
+            throw new EquityException(MyErrorEnum.CARD_INFO_APP_ID_NOT_MATCH);
+        }
+
+        int status = (int)cardTicket.getStatus();
+        if (CardTicketStatusEnum.ACTIVE.getCode() != status) {
+            throw new EquityException(MyErrorEnum.CARD_TICKET_BIND_EXCHANGE_FAILED.getCode(),
+                    MyErrorEnum.CARD_TICKET_BIND_EXCHANGE_FAILED.getMsg()+CardTicketStatusEnum.int2msg(status));
         }
 
         CardTicket ticket = new CardTicket();
         ticket.setOpenId(bean.getOpenId());
         ticket.setId(cardTicket.getId());
-        ticket.setStatus((short) 3);
+        ticket.setStatus((short)CardTicketStatusEnum.BOUND.getCode());
 
         return ticketDao.update(ticket);
     }
 
     @Override
-    public CouponUseInfo exchangeCardTicket(CardTicketBean bean)  throws Exception{
+    public CouponUseInfo exchangeCardTicket(CardTicketBean bean) {
+        if (null == bean.getAppId()){
+            throw new EquityException(MyErrorEnum.CARD_TICKET_HEADER_APP_ID_BLANK);
+        }
+
         String userCouponCode = "";
+
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
         CardInfoX cardInfoX = infoDao.findByCardId(cardTicket.getCardId());
-        if(coupon.getCouponType() == 4 && cardTicket.getStatus() == 3){
+        if (!bean.getAppId().equals(cardInfoX.getAppId())){
+            throw new EquityException(MyErrorEnum.CARD_INFO_APP_ID_NOT_MATCH);
+        }
+        if(coupon.getCouponType() == 4 && cardTicket.getStatus() == CardTicketStatusEnum.BOUND.getCode()){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
             CouponUseInfo couponUseInfo = new CouponUseInfo();
@@ -140,18 +173,19 @@ public class CardTicketServiceImpl implements CardTicketService {
             couponUseInfo.setAppId(coupon.getAppId());
             int insert = useInfoDao.insert(couponUseInfo);
             if(insert == 1){
+                couponXMapper.increaseReleaseNumById(coupon.getId());
                 JobClientUtils.couponUseInfoInvalidTrigger(environment, jobClient, couponUseInfo.getId(), fetureDate);
                 CardTicket ticket = new CardTicket();
-                ticket.setStatus((short)4);
+                ticket.setStatus((short)CardTicketStatusEnum.EXCHANGED.getCode());
                 ticket.setId(cardTicket.getId());
                 ticket.setUserCouponCode(userCouponCode);
                 ticketDao.update(ticket);
                 return couponUseInfo;
             }else{
-                throw new Exception("兑换失败");
+                throw new EquityException(MyErrorEnum.COUPON_USE_INFO_INSERT_ERROR);
             }
         }else{
-            throw new Exception("兑换失败");
+            throw new EquityException(MyErrorEnum.COUPON_USE_INFO_INSERT_ERROR);
         }
     }
 
@@ -162,7 +196,7 @@ public class CardTicketServiceImpl implements CardTicketService {
             CardInfo infoX = infoDao.findById(ticket.getCardId());
             ticket.setCardInfo(infoX);
 
-            List<CouponBean> couponBeanList = new ArrayList();
+            List<CouponBean> couponBeanList = new ArrayList<>();
             if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
                 ArrayList<CouponUseInfoX> useInfoXList = new ArrayList<>();
                 CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
@@ -197,13 +231,13 @@ public class CardTicketServiceImpl implements CardTicketService {
     public int invalid(int id) {
         CardTicket ticket = new CardTicket();
         ticket.setId(id);
-        ticket.setStatus((short) 7);
+        ticket.setStatus((short)CardTicketStatusEnum.TIMEOUT.getCode());
         return ticketDao.update(ticket);
     }
 
     @Override
     public Map<String, String> selectPlatformAll() {
-        Map<String, String> platformMap = new HashMap<String, String>();
+        Map<String, String> platformMap = new HashMap<>();
         List<Platform> platformAll = prodService.findPlatformAll();
         for (Platform platform : platformAll) {
             if (platform != null) {
@@ -220,7 +254,7 @@ public class CardTicketServiceImpl implements CardTicketService {
             CardInfo infoX = infoDao.findById(ticket.getCardId());
             ticket.setCardInfo(infoX);
 
-            List<CouponBean> couponBeanList = new ArrayList();
+            List<CouponBean> couponBeanList = new ArrayList<>();
             if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
                 ArrayList<CouponUseInfoX> useInfoXList = new ArrayList<>();
                 CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
@@ -249,6 +283,33 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public int deleteCardTicket(Integer id) {
         return ticketDao.deleteCardTicket(id);
+    }
+
+    @Override
+    public List<Integer>
+    getOrderIdByCouponId(List<Integer> couponIdList){
+
+        List<CouponUseInfo> infoList = useInfoDao.selectByCouponIdList(couponIdList);
+        List<Integer> orderIdList = new ArrayList<>();
+
+        for(CouponUseInfo info: infoList){
+            String[] idArray = info.getOrderId().split(",");
+            for(String idString: idArray){
+                Integer id = Integer.valueOf(idString);
+                if (!orderIdList.contains(id)) {
+                    orderIdList.add(id);
+                }
+            }
+        }
+
+        return orderIdList;
+    }
+
+    @Override
+    public List<CouponUseInfo>
+    selectByUserCouponCodeList(List<String> codeList){
+
+        return useInfoDao.selectByUserCouponCodeList(codeList);
     }
 
     private CouponBean couponToBean(CouponX coupon){
