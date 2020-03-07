@@ -53,8 +53,8 @@ public class UploadServiceImpl implements UploadService {
             log.error("下载上传图片异常:{}", e.getMessage(), e);
         }
         log.info("下载上传图片 本地路径:{} 上传路径:{}",
-                base + img.getPath() + img.getType() + fileName, img.getPath() + img.getType() + fileName);
-        CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + fileName),img.getPath() + img.getType() + fileName) ;
+                base + img.getPath() + img.getType() + "/" + fileName, img.getPath() + img.getType() + "/" + fileName);
+        CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + "/" + fileName),img.getPath() + img.getType() + "/" + fileName) ;
         productService.imageBack(img.getId(), 1) ;
     }
 
