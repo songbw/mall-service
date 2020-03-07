@@ -46,9 +46,11 @@ public class UploadServiceImpl implements UploadService {
         // String fileName = array1[1];
         String fileName = img.getAyImage().substring(img.getAyImage().lastIndexOf("/") + 1);
         try {
+            log.info("下载上传图片 url:{}, fileName:{}, savePath:{}",
+                    img.getAyImage(), fileName, base + img.getPath() + img.getType());
             URLConnectionDownloader.download(img.getAyImage(), fileName, base + img.getPath() + img.getType());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("下载上传图片异常:{}", e.getMessage(), e);
         }
         CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + fileName),img.getPath() + img.getType() + fileName) ;
         productService.imageBack(img.getId(), 1) ;
