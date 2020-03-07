@@ -54,4 +54,6 @@ public interface CouponService {
     List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId, String appId);
 
     List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdBean> beans, String appId);
+
+
 }

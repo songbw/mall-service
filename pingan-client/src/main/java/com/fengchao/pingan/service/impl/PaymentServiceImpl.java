@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -90,6 +91,9 @@ public class PaymentServiceImpl implements PaymentService {
         paramBean.setAppId(pingAnConfigBean.getPayAppId());
         paymentBean.setMerchantNo(pingAnConfigBean.getPayMerchantNo());
         paymentBean.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
+        if (!StringUtils.isEmpty(pingAnConfigBean.getPaySceneId())) {
+            paymentBean.setSceneId(pingAnConfigBean.getPaySceneId());
+        }
         WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);

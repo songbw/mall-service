@@ -1656,10 +1656,7 @@ public class OrderServiceImpl implements OrderService {
         bean.setId(id);
         bean.setOrderId(orderId);
         OperaResult result = equityService.consume(bean);
-        if (result.getCode() == 200) {
-            return true;
-        }
-        return false;
+        return result.getCode() == 200;
     }
 
     private boolean release(int id, String code) {
