@@ -55,6 +55,7 @@ public class CardInfoDao {
         if(bean.getName() != null){
             criteria.andNameLike("%" +bean.getName()+ "%");
         }
+        example.setOrderByClause("id DESC");
 
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
         List<CardInfo> cardTickets = mapper.selectByExample(example);

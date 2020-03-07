@@ -3,8 +3,13 @@ package com.fengchao.equity.mapper;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
+
+@Mapper
+@Component
 public interface CardTicketMapper {
     long countByExample(CardTicketExample example);
 

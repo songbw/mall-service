@@ -754,6 +754,12 @@
     <update id="couponEnd" parameterType="java.lang.Integer" >
     update coupon set status = 5 where id = #{id,jdbcType=INTEGER}
   </update>
+  <update id="increaseReleaseNumById" parameterType="java.lang.Integer">
+    update coupon
+    set  release_num = release_num + 1
+    where id = #{id,jdbcType=INTEGER}
+
+  </update>
   <select id="selectByCodeKey" parameterType="com.fengchao.equity.model.CouponX" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

@@ -21,15 +21,28 @@ public class CardController {
     private CardTicketService ticketService;
 
     @PostMapping("binds")
-    public OperaResult verifyCardTicket(@RequestBody CardTicketBean bean, OperaResult result) throws Exception {
-        log.info("用户验证礼品券参数 入参:{}", JSONUtil.toJsonString(bean));
+    public OperaResult
+    verifyCardTicket(@RequestBody CardTicketBean bean,
+                     @RequestHeader(value = "appId") String appId,
+                     OperaResult result) throws Exception {
+        log.info("用户验证礼品券参数 appId={} 入参:{}", appId,JSONUtil.toJsonString(bean));
+        if (null == appId){
+            result.setCode(500);
+            result.setMsg("应用缺失appId");
+            return result;
+        }
+        bean.setAppId(appId);
         result.getData().put("result",ticketService.verifyCardTicket(bean));
         return result;
     }
 
     @PostMapping("exchange")
-    public OperaResult exchangeCardTicket(@RequestBody CardTicketBean bean, OperaResult result) throws Exception {
-        log.info("兑换礼品券参数 入参:{}", JSONUtil.toJsonString(bean));
+    public OperaResult
+    exchangeCardTicket(@RequestBody CardTicketBean bean,
+                       @RequestHeader(value = "appId") String appId,
+                       OperaResult result) throws Exception {
+        log.info("兑换礼品券参数 appId={} 入参:{}", appId,JSONUtil.toJsonString(bean));
+        bean.setAppId(appId);
         result.getData().put("result",ticketService.exchangeCardTicket(bean));
         return result;
     }
