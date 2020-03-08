@@ -93,6 +93,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentBean.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
         if (!StringUtils.isEmpty(pingAnConfigBean.getPaySceneId())) {
             paymentBean.setSceneId(pingAnConfigBean.getPaySceneId());
+            logger.info("请求平安 scene id 参数： {}",JSONUtil.toJsonString(paramBean));
         }
         WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
         ObjectMapper objectMapper = new ObjectMapper();
