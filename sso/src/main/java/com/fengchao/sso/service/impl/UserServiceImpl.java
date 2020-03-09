@@ -105,4 +105,9 @@ public class UserServiceImpl implements IUserService {
         return mapper.selectCount();
     }
 
+    @Override
+    public List<SUser> findByAppIdAndOpenIds(String appId, List<String> openIds) {
+        return userDao.selectUserByAppIdAndOpenIds(appId, openIds);
+    }
+
 }

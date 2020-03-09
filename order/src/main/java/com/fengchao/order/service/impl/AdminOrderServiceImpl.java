@@ -231,7 +231,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
         // 1.1 获取已退款的子订单信息集合
         List<WorkOrder> workOrderList =
-                workOrderRpcService.queryRefundedOrderDetailList(orderExportReqVo.getMerchantId(), startDateTime, endDateTime);
+                workOrderRpcService.queryRefundedOrderDetailList(orderExportReqVo.getMerchantId(), null, startDateTime, endDateTime);
         if (CollectionUtils.isEmpty(workOrderList)) {
             return Collections.emptyList();
         }

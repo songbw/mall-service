@@ -125,6 +125,9 @@
     <if test="aoyiId != null">
       and orders.aoyi_id = #{aoyiId}
     </if>
+    <if test="receiverName != null">
+      and orders.receiver_name = #{receiverName}
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -212,6 +215,9 @@
     </if>
     <if test="aoyiId != null">
       and orders.aoyi_id = #{aoyiId}
+    </if>
+    <if test="receiverName != null">
+      and orders.receiver_name = #{receiverName}
     </if>
     order by orders.created_at desc
     limit #{pageNo},#{pageSize}

@@ -76,4 +76,19 @@ public class UserDao {
         }
         return null;
     }
+
+    /**
+     * 根据OpenId列表和appId查询用户信息
+     * @param appId
+     * @param openIds
+     * @return
+     */
+    public List<SUser> selectUserByAppIdAndOpenIds(String appId, List<String> openIds) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andOpenIdIn(openIds) ;
+        List<SUser> userList = mapper.selectByExample(userExample);
+        return userList ;
+    }
 }

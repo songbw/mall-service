@@ -32,7 +32,7 @@ public class WorkOrderServiceClientFallbackFactory implements FallbackFactory<Wo
             }
 
             @Override
-            public OperaResponse<List<WorkOrder>> queryRefundedOrderDetailList(Long merchantId, String startTime, String endTime) {
+            public OperaResponse<List<WorkOrder>> queryRefundedOrderDetailList(Long merchantId, String appId, String startTime, String endTime) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
         };

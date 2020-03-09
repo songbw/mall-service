@@ -1,7 +1,10 @@
 package com.fengchao.sso.controller;
 
+import com.fengchao.sso.bean.BatchOpenIds;
 import com.fengchao.sso.bean.LoginBean;
+import com.fengchao.sso.bean.OperaResponse;
 import com.fengchao.sso.bean.UserBean;
+import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
 import com.fengchao.sso.config.SMSConfig;
@@ -159,6 +162,14 @@ public class UserController {
         }
         User user = service.selectById(id);
         result.getData().put("user",user);
+        return result;
+    }
+
+    @PostMapping("batch/openIds")
+    private OperaResponse batchFindByOpenIds(@RequestBody BatchOpenIds bean){
+        OperaResponse result = new OperaResponse();
+        List<SUser> sUsers = service.findByAppIdAndOpenIds(bean.getAppId(), bean.getOpenIds()) ;
+        result.setData(sUsers);
         return result;
     }
 }

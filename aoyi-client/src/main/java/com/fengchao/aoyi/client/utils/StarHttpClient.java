@@ -88,6 +88,7 @@ public class StarHttpClient {
     }
 
     public static <T> T post(Map<String, String>  body, Class<T> obj, String path, String method, String appKey, String appSecret) throws AoyiClientException{
+        log.info("请求数据：{},{}", path, method);
         body = setBaseParams(body, appKey, appSecret) ;
         Form form = new Form() ;
         for (Map.Entry<String, String> entry : body.entrySet()) {
