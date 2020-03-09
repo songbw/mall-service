@@ -3,11 +3,13 @@ package com.fengchao.order.rpc;
 import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.AoyiClientService;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 @Slf4j
@@ -18,6 +20,30 @@ public class AoyiRpcService {
     @Autowired
     public AoyiRpcService(AoyiClientService aoyiClientService) {
         this.aoyiClientService = aoyiClientService;
+    }
+
+    public OperaResponse<AoyiQueryInventoryResDto> queryItemInventory(@RequestParam("itemId") String itemId,
+                                                                    @RequestParam("skuId") String skuId,
+                                                                    @RequestParam("num") Integer num,
+                                                                    @RequestParam("divisionCode") String divisionCode) {
+        // 返回值
+        OperaResponse<String> operaResponse = null;
+
+        try {
+            // log.info("唯品会查询库存 调用aoyiClient rpc服务 入参 itemid:{}, skuId:{}, num:{}));
+
+            operaResponse = null; // aoyiClientService.weipinhuiRenderOrder(aoyiRenderOrderRequest);
+            log.info("唯品会查询库存 调用aoyiClient rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+        } catch (Exception e) {
+            log.error("唯品会查询库存 异常:{}", e.getMessage(), e);
+
+            operaResponse.setCode(500);
+            operaResponse.setMessage(e.getMessage());
+        }
+
+        log.info("唯品会预下单 AoyiRpcService#weipinhuiRend 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+        return null;
     }
 
     /**
