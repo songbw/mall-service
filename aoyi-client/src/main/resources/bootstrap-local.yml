@@ -1,5 +1,22 @@
 spring.cloud.service-registry.auto-registration.enabled: false
 
+spring:
+  profiles:
+    active: dev
+  application:
+    name: aoyi-client
+  cloud:
+    #config:
+    #  discovery:
+    #    enabled: true
+    #    service-id: config-server
+    #  profile: ${spring.profiles.active}
+    #  retry:
+    #    max-attempts: 3
+    #    max-interval: 2000
+    #    initial-interval: 2000
+    #    request-read-timeout: 10000
+
 ## aoyitest.aoyi365.com
 weipinhui:
   appid: 36402f98-d0fb-4466-8e0e-610f7d81ce9a  # 测试
