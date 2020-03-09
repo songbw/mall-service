@@ -354,6 +354,8 @@ public class ShippingServiceImpl implements ShippingService {
         if(status == 0){
             int templateId = 0;
             float totalPrice = 0;
+            float maxShipPrice = 0;
+            int maxMerchantId = 0;
 //            List<MpuParam> mpuParams = bean.getMpuParams();
             List<ShipMerchantInfo> merchantInfos = bean.getMerchantInfos();
             for (int i = 0; i < merchantInfos.size(); i++){
@@ -362,8 +364,8 @@ public class ShippingServiceImpl implements ShippingService {
                 shipPriceBean.setMerchantCode(merchantInfo.getMerchantCode());
                 shipPriceBean.setMerchantId(merchantInfo.getMerchantId());
                 List<MpuParam> mpuParams = merchantInfo.getMpuParams();
-                float shipPrice = 0;
                 for (int j = 0; j < mpuParams.size(); j++){
+                    float shipPrice = 0;
                     ShippingMpu shipByMpu = shipMpuDao.findByMpu(mpuParams.get(j).getMpu());
                     if(shipByMpu != null){
                         ShippingTemplateX shipTemplate = shipTemplateDao.findShipTemplateById(shipByMpu.getTemplateId());
@@ -382,19 +384,26 @@ public class ShippingServiceImpl implements ShippingService {
                     }
                     if(shippingRegions != null){
                         if(shippingRegions.getBaseAmount() < mpuParams.get(j).getNum()){
-                            shipPrice += (mpuParams.get(j).getNum() - shippingRegions.getBaseAmount())/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
+                            shipPrice = (mpuParams.get(j).getNum() - shippingRegions.getBaseAmount())/shippingRegions.getCumulativeUnit() * shippingRegions.getCumulativePrice()
                                     + shippingRegions.getBasePrice();
-                            shipPriceBean.setShipPrice(shipPrice);
                         }else{
-                            shipPrice += shippingRegions.getBasePrice();
-                            shipPriceBean.setShipPrice(shipPrice);
+                            shipPrice = shippingRegions.getBasePrice();
                         }
                     }
+                    if (shipPrice > maxShipPrice) {
+                        maxShipPrice = shipPrice;
+                        maxMerchantId = merchantInfo.getMerchantId();
+                    }
                 }
-                totalPrice += shipPrice;
-                shipPriceBean.setShipPrice(shipPrice);
+                shipPriceBean.setShipPrice(maxShipPrice);
                 shipPriceBeans.add(shipPriceBean);
             }
+            for(ShipPriceBean shipPriceBean : shipPriceBeans) {
+                if (shipPriceBean.getMerchantId() != maxMerchantId) {
+                    shipPriceBean.setShipPrice((float)0);
+                }
+            }
+            totalPrice = maxShipPrice;
             carriagePriceBean.setTotalPrice(totalPrice);
             carriagePriceBean.setPriceBeans(shipPriceBeans);
         }else{
