@@ -608,6 +608,10 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 Map<String, StarSku> _map = starSkuList.stream().collect(Collectors.toMap(s -> s.getSkuId(), s -> s));
 
                 // starPropertyDao.updateByPrimaryKeySelective
+
+                for (StarProperty starProperty : starPropertyList) {
+
+                }
             } else {
                 break;
             }
