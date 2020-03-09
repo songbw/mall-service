@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.AoyiClientService;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import org.springframework.stereotype.Component;
 
@@ -60,6 +61,11 @@ public class AoyiClientServiceH implements AoyiClientService {
 
     @Override
     public OperaResponse addOrder(StarOrderBean bean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<AoyiQueryInventoryResDto> queryItemInventory(String itemId, String skuId, Integer num, String divisionCode) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 
