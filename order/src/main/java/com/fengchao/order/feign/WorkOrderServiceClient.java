@@ -42,6 +42,7 @@ public interface WorkOrderServiceClient {
      */
     @RequestMapping(value = "/refund/query/refundedDetail", method = RequestMethod.GET)
     OperaResponse<List<WorkOrder>> queryRefundedOrderDetailList(@RequestParam(value = "merchantId", required = false) Long merchantId,
+                                                                @RequestParam(value = "appId", required = false) String appId,
                                                                 @RequestParam(value = "startTime") String startTime,
                                                                 @RequestParam(value = "endTime") String endTime);
 }

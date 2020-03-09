@@ -192,7 +192,7 @@ public class SettlementAssistServiceImpl implements SettlementAssistService {
     public List<UserOrderBo> queryRefundUserOrderBoList(Date startTime, Date endTime, String appId) {
         try {
             // 1. 查询退款的信息
-            List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, startTime, endTime);
+            List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, null, startTime, endTime);
             if (CollectionUtils.isEmpty(workOrderList)) {
                 log.info("结算辅助服务-查询退款工单 未获取到退款记录");
 
