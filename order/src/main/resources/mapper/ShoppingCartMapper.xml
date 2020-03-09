@@ -28,6 +28,9 @@
     <include refid="Base_Column_List" />
     from shopping_cart
     where mpu = #{mpu} and open_id = #{openId} and is_del = 0 and status = 0
+    <if test="skuId != null" >
+      and sku_id = #{skuId}
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
