@@ -41,6 +41,7 @@ public class ProductController {
 
     @GetMapping
     private OperaResult find(String mpu, @RequestHeader("appId") String appId, OperaResult result){
+        log.info("查询商品信息 入参 mpu:{}", mpu);
         if (StringUtils.isEmpty(mpu)) {
             result.setCode(200501);
             result.setMsg("mpu 不能为空");
