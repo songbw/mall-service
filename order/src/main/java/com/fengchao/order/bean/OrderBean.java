@@ -41,4 +41,5 @@ public class OrderBean implements Serializable {
     private String completeDateStart;
     private String completeDateEnd;
     private String appId;
+    private String reveiverName;
 }
