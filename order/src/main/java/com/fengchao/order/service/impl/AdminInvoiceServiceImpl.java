@@ -208,7 +208,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
     private Map<String, ExportReceiptBillVo> handleOutInvoiceInfo(Date startTime, Date endTime, String appId, ReceiptTypeEnum receiptTypeEnum) {
         try {
             // 1. 查询退款的信息
-            List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, startTime, endTime);
+            List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, appId, startTime, endTime);
             if (CollectionUtils.isEmpty(workOrderList)) {
                 log.info("导出商品开票信息 未获取到退款记录");
 
