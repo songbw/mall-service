@@ -288,6 +288,7 @@ public class LoginServiceImpl implements ILoginService {
             if ("snsapi_base".equals(weChatAccessTokenBean.getScope())) {
                 String nickname = "fc_" + weChatAccessTokenBean.getOpenid().substring(weChatAccessTokenBean.getOpenid().length() - 8);
                 user.setNickname(nickname);
+                user.setOpenId(weChatAccessTokenBean.getOpenid());
             } else {
                 OperaResponse<WeChatUserInfoBean> userInfoBeanOperaResponse = weChatService.getUserInfo(weChatAccessTokenBean.getAccess_token(),weChatAccessTokenBean.getOpenid()) ;
                 if (userInfoBeanOperaResponse.getCode() != 200) {

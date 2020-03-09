@@ -98,6 +98,11 @@ public class LoginController {
 
     @PostMapping("/thirdLogin")
     public OperaResult thirdLogin(@RequestBody ThirdLoginBean loginBean, OperaResult result) {
+        if (StringUtils.isEmpty(loginBean.getOpenId())) {
+            result.setCode(100000);
+            result.setMsg("openId不能为空");
+            return result;
+        }
         result.getData().put("result", loginService.thirdLogin(loginBean));
         return result;
     }
