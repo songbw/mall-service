@@ -1,6 +1,7 @@
 package com.fengchao.order.service;
 
 import com.fengchao.order.bean.vo.ExportReceiptBillVo;
+import com.fengchao.order.constants.PaymentTypeEnum;
 import com.fengchao.order.constants.ReceiptTypeEnum;
 
 import java.util.Date;
@@ -14,10 +15,10 @@ public interface AdminInvoiceService {
      * @param startTime
      * @param endTime
      * @param appId
-     * @param receiptTypeEnum 发票类型
+     * @param paymentTypeEnum 发票类型
      * @return
      * @throws Exception
      */
     List<ExportReceiptBillVo> exportInvoice(Date startTime, Date endTime,
-                                                       String appId, ReceiptTypeEnum receiptTypeEnum) throws Exception;
+                                                       String appId, PaymentTypeEnum paymentTypeEnum) throws Exception;
 }
