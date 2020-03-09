@@ -3,11 +3,10 @@ package com.fengchao.order.feign;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.hystric.AoyiClientServiceClientFallbackFactory;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,6 +38,21 @@ public interface AoyiClientService {
     OperaResponse addOrder(@RequestBody StarOrderBean bean);
 
     // 唯品会相关 begin
+
+    /**
+     * 库存查询接口
+     *
+     * @param itemId
+     * @param skuId
+     * @param num          数量
+     * @param divisionCode 地址code
+     * @return
+     */
+    @RequestMapping(value = "/weipinhui/queryItemInventory", method = RequestMethod.GET)
+    OperaResponse<AoyiQueryInventoryResDto> queryItemInventory(@RequestParam("itemId") String itemId,
+                                                                    @RequestParam("skuId") String skuId,
+                                                                    @RequestParam("num") Integer num,
+                                                                    @RequestParam("divisionCode") String divisionCode);
 
     /**
      * 预下单

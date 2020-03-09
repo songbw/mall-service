@@ -22,17 +22,25 @@ public class AoyiRpcService {
         this.aoyiClientService = aoyiClientService;
     }
 
-    public OperaResponse<AoyiQueryInventoryResDto> queryItemInventory(@RequestParam("itemId") String itemId,
-                                                                    @RequestParam("skuId") String skuId,
-                                                                    @RequestParam("num") Integer num,
-                                                                    @RequestParam("divisionCode") String divisionCode) {
+    /**
+     * 唯品会查询库存
+     *
+     * @param itemId
+     * @param skuId
+     * @param num
+     * @param divisionCode
+     * @return
+     */
+    public OperaResponse<AoyiQueryInventoryResDto> queryItemInventory(String itemId, String skuId,
+                                                                    Integer num, String divisionCode) {
         // 返回值
-        OperaResponse<String> operaResponse = null;
+        OperaResponse<AoyiQueryInventoryResDto> operaResponse = null;
 
         try {
-            // log.info("唯品会查询库存 调用aoyiClient rpc服务 入参 itemid:{}, skuId:{}, num:{}));
+            log.info("唯品会查询库存 调用aoyiClient rpc服务 入参 itemid:{}, skuId:{}, num:{}, divisionCode:{}",
+                    itemId, skuId, num, divisionCode);
 
-            operaResponse = null; // aoyiClientService.weipinhuiRenderOrder(aoyiRenderOrderRequest);
+            operaResponse = aoyiClientService.queryItemInventory(itemId, skuId, num, divisionCode);
             log.info("唯品会查询库存 调用aoyiClient rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
         } catch (Exception e) {
             log.error("唯品会查询库存 异常:{}", e.getMessage(), e);
@@ -41,38 +49,16 @@ public class AoyiRpcService {
             operaResponse.setMessage(e.getMessage());
         }
 
-        log.info("唯品会预下单 AoyiRpcService#weipinhuiRend 返回:{}", JSONUtil.toJsonString(operaResponse));
+        log.info("唯品会查询库存 AoyiRpcService#queryItemInventory 返回:{}", JSONUtil.toJsonString(operaResponse));
 
-        return null;
+        return operaResponse;
     }
 
     /**
-     * 发送短信
+     * 唯品会预下单
      *
      * @param aoyiRenderOrderRequest
-     * @return "SUCCESS" 成功， 其他: 失败
-     * <p>
-     * {
-     * "orderNo": "testorderno222",
-     * "amount": "30.1",
-     * "freight": "1.1",
-     * "items": [
-     * {
-     * "subOrderNo": "testsuborderno222",
-     * "itemId": "30007551",
-     * "skuId": "30012085",
-     * "number": 1,
-     * "prodPrice": "29",
-     * "subAmount": "29"
-     * }
-     * ],
-     * "deliveryAddress": {
-     * "divisionCode": "8",
-     * "fullName":"荆涛测试",
-     * "mobile": "13488689297",
-     * "addressDetail": "北京是朝阳区建外soho西区11-3006"
-     * }
-     * }
+     * @return
      */
     public OperaResponse<String> weipinhuiRend(AoyiRenderOrderRequest aoyiRenderOrderRequest) {
         // 返回值

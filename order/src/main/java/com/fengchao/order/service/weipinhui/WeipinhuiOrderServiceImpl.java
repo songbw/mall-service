@@ -11,10 +11,7 @@ import com.fengchao.order.model.OrderDetailX;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.model.WeipinhuiAddress;
 import com.fengchao.order.rpc.AoyiRpcService;
-import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
-import com.fengchao.order.rpc.extmodel.weipinhui.AoyiDeliverAddress;
-import com.fengchao.order.rpc.extmodel.weipinhui.AoyiItem;
-import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
+import com.fengchao.order.rpc.extmodel.weipinhui.*;
 import com.fengchao.order.utils.AlarmUtil;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +53,11 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
         this.weipinhuiAddressDao = weipinhuiAddressDao;
         this.orderDetailDao = orderDetailDao;
         this.ordersDao = ordersDao;
+    }
+
+    @Override
+    public OperaResponse<String> queryItemInventory(String itemId, String skuId, Integer num, String divisionCode) {
+        return null;
     }
 
     /**

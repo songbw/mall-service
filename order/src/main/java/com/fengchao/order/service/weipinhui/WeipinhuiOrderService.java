@@ -1,6 +1,7 @@
 package com.fengchao.order.service.weipinhui;
 
 import com.fengchao.order.bean.*;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 
 import java.util.List;
 
@@ -8,6 +9,18 @@ import java.util.List;
  * 唯品会order服务
  */
 public interface WeipinhuiOrderService {
+
+    /**
+     * 唯品会查询库存
+     *
+     * @param itemId
+     * @param skuId
+     * @param num
+     * @param divisionCode
+     * @return
+     */
+    OperaResponse<String> queryItemInventory(String itemId, String skuId,
+                                                                      Integer num, String divisionCode);
 
     /**
      * 预占订单
