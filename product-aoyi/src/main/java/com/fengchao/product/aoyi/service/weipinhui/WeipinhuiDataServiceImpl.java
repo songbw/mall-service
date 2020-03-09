@@ -589,6 +589,35 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
         }
     }
 
+    @Override
+    public void fixStarProperty() throws Exception {
+        int currentPage = 1;
+        int pageSize = 200;
+        while (true) {
+            List<StarProperty> starPropertyList =
+                    starPropertyDao.selectPageableByNamePrefix("sepc", currentPage, pageSize);
+
+            log.info("fixStarProperty 第{}页 数据量:{}", currentPage, starPropertyList.size());
+
+            if (CollectionUtils.isNotEmpty(starPropertyList)) {
+                List<String> productionIdList = starPropertyList.stream().map(s -> String.valueOf(s.getProductId())).collect(Collectors.toList());
+
+                // 查询
+                List<StarSku> starSkuList = starSkuDao.selectBySkuIdList(productionIdList);
+                // 转map
+                Map<String, StarSku> _map = starSkuList.stream().collect(Collectors.toMap(s -> s.getSkuId(), s -> s));
+
+                // starPropertyDao.updateByPrimaryKeySelective
+            } else {
+                break;
+            }
+
+            currentPage++;
+        } // while end
+
+        log.info("fixStarProperty 第{}页 结束", currentPage);
+    }
+
     ///======================================== private ===================================================
 
     /**

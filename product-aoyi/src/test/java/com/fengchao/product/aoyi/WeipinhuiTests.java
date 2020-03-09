@@ -51,13 +51,22 @@ public class WeipinhuiTests {
 
 
     @Test
+    @Ignore
     public void testQueryItemDetail() {
         try {
             weipinhuiDataService.syncItemDetail(1, -1);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
 
-
+    @Test
+    @Ignore
+    public void fixStarProperty() {
+        try {
+            weipinhuiDataService.fixStarProperty();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

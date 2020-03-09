@@ -85,7 +85,7 @@ public class StarSkuDao {
         StarSkuExample starSkuExample = new StarSkuExample();
 
         StarSkuExample.Criteria criteria = starSkuExample.createCriteria();
-        criteria.andIstatusEqualTo(IStatusEnum.INVALID.getCode().shortValue());
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getCode().shortValue());
 
         criteria.andSkuIdIn(skuIdList);
 

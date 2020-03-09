@@ -6,16 +6,16 @@ spring:
   application:
     name: aoyi-client
   cloud:
-    config:
-      discovery:
-        enabled: true
-        service-id: config-server
-      profile: ${spring.profiles.active}
-      retry:
-        max-attempts: 3
-        max-interval: 2000
-        initial-interval: 2000
-        request-read-timeout: 10000
+    #config:
+    #  discovery:
+    #    enabled: true
+    #    service-id: config-server
+    #  profile: ${spring.profiles.active}
+    #  retry:
+    #    max-attempts: 3
+    #    max-interval: 2000
+    #    initial-interval: 2000
+    #    request-read-timeout: 10000
 
 ## aoyitest.aoyi365.com
 weipinhui:

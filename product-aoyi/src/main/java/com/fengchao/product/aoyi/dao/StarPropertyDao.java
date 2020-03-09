@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.mapper.StarPropertyMapper;
 import com.fengchao.product.aoyi.mapper.StarPropertyXMapper;
 import com.fengchao.product.aoyi.model.StarProperty;
 import com.fengchao.product.aoyi.model.StarPropertyExample;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,14 @@ public class StarPropertyDao {
     }
 
     /**
+     *
+     * @param record
+     */
+    public void updateByPrimaryKeySelective(StarProperty record) {
+        starPropertyMapper.updateByPrimaryKeySelective(record);
+    }
+
+    /**
      * 根据productId和type查询属性信息
      *
      * @return
@@ -63,5 +72,23 @@ public class StarPropertyDao {
 
         List<StarProperty> list = starPropertyMapper.selectByExample(example);
         return list;
+    }
+
+    /**
+     * 根据name前缀 分页查询
+     *
+     * @param namePrefix
+     * @return
+     */
+    public List<StarProperty> selectPageableByNamePrefix(String namePrefix, Integer currentPage, Integer pageSize) {
+        StarPropertyExample starPropertyExample = new StarPropertyExample();
+        StarPropertyExample.Criteria criteria = starPropertyExample.createCriteria();
+
+        criteria.andNameLike(namePrefix + "%");
+
+        PageHelper.startPage(currentPage, pageSize);
+        List<StarProperty> starPropertyList = starPropertyMapper.selectByExample(starPropertyExample);
+
+        return starPropertyList;
     }
 }

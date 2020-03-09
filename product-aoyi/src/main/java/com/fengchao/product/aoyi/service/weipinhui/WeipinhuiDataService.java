@@ -42,4 +42,11 @@ public interface WeipinhuiDataService {
      * @throws Exception
      */
     void syncItemDetail(Integer pageNumber, Integer syncItemDetail) throws Exception;
+
+    /**
+     * 用于star_property数据的修复
+     *
+     * @throws Exception
+     */
+    void fixStarProperty() throws Exception;
 }
