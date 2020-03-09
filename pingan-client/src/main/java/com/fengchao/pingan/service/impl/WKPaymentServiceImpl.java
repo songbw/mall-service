@@ -1,5 +1,7 @@
 package com.fengchao.pingan.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.pingan.bean.*;
 import com.fengchao.pingan.config.PingAnClientConfig;
 import com.fengchao.pingan.feign.WSPayClientService;
@@ -34,7 +36,13 @@ public class WKPaymentServiceImpl implements WKPaymentService {
 
     @Override
     public WKOperaResponse<WKRefund> refundApply(WKRefundRequestBean bean) {
-        WebTarget webTarget = HttpClient.createClient().target(config.getWkBaseUrl() + HttpClient.WK_PAYMENT_REFUND);
+        log.info("万科云城退款 请求 参数： {}", JSONUtil.toJsonString(bean));
+        WKOperaResponse<WKAccessToken>  tokenResponse = getWKAccessToken() ;
+        Object token = tokenResponse.getData() ;
+        String jsonString = JSON.toJSONString(token);
+        JSONObject jsonObject = JSONObject.parseObject(jsonString, JSONObject.class) ;
+        log.info("万科云城token 返回结果： {}", JSONUtil.toJsonString(token));
+        WebTarget webTarget = HttpClient.createClient().target(config.getWkBaseUrl() + HttpClient.WK_PAYMENT_REFUND).queryParam("access_token", jsonObject.getString("access_token"));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         WKOperaResponse result = response.readEntity(WKOperaResponse.class);
@@ -73,9 +81,10 @@ public class WKPaymentServiceImpl implements WKPaymentService {
             aggPayBackBean.setTradeNo(bean.getOrderNo());
             aggPayBackBean.setOrderNo(bean.getOrderNo());
             aggPayBackBean.setRefundNo(bean.getRefundNo());
-            aggPayBackBean.setRefundFee(bean.getRefundAmount().toString());
+            aggPayBackBean.setRefundFee(bean.getRefundAmount().multiply(new BigDecimal(100)).intValue() + "");
             aggPayBackBean.setTradeDate(bean.getRefundTime());
-            CommonResult<String> aggPayBackResult = payClientService.aggPayBack(aggPayBackBean) ;
+            aggPayBackBean.setPayType("yuncheng");
+            CommonResult<String> aggPayBackResult = payClientService.aggRefundBack(aggPayBackBean) ;
             if (aggPayBackResult.getCode() == 200) {
                 return "SUCCESS" ;
             }
@@ -85,4 +94,18 @@ public class WKPaymentServiceImpl implements WKPaymentService {
         }
         return "error";
     }
+
+    @Override
+    public WKOperaResponse<WKAccessToken> getWKAccessToken() {
+        WKTokenRequestBean bean = new WKTokenRequestBean() ;
+        bean.setAppid(config.getWkAppId());
+        bean.setSecret(config.getWkAppSecret());
+        WebTarget webTarget = HttpClient.createClient().target(config.getWkBaseUrl() + HttpClient.WK_ACCESS_TOKEN_URL);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
+        WKOperaResponse result = response.readEntity(WKOperaResponse.class);
+        log.info("获取万科token信息返回值： {}", JSONUtil.toJsonString(result));
+        return result ;
+    }
+
 }

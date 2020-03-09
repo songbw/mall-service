@@ -72,14 +72,14 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    public OperaResult getProfileList(Integer pageNo, Integer pageSize, String name, String sex, String telephone, OperaResult result){
+    public OperaResult getProfileList(Integer pageNo, Integer pageSize, String name, String sex, String telephone, String appId, String openId, OperaResult result){
         if(pageNo == null || pageNo <= 0){
             pageNo = 1;
         }
         if (pageSize == null || pageSize > 200) {
             pageNo = 10;
         }
-        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone));
+        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone, appId, openId));
         return result;
     }
 

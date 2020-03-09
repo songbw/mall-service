@@ -32,4 +32,10 @@ public interface CardTicketService {
     CardTicketX getCardTicketByCard(String openId, String card);
 
     int deleteCardTicket(Integer id);
+
+    List<Integer>
+    getOrderIdByCouponId(List<Integer> couponIdList);
+
+    List<CouponUseInfo>
+    selectByUserCouponCodeList(List<String> codeList);
 }

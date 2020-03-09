@@ -458,4 +458,15 @@ public class OrderController {
         log.info("怡亚通发货通知： {}", JSONUtil.toJsonString(bean));
         return service.deliverStatus(bean);
     }
+
+    @PostMapping("/batch/ids")
+    private OperaResponse selectByOrderIds(@RequestBody List<Integer> orderIds) {
+        OperaResponse response = new OperaResponse() ;
+        if (orderIds.size() > 100) {
+            response.setCode(200001);
+            response.setMsg("mpu 列表数量超过50！");
+            return response ;
+        }
+        return service.batchSelectByIds(orderIds);
+    }
 }

@@ -5,6 +5,7 @@ import com.fengchao.aoyi.client.bean.Orders;
 import com.fengchao.aoyi.client.bean.StarBackBean;
 import com.fengchao.aoyi.client.config.StarClientConfig;
 import com.fengchao.aoyi.client.feign.OrderServiceClient;
+import com.fengchao.aoyi.client.feign.WorkOrderServiceClient;
 import com.fengchao.aoyi.client.starBean.*;
 import com.fengchao.aoyi.client.startService.OrderStarService;
 import com.fengchao.aoyi.client.utils.JSONUtil;
@@ -31,6 +32,8 @@ public class OrderStarServiceImpl implements OrderStarService {
     private StarClientConfig starClientConfig;
     @Autowired
     private OrderServiceClient orderServiceClient ;
+    @Autowired
+    private WorkOrderServiceClient workOrderServiceClient ;
 
     @Override
     public OperaResponse addOrder(StarOrderBean bean) {
@@ -252,7 +255,13 @@ public class OrderStarServiceImpl implements OrderStarService {
                 }
             }
         } else {
-            //TODO 工单状态变更
+            // 工单状态变更
+            response = workOrderServiceClient.refundStatus(bean) ;
+            if (response.getCode() == 200) {
+                return "success" ;
+            } else {
+                return "error" ;
+            }
         }
         return null;
     }

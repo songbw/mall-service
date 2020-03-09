@@ -271,6 +271,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Override
     public void uploadProdImage() {
         List<AyFcImages> ayFcImages = ayFcImagesDao.findNoUploadImage();
+        logger.info("需要处理下载图片:{}个", ayFcImages.size());
         if (ayFcImages != null && ayFcImages.size() > 0) {
             ayFcImages.forEach(image -> {
                 OperaResult result = baseService.downUpload(image);
@@ -385,7 +386,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     public OperaResponse syncStarProdPrice() {
         logger.info("syncStarProdPrice");
         OperaResponse response = new OperaResponse() ;
-        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao);
+        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao, productDao);
         return response;
     }
 

@@ -87,7 +87,7 @@ public class Order implements Serializable {
     // 支付状态 10初始创建订单  1下单成功，等待支付。  2支付中，3超时未支付  4支付失败  5支付成功  11支付成功，记账也成功   12支付成功，记账失败  14退款失败，15订单已退款
     private int payStatus;
     // 1支付，2充值，3退款，4提现
-    private int payOrderCategory ;
+    private Integer payOrderCategory ;
 
     private Date createdAt;
 
@@ -116,6 +116,8 @@ public class Order implements Serializable {
     private String appId ;
 
     private String regionId;
+
+    private List<OrderDetail> orderDetails;
 
     public Integer getId() {
         return id;
@@ -461,11 +463,11 @@ public class Order implements Serializable {
         this.payStatus = payStatus;
     }
 
-    public int getPayOrderCategory() {
+    public Integer getPayOrderCategory() {
         return payOrderCategory;
     }
 
-    public void setPayOrderCategory(int payOrderCategory) {
+    public void setPayOrderCategory(Integer payOrderCategory) {
         this.payOrderCategory = payOrderCategory;
     }
 
@@ -555,5 +557,13 @@ public class Order implements Serializable {
 
     public void setRegionId(String regionId) {
         this.regionId = regionId;
+    }
+
+    public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 }

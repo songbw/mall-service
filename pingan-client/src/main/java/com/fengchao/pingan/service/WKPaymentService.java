@@ -14,4 +14,6 @@ public interface WKPaymentService {
 
     String refundNotify(WKRefundNotifyRequestBean bean) ;
 
+    WKOperaResponse<WKAccessToken> getWKAccessToken() ;
+
 }

@@ -2,11 +2,15 @@ package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.model.CouponUseInfoX;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 
+@Component
+@Mapper
 public interface CouponUseInfoXMapper {
     int deleteByPrimaryKey(CouponUseInfoBean bean);
 
