@@ -26,7 +26,6 @@ import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -777,7 +776,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("subStatus",orderBean.getSubStatus());
         map.put("aoyiId",orderBean.getAoyiId());
         map.put("appId",orderBean.getAppId());
-        map.put("receiverName",orderBean.getReveiverName());
+        map.put("receiverName",orderBean.getReceiverName());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
             map.put("payDateStart", orderBean.getPayDateStart() + " 00:00:00");
         }
