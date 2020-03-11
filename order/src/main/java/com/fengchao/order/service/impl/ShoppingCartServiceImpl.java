@@ -156,6 +156,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             log.info("获取购物车列表 获取购物车数据List<ShoppingCart>:{}", JSONUtil.toJsonString(shoppingCartList));
 
             List<AoyiProdIndex> aoyiProdIndices = findProductByMpuList(shoppingCartList) ;
+            log.info("获取购物车列表 查询的商品列表List<AoyiProdIndex>:{}", JSONUtil.toJsonString(aoyiProdIndices));
+
             List<CouponAndPromBean>  couponAndPromBeans =  findCouponListByMpuList(aoyiProdIndices, queryBean.getAppId()) ;
             shoppingCartList.forEach(shoppingCart -> { // 遍历购物车列表
                 int perLimit = findPromotionBySku(shoppingCart.getMpu(), shoppingCart.getOpenId(), queryBean.getAppId()) ;
