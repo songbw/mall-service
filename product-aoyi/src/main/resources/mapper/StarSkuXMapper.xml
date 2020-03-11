@@ -20,7 +20,7 @@
 
   <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
     insert into star_sku
-    (goods_logo, sku_id, status, spu_id, advise_price, sprice, merchant_code, price)
+    (goods_logo, sku_id, status, spu_id, advise_price, sprice, merchant_code, price, code)
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
@@ -31,7 +31,8 @@
       #{item.advisePrice},
       #{item.sprice},
       #{item.merchantCode},
-      #{item.price}
+      #{item.price},
+      #{item.code}
       )
     </foreach>
   </insert>

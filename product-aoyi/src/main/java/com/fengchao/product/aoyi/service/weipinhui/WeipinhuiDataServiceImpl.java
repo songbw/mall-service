@@ -491,6 +491,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                             // starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
                             starSku.setSkuId(aoyiSkuResDto.getSkuId());
+                            starSku.setCode(aoyiSkuResDto.getSkuId());
                             starSku.setStatus("false".equals(aoyiSkuResDto.getCanSell()) ? 0 : 1);
                             starSku.setSpuId(itemId);
                             starSku.setAdvisePrice(PriceUtil.convertYuanToFen(aoyiSkuResDto.getSellPrice())); // 建议销售价格 单位分
@@ -527,6 +528,15 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         totalSkuCount = totalSkuCount + insertStarSkuList.size();
                     }
 
+                    // x..  这里在获取一下刚才批量插入的sku数据, 主要是为了获取新插入的id，然后作为sku_property的属性
+                    Map<String, StarSku> starSkuMap = new HashMap<>(); // key: skuId, value: starSku;
+                    if (CollectionUtils.isNotEmpty(insertStarSkuList)) {
+                        List<String> _skuIdList = insertStarSkuList.stream().map(i -> i.getSkuId()).collect(Collectors.toList());
+                        List<StarSku>  _starSkuList = starSkuDao.selectBySkuIdList(_skuIdList);
+
+                        starSkuMap = _starSkuList.stream().collect(Collectors.toMap(_s -> _s.getSkuId(), _s -> _s));
+                    }
+
                     // 4.3.2 批量插入 sku的商品规格
                     log.info("同步商品详情 第{}页 第{}个itemId:{}, 待处理的proerty列表:{}个 数据:{}",
                             pageNum, itemIdIndex, itemId, candidateStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(candidateStarPropertyList));
@@ -546,13 +556,19 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         // 过滤
                         for (StarProperty candidateStarProperty : candidateStarPropertyList) {
                             if (!exsitPropertyIdList.contains(candidateStarProperty.getProductId())) {
+                                // !!xx  将productId修改为startSku中的id
+                                StarSku _starSku = starSkuMap.get(String.valueOf(candidateStarProperty.getProductId()));
+                                if (_starSku != null) {
+                                    candidateStarProperty.setProductId(_starSku.getId());
+                                }
+
                                 insertStarPropertyList.add(candidateStarProperty);
                             }
                         }
 
                         log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入的proerty列表:{}个 数据:{}",
                                 pageNum, itemIdIndex, itemId, insertStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(insertStarPropertyList));
-                        //
+                        // 执行批量插入商品规格
                         if (CollectionUtils.isNotEmpty(insertStarPropertyList)) {
                             starPropertyDao.batchInsert(insertStarPropertyList);
                         }
@@ -566,7 +582,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
                             pageNum, itemIdIndex, itemId, mainSpuImageList.size(), JSONUtil.toJsonStringWithoutNull(mainSpuImageList));
                     if (CollectionUtils.isNotEmpty(mainSpuImageList)) {
-                        ayFcImagesDao.batchInsert(mainSpuImageList);
+                        // ayFcImagesDao.batchInsert(mainSpuImageList);
                     }
                 }// end for
 
@@ -638,7 +654,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
         if (StringUtils.isNotBlank(sepca)) {
             StarProperty starProperty = new StarProperty();
-            starProperty.setType(0);
+            starProperty.setType(1);
             starProperty.setName("sepca");
             starProperty.setProductId(Integer.valueOf(skuId));
             starProperty.setVal(sepca);
@@ -648,7 +664,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
         if (StringUtils.isNotBlank(sepcb)) {
             StarProperty starProperty = new StarProperty();
-            starProperty.setType(0);
+            starProperty.setType(1);
             starProperty.setName("sepcb");
             starProperty.setProductId(Integer.valueOf(skuId));
             starProperty.setVal(sepcb);
@@ -658,7 +674,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
         if (StringUtils.isNotBlank(sepcc)) {
             StarProperty starProperty = new StarProperty();
-            starProperty.setType(0);
+            starProperty.setType(1);
             starProperty.setName("sepcc");
             starProperty.setProductId(Integer.valueOf(skuId));
             starProperty.setVal(sepcc);

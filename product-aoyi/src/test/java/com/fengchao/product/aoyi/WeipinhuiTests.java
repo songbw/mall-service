@@ -51,7 +51,6 @@ public class WeipinhuiTests {
 
 
     @Test
-    @Ignore
     public void testQueryItemDetail() {
         try {
             weipinhuiDataService.syncItemDetail(1, -1);

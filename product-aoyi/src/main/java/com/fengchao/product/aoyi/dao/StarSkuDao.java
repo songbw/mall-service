@@ -76,7 +76,7 @@ public class StarSkuDao {
     }
 
     /**
-     * 根据skuId集合查询s
+     * 根据skuId集合查询
      *
      * @param skuIdList
      * @return
