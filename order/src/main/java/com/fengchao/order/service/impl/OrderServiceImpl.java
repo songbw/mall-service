@@ -1429,6 +1429,9 @@ public class OrderServiceImpl implements OrderService {
     public OperaResponse confirmStarOrder(List<Integer> orderIds) {
         List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndMerchantId(orderIds, OrderConstants.STAR_MERCHANG_CODE) ;
         List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
+        if (orderDetails == null || orderDetails.size() == 0) {
+            return new OperaResponse() ;
+        }
         orderDetails.forEach(orderDetail -> {
             StarCodeBean starCodeBean = new StarCodeBean() ;
             starCodeBean.setCode(orderDetail.getSkuId());
