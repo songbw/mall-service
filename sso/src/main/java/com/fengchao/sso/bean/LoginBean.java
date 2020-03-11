@@ -9,4 +9,5 @@ public class LoginBean {
     private String oldPassword;
     private String code;
     private String appId;
+    private String openId ;
 }

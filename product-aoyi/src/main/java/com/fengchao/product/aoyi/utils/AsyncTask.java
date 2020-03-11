@@ -160,25 +160,27 @@ public class AsyncTask {
                         String skuDetailResString = JSON.toJSONString(skuDetailRes) ;
                         JSONObject skuDetailResJson = JSONObject.parseObject(skuDetailResString) ;
                         JSONArray skuDetailData = skuDetailResJson.getJSONArray("data") ;
-                        JSONObject jsonObject = skuDetailData.getJSONObject(0) ;
-                        StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
-                        skuBean.setSpuId(spuArray.getString(i));
-                        // insert spu
-                        List<StarSku> starSkus = starSkuDao.selectBySpuIdAndCode(spuArray.getString(i), skuBean.getCode()) ;
-                        if (starSkus == null || starSkus.size() == 0) {
-                            starSkuMapper.insertSelective(skuBean) ;
-                            JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
-                            for (int j = 0; j < propertyArray.size(); j++) {
-                                JSONObject propertyJson = propertyArray.getJSONObject(j) ;
-                                StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
-                                // set spu id
-                                starProperty.setProductId(skuBean.getId());
-                                // set type 1
-                                starProperty.setType(1);
-                                // isert property
-                                starPropertyMapper.insertSelective(starProperty) ;
+                        for (int h = 0; h < skuDetailData.size(); h++) {
+                            JSONObject jsonObject = skuDetailData.getJSONObject(h) ;
+                            StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
+                            skuBean.setSpuId(spuArray.getString(i));
+                            // insert spu
+                            List<StarSku> starSkus = starSkuDao.selectBySpuIdAndCode(spuArray.getString(i), skuBean.getCode()) ;
+                            if (starSkus == null || starSkus.size() == 0) {
+                                starSkuMapper.insertSelective(skuBean) ;
+                                JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
+                                for (int j = 0; j < propertyArray.size(); j++) {
+                                    JSONObject propertyJson = propertyArray.getJSONObject(j) ;
+                                    StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
+                                    // set spu id
+                                    starProperty.setProductId(skuBean.getId());
+                                    // set type 1
+                                    starProperty.setType(1);
+                                    // isert property
+                                    starPropertyMapper.insertSelective(starProperty) ;
+                                }
+                                log.info("获取SKU信息，入参：{}, 结果：{}",spuArray.getString(i), JSONUtil.toJsonString(skuBean));
                             }
-                            log.info("获取SKU信息，入参：{}, 结果：{}",spuArray.getString(i), JSONUtil.toJsonString(skuBean));
                         }
                     }
                 }
