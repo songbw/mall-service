@@ -27,7 +27,7 @@ public class ShoppingCartController {
         queryBean.setAppId(appId);
         result.getData().put("result", service.findList(queryBean)) ;
 
-        log.info("获取购物车列表 返回: {}", appId, JSONUtil.toJsonString(result));
+        log.info("获取购物车列表 返回: {}", JSONUtil.toJsonString(result));
         return result;
     }
 

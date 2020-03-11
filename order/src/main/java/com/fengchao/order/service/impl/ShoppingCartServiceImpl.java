@@ -157,17 +157,27 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
             List<AoyiProdIndex> aoyiProdIndices = findProductByMpuList(shoppingCartList) ;
             List<CouponAndPromBean>  couponAndPromBeans =  findCouponListByMpuList(aoyiProdIndices, queryBean.getAppId()) ;
-            shoppingCartList.forEach(shoppingCart -> {
+            shoppingCartList.forEach(shoppingCart -> { // 遍历购物车列表
                 int perLimit = findPromotionBySku(shoppingCart.getMpu(), shoppingCart.getOpenId(), queryBean.getAppId()) ;
 
                 shoppingCart.setPerLimited(perLimit);
-                ShoppingCartBean shoppingCartBean = new ShoppingCartBean() ;
-                BeanUtils.copyProperties(shoppingCart, shoppingCartBean);
+                ShoppingCartBean shoppingCartBean = convertToShoppingCartBean(shoppingCart); // new ShoppingCartBean() ;
+                // BeanUtils.copyProperties(shoppingCart, shoppingCartBean);
+
                 aoyiProdIndices.forEach(aoyiProdIndex -> {
-                    if (shoppingCart.getMpu().equals(aoyiProdIndex.getMpu())) {
-                        BeanUtils.copyProperties(aoyiProdIndex, shoppingCartBean);
-                        shoppingCartBean.setId(shoppingCart.getId());
+                    if (StringUtils.isNotBlank(shoppingCart.getSkuId())) { // 如果有值， 使用sku判断
+                        if (shoppingCart.getSkuId().equals(aoyiProdIndex.getStarSku().getCode())) {
+                            BeanUtils.copyProperties(aoyiProdIndex, shoppingCartBean);
+                            shoppingCartBean.setId(shoppingCart.getId());
+                        }
+                    } else { // 否则  使用mpu判断
+                        if (shoppingCart.getMpu().equals(aoyiProdIndex.getMpu())) {
+                            BeanUtils.copyProperties(aoyiProdIndex, shoppingCartBean);
+                            shoppingCartBean.setId(shoppingCart.getId());
+                        }
                     }
+                    // if (shoppingCart.getMpu().equals(aoyiProdIndex.getMpu())) {
+
                 });
                 shoppingCarts.add(shoppingCartBean) ;
             });
@@ -259,5 +269,27 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return -1;
         }
         return -1;
+    }
+
+    private ShoppingCartBean convertToShoppingCartBean(ShoppingCart shoppingCart) {
+        ShoppingCartBean shoppingCartBean = new ShoppingCartBean();
+
+        shoppingCartBean.setId(shoppingCart.getId());
+        shoppingCartBean.setOpenId(shoppingCart.getOpenId());
+        shoppingCartBean.setMacAddress(shoppingCart.getMacAddress());
+        shoppingCartBean.setMpu(shoppingCart.getMpu());
+        shoppingCartBean.setSkuId(shoppingCart.getSkuId());
+        shoppingCartBean.setCount(shoppingCart.getCount());
+        shoppingCartBean.setStatus(shoppingCart.getStatus());
+        shoppingCartBean.setCreatedAt(shoppingCart.getCreatedAt());
+        shoppingCartBean.setUpdatedAt(shoppingCart.getUpdatedAt());
+        shoppingCartBean.setIsDel(shoppingCart.getIsDel());
+        shoppingCartBean.setPerLimited(shoppingCart.getPerLimited()); //  = -1;
+
+
+        // shoppingCartBean.setStarSku ;
+
+
+        return shoppingCartBean;
     }
 }
