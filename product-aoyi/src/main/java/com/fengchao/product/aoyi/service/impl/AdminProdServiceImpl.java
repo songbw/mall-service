@@ -785,27 +785,28 @@ public class AdminProdServiceImpl implements AdminProdService {
             if ("1".equals(bean.getState())) {
                 if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                     ids.add(bean.getId()) ;
+                    logger.info("category is {}", bean.getId());
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
+                    logger.info("price is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getImage())) {
-                    ids.add(bean.getId()) ;
-                    continue;
-                }
-                if (starDetailImgs == null || starDetailImgs.size() == 0) {
+                    logger.info("image is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
                     if (starDetailImgs == null || starDetailImgs.size() == 0) {
+                        logger.info("image url is {}", bean.getId());
                         ids.add(bean.getId()) ;
                         continue;
                     }
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl()) && StringUtils.isEmpty(aoyiProdIndex.getIntroduction())) {
+                    logger.info("introduction  url is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
