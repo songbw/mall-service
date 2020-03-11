@@ -258,9 +258,19 @@ public class LoginServiceImpl implements ILoginService {
             }
             user.setName(guanaitongUserBean.getName());
             user.setTelephone(guanaitongUserBean.getMobile());
-            user.setCreatedAt(new Date());
             user.setiAppId(iAppId);
-            userMapper.insertSelective(user);
+            SUser userByTel = new SUser() ;
+            if (!StringUtils.isEmpty(guanaitongUserBean.getMobile())) {
+                userByTel = userDao.selectUserByTel(iAppId, guanaitongUserBean.getMobile()) ;
+            }
+            if (userByTel == null || userByTel.getId() == null || userByTel.getId() == 0) {
+                user.setCreatedAt(new Date());
+                userMapper.insertSelective(user);
+            } else {
+                user.setId(userByTel.getId());
+                user.setUpdatedAt(new Date());
+                userMapper.updateByPrimaryKeySelective(user) ;
+            }
         }
         result.getData().put("result", accessToken);
         return result ;
@@ -353,9 +363,19 @@ public class LoginServiceImpl implements ILoginService {
                 user.setNickname(nickname);
             }
             user.setTelephone(authUserBean.getMobileNo());
-            user.setCreatedAt(new Date());
             user.setiAppId(iAppId);
-            userMapper.insertSelective(user);
+            SUser userByTel = new SUser() ;
+            if (!StringUtils.isEmpty(authUserBean.getMobileNo())) {
+                userByTel = userDao.selectUserByTel(iAppId, authUserBean.getMobileNo()) ;
+            }
+            if (userByTel == null || userByTel.getId() == null || userByTel.getId() == 0) {
+                user.setCreatedAt(new Date());
+                userMapper.insertSelective(user);
+            } else {
+                user.setId(userByTel.getId());
+                user.setUpdatedAt(new Date());
+                userMapper.updateByPrimaryKeySelective(user) ;
+            }
         }
         if ("11".equals(iAppId)) {
             balanceDao.updateOpenIdByTel(authUserBean.getMobileNo(), authUserBean.getOpenId());
@@ -434,12 +454,13 @@ public class LoginServiceImpl implements ILoginService {
         String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppId() + bandWXBean.getTelephone()) ;
         if (bandWXBean.getCode().equals(code)) {
             // 绑定openId 查询手机号是否存在，绑定公众号
-
             SUser user = userDao.selectUserByTel(platform.getAppId(), bandWXBean.getTelephone()) ;
+            //  如果用户不存在，创建用户ID，继续绑定用户, 输入手机号、appId 创建用户
             if (user == null) {
-                result.setCode(900100);
-                result.setMsg("电话号码不正确或此用户不存在");
-                return result;
+                user = new SUser() ;
+                user.setiAppId(platform.getAppId());
+                user.setTelephone(bandWXBean.getTelephone());
+                mapper.insertSelective(user) ;
             }
             // 绑定第三方openId
             BindSubAccount bindSubAccount = bindSubAccountDao.selectByUserIdAndAppId(bandWXBean.getAppId(), user.getId()) ;
