@@ -161,8 +161,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 int perLimit = findPromotionBySku(shoppingCart.getMpu(), shoppingCart.getOpenId(), queryBean.getAppId()) ;
 
                 shoppingCart.setPerLimited(perLimit);
-                ShoppingCartBean shoppingCartBean = convertToShoppingCartBean(shoppingCart); // new ShoppingCartBean() ;
-                // BeanUtils.copyProperties(shoppingCart, shoppingCartBean);
+                ShoppingCartBean shoppingCartBean = new ShoppingCartBean() ; // convertToShoppingCartBean(shoppingCart); //
+                BeanUtils.copyProperties(shoppingCart, shoppingCartBean);
 
                 aoyiProdIndices.forEach(aoyiProdIndex -> {
                     if (StringUtils.isNotBlank(shoppingCart.getSkuId())) { // 如果有值， 使用sku判断
