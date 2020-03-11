@@ -152,10 +152,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Map<String, Object> data = new HashMap<>() ;
         if (total > 0) {
             List<ShoppingCart> shoppingCartList = mapper.selectLimit(map) ;
+
+            log.info("获取购物车列表 获取购物车数据List<ShoppingCart>:{}", JSONUtil.toJsonString(shoppingCartList));
+
             List<AoyiProdIndex> aoyiProdIndices = findProductByMpuList(shoppingCartList) ;
             List<CouponAndPromBean>  couponAndPromBeans =  findCouponListByMpuList(aoyiProdIndices, queryBean.getAppId()) ;
             shoppingCartList.forEach(shoppingCart -> {
                 int perLimit = findPromotionBySku(shoppingCart.getMpu(), shoppingCart.getOpenId(), queryBean.getAppId()) ;
+
                 shoppingCart.setPerLimited(perLimit);
                 ShoppingCartBean shoppingCartBean = new ShoppingCartBean() ;
                 BeanUtils.copyProperties(shoppingCart, shoppingCartBean);
@@ -167,10 +171,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 });
                 shoppingCarts.add(shoppingCartBean) ;
             });
+
+            log.info("获取购物车列表 List<ShoppingCartBean>:{}", JSONUtil.toJsonString(shoppingCarts));
             data.put("cart", shoppingCarts);
             data.put("couponProm", couponAndPromBeans) ;
         }
         pageBean = PageBean.build(pageBean, data, total, queryBean.getPageNo(), queryBean.getPageSize());
+
+        log.info("获取购物车列表 返回PageBean:{}", JSONUtil.toJsonString(pageBean));
         return pageBean;
     }
 
