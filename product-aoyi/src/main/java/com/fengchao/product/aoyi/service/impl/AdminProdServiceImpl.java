@@ -6,10 +6,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.constants.CategoryClassEnum;
 import com.fengchao.product.aoyi.constants.ProductStatusEnum;
-import com.fengchao.product.aoyi.dao.CategoryDao;
-import com.fengchao.product.aoyi.dao.ProductDao;
-import com.fengchao.product.aoyi.dao.ProductExtendDao;
-import com.fengchao.product.aoyi.dao.StarSkuDao;
+import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
@@ -71,6 +68,8 @@ public class AdminProdServiceImpl implements AdminProdService {
     private StarSkuMapper starSkuMapper ;
     @Autowired
     private StarSkuDao starSkuDao ;
+    @Autowired
+    private StarDetailImgDao starDetailImgDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -782,28 +781,32 @@ public class AdminProdServiceImpl implements AdminProdService {
                 continue;
             }
             AoyiProdIndexWithBLOBs aoyiProdIndex = mapper.selectByPrimaryKey(bean.getId()) ;
+            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndex.getId()) ;
             if ("1".equals(bean.getState())) {
                 if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                     ids.add(bean.getId()) ;
+                    logger.info("category is {}", bean.getId());
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
+                    logger.info("price is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getImage())) {
+                    logger.info("image is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
-                    ids.add(bean.getId()) ;
-                    continue;
+                    if (starDetailImgs == null || starDetailImgs.size() == 0) {
+                        logger.info("image url is {}", bean.getId());
+                        ids.add(bean.getId()) ;
+                        continue;
+                    }
                 }
-                if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl()) && aoyiProdIndex.getMerchantId() != 4) {
-                    ids.add(bean.getId()) ;
-                    continue;
-                }
-                if (StringUtils.isEmpty(aoyiProdIndex.getIntroduction()) && aoyiProdIndex.getMerchantId() == 4) {
+                if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl()) && StringUtils.isEmpty(aoyiProdIndex.getIntroduction())) {
+                    logger.info("introduction  url is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }

@@ -94,10 +94,10 @@ public class AsyncTask {
                 for (int i = 0; i < spuArray.size(); i++) {
                     String detailParam = "" ;
                     System.out.println(i);
-                    if ((i + 49) > spuArray.size()) {
+                    if ((i + 29) > spuArray.size()) {
                         detailParam = JSONUtil.toJsonString(spuArray.subList(i, spuArray.size()));
                     } else {
-                        detailParam = JSONUtil.toJsonString(spuArray.subList(i, i + 49));
+                        detailParam = JSONUtil.toJsonString(spuArray.subList(i, i + 29));
                     }
                     detailParam = detailParam.replace("[", "").replace("]", "").replace("\"", "") ;
                     OperaResponse spuDetailRes = aoyiClientService.getSpuDetail(detailParam) ;
