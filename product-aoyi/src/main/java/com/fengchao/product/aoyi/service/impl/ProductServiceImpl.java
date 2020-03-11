@@ -439,27 +439,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<AoyiProdIndexX> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) {
-        List<String> mpuIdList = new ArrayList<>() ;
-        List<String> codeList = new ArrayList<>() ;
-        bean.forEach(b -> {
-            mpuIdList.add(b.getMpu()) ;
-            codeList.add(b.getSkuid()) ;
-        });
-        // 根据code查询SKU表
-        List<StarSku> starSkus = starSkuDao.selectByCodeList(codeList) ;
         // 根据MPU查询商品表
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
-        productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
-            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+        bean.forEach(aoyiProdIndex -> {
+            AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-            BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
-            for (StarSku starSku: starSkus) {
-                if (aoyiProdIndex.getSkuid().equals(starSku.getSpuId())) {
-                    BigDecimal bigDecimal = new BigDecimal(starSku.getPrice()) ;
-                    String price = bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString() ;
-                    aoyiProdIndexX.setPrice(price);
-                    aoyiProdIndexX.setStarSku(starSku);
-                }
+            BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
+            List<StarSku> starSkus = starSkuDao.selectByCode(aoyiProdIndex.getSkuid()) ;
+            if (starSkus != null && starSkus.size() > 0) {
+                aoyiProdIndexX.setStarSku(starSkus.get(0));
             }
             aoyiProdIndexList.add(aoyiProdIndexX);
         });
