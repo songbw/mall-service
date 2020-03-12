@@ -175,4 +175,10 @@ public class ThirdProdController {
         return service.syncStarProdPrice();
     }
 
+    @GetMapping("star/category")
+    public OperaResponse starCategory() {
+        log.info("开始同步星链类目");
+        return service.syncStarCategory();
+    }
+
 }
