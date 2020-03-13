@@ -13,7 +13,7 @@ public interface CouponService {
 
     PageBean findCoupon(Integer offset, Integer limit, String appId);
 
-    PageBean serachCoupon(CouponSearchBean bean);
+    PageBean searchCoupon(CouponSearchBean bean);
 
     int updateCoupon(CouponBean bean);
 

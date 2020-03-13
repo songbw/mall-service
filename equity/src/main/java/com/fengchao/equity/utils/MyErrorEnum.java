@@ -26,6 +26,8 @@ public enum MyErrorEnum {
 
     CARD_TICKET_MISSING(420201,"兑换失败,,未找到提货券信息"),
     CARD_INFO_APP_ID_NOT_MATCH(420202,"兑换失败,应用渠道与提货券渠道不符"),
+    COUPON_NOT_FOUND(420203,"兑换失败,优惠券不存在"),
+
 
     /* 内部异常错误*/
     COUPON_USE_INFO_INSERT_ERROR(500101,"兑换失败,增加记录失败"),
