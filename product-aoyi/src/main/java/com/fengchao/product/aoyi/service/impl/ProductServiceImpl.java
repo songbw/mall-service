@@ -445,9 +445,11 @@ public class ProductServiceImpl implements ProductService {
             AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
-            List<StarSku> starSkus = starSkuDao.selectByCode(aoyiProdIndex.getSkuid()) ;
-            if (starSkus != null && starSkus.size() > 0) {
-                aoyiProdIndexX.setStarSku(starSkus.get(0));
+            if (StringUtils.isNotBlank(aoyiProdIndex.getSkuid())) {
+                List<StarSku> starSkus = starSkuDao.selectByCode(aoyiProdIndex.getSkuid()) ;
+                if (starSkus != null && starSkus.size() > 0) {
+                    aoyiProdIndexX.setStarSku(starSkus.get(0));
+                }
             }
             aoyiProdIndexList.add(aoyiProdIndexX);
         });
