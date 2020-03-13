@@ -1,5 +1,6 @@
 package com.fengchao.equity.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Coupon;
@@ -7,6 +8,7 @@ import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.JSONUtil;
+import com.fengchao.equity.utils.MyFunctions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,7 +29,7 @@ public class AdminCouponController {
 
     @PostMapping("create")
     public OperaResult createCoupon(@RequestBody CouponBean bean, OperaResult result){
-        log.info("创建createCoupon优惠券参数 入参:{}", JSONUtil.toJsonString(bean));
+        logParamIn(MyFunctions.WEB_ADMIN_CREATE_COUPON,JSONUtil.toJsonString(bean));
         result.getData().put("couponId",couponService.createCoupon(bean));
         return result;
     }
@@ -40,8 +42,8 @@ public class AdminCouponController {
     }
 
     @PostMapping("search")
-    public OperaResult serachCoupon(@RequestBody CouponSearchBean bean, OperaResult result){
-        PageBean pageBean = couponService.serachCoupon(bean);
+    public OperaResult searchCoupon(@RequestBody CouponSearchBean bean, OperaResult result){
+        PageBean pageBean = couponService.searchCoupon(bean);
         result.getData().put("result",pageBean);
         return result;
     }
@@ -54,6 +56,7 @@ public class AdminCouponController {
 
     @PostMapping("update")
     public OperaResult updateCoupon(@RequestBody CouponBean bean, OperaResult result){
+        logParamIn(MyFunctions.WEB_ADMIN_UPDATE_COUPON,JSONUtil.toJsonString(bean));
         int pageBean = couponService.updateCoupon(bean);
         result.getData().put("result",pageBean);
         return result;
@@ -61,6 +64,7 @@ public class AdminCouponController {
 
     @DeleteMapping("delete")
     public OperaResult deleteCoupon(Integer id, OperaResult result){
+        logParamIn(MyFunctions.WEB_ADMIN_DELETE_COUPON,(null == id?"null":id.toString()));
         int num = couponService.deleteCoupon(id);
         if(num == 0){
             result.setCode(700101);
@@ -76,6 +80,7 @@ public class AdminCouponController {
 
     @GetMapping("usageById")
     public OperaResult findCollect(CouponUseInfoBean bean, OperaResult result){
+        //log.info("获取优惠券使用详情 入参: {}", JSON.toJSONString(bean));
         result.getData().put("result", useInfoService.findCollect(bean));
         return result;
     }
@@ -130,6 +135,7 @@ public class AdminCouponController {
 
     @PostMapping("consume")
     public OperaResult consumeCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        logParamIn(MyFunctions.WEB_ADMIN_CONSUME_COUPON,JSONUtil.toJsonString(bean));
         CouponUseInfoX coupon = couponService.adminConsumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
@@ -170,7 +176,7 @@ public class AdminCouponController {
 
     @PostMapping("redemption")
     public OperaResult redemption(@RequestBody CouponUseInfoBean bean, OperaResult result){
-        log.info("兑换优惠券参数 入参:{}", JSONUtil.toJsonString(bean));
+        logParamIn(MyFunctions.WEB_ADMIN_REDEMPTION_COUPON,JSONUtil.toJsonString(bean));
         CouponUseInfoBean couponUseInfoBean = useInfoService.redemption(bean);
         if(couponUseInfoBean.getUserCouponCode().equals("2")){
             result.setCode(40010);
@@ -199,4 +205,9 @@ public class AdminCouponController {
         result.getData().put("result", useInfoService.findUnCollect(bean));
         return result;
     }
+
+    private void logParamIn(String functionDescription, String msg){
+        log.info("{} 入参:{}",functionDescription,msg);
+    }
+
 }

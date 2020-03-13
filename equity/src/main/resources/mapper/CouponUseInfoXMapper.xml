@@ -107,6 +107,9 @@
     <if test="status != null" >
       and status = #{status,jdbcType=INTEGER}
     </if>
+    <if test="userCouponCode != null" >
+        and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    </if>
     <if test="userOpenId != null" >
        <bind name="patternName" value="'%' + userOpenId + '%'" />
        and user_open_id LIKE #{patternName}
@@ -130,7 +133,7 @@
       <![CDATA[ and consumed_time <= #{consumedEndDate,jdbcType=TIMESTAMP}]]>
     </if>
     order by collected_time desc
-    limit #{pageNo},#{pageSize}
+    limit #{pageNo ,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
   <select id="selectBybatchCode" resultMap="BaseResultMap" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
     select

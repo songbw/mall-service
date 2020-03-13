@@ -1,5 +1,6 @@
 package com.fengchao.equity.dao;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
 import com.fengchao.equity.mapper.CouponUseInfoXMapper;
@@ -7,6 +8,8 @@ import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoExample;
 import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.utils.CouponUseStatusEnum;
+import com.fengchao.equity.utils.DataUtils;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,6 +70,68 @@ public class CouponUseInfoDao {
         PageHelper.startPage(bean.getOffset(), bean.getLimit());
         List<CouponUseInfo> couponUseInfoList = couponUseInfoMapper.selectByExample(couponUseInfoExample);
 
+        return new PageInfo<>(couponUseInfoList);
+    }
+
+    public PageInfo<CouponUseInfo> findCollectCoupon(CouponUseInfoBean bean) {
+        //log.info("findCollectCoupon 入参： {}", JSON.toJSONString(bean));
+        CouponUseInfoExample couponUseInfoExample = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria criteria = couponUseInfoExample.createCriteria();
+
+        Integer id = bean.getId();
+        String userOpenId = bean.getUserOpenId();
+        String userCouponCode = bean.getUserCouponCode();
+        Integer status = bean.getStatus();
+        String collectedStartDate = bean.getCollectedStartDate();
+        String collectedEndDate = bean.getCollectedEndDate();
+        String consumedStartDate = bean.getConsumedStartDate();
+        String consumedEndDate = bean.getConsumedEndDate();
+
+        if (null != id){
+            criteria.andCouponIdEqualTo(id);
+        }
+        if (null != userOpenId && !userOpenId.isEmpty()){
+            criteria.andUserOpenIdEqualTo(userOpenId);
+        }
+        if (null != userCouponCode && !userCouponCode.isEmpty()){
+            criteria.andUserCouponCodeEqualTo(userCouponCode);
+        }
+        if (null != status){
+            criteria.andStatusEqualTo(status);
+        }
+        if (null != collectedStartDate && !collectedStartDate.isEmpty()){
+            Date collectedStart = DataUtils.dateFormat(collectedStartDate);
+            if (null != collectedStart){
+                criteria.andCollectedTimeGreaterThanOrEqualTo(collectedStart);
+            }
+        }
+        if (null != collectedEndDate && !collectedEndDate.isEmpty()){
+            Date collectedEnd = DataUtils.dateFormat(collectedEndDate);
+            if (null != collectedEnd){
+                criteria.andCollectedTimeLessThanOrEqualTo(collectedEnd);
+            }
+        }
+        if (null != consumedStartDate && !consumedStartDate.isEmpty()){
+            Date consumedStart = DataUtils.dateFormat(consumedStartDate);
+            if (null != consumedStart){
+                criteria.andConsumedTimeGreaterThanOrEqualTo(consumedStart);
+            }
+        }
+        if (null != consumedEndDate && !consumedEndDate.isEmpty()){
+            Date consumedEnd = DataUtils.dateFormat(consumedEndDate);
+            if (null != consumedEnd){
+                criteria.andConsumedTimeLessThanOrEqualTo(consumedEnd);
+            }
+        }
+        if (1 > bean.getOffset()){
+            bean.setOffset(1);
+        }
+        if (1 > bean.getLimit()){
+            bean.setLimit(10);
+        }
+        PageHelper.startPage(bean.getOffset(), bean.getLimit(),true);
+        List<CouponUseInfo> couponUseInfoList = couponUseInfoMapper.selectByExample(couponUseInfoExample);
+        //log.info("findCollectCoupon list： {}", JSON.toJSONString(couponUseInfoList));
         return new PageInfo<>(couponUseInfoList);
     }
 

@@ -152,8 +152,17 @@ public class CardTicketServiceImpl implements CardTicketService {
         String userCouponCode = "";
 
         Coupon coupon = couponDao.selectCouponById(bean.getCouponId());
+        if (null == coupon){
+            throw new EquityException(MyErrorEnum.COUPON_NOT_FOUND);
+        }
         CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
+        if (null == cardTicket || null == cardTicket.getId()){
+            throw new EquityException(MyErrorEnum.CARD_TICKET_MISSING);
+        }
         CardInfoX cardInfoX = infoDao.findByCardId(cardTicket.getCardId());
+        if (null == cardInfoX){
+            throw new EquityException(MyErrorEnum.CARD_TICKET_MISSING);
+        }
         if (!bean.getAppId().equals(cardInfoX.getAppId())){
             throw new EquityException(MyErrorEnum.CARD_INFO_APP_ID_NOT_MATCH);
         }
@@ -229,6 +238,10 @@ public class CardTicketServiceImpl implements CardTicketService {
 
     @Override
     public int invalid(int id) {
+        if (1> id){
+            log.error("invalid failed for id = {}",String.valueOf(id));
+            return 0;
+        }
         CardTicket ticket = new CardTicket();
         ticket.setId(id);
         ticket.setStatus((short)CardTicketStatusEnum.TIMEOUT.getCode());
