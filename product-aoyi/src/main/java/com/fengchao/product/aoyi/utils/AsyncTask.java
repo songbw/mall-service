@@ -11,10 +11,7 @@ import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
-import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
-import com.fengchao.product.aoyi.mapper.StarDetailImgMapper;
-import com.fengchao.product.aoyi.mapper.StarPropertyMapper;
-import com.fengchao.product.aoyi.mapper.StarSkuMapper;
+import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -249,4 +246,44 @@ public class AsyncTask {
             }
         });
     }
-}
+
+    @Async
+    public void executeAsyncStarCategory(AoyiClientService aoyiClientService, StarCategoryMapper starCategoryMapper) {
+        OperaResponse response = aoyiClientService.findProdCategory(null) ;
+        if (response.getCode() == 200) {
+            String data = JSONUtil.toJsonString(response.getData()) ;
+            JSONObject categorys = JSONObject.parseObject(data) ;
+            JSONArray categoryArray =  categorys.getJSONArray("categoryList") ;
+            for (int j = 0; j < categoryArray.size(); j++) {
+                JSONObject jsonObject = categoryArray.getJSONObject(j) ;
+                StarCategory starCategory = new StarCategory() ;
+                starCategory.setStarId(jsonObject.getInteger("cateId"));
+                starCategory.setLevel(jsonObject.getInteger("level"));
+                starCategory.setName(jsonObject.getString("cateName"));
+                starCategory.setParentId(jsonObject.getInteger("parentId"));
+                starCategoryMapper.insert(starCategory) ;
+                subStarCategory(aoyiClientService, starCategory.getStarId(), starCategoryMapper) ;
+            }
+        }
+    }
+
+    private void subStarCategory(AoyiClientService aoyiClientService, int categoryId, StarCategoryMapper starCategoryMapper) {
+        OperaResponse response = aoyiClientService.findProdCategory(categoryId + "") ;
+        if (response.getCode() == 200) {
+            String data = JSONUtil.toJsonString(response.getData()) ;
+            JSONObject categorys = JSONObject.parseObject(data) ;
+            JSONArray categoryArray =  categorys.getJSONArray("categoryList") ;
+            for (int j = 0; j < categoryArray.size(); j++) {
+                JSONObject jsonObject = categoryArray.getJSONObject(j) ;
+                StarCategory starCategory = new StarCategory() ;
+                starCategory.setStarId(jsonObject.getInteger("cateId"));
+                starCategory.setLevel(jsonObject.getInteger("level"));
+                starCategory.setName(jsonObject.getString("cateName"));
+                starCategory.setParentId(jsonObject.getInteger("parentId"));
+                starCategoryMapper.insert(starCategory) ;
+                subStarCategory(aoyiClientService, starCategory.getStarId(), starCategoryMapper) ;
+            }
+        }
+    }
+
+    }

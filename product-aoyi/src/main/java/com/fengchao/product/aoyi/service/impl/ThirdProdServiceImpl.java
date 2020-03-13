@@ -55,6 +55,8 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private StarSkuMapper starSkuMapper ;
     @Autowired
     private StarSkuDao starSkuDao ;
+    @Autowired
+    private StarCategoryMapper starCategoryMapper ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -389,6 +391,13 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         logger.info("syncStarProdPrice");
         OperaResponse response = new OperaResponse() ;
         asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao, productDao);
+        return response;
+    }
+
+    @Override
+    public OperaResponse syncStarCategory() {
+        OperaResponse response = new OperaResponse() ;
+        asyncTask.executeAsyncStarCategory(aoyiClientService, starCategoryMapper);
         return response;
     }
 

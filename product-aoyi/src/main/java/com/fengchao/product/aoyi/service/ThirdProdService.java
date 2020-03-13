@@ -35,4 +35,6 @@ public interface ThirdProdService {
     OperaResponse syncStarProd() ;
 
     OperaResponse syncStarProdPrice() ;
+
+    OperaResponse syncStarCategory() ;
 }
