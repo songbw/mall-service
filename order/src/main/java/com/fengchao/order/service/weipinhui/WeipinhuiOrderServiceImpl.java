@@ -104,10 +104,13 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
             List<OrderDetailX> orderDetailXList = orderMerchantBean.getSkus();
             List<AoyiItem> items = new ArrayList<>();
             BigDecimal amount = new BigDecimal(0); //  订单总金额(不 含运费) 单位元
+            int index = 0;
             for (OrderDetailX orderDetailX : orderDetailXList) {
                 AoyiItem aoyiItem = new AoyiItem();
 
-                aoyiItem.setSubOrderNo(orderDetailX.getSubOrderId()); // 子订单号
+                // aoyiItem.setSubOrderNo(orderDetailX.getSubOrderId()); // 子订单号
+                aoyiItem.setSubOrderNo(orderMerchantBean.getTradeNo() + String.format("%03d", ++index));
+
                 aoyiItem.setItemId(orderDetailX.getMpu()); // spu
                 aoyiItem.setSkuId(orderDetailX.getSkuId());
                 aoyiItem.setNumber(orderDetailX.getNum()); // 商品数量
@@ -144,6 +147,7 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
                 log.info("唯品会预下单 组装AoyiRenderOrderRequest:{}", JSONUtil.toJsonStringWithoutNull(aoyiRenderOrderRequest));
                 rpcResult = aoyiRpcService.weipinhuiRend(aoyiRenderOrderRequest);
             } else {
+                log.warn("未找到对应的唯品会地址 sncode: {} snpcode:{} level:3", orderParamBean.getTownId(), orderParamBean.getCityId());
                 rpcResult.setCode(500);
                 rpcResult.setMsg("未找到对应的唯品会地址 sncode:" + orderParamBean.getTownId() + "snpcode:" + orderParamBean.getCityId() + "level:3");
             }
