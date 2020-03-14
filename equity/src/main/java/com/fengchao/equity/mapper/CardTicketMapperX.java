@@ -3,10 +3,14 @@ package com.fengchao.equity.mapper;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketExample;
 import com.fengchao.equity.model.CardTicketX;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Mapper
+@Component
 public interface CardTicketMapperX {
     long countByExample(CardTicketExample example);
 
@@ -37,4 +41,6 @@ public interface CardTicketMapperX {
     CardTicketX selectByCard(String card);
 
     CardTicketX seleteCardTicketByCard(@Param("openId") String openId, @Param("card") String card);
+
+    CardTicketX selectByUseCouponCode(String userCouponCode);
 }

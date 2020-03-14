@@ -9,7 +9,7 @@
       <result column="code" jdbcType="VARCHAR" property="code" />
       <result column="collected_time" jdbcType="TIMESTAMP" property="collectedTime" />
       <result column="consumed_time" jdbcType="TIMESTAMP" property="consumedTime" />
-      <result column="order_id" jdbcType="INTEGER" property="orderId" />
+      <result column="order_id" jdbcType="VARCHAR" property="orderId" />
       <result column="status" jdbcType="INTEGER" property="status" />
       <result column="url" jdbcType="VARCHAR" property="url" />
       <result column="type" jdbcType="INTEGER" property="type" />
@@ -23,7 +23,7 @@
     order_id, status, url, type, effective_start_date, effective_end_date, app_id, delete_flag
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.fengchao.equity.bean.CouponUseInfoBean" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from coupon_use_info
     where delete_flag = 0
@@ -46,7 +46,8 @@
       and status = #{status,jdbcType=INTEGER}
     </if>
     <if test="userOpenId != null" >
-      and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+       <bind name="patternName" value="'%' + userOpenId + '%'" />
+       and user_open_id LIKE #{patternName}
     </if>
     <if test="deleteFlag != null" >
       and delete_flag = 0
@@ -106,8 +107,12 @@
     <if test="status != null" >
       and status = #{status,jdbcType=INTEGER}
     </if>
+    <if test="userCouponCode != null" >
+        and user_coupon_code = #{userCouponCode,jdbcType=VARCHAR}
+    </if>
     <if test="userOpenId != null" >
-      and user_open_id = #{userOpenId,jdbcType=VARCHAR}
+       <bind name="patternName" value="'%' + userOpenId + '%'" />
+       and user_open_id LIKE #{patternName}
     </if>
     <if test="deleteFlag != null" >
       and delete_flag = 0
@@ -128,7 +133,7 @@
       <![CDATA[ and consumed_time <= #{consumedEndDate,jdbcType=TIMESTAMP}]]>
     </if>
     order by collected_time desc
-    limit #{pageNo},#{pageSize}
+    limit #{pageNo ,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
   <select id="selectBybatchCode" resultMap="BaseResultMap" parameterType="com.fengchao.equity.model.CouponUseInfoX" >
     select
@@ -176,7 +181,7 @@
       app_id, delete_flag)
     values (#{couponId,jdbcType=INTEGER}, #{userCouponCode,jdbcType=VARCHAR}, #{userOpenId,jdbcType=VARCHAR},
       #{code,jdbcType=VARCHAR}, #{collectedTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP},
-      #{orderId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},
+      #{orderId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},
       #{type,jdbcType=INTEGER}, #{effectiveStartDate,jdbcType=TIMESTAMP}, #{effectiveEndDate,jdbcType=TIMESTAMP},
       #{appId,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER})
   </insert>
@@ -246,7 +251,7 @@
               #{consumedTime,jdbcType=TIMESTAMP},
           </if>
           <if test="orderId != null">
-              #{orderId,jdbcType=INTEGER},
+              #{orderId,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
               #{status,jdbcType=INTEGER},
@@ -273,12 +278,14 @@
   </insert>
   <insert id="insertbatchCode" parameterType="java.util.List" >
     insert into coupon_use_info (coupon_id, user_coupon_code,
-      code, app_id) values
+      code, effective_start_date,effective_end_date,app_id) values
     <foreach collection="useInfos" item="item" index="index" separator=",">
       (
       #{item.couponId,jdbcType=INTEGER},
       #{item.userCouponCode,jdbcType=VARCHAR},
       #{item.code,jdbcType=VARCHAR},
+      #{item.effectiveStartDate,jdbcType=TIMESTAMP},
+      #{item.effectiveEndDate,jdbcType=TIMESTAMP},
       #{item.appId,jdbcType=VARCHAR}
       )
     </foreach>
@@ -316,7 +323,7 @@
               consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
           </if>
           <if test="orderId != null">
-              order_id = #{orderId,jdbcType=INTEGER},
+              order_id = #{orderId,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
               status = #{status,jdbcType=INTEGER},
@@ -350,7 +357,7 @@
       code = #{code,jdbcType=VARCHAR},
       collected_time = #{collectedTime,jdbcType=TIMESTAMP},
       consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
-      order_id = #{orderId,jdbcType=INTEGER},
+      order_id = #{orderId,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
@@ -380,7 +387,10 @@
         status = #{status,jdbcType=INTEGER},
       </if>
       <if test="consumedTime != null" >
-        consumed_time = #{consumedTime,jdbcType=TIMESTAMP}
+        consumed_time = #{consumedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderId != null">
+         order_id = #{orderId,jdbcType=VARCHAR}
       </if>
     </set>
     where delete_flag = 0
@@ -411,4 +421,41 @@
     </if>
   </update>
 
+    <select id="selectCountByOpenId" resultType="java.lang.Integer" parameterType="Map">
+        select
+        count(*)
+        from coupon p
+        left join coupon_use_info c on c.coupon_id = p.id
+        WHERE delete_flag = 0 and p.coupon_type != 4
+        <if test="status != null" >
+            and c.status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="userOpenId != null" >
+            <bind name="patternName" value="'%' + userOpenId + '%'" />
+            and c.user_open_id LIKE #{patternName}
+        </if>
+        <if test="appId != null" >
+            and c.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+    </select>
+    <select id="selectLimitByOpenId" resultMap="BaseResultMap" parameterType="Map">
+        select
+        c.id, coupon_id, user_coupon_code, user_open_id, c.code, collected_time, consumed_time,
+        order_id, c.status, c.url, c.type, c.effective_start_date, c.effective_end_date, c.app_id, c.delete_flag
+        from coupon p
+        left join coupon_use_info c on c.coupon_id = p.id
+        WHERE delete_flag = 0 and p.coupon_type != 4
+        <if test="status != null" >
+            and c.status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="userOpenId != null" >
+            <bind name="patternName" value="'%' + userOpenId + '%'" />
+            and c.user_open_id LIKE #{patternName}
+        </if>
+        <if test="appId != null" >
+            and c.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        order by collected_time desc
+        limit #{pageNo},#{pageSize}
+    </select>
 </mapper>

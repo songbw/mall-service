@@ -18,4 +18,5 @@ public class PingAnConfigBean {
     private String payAppId;
     private String payAppKey ;
     private String payMerchantNo;
+    private String paySceneId ;
 }

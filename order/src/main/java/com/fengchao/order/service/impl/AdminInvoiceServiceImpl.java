@@ -68,14 +68,14 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      */
     @Override
     public List<ExportReceiptBillVo> exportInvoice(Date startTime, Date endTime,
-                                                       String appId, ReceiptTypeEnum receiptTypeEnum) throws Exception {
+                                                       String appId, PaymentTypeEnum paymentTypeEnum) throws Exception {
         try {
             // 1.获取入账的'发票导出'信息 key: mpu
-            Map<String, ExportReceiptBillVo> inComeExportReceiptBillVoMap = handleIncomeInvoiceInfo(startTime, endTime, appId, receiptTypeEnum);
+            Map<String, ExportReceiptBillVo> inComeExportReceiptBillVoMap = handleIncomeInvoiceInfo(startTime, endTime, appId, paymentTypeEnum);
             log.info("导出商品开票信息 获取入账的信息:{}", JSONUtil.toJsonString(inComeExportReceiptBillVoMap));
 
             // 2.获取出账的'发票导出'信息
-            Map<String, ExportReceiptBillVo> outExportReceiptBillVoMap = handleOutInvoiceInfo(startTime, endTime, appId, receiptTypeEnum);
+            Map<String, ExportReceiptBillVo> outExportReceiptBillVoMap = handleOutInvoiceInfo(startTime, endTime, appId, paymentTypeEnum);
             log.info("导出商品开票信息 获取出账的信息:{}", JSONUtil.toJsonString(outExportReceiptBillVoMap));
 
             // 3. 合并上2步的信息
@@ -202,13 +202,13 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * @param startTime
      * @param endTime
      * @param appId
-     * @param receiptTypeEnum
+     * @param paymentTypeEnum
      * @return
      */
-    private Map<String, ExportReceiptBillVo> handleOutInvoiceInfo(Date startTime, Date endTime, String appId, ReceiptTypeEnum receiptTypeEnum) {
+    private Map<String, ExportReceiptBillVo> handleOutInvoiceInfo(Date startTime, Date endTime, String appId, PaymentTypeEnum paymentTypeEnum) {
         try {
             // 1. 查询退款的信息
-            List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, startTime, endTime);
+            List<WorkOrder> workOrderList = workOrderRpcService.queryRefundedOrderDetailList(null, appId, startTime, endTime);
             if (CollectionUtils.isEmpty(workOrderList)) {
                 log.info("导出商品开票信息 未获取到退款记录");
 
@@ -260,7 +260,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 }
 
                 // 获取指定退款方式下的退款金额
-                Integer refundAmount =calcRefundAmount(receiptTypeEnum, refundInfoMapList);
+                Integer refundAmount = judageOutAmount(refundInfoMapList, paymentTypeEnum);
                 if (refundAmount >= 0) { // 说明该退款信息中 含有指定方式下的退款金额
                     OrderDetail _orderDetail = orderDetailMap.get(workOrder.getOrderId());
                     if (_orderDetail == null) {
@@ -304,10 +304,10 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * @param startTime
      * @param endTime
      * @param appId
-     * @param receiptTypeEnum
+     * @param paymentTypeEnum
      * @return
      */
-    private Map<String, ExportReceiptBillVo> handleIncomeInvoiceInfo(Date startTime, Date endTime, String appId, ReceiptTypeEnum receiptTypeEnum) {
+    private Map<String, ExportReceiptBillVo> handleIncomeInvoiceInfo(Date startTime, Date endTime, String appId, PaymentTypeEnum paymentTypeEnum) {
         try {
             // 1. 首先查询符合条件的主订单
             List<Orders> payedOrdersList = ordersDao.selectPayedOrdersListByPaymentTime(startTime, endTime, appId); // 已经支付的主订单集合
@@ -414,7 +414,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 Integer totalAmount = 0; // 该用户单(支付订单)下，所有商品的一个总价 num * salePrice 单位分
 
                 // 判断该支付单的支付方式 返回的是所选择的支付方式支付的总额
-                Integer payAmount = judgePaymentType(receiptTypeEnum, paymentMethodMap.get(paymentNo)); // judgeBanlanceCardWoaPayment(paymentMethodMap.get(paymentNo)); // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式的支付总额
+                Integer payAmount = judgeIncomePayment(paymentMethodMap.get(paymentNo), paymentTypeEnum); // judgeBanlanceCardWoaPayment(paymentMethodMap.get(paymentNo)); // "balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式的支付总额
                 if (payAmount > 0) { // 说明该用户单(支付单)在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中 (20191227 这里排除等于0的情况,因为等于0不用开发票)
                     // 遍历主订单
                     for (Orders _orders : ordersPaymentNoMap.get(paymentNo)) { // 遍历主订单
@@ -554,25 +554,13 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
      * 根据指定的开票类型，获取用户单该在 该'开票类型' 下的支付方式的支付总额
      * (判断发票的类型, 进而获取该类型的支付总额)
      *
-     * @param receiptTypeEnum 指定的开票类型
+     * @param paymentTypeEnum 指定的开票类型
      * @param orderPayMethodInfoBeanList 某个支付单号下的支付方式的集合; 换一种表述，这是一个用户单下的支付方式集合
      * @return
      */
-    private Integer judgePaymentType(ReceiptTypeEnum receiptTypeEnum, List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
-        switch (receiptTypeEnum) {
-            case BALANCE:
-                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.BALANCE);
-            case CARD:
-                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.CARD);
-            case WOA:
-                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.WOA);
-            case BANK:
-                return judgeIncomePayment(orderPayMethodInfoBeanList, PaymentTypeEnum.BANK);
-
-            default:
-                log.warn("获取用户单该在 该'开票类型' 下的支付方式的支付总额 未找到有效的发票类型!");
-                return -1;
-        }
+    @Deprecated
+    private Integer judgePaymentType(PaymentTypeEnum paymentTypeEnum, List<OrderPayMethodInfoBean> orderPayMethodInfoBeanList) {
+        return null;
     }
 
     /**
@@ -612,25 +600,12 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
     /**
      * 根据指定的开票类型，获取某个sku在该'开票类型'下的退款金额
      *
-     * @param receiptTypeEnum
+     * @param paymentTypeEnum
      * @param refundInfoList
      * @return 单位分
      */
-    private Integer calcRefundAmount(ReceiptTypeEnum receiptTypeEnum, List<Map<String, Object>> refundInfoList) {
-        switch (receiptTypeEnum) {
-            case BALANCE:
-                return judageOutAmount(refundInfoList, PaymentTypeEnum.BALANCE);
-            case CARD:
-                return judageOutAmount(refundInfoList, PaymentTypeEnum.CARD);
-            case WOA:
-                return judageOutAmount(refundInfoList, PaymentTypeEnum.WOA);
-            case BANK:
-                return judageOutAmount(refundInfoList, PaymentTypeEnum.BANK);
-
-            default:
-                log.warn("获取用户单该在 该'开票类型' 下的退款方式的退款总额 未找到有效的发票类型!");
-                return -1;
-        }
+    private Integer calcRefundAmount(PaymentTypeEnum paymentTypeEnum, List<Map<String, Object>> refundInfoList) {
+        return judageOutAmount(refundInfoList, paymentTypeEnum);
     }
 
     /**

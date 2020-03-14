@@ -1,8 +1,10 @@
 package com.fengchao.equity.dao;
 
 import com.fengchao.equity.mapper.CouponMapper;
+import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponExample;
+import com.fengchao.equity.model.CouponX;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,12 @@ import java.util.List;
 public class CouponDao {
 
     private CouponMapper couponMapper;
+    private CouponXMapper couponXMapper;
 
     @Autowired
-    public CouponDao(CouponMapper couponMapper) {
+    public CouponDao(CouponMapper couponMapper, CouponXMapper couponXMapper) {
         this.couponMapper = couponMapper;
+        this.couponXMapper = couponXMapper;
     }
 
     /**
@@ -76,5 +80,15 @@ public class CouponDao {
     public Coupon selectCouponById(Integer id) {
 
         return couponMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 根据id查询CouponX
+     *
+     * @return
+     */
+    public CouponX selectCouponXById(Integer id) {
+
+        return couponXMapper.selectByPrimaryKey(id);
     }
 }

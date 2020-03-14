@@ -2,7 +2,10 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.model.*;
+import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.BrandService;
 import com.fengchao.product.aoyi.service.CategoryService;
@@ -13,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/third/prod", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -172,6 +173,12 @@ public class ThirdProdController {
     public OperaResponse starProdPrice() {
         log.info("开始同步星链价格");
         return service.syncStarProdPrice();
+    }
+
+    @GetMapping("star/category")
+    public OperaResponse starCategory() {
+        log.info("开始同步星链类目");
+        return service.syncStarCategory();
     }
 
 }

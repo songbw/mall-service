@@ -56,6 +56,8 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private StarSkuMapper starSkuMapper ;
     @Autowired
     private StarSkuDao starSkuDao ;
+    @Autowired
+    private StarCategoryMapper starCategoryMapper ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -239,11 +241,11 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 operaResponse.setMsg("销售价格不能为空");
                 return operaResponse ;
             }
-            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImage())) {
-                operaResponse.setCode(200102);
-                operaResponse.setMsg("封面图不能为空");
-                return operaResponse ;
-            }
+//            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImage())) {
+//                operaResponse.setCode(200102);
+//                operaResponse.setMsg("封面图不能为空");
+//                return operaResponse ;
+//            }
             if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
                 operaResponse.setCode(200103);
                 operaResponse.setMsg("主图不能为空");
@@ -271,6 +273,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Override
     public void uploadProdImage() {
         List<AyFcImages> ayFcImages = ayFcImagesDao.findNoUploadImage();
+        logger.info("需要处理下载图片:{}个", ayFcImages.size());
         if (ayFcImages != null && ayFcImages.size() > 0) {
             ayFcImages.forEach(image -> {
                 OperaResult result = baseService.downUpload(image);
@@ -385,7 +388,14 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     public OperaResponse syncStarProdPrice() {
         logger.info("syncStarProdPrice");
         OperaResponse response = new OperaResponse() ;
-        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao);
+        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao, productDao);
+        return response;
+    }
+
+    @Override
+    public OperaResponse syncStarCategory() {
+        OperaResponse response = new OperaResponse() ;
+        asyncTask.executeAsyncStarCategory(aoyiClientService, starCategoryMapper);
         return response;
     }
 

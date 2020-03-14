@@ -3,8 +3,13 @@ package com.fengchao.equity.mapper;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
+
+@Mapper
+@Component
 public interface CouponUseInfoMapper {
     long countByExample(CouponUseInfoExample example);
 

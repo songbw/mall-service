@@ -19,4 +19,6 @@ public class SerachBean {
     private Integer id;
     private String order;
     private String mpu;
+    private Integer minPrice;
+    private Integer maxPrice;
 }

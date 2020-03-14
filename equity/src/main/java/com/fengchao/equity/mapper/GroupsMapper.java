@@ -1,10 +1,14 @@
 package com.fengchao.equity.mapper;
 
 import com.fengchao.equity.model.Groups;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 
+@Mapper
+@Component
 public interface GroupsMapper {
     int deleteByPrimaryKey(Integer id);
 

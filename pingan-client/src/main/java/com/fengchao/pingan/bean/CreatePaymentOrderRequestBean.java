@@ -17,4 +17,5 @@ public class CreatePaymentOrderRequestBean {
     private String memberNo ;
     private String mchOrderNo ;
     private String notifyUrl ;
+    private String sceneId ;
 }

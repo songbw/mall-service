@@ -109,6 +109,8 @@ public class LoginServiceImpl implements ILoginService {
     @Override
     public TokenBean thirdLogin(ThirdLoginBean loginBean) {
         log.info("第三方登录，入参：{}", JSONUtil.toJsonString(loginBean));
+        // 获取用户信息
+        getUserInfo(loginBean) ;
         String token = JwtTokenUtil.generateToken(loginBean);
         log.info("第三方登录，token ：{}", token);
         TokenBean bean = new TokenBean();
@@ -151,6 +153,42 @@ public class LoginServiceImpl implements ILoginService {
         redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
         log.info("第三方登录，返回结果 ：{}", JSONUtil.toJsonString(bean));
         return bean;
+    }
+
+    /**
+     * 获取用户信息
+     * @param loginBean
+     */
+    private void getUserInfo(ThirdLoginBean loginBean) {
+        User tempU = new User();
+        tempU.setOpenId(loginBean.getOpenId());
+        tempU.setiAppId(loginBean.getiAppId());
+        User user = userMapper.selectByOpenId(tempU);
+        if (user == null) {
+            if ("14".equals(loginBean.getiAppId())) {
+                // 获取万科云城用户信息
+                OperaResponse response = pinganClientService.findWKUser(loginBean.getOpenId(), loginBean.getAccessToken()) ;
+                if (response.getCode() == 200) {
+                    Object object = response.getData() ;
+                    String jsonString = JSON.toJSONString(object);
+                    JSONObject jsonObject = JSONObject.parseObject(jsonString, JSONObject.class) ;
+                    user = new User() ;
+                    user.setOpenId(loginBean.getOpenId());
+                    user.setiAppId(loginBean.getiAppId());
+                    if (StringUtils.isEmpty(jsonObject.getString("aliasName"))) {
+                        String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
+                        user.setNickname(nickname);
+                    } else {
+                        user.setNickname(jsonObject.getString("aliasName"));
+                    }
+                    user.setTelephone(jsonObject.getString("mobilePhone"));
+                    user.setName(jsonObject.getString("userName"));
+                    user.setHeadImg(jsonObject.getString("headIconUrl"));
+                    userMapper.insertSelective(user);
+                }
+            }
+        }
+
     }
 
     private TokenBean verifyNewUser(ThirdLoginBean loginBean) {
@@ -220,9 +258,19 @@ public class LoginServiceImpl implements ILoginService {
             }
             user.setName(guanaitongUserBean.getName());
             user.setTelephone(guanaitongUserBean.getMobile());
-            user.setCreatedAt(new Date());
             user.setiAppId(iAppId);
-            userMapper.insertSelective(user);
+            SUser userByTel = new SUser() ;
+            if (!StringUtils.isEmpty(guanaitongUserBean.getMobile())) {
+                userByTel = userDao.selectUserByTel(iAppId, guanaitongUserBean.getMobile()) ;
+            }
+            if (userByTel == null || userByTel.getId() == null || userByTel.getId() == 0) {
+                user.setCreatedAt(new Date());
+                userMapper.insertSelective(user);
+            } else {
+                user.setId(userByTel.getId());
+                user.setUpdatedAt(new Date());
+                userMapper.updateByPrimaryKeySelective(user) ;
+            }
         }
         result.getData().put("result", accessToken);
         return result ;
@@ -250,6 +298,7 @@ public class LoginServiceImpl implements ILoginService {
             if ("snsapi_base".equals(weChatAccessTokenBean.getScope())) {
                 String nickname = "fc_" + weChatAccessTokenBean.getOpenid().substring(weChatAccessTokenBean.getOpenid().length() - 8);
                 user.setNickname(nickname);
+                user.setOpenId(weChatAccessTokenBean.getOpenid());
             } else {
                 OperaResponse<WeChatUserInfoBean> userInfoBeanOperaResponse = weChatService.getUserInfo(weChatAccessTokenBean.getAccess_token(),weChatAccessTokenBean.getOpenid()) ;
                 if (userInfoBeanOperaResponse.getCode() != 200) {
@@ -314,9 +363,19 @@ public class LoginServiceImpl implements ILoginService {
                 user.setNickname(nickname);
             }
             user.setTelephone(authUserBean.getMobileNo());
-            user.setCreatedAt(new Date());
             user.setiAppId(iAppId);
-            userMapper.insertSelective(user);
+            SUser userByTel = new SUser() ;
+            if (!StringUtils.isEmpty(authUserBean.getMobileNo())) {
+                userByTel = userDao.selectUserByTel(iAppId, authUserBean.getMobileNo()) ;
+            }
+            if (userByTel == null || userByTel.getId() == null || userByTel.getId() == 0) {
+                user.setCreatedAt(new Date());
+                userMapper.insertSelective(user);
+            } else {
+                user.setId(userByTel.getId());
+                user.setUpdatedAt(new Date());
+                userMapper.updateByPrimaryKeySelective(user) ;
+            }
         }
         if ("11".equals(iAppId)) {
             balanceDao.updateOpenIdByTel(authUserBean.getMobileNo(), authUserBean.getOpenId());
@@ -395,12 +454,13 @@ public class LoginServiceImpl implements ILoginService {
         String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppId() + bandWXBean.getTelephone()) ;
         if (bandWXBean.getCode().equals(code)) {
             // 绑定openId 查询手机号是否存在，绑定公众号
-
             SUser user = userDao.selectUserByTel(platform.getAppId(), bandWXBean.getTelephone()) ;
+            //  如果用户不存在，创建用户ID，继续绑定用户, 输入手机号、appId 创建用户
             if (user == null) {
-                result.setCode(900100);
-                result.setMsg("电话号码不正确或此用户不存在");
-                return result;
+                user = new SUser() ;
+                user.setiAppId(platform.getAppId());
+                user.setTelephone(bandWXBean.getTelephone());
+                mapper.insertSelective(user) ;
             }
             // 绑定第三方openId
             BindSubAccount bindSubAccount = bindSubAccountDao.selectByUserIdAndAppId(bandWXBean.getAppId(), user.getId()) ;

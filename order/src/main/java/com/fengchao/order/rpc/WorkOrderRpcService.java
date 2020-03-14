@@ -68,7 +68,7 @@ public class WorkOrderRpcService {
      *
      * @return
      */
-    public List<WorkOrder> queryRefundedOrderDetailList(Integer merchantId, Date startTime, Date endTime) {
+    public List<WorkOrder> queryRefundedOrderDetailList(Integer merchantId, String appId, Date startTime, Date endTime) {
         // 返回值
         List<WorkOrder> workOrderList = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class WorkOrderRpcService {
         String endTimeStr = DateUtil.dateTimeFormat(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
         OperaResponse<List<WorkOrder>> operaResponse = workOrderServiceClient.queryRefundedOrderDetailList(
-                merchantId == null ? null : merchantId.longValue(), startTimeStr, endTimeStr);
+                merchantId == null ? null : merchantId.longValue(), appId, startTimeStr, endTimeStr);
         log.info("获取已退款的子订单信息集合 调用workorder rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
         // 处理返回

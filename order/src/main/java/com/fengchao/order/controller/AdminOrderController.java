@@ -1,6 +1,7 @@
 package com.fengchao.order.controller;
 
 import com.fengchao.order.bean.vo.*;
+import com.fengchao.order.constants.PaymentTypeEnum;
 import com.fengchao.order.constants.ReceiptTypeEnum;
 import com.fengchao.order.rpc.extmodel.OrderPayMethodInfoBean;
 import com.fengchao.order.service.AdminInvoiceService;
@@ -1086,7 +1087,7 @@ public class AdminOrderController {
     @GetMapping(value = "/export/receiptBill")
     public void exportInvoiceBill(@RequestParam("startTime") String startTime,
                                   @RequestParam("endTime") String endTime,
-                                  @RequestParam("receiptType") Integer receiptType,
+                                  @RequestParam("receiptType") String receiptType,
                                   @RequestParam(value = "appId", required = true) String appId,
                                   HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
@@ -1110,12 +1111,12 @@ public class AdminOrderController {
             }
 
             // 发票类型
-            if (receiptType == null || receiptType <= 0) {
+            if (StringUtils.isBlank(receiptType)) {
                 log.warn("导出商品开票信息 无效的发票类型");
                 throw new Exception("无效的发票类型");
             }
-            ReceiptTypeEnum receiptTypeEnum = ReceiptTypeEnum.getReceiptTypeEnum(receiptType);
-            if (ReceiptTypeEnum.UNKNOWN.equals(receiptTypeEnum)) {
+            PaymentTypeEnum paymentTypeEnum = PaymentTypeEnum.getPaymentTypeEnumByName(receiptType);
+            if (paymentTypeEnum == null) {
                 log.warn("导出商品开票信息 发票类型不正确");
                 throw new Exception("发票类型不正确");
             }
@@ -1127,7 +1128,7 @@ public class AdminOrderController {
             }
 
             // 2. 执行查询&数据处理逻辑
-            List<ExportReceiptBillVo> exportReceiptBillVoList = adminInvoiceService.exportInvoice(startDate, endDate, appId, receiptTypeEnum);
+            List<ExportReceiptBillVo> exportReceiptBillVoList = adminInvoiceService.exportInvoice(startDate, endDate, appId, paymentTypeEnum);
             log.info("导出商品开票信息 获取到需要导出数据的个数:{}", exportReceiptBillVoList.size());
 
             // 3. 创建导出文件对象

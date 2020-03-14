@@ -13,7 +13,7 @@ public interface CouponService {
 
     PageBean findCoupon(Integer offset, Integer limit, String appId);
 
-    PageBean serachCoupon(CouponSearchBean bean);
+    PageBean searchCoupon(CouponSearchBean bean);
 
     int updateCoupon(CouponBean bean);
 
@@ -54,4 +54,6 @@ public interface CouponService {
     List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId, String appId);
 
     List<CouponAndPromBean> findCouponListByMpuList(List<AoyiProdBean> beans, String appId);
+
+
 }

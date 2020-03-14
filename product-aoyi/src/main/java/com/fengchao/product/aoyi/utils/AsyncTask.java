@@ -6,14 +6,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
+import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
-import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
-import com.fengchao.product.aoyi.mapper.StarDetailImgMapper;
-import com.fengchao.product.aoyi.mapper.StarPropertyMapper;
-import com.fengchao.product.aoyi.mapper.StarSkuMapper;
+import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -93,10 +91,10 @@ public class AsyncTask {
                 for (int i = 0; i < spuArray.size(); i++) {
                     String detailParam = "" ;
                     System.out.println(i);
-                    if ((i + 49) > spuArray.size()) {
+                    if ((i + 29) > spuArray.size()) {
                         detailParam = JSONUtil.toJsonString(spuArray.subList(i, spuArray.size()));
                     } else {
-                        detailParam = JSONUtil.toJsonString(spuArray.subList(i, i + 49));
+                        detailParam = JSONUtil.toJsonString(spuArray.subList(i, i + 29));
                     }
                     detailParam = detailParam.replace("[", "").replace("]", "").replace("\"", "") ;
                     OperaResponse spuDetailRes = aoyiClientService.getSpuDetail(detailParam) ;
@@ -159,25 +157,27 @@ public class AsyncTask {
                         String skuDetailResString = JSON.toJSONString(skuDetailRes) ;
                         JSONObject skuDetailResJson = JSONObject.parseObject(skuDetailResString) ;
                         JSONArray skuDetailData = skuDetailResJson.getJSONArray("data") ;
-                        JSONObject jsonObject = skuDetailData.getJSONObject(0) ;
-                        StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
-                        skuBean.setSpuId(spuArray.getString(i));
-                        // insert spu
-                        List<StarSku> starSkus = starSkuDao.selectBySpuIdAndCode(spuArray.getString(i), skuBean.getCode()) ;
-                        if (starSkus == null || starSkus.size() == 0) {
-                            starSkuMapper.insertSelective(skuBean) ;
-                            JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
-                            for (int j = 0; j < propertyArray.size(); j++) {
-                                JSONObject propertyJson = propertyArray.getJSONObject(j) ;
-                                StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
-                                // set spu id
-                                starProperty.setProductId(skuBean.getId());
-                                // set type 1
-                                starProperty.setType(1);
-                                // isert property
-                                starPropertyMapper.insertSelective(starProperty) ;
+                        for (int h = 0; h < skuDetailData.size(); h++) {
+                            JSONObject jsonObject = skuDetailData.getJSONObject(h) ;
+                            StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
+                            skuBean.setSpuId(spuArray.getString(i));
+                            // insert spu
+                            List<StarSku> starSkus = starSkuDao.selectBySpuIdAndCode(spuArray.getString(i), skuBean.getCode()) ;
+                            if (starSkus == null || starSkus.size() == 0) {
+                                starSkuMapper.insertSelective(skuBean) ;
+                                JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
+                                for (int j = 0; j < propertyArray.size(); j++) {
+                                    JSONObject propertyJson = propertyArray.getJSONObject(j) ;
+                                    StarProperty starProperty  = JSON.parseObject(propertyJson.toJSONString(), new TypeReference<StarProperty>(){});
+                                    // set spu id
+                                    starProperty.setProductId(skuBean.getId());
+                                    // set type 1
+                                    starProperty.setType(1);
+                                    // isert property
+                                    starPropertyMapper.insertSelective(starProperty) ;
+                                }
+                                log.info("获取SKU信息，入参：{}, 结果：{}",spuArray.getString(i), JSONUtil.toJsonString(skuBean));
                             }
-                            log.info("获取SKU信息，入参：{}, 结果：{}",spuArray.getString(i), JSONUtil.toJsonString(skuBean));
                         }
                     }
                 }
@@ -186,7 +186,7 @@ public class AsyncTask {
     }
 
     @Async
-    public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao) {
+    public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
         List<StarSku> starSkus = starSkuDao.selectAll() ;
         List<String> codes = new ArrayList<>() ;
         String code = "" ;
@@ -207,6 +207,7 @@ public class AsyncTask {
                 codes.add(code) ;
             }
         }
+        List<String> spus = new ArrayList<>();
         codes.forEach(c -> {
             OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(c) ;
             String skuPriceResString = JSON.toJSONString(priceResponse) ;
@@ -225,8 +226,64 @@ public class AsyncTask {
                 starSku.setCode(skuCode);
                 starSku.setSprice(sprice);
                 starSku.setAdvisePrice(advisePrice);
+                starSku.setPrice(advisePrice);
                 starSkuDao.updatePriceByCode(starSku);
+                List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
+                if (!starSkus1.isEmpty()) {
+                    String spuId = starSkus1.get(0).getSpuId() ;
+                    log.info("spu id is : {}", spuId);
+                    if (!spus.contains(spuId)) {
+                        spus.add(starSkus1.get(0).getSpuId()) ;
+                        // 更新spu表价格
+                        PriceBean priceBean = new PriceBean() ;
+                        priceBean.setSkuId(starSkus1.get(0).getSpuId());
+                        priceBean.setMerchantId(4);
+                        priceBean.setPrice(retailPrice);
+                        priceBean.setSPrice(channelPrice);
+                        productDao.updatePrice(priceBean) ;
+                    }
+                }
             }
         });
     }
-}
+
+    @Async
+    public void executeAsyncStarCategory(AoyiClientService aoyiClientService, StarCategoryMapper starCategoryMapper) {
+        OperaResponse response = aoyiClientService.findProdCategory(null) ;
+        if (response.getCode() == 200) {
+            String data = JSONUtil.toJsonString(response.getData()) ;
+            JSONObject categorys = JSONObject.parseObject(data) ;
+            JSONArray categoryArray =  categorys.getJSONArray("categoryList") ;
+            for (int j = 0; j < categoryArray.size(); j++) {
+                JSONObject jsonObject = categoryArray.getJSONObject(j) ;
+                StarCategory starCategory = new StarCategory() ;
+                starCategory.setStarId(jsonObject.getInteger("cateId"));
+                starCategory.setLevel(jsonObject.getInteger("level"));
+                starCategory.setName(jsonObject.getString("cateName"));
+                starCategory.setParentId(jsonObject.getInteger("parentId"));
+                starCategoryMapper.insert(starCategory) ;
+                subStarCategory(aoyiClientService, starCategory.getStarId(), starCategoryMapper) ;
+            }
+        }
+    }
+
+    private void subStarCategory(AoyiClientService aoyiClientService, int categoryId, StarCategoryMapper starCategoryMapper) {
+        OperaResponse response = aoyiClientService.findProdCategory(categoryId + "") ;
+        if (response.getCode() == 200) {
+            String data = JSONUtil.toJsonString(response.getData()) ;
+            JSONObject categorys = JSONObject.parseObject(data) ;
+            JSONArray categoryArray =  categorys.getJSONArray("categoryList") ;
+            for (int j = 0; j < categoryArray.size(); j++) {
+                JSONObject jsonObject = categoryArray.getJSONObject(j) ;
+                StarCategory starCategory = new StarCategory() ;
+                starCategory.setStarId(jsonObject.getInteger("cateId"));
+                starCategory.setLevel(jsonObject.getInteger("level"));
+                starCategory.setName(jsonObject.getString("cateName"));
+                starCategory.setParentId(jsonObject.getInteger("parentId"));
+                starCategoryMapper.insert(starCategory) ;
+                subStarCategory(aoyiClientService, starCategory.getStarId(), starCategoryMapper) ;
+            }
+        }
+    }
+
+    }

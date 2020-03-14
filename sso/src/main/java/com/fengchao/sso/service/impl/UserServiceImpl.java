@@ -72,8 +72,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public PageInfo<SUser> selectUser(Integer page, Integer limit, String name, String sex, String telephone) {
-        PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit, name, sex, telephone);
+    public PageInfo<SUser> selectUser(Integer page, Integer limit, String name, String sex, String telephone, String appId, String openId, String nickName) {
+        PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit, name, sex, telephone, appId, openId, nickName);
         return users;
     }
 
@@ -103,6 +103,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public int findUserCount() {
         return mapper.selectCount();
+    }
+
+    @Override
+    public List<SUser> findByAppIdAndOpenIds(String appId, List<String> openIds) {
+        return userDao.selectUserByAppIdAndOpenIds(appId, openIds);
     }
 
 }

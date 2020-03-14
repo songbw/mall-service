@@ -1,7 +1,10 @@
 package com.fengchao.sso.controller;
 
+import com.fengchao.sso.bean.BatchOpenIds;
 import com.fengchao.sso.bean.LoginBean;
+import com.fengchao.sso.bean.OperaResponse;
 import com.fengchao.sso.bean.UserBean;
+import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
 import com.fengchao.sso.config.SMSConfig;
@@ -72,14 +75,14 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    public OperaResult getProfileList(Integer pageNo, Integer pageSize, String name, String sex, String telephone, OperaResult result){
+    public OperaResult getProfileList(Integer pageNo, Integer pageSize, String name, String sex, String telephone, String appId, String openId, String nickName, OperaResult result){
         if(pageNo == null || pageNo <= 0){
             pageNo = 1;
         }
         if (pageSize == null || pageSize > 200) {
             pageNo = 10;
         }
-        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone));
+        result.getData().put("userList",service.selectUser(pageNo, pageSize, name, sex, telephone, appId, openId, nickName));
         return result;
     }
 
@@ -159,6 +162,14 @@ public class UserController {
         }
         User user = service.selectById(id);
         result.getData().put("user",user);
+        return result;
+    }
+
+    @PostMapping("batch/openIds")
+    private OperaResponse batchFindByOpenIds(@RequestBody BatchOpenIds bean){
+        OperaResponse result = new OperaResponse();
+        List<SUser> sUsers = service.findByAppIdAndOpenIds(bean.getAppId(), bean.getOpenIds()) ;
+        result.setData(sUsers);
         return result;
     }
 }

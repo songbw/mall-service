@@ -19,6 +19,7 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.poi.util.StringUtil;
@@ -244,11 +245,10 @@ public class ProductServiceImpl implements ProductService {
             String imageUrl = "" ;
             if (starDetailImgs != null && starDetailImgs.size() > 0) {
                 for (int i = 0; i < starDetailImgs.size(); i++) {
-                    StarDetailImg starDetailImg = starDetailImgs.get(0) ;
                     if (i == 0) {
-                        imageUrl = starDetailImg.getImgUrl() ;
+                        imageUrl = starDetailImgs.get(i).getImgUrl() ;
                     } else {
-                        imageUrl = imageUrl + ";" + starDetailImg.getImgUrl() ;
+                        imageUrl = imageUrl + ";" + starDetailImgs.get(i).getImgUrl() ;
                     }
                 }
                 aoyiProdIndexX.setImagesUrl(imageUrl);
@@ -282,9 +282,19 @@ public class ProductServiceImpl implements ProductService {
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
 
         // 2. 查询商品品类信息
-        List<Integer> categoryIdList =
-                aoyiProdIndexList.stream().map(p -> Integer.valueOf(p.getCategory())).collect(Collectors.toList());
-        List<CategoryBean> categoryBeanList =  categoryService.queryCategoryListByCategoryIdList(categoryIdList);
+        List<Integer> categoryIdList = new ArrayList<>();
+        for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
+            String category = aoyiProdIndex.getCategory();
+
+            if (StringUtils.isNotBlank(category)) {
+                categoryIdList.add(Integer.valueOf(category));
+            }
+        }
+
+        List<CategoryBean> categoryBeanList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(categoryIdList)) {
+            categoryBeanList = categoryService.queryCategoryListByCategoryIdList(categoryIdList);
+        }
 
         // 转map key：categoryId, value: CategoryBean
         Map<Integer, CategoryBean> categoryBeanMap =
@@ -428,30 +438,40 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<AoyiProdIndex> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) {
-        List<String> mpuIdList = new ArrayList<>() ;
-        List<String> codeList = new ArrayList<>() ;
-        bean.forEach(b -> {
-            mpuIdList.add(b.getMpu()) ;
-            codeList.add(b.getSkuid()) ;
-        });
-        // 根据code查询SKU表
-        List<StarSku> starSkus = starSkuDao.selectByCodeList(codeList) ;
+    public List<AoyiProdIndexX> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) {
         // 根据MPU查询商品表
-        List<AoyiProdIndex> aoyiProdIndexList = new ArrayList<>();
-        productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
-            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
-            for (StarSku starSku: starSkus) {
-                if (aoyiProdIndex.getSkuid().equals(starSku.getSpuId())) {
-                    BigDecimal bigDecimal = new BigDecimal(starSku.getPrice()) ;
-                    String price = bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString() ;
-                    aoyiProdIndex.setPrice(price);
+        List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
+        bean.forEach(aoyiProdIndex -> {
+            AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
+            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+            BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
+            if (StringUtils.isNotBlank(aoyiProdIndex.getSkuid())) {
+                List<StarSku> starSkus = starSkuDao.selectByCode(aoyiProdIndex.getSkuid()) ;
+                if (starSkus != null && starSkus.size() > 0) {
+                    aoyiProdIndexX.setStarSku(starSkus.get(0));
                 }
             }
-            aoyiProdIndexList.add(aoyiProdIndex);
+            aoyiProdIndexList.add(aoyiProdIndexX);
         });
 
         return aoyiProdIndexList;
+    }
+
+    @Override
+    public OperaResponse findSpuAndSku(String mpu, String code) {
+        OperaResponse response = new OperaResponse() ;
+        AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(mpu) ;
+        aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+        AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+        BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
+        List<String> codes = new ArrayList<>();
+        codes.add(code);
+        List<StarSku> starSkus = starSkuDao.selectByCodeList(codes) ;
+        if (starSkus != null && starSkus.size() > 0) {
+            aoyiProdIndexX.setStarSku(starSkus.get(0));
+        }
+        response.setData(aoyiProdIndexX);
+        return response;
     }
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean, String appId) {

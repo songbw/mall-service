@@ -1,18 +1,25 @@
 package com.fengchao.equity.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.feign.OrderService;
 import com.fengchao.equity.model.CardAndCoupon;
 import com.fengchao.equity.model.CardInfo;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
+import com.fengchao.equity.service.CardAndCouponService;
 import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.service.CardTicketService;
 import com.fengchao.equity.utils.DataUtils;
 import com.fengchao.equity.utils.JSONUtil;
+import com.fengchao.equity.utils.MyErrorEnum;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -42,6 +49,11 @@ public class AdminCardInfoController {
     private CardInfoService service;
     @Autowired
     private CardTicketService ticketService;
+    @Autowired
+    private CardAndCouponService cardAndCouponService;
+
+    @Autowired
+    private OrderService orderService;
 
     @PostMapping("create")
     public OperaResult createCardInfo(@RequestBody CardInfoBean bean, OperaResult result){
@@ -52,7 +64,7 @@ public class AdminCardInfoController {
 
     @GetMapping("find")
     public OperaResult findCardInfo(CardInfoBean bean, OperaResult result){
-        PageableData<CardInfo> coupon = service.findCardInfo(bean);
+        PageableData<CardInfoX> coupon = service.findCardInfo(bean);
         result.getData().put("result", coupon);
         return result;
     }
@@ -98,7 +110,7 @@ public class AdminCardInfoController {
     @PutMapping("activate")
     public OperaResult activateCardTicket(@RequestBody List<CardTicket> beans, OperaResult result){
         log.info("激活createCardTicket礼品券参数 入参:{}", JSONUtil.toJsonString(beans));
-        result.getData().put("result",ticketService.activatesCardTicket(beans));
+        result.getData().put("激活失败cards:",ticketService.activatesCardTicket(beans));
         return result;
     }
 
@@ -122,19 +134,19 @@ public class AdminCardInfoController {
 
             //
             HSSFCell titleCell0 = titleRow.createCell(0);
-            titleCell0.setCellValue("ID"); // id
+            titleCell0.setCellValue("提货卡编号"); // id
 
             HSSFCell titleCell1 = titleRow.createCell(1);
             titleCell1.setCellValue("名称");
 
             HSSFCell titleCell2 = titleRow.createCell(2);
-            titleCell2.setCellValue("卡金额"); // 卡金额
+            titleCell2.setCellValue("金额(元)"); // 卡金额
 
             HSSFCell titleCell3 = titleRow.createCell(3);
-            titleCell3.setCellValue("卡类型"); // 卡类型
+            titleCell3.setCellValue("提货卡类型"); // 卡类型
 
             HSSFCell titleCell4 = titleRow.createCell(4);
-            titleCell4.setCellValue("状态"); // 状态
+            titleCell4.setCellValue("提货卡状态"); // 状态
 
             HSSFCell titleCell5 = titleRow.createCell(5);
             titleCell5.setCellValue("有效期天数"); // 有效期天数
@@ -143,31 +155,31 @@ public class AdminCardInfoController {
             titleCell6.setCellValue("创建时间"); // 创建时间
 
             HSSFCell titleCell7 = titleRow.createCell(7);
-            titleCell7.setCellValue("优惠券ID"); // 优惠券
+            titleCell7.setCellValue("优惠券列表"); // 优惠券
 
             HSSFCell titleCell8 = titleRow.createCell(8);
-            titleCell8.setCellValue("卡券ID"); // 卡券ID
+            titleCell8.setCellValue("提货券编号"); // 卡券ID
 
             HSSFCell titleCell9 = titleRow.createCell(9);
-            titleCell9.setCellValue("卡号"); // 卡号
+            titleCell9.setCellValue("提货券编码"); // 卡号
 
             HSSFCell titleCell10 = titleRow.createCell(10);
-            titleCell10.setCellValue("密码"); // 密码
+            titleCell10.setCellValue("提货券密码"); // 密码
 
             HSSFCell titleCell11 = titleRow.createCell(11);
-            titleCell11.setCellValue("卡券状态"); // 卡券状态
+            titleCell11.setCellValue("提货券状态"); // 卡券状态
 
             HSSFCell titleCell12 = titleRow.createCell(12);
-            titleCell12.setCellValue("用户ID"); // 用户ID
+            titleCell12.setCellValue("用户OpenID"); // 用户ID
 
             HSSFCell titleCell13 = titleRow.createCell(13);
-            titleCell13.setCellValue("创建时间");
+            titleCell13.setCellValue("提货券生成时间");
 
             HSSFCell titleCell14 = titleRow.createCell(14);
-            titleCell14.setCellValue("激活时间");
+            titleCell14.setCellValue("提货券激活时间");
 
             HSSFCell titleCell15 = titleRow.createCell(15);
-            titleCell15.setCellValue("使用时间");
+            titleCell15.setCellValue("提货券使用时间");
 
             HSSFCell titleCell16 = titleRow.createCell(16);
             titleCell16.setCellValue("备注信息");
@@ -193,9 +205,9 @@ public class AdminCardInfoController {
                 cell2.setCellValue(cardInfo.getAmount());
                 Short type = cardInfo.getType();
                 if(type == 1){
-                    cell3.setCellValue("礼包券");
+                    cell3.setCellValue("礼包卡");
                 }else if(type == 2){
-                    cell3.setCellValue("代金券");
+                    cell3.setCellValue("代金卡");
                 }
                 Short status = cardInfo.getStatus();
                 if(status == 1){
@@ -237,6 +249,12 @@ public class AdminCardInfoController {
                             cell11.setCellValue("未激活");
                         }else if(statusTicket == 2){
                             cell11.setCellValue("已激活");
+                        }else if(statusTicket == 3){
+                            cell11.setCellValue("已绑定");
+                        }else if(statusTicket == 4){
+                            cell11.setCellValue("已兑换");
+                        }else if(statusTicket == 2){
+                            cell11.setCellValue("已占用");
                         }else if(statusTicket == 3){
                             cell11.setCellValue("已使用");
                         }else if(statusTicket == 4){
@@ -337,4 +355,33 @@ public class AdminCardInfoController {
             }
         }
     }
+
+    /*
+    @GetMapping("orderListById")
+    public OperaResult findOrderListById(Integer pageNo, Integer pageSize,Integer id, OperaResult result){
+
+        result.setCode(MyErrorEnum.RESPONSE_SUCCESS.getCode());
+        result.setMsg(MyErrorEnum.RESPONSE_SUCCESS.getMsg());
+        List<CardAndCoupon> cardAndCoupons = cardAndCouponService.getCouponIdList(id);
+
+        List<Integer> orderIdList = ticketService.getOrderIdByCouponId(couponIdPages.getList());
+
+        String response = orderService.getOrderList(orderIdList);
+        log.info("获取订单列表 response：{}", response);
+        JSONObject json = JSON.parseObject(response);
+        Integer code = json.getInteger("code");
+        if (!MyErrorEnum.RESPONSE_SUCCESS.getCode().equals(code)){
+            log.error("获取订单列表失败");
+            return result;
+        }
+        JSONArray jsonArray = json.getJSONArray("data");
+        if (null == jsonArray){
+            log.error("获取订单列表为空");
+            return result;
+        }
+
+        result.getData().put("result", coupon);
+        return result;
+    }
+*/
 }

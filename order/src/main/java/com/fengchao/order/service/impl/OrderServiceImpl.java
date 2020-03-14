@@ -27,6 +27,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -227,7 +228,7 @@ public class OrderServiceImpl implements OrderService {
             orderMapper.insert(bean);
             AtomicInteger i= new AtomicInteger(1);
             for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
-                AoyiProdIndex prodIndexWithBLOBs = findProduct(orderSku.getMpu(), orderBean.getAppId());
+                AoyiProdIndex prodIndexWithBLOBs = findProductSpu(orderSku.getMpu(), orderSku.getSkuId());
 
                 // 判断产品上下架状态
                 if ("0".equals(prodIndexWithBLOBs.getState())) {
@@ -256,10 +257,18 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setModel(prodIndexWithBLOBs.getModel());
                 orderDetail.setName(prodIndexWithBLOBs.getName());
                 orderDetail.setProductType(prodIndexWithBLOBs.getType());
-                if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
-                    BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
-                    orderDetail.setSprice(bigDecimal);
+                if (prodIndexWithBLOBs.getStarSku() == null) {
+                    if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                        orderDetail.setSprice(bigDecimal);
+                    }
+                } else {
+                    if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
+                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
+                        orderDetail.setSprice(bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
+                    }
                 }
+
                 orderDetail.setStatus(0);
                 orderDetail.setSkuId(orderSku.getSkuId());
                 orderDetail.setMpu(orderSku.getMpu());
@@ -692,6 +701,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("subStatus",orderBean.getSubStatus());
         map.put("aoyiId",orderBean.getAoyiId());
         map.put("appId",orderBean.getAppId());
+        map.put("receiverName",orderBean.getReceiverName());
         if(orderBean.getPayDateStart() != null && !orderBean.getPayDateStart().equals("")){
             map.put("payDateStart", orderBean.getPayDateStart() + " 00:00:00");
         }
@@ -933,7 +943,7 @@ public class OrderServiceImpl implements OrderService {
     public Integer updatePaymentByOutTradeNoAndPaymentNo(Order order) {
         // 核销优惠券
         if (order.getCouponId() != null && order.getCouponId() > 0 && order.getCouponCode() != null && (!"".equals(order.getCouponCode()))) {
-            consume(order.getCouponId(), order.getCouponCode()) ;
+            consume(order.getCouponId(), order.getCouponCode(), order.getId()) ;
             order.setCouponStatus(3);
         }
         int id = orderMapper.updatePaymentByOutTradeNoAndPaymentNo(order);
@@ -1419,6 +1429,9 @@ public class OrderServiceImpl implements OrderService {
     public OperaResponse confirmStarOrder(List<Integer> orderIds) {
         List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndMerchantId(orderIds, OrderConstants.STAR_MERCHANG_CODE) ;
         List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
+        if (orderDetails == null || orderDetails.size() == 0) {
+            return new OperaResponse() ;
+        }
         orderDetails.forEach(orderDetail -> {
             StarCodeBean starCodeBean = new StarCodeBean() ;
             starCodeBean.setCode(orderDetail.getSkuId());
@@ -1484,6 +1497,22 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public OperaResponse batchSelectByIds(List<Integer> orderIds) {
+        OperaResponse response = new OperaResponse() ;
+        List<Order> orders = new ArrayList<>();
+        List<Orders> list = ordersDao.selectOrdersByIds(orderIds) ;
+        list.forEach(temp -> {
+            Order order = new Order() ;
+            BeanUtils.copyProperties(temp, order);
+            List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersId(temp.getId()) ;
+            order.setOrderDetails(orderDetails);
+            orders.add(order) ;
+        });
+        response.setData(orders);
+        return response;
+    }
+
     private String fetchGroupKey(Order order) {
         String tradeNo = order.getTradeNo();
         String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());
@@ -1498,6 +1527,18 @@ public class OrderServiceImpl implements OrderService {
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
+            String jsonString = JSON.toJSONString(object);
+            AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
+            return aoyiProdIndex;
+        }
+        return null;
+    }
+
+    private AoyiProdIndex findProductSpu(String mpu, String code) {
+        OperaResponse result = productService.findSpu(mpu, code);
+        logger.info("根据MPU：" + mpu + " 查询商品信息，输出结果：{}", JSONUtil.toJsonString(result));
+        if (result.getCode() == 200) {
+            Object object = result.getData();
             String jsonString = JSON.toJSONString(object);
             AoyiProdIndex aoyiProdIndex = JSONObject.parseObject(jsonString, AoyiProdIndex.class) ;
             return aoyiProdIndex;
@@ -1537,15 +1578,13 @@ public class OrderServiceImpl implements OrderService {
 //        return false;
 //    }
 
-    private boolean consume(int id, String code) {
+    private boolean consume(int id, String code, int orderId) {
         CouponUseInfoBean bean = new CouponUseInfoBean();
         bean.setUserCouponCode(code);
         bean.setId(id);
+        bean.setOrderId(orderId);
         OperaResult result = equityService.consume(bean);
-        if (result.getCode() == 200) {
-            return true;
-        }
-        return false;
+        return result.getCode() == 200;
     }
 
     private boolean release(int id, String code) {

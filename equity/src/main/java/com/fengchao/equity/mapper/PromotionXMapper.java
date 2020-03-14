@@ -4,11 +4,15 @@ import com.fengchao.equity.bean.ExportPromotionInfo;
 import com.fengchao.equity.bean.PromotionInfoBean;
 import com.fengchao.equity.model.PromotionExample;
 import com.fengchao.equity.model.PromotionX;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 
+@Mapper
+@Component
 public interface PromotionXMapper {
     int deleteByPrimaryKey(Integer id);
 

@@ -33,7 +33,7 @@ public class UserDao {
      * @param pageSize
      * @return
      */
-    public PageInfo<SUser> selectUserByPageable(Integer pageNo, Integer pageSize, String name, String sex, String telephone) {
+    public PageInfo<SUser> selectUserByPageable(Integer pageNo, Integer pageSize, String name, String sex, String telephone, String appId, String openId, String nickName) {
         SUserExample userExample = new SUserExample();
         SUserExample.Criteria criteria = userExample.createCriteria();
         if (name != null && (!"".equals(name))) {
@@ -44,6 +44,15 @@ public class UserDao {
         }
         if (telephone != null && (!"".equals(telephone))) {
             criteria.andTelephoneEqualTo(telephone);
+        }
+        if (appId != null && (!"".equals(appId))) {
+            criteria.andIAppIdEqualTo(appId);
+        }
+        if (openId != null && (!"".equals(openId))) {
+            criteria.andOpenIdLike("%" + openId + "%");
+        }
+        if (nickName != null && (!"".equals(nickName))) {
+            criteria.andNicknameLike("%" + nickName + "%");
         }
         PageHelper.startPage(pageNo, pageSize);
         List<SUser> userList = mapper.selectByExample(userExample);
@@ -69,5 +78,20 @@ public class UserDao {
             return userList.get(0) ;
         }
         return null;
+    }
+
+    /**
+     * 根据OpenId列表和appId查询用户信息
+     * @param appId
+     * @param openIds
+     * @return
+     */
+    public List<SUser> selectUserByAppIdAndOpenIds(String appId, List<String> openIds) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andOpenIdIn(openIds) ;
+        List<SUser> userList = mapper.selectByExample(userExample);
+        return userList ;
     }
 }
