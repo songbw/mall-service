@@ -443,6 +443,7 @@ public class ProductServiceImpl implements ProductService {
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
         bean.forEach(aoyiProdIndex -> {
             AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
+            aoyiProdIndex1 = ProductHandle.updateImageExample(aoyiProdIndex1) ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
             if (StringUtils.isNotBlank(aoyiProdIndex.getSkuid())) {
