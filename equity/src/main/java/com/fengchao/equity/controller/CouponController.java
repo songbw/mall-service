@@ -1,5 +1,6 @@
 package com.fengchao.equity.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.service.CouponService;
@@ -34,6 +35,7 @@ public class CouponController {
     @PostMapping("collect")
     public OperaResult collectCoupon(@RequestBody CouponUseInfoBean bean, @RequestHeader("appId") String appId, OperaResult result){
         bean.setAppId(appId);
+        logParamIn(MyFunctions.WEB_COLLECT_COUPON, JSON.toJSONString(bean));
         CouponUseInfoBean couponUseInfoBean = useInfoService.collectCoupon(bean);
         if(couponUseInfoBean.getUserCouponCode().equals("0")){
             result.setCode(40010);
@@ -51,6 +53,7 @@ public class CouponController {
             result.getData().put("userCouponCode", couponUseInfoBean.getUserCouponCode());
             result.getData().put("couponCollectNum", couponUseInfoBean.getCouponCollectNum());
         }
+        logParamOut(MyFunctions.WEB_COLLECT_COUPON, JSON.toJSONString(result));
         return result;
     }
 

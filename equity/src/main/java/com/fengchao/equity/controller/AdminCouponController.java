@@ -87,6 +87,7 @@ public class AdminCouponController {
 
     @PostMapping("importCode")
     public OperaResult importCode(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        logParamIn(MyFunctions.WEB_ADMIN_IMPORT_CODE,JSON.toJSONString(bean));
         int num = useInfoService.importCode(bean);
         if(num == 0){
             result.setCode(10010);
@@ -103,11 +104,13 @@ public class AdminCouponController {
         }else{
             result.getData().put("result", num);
         }
+        logParamOut(MyFunctions.WEB_ADMIN_IMPORT_CODE,JSON.toJSONString(result));
         return result;
     }
 
     @PostMapping("batchCode")
     public OperaResult batchCode(@RequestBody CouponUseInfoBean bean, OperaResult result){
+        logParamIn(MyFunctions.WEB_ADMIN_BATCH_CODE,JSON.toJSONString(bean));
         int num = useInfoService.batchCode(bean);
         if(num == 0){
             result.setCode(10010);
@@ -130,6 +133,7 @@ public class AdminCouponController {
         }else{
             result.getData().put("result", num);
         }
+        logParamOut(MyFunctions.WEB_ADMIN_BATCH_CODE,JSON.toJSONString(result));
         return result;
     }
 
@@ -208,6 +212,9 @@ public class AdminCouponController {
 
     private void logParamIn(String functionDescription, String msg){
         log.info("{} 入参:{}",functionDescription,msg);
+    }
+    private void logParamOut(String functionDescription, String msg){
+        log.info("{} 出参:{}",functionDescription,msg);
     }
 
 }

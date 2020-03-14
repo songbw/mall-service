@@ -312,6 +312,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         num = mapper.insertbatchCode(useInfos);
+        log.info("{} 生成 num= {}",MyFunctions.WEB_ADMIN_BATCH_CODE,String.valueOf(num));
 //        if(num == 1){
 //            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), coupon.getEffectiveEndDate());
 //        }
