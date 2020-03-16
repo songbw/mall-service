@@ -16,14 +16,14 @@ import com.fengchao.equity.mapper.*;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CouponService;
-import com.fengchao.equity.utils.ConvertUtil;
-import com.fengchao.equity.utils.CouponUseStatusEnum;
-import com.fengchao.equity.utils.JSONUtil;
-import com.fengchao.equity.utils.JobClientUtils;
+import com.fengchao.equity.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -35,9 +35,13 @@ import java.util.*;
 public class CouponServiceImpl implements CouponService {
 
     @Autowired
-    private CouponXMapper mapper;
+    private CouponXMapper XMapper;
     @Autowired
-    private CouponUseInfoXMapper useInfoMapper;
+    private CouponMapper mapper;
+    @Autowired
+    private CouponUseInfoXMapper useInfoXMapper;
+    @Autowired
+    private CouponUseInfoMapper couponUseInfoMapper;
     @Autowired
     private CouponTagsMapper tagsMapper;
     @Autowired
@@ -67,7 +71,7 @@ public class CouponServiceImpl implements CouponService {
         if(couponx.getCode() == null || "".equals(couponx.getCode())){
             couponx.setCode(bean.getAppId() + uuid);
         }
-        int num = mapper.insertSelective(couponx);
+        int num = XMapper.insertSelective(couponx);
         return couponx.getId();
     }
 
@@ -81,9 +85,9 @@ public class CouponServiceImpl implements CouponService {
         map.put("pageSize",limit);
         map.put("appId",appId);
         List<CouponResultBean> coupons = new ArrayList<>();
-        total = mapper.selectCount(map);
+        total = XMapper.selectCount(map);
         if (total > 0) {
-            coupons = mapper.selectLimit(map);
+            coupons = XMapper.selectLimit(map);
         }
         pageBean = PageBean.build(pageBean, coupons, total, offset, limit);
         return pageBean;
@@ -95,7 +99,7 @@ public class CouponServiceImpl implements CouponService {
         coupon.setId(bean.getId());
         CouponX couponById;
         if(bean.getStatus() != null && bean.getStatus() == 2){
-            couponById = mapper.selectByPrimaryKey(bean.getId());
+            couponById = XMapper.selectByPrimaryKey(bean.getId());
             Date now = new Date();
             if(couponById.getReleaseStartDate().after(now)){
 
@@ -120,21 +124,21 @@ public class CouponServiceImpl implements CouponService {
                 }
             }
         }
-        return mapper.updateByPrimaryKeySelective(coupon);
+        return XMapper.updateByPrimaryKeySelective(coupon);
     }
 
     @Override
     public int deleteCoupon(Integer id) {
-        CouponX couponX = mapper.selectByPrimaryKey(id);
+        CouponX couponX = XMapper.selectByPrimaryKey(id);
         if(couponX.getStatus() != 1){
             return 2;
         }
-        return mapper.deleteByPrimaryKey(id);
+        return XMapper.deleteByPrimaryKey(id);
     }
 
     @Override
     public CouponBean findByCouponId(Integer id) {
-        CouponX coupon = mapper.selectByPrimaryKey(id);
+        CouponX coupon = XMapper.selectByPrimaryKey(id);
         CouponBean couponBean = couponToBean(coupon);
         return couponBean;
     }
@@ -158,11 +162,11 @@ public class CouponServiceImpl implements CouponService {
             map.put("tagId", tags.getId());
         }
         List<CouponBean> couponBeans = new ArrayList<>();
-        total = mapper.selectActiveCouponCount(map);
+        total = XMapper.selectActiveCouponCount(map);
         if (total > 0) {
-            List<CouponX> coupons = mapper.selectActiveCouponLimit(map);
+            List<CouponX> coupons = XMapper.selectActiveCouponLimit(map);
             coupons.forEach(coupon -> {
-                int num = useInfoMapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), bean.getAppId());
+                int num = useInfoXMapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), bean.getAppId());
                 coupon.setUserCollectNum(num);
                 couponBeans.add(couponToBean(coupon));
             });
@@ -174,14 +178,14 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CategoryCouponBean activeCategories(String appId) {
         CategoryCouponBean categoryCouponBean = new CategoryCouponBean();
-        List<String> tags = mapper.selectTags(appId);
+        List<String> tags = XMapper.selectTags(appId);
         List<CouponTags> tagList = null;
         if(!tags.isEmpty()){
             tagList = tagsMapper.selectTags(tags);
         }
 
         List<Category> categoryList = null;
-        List<String> categories = mapper.selectActiveCategories(appId);
+        List<String> categories = XMapper.selectActiveCategories(appId);
         if(!categories.isEmpty()){
             OperaResult result = productService.findCategoryList(categories);
             Object object = result.getData().get("result");
@@ -197,7 +201,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponBean selectSkuByCouponId(CouponUseInfoBean bean) {
         QueryProdBean queryProdBean = new QueryProdBean();
-        CouponX coupon = mapper.selectByPrimaryKey(bean.getId());
+        CouponX coupon = XMapper.selectByPrimaryKey(bean.getId());
         if(coupon == null){
             return null;
         }
@@ -253,7 +257,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponUseInfoX consumeCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX useInfo = new CouponUseInfoX();
-        CouponUseInfoX couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
+        CouponUseInfoX couponUseInfo = useInfoXMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
         }else if (couponUseInfo.getStatus() == CouponUseStatusEnum.USED.getCode()){
@@ -268,7 +272,7 @@ public class CouponServiceImpl implements CouponService {
                 } else {
                     useInfo.setOrderId(String.valueOf(bean.getOrderId()));
                 }
-                useInfoMapper.updateStatusByUserCode(useInfo);
+                useInfoXMapper.updateStatusByUserCode(useInfo);
             }
             return couponUseInfo;
         }
@@ -289,14 +293,14 @@ public class CouponServiceImpl implements CouponService {
             }
         }
         useInfo.setStatus(CouponUseStatusEnum.USED.getCode());
-        useInfoMapper.updateStatusByUserCode(useInfo);
+        useInfoXMapper.updateStatusByUserCode(useInfo);
         return couponUseInfo;
     }
 
     @Override
     public List<CouponBean> selectCouponByMpu(AoyiProdBean bean) {
         List<CouponBean> couponBeans =  new ArrayList<>();
-        mapper.selectCouponByMpu(bean).forEach(coupon -> {
+        XMapper.selectCouponByMpu(bean).forEach(coupon -> {
             couponBeans.add(couponToBean(coupon));
         });
         return couponBeans;
@@ -304,17 +308,139 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public int effective(int couponId) {
-        return mapper.couponEffective(couponId);
+        return XMapper.couponEffective(couponId);
     }
 
     @Override
     public int end(int couponId) {
-        int num = mapper.couponEnd(couponId);
+        int num = XMapper.couponEnd(couponId);
         return num;
     }
 
+    private
+    List<Integer> getIdList(String openId,String userCouponCode){
+
+        CouponUseInfoExample infoExample = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria infoCriteria = infoExample.createCriteria();
+
+        if (null != openId && !openId.isEmpty()){
+            infoCriteria.andUserOpenIdEqualTo(openId);
+        }
+        if (null != userCouponCode && !userCouponCode.isEmpty()){
+            infoCriteria.andUserCouponCodeEqualTo(userCouponCode);
+        }
+        List<CouponUseInfo> list = couponUseInfoMapper.selectByExample(infoExample);
+        List<Integer> idList = new ArrayList<>();
+        for(CouponUseInfo info: list){
+            if(null != info.getCouponId()){
+                idList.add(info.getCouponId());
+            }
+        }
+        return idList;
+
+    }
+
     @Override
-    public PageBean serachCoupon(CouponSearchBean bean) {
+    public PageBean searchCoupon(CouponSearchBean bean) {
+        PageBean pageBean = new PageBean();
+        int pageNo = bean.getOffset();
+        Integer pageSize = bean.getLimit();
+        if (1 > pageNo){
+            pageNo = 1;
+        }
+        if (1 > pageSize){
+            pageSize = 10;
+        }
+        String name = bean.getName();
+        Integer status = bean.getStatus();
+        Integer releaseTotal = bean.getReleaseTotal();
+        String couponType = bean.getCouponType();
+        String scenarioType = bean.getScenarioType();
+        String appId = bean.getAppId();
+        Date releaseStartDate = bean.getReleaseStartDate();
+        Date releaseEndDate = bean.getReleaseEndDate();
+        String openId = bean.getOpenId();
+        String userCouponCode = bean.getUserCouponCode();
+
+        CouponExample example = new CouponExample();
+        CouponExample.Criteria criteria = example.createCriteria();
+
+        boolean needCouponUserInfo = (null != openId && !openId.isEmpty()) ||
+                (null != userCouponCode && !userCouponCode.isEmpty());
+        if (needCouponUserInfo){
+            List<Integer> idList = getIdList(openId,userCouponCode);
+            if (0 < idList.size()){
+                criteria.andIdIn(idList);
+            }else{
+                return PageBean.build(pageBean, null, 0, pageNo, pageSize);
+            }
+        }
+        if (null != name && !name.isEmpty()){
+            criteria.andNameEqualTo(name);
+        }
+        if (null != status){
+            criteria.andStatusEqualTo(status);
+        }
+        if (null != releaseTotal){
+            criteria.andReleaseTotalEqualTo(releaseTotal);
+        }
+        if (null != couponType){
+            Integer ct = null;
+            try {
+                ct = Integer.valueOf(couponType);
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+            }
+            if (null != ct) {
+                criteria.andCouponTypeEqualTo(ct);
+            }
+        }
+        if (null != scenarioType && !scenarioType.isEmpty()){
+
+            Integer st = null;
+            try {
+                st = Integer.valueOf(scenarioType);
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+            }
+            if (null != st) {
+                criteria.andScenarioTypeEqualTo(st);
+            }
+        }
+        if (null != appId && !appId.isEmpty()){
+            criteria.andAppIdEqualTo(appId);
+        }
+        if (null != releaseStartDate){
+            criteria.andReleaseStartDateEqualTo(releaseStartDate);
+        }
+        if (null != releaseEndDate){
+            criteria.andReleaseEndDateEqualTo(releaseEndDate);
+        }
+
+        Page<Coupon> pages;
+        List<Coupon> list;
+
+        try{
+            pages = PageHelper.startPage(pageNo, pageSize, true);
+            list = mapper.selectByExample(example);
+            List<CouponResultBean> coupons = new ArrayList<>();
+            for(Coupon coupon: list){
+                CouponResultBean b = new CouponResultBean();
+                BeanUtils.copyProperties(coupon,b);
+                coupons.add(b);
+            }
+
+            pageBean = PageBean.build(pageBean, coupons, (int)pages.getTotal(), pageNo, pageSize);
+
+        }catch (Exception e) {
+            log.error(e.getMessage(),e);
+            pageBean = PageBean.build(pageBean, null, 0, bean.getOffset(), pageSize);
+        }
+
+        return pageBean;
+    }
+
+    public PageBean searchXCoupon(CouponSearchBean bean) {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
@@ -330,9 +456,9 @@ public class CouponServiceImpl implements CouponService {
         map.put("scenarioType",bean.getScenarioType());
         map.put("appId",bean.getAppId());
         List<CouponResultBean> coupons = new ArrayList<>();
-        total = mapper.selectCount(map);
+        total = XMapper.selectCount(map);
         if (total > 0) {
-            coupons = mapper.selectLimit(map);
+            coupons = XMapper.selectLimit(map);
         }
         pageBean = PageBean.build(pageBean, coupons, total, bean.getOffset(), bean.getLimit());
         return pageBean;
@@ -510,14 +636,14 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public int invalid(int couponId) {
-        return useInfoMapper.updateStatusByCouponId(couponId);
+        return useInfoXMapper.updateStatusByCouponId(couponId);
     }
 
     @Override
     public CouponUseInfoX adminConsumeCoupon(CouponUseInfoBean bean) {
 
         CouponUseInfoX useInfo = new CouponUseInfoX();
-        CouponUseInfoX couponUseInfo = useInfoMapper.selectByUserCode(bean.getUserCouponCode());
+        CouponUseInfoX couponUseInfo = useInfoXMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
         }else if (couponUseInfo.getStatus() == 3){
@@ -525,7 +651,7 @@ public class CouponServiceImpl implements CouponService {
         }
 
         if(couponUseInfo != null){
-//            CouponX couponX = mapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+//            CouponX couponX = XMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
             Date date = new Date();
             if(couponUseInfo.getEffectiveStartDate().after(date) || couponUseInfo.getEffectiveEndDate().before(date)){
                 couponUseInfo.setStatus(4);
@@ -537,7 +663,8 @@ public class CouponServiceImpl implements CouponService {
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(3);
-        useInfoMapper.updateStatusByUserCode(useInfo);
+        useInfoXMapper.updateStatusByUserCode(useInfo);
+        log.info("管理端核销consumeCoupon优惠券参数 完成:{}", JSONUtil.toJsonString(useInfo));
         return couponUseInfo;
     }
 
@@ -557,9 +684,9 @@ public class CouponServiceImpl implements CouponService {
             }
         }
 
-        List<CouponX> coupons = mapper.selectGiftCoupon(iAppId);
+        List<CouponX> coupons = XMapper.selectGiftCoupon(iAppId);
         coupons.forEach(couponX -> {
-            int num = useInfoMapper.selectCollectCount(couponX.getId(), openId, iAppId);
+            int num = useInfoXMapper.selectCollectCount(couponX.getId(), openId, iAppId);
             couponX.setUserCollectNum(num);
             couponBeans.add(couponToBean(couponX));
         });
@@ -579,10 +706,10 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public List<CouponBean> findCouponListByIdList(List<Integer> ids, String openId, String appId) {
-        List<CouponX> couponList = mapper.selectCouponListByIdList(ids);
+        List<CouponX> couponList = XMapper.selectCouponListByIdList(ids);
         List<CouponBean> couponBeanList = new ArrayList<>();
         for (CouponX coupon : couponList) {
-            int num = useInfoMapper.selectCollectCount(coupon.getId(), openId, appId);
+            int num = useInfoXMapper.selectCollectCount(coupon.getId(), openId, appId);
             coupon.setUserCollectNum(num);
             CouponBean couponBean = couponToBean(coupon);
             couponBeanList.add(couponBean);
@@ -630,7 +757,7 @@ public class CouponServiceImpl implements CouponService {
             couponAndPromBean.setPromotions(beans);
 
             List<CouponBean> couponBeans =  new ArrayList<>();
-            mapper.selectCouponByMpu(bean).forEach(coupon -> {
+            XMapper.selectCouponByMpu(bean).forEach(coupon -> {
                 couponBeans.add(couponToBean(coupon));
             });
             couponAndPromBean.setCoupons(couponBeans);

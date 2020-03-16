@@ -240,11 +240,11 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 operaResponse.setMsg("销售价格不能为空");
                 return operaResponse ;
             }
-            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImage())) {
-                operaResponse.setCode(200102);
-                operaResponse.setMsg("封面图不能为空");
-                return operaResponse ;
-            }
+//            if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImage())) {
+//                operaResponse.setCode(200102);
+//                operaResponse.setMsg("封面图不能为空");
+//                return operaResponse ;
+//            }
             if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
                 operaResponse.setCode(200103);
                 operaResponse.setMsg("主图不能为空");

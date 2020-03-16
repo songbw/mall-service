@@ -1,5 +1,6 @@
 package com.fengchao.equity.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.equity.bean.*;
@@ -138,7 +139,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
         param.setEquity_code(code);
         resquest.setData(param);
-        resquest.setTimestamp(String.valueOf(new Date().getTime()));
+        resquest.setTimestamp(String.valueOf(System.currentTimeMillis()) /*(String.valueOf(new Date().getTime())*/);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> props = objectMapper.convertValue(param, Map.class);
         String urlMap = Pkcs8Util.formatUrlMap(props, false, false);
@@ -162,6 +163,15 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
     @Override
     public PageBean findCollect(CouponUseInfoBean bean) {
+
+        PageBean pageBean = new PageBean();
+        PageInfo<CouponUseInfo> pageInfo = couponUseInfoDao.findCollectCoupon(bean);
+        pageBean = PageBean.build(pageBean, pageInfo.getList(), (int)pageInfo.getTotal(), bean.getOffset(), bean.getLimit());
+        return pageBean;
+
+    }
+
+    public PageBean findXCollect(CouponUseInfoBean bean) {
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
@@ -174,9 +184,13 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         map.put("collectedEndDate",bean.getCollectedEndDate());
         map.put("consumedStartDate", bean.getConsumedStartDate());
         map.put("consumedEndDate",bean.getConsumedEndDate());
+        map.put("userCouponCode",bean.getUserCouponCode());
+        map.put("userOpenId",bean.getUserOpenId());
+
         List<CouponUseInfoX> coupons = new ArrayList<>();
         total = mapper.selectCount(map);
         if (total > 0) {
+            log.info("findCollect selectLimit {}", JSON.toJSONString(map));
             coupons = mapper.selectLimit(map);
         }
         pageBean = PageBean.build(pageBean, coupons, total, bean.getOffset(), bean.getLimit());
@@ -298,6 +312,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
 
         num = mapper.insertbatchCode(useInfos);
+        log.info("{} 生成 num= {}",MyFunctions.WEB_ADMIN_BATCH_CODE,String.valueOf(num));
 //        if(num == 1){
 //            JobClientUtils.couponInvalidTrigger(jobClient, coupon.getId(), coupon.getEffectiveEndDate());
 //        }

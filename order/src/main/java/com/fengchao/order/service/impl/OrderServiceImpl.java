@@ -397,23 +397,28 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetail createOrderDetail(Order bean, OrderDetailX orderSku,
                                           AoyiProdIndex prodIndexWithBLOBs,  AtomicInteger atomicInteger) {
         OrderDetail orderDetail = new OrderDetail();
-
         orderDetail.setPromotionId(orderSku.getPromotionId());
         orderDetail.setSalePrice(orderSku.getSalePrice());
         orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
         // orderDetail.setCreatedAt(date);
         // orderDetail.setUpdatedAt(date);
         orderDetail.setOrderId(bean.getId());
-        orderDetail.setImage(prodIndexWithBLOBs.getImage());
+
         orderDetail.setModel(prodIndexWithBLOBs.getModel());
         orderDetail.setName(prodIndexWithBLOBs.getName());
         orderDetail.setProductType(prodIndexWithBLOBs.getType());
         if (prodIndexWithBLOBs.getStarSku() == null) {
+            orderDetail.setImage(prodIndexWithBLOBs.getImage());
             if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
                 BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
                 orderDetail.setSprice(bigDecimal);
             }
         } else {
+            if (StringUtils.isEmpty(prodIndexWithBLOBs.getStarSku().getGoodsLogo())) {
+                orderDetail.setImage(prodIndexWithBLOBs.getImage());
+            } else {
+                orderDetail.setImage(prodIndexWithBLOBs.getStarSku().getGoodsLogo());
+            }
             if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
                 BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
                 orderDetail.setSprice(bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
