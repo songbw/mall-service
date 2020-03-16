@@ -110,4 +110,15 @@ public class StarSkuDao {
         return list;
     }
 
+    /**
+     * 根据code更新上下架状态
+     * @param starSku
+     */
+    public void updateStatusByCode(StarSku starSku) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andCodeEqualTo(starSku.getCode()) ;
+        mapper.updateByExampleSelective(starSku, example);
+    }
+
 }
