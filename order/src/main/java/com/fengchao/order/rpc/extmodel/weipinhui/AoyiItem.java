@@ -27,6 +27,11 @@ public class AoyiItem {
     private String prodPrice;
 
     /**
+     * 成本价
+     */
+    private String centPrice;
+
+    /**
      * 子订单金额
      */
     private String subAmount;

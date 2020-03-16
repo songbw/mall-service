@@ -115,6 +115,7 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
                 aoyiItem.setSkuId(orderDetailX.getSkuId());
                 aoyiItem.setNumber(orderDetailX.getNum()); // 商品数量
                 aoyiItem.setProdPrice(orderDetailX.getSalePrice().toPlainString()); // 商品销售单价 , 凤巢的销售价格
+                aoyiItem.setCentPrice(orderDetailX.getSprice().toPlainString()); // 成本价
                 String subAmount = orderDetailX.getSalePrice()
                         .multiply(new BigDecimal(orderDetailX.getNum())).toPlainString(); // 子订单金额
                 aoyiItem.setSubAmount(subAmount); // 子订单金额

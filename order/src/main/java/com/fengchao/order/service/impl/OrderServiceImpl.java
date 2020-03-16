@@ -218,6 +218,9 @@ public class OrderServiceImpl implements OrderService {
                 // 创建 子订单
                 OrderDetail orderDetail = createOrderDetail(bean, orderSku, prodIndexWithBLOBs, atomicInteger);
 
+                // !!
+                orderSku.setSprice(orderDetail.getSprice());
+
                 // 添加子订单
                 logger.debug("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
                 orderDetailDao.insert(orderDetail);
