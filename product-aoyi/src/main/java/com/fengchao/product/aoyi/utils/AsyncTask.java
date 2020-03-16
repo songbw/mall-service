@@ -224,13 +224,20 @@ public class AsyncTask {
                 if (StarSkuStatusEnum.PUT_ON.equals(status)) {
                     BigDecimal bigDecimalC = new BigDecimal(channelPrice) ;
                     int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue() ;
+                    BigDecimal bigDecimalPrice = new BigDecimal(0) ;
+                    bigDecimalPrice = bigDecimalC.divide(new BigDecimal(0.9), 2, BigDecimal.ROUND_HALF_UP) ;
+                    int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
                     BigDecimal bigDecimalR = new BigDecimal(retailPrice) ;
                     int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue() ;
                     StarSku starSku = new StarSku() ;
                     starSku.setCode(skuCode);
                     starSku.setSprice(sprice);
                     starSku.setAdvisePrice(advisePrice);
-                    starSku.setPrice(advisePrice);
+                    if (price > advisePrice) {
+                        starSku.setPrice(price);
+                    } else {
+                        starSku.setPrice(advisePrice);
+                    }
                     starSkuDao.updatePriceByCode(starSku);
                     List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
                     if (!starSkus1.isEmpty()) {
