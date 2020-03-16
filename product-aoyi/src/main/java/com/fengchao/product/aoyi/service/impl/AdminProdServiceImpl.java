@@ -817,10 +817,13 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 查询是否有sku
             List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
             if (starSkus != null && starSkus.size() > 0) {
-                StarSku starSku = starSkus.get(0) ;
-                starSku.setStatus(Integer.valueOf(bean.getState()));
-                starSku.setUpdateTime(new Date());
-                starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+                starSkus.forEach(starSku -> {
+                    if (starSku.getPrice() != 0) {
+                        starSku.setStatus(Integer.valueOf(bean.getState()));
+                        starSku.setUpdateTime(new Date());
+                        starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+                    }
+                });
             }
         }
         if (ids != null && ids.size() > 0) {

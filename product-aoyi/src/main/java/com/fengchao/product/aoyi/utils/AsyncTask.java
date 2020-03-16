@@ -8,6 +8,8 @@ import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.QueryBean;
+import com.fengchao.product.aoyi.constants.ProductStatusEnum;
+import com.fengchao.product.aoyi.constants.StarSkuStatusEnum;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
@@ -218,30 +220,45 @@ public class AsyncTask {
                 String channelPrice = skuPriceJson.getString("channelPrice") ;
                 String retailPrice = skuPriceJson.getString("retailPrice") ;
                 String skuCode = skuPriceJson.getString("code") ;
-                BigDecimal bigDecimalC = new BigDecimal(channelPrice) ;
-                int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue() ;
-                BigDecimal bigDecimalR = new BigDecimal(retailPrice) ;
-                int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue() ;
-                StarSku starSku = new StarSku() ;
-                starSku.setCode(skuCode);
-                starSku.setSprice(sprice);
-                starSku.setAdvisePrice(advisePrice);
-                starSku.setPrice(advisePrice);
-                starSkuDao.updatePriceByCode(starSku);
-                List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
-                if (!starSkus1.isEmpty()) {
-                    String spuId = starSkus1.get(0).getSpuId() ;
-                    log.info("spu id is : {}", spuId);
-                    if (!spus.contains(spuId)) {
-                        spus.add(starSkus1.get(0).getSpuId()) ;
-                        // 更新spu表价格
-                        PriceBean priceBean = new PriceBean() ;
-                        priceBean.setSkuId(starSkus1.get(0).getSpuId());
-                        priceBean.setMerchantId(4);
-                        priceBean.setPrice(retailPrice);
-                        priceBean.setSPrice(channelPrice);
-                        productDao.updatePrice(priceBean) ;
+                Integer status = skuPriceJson.getInteger("status") ;
+                if (StarSkuStatusEnum.PUT_ON.equals(status)) {
+                    BigDecimal bigDecimalC = new BigDecimal(channelPrice) ;
+                    int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue() ;
+                    BigDecimal bigDecimalPrice = new BigDecimal(0) ;
+                    bigDecimalPrice = bigDecimalC.divide(new BigDecimal(0.9), 2, BigDecimal.ROUND_HALF_UP) ;
+                    int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
+                    BigDecimal bigDecimalR = new BigDecimal(retailPrice) ;
+                    int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue() ;
+                    StarSku starSku = new StarSku() ;
+                    starSku.setCode(skuCode);
+                    starSku.setSprice(sprice);
+                    starSku.setAdvisePrice(advisePrice);
+                    if (price > advisePrice) {
+                        starSku.setPrice(price);
+                    } else {
+                        starSku.setPrice(advisePrice);
                     }
+                    starSkuDao.updatePriceByCode(starSku);
+                    List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
+                    if (!starSkus1.isEmpty()) {
+                        String spuId = starSkus1.get(0).getSpuId() ;
+                        log.info("spu id is : {}", spuId);
+                        if (!spus.contains(spuId)) {
+                            spus.add(starSkus1.get(0).getSpuId()) ;
+                            // 更新spu表价格
+                            PriceBean priceBean = new PriceBean() ;
+                            priceBean.setSkuId(starSkus1.get(0).getSpuId());
+                            priceBean.setMerchantId(4);
+                            priceBean.setPrice(retailPrice);
+                            priceBean.setSPrice(channelPrice);
+                            productDao.updatePrice(priceBean) ;
+                        }
+                    }
+                } else {
+                    StarSku starSku = new StarSku() ;
+                    starSku.setCode(skuCode);
+                    starSku.setStatus(ProductStatusEnum.PUT_ON.getValue());
+                    starSkuDao.updateStatusByCode(starSku);
                 }
             }
         });
