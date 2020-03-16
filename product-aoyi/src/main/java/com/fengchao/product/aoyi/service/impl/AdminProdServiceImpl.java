@@ -818,9 +818,11 @@ public class AdminProdServiceImpl implements AdminProdService {
             List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
             if (starSkus != null && starSkus.size() > 0) {
                 starSkus.forEach(starSku -> {
-                    starSku.setStatus(Integer.valueOf(bean.getState()));
-                    starSku.setUpdateTime(new Date());
-                    starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+                    if (starSku.getPrice() != 0) {
+                        starSku.setStatus(Integer.valueOf(bean.getState()));
+                        starSku.setUpdateTime(new Date());
+                        starSkuMapper.updateByPrimaryKeySelective(starSku) ;
+                    }
                 });
             }
         }
