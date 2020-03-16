@@ -79,7 +79,7 @@ public interface AoyiClientService {
      * @param subOrderNo
      * @return
      */
-    @GetMapping("/queryOrderLogistics")
+    @RequestMapping(value = "/weipinhui/queryOrderLogistics", method = RequestMethod.GET)
     OperaResponse<AoyiLogisticsResDto> weipinhuiQueryOrderLogistics(@RequestParam("subOrderNo") String subOrderNo);
 
     // 唯品会相关 end
