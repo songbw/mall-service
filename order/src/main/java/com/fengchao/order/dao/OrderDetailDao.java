@@ -472,4 +472,21 @@ public class OrderDetailDao {
         return orderDetailList;
     }
 
+    /**
+     * 根据子订单号的前缀查询
+     *
+     * @param subOrderIdPrefix
+     * @return
+     */
+    public List<OrderDetail> selectBySubOrderIdPrefix(String subOrderIdPrefix) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andSubOrderIdLike(subOrderIdPrefix + "%");
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
 }
