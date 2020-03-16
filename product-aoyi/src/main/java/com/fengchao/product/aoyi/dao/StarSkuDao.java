@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.model.StarSkuExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,6 +66,7 @@ public class StarSkuDao {
      * @param starSku
      */
     public void updatePriceByCode(StarSku starSku) {
+        starSku.setUpdateTime(new Date());
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeEqualTo(starSku.getCode()) ;
@@ -115,6 +117,7 @@ public class StarSkuDao {
      * @param starSku
      */
     public void updateStatusByCode(StarSku starSku) {
+        starSku.setUpdateTime(new Date());
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeEqualTo(starSku.getCode()) ;
