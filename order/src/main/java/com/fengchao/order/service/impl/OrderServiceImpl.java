@@ -10,6 +10,7 @@ import com.fengchao.order.bean.*;
 import com.fengchao.order.constants.OrderConstants;
 import com.fengchao.order.constants.PaymentStatusEnum;
 import com.fengchao.order.dao.AdminOrderDao;
+import com.fengchao.order.dao.KuaidiCodeDao;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.db.annotation.DataSource;
@@ -98,6 +99,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private AoyiRpcService aoyiRpcService;
+
+    @Autowired
+    private KuaidiCodeDao kuaidiCodeDao;
 
     @Transactional
     @Override
@@ -930,7 +934,6 @@ public class OrderServiceImpl implements OrderService {
 
         // 2. 获取子定单子
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
-
         logger.info("物流查询 获取到子订单:{}", JSONUtil.toJsonString(logistics));
 
         // 3. 处理唯品会的子订单
@@ -944,13 +947,19 @@ public class OrderServiceImpl implements OrderService {
                             aoyiRpcService.weipinhuiQueryOrderLogistics(orderDetailX.getSubOrderId());
 
                     if (aoyiLogisticsResDto != null) { // 如果获取到物流信息
+                        // 查询comcode
+                        KuaidiCode kuaidiCode =
+                                kuaidiCodeDao.selectByKudiName(aoyiLogisticsResDto.getExpressName());
+
                         orderDetailX.setLogisticsId(aoyiLogisticsResDto.getExpressNo());
+                        orderDetailX.setComCode(kuaidiCode == null ? null : kuaidiCode.getCode());
 
                         //
                         Logisticsbean logisticsbean = new Logisticsbean();
                         logisticsbean.setLogisticsContent(aoyiLogisticsResDto.getExpressName());
                         logisticsbean.setLogisticsId(aoyiLogisticsResDto.getExpressNo());
                         logisticsbean.setSubOrderId(orderDetailX.getSubOrderId());
+                        logisticsbean.setComCode(kuaidiCode == null ? null : kuaidiCode.getCode());
 
                         weipinhuiLogisticsBean.add(logisticsbean);
                     }
@@ -965,6 +974,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 6. 商户查询快递信息
+        logger.info("物流查询 ");
         if (logistics != null && logistics.size() > 0) {
             for (OrderDetailX logist : logistics) {
                 if (logist != null && logist.getLogisticsId() != null && logist.getComCode() != null) {
