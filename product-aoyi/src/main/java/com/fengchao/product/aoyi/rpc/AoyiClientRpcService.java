@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.rpc;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -147,5 +148,47 @@ public class AoyiClientRpcService {
                 JSONUtil.toJsonString(aoyiItemDetailResDto));
 
         return aoyiItemDetailResDto;
+    }
+
+    /**
+     * 唯品会查询库存
+     *
+     * @param itemId
+     * @param skuId
+     * @param num
+     * @param divisionCode
+     * @return
+     */
+    public AoyiQueryInventoryResDto weipinhuiQueryItemInventory(String itemId, String skuId,
+                                                       Integer num, String divisionCode) throws RuntimeException {
+        // 返回值
+        AoyiQueryInventoryResDto aoyiQueryInventoryResDto = null;
+
+        try {
+            log.info("唯品会查询库存 调用aoyiClient rpc服务 入参 itemid:{}, skuId:{}, num:{}, divisionCode:{}",
+                    itemId, skuId, num, divisionCode);
+
+            OperaResponse<AoyiQueryInventoryResDto> operaResponse =
+                    aoyiClientService.weipinhuiQueryItemInventory(itemId, skuId, num, divisionCode);
+            log.info("唯品会查询库存 调用aoyiClient rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+
+            // 处理返回
+            if (operaResponse.getCode() == 200) {
+                aoyiQueryInventoryResDto = operaResponse.getData();
+            } else {
+                log.warn("唯品会查询库存 调用aoyi-client rpc服务 错误!");
+
+                throw new Exception("唯品会查询库存 调用aoyi-client rpc服务 错误!!");
+            }
+        } catch (Exception e) {
+            log.error("唯品会查询库存 异常:{}", e.getMessage(), e);
+
+            aoyiQueryInventoryResDto = null; // 这里返回null，是为了兼容调用该方法的已有逻辑!
+        }
+
+        log.info("唯品会查询库存 AoyiClientRpcService#queryItemInventory 返回业务数据:{}",
+                JSONUtil.toJsonString(aoyiQueryInventoryResDto));
+
+        return aoyiQueryInventoryResDto;
     }
 }

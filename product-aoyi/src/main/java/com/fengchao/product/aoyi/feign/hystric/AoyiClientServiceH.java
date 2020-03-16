@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 
 import java.util.List;
@@ -108,6 +109,11 @@ public class AoyiClientServiceH implements AoyiClientService {
 
     @Override
     public OperaResponse<AoyiItemDetailResDto> weipinhuiQueryItemDetial(String itemId) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<AoyiQueryInventoryResDto> weipinhuiQueryItemInventory(String itemId, String skuId, Integer num, String divisionCode) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 }

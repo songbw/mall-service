@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -105,22 +106,27 @@ public class AoyiClientServiceClientFallbackFactory implements FallbackFactory<A
 
             @Override
             public OperaResponse weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
-                return HystrixDefaultFallback.defaultReponseFallback();
+                return HystrixDefaultFallback.fallbackResponse(throwable);
             }
 
             @Override
             public OperaResponse<List<CategoryResDto>> weipinhuiGetCategory(Integer pageNumber, Integer pageSize) {
-                return HystrixDefaultFallback.defaultReponseFallback();
+                return HystrixDefaultFallback.fallbackResponse(throwable);
             }
 
             @Override
             public OperaResponse<List<AoyiItemDetailResDto>> weipinhuiQueryItemsList(Integer pageNumber, Integer pageSize) {
-                return HystrixDefaultFallback.defaultReponseFallback();
+                return HystrixDefaultFallback.fallbackResponse(throwable);
             }
 
             @Override
             public OperaResponse<AoyiItemDetailResDto> weipinhuiQueryItemDetial(String itemId) {
-                return HystrixDefaultFallback.defaultReponseFallback();
+                return HystrixDefaultFallback.fallbackResponse(throwable);
+            }
+
+            @Override
+            public OperaResponse<AoyiQueryInventoryResDto> weipinhuiQueryItemInventory(String itemId, String skuId, Integer num, String divisionCode) {
+                return HystrixDefaultFallback.fallbackResponse(throwable);
             }
         };
     }

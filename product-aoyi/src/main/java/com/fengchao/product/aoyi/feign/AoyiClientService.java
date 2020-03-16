@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceClientFallbackFactory;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -87,5 +88,20 @@ public interface AoyiClientService {
      */
     @RequestMapping(value = "/weipinhui/queryItemDetial", method = RequestMethod.GET)
     OperaResponse<AoyiItemDetailResDto> weipinhuiQueryItemDetial(@RequestParam("itemId") String itemId);
+
+    /**
+     * 库存查询接口
+     *
+     * @param itemId
+     * @param skuId
+     * @param num          数量
+     * @param divisionCode 地址code
+     * @return
+     */
+    @RequestMapping(value = "/weipinhui/queryItemInventory", method = RequestMethod.GET)
+    OperaResponse<AoyiQueryInventoryResDto> weipinhuiQueryItemInventory(@RequestParam("itemId") String itemId,
+                                                               @RequestParam("skuId") String skuId,
+                                                               @RequestParam("num") Integer num,
+                                                               @RequestParam("divisionCode") String divisionCode);
     // 唯品会 end
 }

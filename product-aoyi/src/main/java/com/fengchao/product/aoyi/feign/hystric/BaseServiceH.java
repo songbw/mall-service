@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.feign.BaseService;
 import com.fengchao.product.aoyi.model.AyFcImages;
+import com.fengchao.product.aoyi.rpc.extmodel.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -28,5 +29,10 @@ public class BaseServiceH implements BaseService {
         result.setCode(404);
         result.setMsg("base服务失败 " + msg);
         return result;
+    }
+
+    @Override
+    public OperaResponse sendMail(Email email) {
+        return HystrixDefaultFallback.defaultReponseFallback();
     }
 }
