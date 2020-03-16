@@ -345,7 +345,12 @@ public class CouponServiceImpl implements CouponService {
         PageBean pageBean = new PageBean();
         int pageNo = bean.getOffset();
         Integer pageSize = bean.getLimit();
-
+        if (1 > pageNo){
+            pageNo = 1;
+        }
+        if (1 > pageSize){
+            pageSize = 10;
+        }
         String name = bean.getName();
         Integer status = bean.getStatus();
         Integer releaseTotal = bean.getReleaseTotal();
@@ -366,6 +371,8 @@ public class CouponServiceImpl implements CouponService {
             List<Integer> idList = getIdList(openId,userCouponCode);
             if (0 < idList.size()){
                 criteria.andIdIn(idList);
+            }else{
+                return PageBean.build(pageBean, null, 0, pageNo, pageSize);
             }
         }
         if (null != name && !name.isEmpty()){
@@ -412,12 +419,7 @@ public class CouponServiceImpl implements CouponService {
 
         Page<Coupon> pages;
         List<Coupon> list;
-        if (1 > pageNo){
-            pageNo = 1;
-        }
-        if (1 > pageSize){
-            pageSize = 10;
-        }
+
         try{
             pages = PageHelper.startPage(pageNo, pageSize, true);
             list = mapper.selectByExample(example);
