@@ -63,7 +63,11 @@ public class ProductController {
      */
     @PostMapping("/inventory")
     private OperaResult inventory(@RequestBody InventoryQueryBean queryBean, OperaResult result) throws ProductException {
-        return service.findInventory(queryBean);
+        log.info("查询库存 入参:{}", JSONUtil.toJsonString(queryBean));
+        OperaResult operaResult = service.findInventory(queryBean);
+        log.info("查询库存 返回:{}", JSONUtil.toJsonString(queryBean));
+
+        return operaResult;
     }
 
     /**
