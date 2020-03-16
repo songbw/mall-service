@@ -12,11 +12,11 @@ spring:
         request-read-timeout: 10000
 
 logging:
-  file: /data/logs/order/log.log
+  file: /data/logs/product/log.log
   pattern:
     file: '%d %-5level [%thread] %logger : %msg%n'
   level:
     org.springframework.web: debug
-    com.fengchao.order.controller: debug
-    com.fengchao.order.service: debug
-    com.fengchao.order.mapper: debug
+    com.fengchao.product.aoyi.controller: debug
+    com.fengchao.product.aoyi.service: debug
+    com.fengchao.product.aoyi.mapper: debug
