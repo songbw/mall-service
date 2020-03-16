@@ -3,6 +3,7 @@ package com.fengchao.order.feign;
 import com.fengchao.order.bean.*;
 import com.fengchao.order.feign.hystric.AoyiClientServiceClientFallbackFactory;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiConfirmOrderRequest;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiLogisticsResDto;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiRenderOrderRequest;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -71,6 +72,16 @@ public interface AoyiClientService {
      */
     @RequestMapping(value = "/weipinhui/createOrder", method = RequestMethod.POST)
     OperaResponse weipinhuiCreateOrder(@RequestBody AoyiConfirmOrderRequest aoyiConfirmOrderRequest);
+
+    /**
+     * 查询物流信息
+     *
+     * @param subOrderNo
+     * @return
+     */
+    @GetMapping("/queryOrderLogistics")
+    OperaResponse<AoyiLogisticsResDto> weipinhuiQueryOrderLogistics(@RequestParam("subOrderNo") String subOrderNo);
+
     // 唯品会相关 end
 
 }

@@ -20,6 +20,8 @@ import com.fengchao.order.feign.EquityServiceClient;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
+import com.fengchao.order.rpc.AoyiRpcService;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiLogisticsResDto;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.service.weipinhui.WeipinhuiOrderService;
 import com.fengchao.order.utils.*;
@@ -93,6 +95,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private WeipinhuiOrderService weipinhuiOrderService;
+
+    @Autowired
+    private AoyiRpcService aoyiRpcService;
 
     @Transactional
     @Override
@@ -913,18 +918,55 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OperaResult getLogist(String merchantNo, String orderId) {
         OperaResult result = new OperaResult();
-        JSONArray jsonArray = new JSONArray();
+        JSONArray jsonArray = new JSONArray(); // 物流信息
+
+        // 1. 校验
         List<Orders> orders = ordersDao.selectOrdersByTradeNo(orderId);
         if (orders == null || orders.size() == 0) {
             result.setCode(4000001);
             result.setMsg("订单号不存在");
-            return result ;
+            return result;
         }
+
+        // 2. 获取子定单子
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
+
+        // 3. 处理唯品会的子订单
+        List<Logisticsbean> weipinhuiLogisticsBean = new ArrayList<>();
+        for (OrderDetailX orderDetailX : logistics) {
+            if (orderDetailX.getSkuId().startsWith(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的单子
+
+                if (org.apache.commons.lang.StringUtils.isBlank(orderDetailX.getLogisticsId())) { // 如果没有物流信息
+                    // rpc 查询唯品会物流信息
+                    AoyiLogisticsResDto aoyiLogisticsResDto =
+                            aoyiRpcService.weipinhuiQueryOrderLogistics(orderDetailX.getSubOrderId());
+
+                    if (aoyiLogisticsResDto != null) { // 如果获取到物流信息
+                        orderDetailX.setLogisticsId(aoyiLogisticsResDto.getExpressNo());
+
+                        //
+                        Logisticsbean logisticsbean = new Logisticsbean();
+                        logisticsbean.setLogisticsContent(aoyiLogisticsResDto.getExpressName());
+                        logisticsbean.setLogisticsId(aoyiLogisticsResDto.getExpressNo());
+                        logisticsbean.setSubOrderId(orderDetailX.getSubOrderId());
+
+                        weipinhuiLogisticsBean.add(logisticsbean);
+                    }
+                }
+            }
+        }
+
+        logger.info("物流查询 唯品会物流信息:{}", JSONUtil.toJsonString(weipinhuiLogisticsBean));
+        // 调用创建任务，和保存物流信息
+        if (CollectionUtils.isNotEmpty(weipinhuiLogisticsBean)) {
+            logistics(weipinhuiLogisticsBean);
+        }
+
+        // 6. 商户查询快递信息
         if (logistics != null && logistics.size() > 0) {
             for (OrderDetailX logist : logistics) {
                 if (logist != null && logist.getLogisticsId() != null && logist.getComCode() != null) {
-                    OperaResponse<JSONObject> response =  baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode()) ;
+                    OperaResponse<JSONObject> response = baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode());
                     if (response.getCode() == 200) {
                         JSONObject jsonObject = response.getData();
                         jsonArray.add(jsonObject);
@@ -932,10 +974,13 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
         }
-        logger.info("物流查询结果： {}", JSONUtils.toJSONString(jsonArray));
-        result.getData().put("result", jsonArray) ;
+
+        logger.info("OrderServiceImpl#getLogist 物流查询结果: {}", JSONUtils.toJSONString(jsonArray));
+        result.getData().put("result", jsonArray);
+
         return result;
     }
+
 
     @Override
     public OperaResult getWorkOrderLogist(String logisticNo, String code, String merchantNo) {

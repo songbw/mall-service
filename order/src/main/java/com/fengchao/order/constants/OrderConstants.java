@@ -9,5 +9,8 @@ public class OrderConstants {
     public static final int AOYI_MERCHANG_CODE = 2;
     public static final int STAR_MERCHANG_CODE = 4;
 
+    /**
+     *
+     */
     public static final String MERCHANTNO_WEIPINHUI = "30";
 }

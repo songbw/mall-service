@@ -162,7 +162,12 @@ public class OrderController {
 
     @GetMapping("/logistics")
     private OperaResult getLogistics(String orderId, String merchantNo, OperaResult result) {
-        return service.getLogist(merchantNo, orderId);
+        log.info("物流查询 入参 orderId:{}, merchantNo:{}", orderId, merchantNo);
+
+        OperaResult operaResult = service.getLogist(merchantNo, orderId);
+
+        log.info("物流查询 返回:{}", JSONUtil.toJsonString(operaResult));
+        return operaResult;
     }
 
     @GetMapping("/sub/logistics")

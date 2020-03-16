@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.constants.ProductConstant;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -153,7 +154,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<InventoryBean> inventoryBeanList = queryBean.getSkus();
         for (InventoryBean _inventroyBean : inventoryBeanList) {
-            if (_inventroyBean.getSkuId().startsWith("30") == true) { // 唯品会的sku
+            if (_inventroyBean.getSkuId().startsWith(ProductConstant.MERCHANTNO_WEIPINHUI) == true) { // 唯品会的sku
                 weipinhuiSkuList.add(_inventroyBean);
             } else { // 其他供应商
                 otherSkuList.add(_inventroyBean);
