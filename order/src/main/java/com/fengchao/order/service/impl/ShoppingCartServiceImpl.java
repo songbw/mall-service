@@ -167,9 +167,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 BeanUtils.copyProperties(shoppingCart, shoppingCartBean);
 
                 aoyiProdIndices.forEach(aoyiProdIndex -> {
-                    if (StringUtils.isNotBlank(shoppingCart.getSkuId())) { // 如果有值， 使用sku判断
-                        shoppingCart.getSkuId();
-                        aoyiProdIndex.getStarSku();
+                    if (StringUtils.isNotBlank(shoppingCart.getSkuId()) && aoyiProdIndex.getStarSku() != null) { // 如果有值， 使用sku判断
                         if (shoppingCart.getSkuId().equals(aoyiProdIndex.getStarSku().getCode())) {
                             BeanUtils.copyProperties(aoyiProdIndex, shoppingCartBean);
                             shoppingCartBean.setId(shoppingCart.getId());
