@@ -192,19 +192,21 @@ public class ProductServiceImpl implements ProductService {
                         queryBean.getCountyId(), queryBean.getCityId());
             } else {
                 // 查询spu信息
-                AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId());
-                if (aoyiProdIndexX != null && "1".equals(aoyiProdIndexX.getState())) {
-                    AoyiQueryInventoryResDto aoyiQueryInventoryResDto =
-                            aoyiClientRpcService.weipinhuiQueryItemInventory(aoyiProdIndexX.getMpu(), sku.getSkuId(),
-                                    Integer.valueOf(sku.getRemainNum()), weipinhuiAddress.getWphCode());
-                    if (aoyiQueryInventoryResDto != null) {
-                        inventoryBean.setRemainNum(sku.getRemainNum());
-                        inventoryBean.setState("1");
-                    } else {
-                        inventoryBean = new InventoryBean() ;
-                    }
+                StarSku starSku =  starSkuDao.selectBySkuId(sku.getSkuId());
+
+                // 执行rpc查询库存
+                AoyiQueryInventoryResDto aoyiQueryInventoryResDto =
+                        aoyiClientRpcService.weipinhuiQueryItemInventory(starSku.getSpuId(), sku.getSkuId(),
+                                Integer.valueOf(sku.getRemainNum()), weipinhuiAddress.getWphCode());
+
+                if (aoyiQueryInventoryResDto != null) {
+                    inventoryBean.setRemainNum(sku.getRemainNum());
+                    inventoryBean.setState("1");
+                } else {
+                    inventoryBean = new InventoryBean() ;
                 }
-            }
+
+                }
 
             inventoryBean.setSkuId(sku.getSkuId());
             inventoryBeans.add(inventoryBean);
@@ -225,7 +227,7 @@ public class ProductServiceImpl implements ProductService {
             inventory.setSkuIds(ilist);
 
             InventoryBean inventoryBean = new InventoryBean() ;
-            AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId()) ;
+            AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId());
             if (aoyiProdIndexX != null && "1".equals(aoyiProdIndexX.getState())) {
                 OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
                 inventoryBean = operaResponse.getData();

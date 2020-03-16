@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.mapper.StarSkuMapper;
 import com.fengchao.product.aoyi.mapper.StarSkuXMapper;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -93,6 +94,31 @@ public class StarSkuDao {
         List<StarSku> starSkuList = starSkuMapper.selectByExample(starSkuExample);
 
         return starSkuList;
+    }
+
+    /**
+     * 根据sku查询
+     *
+     * @param skuId
+     * @return
+     */
+    public StarSku selectBySkuId(String skuId) {
+        StarSkuExample starSkuExample = new StarSkuExample();
+
+        StarSkuExample.Criteria criteria = starSkuExample.createCriteria();
+        criteria.andIstatusEqualTo(IStatusEnum.VALID.getCode().shortValue());
+
+        criteria.andSkuIdEqualTo(skuId);
+
+        List<StarSku> starSkuList = starSkuMapper.selectByExample(starSkuExample);
+
+        if (CollectionUtils.isEmpty(starSkuList)) {
+            return null;
+        } else if (starSkuList.size() > 1) {
+            throw new RuntimeException("根据sku查询 数据库结果大于1 与期望不符 skuId:" + skuId);
+        }
+
+        return starSkuList.get(0);
     }
 
     /**
