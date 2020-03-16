@@ -931,6 +931,8 @@ public class OrderServiceImpl implements OrderService {
         // 2. 获取子定单子
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
 
+        logger.info("物流查询 获取到子订单:{}", JSONUtil.toJsonString(logistics));
+
         // 3. 处理唯品会的子订单
         List<Logisticsbean> weipinhuiLogisticsBean = new ArrayList<>();
         for (OrderDetailX orderDetailX : logistics) {
