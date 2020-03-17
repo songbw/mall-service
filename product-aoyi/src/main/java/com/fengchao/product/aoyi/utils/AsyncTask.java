@@ -221,7 +221,7 @@ public class AsyncTask {
                 String retailPrice = skuPriceJson.getString("retailPrice") ;
                 String skuCode = skuPriceJson.getString("code") ;
                 Integer status = skuPriceJson.getInteger("status") ;
-                if (StarSkuStatusEnum.PUT_ON.equals(status)) {
+                if (StarSkuStatusEnum.PUT_ON.getValue() == status) {
                     BigDecimal bigDecimalC = new BigDecimal(channelPrice) ;
                     int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue() ;
                     BigDecimal bigDecimalPrice = new BigDecimal(0) ;
