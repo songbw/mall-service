@@ -94,4 +94,23 @@ public class UserDao {
         List<SUser> userList = mapper.selectByExample(userExample);
         return userList ;
     }
+
+    /**
+     * 根据openId和appId查询用户信息
+     *
+     * @param appId
+     * @param openId
+     * @return
+     */
+    public SUser selectUserByAppIdAndOpenId(String appId, String openId) {
+        SUserExample userExample = new SUserExample();
+        SUserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andIAppIdEqualTo(appId);
+        criteria.andOpenIdEqualTo(openId);
+        List<SUser> userList = mapper.selectByExample(userExample);
+        if (userList != null && userList.size() > 0) {
+            return userList.get(0) ;
+        }
+        return null;
+    }
 }

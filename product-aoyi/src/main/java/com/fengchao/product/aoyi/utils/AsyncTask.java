@@ -238,6 +238,7 @@ public class AsyncTask {
                     } else {
                         starSku.setPrice(advisePrice);
                     }
+                    starSku.setStatus(ProductStatusEnum.PUT_OFF.getValue());
                     starSkuDao.updatePriceByCode(starSku);
                     List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
                     if (!starSkus1.isEmpty()) {
