@@ -219,7 +219,8 @@ public class LoginController {
     }
 
     @GetMapping("/thirdParty/token/gat")
-    public OperaResult getThirdOpenIdGAT(String iAppId, String initCode, OperaResult result) {
+    public OperaResult getThirdOpenIdGAT(String iAppId, String initCode) {
+        OperaResult result = new OperaResult();
         if (StringUtil.isEmpty(initCode)){
             result.setCode(100000);
             result.setMsg("initCode不正确");

@@ -16,6 +16,7 @@ import com.fengchao.sso.service.WeChatService;
 import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -251,30 +252,42 @@ public class LoginServiceImpl implements ILoginService {
         temp.setOpenId(openId.getOpen_id());
         temp.setiAppId(iAppId);
         User user = userMapper.selectByOpenId(temp);
+
         if (user == null) {
             GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id()) ;
+            SUser userByTel = userDao.selectUserByTel(iAppId, guanaitongUserBean.getMobile()) ;
+            Date date = new Date() ;
             user = new User();
-            user.setOpenId(openId.getOpen_id());
-            if (!StringUtils.isEmpty(guanaitongUserBean.getName())) {
-                user.setNickname(guanaitongUserBean.getName());
-            } else {
-                String nickname = "fc_" + guanaitongUserBean.getOpen_id().substring(user.getOpenId().length() - 8);
-                user.setNickname(nickname);
-            }
-            user.setName(guanaitongUserBean.getName());
-            user.setTelephone(guanaitongUserBean.getMobile());
-            user.setiAppId(iAppId);
-            SUser userByTel = new SUser() ;
-            if (!StringUtils.isEmpty(guanaitongUserBean.getMobile())) {
-                userByTel = userDao.selectUserByTel(iAppId, guanaitongUserBean.getMobile()) ;
-            }
-            if (userByTel == null || userByTel.getId() == null || userByTel.getId() == 0) {
+            BindSubAccount bindSubAccount = new BindSubAccount() ;
+            bindSubAccount.setCreatedAt(date);
+            bindSubAccount.setUpdatedAt(date);
+            if (userByTel == null) {
+                user.setOpenId(openId.getOpen_id());
+                if (!StringUtils.isEmpty(guanaitongUserBean.getName())) {
+                    user.setNickname(guanaitongUserBean.getName());
+                } else {
+                    String nickname = "fc_" + guanaitongUserBean.getOpen_id().substring(user.getOpenId().length() - 8);
+                    user.setNickname(nickname);
+                }
+                user.setName(guanaitongUserBean.getName());
+                user.setTelephone(guanaitongUserBean.getMobile());
+                user.setiAppId(iAppId);
                 user.setCreatedAt(new Date());
                 userMapper.insertSelective(user);
+
+
+                bindSubAccount.setUserId(user.getId());
+                bindSubAccount.setOpenId(user.getOpenId());
+                bindSubAccount.setAppId(user.getiAppId());
+                // 添加子账户
+                bindSubAccountMapper.insertSelective(bindSubAccount) ;
             } else {
-                user.setId(userByTel.getId());
-                user.setUpdatedAt(new Date());
-                userMapper.updateByPrimaryKeySelective(user) ;
+                bindSubAccount.setUserId(userByTel.getId());
+                bindSubAccount.setOpenId(openId.getOpen_id());
+                bindSubAccount.setAppId(iAppId);
+                // 添加子账户
+                bindSubAccountMapper.insertSelective(bindSubAccount) ;
+                BeanUtils.copyProperties(userByTel, user);
             }
         }
         result.getData().put("result", accessToken);
@@ -358,29 +371,41 @@ public class LoginServiceImpl implements ILoginService {
         temp.setOpenId(authUserBean.getOpenId());
         temp.setiAppId(iAppId);
         User user = userMapper.selectByOpenId(temp);
+        SUser userByTel = userDao.selectUserByTel(iAppId, authUserBean.getMobileNo()) ;
         if (user == null) {
+            // 生成自己的OpenId, 并且把第三方OpenId写到子账户
+            Date date = new Date() ;
             user = new User();
-            user.setOpenId(authUserBean.getOpenId());
-            if (!StringUtils.isEmpty(authUserBean.getNickName())) {
-                user.setNickname(authUserBean.getNickName());
-            } else {
-                String nickname = "fc_" + authUserBean.getOpenId().substring(user.getOpenId().length() - 8);
-                user.setNickname(nickname);
-            }
-            user.setTelephone(authUserBean.getMobileNo());
-            user.setiAppId(iAppId);
-            SUser userByTel = new SUser() ;
-            if (!StringUtils.isEmpty(authUserBean.getMobileNo())) {
-                userByTel = userDao.selectUserByTel(iAppId, authUserBean.getMobileNo()) ;
-            }
-            if (userByTel == null || userByTel.getId() == null || userByTel.getId() == 0) {
+            BindSubAccount bindSubAccount = new BindSubAccount() ;
+            bindSubAccount.setCreatedAt(date);
+            bindSubAccount.setUpdatedAt(date);
+            if (userByTel == null) {
+                user.setOpenId(authUserBean.getOpenId());
+                if (!StringUtils.isEmpty(authUserBean.getNickName())) {
+                    user.setNickname(authUserBean.getNickName());
+                } else {
+                    String nickname = "fc_" + authUserBean.getOpenId().substring(user.getOpenId().length() - 8);
+                    user.setNickname(nickname);
+                }
+                user.setTelephone(authUserBean.getMobileNo());
+                user.setiAppId(iAppId);
                 user.setCreatedAt(new Date());
                 userMapper.insertSelective(user);
+
+                bindSubAccount.setUserId(user.getId());
+                bindSubAccount.setOpenId(user.getOpenId());
+                bindSubAccount.setAppId(user.getiAppId());
+                // 添加子账户
+                bindSubAccountMapper.insertSelective(bindSubAccount) ;
             } else {
-                user.setId(userByTel.getId());
-                user.setUpdatedAt(new Date());
-                userMapper.updateByPrimaryKeySelective(user) ;
+                bindSubAccount.setUserId(userByTel.getId());
+                bindSubAccount.setOpenId(authUserBean.getOpenId());
+                bindSubAccount.setAppId(iAppId);
+                // 添加子账户
+                bindSubAccountMapper.insertSelective(bindSubAccount) ;
+                BeanUtils.copyProperties(userByTel, user);
             }
+
         }
         if ("11".equals(iAppId)) {
             balanceDao.updateOpenIdByTel(authUserBean.getMobileNo(), authUserBean.getOpenId());
@@ -465,7 +490,7 @@ public class LoginServiceImpl implements ILoginService {
                 user = new SUser() ;
                 user.setiAppId(platform.getAppId());
                 user.setTelephone(bandWXBean.getTelephone());
-                // TODO 生成OpenId和昵称
+                // 生成OpenId和昵称
                 user.setOpenId(Md5Util.md5(user.getTelephone() + user.getiAppId()));
                 String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
                 user.setNickname(nickname);
@@ -486,11 +511,6 @@ public class LoginServiceImpl implements ILoginService {
                 bindSubAccount.setAppId(bandWXBean.getAppId());
                 // 添加
                 bindSubAccountMapper.insertSelective(bindSubAccount) ;
-            } else {
-                // 修改
-                bindSubAccount.setOpenId(bandWXBean.getOpenId());
-                bindSubAccount.setUpdatedAt(date);
-                bindSubAccountMapper.updateByPrimaryKeySelective(bindSubAccount) ;
             }
             result.setData(user);
         } else {
