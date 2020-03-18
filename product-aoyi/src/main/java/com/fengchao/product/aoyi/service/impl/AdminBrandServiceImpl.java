@@ -3,17 +3,15 @@ package com.fengchao.product.aoyi.service.impl;
 import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
-import com.fengchao.product.aoyi.mapper.AoyiBaseBrandMapper;
-import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.mapper.AoyiBaseBrandXMapper;
+import com.fengchao.product.aoyi.model.AoyiBaseBrandX;
 import com.fengchao.product.aoyi.service.AdminBrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,7 +19,7 @@ import java.util.List;
 public class AdminBrandServiceImpl implements AdminBrandService {
 
     @Autowired
-    private AoyiBaseBrandMapper brandMapper;
+    private AoyiBaseBrandXMapper brandMapper;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -32,7 +30,7 @@ public class AdminBrandServiceImpl implements AdminBrandService {
         HashMap map = new HashMap();
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
-        List<AoyiBaseBrand> brands = new ArrayList<>();
+        List<AoyiBaseBrandX> brands = new ArrayList<>();
         total = brandMapper.selectLimitCount(map);
         if (total > 0) {
             brands = brandMapper.selectLimit(map);
@@ -43,14 +41,14 @@ public class AdminBrandServiceImpl implements AdminBrandService {
 
     @CachePut(value = "brand", key = "#bean.brandId")
     @Override
-    public Integer updateBrandbyId(AoyiBaseBrand bean) {
+    public Integer updateBrandbyId(AoyiBaseBrandX bean) {
         brandMapper.updateByPrimaryKeySelective(bean);
         return bean.getBrandId();
     }
 
     @CachePut(value = "brand", key = "#bean.brandId")
     @Override
-    public Integer create(AoyiBaseBrand bean) {
+    public Integer create(AoyiBaseBrandX bean) {
         brandMapper.insertSelective(bean);
         return bean.getBrandId();
     }
@@ -71,7 +69,7 @@ public class AdminBrandServiceImpl implements AdminBrandService {
         map.put("brandName", query);
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
-        List<AoyiBaseBrand> brands = new ArrayList<>();
+        List<AoyiBaseBrandX> brands = new ArrayList<>();
         total = brandMapper.selectLimitCount(map);
         if (total > 0) {
             brands = brandMapper.selectNameList(map);
