@@ -87,7 +87,12 @@ public class LoginServiceImpl implements ILoginService {
         String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
         user.setTelephone(loginBean.getUsername());
         user.setNickname(nickname);
-        return userMapper.insertSelective(user);
+        SUser verify = userDao.selectUserByAppIdAndOpenId(login.getAppId(), login.getUsername()) ;
+        if (verify == null) {
+            return userMapper.insertSelective(user);
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -460,7 +465,14 @@ public class LoginServiceImpl implements ILoginService {
                 user = new SUser() ;
                 user.setiAppId(platform.getAppId());
                 user.setTelephone(bandWXBean.getTelephone());
-                mapper.insertSelective(user) ;
+                // TODO 生成OpenId和昵称
+                user.setOpenId(Md5Util.md5(user.getTelephone() + user.getiAppId()));
+                String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
+                user.setNickname(nickname);
+                SUser verify = userDao.selectUserByAppIdAndOpenId(user.getiAppId(), user.getOpenId()) ;
+                if (verify == null) {
+                    mapper.insertSelective(user) ;
+                }
             }
             // 绑定第三方openId
             BindSubAccount bindSubAccount = bindSubAccountDao.selectByUserIdAndAppId(bandWXBean.getAppId(), user.getId()) ;
