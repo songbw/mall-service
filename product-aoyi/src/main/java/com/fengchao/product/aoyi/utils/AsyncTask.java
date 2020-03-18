@@ -239,10 +239,14 @@ public class AsyncTask {
                         starSku.setPrice(advisePrice);
                     }
                     starSku.setStatus(ProductStatusEnum.PUT_OFF.getValue());
-                    starSkuDao.updatePriceByCode(starSku);
                     List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
                     if (!starSkus1.isEmpty()) {
-                        String spuId = starSkus1.get(0).getSpuId() ;
+                        StarSku checkSku = starSkus1.get(0) ;
+                        if (checkSku.getPrice() > starSku.getPrice()) {
+                            starSku.setPrice(checkSku.getPrice());
+                        }
+                        starSkuDao.updatePriceByCode(starSku);
+                        String spuId = checkSku.getSpuId() ;
                         log.info("spu id is : {}", spuId);
                         if (!spus.contains(spuId)) {
                             spus.add(starSkus1.get(0).getSpuId()) ;
