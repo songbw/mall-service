@@ -14,4 +14,5 @@ public class BindWXBean {
     private String openId ;
     private String code ;
     private String appSrc;
+    private String appId;
 }

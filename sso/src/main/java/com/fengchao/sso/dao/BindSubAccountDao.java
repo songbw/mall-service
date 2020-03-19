@@ -55,16 +55,13 @@ public class BindSubAccountDao {
      * @param openId
      * @return
      */
-    public BindSubAccount selectByOpenIdAndAppId(String appId, String openId) {
+    public List<BindSubAccount> selectByOpenIdAndAppId(String appId, String openId) {
         BindSubAccountExample example  = new BindSubAccountExample();
         BindSubAccountExample.Criteria criteria = example.createCriteria();
         criteria.andAppIdEqualTo(appId);
         criteria.andOpenIdEqualTo(openId);
         List<BindSubAccount> list = mapper.selectByExample(example);
-        if (list != null && list.size() > 0) {
-            return list.get(0) ;
-        }
-        return null;
+        return list;
     }
 
 }

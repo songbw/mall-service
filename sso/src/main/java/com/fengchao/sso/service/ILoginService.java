@@ -26,11 +26,11 @@ public interface ILoginService {
 
     OperaResponse getWXOpenIdByAppIdAndCode(String appId, String code) ;
 
-    OperaResponse verifyCode(String telephone, String type, String appId) ;
+    OperaResponse verifyCode(String telephone, String type, String appId, String appSrc) ;
 
     OperaResponse bindWXOpenId(BindWXBean bandWXBean) ;
 
-    OperaResponse wxBindVerify(String appId, String openSrc) ;
+    OperaResponse wxBindVerify(String appId, String appSrc, String openId) ;
 
     TokenBean login(LoginBean loginBean) ;
 

@@ -274,17 +274,15 @@ public class LoginServiceImpl implements ILoginService {
                 user.setiAppId(iAppId);
                 user.setCreatedAt(new Date());
                 userMapper.insertSelective(user);
-
-
                 bindSubAccount.setUserId(user.getId());
                 bindSubAccount.setOpenId(user.getOpenId());
-                bindSubAccount.setAppId(user.getiAppId());
+                bindSubAccount.setAppId("00");
                 // 添加子账户
                 bindSubAccountMapper.insertSelective(bindSubAccount) ;
             } else {
                 bindSubAccount.setUserId(userByTel.getId());
                 bindSubAccount.setOpenId(openId.getOpen_id());
-                bindSubAccount.setAppId(iAppId);
+                bindSubAccount.setAppId("00");
                 // 添加子账户
                 bindSubAccountMapper.insertSelective(bindSubAccount) ;
                 BeanUtils.copyProperties(userByTel, user);
@@ -394,13 +392,13 @@ public class LoginServiceImpl implements ILoginService {
 
                 bindSubAccount.setUserId(user.getId());
                 bindSubAccount.setOpenId(user.getOpenId());
-                bindSubAccount.setAppId(user.getiAppId());
+                bindSubAccount.setAppId("00");
                 // 添加子账户
                 bindSubAccountMapper.insertSelective(bindSubAccount) ;
             } else {
                 bindSubAccount.setUserId(userByTel.getId());
                 bindSubAccount.setOpenId(authUserBean.getOpenId());
-                bindSubAccount.setAppId(iAppId);
+                bindSubAccount.setAppId("00");
                 // 添加子账户
                 bindSubAccountMapper.insertSelective(bindSubAccount) ;
                 BeanUtils.copyProperties(userByTel, user);
@@ -433,17 +431,22 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public OperaResponse verifyCode(String telephone, String type, String appId) {
+    public OperaResponse verifyCode(String telephone, String type, String appId, String appSrc) {
         OperaResponse result = new OperaResponse() ;
         if(StringUtil.isEmpty(telephone)){
             result.setCode(100000);
             result.setMsg("电话号码不正确");
             return result;
         }
+        if(StringUtil.isEmpty(appSrc)){
+            result.setCode(100000);
+            result.setMsg("appSrc不正确");
+            return result;
+        }
         SMSPostBean smsPostBean = new SMSPostBean() ;
         smsPostBean.setPhone(telephone);
         String code = baseService.send(smsPostBean).getData() ;
-        redisDAO.setKey(type + ":sso:" + appId + telephone, code, 5 * 60 * 1000);
+        redisDAO.setKey(type + ":sso:" + appId + appSrc + telephone, code, 5 * 60 * 1000);
         return result;
     }
 
@@ -467,28 +470,17 @@ public class LoginServiceImpl implements ILoginService {
         }
         if(StringUtil.isEmpty(bandWXBean.getAppSrc())){
             result.setCode(100000);
-            result.setMsg("appId不正确");
+            result.setMsg("appSrc不正确");
             return result;
         }
-        // 根据子账号appId获取主账户appId
-        OperaResponse<Platform> platformOperaResponse = productService.findPlatformBySubAppId(bandWXBean.getAppSrc()) ;
-        Platform platform = new Platform() ;
-        if (platformOperaResponse.getCode() == 200) {
-            platform = platformOperaResponse.getData() ;
-        }
-        if (platform == null) {
-            result.setCode(100000);
-            result.setMsg("appId所属主账户不存在");
-            return result;
-        }
-        String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppSrc() + bandWXBean.getTelephone()) ;
+        String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppId() + bandWXBean.getAppSrc() + bandWXBean.getTelephone()) ;
         if (bandWXBean.getCode().equals(code)) {
             // 绑定openId 查询手机号是否存在，绑定公众号
-            SUser user = userDao.selectUserByTel(platform.getAppId(), bandWXBean.getTelephone()) ;
+            SUser user = userDao.selectUserByTel(bandWXBean.getAppId(), bandWXBean.getTelephone()) ;
             //  如果用户不存在，创建用户ID，继续绑定用户, 输入手机号、appId 创建用户
             if (user == null) {
                 user = new SUser() ;
-                user.setiAppId(platform.getAppId());
+                user.setiAppId(bandWXBean.getAppId());
                 user.setTelephone(bandWXBean.getTelephone());
                 // 生成OpenId和昵称
                 user.setOpenId(Md5Util.md5(user.getTelephone() + user.getiAppId()));
@@ -522,9 +514,9 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public OperaResponse wxBindVerify(String appId, String openSrc) {
+    public OperaResponse wxBindVerify(String appId, String appSrc, String openId) {
         OperaResponse result = new OperaResponse() ;
-        if(StringUtil.isEmpty(openSrc)){
+        if(StringUtil.isEmpty(openId)){
             result.setCode(100000);
             result.setMsg("openId不能为空");
             return result;
@@ -534,9 +526,19 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("appId不正确");
             return result;
         }
-        BindSubAccount bindSubAccount = bindSubAccountDao.selectByOpenIdAndAppId(appId, openSrc) ;
-        if (bindSubAccount != null && bindSubAccount.getUserId() != null) {
-            result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
+        if(StringUtil.isEmpty(appSrc)){
+            result.setCode(100000);
+            result.setMsg("appSrc不正确");
+            return result;
+        }
+        List<BindSubAccount> bindSubAccounts = bindSubAccountDao.selectByOpenIdAndAppId(appSrc, openId) ;
+        if (!bindSubAccounts.isEmpty()) {
+            for (BindSubAccount account : bindSubAccounts) {
+                SUser user = mapper.selectByPrimaryKey(account.getUserId()) ;
+                if (appId.equals(user.getiAppId())) {
+                    result.setData(user);
+                }
+            }
         }
         return result;
     }

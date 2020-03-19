@@ -235,18 +235,19 @@ public class LoginController {
     }
 
     @GetMapping("/code")
-    public OperaResponse verifyCode(@RequestHeader("appId") String appId, String telephone, String type) {
-        return loginService.verifyCode(telephone, type, appId);
+    public OperaResponse verifyCode(@RequestHeader("appId") String appId, String appSrc, String telephone, String type) {
+        return loginService.verifyCode(telephone, type, appId, appSrc);
     }
 
     @PutMapping("/wx/bind")
     public OperaResponse wxBind(@RequestHeader("appId") String appId, @RequestBody BindWXBean bindWXBean) {
+        bindWXBean.setAppId(appId);
         return loginService.bindWXOpenId(bindWXBean);
     }
 
     @GetMapping("/wx/bind/verify")
-    public OperaResponse wxBindVerify(String appId, String openSrc) {
-        return loginService.wxBindVerify(appId, openSrc);
+    public OperaResponse wxBindVerify(@RequestHeader("appId") String appId, String appSrc, String openId) {
+        return loginService.wxBindVerify(appId, appSrc, openId);
     }
 
     @GetMapping("/thirdParty/token/wx")
