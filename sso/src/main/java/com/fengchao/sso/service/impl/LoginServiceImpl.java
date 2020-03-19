@@ -465,13 +465,13 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("验证码不能为空");
             return result;
         }
-        if(StringUtil.isEmpty(bandWXBean.getAppId())){
+        if(StringUtil.isEmpty(bandWXBean.getAppSrc())){
             result.setCode(100000);
             result.setMsg("appId不正确");
             return result;
         }
         // 根据子账号appId获取主账户appId
-        OperaResponse<Platform> platformOperaResponse = productService.findPlatformBySubAppId(bandWXBean.getAppId()) ;
+        OperaResponse<Platform> platformOperaResponse = productService.findPlatformBySubAppId(bandWXBean.getAppSrc()) ;
         Platform platform = new Platform() ;
         if (platformOperaResponse.getCode() == 200) {
             platform = platformOperaResponse.getData() ;
@@ -481,7 +481,7 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("appId所属主账户不存在");
             return result;
         }
-        String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppId() + bandWXBean.getTelephone()) ;
+        String code = redisDAO.getValue("wx:sso:" + bandWXBean.getAppSrc() + bandWXBean.getTelephone()) ;
         if (bandWXBean.getCode().equals(code)) {
             // 绑定openId 查询手机号是否存在，绑定公众号
             SUser user = userDao.selectUserByTel(platform.getAppId(), bandWXBean.getTelephone()) ;
@@ -500,7 +500,7 @@ public class LoginServiceImpl implements ILoginService {
                 }
             }
             // 绑定第三方openId
-            BindSubAccount bindSubAccount = bindSubAccountDao.selectByUserIdAndAppId(bandWXBean.getAppId(), user.getId()) ;
+            BindSubAccount bindSubAccount = bindSubAccountDao.selectByUserIdAndAppId(bandWXBean.getAppSrc(), user.getId()) ;
             Date date = new Date() ;
             if (bindSubAccount == null) {
                 bindSubAccount = new BindSubAccount() ;
@@ -508,7 +508,7 @@ public class LoginServiceImpl implements ILoginService {
                 bindSubAccount.setUpdatedAt(date);
                 bindSubAccount.setUserId(user.getId());
                 bindSubAccount.setOpenId(bandWXBean.getOpenId());
-                bindSubAccount.setAppId(bandWXBean.getAppId());
+                bindSubAccount.setAppId(bandWXBean.getAppSrc());
                 // 添加
                 bindSubAccountMapper.insertSelective(bindSubAccount) ;
             }
@@ -522,9 +522,9 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public OperaResponse wxBindVerify(String appId, String openId) {
+    public OperaResponse wxBindVerify(String appId, String openSrc) {
         OperaResponse result = new OperaResponse() ;
-        if(StringUtil.isEmpty(openId)){
+        if(StringUtil.isEmpty(openSrc)){
             result.setCode(100000);
             result.setMsg("openId不能为空");
             return result;
@@ -534,7 +534,7 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("appId不正确");
             return result;
         }
-        BindSubAccount bindSubAccount = bindSubAccountDao.selectByOpenIdAndAppId(appId, openId) ;
+        BindSubAccount bindSubAccount = bindSubAccountDao.selectByOpenIdAndAppId(appId, openSrc) ;
         if (bindSubAccount != null && bindSubAccount.getUserId() != null) {
             result.setData(mapper.selectByPrimaryKey(bindSubAccount.getUserId()));
         }

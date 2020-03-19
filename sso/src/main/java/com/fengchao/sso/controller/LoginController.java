@@ -245,8 +245,8 @@ public class LoginController {
     }
 
     @GetMapping("/wx/bind/verify")
-    public OperaResponse wxBindVerify(String appId, String openId) {
-        return loginService.wxBindVerify(appId, openId);
+    public OperaResponse wxBindVerify(String appId, String openSrc) {
+        return loginService.wxBindVerify(appId, openSrc);
     }
 
     @GetMapping("/thirdParty/token/wx")
