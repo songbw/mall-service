@@ -131,7 +131,7 @@ public class AggregationServiceImpl implements AggregationService {
         }
         for (int i = 0; i < AggregationArray.size(); i++) {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
-            if (type == 3 ) {
+            if (type == 3 /* PromotionType */ || type == 10 /* HorizontalGoodType */ ) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < jsonArray.size(); j++) {
                     String mpu = jsonArray.getJSONObject(j).getString("mpu");
@@ -139,7 +139,7 @@ public class AggregationServiceImpl implements AggregationService {
                         mpus.add(mpu);
                     }
                 }
-            } else if (type == 4) {
+            } else if (type == 4  /* GoodsType */ || type == 9 /* PromotionListType */) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
@@ -153,7 +153,8 @@ public class AggregationServiceImpl implements AggregationService {
             }
         }
         HashSet<String> hashSet = new HashSet<>(mpus);
-        mpus.clear();mpus.addAll(hashSet);
+        mpus.clear();
+        mpus.addAll(hashSet);
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
         Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
@@ -173,7 +174,7 @@ public class AggregationServiceImpl implements AggregationService {
         }
         for (int i = 0; i < AggregationArray.size(); i++) {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
-            if (type == 3) {
+            if (type == 3 || type == 10) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(j);
@@ -195,11 +196,15 @@ public class AggregationServiceImpl implements AggregationService {
                                 jsonObject.put("price", aoyiProdIndex.getPrice());
                                 jsonObject.put("name", aoyiProdIndex.getName());
                                 jsonObject.put("subTitle", aoyiProdIndex.getSubTitle());
+                                PromotionMpu promotionMpu = promotionMap.get(mpu);
+                                if (type == 10 && promotionMpu != null) {
+                                    jsonObject.put("discount", promotionMpu.getDiscount());
+                                }
                             }
                         }
+                    }
                 }
-            }
-            if (type == 4) {
+            if (type == 4 || type == 9) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
@@ -224,8 +229,8 @@ public class AggregationServiceImpl implements AggregationService {
                                 jsonObject.put("imagePath", aoyiProdIndex.getImage());
                                 jsonObject.put("name", aoyiProdIndex.getName());
                                 jsonObject.put("subTitle", aoyiProdIndex.getSubTitle());
-                                if(promotionMpu != null){
-                                    jsonObject.put("discount",  promotionMpu.getDiscount());
+                                if (type == 4 && promotionMpu != null) {
+                                    jsonObject.put("discount", promotionMpu.getDiscount());
                                 }
                             }
                         }
