@@ -567,6 +567,8 @@ public class AdminOrderController {
             // 转map
             Map<String, List<ExportOrdersVo>> exportMap = convertToExportOrdersVoMapByPay(mergedExportOrdersVoList);
 
+            log.info("导出订单对账单 Map<String, List<ExportOrdersVo>>:{}", JSONUtil.toJsonString(exportMap));
+
             // 4.开始组装excel
             // 创建HSSFWorkbook对象
             workbook = new HSSFWorkbook();
