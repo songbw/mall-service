@@ -2,8 +2,8 @@
 
 set user smartadmin
 set passwd Smartautotech@123
-set host 192.168.200.122
-set port 22
+set host 121.36.52.130
+set port 22051
 set src_dir ./equity/target/
 set tag_dir /data/server/equity/userapps
 set name equity-0.0.1-SNAPSHOT.jar
