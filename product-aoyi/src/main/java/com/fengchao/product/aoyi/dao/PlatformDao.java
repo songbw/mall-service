@@ -55,4 +55,21 @@ public class PlatformDao {
         PageInfo<Platform> pageInfo = new PageInfo(list);
         return pageInfo;
     }
+
+    /**
+     *
+     *
+     * @param appIdList
+     * @return
+     */
+    public List<Platform> selectByAppIdList(List<String> appIdList) {
+        PlatformExample example = new PlatformExample();
+        PlatformExample.Criteria criteria = example.createCriteria();
+
+        criteria.andAppIdIn(appIdList);
+
+        List<Platform> platformList = mapper.selectByExample(example);
+
+        return platformList;
+    }
 }

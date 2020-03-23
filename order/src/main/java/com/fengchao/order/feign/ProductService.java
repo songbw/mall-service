@@ -58,6 +58,14 @@ public interface ProductService {
     OperaResult selectPlatformByAppId(@RequestParam("appId") String appId);
 
     /**
+     * 获取平台信息
+     * @param appIdList
+     * @return
+     */
+    @RequestMapping(value = "/platform/apps", method = RequestMethod.GET)
+    OperaResponse selectPlatformByAppIdList(@RequestParam("appIdList") List<String> appIdList);
+
+    /**
      * 根据mpu,code集合查询产品信息
      *
      * @param mpuIdList

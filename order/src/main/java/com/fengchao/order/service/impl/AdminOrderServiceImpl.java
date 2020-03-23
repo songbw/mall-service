@@ -176,13 +176,25 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Orders> ordersList = ordersDao.selectOrdersListByIdList(ordersIdList, orderExportReqVo.getAppId());
         log.debug("导出订单对账单(入账) 查询主订单 数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
-        //获取平台信息
-        Platform platform = productRpcService.findPlatformByAppId(orderExportReqVo.getAppId());
+        // x. 获取平台信息
+        // Platform platform = productRpcService.findPlatformByAppId(orderExportReqVo.getAppId());
+        List<String> appIdList = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            appIdList.add(orders.getAppId());
+        }
+        List<Platform> platformList = productRpcService.findPlatformByAppIdList(appIdList);
+        // 转map
+        Map<String, String> platformMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(platformList)) {
+            platformMap = platformList.stream().collect(Collectors.toMap(p -> p.getAppId(), p -> p.getName()));
+        }
 
         // 支付方式信息   key : paymentNo,  value : 支付方式列表(List<OrderPayMethodInfoBean>)
         List<String> paymentNoList = new ArrayList<>();
         for (Orders orders : ordersList) {
-            orders.setAppId(platform.getName());
+            String platformName = platformMap.get(orders.getAppId());
+
+            orders.setAppId(StringUtils.isBlank(platformName) ? "--" : platformName);
             if (StringUtils.isNotBlank(orders.getPaymentNo())) {
                 paymentNoList.add(orders.getPaymentNo());
             }

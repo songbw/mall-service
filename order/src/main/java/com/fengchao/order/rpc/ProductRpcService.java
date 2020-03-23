@@ -1,6 +1,7 @@
 package com.fengchao.order.rpc;
 
 import com.alibaba.fastjson.JSON;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.ProductService;
 import com.fengchao.order.rpc.extmodel.Platform;
@@ -101,5 +102,26 @@ public class ProductRpcService {
             log.warn("根据mpu集合查询产品信息 调用product rpc服务 错误!");
         }
         return platform ;
+    }
+
+    /**
+     * 根据appIdList 获取平台信息
+     * @param appIdList
+     * @return
+     */
+    public List<Platform> findPlatformByAppIdList(List<String> appIdList) {
+        List<Platform> platformList = new ArrayList<>();
+        OperaResponse operaResult = productService.selectPlatformByAppIdList(appIdList);
+
+        log.info("根据appIdList获取平台信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+        // 处理返回
+        if (operaResult.getCode() == 200) {
+            platformList = (List) operaResult.getData();
+        } else {
+            log.warn("根据appIdList获取平台信息 调用product rpc服务 错误!");
+        }
+
+        log.info("根据appIdList获取平台信息 返回:{}", JSONUtil.toJsonString(platformList));
+        return platformList ;
     }
 }

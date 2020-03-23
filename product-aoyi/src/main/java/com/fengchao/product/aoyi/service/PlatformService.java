@@ -4,6 +4,8 @@ import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.model.Platform;
 
+import java.util.List;
+
 /**
  * @author songbw
  * @date 2019/11/22 10:23
@@ -21,6 +23,14 @@ public interface PlatformService {
     OperaResponse find(Integer id) ;
 
     Platform findByAppId(String appId) ;
+
+    /**
+     *
+     *
+     * @param appIdList
+     * @return
+     */
+    List<Platform> findByAppIdList(List<String> appIdList) ;
 
     Platform findBySubAppId(String appId) ;
 }
