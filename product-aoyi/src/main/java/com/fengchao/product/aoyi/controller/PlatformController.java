@@ -60,8 +60,8 @@ public class PlatformController {
     }
 
     @GetMapping("/apps")
-    private OperaResponse findByAppIdList(@RequestParam("appIdList") List<String> appIdList) {
-        OperaResponse response = new OperaResponse() ;
+    private OperaResponse<List<Platform> > findByAppIdList(@RequestParam("appIdList") List<String> appIdList) {
+        OperaResponse<List<Platform>>  response = new OperaResponse();
 
         response.setData(service.findByAppIdList(appIdList));
         return response;

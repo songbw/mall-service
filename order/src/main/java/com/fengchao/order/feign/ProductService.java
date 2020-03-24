@@ -5,6 +5,7 @@ import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.OperaResult;
 import com.fengchao.order.feign.hystric.ProductServiceH;
 import com.fengchao.order.model.AoyiProdIndex;
+import com.fengchao.order.rpc.extmodel.Platform;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +64,7 @@ public interface ProductService {
      * @return
      */
     @RequestMapping(value = "/platform/apps", method = RequestMethod.GET)
-    OperaResponse selectPlatformByAppIdList(@RequestParam("appIdList") List<String> appIdList);
+    OperaResponse<List<Platform>> selectPlatformByAppIdList(@RequestParam("appIdList") List<String> appIdList);
 
     /**
      * 根据mpu,code集合查询产品信息

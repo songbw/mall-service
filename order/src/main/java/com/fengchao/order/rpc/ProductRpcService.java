@@ -121,7 +121,7 @@ public class ProductRpcService {
             log.warn("根据appIdList获取平台信息 调用product rpc服务 错误!");
         }
 
-        log.info("根据appIdList获取平台信息 返回:{}", JSONUtil.toJsonString(platformList));
+        log.info("根据appIdList获取平台信息 rpc 返回:{}", JSONUtil.toJsonString(platformList));
         return platformList ;
     }
 }
