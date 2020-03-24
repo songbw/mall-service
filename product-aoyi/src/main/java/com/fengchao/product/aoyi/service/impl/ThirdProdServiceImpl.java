@@ -231,6 +231,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         OperaResponse operaResponse = new OperaResponse();
         if ("1".equals(bean.getState())) {
             AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(bean.getSkuId()) ;
+            logger.info("第三方更新状态接口，商品信息：{}", JSONUtil.toJsonString(aoyiProdIndex));
             if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                 operaResponse.setCode(200100);
                 operaResponse.setMsg("类别不能为空");
