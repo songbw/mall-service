@@ -254,7 +254,7 @@ public class AsyncTask {
                             PriceBean priceBean = new PriceBean() ;
                             priceBean.setSkuId(starSkus1.get(0).getSpuId());
                             priceBean.setMerchantId(4);
-                            priceBean.setPrice(retailPrice);
+                            priceBean.setPrice(new BigDecimal(starSku.getPrice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
                             priceBean.setSPrice(channelPrice);
                             productDao.updatePrice(priceBean) ;
                         }
