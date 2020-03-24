@@ -41,6 +41,7 @@ public class CardInfoServiceImpl implements CardInfoService {
         cardInfo.setEffectiveDays(bean.getEffectiveDays());
         cardInfo.setType(bean.getType());
         cardInfo.setAppId(bean.getAppId());
+        cardInfo.setCorporationCode(bean.getCorporationCode());
         int cardTicket = dao.createCardTicket(cardInfo);
         if(cardTicket == 1){
             for (int i = 0; i < bean.getCouponIds().size(); i++){
@@ -60,8 +61,10 @@ public class CardInfoServiceImpl implements CardInfoService {
 
     @Override
     public CardInfoX findByCardId(Integer id) {
-        CardInfoX cardInfoX = dao.findByCardId(id);
+        CardInfo cardInfo = dao.findByCardId(id);
         List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(id);
+        CardInfoX cardInfoX = new CardInfoX();
+        BeanUtils.copyProperties(cardInfo,cardInfoX);
         cardInfoX.setCouponIds(couponIds);
 
         return cardInfoX;

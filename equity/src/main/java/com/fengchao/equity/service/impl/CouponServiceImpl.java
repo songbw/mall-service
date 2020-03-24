@@ -103,23 +103,26 @@ public class CouponServiceImpl implements CouponService {
             Date now = new Date();
             if(couponById.getReleaseStartDate().after(now)){
 
-                coupon.setStatus(3);
+                coupon.setStatus(CouponStatusEnum.READY_GO.getCode());
                 JobClientUtils.couponEffectiveTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseStartDate());
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                if(coupon.getCouponType()!= null && coupon.getCouponType() != 4){
+                if (null != coupon.getCouponType() &&
+                        !CouponTypeEnum.GIFT_PACKAGE.equals(coupon.getCouponType())) {
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }else if(couponById.getReleaseStartDate().before(now)  && couponById.getReleaseEndDate().after(now)){
 
-                coupon.setStatus(4);
+                coupon.setStatus(CouponStatusEnum.UNDERGOING.getCode());
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                if(coupon.getCouponType()!= null && coupon.getCouponType() != 4){
+                if (null != coupon.getCouponType() &&
+                        !CouponTypeEnum.GIFT_PACKAGE.equals(coupon.getCouponType())) {
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }else if(couponById.getReleaseEndDate().before(now)){
 
-                coupon.setStatus(5);
-                if(coupon.getCouponType()!= null && coupon.getCouponType() != 4){
+                coupon.setStatus(CouponStatusEnum.INVALID.getCode());
+                if (null != coupon.getCouponType() &&
+                        !CouponTypeEnum.GIFT_PACKAGE.equals(coupon.getCouponType())) {
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }

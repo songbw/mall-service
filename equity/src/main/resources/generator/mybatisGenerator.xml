@@ -12,7 +12,7 @@
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
         <!--数据库链接URL，用户名、密码 -->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.200.37:3306/fc_mall" userId="fengchao" password="Smartautotech@123">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://122.112.211.218:33143/fc_mall" userId="fengchao" password="Smartautotech@123">
         </jdbcConnection>
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
@@ -40,8 +40,11 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="promotion_mpu">
+        <!--table tableName="promotion_mpu">
             <generatedKey column="id" sqlStatement="JDBC" />
+        </table-->
+        <table tableName="card_info" domainObjectName="CardInfo" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="id">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
     </context>
 </generatorConfiguration>

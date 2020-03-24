@@ -100,7 +100,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             couponUseInfo.setUrl(url);
             num = mapper.insertSelective(couponUseInfo);
             couponUseInfoBean.setUserCouponCode(user_coupon_code);
-        }else if(coupon.getCollectType() == 4){
+        }else if(CouponCollectTypeEnum.MANUAL_ASSIGN.equals(coupon.getCollectType())){
             couponUseInfoBean.setUserCouponCode("3");
             return couponUseInfoBean;
         }else{
@@ -281,7 +281,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return num;
         }
 
-        if(coupon.getCollectType() == null || coupon.getCollectType() != 4){
+        if(coupon.getCollectType() == null ||
+                !CouponCollectTypeEnum.MANUAL_ASSIGN.equals(coupon.getCollectType())){
             num = 1002;
             return num;
         }
@@ -331,7 +332,8 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             return num;
         }
 
-        if(coupon.getCollectType() == null || coupon.getCollectType() != 4){
+        if(null == coupon.getCollectType() ||
+                !CouponCollectTypeEnum.MANUAL_ASSIGN.equals(coupon.getCollectType())){
             num = 1002;
             return num;
         }
