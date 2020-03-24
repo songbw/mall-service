@@ -13,5 +13,6 @@ public class BindWXBean {
     private String telephone ;
     private String openId ;
     private String code ;
-    private String appId ;
+    private String appSrc;
+    private String appId;
 }

@@ -55,4 +55,9 @@ public class ProductServiceH implements ProductService {
     public OperaResponse findSpu(String mpu, String code) {
         return HystrixDefaultFallback.fallbackResponse(cause);
     }
+
+    @Override
+    public OperaResponse selectPlatformByAppIdList(List<String> appIdList) {
+        return HystrixDefaultFallback.fallbackResponse(cause);
+    }
 }

@@ -219,7 +219,8 @@ public class LoginController {
     }
 
     @GetMapping("/thirdParty/token/gat")
-    public OperaResult getThirdOpenIdGAT(String iAppId, String initCode, OperaResult result) {
+    public OperaResult getThirdOpenIdGAT(String iAppId, String initCode) {
+        OperaResult result = new OperaResult();
         if (StringUtil.isEmpty(initCode)){
             result.setCode(100000);
             result.setMsg("initCode不正确");
@@ -234,18 +235,19 @@ public class LoginController {
     }
 
     @GetMapping("/code")
-    public OperaResponse verifyCode(@RequestHeader("appId") String appId, String telephone, String type) {
-        return loginService.verifyCode(telephone, type, appId);
+    public OperaResponse verifyCode(@RequestHeader("appId") String appId, String appSrc, String telephone, String type) {
+        return loginService.verifyCode(telephone, type, appId, appSrc);
     }
 
     @PutMapping("/wx/bind")
     public OperaResponse wxBind(@RequestHeader("appId") String appId, @RequestBody BindWXBean bindWXBean) {
+        bindWXBean.setAppId(appId);
         return loginService.bindWXOpenId(bindWXBean);
     }
 
     @GetMapping("/wx/bind/verify")
-    public OperaResponse wxBindVerify(String appId, String openId) {
-        return loginService.wxBindVerify(appId, openId);
+    public OperaResponse wxBindVerify(@RequestHeader("appId") String appId, String appSrc, String openId) {
+        return loginService.wxBindVerify(appId, appSrc, openId);
     }
 
     @GetMapping("/thirdParty/token/wx")

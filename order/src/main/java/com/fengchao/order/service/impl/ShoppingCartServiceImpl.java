@@ -249,6 +249,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         List<String> mpus = new ArrayList<>() ;
         mpus.add(mpu) ;
         OperaResult result = equityService.findPromotionByMpuList(mpus, appId);
+        log.info("promotion limit 返回结果： {}", JSONUtil.toJsonString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");

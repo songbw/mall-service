@@ -239,10 +239,14 @@ public class AsyncTask {
                         starSku.setPrice(advisePrice);
                     }
                     starSku.setStatus(ProductStatusEnum.PUT_OFF.getValue());
-                    starSkuDao.updatePriceByCode(starSku);
                     List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
                     if (!starSkus1.isEmpty()) {
-                        String spuId = starSkus1.get(0).getSpuId() ;
+                        StarSku checkSku = starSkus1.get(0) ;
+                        if (checkSku.getPrice() > starSku.getPrice()) {
+                            starSku.setPrice(checkSku.getPrice());
+                        }
+                        starSkuDao.updatePriceByCode(starSku);
+                        String spuId = checkSku.getSpuId() ;
                         log.info("spu id is : {}", spuId);
                         if (!spus.contains(spuId)) {
                             spus.add(starSkus1.get(0).getSpuId()) ;
@@ -250,7 +254,7 @@ public class AsyncTask {
                             PriceBean priceBean = new PriceBean() ;
                             priceBean.setSkuId(starSkus1.get(0).getSpuId());
                             priceBean.setMerchantId(4);
-                            priceBean.setPrice(retailPrice);
+                            priceBean.setPrice(new BigDecimal(starSku.getPrice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
                             priceBean.setSPrice(channelPrice);
                             productDao.updatePrice(priceBean) ;
                         }

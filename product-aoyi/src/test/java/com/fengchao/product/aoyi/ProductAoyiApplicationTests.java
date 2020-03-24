@@ -86,17 +86,17 @@ public class ProductAoyiApplicationTests {
 //		int count = indexXMapper.selectPriceCount(map) ;
 //		List<ProductExportResVo> productExportResVos = indexXMapper.selectProductPriceListPageable(map) ;
 //		System.out.println(count);
-		int floorPriceRate = 110;
-		DecimalFormat df = new DecimalFormat("0.00");
-		String s = df.format((float)floorPriceRate/100);
-		float param = Float.valueOf(s.trim()).floatValue();
-		List<ProductExportResVo> productExportResVoList = new ArrayList<>() ;
-		try {
-//			productExportResVoList =  prodService.exportProductPriceList(param) ;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println(productExportResVoList);
+//		int floorPriceRate = 110;
+//		DecimalFormat df = new DecimalFormat("0.00");
+//		String s = df.format((float)floorPriceRate/100);
+//		float param = Float.valueOf(s.trim()).floatValue();
+//		List<ProductExportResVo> productExportResVoList = new ArrayList<>() ;
+//		try {
+////			productExportResVoList =  prodService.exportProductPriceList(param) ;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		System.out.println(new BigDecimal(162900).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
 	}
 
 	@Ignore
