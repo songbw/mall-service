@@ -111,6 +111,12 @@ public class ProductRpcService {
      */
     public List<Platform> findPlatformByAppIdList(List<String> appIdList) {
         List<Platform> platformList = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(appIdList)) {
+            log.info("根据appIdList获取平台信息 rpc 入参为空 返回");
+            return platformList;
+        }
+
         OperaResponse operaResult = productService.selectPlatformByAppIdList(appIdList);
 
         log.info("根据appIdList获取平台信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));

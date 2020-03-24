@@ -99,6 +99,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         List<Orders> ordersList = adminOrderDao.selectExportOrders(queryConditions, startDateTime, endDateTime);
         log.info("导出订单 查询数据库结果List<Orders>:{}", JSONUtil.toJsonString(ordersList));
 
+        if (CollectionUtils.isEmpty(ordersList)) {
+            return Collections.emptyList();
+        }
+
         // x. 获取平台信息
         // Platform platform = productRpcService.findPlatformByAppId(orderExportReqVo.getAppId());
         List<String> appIdList = new ArrayList<>();
@@ -110,10 +114,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         Map<String, String> platformMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(platformList)) {
             platformMap = platformList.stream().collect(Collectors.toMap(p -> p.getAppId(), p -> p.getName()));
-        }
-
-        if (CollectionUtils.isEmpty(ordersList)) {
-            return Collections.emptyList();
         }
 
         // 2. 根据上一步，查询子订单(注意条件：子订单号、商家id)
