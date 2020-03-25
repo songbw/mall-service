@@ -734,6 +734,76 @@ public class CardInfoExample {
             addCriterion("app_id not between", value1, value2, "appId");
             return (Criteria) this;
         }
+
+        public Criteria andCorporationCodeIsNull() {
+            addCriterion("corporation_code is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeIsNotNull() {
+            addCriterion("corporation_code is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeEqualTo(String value) {
+            addCriterion("corporation_code =", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeNotEqualTo(String value) {
+            addCriterion("corporation_code <>", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeGreaterThan(String value) {
+            addCriterion("corporation_code >", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeGreaterThanOrEqualTo(String value) {
+            addCriterion("corporation_code >=", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeLessThan(String value) {
+            addCriterion("corporation_code <", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeLessThanOrEqualTo(String value) {
+            addCriterion("corporation_code <=", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeLike(String value) {
+            addCriterion("corporation_code like", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeNotLike(String value) {
+            addCriterion("corporation_code not like", value, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeIn(List<String> values) {
+            addCriterion("corporation_code in", values, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeNotIn(List<String> values) {
+            addCriterion("corporation_code not in", values, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeBetween(String value1, String value2) {
+            addCriterion("corporation_code between", value1, value2, "corporationCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andCorporationCodeNotBetween(String value1, String value2) {
+            addCriterion("corporation_code not between", value1, value2, "corporationCode");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

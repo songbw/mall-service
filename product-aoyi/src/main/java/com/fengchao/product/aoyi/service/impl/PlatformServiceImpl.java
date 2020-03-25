@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author songbw
@@ -99,5 +100,11 @@ public class PlatformServiceImpl implements PlatformService {
     public Platform findBySubAppId(String appId) {
         Platform sub = dao.selectByAppId(appId) ;
         return mapper.selectByPrimaryKey(sub.getParentId());
+    }
+
+    @Override
+    public List<Platform> findByAppIdList(List<String> appIdList) {
+        List<Platform> platformList = dao.selectByAppIdList(appIdList);
+        return platformList;
     }
 }

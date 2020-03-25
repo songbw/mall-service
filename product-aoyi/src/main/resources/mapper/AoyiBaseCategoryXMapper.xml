@@ -238,4 +238,21 @@
     <include refid="Base_Column_List" />
     from aoyi_base_category
   </select>
+
+
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into aoyi_base_category
+    (category_id, category_name, parent_id, category_class, category_desc, idate)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.categoryId},
+      #{item.categoryName},
+      #{item.parentId},
+      #{item.categoryClass},
+      #{item.categoryDesc},
+      #{item.idate}
+      )
+    </foreach>
+  </insert>
 </mapper>

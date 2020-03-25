@@ -29,6 +29,8 @@ public class StarSku {
 
     private Date createTime;
 
+    private String merchantCode;
+
     public Integer getId() {
         return id;
     }
@@ -131,5 +133,13 @@ public class StarSku {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getMerchantCode() {
+        return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode == null ? null : merchantCode.trim();
     }
 }

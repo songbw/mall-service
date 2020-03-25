@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.product.aoyi.mapper.AoyiBaseBrandXMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
+    <id column="brand_id" property="brandId" jdbcType="INTEGER" />
+    <result column="brand_name" property="brandName" jdbcType="VARCHAR" />
+    <result column="brand_cname" property="brandCname" jdbcType="VARCHAR" />
+    <result column="brand_ename" property="brandEname" jdbcType="VARCHAR" />
+    <result column="brand_first_char" property="brandFirstChar" jdbcType="CHAR" />
+    <result column="brand_logo" property="brandLogo" jdbcType="VARCHAR" />
+    <result column="site_url" property="siteUrl" jdbcType="VARCHAR" />
+    <result column="sort_order" property="sortOrder" jdbcType="TINYINT" />
+    <result column="is_show" property="isShow" jdbcType="BIT" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiBaseBrandX" extends="BaseResultMap" >
+    <result column="brand_desc" property="brandDesc" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    brand_id, brand_name, brand_cname, brand_ename, brand_first_char, brand_logo, site_url, 
+    sort_order, is_show, add_time
+  </sql>
+  <sql id="Blob_Column_List" >
+    brand_desc
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from aoyi_base_brand
+    where brand_id = #{brandId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from aoyi_base_brand
+    where brand_id = #{brandId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
+    insert into aoyi_base_brand (brand_name, brand_cname,
+      brand_ename, brand_first_char, brand_logo, 
+      site_url, sort_order, is_show, 
+      add_time, brand_desc)
+    values (#{brandName,jdbcType=VARCHAR}, #{brandCname,jdbcType=VARCHAR},
+      #{brandEname,jdbcType=VARCHAR}, #{brandFirstChar,jdbcType=CHAR}, #{brandLogo,jdbcType=VARCHAR}, 
+      #{siteUrl,jdbcType=VARCHAR}, #{sortOrder,jdbcType=TINYINT}, #{isShow,jdbcType=BIT}, 
+      #{addTime}, #{brandDesc,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX"  keyProperty="brandId" useGeneratedKeys="true">
+    insert into aoyi_base_brand
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        brand_id,
+      </if>
+      <if test="brandName != null" >
+        brand_name,
+      </if>
+      <if test="brandCname != null" >
+        brand_cname,
+      </if>
+      <if test="brandEname != null" >
+        brand_ename,
+      </if>
+      <if test="brandFirstChar != null" >
+        brand_first_char,
+      </if>
+      <if test="brandLogo != null" >
+        brand_logo,
+      </if>
+      <if test="siteUrl != null" >
+        site_url,
+      </if>
+      <if test="sortOrder != null" >
+        sort_order,
+      </if>
+      <if test="isShow != null" >
+        is_show,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="brandDesc != null" >
+        brand_desc,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        #{brandId},
+      </if>
+      <if test="brandName != null" >
+        #{brandName,jdbcType=VARCHAR},
+      </if>
+      <if test="brandCname != null" >
+        #{brandCname,jdbcType=VARCHAR},
+      </if>
+      <if test="brandEname != null" >
+        #{brandEname,jdbcType=VARCHAR},
+      </if>
+      <if test="brandFirstChar != null" >
+        #{brandFirstChar,jdbcType=CHAR},
+      </if>
+      <if test="brandLogo != null" >
+        #{brandLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="siteUrl != null" >
+        #{siteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null" >
+        #{sortOrder,jdbcType=TINYINT},
+      </if>
+      <if test="isShow != null" >
+        #{isShow,jdbcType=BIT},
+      </if>
+      <if test="addTime != null" >
+        #{addTime},
+      </if>
+      <if test="brandDesc != null" >
+        #{brandDesc,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX"  keyProperty="brandId" useGeneratedKeys="true">
+    update aoyi_base_brand
+    <set >
+      <if test="brandName != null" >
+        brand_name = #{brandName,jdbcType=VARCHAR},
+      </if>
+      <if test="brandCname != null" >
+        brand_cname = #{brandCname,jdbcType=VARCHAR},
+      </if>
+      <if test="brandEname != null" >
+        brand_ename = #{brandEname,jdbcType=VARCHAR},
+      </if>
+      <if test="brandFirstChar != null" >
+        brand_first_char = #{brandFirstChar,jdbcType=CHAR},
+      </if>
+      <if test="brandLogo != null" >
+        brand_logo = #{brandLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="siteUrl != null" >
+        site_url = #{siteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null" >
+        sort_order = #{sortOrder,jdbcType=TINYINT},
+      </if>
+      <if test="isShow != null" >
+        is_show = #{isShow,jdbcType=BIT},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime},
+      </if>
+      <if test="brandDesc != null" >
+        brand_desc = #{brandDesc,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where brand_id = #{brandId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
+    update aoyi_base_brand
+    set brand_name = #{brandName,jdbcType=VARCHAR},
+      brand_cname = #{brandCname,jdbcType=VARCHAR},
+      brand_ename = #{brandEname,jdbcType=VARCHAR},
+      brand_first_char = #{brandFirstChar,jdbcType=CHAR},
+      brand_logo = #{brandLogo,jdbcType=VARCHAR},
+      site_url = #{siteUrl,jdbcType=VARCHAR},
+      sort_order = #{sortOrder,jdbcType=TINYINT},
+      is_show = #{isShow,jdbcType=BIT},
+      add_time = #{addTime},
+      brand_desc = #{brandDesc,jdbcType=LONGVARCHAR}
+    where brand_id = #{brandId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AoyiBaseBrandX" >
+    update aoyi_base_brand
+    set brand_name = #{brandName,jdbcType=VARCHAR},
+      brand_cname = #{brandCname,jdbcType=VARCHAR},
+      brand_ename = #{brandEname,jdbcType=VARCHAR},
+      brand_first_char = #{brandFirstChar,jdbcType=CHAR},
+      brand_logo = #{brandLogo,jdbcType=VARCHAR},
+      site_url = #{siteUrl,jdbcType=VARCHAR},
+      sort_order = #{sortOrder,jdbcType=TINYINT},
+      is_show = #{isShow,jdbcType=BIT},
+      add_time = #{addTime}
+    where brand_id = #{brandId,jdbcType=INTEGER}
+  </update>
+  <select id="selectLimitCount" resultType="java.lang.Integer" parameterType="Map">
+    select
+    count(brand_id)
+    from aoyi_base_brand
+    WHERE 1=1
+    <if test="brandName != null" >
+      <bind name="pattern" value="'%' + brandName + '%'" />
+      AND brand_name LIKE #{pattern}
+    </if>
+  </select>
+  <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from aoyi_base_brand
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectNameList" resultMap="BaseResultMap" parameterType="Map">
+    <bind name="pattern" value="'%' + brandName + '%'" />
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM  aoyi_base_brand
+    WHERE brand_name LIKE #{pattern}
+    limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectByBrandIdList" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    FROM  aoyi_base_brand where brand_id in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into aoyi_base_brand
+    (brand_id, brand_name, brand_desc)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.brandId},
+      #{item.brandName},
+      #{item.brandDesc}
+      )
+    </foreach>
+  </insert>
+
+</mapper>

@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author songbw
  * @date 2019/11/22 10:54
@@ -54,6 +56,14 @@ public class PlatformController {
             return response ;
         }
         response.setData(service.findByAppId(appId));
+        return response;
+    }
+
+    @GetMapping("/apps")
+    private OperaResponse<List<Platform> > findByAppIdList(@RequestParam("appIdList") List<String> appIdList) {
+        OperaResponse<List<Platform>>  response = new OperaResponse();
+
+        response.setData(service.findByAppIdList(appIdList));
         return response;
     }
 

@@ -35,4 +35,6 @@ public class CardInfoBean {
     private Integer pageNo = 1;
 
     private Integer pageSize = 10;
+
+    private String corporationCode;
 }

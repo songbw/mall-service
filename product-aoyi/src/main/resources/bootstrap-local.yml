@@ -1,1 +1,145 @@
 spring.cloud.service-registry.auto-registration.enabled: false
+
+rpc:
+  feign:
+    client:
+      aoyiclient:
+       url: http://localhost:8001
+
+server:
+  compression:
+    enabled: true
+    mime-types:
+      - image/png
+      - image/jpeg
+      - image/jpg
+      - text/html
+      - application/javascript
+      - text/css
+      - application/octet-stream
+      - application/json
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.fengchao.product.aoyi.model
+
+spring:
+  #zipkin:
+  #  baseUrl: http://localhost:9411
+  #  locator:
+  #    discovery:
+  #      enabled: true
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    druid:
+      one:
+        url: jdbc:mysql://139.9.114.143:3306/fc_mall?characterEncoding=utf8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useTimezone=true&serverTimezone=GMT%2B8
+        username: fengchao
+        password: Smartautotech@123
+      two:
+        url: jdbc:mysql://139.9.114.143:3306/fc_mall?characterEncoding=utf8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useTimezone=true&serverTimezone=GMT%2B8
+        username: fengchao
+        password: Smartautotech@123
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+      removeAbandoned: true
+  jackson:
+    time-zone: GMT+8
+  # Redis
+  cache:
+    type: redis
+  redis:
+    host: 192.168.0.73
+    port: 6379
+    password: Smartautotech@123
+    timeout: 10000
+    database: 0
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+
+feign:
+  compression:
+    response:
+      enabled: true
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+        loggerLevel: basic
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+
+lts:
+  jobclient:
+    cluster-name: test_cluster
+    registry-address: zookeeper://peer5:2181
+    node-group: test_jobClient
+    use-retry-client: true
+    configs:
+      job:
+        fail:
+          store: mapdb
+
+  tasktracker:
+    cluster-name: test_cluster
+    registry-address: zookeeper://peer5:2181
+    node-group: product_trade_TaskTracker_wuxi
+    configs:
+      job:
+        fail:
+          store: mapdb
+
+management:
+  loggers:
+    enabled: true
+    sensitive: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+
+

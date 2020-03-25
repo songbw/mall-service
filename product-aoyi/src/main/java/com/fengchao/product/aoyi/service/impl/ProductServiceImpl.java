@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.constants.ProductConstant;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -12,6 +13,8 @@ import com.fengchao.product.aoyi.feign.ESService;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.*;
+import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.CosUtil;
@@ -59,6 +62,12 @@ public class ProductServiceImpl implements ProductService {
     private StarPropertyDao starPropertyDao ;
     @Autowired
     private StarSkuDao starSkuDao ;
+
+    @Autowired
+    private AoyiClientRpcService aoyiClientRpcService;
+
+    @Autowired
+    private WeipinhuiAddressDao weipinhuiAddressDao;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -139,11 +148,77 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public OperaResult findInventory(InventoryQueryBean queryBean) {
         OperaResult operaResult = new OperaResult();
+        // 1. 首先将InventoryQueryBean 按照供应商分开，目前供应商先按照分为 唯品会 和 其他
+        List<InventoryBean> weipinhuiSkuList = new ArrayList<>(); // 唯品会
+        List<InventoryBean> otherSkuList = new ArrayList<>(); // 其他
+
+        List<InventoryBean> inventoryBeanList = queryBean.getSkus();
+        for (InventoryBean _inventroyBean : inventoryBeanList) {
+            if (_inventroyBean.getSkuId().startsWith(ProductConstant.MERCHANTNO_WEIPINHUI) == true) { // 唯品会的sku
+                weipinhuiSkuList.add(_inventroyBean);
+            } else { // 其他供应商
+                otherSkuList.add(_inventroyBean);
+            }
+        }
+
+        // 2. 组装唯品会  和 其他 供应商的信息
+        // 2.1 唯品会
+        InventoryQueryBean weipinhuiInventoryQueryBean = new InventoryQueryBean();
+        weipinhuiInventoryQueryBean.setCityId(queryBean.getCityId());
+        weipinhuiInventoryQueryBean.setCountyId(queryBean.getCountyId());
+        weipinhuiInventoryQueryBean.setSkus(weipinhuiSkuList);
+
+        // 2.2 其他
+        InventoryQueryBean otherInventoryQueryBean = new InventoryQueryBean();
+        otherInventoryQueryBean.setCityId(queryBean.getCityId());
+        otherInventoryQueryBean.setCountyId(queryBean.getCountyId());
+        otherInventoryQueryBean.setSkus(otherSkuList);
+
+        log.info("查询库存  按照供应商分开商品 weipinhuiInventoryQueryBean:{}, otherInventoryQueryBean:{}",
+                JSONUtil.toJsonString(weipinhuiInventoryQueryBean), JSONUtil.toJsonString(otherInventoryQueryBean));
+
+        // 4. 分别进行库存查询
         List<InventoryBean> inventoryBeans = new ArrayList<>() ;
-        for (InventoryBean sku : queryBean.getSkus()) {
+
+        // 4.1 唯品会库存查询
+        for (InventoryBean sku : weipinhuiInventoryQueryBean.getSkus()) {
+            // 需要将库存信息处理成的对象
+            InventoryBean inventoryBean = new InventoryBean() ;
+
+            // 翻译地址
+            WeipinhuiAddress weipinhuiAddress =
+                    weipinhuiAddressDao.selectBySuningAddress(queryBean.getCountyId(), queryBean.getCityId(), 3);
+            if (weipinhuiAddress == null) {
+                log.warn("查询库存 未获取到唯品会的对应地址信息 countryId:{}, cityId:{}",
+                        queryBean.getCountyId(), queryBean.getCityId());
+            } else {
+                // 查询spu信息
+                StarSku starSku =  starSkuDao.selectBySkuId(sku.getSkuId());
+
+                // 执行rpc查询库存
+                AoyiQueryInventoryResDto aoyiQueryInventoryResDto =
+                        aoyiClientRpcService.weipinhuiQueryItemInventory(starSku.getSpuId(), sku.getSkuId(),
+                                Integer.valueOf(sku.getRemainNum()), weipinhuiAddress.getWphCode());
+
+                if (aoyiQueryInventoryResDto != null) {
+                    inventoryBean.setRemainNum(sku.getRemainNum());
+                    inventoryBean.setState("1");
+                } else {
+                    inventoryBean = new InventoryBean() ;
+                }
+
+                }
+
+            inventoryBean.setSkuId(sku.getSkuId());
+            inventoryBeans.add(inventoryBean);
+        }
+
+        // 4.2 其他供应商的库存查询
+        for (InventoryBean sku : otherInventoryQueryBean.getSkus()) {
             QueryInventory inventory = new QueryInventory();
             inventory.setCityId(queryBean.getCityId());
             inventory.setCountyId(queryBean.getCountyId());
+
             List<InventorySkus> ilist = new ArrayList<>();
             InventorySkus inventorySkus = new InventorySkus();
             inventorySkus.setNum(sku.getRemainNum());
@@ -151,8 +226,9 @@ public class ProductServiceImpl implements ProductService {
             inventorySkus.setProdPrice(sku.getPrice());
             ilist.add(inventorySkus);
             inventory.setSkuIds(ilist);
+
             InventoryBean inventoryBean = new InventoryBean() ;
-            AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId()) ;
+            AoyiProdIndex aoyiProdIndexX =  productDao.selectByMpu(sku.getSkuId());
             if (aoyiProdIndexX != null && "1".equals(aoyiProdIndexX.getState())) {
                 OperaResponse<InventoryBean> operaResponse = aoyiClientService.inventory(inventory);
                 inventoryBean = operaResponse.getData();
@@ -162,10 +238,14 @@ public class ProductServiceImpl implements ProductService {
                     inventoryBean = new InventoryBean() ;
                 }
             }
+
             inventoryBean.setSkuId(sku.getSkuId());
             inventoryBeans.add(inventoryBean);
         }
-        operaResult.getData().put("result", inventoryBeans) ;
+
+        operaResult.getData().put("result", inventoryBeans);
+        log.info("查询库存 ProductServiceImpl#findInventory 返回:{}", JSONUtil.toJsonString(operaResult));
+
         return operaResult;
     }
 
