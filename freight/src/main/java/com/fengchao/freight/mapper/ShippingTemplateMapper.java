@@ -3,8 +3,13 @@ package com.fengchao.freight.mapper;
 import com.fengchao.freight.model.ShippingTemplate;
 import com.fengchao.freight.model.ShippingTemplateExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
+
+@Mapper
+@Component
 public interface ShippingTemplateMapper {
     long countByExample(ShippingTemplateExample example);
 

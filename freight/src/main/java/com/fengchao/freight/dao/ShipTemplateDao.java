@@ -40,11 +40,26 @@ public class ShipTemplateDao {
         return templateX;
     }
 
-    public PageInfo<ShippingTemplate> findShipTemplate(Integer pageNo, Integer pageSize) {
+    public List<ShippingTemplate>
+    selectByIdList(List<Integer> idList){
+        ShippingTemplateExample example = new ShippingTemplateExample();
+        ShippingTemplateExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(1);
+        criteria.andIdIn(idList);
+
+        return mapper.selectByExample(example);
+    }
+
+    public PageInfo<ShippingTemplate> findShipTemplate(Integer pageNo, Integer pageSize, Integer merchantId) {
         ShippingTemplateExample example = new ShippingTemplateExample();
         ShippingTemplateExample.Criteria criteria = example.createCriteria();
 
         criteria.andStatusEqualTo(1);
+        if (null == merchantId || 0 == merchantId){
+            criteria.andMerchantIdEqualTo(0);
+        }else{
+            criteria.andMerchantIdGreaterThan(0);
+        }
         PageHelper.startPage(pageNo, pageSize);
         List<ShippingTemplate> shippingTemplates = mapper.selectByExample(example);
         return new PageInfo<>(shippingTemplates);
@@ -70,5 +85,16 @@ public class ShipTemplateDao {
     public List<ShippingTemplateX> findShipTemplateByMpu(Integer id) {
         List<ShippingTemplateX> shipTemplateByMpu = xMapper.findShipTemplateByMpu(id);
         return shipTemplateByMpu;
+    }
+
+    public List<ShippingTemplate>
+    findShipTemplateByMerchantId(Integer merchantId) {
+        ShippingTemplateExample example = new ShippingTemplateExample();
+        ShippingTemplateExample.Criteria criteria = example.createCriteria();
+
+        criteria.andStatusEqualTo(1);
+        criteria.andMerchantIdEqualTo(merchantId);
+        List<ShippingTemplate> shippingTemplates = mapper.selectByExample(example);
+        return shippingTemplates;
     }
 }
