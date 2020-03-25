@@ -820,7 +820,7 @@ public class OrderServiceImpl implements OrderService {
                 OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(Logistics.getSubOrderId()) ;
                 if (orderDetail.getStatus() == 1) {
                     orderDetailXMapper.updateByOrderId(orderDetailX);
-                    JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+                    JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
                 }
             });
         }
@@ -1244,7 +1244,7 @@ public class OrderServiceImpl implements OrderService {
             OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
             if (orderDetail.getStatus() == 1) {
                 orderDetailDao.updateBySubOrderId(logistics) ;
-                JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+                JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
             }
         }
         if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
@@ -1355,7 +1355,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             checkOrderDetail.setStatus(2);
             // 启动定时完成任务
-            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetailId);
+            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetailId, checkOrderDetail.getMerchantId());
         }
         Date date = new Date() ;
         checkOrderDetail.setUpdatedAt(date);
@@ -1495,7 +1495,7 @@ public class OrderServiceImpl implements OrderService {
                         orderDetail.setStatus(2);
                         orderDetail.setUpdatedAt(new Date());
                         orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
-                        JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+                        JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
                     }
                 });
             }
