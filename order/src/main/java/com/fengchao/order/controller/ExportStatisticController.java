@@ -31,14 +31,10 @@ import java.util.*;
 @Slf4j
 public class ExportStatisticController {
 
-    private AdminOrderService adminOrderService;
-
     private ExportStatisticService exportStatisticService;
 
     @Autowired
-    public ExportStatisticController(AdminOrderService adminOrderService,
-                                     ExportStatisticService exportStatisticService) {
-        this.adminOrderService = adminOrderService;
+    public ExportStatisticController(ExportStatisticService exportStatisticService) {
         this.exportStatisticService = exportStatisticService;
     }
 
@@ -55,7 +51,7 @@ public class ExportStatisticController {
     @GetMapping(value = "/export")
     public void exportOrder(@RequestParam("startTime") String startTime,
                             @RequestParam("endTime") String endTime,
-                            @RequestParam("merchantId") String merchantId,
+                            @RequestParam("merchantId") Integer merchantId,
                             @RequestParam(value = "appId", required = false) String appIds,
                             HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
@@ -69,49 +65,77 @@ public class ExportStatisticController {
 //            if (orderExportReqVo.getPayStartDate() == null) {
 //                throw new Exception("参数不合法, 查询开始时间为空");
 //            }
-//            if (orderExportReqVo.getPayEndDate() == null) {
-//                throw new Exception("参数不合法, 查询结束时间为空");
-//            }
 
             List<String> appList = Arrays.asList(appIds.split(","));
 
-            // 创建HSSFWorkbook对象
-            workbook = new HSSFWorkbook();
-            // 创建HSSFSheet对象
-            HSSFSheet sheet = workbook.createSheet("订单结算");
-
             // 1.根据条件获取订单集合
-            exportStatisticService.exportSettlement(startTime, endTime, appList, merchantId);
+            Date startDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDate = DateUtil.parseDateTime(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            ExportLoanSettlementVo exportLoanSettlementVo =
+                    exportStatisticService.exportSettlement(startDate, endDate, appList, merchantId);
 
-
-            //                    adminOrderService.exportOrdersMock();
-            if (CollectionUtils.isEmpty(exportOrdersVoList) && CollectionUtils.isEmpty(exportOrdersVoListOut)) {
+            if (exportLoanSettlementVo == null) {
                 throw new Exception("未找出有效的导出数据!");
             }
 
-            // 合并导出的订单集合
-            List<ExportOrdersVo> mergedExportOrdersVoList = new ArrayList<>();
-            if (exportOrdersVoList != null) {
-                mergedExportOrdersVoList.addAll(exportOrdersVoList);
-            }
-            if (exportOrdersVoListOut != null) {
-                mergedExportOrdersVoList.addAll(exportOrdersVoListOut);
-            }
-
-            // 将要导出的ExportOrdersVo以主订单维度形成map
-            Map<String, List<ExportOrdersVo>> exportOrdersVoMap = convertToExportOrdersVoMap(exportOrdersVoList);
-
             // 2.开始组装excel
-            // 2.1 组装title
-            createTitle(sheet);
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("导出货款结算表");
 
-            // 2.2 组装业务数据
-            createContent(sheet, exportOrdersVoMap);
+            // 2.1 组装
+            HSSFRow row0 = sheet.createRow(0);
+            HSSFCell cell00 = row0.createCell(0);
+            cell00.setCellValue("货款结算单"); //
+            HSSFCell cell01 = row0.createCell(1);
+            cell01.setCellValue("");
 
+            HSSFRow row1 = sheet.createRow(1);
+            HSSFCell cell10 = row1.createCell(0);
+            cell10.setCellValue("结算周期"); //
+            HSSFCell cell11 = row1.createCell(1);
+            cell11.setCellValue(exportLoanSettlementVo.getSettlementPeriod());
+
+            HSSFRow row2 = sheet.createRow(2);
+            HSSFCell cell20 = row2.createCell(0);
+            cell20.setCellValue("本期已完成订单金额（元）"); //
+            HSSFCell cell21 = row2.createCell(1);
+            cell21.setCellValue(exportLoanSettlementVo.getCompleteOrderAmount());
+
+            HSSFRow row3 = sheet.createRow(3);
+            HSSFCell cell30 = row3.createCell(0);
+            cell30.setCellValue("本期已退款订单金额（元）"); //
+            HSSFCell cell31 = row3.createCell(1);
+            cell31.setCellValue(exportLoanSettlementVo.getRefundOrderAmount());
+
+            HSSFRow row4 = sheet.createRow(4);
+            HSSFCell cell40 = row4.createCell(0);
+            cell40.setCellValue("本期实际成交订单金额（元）"); //
+            HSSFCell cell41 = row4.createCell(1);
+            cell41.setCellValue(exportLoanSettlementVo.getRealyOrderAmount());
+
+            HSSFRow row5 = sheet.createRow(5);
+            HSSFCell cell50 = row5.createCell(0);
+            cell50.setCellValue("供应商优惠券金额（元）"); //
+            HSSFCell cell51 = row5.createCell(1);
+            cell51.setCellValue(exportLoanSettlementVo.getCouponAmount());
+
+            HSSFRow row6 = sheet.createRow(6);
+            HSSFCell cell60 = row6.createCell(0);
+            cell60.setCellValue("本期运费金额（元）"); //
+            HSSFCell cell61 = row6.createCell(1);
+            cell61.setCellValue(exportLoanSettlementVo.getCouponAmount());
+
+            HSSFRow row7 = sheet.createRow(7);
+            HSSFCell cell70 = row7.createCell(0);
+            cell70.setCellValue("当期应付款（元）"); //
+            HSSFCell cell71 = row7.createCell(1);
+            cell71.setCellValue(exportLoanSettlementVo.getPayAmout());
 
             ///////// 文件名
             String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
-            String fileName = "exportorder_" + date + ".xls";
+            String fileName = "settlement" + date + ".xls";
 
             // 3. 输出文件
             try {
@@ -123,7 +147,7 @@ public class ExportStatisticController {
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
-                log.error("导出订单文件 出错了:{}", e.getMessage(), e);
+                log.error("导出货款结算表 出错了:{}", e.getMessage(), e);
 
                 throw new Exception(e);
             } finally {
@@ -135,7 +159,7 @@ public class ExportStatisticController {
             //
             log.debug("export file finish");
         } catch (Exception e) {
-            log.error("导出订单文件异常:{}", e.getMessage(), e);
+            log.error("导出货款结算表异常:{}", e.getMessage(), e);
 
 //            response.setHeader("content-type", "application/json;charset=UTF-8");
 //            response.setContentType("application/json");
@@ -153,7 +177,7 @@ public class ExportStatisticController {
 
                 writer.write(JSONUtil.toJsonString(map));
             } catch (Exception e1) {
-                log.error("导出订单文件 错误:{}", e.getMessage(), e);
+                log.error("导出货款结算表 错误:{}", e.getMessage(), e);
             } finally {
                 if (writer != null) {
                     writer.close();

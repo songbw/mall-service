@@ -1,5 +1,6 @@
 package com.fengchao.order.service;
 
+import com.fengchao.order.bean.vo.ExportLoanSettlementVo;
 import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.constants.PaymentTypeEnum;
 
@@ -13,11 +14,11 @@ public interface ExportStatisticService {
      *
      * @param startTime
      * @param endTime
-     * @param appId
+     * @param appIdList
      * @param merchantId
      * @return
      * @throws Exception
      */
-    List<ExportReceiptBillVo> exportSettlement(Date startTime, Date endTime,
-                                            String appId, String merchantId) throws Exception;
+    ExportLoanSettlementVo exportSettlement(Date startTime, Date endTime,
+                                            List<String> appIdList, Integer merchantId) throws Exception;
 }
