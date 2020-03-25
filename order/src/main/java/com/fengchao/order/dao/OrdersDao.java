@@ -9,6 +9,7 @@ import com.fengchao.order.model.OrdersExample;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -214,6 +215,24 @@ public class OrdersDao {
         OrdersExample ordersExample = new OrdersExample();
         OrdersExample.Criteria criteria = ordersExample.createCriteria();
         criteria.andIdIn(ids);
+
+        List<Orders> list = ordersMapper.selectByExample(ordersExample);
+        return list;
+    }
+
+    /**
+     *
+     * @param ids
+     * @return
+     */
+    public List<Orders> selectOrdersByIdsAndAppIds(List<Integer> ids, List<String> appIdList) {
+        OrdersExample ordersExample = new OrdersExample();
+        OrdersExample.Criteria criteria = ordersExample.createCriteria();
+        criteria.andIdIn(ids);
+
+        if (CollectionUtils.isNotEmpty(appIdList)) {
+            criteria.andAppIdIn(appIdList);
+        }
 
         List<Orders> list = ordersMapper.selectByExample(ordersExample);
         return list;
