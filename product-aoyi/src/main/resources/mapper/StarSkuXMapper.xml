@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fengchao.product.aoyi.mapper.StarSkuXMapper" >
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.StarSku">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="goods_logo" jdbcType="VARCHAR" property="goodsLogo" />
+    <result column="purchase_qty" jdbcType="INTEGER" property="purchaseQty" />
+    <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="spu_id" jdbcType="VARCHAR" property="spuId" />
+    <result column="advise_price" jdbcType="INTEGER" property="advisePrice" />
+    <result column="sprice" jdbcType="INTEGER" property="sprice" />
+    <result column="price" jdbcType="INTEGER" property="price" />
+    <result column="istatus" jdbcType="SMALLINT" property="istatus" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
+  </resultMap>
+
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into star_sku
+    (goods_logo, sku_id, status, spu_id, advise_price, sprice, merchant_code, price, code)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.goodsLogo},
+      #{item.skuId},
+      #{item.status},
+      #{item.spuId},
+      #{item.advisePrice},
+      #{item.sprice},
+      #{item.merchantCode},
+      #{item.price},
+      #{item.code}
+      )
+    </foreach>
+  </insert>
+
+</mapper>

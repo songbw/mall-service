@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.product.aoyi.mapper.WeipinhuiAddressMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.WeipinhuiAddress">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sn_code" jdbcType="VARCHAR" property="snCode" />
+    <result column="sn_pcode" jdbcType="VARCHAR" property="snPcode" />
+    <result column="sn_name" jdbcType="VARCHAR" property="snName" />
+    <result column="wph_code" jdbcType="VARCHAR" property="wphCode" />
+    <result column="wph_pcode" jdbcType="VARCHAR" property="wphPcode" />
+    <result column="wph_name" jdbcType="VARCHAR" property="wphName" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="istatus" jdbcType="SMALLINT" property="istatus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, sn_code, sn_pcode, sn_name, wph_code, wph_pcode, wph_name, level, istatus, create_time, 
+    update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.WeipinhuiAddressExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from weipinhui_address
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from weipinhui_address
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from weipinhui_address
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.product.aoyi.model.WeipinhuiAddressExample">
+    delete from weipinhui_address
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.WeipinhuiAddress" useGeneratedKeys="true">
+    insert into weipinhui_address (sn_code, sn_pcode, sn_name, 
+      wph_code, wph_pcode, wph_name, 
+      level, istatus, create_time, 
+      update_time)
+    values (#{snCode,jdbcType=VARCHAR}, #{snPcode,jdbcType=VARCHAR}, #{snName,jdbcType=VARCHAR}, 
+      #{wphCode,jdbcType=VARCHAR}, #{wphPcode,jdbcType=VARCHAR}, #{wphName,jdbcType=VARCHAR}, 
+      #{level,jdbcType=INTEGER}, #{istatus,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.WeipinhuiAddress" useGeneratedKeys="true">
+    insert into weipinhui_address
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="snCode != null">
+        sn_code,
+      </if>
+      <if test="snPcode != null">
+        sn_pcode,
+      </if>
+      <if test="snName != null">
+        sn_name,
+      </if>
+      <if test="wphCode != null">
+        wph_code,
+      </if>
+      <if test="wphPcode != null">
+        wph_pcode,
+      </if>
+      <if test="wphName != null">
+        wph_name,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="istatus != null">
+        istatus,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="snCode != null">
+        #{snCode,jdbcType=VARCHAR},
+      </if>
+      <if test="snPcode != null">
+        #{snPcode,jdbcType=VARCHAR},
+      </if>
+      <if test="snName != null">
+        #{snName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphCode != null">
+        #{wphCode,jdbcType=VARCHAR},
+      </if>
+      <if test="wphPcode != null">
+        #{wphPcode,jdbcType=VARCHAR},
+      </if>
+      <if test="wphName != null">
+        #{wphName,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="istatus != null">
+        #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.product.aoyi.model.WeipinhuiAddressExample" resultType="java.lang.Long">
+    select count(*) from weipinhui_address
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update weipinhui_address
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.snCode != null">
+        sn_code = #{record.snCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.snPcode != null">
+        sn_pcode = #{record.snPcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.snName != null">
+        sn_name = #{record.snName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphCode != null">
+        wph_code = #{record.wphCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphPcode != null">
+        wph_pcode = #{record.wphPcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphName != null">
+        wph_name = #{record.wphName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level != null">
+        level = #{record.level,jdbcType=INTEGER},
+      </if>
+      <if test="record.istatus != null">
+        istatus = #{record.istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update weipinhui_address
+    set id = #{record.id,jdbcType=BIGINT},
+      sn_code = #{record.snCode,jdbcType=VARCHAR},
+      sn_pcode = #{record.snPcode,jdbcType=VARCHAR},
+      sn_name = #{record.snName,jdbcType=VARCHAR},
+      wph_code = #{record.wphCode,jdbcType=VARCHAR},
+      wph_pcode = #{record.wphPcode,jdbcType=VARCHAR},
+      wph_name = #{record.wphName,jdbcType=VARCHAR},
+      level = #{record.level,jdbcType=INTEGER},
+      istatus = #{record.istatus,jdbcType=SMALLINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.WeipinhuiAddress">
+    update weipinhui_address
+    <set>
+      <if test="snCode != null">
+        sn_code = #{snCode,jdbcType=VARCHAR},
+      </if>
+      <if test="snPcode != null">
+        sn_pcode = #{snPcode,jdbcType=VARCHAR},
+      </if>
+      <if test="snName != null">
+        sn_name = #{snName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphCode != null">
+        wph_code = #{wphCode,jdbcType=VARCHAR},
+      </if>
+      <if test="wphPcode != null">
+        wph_pcode = #{wphPcode,jdbcType=VARCHAR},
+      </if>
+      <if test="wphName != null">
+        wph_name = #{wphName,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="istatus != null">
+        istatus = #{istatus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.WeipinhuiAddress">
+    update weipinhui_address
+    set sn_code = #{snCode,jdbcType=VARCHAR},
+      sn_pcode = #{snPcode,jdbcType=VARCHAR},
+      sn_name = #{snName,jdbcType=VARCHAR},
+      wph_code = #{wphCode,jdbcType=VARCHAR},
+      wph_pcode = #{wphPcode,jdbcType=VARCHAR},
+      wph_name = #{wphName,jdbcType=VARCHAR},
+      level = #{level,jdbcType=INTEGER},
+      istatus = #{istatus,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

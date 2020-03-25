@@ -1,9 +1,8 @@
 package com.fengchao.product.aoyi.model;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class AoyiBaseBrand implements Serializable {
+public class AoyiBaseBrand {
     private Integer brandId;
 
     private String brandName;

@@ -3,21 +3,19 @@ package com.fengchao.product.aoyi.dao;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
-import com.fengchao.product.aoyi.bean.ThirdSyncBean;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
+import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
-import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,9 +28,13 @@ public class ProductDao {
 
     private AoyiProdIndexMapper aoyiProdIndexMapper;
 
+    private AoyiProdIndexXMapper aoyiProdIndexXMapper;
+
     @Autowired
-    public ProductDao(AoyiProdIndexMapper aoyiProdIndexMapper) {
+    public ProductDao(AoyiProdIndexMapper aoyiProdIndexMapper,
+                      AoyiProdIndexXMapper aoyiProdIndexXMapper) {
         this.aoyiProdIndexMapper = aoyiProdIndexMapper;
+        this.aoyiProdIndexXMapper = aoyiProdIndexXMapper;
     }
 
     /**
@@ -44,6 +46,15 @@ public class ProductDao {
     public Integer insert(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
         aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs);
         return aoyiProdIndexWithBLOBs.getId();
+    }
+
+    /**
+     * 批量插入
+     *
+     * @param aoyiProdIndexList
+     */
+    public void batchInsert(List<AoyiProdIndex> aoyiProdIndexList) {
+        aoyiProdIndexXMapper.batchInsert(aoyiProdIndexList);
     }
 
     /**
@@ -235,6 +246,18 @@ public class ProductDao {
     }
 
     /**
+     * 更新产品信息
+     *
+     * @param aoyiProdIndexWithBLOBs
+     */
+    public int updateByPrimaryKeySelective(AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs) {
+
+        int count = aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
+
+        return count;
+    }
+
+    /**
      * 根据MPU添加产品信息
      * @param bean
      */
@@ -257,15 +280,42 @@ public class ProductDao {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
 
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
-        if(queryBean.getBrand()!=null&&!queryBean.getBrand().equals(""))
-            criteria.andBrandEqualTo(queryBean.getBrand()) ;
-        if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
+        if (queryBean.getBrand() != null && !queryBean.getBrand().equals(""))
+            criteria.andBrandEqualTo(queryBean.getBrand());
+        if (queryBean.getPriceOrder() != null && !queryBean.getPriceOrder().equals(""))
             aoyiProdIndexExample.setOrderByClause("CAST(price AS DECIMAL) " + queryBean.getPriceOrder());
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
             criteria.andCategoryIn(queryBean.getCategories());
-        criteria.andStateEqualTo("1") ;
+        criteria.andStateEqualTo("1");
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
-        List<AoyiProdIndex>  aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);
+
+        return pageInfo;
+    }
+
+    /**
+     * 分页查询product信息
+     *
+     * @param queryBean
+     * @return
+     */
+    public PageInfo<AoyiProdIndex> selectPageable(ProductQueryBean queryBean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+
+        if (queryBean.getMerchantId() != null) {
+            criteria.andMerchantIdEqualTo(queryBean.getMerchantId());
+        }
+        if (StringUtils.isNotBlank(queryBean.getSkuProfix())) {
+            criteria.andSkuidLike(queryBean.getSkuProfix() + "%");
+        }
+
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
+
+        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+
         PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);
 
         return pageInfo;

@@ -1,5 +1,7 @@
 package com.fengchao.base.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -7,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+@Slf4j
 public class URLConnectionDownloader {
 
     public static void main(String[] args) throws Exception {
@@ -30,6 +33,8 @@ public class URLConnectionDownloader {
         if(!sf.exists()){
             sf.mkdirs();
         }
+
+        log.info("下载上传图片 本地保存文件:{}", sf.getPath() + "/" + filename);
         OutputStream os = new FileOutputStream(sf.getPath() + "/" + filename);
         // 开始读取
         while ((len = is.read(bs)) != -1) {

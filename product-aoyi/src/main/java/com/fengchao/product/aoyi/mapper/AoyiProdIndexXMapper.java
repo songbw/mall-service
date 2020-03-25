@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.mapper;
 
 import com.fengchao.product.aoyi.bean.QueryProdBean;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs;
 
@@ -58,4 +59,11 @@ public interface AoyiProdIndexXMapper {
     AoyiProdIndexX selectForUpdateByMpu(String mpu);
 
     int batchUpdate(AoyiProdIndexX prodIndex);
+
+    /**
+     * 批量插入
+     *
+     * @param aoyiProdIndexList
+     */
+    void batchInsert(List<AoyiProdIndex> aoyiProdIndexList);
 }

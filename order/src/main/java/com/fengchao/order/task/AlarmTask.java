@@ -15,7 +15,7 @@ public class AlarmTask extends TraceableBaseTask {
     /**
      * 邮件接收人
      */
-    private static String MAIL_ADDRESS = "tom.jing@weesharing.com";
+    private static String MAIL_ADDRESS = "tom.jing@weesharing.com,bingwei.song@weesharing.com";
 
     private String title;
 
