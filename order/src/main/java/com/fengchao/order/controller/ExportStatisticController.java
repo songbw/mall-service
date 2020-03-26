@@ -48,8 +48,8 @@ public class ExportStatisticController {
      * @param response
      * @throws Exception
      */
-    @GetMapping(value = "/export")
-    public void exportOrder(@RequestParam("startTime") String startTime,
+    @GetMapping(value = "/settlment")
+    public void exportSettlement(@RequestParam("startTime") String startTime,
                             @RequestParam("endTime") String endTime,
                             @RequestParam("merchantId") Integer merchantId,
                             @RequestParam(value = "appId", required = false) String appIds,
@@ -75,6 +75,7 @@ public class ExportStatisticController {
                     exportStatisticService.exportSettlement(startDate, endDate, appList, merchantId);
 
             if (exportLoanSettlementVo == null) {
+                log.info("导出货款结算表 未找出有效的导出数据!");
                 throw new Exception("未找出有效的导出数据!");
             }
 
@@ -82,7 +83,7 @@ public class ExportStatisticController {
             // 创建HSSFWorkbook对象
             workbook = new HSSFWorkbook();
             // 创建HSSFSheet对象
-            HSSFSheet sheet = workbook.createSheet("导出货款结算表");
+            HSSFSheet sheet = workbook.createSheet("货款结算表");
 
             // 2.1 组装
             HSSFRow row0 = sheet.createRow(0);
@@ -194,6 +195,141 @@ public class ExportStatisticController {
         }
     }
 
+
+    /**
+     * 导出运费实际收款报表
+     *
+     * @param startTime
+     * @param endTime
+     * @param appIds
+     * @param response
+     * @throws Exception
+     */
+    @GetMapping(value = "/expressfee")
+    public void exportExpressFee(@RequestParam("startTime") String startTime,
+                                 @RequestParam("endTime") String endTime,
+                                 @RequestParam(value = "appId", required = false) String appIds,
+                                 HttpServletResponse response) throws Exception {
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
+
+        try {
+            log.info("导出运费实际收款报表 入参 startTime:{}, endTime:{}, appIds:{}", startTime, endTime, appIds);
+            // 0.入参检验
+//            if (orderExportReqVo.getPayStartDate() == null) {
+//                throw new Exception("参数不合法, 查询开始时间为空");
+//            }
+
+            List<String> appList = Arrays.asList(appIds.split(","));
+
+            // 1. 获取导出数据
+            Date startDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDate = DateUtil.parseDateTime(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            List<ExportExpressFeeVo> exportExpressFeeVoList =
+                    exportStatisticService.exportExpressFee(startDate, endDate, appList);
+
+            if (CollectionUtils.isEmpty(exportExpressFeeVoList)) {
+                log.warn("导出运费实际收款报表 未找出有效的导出数据!");
+                throw new Exception("未找出有效的导出数据!");
+            }
+
+            // 2.开始组装excel
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("运费实际收款报表");
+
+            // 2.1 组装
+            // title
+            HSSFRow titleRow0 = sheet.createRow(0);
+            HSSFCell cell00 = titleRow0.createCell(0);
+            cell00.setCellValue(startTime + "-" + endTime + "  运费实际收款表"); //
+
+            HSSFRow titleRow1 = sheet.createRow(1);
+            HSSFCell cell10 = titleRow0.createCell(0);
+            cell10.setCellValue("供应商名称"); //
+            HSSFCell cell11 = titleRow0.createCell(1);
+            cell11.setCellValue("运费实际收款金额（元）"); //
+            HSSFCell cell12 = titleRow0.createCell(2);
+            cell12.setCellValue("供应商运费金额（元）"); //
+
+            // content
+            int index = 2;
+            for (ExportExpressFeeVo exportExpressFeeVo : exportExpressFeeVoList) {
+                HSSFRow row = sheet.createRow(index);
+
+                HSSFCell cell0 = row.createCell(0);
+                cell0.setCellValue(exportExpressFeeVo.getMerchantName()); //
+
+                HSSFCell cell1 = row.createCell(1);
+                cell1.setCellValue(exportExpressFeeVo.getUserExpressFee());
+
+                HSSFCell cell2 = row.createCell(2);
+                cell2.setCellValue(exportExpressFeeVo.getMerchantExpressFee());
+            }
+
+
+            ///////// 文件名
+            String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
+            String fileName = "expressFee" + date + ".xls";
+
+            // 3. 输出文件
+            try {
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出运费实际收款报表 出错了:{}", e.getMessage(), e);
+
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
+            log.debug("export file finish");
+        } catch (Exception e) {
+            log.error("导出运费实际收款报表异常:{}", e.getMessage(), e);
+
+//            response.setHeader("content-type", "application/json;charset=UTF-8");
+//            response.setContentType("application/json");
+            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setStatus(400);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "400");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出运费实际收款报表 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+
+            if (workbook != null) {
+                workbook.close();
+            }
+        }
+    }
 
 
 
