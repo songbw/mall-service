@@ -8,6 +8,7 @@ public class GuanAiTong {
     public static final String GET_ENTERPRISE_INFO_PATH = "seller/enterprise/getByOpenId";
     public static final String SEND_MESSAGE_PATH = "seller/msg/sendTplMsg";
     public static final String POST_SYNC_REFUND_PATH = "seller/pay/syncRefund";
+    public static final String POST_V2_REFUND_PATH = "seller/payV2/refund";
     public static final String GET_PAY_RECORD_PATH = "seller/pay/record";
     public static final String POST_TRADE_INFO_PATH = "seller/payV2/transfer_trade_info";
     public static final String GET_REFUND_RECORD_PATH = "seller/pay/refundRecord";

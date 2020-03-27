@@ -327,13 +327,13 @@ public class SellerController {
             return;
         }
         try {
-            JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_SYNC_REFUND_PATH, map);
+            JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_V2_REFUND_PATH, map);
             if (null != json) {
                 buildResponse(response, json);
                 return;
             }
         } catch (Exception ex) {
-            log.info("guanAiTongPost {} got exception : {}",GuanAiTong.POST_SYNC_REFUND_PATH,ex.getMessage());
+            log.info("guanAiTongPost {} got exception : {}",GuanAiTong.POST_V2_REFUND_PATH,ex.getMessage());
         }
 
         log.info("GuanAiTong response data is NULL");
@@ -496,6 +496,7 @@ public class SellerController {
             buildResponse(response, json);
             return;
         }
+
         String tradeInfoStr = tradeInfo.toString();
         try {
             JSONObject j = JSONObject.parseObject(tradeInfoStr);
@@ -509,6 +510,10 @@ public class SellerController {
         Map<String,Object> params = new HashMap<>();
         params.put(GuanAiTong.OUTER_TRADE_NO_KEY,tradeNo);
         params.put(GuanAiTong.TRADE_INFO_KEY,tradeInfo);
+        Object refundNo = map.get(GuanAiTong.OUTER_REFUND_NO_KEY);
+        if (null != refundNo && null != refundNo.toString()){
+            params.put(GuanAiTong.OUTER_REFUND_NO_KEY,refundNo.toString());
+        }
         try {
             json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_TRADE_INFO_PATH, params);
         } catch (Exception ex) {
