@@ -484,7 +484,7 @@ public class OrderController {
     }
 
     @PutMapping("/status/deliver")
-    private OperaResponse deliver(@RequestBody Orders bean) {
+    private OperaResponse deliver(@RequestBody StarBackBean bean) {
         log.info("怡亚通发货通知： {}", JSONUtil.toJsonString(bean));
         return service.deliverStatus(bean);
     }

@@ -243,10 +243,8 @@ public class OrderStarServiceImpl implements OrderStarService {
         OperaResponse response = new OperaResponse() ;
         if ("1".equals(bean.getUpdateType())) {
             // 供应商发货
-            Orders orders = new Orders() ;
-            orders.setTradeNo(bean.getOutOrderNo());
-            orders.setAoyiId(bean.getOrderSn());
-            response = orderServiceClient.deliverStatue(orders);
+
+            response = orderServiceClient.deliverStatue(bean);
             if (response.getCode() == 200) {
                 return "success" ;
             } else {

@@ -43,7 +43,7 @@ public class JobClientUtils {
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         if (OrderConstants.STAR_MERCHANG_CODE == merchantId) {
-            job.setTriggerTime(DateUtils.addDay(new Date(), 14).getTime());   // 14 天之后执行
+            job.setTriggerTime(DateUtils.addDay(new Date(), 7).getTime());   // 7 天之后执行
         } else {
             job.setTriggerTime(DateUtils.addDay(new Date(), 10).getTime());   // 10 天之后执行
         }

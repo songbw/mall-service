@@ -767,6 +767,8 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setStatus(3);
 
             // adminOrderDao.updateOrderDetailStatus(orderDetail);
+            // TODO 怡亚通商品确认收货 1.调怡亚通确认收货接口，2.更新状态是已完成，3.定时任务7天后出发完成时间
+
 
             adminOrderDao.updateOrderDetailStatusForReceived(orderDetail);
         }
@@ -1399,7 +1401,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer finishOrderDetail(Integer id) {
         OrderDetail orderDetail = orderDetailMapper.selectByPrimaryKey(id) ;
-        if (orderDetail != null && orderDetail.getStatus() == 2) {
+        if (orderDetail != null && (orderDetail.getStatus() == 2 || 3 == orderDetail.getStatus())) {
             orderDetail.setStatus(3);
             orderDetailDao.updateOrderDetailStatus(orderDetail) ;
         }
@@ -1615,7 +1617,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OperaResponse deliverStatus(Orders orders) {
+    public OperaResponse deliverStatus(StarBackBean bean) {
+        Orders orders = new Orders() ;
+        orders.setTradeNo(bean.getOutOrderNo());
+        orders.setAoyiId(bean.getOrderSn());
         OperaResponse response = new OperaResponse() ;
         List<Orders> ordersList = ordersDao.selectOrdersByTradeNoAndAoyiId(orders) ;
         List<Integer> ids = new ArrayList<>() ;
@@ -1624,16 +1629,32 @@ public class OrderServiceImpl implements OrderService {
                 ids.add(temp.getId()) ;
             });
             List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndThirdOrderSn(ids, orders.getAoyiId()) ;
-            if (orderDetails != null && orderDetails.size() > 0) {
-                orderDetails.forEach(orderDetail -> {
-                    if (orderDetail.getStatus() == 1) {
-                        orderDetail.setStatus(2);
-                        orderDetail.setUpdatedAt(new Date());
-                        orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
-                        JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
-                    }
-                });
+            if ("20".equals(bean.getOldStatus()) && "30".equals(bean.getNewStatus())) {
+                if (orderDetails != null && orderDetails.size() > 0) {
+                    orderDetails.forEach(orderDetail -> {
+                        if (orderDetail.getStatus() == 1) {
+                            orderDetail.setStatus(2);
+                            orderDetail.setUpdatedAt(new Date());
+                            orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
+//                            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
+                        }
+                    });
+                }
+            } else if ("30".equals(bean.getOldStatus()) && "40".equals(bean.getNewStatus())) {
+                // 怡亚通系统自动确认收货，发邮件监控一下吧
+                AlarmUtil.alarmAsync("怡亚通系统自动确认收货", JSONUtil.toJsonString(bean));
+                if (orderDetails != null && orderDetails.size() > 0) {
+                    orderDetails.forEach(orderDetail -> {
+                        if (orderDetail.getStatus() == 2) {
+                            orderDetail.setStatus(3);
+                            orderDetail.setUpdatedAt(new Date());
+                            orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
+                            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
+                        }
+                    });
+                }
             }
+
         }
         return response;
     }
