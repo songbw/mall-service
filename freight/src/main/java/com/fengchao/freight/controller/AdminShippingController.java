@@ -34,9 +34,13 @@ public class AdminShippingController {
     }
 
     @GetMapping("findMerchants")
-    public OperaResult findShipTemplateMerchants(@Param("pageNo") Integer pageNo, @Param("pageSize")Integer pageSize, OperaResult result){
-        //获取所有merchantId不为0的，即非平台商的模板
-        result.getData().put("result",shippingService.findShipTemplate(pageNo, pageSize,1));
+    public OperaResult
+    findShipTemplateMerchants(@Param("pageNo") Integer pageNo,
+                              @Param("pageSize")Integer pageSize,
+                              @Param("merchantId")Integer merchantId,
+                              OperaResult result){
+        //获取所有merchantId不为0的，即非平台商的模板,如果merchantId有值，则获取特定商户的模板
+        result.getData().put("result",shippingService.findShipTemplate(pageNo, pageSize,merchantId));
         return result;
     }
 

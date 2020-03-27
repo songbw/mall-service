@@ -55,11 +55,13 @@ public class ShipTemplateDao {
         ShippingTemplateExample.Criteria criteria = example.createCriteria();
 
         criteria.andStatusEqualTo(1);
-        if (null == merchantId || 0 == merchantId){
-            criteria.andMerchantIdEqualTo(0);
-        }else{
+
+        if (null == merchantId) {
             criteria.andMerchantIdGreaterThan(0);
+        } else {
+            criteria.andMerchantIdEqualTo(merchantId);
         }
+
         PageHelper.startPage(pageNo, pageSize);
         List<ShippingTemplate> shippingTemplates = mapper.selectByExample(example);
         return new PageInfo<>(shippingTemplates);
