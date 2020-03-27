@@ -282,7 +282,7 @@ public class CouponServiceImpl implements CouponService {
 
         log.info("首次核销 {}",JSON.toJSONString(couponUseInfo));
         Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
-        if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
+        if(null != coupon.getCouponType() && CouponTypeEnum.GIFT_PACKAGE.getCode().equals(coupon.getCouponType())){
             ticketDao.consumeCard(bean.getUserCouponCode());
         }
         useInfo.setId(bean.getId());
@@ -649,7 +649,7 @@ public class CouponServiceImpl implements CouponService {
         CouponUseInfoX couponUseInfo = useInfoXMapper.selectByUserCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
-        }else if (couponUseInfo.getStatus() == 3){
+        }else if (couponUseInfo.getStatus() == CouponUseStatusEnum.USED.getCode()){
             return couponUseInfo;
         }
 
@@ -657,7 +657,7 @@ public class CouponServiceImpl implements CouponService {
 //            CouponX couponX = XMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
             Date date = new Date();
             if(couponUseInfo.getEffectiveStartDate().after(date) || couponUseInfo.getEffectiveEndDate().before(date)){
-                couponUseInfo.setStatus(4);
+                couponUseInfo.setStatus(CouponUseStatusEnum.INVALID.getCode());
                 return couponUseInfo;
             }
         }
@@ -665,7 +665,7 @@ public class CouponServiceImpl implements CouponService {
         useInfo.setId(bean.getId());
         useInfo.setConsumedTime(new Date());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setStatus(3);
+        useInfo.setStatus(CouponUseStatusEnum.USED.getCode());
         useInfoXMapper.updateStatusByUserCode(useInfo);
         log.info("管理端核销consumeCoupon优惠券参数 完成:{}", JSONUtil.toJsonString(useInfo));
         return couponUseInfo;

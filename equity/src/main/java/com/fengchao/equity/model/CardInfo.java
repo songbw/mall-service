@@ -25,6 +25,8 @@ public class CardInfo {
 
     private String corporationCode;
 
+    private String code;
+
     public Integer getId() {
         return id;
     }
@@ -111,5 +113,13 @@ public class CardInfo {
 
     public void setCorporationCode(String corporationCode) {
         this.corporationCode = corporationCode == null ? null : corporationCode.trim();
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code == null ? null : code.trim();
     }
 }

@@ -43,8 +43,8 @@
         <!--table tableName="promotion_mpu">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table-->
-        <table tableName="card_info" domainObjectName="CardInfo" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="id">
+        <!--table tableName="card_info" domainObjectName="CardInfo" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="id">
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
+        </table-->
     </context>
 </generatorConfiguration>

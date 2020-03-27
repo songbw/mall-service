@@ -31,6 +31,7 @@ public class CardInfoX {
 
     private String appId;
     private String corporationCode;
+    private String code;
 
     private List<CardAndCoupon> couponIds;
 

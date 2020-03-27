@@ -2,6 +2,7 @@ package com.fengchao.equity.jobClient;
 
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponUseInfoService;
+import com.fengchao.equity.utils.CouponUseStatusEnum;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
@@ -17,7 +18,7 @@ public class CouponReleaseRunnerJobImpl implements JobRunner {
 
 
     @Override
-    public Result run(JobContext jobContext) throws Throwable {
+    public Result run(JobContext jobContext) {
         try {
             BizLogger bizLogger = jobContext.getBizLogger();
 
@@ -27,7 +28,8 @@ public class CouponReleaseRunnerJobImpl implements JobRunner {
             CouponUseInfoService couponUseInfoService = BeanContext.getApplicationContext().getBean(CouponUseInfoService.class);
             int couponUserId = Integer.parseInt(id) ;
             CouponUseInfo couponUseInfo = couponUseInfoService.findBycouponUserId(couponUserId);
-            if (couponUseInfo != null && couponUseInfo.getStatus() == 2) {
+            if (couponUseInfo != null &&
+                    couponUseInfo.getStatus() == CouponUseStatusEnum.OCCUPIED.getCode()) {
                 couponUseInfoService.triggerRelease(couponUserId) ;
                 // 会发送到 LTS (JobTracker上)
                 bizLogger.info("优惠券释放成功");
@@ -36,6 +38,6 @@ public class CouponReleaseRunnerJobImpl implements JobRunner {
             LOGGER.info("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
         }
-        return new Result(Action.EXECUTE_SUCCESS, "执行成功了，哈哈");
+        return new Result(Action.EXECUTE_SUCCESS, "优惠券释放执行成功");
     }
 }

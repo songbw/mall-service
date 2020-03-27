@@ -451,11 +451,12 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         }
         useInfo.setId(bean.getId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
-        useInfo.setStatus(2);
+        useInfo.setStatus(CouponUseStatusEnum.OCCUPIED.getCode());
         int num = mapper.updateStatusByUserCode(useInfo);
         if(num == 1){
             Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
-            if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
+            if(coupon.getCouponType() != null &&
+                    CouponTypeEnum.GIFT_PACKAGE.getCode().equals(coupon.getCouponType())){
                 ticketDao.occupyCard(bean.getUserCouponCode());
             }
             JobClientUtils.couponReleaseTrigger(environment, jobClient, bean.getId());
@@ -469,17 +470,26 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);
         if(couponUseInfo != null){
 //            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
+            Integer currentStatus = couponUseInfo.getStatus();
+            boolean canRelease = (currentStatus == CouponUseStatusEnum.OCCUPIED.getCode());
+            if (!canRelease){
+                log.error("该优惠券无法释放, {}",JSON.toJSONString(couponUseInfo));
+                return 1;
+            }
+
             Date date = new Date();
             if(couponUseInfo.getEffectiveEndDate().before(date)){
-                useInfo.setStatus(4);
+                useInfo.setStatus(CouponUseStatusEnum.INVALID.getCode());
             }else{
-                useInfo.setStatus(1);
+                useInfo.setStatus(CouponUseStatusEnum.AVAILABLE.getCode());
             }
+
         }
         useInfo.setId(bean.getId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
-        if(coupon.getCouponType() != null && coupon.getCouponType() == 4){
+        if(coupon.getCouponType() != null &&
+                CouponTypeEnum.GIFT_PACKAGE.equals(coupon.getCouponType())){
             ticketDao.releaseCard(bean.getUserCouponCode());
         }
         return mapper.updateStatusByUserCode(useInfo);
@@ -635,10 +645,17 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         if(couponUseInfo != null){
 //            CouponX couponX = couponXMapper.selectByPrimaryKey(couponUseInfo.getCouponId());
 
+            Integer currentStatus = couponUseInfo.getStatus();
+            boolean canRelease = (currentStatus == CouponUseStatusEnum.OCCUPIED.getCode());
+            if (!canRelease){
+                log.error("该优惠券无法释放, {}",JSON.toJSONString(couponUseInfo));
+                return 1;
+            }
+
             if(couponUseInfo.getEffectiveEndDate().before(date)){
-                useInfo.setStatus(4);
+                useInfo.setStatus(CouponUseStatusEnum.INVALID.getCode());
             }else{
-                useInfo.setStatus(1);
+                useInfo.setStatus(CouponUseStatusEnum.AVAILABLE.getCode());
             }
         }
         useInfo.setId(couponUserId);
@@ -678,7 +695,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     public int couponUseInvalid(int couponUseId) {
         CouponUseInfo couponUseInfo = new CouponUseInfo();
         couponUseInfo.setId(couponUseId);
-        couponUseInfo.setStatus(4);
+        couponUseInfo.setStatus(CouponUseStatusEnum.INVALID.getCode());
         return couponUseInfoDao.update(couponUseInfo);
     }
 
