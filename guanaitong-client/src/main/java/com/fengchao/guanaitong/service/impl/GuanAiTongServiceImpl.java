@@ -49,13 +49,16 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     //private final String VERSION_KEY = "version";
     //private final String VERSION_VALUE = "1.0.0";
 
-    private final String TOKEN_KEY = "access_token";
+    private final String TOKEN_KEY = "access_token";//关爱通关键字
     private final String TIME_STAMP_KEY = "timestamp";
     private final String SIGN_KEY = "sign";
 
     private static final int HTTP_STATUS_OK = 200;
     private static final int RESPONSE_DATA_OK = 0;
 
+    private String redisTokenKey(){
+        return "GAT_"+TOKEN_KEY+GuanAiTongConfig.getAppId();
+    }
 
     //okHttp3添加信任所有证书
     private static OkHttpClient getUnsafeOkHttpClient() {
@@ -359,19 +362,21 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         String timeStamp = timeStampS.toString();
         map.put(TIME_STAMP_KEY,timeStamp);
 
+        String token;
+        String sign;
         try {
-            String sign = getFormSign(map);
-            String token = getAccessToken();
-            if (null == token) {
-                log.info("failed to get access_token!! ");
-                return null;
-            }
+            sign = getFormSign(map);
+            token = getAccessToken();
+
             theMap.put(TOKEN_KEY, token);
             theMap.put(SIGN_KEY, sign);
         } catch (Exception e) {
             throw new Exception(e);
         }
+        if (null == token) {
+            throw new Exception("failed to get access_token!! ");
 
+        }
         Set<String> keySet = map.keySet();
         Iterator<String> iter = keySet.iterator();
         while (iter.hasNext()) {
@@ -388,9 +393,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     @Override
     public String getAccessToken() throws Exception {
 
-        String cacheToken = redisDAO.getValue(TOKEN_KEY);
+        String cacheToken = redisDAO.getValue(redisTokenKey());
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            log.info("get cached token: {" + cacheToken + "} ttl=" + redisDAO.ttl(TOKEN_KEY) + "s");
+            log.info("get cached token: {" + cacheToken + "} ttl=" + redisDAO.ttl(redisTokenKey()) + "s");
             return cacheToken;
         }
 
@@ -446,7 +451,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
                 Integer expires = data.getInteger("expires_in");
                 log.info("access_token:" + token);
                 log.info("expires_in:" + expires.toString());
-                redisDAO.setValue(TOKEN_KEY, token, expires - 5);
+                redisDAO.setValue(redisTokenKey(), token, expires - 5);
                 return token;
             } else {
                 log.warn("data in response from guanaitong is null");
@@ -475,14 +480,14 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         String xForm = buildXFormBody(map);
         if (null == xForm || xForm.isEmpty()) {
-            log.info("build param failed");
-            return null;
+            String msg = "构建参数错误";
+            throw new Exception(msg);
         }
 
         try {
             JSONObject json = tryPost(path, xForm);
             if (null == json) {
-                log.info("response data from remote is null");
+                log.error("response data from remote is null");
             }
             return json;
         } catch (Exception e) {

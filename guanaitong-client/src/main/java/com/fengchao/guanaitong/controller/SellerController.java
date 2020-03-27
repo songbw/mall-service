@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -475,6 +476,56 @@ public class SellerController {
         }
 
         log.info("getSignParam got sign : {}", json.toJSONString());
+        buildResponse(response, json);
+    }
+
+    @ResponseStatus(code = HttpStatus.OK)
+    @PostMapping(GuanAiTong.POST_TRADE_INFO_PATH)
+    public void postTradeInfo(HttpServletResponse response,
+                              @RequestBody Map<String, Object> map
+    ) {
+
+        log.info("===postTradeInfo 入参：{}",JSON.toJSONString(map));
+        JSONObject json = new JSONObject();
+        Object tradeNo = map.get(GuanAiTong.OUTER_TRADE_NO_KEY);
+        Object tradeInfo = map.get(GuanAiTong.TRADE_INFO_KEY);
+        if (null == tradeNo || null == tradeInfo || tradeInfo.toString().isEmpty() || tradeNo.toString().isEmpty()){
+            String msg = "交易号，交易详情不可为空";
+            log.error(msg);
+            json.put("msg",msg);
+            buildResponse(response, json);
+            return;
+        }
+        String tradeInfoStr = tradeInfo.toString();
+        try {
+            JSONObject j = JSONObject.parseObject(tradeInfoStr);
+        }catch (Exception e){
+            String msg = e.getMessage();
+            log.error(msg,e);
+            json.put("msg","交易详情格式错误： "+msg);
+            buildResponse(response, json);
+            return;
+        }
+        Map<String,Object> params = new HashMap<>();
+        params.put(GuanAiTong.OUTER_TRADE_NO_KEY,tradeNo);
+        params.put(GuanAiTong.TRADE_INFO_KEY,tradeInfo);
+        try {
+            json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_TRADE_INFO_PATH, params);
+        } catch (Exception ex) {
+            String msg = ex.getMessage();
+            log.error(msg,ex);
+            json.put("msg",msg);
+            buildResponse(response, json);
+            return;
+        }
+
+        if (null == json) {
+            String msg = "GuanAiTong response data is NULL";
+            log.error(msg);
+            json.put("msg",msg);
+            buildResponse(response, json);
+            return;
+        }
         buildResponse(response, json);
     }
 }
