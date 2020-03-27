@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh './order/jenkins/scripts/deliver-gatwph-test.sh'
+                sh './sso/jenkins/scripts/deliver-gatwph-test.sh'
             }
         }
     }
