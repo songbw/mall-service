@@ -331,7 +331,163 @@ public class ExportStatisticController {
         }
     }
 
+    /**
+     * 导出供应商发票
+     *
+     * @param startTime
+     * @param endTime
+     * @param appIds
+     * @param response
+     * @throws Exception
+     */
+    @GetMapping(value = "/merchant/receipt")
+    public void exportMerchantReceipt(@RequestParam("startTime") String startTime,
+                                      @RequestParam("endTime") String endTime,
+                                      @RequestParam("merchantId") Integer merchantId,
+                                      @RequestParam(value = "appId", required = false) String appIds,
+                                 HttpServletResponse response) throws Exception {
+        OutputStream outputStream = null;
+        // 创建HSSFWorkbook对象
+        HSSFWorkbook workbook = null;
 
+        try {
+            log.info("导出供应商发票 入参 startTime:{}, endTime:{}, appIds:{}", startTime, endTime, appIds);
+            // 0.入参检验
+//            if (orderExportReqVo.getPayStartDate() == null) {
+//                throw new Exception("参数不合法, 查询开始时间为空");
+//            }
+
+            List<String> appIdList = Arrays.asList(appIds.split(","));
+
+            // 1. 获取导出数据
+            Date startDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDate = DateUtil.parseDateTime(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            List<ExportMerchantReceiptVo>  exportMerchantReceiptVoList =
+                    exportStatisticService.exportMerchantReceipt(startDate, endDate, appIdList, merchantId);
+
+            if (CollectionUtils.isEmpty(exportMerchantReceiptVoList)) {
+                log.warn("导出供应商发票 未找出有效的导出数据!");
+                throw new Exception("未找出有效的导出数据!");
+            }
+
+            // 2.开始组装excel
+            // 创建HSSFWorkbook对象
+            workbook = new HSSFWorkbook();
+            // 创建HSSFSheet对象
+            HSSFSheet sheet = workbook.createSheet("供应商发票");
+
+            // 2.1 组装
+            // title
+            HSSFRow titleRow0 = sheet.createRow(0);
+            HSSFCell titlecell0 = titleRow0.createCell(0);
+            titlecell0.setCellValue("商品名称"); //
+            HSSFCell titlecell1 = titleRow0.createCell(0);
+            titlecell1.setCellValue("品类"); //
+            HSSFCell titlecell2 = titleRow0.createCell(0);
+            titlecell2.setCellValue("销售单位"); //
+            HSSFCell titlecell3 = titleRow0.createCell(0);
+            titlecell3.setCellValue("数量"); //
+            HSSFCell titlecell4 = titleRow0.createCell(0);
+            titlecell4.setCellValue("进货单价(元)"); //
+            HSSFCell titlecell5 = titleRow0.createCell(0);
+            titlecell5.setCellValue("税率"); //
+            HSSFCell titlecell6 = titleRow0.createCell(0);
+            titlecell6.setCellValue("含税金额"); //
+            HSSFCell titlecell7 = titleRow0.createCell(0);
+            titlecell7.setCellValue("税额"); //
+
+
+            // content
+            int index = 1;
+            for (ExportMerchantReceiptVo exportMerchantReceiptVo : exportMerchantReceiptVoList) {
+                HSSFRow row = sheet.createRow(index);
+
+                HSSFCell cell0 = row.createCell(0);
+                cell0.setCellValue(exportMerchantReceiptVo.getProductName()); //
+
+                HSSFCell cell1 = row.createCell(1);
+                cell1.setCellValue(exportMerchantReceiptVo.getCategoryName());
+
+                HSSFCell cell2 = row.createCell(2);
+                cell2.setCellValue(exportMerchantReceiptVo.getSaleUnit());
+
+                HSSFCell cell3 = row.createCell(3);
+                cell3.setCellValue(exportMerchantReceiptVo.getNum());
+
+                HSSFCell cell4 = row.createCell(4);
+                cell4.setCellValue(exportMerchantReceiptVo.getSprice());
+
+                HSSFCell cell5 = row.createCell(5);
+                cell5.setCellValue(exportMerchantReceiptVo.getTaxRate());
+
+                HSSFCell cell6 = row.createCell(6);
+                cell6.setCellValue(exportMerchantReceiptVo.getAmount());
+
+                HSSFCell cell7 = row.createCell(7);
+                cell7.setCellValue(exportMerchantReceiptVo.getTaxAmount());
+            }
+
+
+            ///////// 文件名
+            String date = DateUtil.nowDate(DateUtil.DATE_YYYYMMDD);
+            String fileName = "expressFee" + date + ".xls";
+
+            // 3. 输出文件
+            try {
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                outputStream = response.getOutputStream();
+                workbook.write(outputStream);
+                outputStream.flush();
+            } catch (Exception e) {
+                log.error("导出供应商发票 出错了:{}", e.getMessage(), e);
+
+                throw new Exception(e);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            //
+            log.debug("export file finish");
+        } catch (Exception e) {
+            log.error("导出供应商发票异常:{}", e.getMessage(), e);
+
+//            response.setHeader("content-type", "application/json;charset=UTF-8");
+//            response.setContentType("application/json");
+            // response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setStatus(400);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = null;
+            try {
+                writer = response.getWriter();
+                Map<String, String> map = new HashMap<>();
+                map.put("code", "400");
+                map.put("msg", e.getMessage());
+                map.put("data", null);
+
+                writer.write(JSONUtil.toJsonString(map));
+            } catch (Exception e1) {
+                log.error("导出供应商发票报表 错误:{}", e.getMessage(), e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+
+            if (workbook != null) {
+                workbook.close();
+            }
+        }
+    }
 
 
 

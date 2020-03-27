@@ -2,6 +2,7 @@ package com.fengchao.order.service;
 
 import com.fengchao.order.bean.vo.ExportExpressFeeVo;
 import com.fengchao.order.bean.vo.ExportLoanSettlementVo;
+import com.fengchao.order.bean.vo.ExportMerchantReceiptVo;
 import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.constants.PaymentTypeEnum;
 
@@ -33,4 +34,17 @@ public interface ExportStatisticService {
      * @throws Exception
      */
     List<ExportExpressFeeVo> exportExpressFee(Date startTime, Date endTime, List<String> appIdList) throws Exception;
+
+    /**
+     * 导出供应商发票
+     *
+     * @param startTime
+     * @param endTime
+     * @param appIdList
+     * @param merchantId
+     * @return
+     * @throws Exception
+     */
+    List<ExportMerchantReceiptVo> exportMerchantReceipt(Date startTime, Date endTime,
+                                                               List<String> appIdList, Integer merchantId) throws Exception;
 }

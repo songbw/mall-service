@@ -98,6 +98,16 @@ public class OrderDetailBo {
     private Integer shareBankAmount;
 
     /**
+     * 品类
+     */
+    private String category;
+
+    /**
+     * 销售单位
+     */
+    private String saleUnit;
+
+    /**
      * 0：待付款；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：已取消，申请售后
      *
      * @return

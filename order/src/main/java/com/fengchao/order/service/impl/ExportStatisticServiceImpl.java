@@ -1,17 +1,21 @@
 package com.fengchao.order.service.impl;
 
+import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.vo.ExportExpressFeeVo;
 import com.fengchao.order.bean.vo.ExportLoanSettlementVo;
+import com.fengchao.order.bean.vo.ExportMerchantReceiptVo;
 import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.feign.FreightsServiceClient;
 import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.model.OrderDetailX;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.rpc.FreightsRpcService;
 import com.fengchao.order.rpc.ProductRpcService;
 import com.fengchao.order.rpc.WorkOrderRpcService;
 import com.fengchao.order.rpc.WsPayRpcService;
+import com.fengchao.order.rpc.extmodel.ProductInfoBean;
 import com.fengchao.order.rpc.extmodel.ShipRegionsBean;
 import com.fengchao.order.rpc.extmodel.ShipTemplateBean;
 import com.fengchao.order.rpc.extmodel.WorkOrder;
@@ -19,6 +23,7 @@ import com.fengchao.order.service.ExportStatisticService;
 import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
+import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -41,15 +46,19 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
     private WorkOrderRpcService workOrderRpcService;
 
+    private ProductRpcService productRpcService;
+
     @Autowired
     public ExportStatisticServiceImpl(OrdersDao ordersDao,
                                       OrderDetailDao orderDetailDao,
                                       FreightsRpcService freightsRpcService,
-                                      WorkOrderRpcService workOrderRpcService) {
+                                      WorkOrderRpcService workOrderRpcService,
+                                      ProductRpcService productRpcService) {
         this.ordersDao = ordersDao;
         this.orderDetailDao = orderDetailDao;
         this.freightsRpcService = freightsRpcService;
         this.workOrderRpcService = workOrderRpcService;
+        this.productRpcService = productRpcService;
     }
 
     @Override
@@ -58,28 +67,31 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
         // 1. 查询入账子订单
         // 1.1 查询
-        List<OrderDetail> originOrderDetailList =
-                orderDetailDao.selectOrderDetailsForReconciliation(merchantId, startTime, endTime);
+        /**
+         * List<OrderDetail> originOrderDetailList =
+         *                 orderDetailDao.selectOrderDetailsForReconciliation(merchantId, startTime, endTime);
+         *
+         *         if (CollectionUtils.isEmpty(originOrderDetailList)) {
+         *             log.warn("导出货款结算表 数据为空");
+         *             return null;
+         *         }
+         *
+         *         // 1.2 根据第1步查询主订单
+         *         List<Integer> queryOrderIdList = originOrderDetailList.stream().map(o -> o.getOrderId()).collect(Collectors.toList());
+         *
+         *         List<Orders> ordersList = ordersDao.selectOrdersByIdsAndAppIds(queryOrderIdList, appIdList);
+         *         List<Integer> ordersIdList = ordersList.stream().map(o -> o.getId()).collect(Collectors.toList());
+         *
+         *         // 1.3 根据appIds过滤子订单
+         *         List<OrderDetail> incomeOrderDetailList = new ArrayList<>(); // 根据appIds过滤后 剩下的子订单
+         *         for (OrderDetail orderDetail : originOrderDetailList) {
+         *             if (ordersIdList.contains(orderDetail.getOrderId())) {
+         *                 incomeOrderDetailList.add(orderDetail);
+         *             }
+         *         }
+         */
+        List<OrderDetail> incomeOrderDetailList = queryIncomeOrderDetails(startTime, endTime, appIdList, merchantId);
 
-        if (CollectionUtils.isEmpty(originOrderDetailList)) {
-            log.warn("导出货款结算表 数据为空");
-            return null;
-        }
-
-
-        // 1.2 根据第1步查询主订单
-        List<Integer> queryOrderIdList = originOrderDetailList.stream().map(o -> o.getOrderId()).collect(Collectors.toList());
-
-        List<Orders> ordersList = ordersDao.selectOrdersByIdsAndAppIds(queryOrderIdList, appIdList);
-        List<Integer> ordersIdList = ordersList.stream().map(o -> o.getId()).collect(Collectors.toList());
-
-        // 1.3 根据appIds过滤子订单
-        List<OrderDetail> incomeOrderDetailList = new ArrayList<>(); // 根据appIds过滤后 剩下的子订单
-        for (OrderDetail orderDetail : originOrderDetailList) {
-            if (ordersIdList.contains(orderDetail.getOrderId())) {
-                incomeOrderDetailList.add(orderDetail);
-            }
-        }
         if (CollectionUtils.isEmpty(incomeOrderDetailList)) {
             log.warn("导出货款结算表 数据为空!!");
             return null;
@@ -96,9 +108,6 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
                 workOrderList.addAll(_tmpList);
             }
-        }
-        if (CollectionUtils.isEmpty(workOrderList)) {
-            return null;
         }
 
         log.info("导出货款结算表 获取退款信息:{}", JSONUtil.toJsonString(workOrderList));
@@ -268,8 +277,119 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         return exportExpressFeeVoList;
     }
 
+    @Override
+    public List<ExportMerchantReceiptVo> exportMerchantReceipt(Date startTime, Date endTime,
+                                                               List<String> appIdList, Integer merchantId) {
+        // 1. 获取入账子订单集合
+        List<OrderDetail> incomeOrderDetailList = queryIncomeOrderDetails(startTime, endTime, appIdList, merchantId);
+
+        // 2. 查询出账的订单
+        // 获取已退款的子订单信息集合
+        List<WorkOrder> workOrderList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(appIdList)) {
+            workOrderList = workOrderRpcService.queryRefundedOrderDetailList(merchantId, null, startTime, endTime);
+        } else {
+            for (String appId : appIdList) {
+                List<WorkOrder> _tmpList = workOrderRpcService.queryRefundedOrderDetailList(merchantId, appId, startTime, endTime);
+
+                workOrderList.addAll(_tmpList);
+            }
+        }
+
+        // 将退款的子订单按照子订单号唯独转map
+        Map<String, WorkOrder> workOrderMap = workOrderList.stream().collect(Collectors.toMap(w -> w.getOrderId(), w -> w));
+        log.info("导出供应商发票 获取退款信息:{}", JSONUtil.toJsonString(workOrderMap));
+
+        // x. 查询商品信息
+        List<String> mpuList = incomeOrderDetailList.stream().map(i -> i.getMpu()).collect(Collectors.toList());
+        List<ProductInfoBean> productInfoBeanList = productRpcService.findProductListByMpuIdList(mpuList);
+        // 转map key：mpu
+        Map<String, ProductInfoBean> productInfoBeanMap = productInfoBeanList.stream().collect(Collectors.toMap(p -> p.getMpu(), p -> p));
+
+        // 3. 合并出账入账订单 & 根据mpu的纬度聚合
+        Map<String, List<OrderDetail>> orderDetailInMpu = new HashMap<>();
+        for (OrderDetail orderDetail : incomeOrderDetailList) {
+            // 设置商品名称
+            String productName = productInfoBeanMap.get(orderDetail.getMpu()) == null ?
+                    orderDetail.getName() : productInfoBeanMap.get(orderDetail.getMpu()).getName();
+            orderDetail.setName(productName);
+
+            // 合并
+            String subOrderId = orderDetail.getSubOrderId();
+            WorkOrder _workOrder = workOrderMap.get(subOrderId);
+            if (_workOrder != null) {
+                orderDetail.setNum(orderDetail.getNum() - _workOrder.getReturnedNum());
+            }
+
+            //
+            List<OrderDetail> orderDetailList = orderDetailInMpu.get(orderDetail.getMpu());
+            if (orderDetailList == null) {
+                orderDetailList = new ArrayList<>();
+                orderDetailInMpu.put(orderDetail.getMpu(), orderDetailList);
+            }
+            orderDetailList.add(orderDetail);
+        }
+
+        // 7. 组装导出数据
+        List<ExportMerchantReceiptVo> exportMerchantReceiptVoList = new ArrayList<>();
+        for (String mpu : orderDetailInMpu.keySet()) {
+            List<OrderDetail> orderDetailList = orderDetailInMpu.get(mpu);
+
+            String productName = "";
+            String categoryName = "";
+            Integer num = 0;
+            String taxRate = productInfoBeanMap.get(mpu).getTaxRate(); // 税率
+            Integer orderDetailAmount = 0; // 子订单的总价(含税金额)
+            for (OrderDetail orderDetail : orderDetailList) {
+                productName = orderDetail.getName();
+                categoryName = orderDetail.getCategory();
+                num = num + orderDetail.getNum();
+                orderDetailAmount = orderDetailAmount +
+                        CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
+            }
+
+            ExportMerchantReceiptVo exportMerchantReceiptVo = new ExportMerchantReceiptVo();
+            exportMerchantReceiptVo.setProductName(productName); // 商品名称
+            exportMerchantReceiptVo.setCategoryId(""); // 品类
+            exportMerchantReceiptVo.setCategoryName(categoryName); // 品类
+            exportMerchantReceiptVo.setNum(num); // 数量
+            exportMerchantReceiptVo.setTaxRate(taxRate); // 税率
+            exportMerchantReceiptVo.setAmount(CalculateUtil.converFenToYuan(orderDetailAmount)); // 含税金额
+
+            // 税额
+            if (StringUtils.isNotBlank(taxRate)) {
+                int taxPrice = new BigDecimal(orderDetailAmount)
+                        .divide(new BigDecimal(taxRate).add(new BigDecimal(1)),2, BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal(taxRate))
+                        .setScale(0, BigDecimal.ROUND_HALF_UP)
+                        .intValue(); // 单位分
+
+                exportMerchantReceiptVo.setTaxAmount(CalculateUtil.converFenToYuan(taxPrice)); // 税额
+            }
+
+            // 进货单价
+            exportMerchantReceiptVo.setSprice(CalculateUtil.converFenToYuan(orderDetailAmount / num)); // 进货单价
+            exportMerchantReceiptVo.setTaxType(""); // 税收类型
+
+            exportMerchantReceiptVoList.add(exportMerchantReceiptVo);
+        }
+
+        log.info("导出供应商发票 组装导出结果List<ExportMerchantReceiptVo>:{}",
+                JSONUtil.toJsonString(exportMerchantReceiptVoList));
+
+
+        return exportMerchantReceiptVoList;
+    }
+
     /// ========================== private ======================================
 
+    /**
+     * 计算子订单的运费
+     *
+     * @param orderDetail
+     * @param expressFeeMap
+     * @return
+     */
     private Integer calcExpressFee(OrderDetail orderDetail, Map<Integer, ShipTemplateBean> expressFeeMap) {
         Integer fee = 0;
 
@@ -302,6 +422,44 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
         return fee;
     }
+
+    /**
+     * 查询入账订单
+     *
+     * @param startTime
+     * @param endTime
+     * @param merchantId
+     * @return
+     */
+    private List<OrderDetail> queryIncomeOrderDetails(Date startTime, Date endTime, List<String> appIdList, Integer merchantId) {
+        // 1. 查询入账子订单
+        // 1.1 查询子订单
+        List<OrderDetail> originOrderDetailList =
+                orderDetailDao.selectOrderDetailsForReconciliation(merchantId, startTime, endTime);
+
+        if (CollectionUtils.isEmpty(originOrderDetailList)) {
+            log.warn("导出货款结算表 数据为空");
+            return null;
+        }
+
+        // 1.2 根据第1步查询主订单
+        List<Integer> queryOrderIdList = originOrderDetailList.stream().map(o -> o.getOrderId()).collect(Collectors.toList());
+
+        List<Orders> ordersList = ordersDao.selectOrdersByIdsAndAppIds(queryOrderIdList, appIdList);
+        List<Integer> ordersIdList = ordersList.stream().map(o -> o.getId()).collect(Collectors.toList());
+
+        // 1.3 根据appIds过滤子订单
+        List<OrderDetail> incomeOrderDetailList = new ArrayList<>(); // 根据appIds过滤后 剩下的子订单
+        for (OrderDetail orderDetail : originOrderDetailList) {
+            if (ordersIdList.contains(orderDetail.getOrderId())) {
+                incomeOrderDetailList.add(orderDetail);
+            }
+        }
+
+        return incomeOrderDetailList;
+    }
+
+
 }
 
 
