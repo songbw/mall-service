@@ -147,4 +147,6 @@ public interface OrderService {
     OperaResponse deliverStatus(StarBackBean orders) ;
 
     OperaResponse batchSelectByIds(List<Integer> orderIds) ;
+
+    OperaResponse sendTradeInfo(String outerTradeNo, String paymentNo) ;
 }

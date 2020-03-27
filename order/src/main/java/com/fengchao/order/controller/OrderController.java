@@ -499,4 +499,9 @@ public class OrderController {
         }
         return service.batchSelectByIds(orderIds);
     }
+
+    @GetMapping("/send/tradeInfo")
+    private OperaResponse sendOrderDetailByOutTradeNoAndPaymentNo(String openId, String paymentNo) {
+        return service.sendTradeInfo(openId, paymentNo);
+    }
 }

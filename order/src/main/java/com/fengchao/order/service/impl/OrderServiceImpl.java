@@ -15,10 +15,7 @@ import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
-import com.fengchao.order.feign.AoyiClientService;
-import com.fengchao.order.feign.BaseService;
-import com.fengchao.order.feign.EquityServiceClient;
-import com.fengchao.order.feign.ProductService;
+import com.fengchao.order.feign.*;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
 import com.fengchao.order.rpc.AoyiRpcService;
@@ -102,6 +99,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private KuaidiCodeDao kuaidiCodeDao;
+    @Autowired
+    private GuanaitongClientService guanaitongClientService ;
 
     @Transactional
     @Override
@@ -1672,6 +1671,57 @@ public class OrderServiceImpl implements OrderService {
             orders.add(order) ;
         });
         response.setData(orders);
+        return response;
+    }
+
+    @Override
+    public OperaResponse sendTradeInfo(String openId, String paymentNo) {
+        OperaResponse response = new OperaResponse() ;
+        List<Orders> orders = ordersDao.selectOrdersByOpenIdAndPaymentNo(openId, paymentNo) ;
+        SendTradeInfoBean sendTradeInfoBean = new SendTradeInfoBean() ;
+        sendTradeInfoBean.setOuter_trade_no(paymentNo);
+        TradeInfoBean tradeInfoBean = new TradeInfoBean() ;
+        tradeInfoBean.setIs_third_orders(1);
+        List<ThirdOrdersBean> thirdOrdersBeans = new ArrayList<>() ;
+        List<GoodsDetailBean> goodsDetailBeans = new ArrayList<>() ;
+        if (orders != null && orders.size() > 0) {
+            tradeInfoBean.setThird_trade_no(orders.get(0).getOutTradeNo());
+            for (Orders orders1 : orders) {
+                ThirdOrdersBean thirdOrdersBean = new ThirdOrdersBean() ;
+                thirdOrdersBean.setThird_sub_trade_no(orders1.getTradeNo());
+                thirdOrdersBean.setThird_sub_delivery_fee(new BigDecimal(orders1.getServFee()));
+                thirdOrdersBean.setThird_sub_total_amount(new BigDecimal(orders1.getSaleAmount()));
+                thirdOrdersBean.setThird_sub_cost_amount(thirdOrdersBean.getThird_sub_total_amount());
+                thirdOrdersBean.setThird_sub_pay_amount(thirdOrdersBean.getThird_sub_total_amount());
+
+                tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()));
+                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()));
+                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
+                List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
+                orderDetails.forEach(orderDetail -> {
+                    GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;
+                    goodsDetailBean.setSku_id(orderDetail.getSkuId());
+                    if (orderDetail.getName().length() > 45) {
+                        goodsDetailBean.setName(orderDetail.getName().substring(0, 45));
+                    } else {
+                        goodsDetailBean.setName(orderDetail.getName());
+                    }
+                    goodsDetailBean.setQuantity(orderDetail.getNum());
+                    goodsDetailBean.setGood_price(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
+                    goodsDetailBean.setGood_pay_amount(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
+                    goodsDetailBean.setGood_cost_amount(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
+                    goodsDetailBeans.add(goodsDetailBean) ;
+                });
+            }
+            tradeInfoBean.setThird_orders(thirdOrdersBeans);
+            sendTradeInfoBean.setTrade_info(tradeInfoBean);
+            logger.info("发送订单详情到关爱通，入口参数：{}", JSONUtil.toJsonString(sendTradeInfoBean));
+            OperaResponse guanaitongResponse = guanaitongClientService.sendTradeInfo(sendTradeInfoBean) ;
+            if (guanaitongResponse.getCode() != 200) {
+                response.setCode(guanaitongResponse.getCode());
+                response.setMsg(guanaitongResponse.getMsg());
+            }
+        }
         return response;
     }
 
