@@ -1,7 +1,6 @@
 package com.fengchao.aoyi.client.feign;
 
 import com.fengchao.aoyi.client.bean.OperaResponse;
-import com.fengchao.aoyi.client.bean.Orders;
 import com.fengchao.aoyi.client.bean.StarBackBean;
 import com.fengchao.aoyi.client.feign.hystric.OrderServiceClientH;
 import org.springframework.cloud.openfeign.FeignClient;
