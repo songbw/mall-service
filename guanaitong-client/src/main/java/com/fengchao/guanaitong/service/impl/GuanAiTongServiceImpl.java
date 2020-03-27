@@ -226,7 +226,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             String key = iter.next();
             tMap.put(key.trim(), m.get(key));
         }
-        log.info("buildFormSignMap 返回 {}",JSON.toJSONString(tMap));
+        if (log.isDebugEnabled()) {
+            log.info("buildFormSignMap 返回 {}", JSON.toJSONString(tMap));
+        }
         return tMap;
     }
 
@@ -240,7 +242,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xFormString = map2stringTradeInfo(m);
-        log.info("getTradeInfoFormSign, parameters for sign : " + xFormString);
+        if (log.isDebugEnabled()) {
+            log.info("getTradeInfoFormSign, parameters for sign : " + xFormString);
+        }
         byte[] bytes = xFormString.getBytes();
         return DigestUtils.sha1Hex(bytes);
     }
@@ -255,7 +259,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xFormString = map2string(m);
-        log.info("getFormSign, parameters for sign : " + xFormString);
+        if (log.isDebugEnabled()) {
+            log.info("getFormSign, parameters for sign : " + xFormString);
+        }
         byte[] bytes = xFormString.getBytes();
         return DigestUtils.sha1Hex(bytes);
     }
@@ -273,8 +279,8 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         Response response;
         try {
             response = client.newCall(request).execute();
-        } catch (IOException ex) {
-            log.info("try post got exception : " + ex.getMessage());
+        } catch (Exception ex) {
+            log.error("try post got exception : {}" , ex.getMessage(),ex);
             throw new Exception(ex);
         }
 
@@ -349,7 +355,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     @Override
     public String buildUrlXFormBody(Map map) throws Exception{
 
-        log.info("buildUrlXFormBody map : {}", JSON.toJSONString(map));
+        if (log.isDebugEnabled()) {
+            log.debug("buildUrlXFormBody map : {}", JSON.toJSONString(map));
+        }
         for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
             Map.Entry<String, Object> item = it.next();
             if (null == item.getValue()) {
@@ -392,7 +400,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xForm = map2string(theMap);
-        log.info("buildUrlXFormBody xForm = {}" ,xForm);
+        if (log.isDebugEnabled()) {
+            log.debug("buildUrlXFormBody xForm = {}", xForm);
+        }
         String newXFrom = xForm.replaceAll("\\+", "%20");
         log.info("buildUrlXFormBody newXForm = {}" ,newXFrom);
         return newXFrom;
@@ -400,8 +410,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     }
 
     private String buildTradeInfoApiBody(Map map) throws Exception{
-
-        log.info("buildTradeInfoApiBody map : {}", JSON.toJSONString(map));
+        if (log.isDebugEnabled()) {
+            log.debug("buildTradeInfoApiBody map : {}", JSON.toJSONString(map));
+        }
         for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
             Map.Entry<String, Object> item = it.next();
             if (null == item.getValue()) {
@@ -444,7 +455,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xForm = map2string(theMap);
-        log.info("buildTradeInfoApiBody xForm = {}" ,xForm);
+        if (log.isDebugEnabled()) {
+            log.debug("buildTradeInfoApiBody xForm = {}" ,xForm);
+        }
         String newXFrom = xForm.replaceAll("\\+", "%20");
         log.info("buildTradeInfoApiBody newXForm = {}" ,newXFrom);
         return newXFrom;

@@ -327,13 +327,13 @@ public class SellerController {
             return;
         }
         try {
-            JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_V2_REFUND_PATH, map);
+            JSONObject json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_SYNC_REFUND_PATH, map);
             if (null != json) {
                 buildResponse(response, json);
                 return;
             }
         } catch (Exception ex) {
-            log.info("guanAiTongPost {} got exception : {}",GuanAiTong.POST_V2_REFUND_PATH,ex.getMessage());
+            log.error("guanAiTongPost {} got exception : {}",GuanAiTong.POST_SYNC_REFUND_PATH,ex.getMessage());
         }
 
         log.info("GuanAiTong response data is NULL");
@@ -541,65 +541,4 @@ public class SellerController {
         buildResponse(response, json);
     }
 
-    @ResponseStatus(code = HttpStatus.OK)
-    @PostMapping("tradeInfo")
-    public void postWorkOrderTradeInfo(HttpServletResponse response,
-                              @RequestBody Map<String, Object> map
-    ) {
-
-        log.info("===postTradeInfo 入参：{}",JSON.toJSONString(map));
-
-        JSONObject result = new JSONObject();
-        Object tradeNo = map.get(GuanAiTong.OUTER_TRADE_NO_KEY);
-        Object tradeInfo = map.get(GuanAiTong.TRADE_INFO_KEY);
-        if (null == tradeNo || null == tradeInfo || tradeInfo.toString().isEmpty() || tradeNo.toString().isEmpty()){
-            String msg = "交易号，交易详情不可为空";
-            log.error(msg);
-            result.put("msg",msg);
-            buildResponse(response, result);
-            return;
-        }
-
-        String tradeInfoStr = JSON.toJSONString(tradeInfo);
-
-        Map<String,Object> params = new TreeMap<>();
-        params.put(GuanAiTong.OUTER_TRADE_NO_KEY,tradeNo);
-        params.put(GuanAiTong.TRADE_INFO_KEY,tradeInfoStr);
-        Object refundNo = map.get(GuanAiTong.OUTER_REFUND_NO_KEY);
-        if (null != refundNo && null != refundNo.toString()){
-            params.put(GuanAiTong.OUTER_REFUND_NO_KEY,refundNo.toString());
-        }
-        JSONObject json = new JSONObject();
-        try {
-            json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_TRADE_INFO_PATH, params);
-            //json = guanAiTongService.guanAiTongXFormUrlEncodedPost(GuanAiTong.POST_TRADE_INFO_PATH, map);
-        } catch (Exception ex) {
-            String msg = ex.getMessage();
-            log.error(msg,ex);
-            json.put("msg",msg);
-            buildResponse(response, json);
-            return;
-        }
-        /*
-        JSONObject json;
-        try {
-            json = guanAiTongService.guanAiTongXFormUrlEncodedPost(GuanAiTong.POST_TRADE_INFO_PATH, map);
-        } catch (Exception ex) {
-            String msg = ex.getMessage();
-            log.error(msg,ex);
-            json = new JSONObject();
-            json.put("msg",msg);
-            buildResponse(response, json);
-            return;
-        }
-        if (null == json) {
-            String msg = "GuanAiTong response data is NULL";
-            log.error(msg);
-            json.put("msg",msg);
-            buildResponse(response, json);
-            return;
-        }
-        */
-        buildResponse(response, json);
-    }
 }
