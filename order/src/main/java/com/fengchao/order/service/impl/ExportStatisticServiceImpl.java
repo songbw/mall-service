@@ -150,7 +150,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // 1.1 查询
         List<OrderDetail> originOrderDetailList =
                 orderDetailDao.selectOrderDetailsForReconciliation(null, startTime, endTime);
-
+        log.info("导出运费实际收款报表 获取的所有收入子订单:{}", JSONUtil.toJsonString(originOrderDetailList));
         if (CollectionUtils.isEmpty(originOrderDetailList)) {
             log.warn("导出运费实际收款报表 数据为空");
             return null;
@@ -159,8 +159,9 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // 1.2 根据第1步查询主订单
         List<Integer> queryOrderIdList = originOrderDetailList.stream().map(o -> o.getOrderId()).collect(Collectors.toList());
         List<Orders> ordersList = ordersDao.selectOrdersByIdsAndAppIds(queryOrderIdList, appIdList);
+        log.info("导出运费实际收款报表 获取主订单列表:{}", JSONUtil.toJsonString(ordersList));
 
-        // x 转map 按照供应商分类
+        // x 转map 按照供应商分类 key:merchantId, value : 该供应商下的主订单集合
         Map<Integer, List<Orders>> ordersMap = new HashMap<>();
         for (Orders orders : ordersList) {
             Integer _merchantId = orders.getMerchantId();
@@ -173,7 +174,6 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
             _ordersList.add(orders);
         }
-
         log.info("导出运费实际收款报表 按照供货商分类主订单信息:{}", JSONUtil.toJsonString(ordersMap));
 
         // 1.3 根据appIds过滤子订单
@@ -184,6 +184,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
                 incomeOrderDetailList.add(orderDetail);
             }
         }
+        log.info("导出运费实际收款报表 获取入账子订单:{}", JSONUtil.toJsonString(incomeOrderDetailList));
+
         if (CollectionUtils.isEmpty(incomeOrderDetailList)) {
             log.warn("导出运费实际收款报表 数据为空!!");
             return null;
@@ -212,6 +214,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // 转map
         Map<Integer, ShipTemplateBean> shipTemplateBeanMap =
                 shipTemplateBeanList.stream().collect(Collectors.toMap(s -> s.getMerchantId(), s -> s));
+        log.info("导出运费实际收款报表 获取运费模版map:{}", JSONUtil.toJsonString(shipTemplateBeanMap));
 
 
         // 5. 处理导出数据
@@ -229,6 +232,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             merchantExpressFeeMap.put(merchantId, merchantExpressFee);
         }
 
+        log.info("导出运费实际收款报表 计算供应商的运费:{}", JSONUtil.toJsonString(merchantExpressFeeMap));
+
         // 5.2 计算用户的运费
         Map<Integer, Integer> userExpressFeeMap = new HashMap<>();
         for (Integer merchantId : ordersMap.keySet()) {
@@ -243,12 +248,19 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             userExpressFeeMap.put(merchantId, userExpressFee);
         }
 
+        log.info("导出运费实际收款报表 计算用户的运费:{}", JSONUtil.toJsonString(userExpressFeeMap));
+
+        // x. 查询一下供应商名称
+        List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
+        // 转map key:merchantId
+        Map<Integer, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(s -> Integer.valueOf(s.getCorporationId()), s -> s));
+        log.info("导出运费实际收款报表 获取供应商map:{}", JSONUtil.toJsonString(merchantMap));
 
         // 6 组装导出数据
         List<ExportExpressFeeVo> exportExpressFeeVoList = new ArrayList<>();
         for (Integer merchantId : orderDetailMap.keySet()) {
             ExportExpressFeeVo exportExpressFeeVo = new ExportExpressFeeVo();
-            exportExpressFeeVo.setMerchantName("" + merchantId); // 商户名称
+            exportExpressFeeVo.setMerchantName(merchantMap.get(merchantId) == null ? "--" : merchantMap.get(merchantId).getCorporationName()); // 商户名称
             exportExpressFeeVo.setUserExpressFee(CalculateUtil.converFenToYuan(userExpressFeeMap.get(merchantId))); // 用户支付运费金额 单位元
             exportExpressFeeVo.setMerchantExpressFee(CalculateUtil.converFenToYuan(merchantExpressFeeMap.get(merchantId))); // 供应商运费金额 单位元
 

@@ -208,7 +208,7 @@ public class ExportStatisticController {
     @GetMapping(value = "/expressfee")
     public void exportExpressFee(@RequestParam("startTime") String startTime,
                                  @RequestParam("endTime") String endTime,
-                                 @RequestParam(value = "appId", required = false) String appIds,
+                                 @RequestParam(value = "appIds", required = false) String appIds,
                                  HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
         // 创建HSSFWorkbook对象
@@ -247,7 +247,7 @@ public class ExportStatisticController {
             cell00.setCellValue(startTime + "-" + endTime + "  运费实际收款表"); //
 
             HSSFRow titleRow1 = sheet.createRow(1);
-            HSSFCell cell10 = titleRow0.createCell(0);
+            HSSFCell cell10 = titleRow1.createCell(0);
             cell10.setCellValue("供应商名称"); //
             HSSFCell cell11 = titleRow0.createCell(1);
             cell11.setCellValue("运费实际收款金额（元）"); //
