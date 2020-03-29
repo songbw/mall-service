@@ -11,14 +11,8 @@ import com.fengchao.order.feign.FreightsServiceClient;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.OrderDetailX;
 import com.fengchao.order.model.Orders;
-import com.fengchao.order.rpc.FreightsRpcService;
-import com.fengchao.order.rpc.ProductRpcService;
-import com.fengchao.order.rpc.WorkOrderRpcService;
-import com.fengchao.order.rpc.WsPayRpcService;
-import com.fengchao.order.rpc.extmodel.ProductInfoBean;
-import com.fengchao.order.rpc.extmodel.ShipRegionsBean;
-import com.fengchao.order.rpc.extmodel.ShipTemplateBean;
-import com.fengchao.order.rpc.extmodel.WorkOrder;
+import com.fengchao.order.rpc.*;
+import com.fengchao.order.rpc.extmodel.*;
 import com.fengchao.order.service.ExportStatisticService;
 import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
@@ -48,6 +42,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
     private ProductRpcService productRpcService;
 
+    private VendorsRpcService vendorsRpcService;
+
     @Autowired
     public ExportStatisticServiceImpl(OrdersDao ordersDao,
                                       OrderDetailDao orderDetailDao,
@@ -67,33 +63,12 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
         // 1. 查询入账子订单
         // 1.1 查询
-        /**
-         * List<OrderDetail> originOrderDetailList =
-         *                 orderDetailDao.selectOrderDetailsForReconciliation(merchantId, startTime, endTime);
-         *
-         *         if (CollectionUtils.isEmpty(originOrderDetailList)) {
-         *             log.warn("导出货款结算表 数据为空");
-         *             return null;
-         *         }
-         *
-         *         // 1.2 根据第1步查询主订单
-         *         List<Integer> queryOrderIdList = originOrderDetailList.stream().map(o -> o.getOrderId()).collect(Collectors.toList());
-         *
-         *         List<Orders> ordersList = ordersDao.selectOrdersByIdsAndAppIds(queryOrderIdList, appIdList);
-         *         List<Integer> ordersIdList = ordersList.stream().map(o -> o.getId()).collect(Collectors.toList());
-         *
-         *         // 1.3 根据appIds过滤子订单
-         *         List<OrderDetail> incomeOrderDetailList = new ArrayList<>(); // 根据appIds过滤后 剩下的子订单
-         *         for (OrderDetail orderDetail : originOrderDetailList) {
-         *             if (ordersIdList.contains(orderDetail.getOrderId())) {
-         *                 incomeOrderDetailList.add(orderDetail);
-         *             }
-         *         }
-         */
         List<OrderDetail> incomeOrderDetailList = queryIncomeOrderDetails(startTime, endTime, appIdList, merchantId);
 
+        log.info("导出商户货款结算表 获取入账子订单:{}", JSONUtil.toJsonString(incomeOrderDetailList));
+
         if (CollectionUtils.isEmpty(incomeOrderDetailList)) {
-            log.warn("导出货款结算表 数据为空!!");
+            log.warn("导出商户货款结算表 数据为空!!");
             return null;
         }
 
@@ -110,16 +85,23 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             }
         }
 
-        log.info("导出货款结算表 获取退款信息:{}", JSONUtil.toJsonString(workOrderList));
+        log.info("导出商户货款结算表 获取退款信息:{}", JSONUtil.toJsonString(workOrderList));
 
         // 3. 查询运费模版
         List<Integer> merchantIdList = incomeOrderDetailList.stream()
                 .map(f -> f.getMerchantId()).collect(Collectors.toList());
         List<ShipTemplateBean> shipTemplateBeanList = freightsRpcService.queryMerchantExceptionFee(merchantIdList);
-        // 转map
+        // 转map  key: merchantId, value:ShipTemplateBean对象
         Map<Integer, ShipTemplateBean> shipTemplateBeanMap =
                 shipTemplateBeanList.stream().collect(Collectors.toMap(s -> s.getMerchantId(), s -> s));
 
+        log.info("导出商户货款结算表 获取运费模版map:{}", JSONUtil.toJsonString(shipTemplateBeanMap));
+
+        // x. 查询一下供应商名称
+        List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
+        // 转map key:merchantId
+        Map<Integer, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(s -> Integer.valueOf(s.getCorporationId()), s -> s));
+        log.info("导出商户货款结算表 获取供应商map:{}", JSONUtil.toJsonString(merchantMap));
 
         // 5. 计算导出数据遍历入账的子订单
         String startTimeStr = DateUtil.dateTimeFormat(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
@@ -132,22 +114,23 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             expressAmount = expressAmount + calcExpressFee(orderDetail, shipTemplateBeanMap);
             completeOrderAmount = completeOrderAmount +
                     orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).intValue();
-
         }
 
         // 5.2 处理出账
+        // 查询子订单
+        List<String> subOrderIdList = workOrderList.stream().map(w -> w.getOrderId()).collect(Collectors.toList());
+        List<OrderDetail> outOrderDetailList = orderDetailDao.selectOrderDetailListBySubOrderIds(subOrderIdList);
+        log.info("导出商户货款结算表 出账子订单是:{}", JSONUtil.toJsonString(outOrderDetailList));
+        // 计算退款总价
         Integer refundOrderAmount = 0;
-        for (WorkOrder workOrder : workOrderList) {
+        for (OrderDetail orderDetail : outOrderDetailList) {
             refundOrderAmount = refundOrderAmount +
-                    CalculateUtil.convertYuanToFen(String.valueOf(workOrder.getRefundAmount()));
+                    CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
         }
 
         // 5.3 组装导出数据
-
-        // todo : 查询一下商户名称
-
         ExportLoanSettlementVo exportLoanSettlementVo = new ExportLoanSettlementVo();
-        exportLoanSettlementVo.setMerchantName(""); // 商户名称
+        exportLoanSettlementVo.setMerchantName(merchantMap.get(merchantId) == null ? "--" : merchantMap.get(merchantId).getName()); // 商户名称
         exportLoanSettlementVo.setSettlementPeriod(startTimeStr + "-" + endTimeStr); // 结算周期
         exportLoanSettlementVo.setCompleteOrderAmount(CalculateUtil.converFenToYuan(completeOrderAmount)); // 已完成订单金额 单位元
         exportLoanSettlementVo.setRefundOrderAmount(CalculateUtil.converFenToYuan(refundOrderAmount)); // 已退款订单金额 单位元
@@ -156,7 +139,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         exportLoanSettlementVo.setExpressFee(CalculateUtil.converFenToYuan(expressAmount)); // 运费金额 单位元
         exportLoanSettlementVo.setPayAmout(CalculateUtil.converFenToYuan(completeOrderAmount - refundOrderAmount + expressAmount)); // 应付款 单位元
 
-        log.info("导出货款结算表 组装导出数据ExportLoanSettlementVo:{}", JSONUtil.toJsonString(exportLoanSettlementVo));
+        log.info("导出商户货款结算表 组装导出数据ExportLoanSettlementVo:{}", JSONUtil.toJsonString(exportLoanSettlementVo));
 
         return exportLoanSettlementVo;
     }

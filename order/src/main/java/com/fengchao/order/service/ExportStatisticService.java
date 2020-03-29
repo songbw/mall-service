@@ -12,7 +12,7 @@ import java.util.List;
 public interface ExportStatisticService {
 
     /**
-     * 导出货款结算表
+     * 导出商户货款结算表
      *
      * @param startTime
      * @param endTime

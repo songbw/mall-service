@@ -39,7 +39,7 @@ public class ExportStatisticController {
     }
 
     /**
-     * 导出货款结算表
+     * 导出商户货款结算表
      *
      * @param startTime
      * @param endTime
@@ -52,14 +52,14 @@ public class ExportStatisticController {
     public void exportSettlement(@RequestParam("startTime") String startTime,
                             @RequestParam("endTime") String endTime,
                             @RequestParam("merchantId") Integer merchantId,
-                            @RequestParam(value = "appId", required = false) String appIds,
+                            @RequestParam(value = "appIds", required = false) String appIds,
                             HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
         // 创建HSSFWorkbook对象
         HSSFWorkbook workbook = null;
 
         try {
-            log.info("导出货款结算表 入参 startTime:{}, endTime:{}, merchantId:{}, appId:{}",
+            log.info("导出商户货款结算表 入参 startTime:{}, endTime:{}, merchantId:{}, appIds:{}",
                     startTime, endTime, merchantId, appIds);
             // 0.入参检验
 //            if (orderExportReqVo.getPayStartDate() == null) {
@@ -75,7 +75,7 @@ public class ExportStatisticController {
                     exportStatisticService.exportSettlement(startDate, endDate, appList, merchantId);
 
             if (exportLoanSettlementVo == null) {
-                log.info("导出货款结算表 未找出有效的导出数据!");
+                log.info("导出商户货款结算表 未找出有效的导出数据!");
                 throw new Exception("未找出有效的导出数据!");
             }
 
@@ -148,7 +148,7 @@ public class ExportStatisticController {
                 workbook.write(outputStream);
                 outputStream.flush();
             } catch (Exception e) {
-                log.error("导出货款结算表 出错了:{}", e.getMessage(), e);
+                log.error("导出商户货款结算表 出错了:{}", e.getMessage(), e);
 
                 throw new Exception(e);
             } finally {
@@ -160,7 +160,7 @@ public class ExportStatisticController {
             //
             log.debug("export file finish");
         } catch (Exception e) {
-            log.error("导出货款结算表异常:{}", e.getMessage(), e);
+            log.error("导出商户货款结算表异常:{}", e.getMessage(), e);
 
 //            response.setHeader("content-type", "application/json;charset=UTF-8");
 //            response.setContentType("application/json");
@@ -178,7 +178,7 @@ public class ExportStatisticController {
 
                 writer.write(JSONUtil.toJsonString(map));
             } catch (Exception e1) {
-                log.error("导出货款结算表 错误:{}", e.getMessage(), e);
+                log.error("导出商户货款结算表 错误:{}", e.getMessage(), e);
             } finally {
                 if (writer != null) {
                     writer.close();
