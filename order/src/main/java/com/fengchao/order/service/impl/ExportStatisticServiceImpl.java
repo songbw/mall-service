@@ -290,20 +290,22 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
                 workOrderList.addAll(_tmpList);
             }
         }
+        log.info("导出供应商发票 获取退款信息:{}", JSONUtil.toJsonString(workOrderList));
 
         // 将退款的子订单按照子订单号唯独转map
         Map<String, WorkOrder> workOrderMap = workOrderList.stream().collect(Collectors.toMap(w -> w.getOrderId(), w -> w));
-        log.info("导出供应商发票 获取退款信息:{}", JSONUtil.toJsonString(workOrderMap));
+        log.info("导出供应商发票 获取退款信息转map:{}", JSONUtil.toJsonString(workOrderMap));
 
         // x. 查询商品信息
         List<String> mpuList = incomeOrderDetailList.stream().map(i -> i.getMpu()).collect(Collectors.toList());
         List<ProductInfoBean> productInfoBeanList = productRpcService.findProductListByMpuIdList(mpuList);
         // 转map key：mpu
         Map<String, ProductInfoBean> productInfoBeanMap = productInfoBeanList.stream().collect(Collectors.toMap(p -> p.getMpu(), p -> p));
+        log.info("导出供应商发票 获取商品map:{}", JSONUtil.toJsonString(productInfoBeanMap));
 
         // 3. 合并出账入账订单 & 根据mpu的纬度聚合
         Map<String, List<OrderDetail>> orderDetailInMpu = new HashMap<>();
-        for (OrderDetail orderDetail : incomeOrderDetailList) {
+        for (OrderDetail orderDetail : incomeOrderDetailList) { // 遍历入账子订单
             // 设置商品名称
             String productName = productInfoBeanMap.get(orderDetail.getMpu()) == null ?
                     orderDetail.getName() : productInfoBeanMap.get(orderDetail.getMpu()).getName();
@@ -324,6 +326,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             }
             orderDetailList.add(orderDetail);
         }
+        log.info("导出供应商发票 合并出账入账后的以mpu纬度聚合的子订单map:{}", JSONUtil.toJsonString(orderDetailInMpu));
 
         // 7. 组装导出数据
         List<ExportMerchantReceiptVo> exportMerchantReceiptVoList = new ArrayList<>();
