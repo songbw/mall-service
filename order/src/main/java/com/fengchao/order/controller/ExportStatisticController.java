@@ -48,7 +48,7 @@ public class ExportStatisticController {
      * @param response
      * @throws Exception
      */
-    @GetMapping(value = "/settelment")
+    @GetMapping(value = "/settlement")
     public void exportSettlement(@RequestParam("startTime") String startTime,
                             @RequestParam("endTime") String endTime,
                             @RequestParam("merchantId") Integer merchantId,
