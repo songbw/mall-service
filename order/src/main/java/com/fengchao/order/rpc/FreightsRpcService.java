@@ -48,6 +48,8 @@ public class FreightsRpcService {
 
             if (operaResponse.getCode() == 200) {
                 log.info("查询商户运费模版 ====={}", operaResponse.getData());
+                log.info("查询商户运费模版 ====={}", JSONUtil.toJsonString(operaResponse.getData()));
+                shipTemplateBeanList = (List<ShipTemplateBean>) operaResponse.getData();
             } else {
                 log.warn("查询商户运费模版 调用freight rpc服务 错误");
                 throw new Exception("查询商户运费模版错误");
