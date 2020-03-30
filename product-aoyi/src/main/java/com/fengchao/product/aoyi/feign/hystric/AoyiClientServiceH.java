@@ -4,9 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
-import org.springframework.stereotype.Component;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
 
-@Component
+import java.util.List;
+
+@Deprecated
 public class AoyiClientServiceH implements AoyiClientService {
     @Override
     public OperaResponse price(QueryCityPrice queryBean) {
@@ -85,6 +89,31 @@ public class AoyiClientServiceH implements AoyiClientService {
 
     @Override
     public OperaResponse findSkuSalePrice(String codes) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<List<CategoryResDto>> weipinhuiGetCategory(Integer pageNumber, Integer pageSize) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<List<AoyiItemDetailResDto>> weipinhuiQueryItemsList(Integer pageNumber, Integer pageSize) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<AoyiItemDetailResDto> weipinhuiQueryItemDetial(String itemId) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
+    public OperaResponse<AoyiQueryInventoryResDto> weipinhuiQueryItemInventory(String itemId, String skuId, Integer num, String divisionCode) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
 }

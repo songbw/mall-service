@@ -243,16 +243,12 @@ public class OrderStarServiceImpl implements OrderStarService {
         OperaResponse response = new OperaResponse() ;
         if ("1".equals(bean.getUpdateType())) {
             // 供应商发货
-            if ("20".equals(bean.getOldStatus()) && "30".equals(bean.getNewStatus())) {
-                Orders orders = new Orders() ;
-                orders.setTradeNo(bean.getOutOrderNo());
-                orders.setAoyiId(bean.getOrderSn());
-                response = orderServiceClient.deliverStatue(orders);
-                if (response.getCode() == 200) {
-                    return "success" ;
-                } else {
-                    return "error" ;
-                }
+
+            response = orderServiceClient.deliverStatue(bean);
+            if (response.getCode() == 200) {
+                return "success" ;
+            } else {
+                return "error" ;
             }
         } else {
             // 工单状态变更
@@ -263,6 +259,5 @@ public class OrderStarServiceImpl implements OrderStarService {
                 return "error" ;
             }
         }
-        return null;
     }
 }

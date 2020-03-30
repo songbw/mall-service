@@ -562,4 +562,18 @@
   <update id="batchUpdate" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexX">
     update aoyi_prod_index set inventory = #{inventory}, updated_at = now() where mpu = #{mpu}
   </update>
+
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into aoyi_prod_index
+    (skuId, merchant_id, mpu, state)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.skuid},
+      #{item.merchantId},
+      #{item.mpu},
+      #{item.state}
+      )
+    </foreach>
+  </insert>
 </mapper>

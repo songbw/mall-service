@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 @Service
 public class ThirdProdServiceImpl implements ThirdProdService {
 
@@ -43,7 +42,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Autowired
     private CategoryDao categoryDao ;
     @Autowired
-    private AoyiBaseBrandMapper baseBrandMapper;
+    private AoyiBaseBrandXMapper baseBrandXMapper;
     @Autowired
     private AoyiClientService aoyiClientService ;
     @Autowired
@@ -231,6 +230,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         OperaResponse operaResponse = new OperaResponse();
         if ("1".equals(bean.getState())) {
             AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(bean.getSkuId()) ;
+            logger.info("第三方更新状态接口，商品信息：{}", JSONUtil.toJsonString(aoyiProdIndex));
             if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                 operaResponse.setCode(200100);
                 operaResponse.setMsg("类别不能为空");
@@ -273,10 +273,13 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Override
     public void uploadProdImage() {
         List<AyFcImages> ayFcImages = ayFcImagesDao.findNoUploadImage();
-        logger.info("需要处理下载图片:{}个", ayFcImages.size());
+        logger.info("下载图片任务 数量为:{}", ayFcImages.size());
         if (ayFcImages != null && ayFcImages.size() > 0) {
             ayFcImages.forEach(image -> {
                 OperaResult result = baseService.downUpload(image);
+
+                logger.info("下载图片任务: {} 返回结果: {}",
+                        JSONUtil.toJsonString(image), JSONUtil.toJsonString(result));
 //                if (result.getCode() == 200) {
 //                    image.setStatus(1);
 //                    ayFcImagesDao.updateStatus(image);
@@ -356,9 +359,9 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             response.setMsg("platformId 不存在");
             return response ;
         }
-        List<AoyiBaseBrand> baseBrands = new ArrayList<>() ;
+        List<AoyiBaseBrandX> baseBrands = new ArrayList<>() ;
         if (bean.getBrands() != null && bean.getBrands().size() > 0) {
-            baseBrands = baseBrandMapper.selectByBrandIdList(bean.getBrands()) ;
+            baseBrands = baseBrandXMapper.selectByBrandIdList(bean.getBrands()) ;
         }
         WebTarget webTarget = HttpClient.createClient().target(platform.getGatewayUrl() + "third/prod/brand/receive");
         asyncTask.executeAsyncBrandTask(webTarget,baseBrands);

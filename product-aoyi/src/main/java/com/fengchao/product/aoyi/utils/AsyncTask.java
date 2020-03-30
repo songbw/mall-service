@@ -66,7 +66,7 @@ public class AsyncTask {
     }
 
     @Async
-    public void executeAsyncBrandTask(WebTarget webTarget, List<AoyiBaseBrand> brands) {
+    public void executeAsyncBrandTask(WebTarget webTarget, List<AoyiBaseBrandX> brands) {
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         brands.forEach(brand -> {
             Response response1 = invocationBuilder.put(Entity.entity(brand, MediaType.APPLICATION_JSON));

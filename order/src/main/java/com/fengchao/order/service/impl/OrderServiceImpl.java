@@ -10,17 +10,18 @@ import com.fengchao.order.bean.*;
 import com.fengchao.order.constants.OrderConstants;
 import com.fengchao.order.constants.PaymentStatusEnum;
 import com.fengchao.order.dao.AdminOrderDao;
+import com.fengchao.order.dao.KuaidiCodeDao;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
 import com.fengchao.order.db.annotation.DataSource;
 import com.fengchao.order.db.config.DataSourceNames;
-import com.fengchao.order.feign.AoyiClientService;
-import com.fengchao.order.feign.BaseService;
-import com.fengchao.order.feign.EquityServiceClient;
-import com.fengchao.order.feign.ProductService;
+import com.fengchao.order.feign.*;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
+import com.fengchao.order.rpc.AoyiRpcService;
+import com.fengchao.order.rpc.extmodel.weipinhui.AoyiLogisticsResDto;
 import com.fengchao.order.service.OrderService;
+import com.fengchao.order.service.weipinhui.WeipinhuiOrderService;
 import com.fengchao.order.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
 import com.github.pagehelper.PageInfo;
@@ -90,9 +91,21 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrdersMapper mapper ;
 
+    @Autowired
+    private WeipinhuiOrderService weipinhuiOrderService;
+
+    @Autowired
+    private AoyiRpcService aoyiRpcService;
+
+    @Autowired
+    private KuaidiCodeDao kuaidiCodeDao;
+    @Autowired
+    private GuanaitongClientService guanaitongClientService ;
+
     @Transactional
     @Override
     public OperaResult add2(OrderParamBean orderBean){
+        // 1. 校验参数
         OperaResult operaResult = new OperaResult();
         if (orderBean == null) {
             operaResult.setCode(400501);
@@ -106,6 +119,8 @@ public class OrderServiceImpl implements OrderService {
             operaResult.setMsg("receiverId 不能为空。");
             return operaResult;
         }
+
+        // 2. 获取该用户的地址
         Receiver receiver = receiverMapper.selectByPrimaryKey(orderBean.getReceiverId());
         if (receiver == null) {
             operaResult.setCode(400501);
@@ -113,18 +128,7 @@ public class OrderServiceImpl implements OrderService {
             return operaResult;
         }
         receiver = handleBean(receiver);
-        orderBean.setReceiverName(receiver.getReceiverName());
-        orderBean.setTelephone(receiver.getTelephone());
-        orderBean.setMobile(receiver.getMobile());
-        orderBean.setEmail(receiver.getEmail());
-        orderBean.setProvinceId(receiver.getProvinceId());
-        orderBean.setCityId(receiver.getCityId());
-        orderBean.setCountyId(receiver.getCountyId());
-        orderBean.setTownId(receiver.getTownId());
-        orderBean.setAddress(receiver.getAddress());
-        orderBean.setZip(receiver.getZip());
-        orderBean.setInvoiceState("1");
-        orderBean.setInvoiceType("4");
+        evaluateAddress(orderBean, receiver);
 
         // TODO 验证数据有效性
         // TODO 验证业务逻辑有效性
@@ -132,44 +136,14 @@ public class OrderServiceImpl implements OrderService {
          * TODO
          * 检查商品库存、检查商品价格
          * 验证优惠券有效性、验证活动有效性
-         *
          * 验证商品总价，验证支付总价
          */
 
         // TODO 存库
         // TODO 通知奥义 (如果成功则正常返回，如果失败则回滚数据库)
+        Order bean = createOrder(orderBean, receiver);
 
-        Order bean = new Order();
-        bean.setOpenId(orderBean.getOpenId());
-        bean.setCompanyCustNo(orderBean.getCompanyCustNo());
-        bean.setInvoiceTitle(orderBean.getInvoiceTitleName());
-        bean.setTaxNo(orderBean.getInvoiceEnterpriseNumber());
-        bean.setInvoiceContent(orderBean.getInvoiceTitleName());
-        bean.setPayment(orderBean.getPayment());
-        bean.setReceiverName(receiver.getReceiverName());
-        bean.setRegionId(orderBean.getRegionId());
-        bean.setTelephone(receiver.getTelephone());
-        bean.setMobile(receiver.getMobile());
-        bean.setEmail(receiver.getEmail());
-        bean.setProvinceId(receiver.getProvinceId());
-        bean.setCityId(receiver.getCityId());
-        bean.setCountyId(receiver.getCountyId());
-        bean.setTownId(receiver.getTownId());
-        bean.setAddress(receiver.getAddress());
-        bean.setZip(receiver.getZip());
-        bean.setProvinceName(receiver.getProvinceName());
-        bean.setCityName(receiver.getCityName());
-        bean.setCountyName(receiver.getCountyName());
-        bean.setInvoiceState("1");
-        bean.setInvoiceType("4");
-        bean.setStatus(0);
-        bean.setType(1);
-        Date date = new Date() ;
-        bean.setCreatedAt(date);
-        bean.setUpdatedAt(date);
-        bean.setAppId(orderBean.getAppId());
-
-        // 优惠券
+        // 3. 优惠券 - 预占优惠券
         OrderCouponBean coupon = orderBean.getCoupon();
         List<OrderCouponMerchantBean> orderCouponMerchants = null;
         if (coupon != null) {
@@ -181,12 +155,12 @@ public class OrderServiceImpl implements OrderService {
             OperaResult occupyResult = equityService.occupy(couponUseInfoBean);
             if (occupyResult.getCode() != 200) {
                 // 优惠券预占失败的话，订单失败
-                logger.info("订单" + bean.getId() + "优惠券预占失败");
+                logger.warn("opendid:{} 下单优惠券预占失败!", bean.getOpenId());
                 operaResult.setCode(400601);
                 operaResult.setMsg(occupyResult.getMsg());
                 return operaResult;
             } else {
-                bean.setCouponStatus(2);
+                bean.setCouponStatus(2); // 优惠券状态1： 未使用， 2：已占用，3：已使用
             }
         }
 
@@ -205,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
             return verifyLimitResult ;
         }
         logger.info("创建订单 入参List<OrderMerchantBean>:{}", JSONUtil.toJsonString(orderMerchantBeans));
-        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) { // 遍历商户(商户单)
             bean.setTradeNo(orderMerchantBean.getTradeNo() + orderBean.getTradeNo());
             orderMerchantBean.setTradeNo(bean.getTradeNo());
             bean.setMerchantNo(orderMerchantBean.getMerchantNo());
@@ -214,7 +188,7 @@ public class OrderServiceImpl implements OrderService {
             bean.setAmount(orderMerchantBean.getAmount());
             bean.setSaleAmount(orderMerchantBean.getSaleAmount());
             bean.setSkus(orderMerchantBean.getSkus());
-            if (orderCouponMerchants != null && orderCouponMerchants.size() > 0) {
+            if (orderCouponMerchants != null && orderCouponMerchants.size() > 0) { // TODO : 逻辑不太清晰
                 for (OrderCouponMerchantBean orderCouponMerchant : orderCouponMerchants) {
                     if (orderMerchantBean.getMerchantNo().equals(orderCouponMerchant.getMerchantNo())) {
                         bean.setCouponId(coupon.getId());
@@ -226,9 +200,12 @@ public class OrderServiceImpl implements OrderService {
             // 添加主订单
             logger.info("创建订单 新增主订单:{}", JSONUtil.toJsonString(bean));
             orderMapper.insert(bean);
-            AtomicInteger i= new AtomicInteger(1);
-            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) {
+
+            //
+            AtomicInteger atomicInteger = new AtomicInteger(1);
+            for (OrderDetailX orderSku : orderMerchantBean.getSkus()) { // 遍历该商户的sku列表
                 AoyiProdIndex prodIndexWithBLOBs = findProductSpu(orderSku.getMpu(), orderSku.getSkuId());
+
 
                 // 判断产品上下架状态
                 if ("0".equals(prodIndexWithBLOBs.getState())) {
@@ -246,49 +223,15 @@ public class OrderServiceImpl implements OrderService {
                     inventories.add(inventoryMpus) ;
                 }
 
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setPromotionId(orderSku.getPromotionId());
-                orderDetail.setSalePrice(orderSku.getSalePrice());
-                orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
-                // orderDetail.setCreatedAt(date);
-                // orderDetail.setUpdatedAt(date);
-                orderDetail.setOrderId(bean.getId());
+                // 创建 子订单
+                OrderDetail orderDetail = createOrderDetail(bean, orderSku, prodIndexWithBLOBs, atomicInteger);
 
-                orderDetail.setModel(prodIndexWithBLOBs.getModel());
-                orderDetail.setName(prodIndexWithBLOBs.getName());
-                orderDetail.setProductType(prodIndexWithBLOBs.getType());
-                if (prodIndexWithBLOBs.getStarSku() == null) {
-                    orderDetail.setImage(prodIndexWithBLOBs.getImage());
-                    if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
-                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
-                        orderDetail.setSprice(bigDecimal);
-                    }
-                } else {
-                    if (StringUtils.isEmpty(prodIndexWithBLOBs.getStarSku().getGoodsLogo())) {
-                        orderDetail.setImage(prodIndexWithBLOBs.getImage());
-                    } else {
-                        orderDetail.setImage(prodIndexWithBLOBs.getStarSku().getGoodsLogo());
-                    }
-                    if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
-                        BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
-                        orderDetail.setSprice(bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
-                    }
-                }
+                // !!
+                orderSku.setSprice(orderDetail.getSprice());
 
-                orderDetail.setStatus(0);
-                orderDetail.setSkuId(orderSku.getSkuId());
-                orderDetail.setMpu(orderSku.getMpu());
-                orderDetail.setMerchantId(orderSku.getMerchantId());
-                orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", i.getAndIncrement()));
-                orderDetail.setUnitPrice(orderSku.getUnitPrice());
-                orderDetail.setCheckedPrice(orderSku.getCheckedPrice());
-                orderDetail.setNum(orderSku.getNum());
-                orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
-                orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
                 // 添加子订单
                 logger.debug("创建订单 新增子订单:{}", JSONUtil.toJsonString(orderDetail));
                 orderDetailDao.insert(orderDetail);
-//                orderDetailXMapper.insert(orderDetailX) ;
 
                 // 删除购物车
                 ShoppingCart shoppingCart = new ShoppingCart();
@@ -312,28 +255,42 @@ public class OrderServiceImpl implements OrderService {
         // 传数据给奥义
         // 滤掉非aoyi商品的数据
         List<OrderMerchantBean> orderMerchantBeanList = new ArrayList<>(); // aoyi的商品数据
-        //STAR商品的数据
+        // STAR商品的数据
         List<OrderMerchantBean> starOrderMerchantBeanList = new ArrayList<>();
-        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) {
+        // 唯品会商品的数据
+        List<OrderMerchantBean> weipinhuiOrderMerchantBeanList = new ArrayList<>();
+
+        for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) { // 遍历商户(商户单)
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
-                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
-                orderMerchantBean.getSkus().forEach(orderDetailX -> {
-                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
-                    aoyiOrderDetail.add(orderDetailX) ;
-                });
-                orderMerchantBean.setSkus(aoyiOrderDetail);
-                orderMerchantBeanList.add(orderMerchantBean);
+                if (orderMerchantBean.getMerchantNo().equals(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的商品
+                    handleUnitPrice(orderMerchantBean);
+                    weipinhuiOrderMerchantBeanList.add(orderMerchantBean);
+                } else {
+                    handleUnitPrice(orderMerchantBean);
+                    orderMerchantBeanList.add(orderMerchantBean);
+                }
             }
+
             if (orderMerchantBean.getMerchantId() == OrderConstants.STAR_MERCHANG_CODE) {
-                List<OrderDetailX> aoyiOrderDetail = new ArrayList<>() ;
-                orderMerchantBean.getSkus().forEach(orderDetailX -> {
-                    orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
-                    aoyiOrderDetail.add(orderDetailX) ;
-                });
-                orderMerchantBean.setSkus(aoyiOrderDetail);
+                handleUnitPrice(orderMerchantBean);
                 starOrderMerchantBeanList.add(orderMerchantBean);
             }
         }
+
+        // 唯品会
+        logger.info("订单唯品会商品信息, {}", JSONUtil.toJsonString(weipinhuiOrderMerchantBeanList));
+        if (CollectionUtils.isNotEmpty(weipinhuiOrderMerchantBeanList)) {
+            OperaResponse<String> weipinhuiResult = weipinhuiOrderService.renderOrder(orderBean, weipinhuiOrderMerchantBeanList.get(0), coupon, inventories);
+
+            if (weipinhuiResult.getCode() != 200) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+                operaResult.setCode(weipinhuiResult.getCode());
+                operaResult.setMsg(weipinhuiResult.getMsg());
+                return operaResult ;
+            }
+        }
+
         // 调用预占商品库存星链模块接口
         logger.info("订单怡亚通商品信息, {}", JSONUtil.toJsonString(starOrderMerchantBeanList));
         if (starOrderMerchantBeanList != null && starOrderMerchantBeanList.size() > 0) {
@@ -402,6 +359,134 @@ public class OrderServiceImpl implements OrderService {
             logger.debug("创建订单 OrderServiceImpl#add2 返回:{}", JSONUtil.toJsonString(operaResult));
         }
         return operaResult;
+    }
+
+    /**
+     * 赋值-地址
+     */
+    private void evaluateAddress(OrderParamBean orderParamBean, Receiver receiver) {
+        orderParamBean.setReceiverName(receiver.getReceiverName());
+        orderParamBean.setTelephone(receiver.getTelephone());
+        orderParamBean.setMobile(receiver.getMobile());
+        orderParamBean.setEmail(receiver.getEmail());
+        orderParamBean.setProvinceId(receiver.getProvinceId());
+        orderParamBean.setCityId(receiver.getCityId());
+        orderParamBean.setCountyId(receiver.getCountyId());
+        orderParamBean.setTownId(receiver.getTownId());
+        orderParamBean.setAddress(receiver.getAddress());
+        orderParamBean.setZip(receiver.getZip());
+        orderParamBean.setInvoiceState("1");
+        orderParamBean.setInvoiceType("4");
+    }
+
+    /**
+     *
+     *
+     * @param orderMerchantBean
+     * @return
+     */
+    private void handleUnitPrice(OrderMerchantBean orderMerchantBean) {
+        List<OrderDetailX> aoyiOrderDetail = new ArrayList<>();
+        orderMerchantBean.getSkus().forEach(orderDetailX -> {
+            orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+            aoyiOrderDetail.add(orderDetailX) ;
+        });
+        orderMerchantBean.setSkus(aoyiOrderDetail);
+    }
+
+    /**
+     *
+     * @param bean
+     * @param orderSku
+     * @param prodIndexWithBLOBs
+     * @param atomicInteger
+     * @return
+     */
+    private OrderDetail createOrderDetail(Order bean, OrderDetailX orderSku,
+                                          AoyiProdIndex prodIndexWithBLOBs,  AtomicInteger atomicInteger) {
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setPromotionId(orderSku.getPromotionId());
+        orderDetail.setSalePrice(orderSku.getSalePrice());
+        orderDetail.setPromotionDiscount(orderSku.getPromotionDiscount());
+        // orderDetail.setCreatedAt(date);
+        // orderDetail.setUpdatedAt(date);
+        orderDetail.setOrderId(bean.getId());
+
+        orderDetail.setModel(prodIndexWithBLOBs.getModel());
+        orderDetail.setName(prodIndexWithBLOBs.getName());
+        orderDetail.setProductType(prodIndexWithBLOBs.getType());
+        if (prodIndexWithBLOBs.getStarSku() == null) {
+            orderDetail.setImage(prodIndexWithBLOBs.getImage());
+            if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                orderDetail.setSprice(bigDecimal);
+            }
+        } else {
+            if (StringUtils.isEmpty(prodIndexWithBLOBs.getStarSku().getGoodsLogo())) {
+                orderDetail.setImage(prodIndexWithBLOBs.getImage());
+            } else {
+                orderDetail.setImage(prodIndexWithBLOBs.getStarSku().getGoodsLogo());
+            }
+            if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
+                BigDecimal bigDecimal = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
+                orderDetail.setSprice(bigDecimal.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP));
+            }
+        }
+
+        orderDetail.setStatus(0);
+        orderDetail.setSkuId(orderSku.getSkuId());
+        orderDetail.setMpu(orderSku.getMpu());
+        orderDetail.setMerchantId(orderSku.getMerchantId());
+        orderDetail.setSubOrderId(bean.getTradeNo() + String.format("%03d", atomicInteger.getAndIncrement()));
+        orderDetail.setUnitPrice(orderSku.getUnitPrice());
+        orderDetail.setCheckedPrice(orderSku.getCheckedPrice());
+        orderDetail.setNum(orderSku.getNum());
+        orderDetail.setCategory(prodIndexWithBLOBs.getCategory());
+        orderDetail.setSkuCouponDiscount((int) (orderSku.getSkuCouponDiscount() * 100)) ;
+
+        return orderDetail;
+    }
+
+    /**
+     * 生成用户单
+     *
+     * @param orderParamBean
+     * @param receiver
+     * @return
+     */
+    private Order createOrder(OrderParamBean orderParamBean, Receiver receiver) {
+        Order bean = new Order();
+
+        bean.setOpenId(orderParamBean.getOpenId());
+        bean.setCompanyCustNo(orderParamBean.getCompanyCustNo());
+        bean.setInvoiceTitle(orderParamBean.getInvoiceTitleName());
+        bean.setTaxNo(orderParamBean.getInvoiceEnterpriseNumber());
+        bean.setInvoiceContent(orderParamBean.getInvoiceTitleName());
+        bean.setPayment(orderParamBean.getPayment());
+        bean.setReceiverName(receiver.getReceiverName());
+        bean.setRegionId(orderParamBean.getRegionId());
+        bean.setTelephone(receiver.getTelephone());
+        bean.setMobile(receiver.getMobile());
+        bean.setEmail(receiver.getEmail());
+        bean.setProvinceId(receiver.getProvinceId());
+        bean.setCityId(receiver.getCityId());
+        bean.setCountyId(receiver.getCountyId());
+        bean.setTownId(receiver.getTownId());
+        bean.setAddress(receiver.getAddress());
+        bean.setZip(receiver.getZip());
+        bean.setProvinceName(receiver.getProvinceName());
+        bean.setCityName(receiver.getCityName());
+        bean.setCountyName(receiver.getCountyName());
+        bean.setInvoiceState("1");
+        bean.setInvoiceType("4");
+        bean.setStatus(0);
+        bean.setType(1);
+        Date date = new Date() ;
+        bean.setCreatedAt(date);
+        bean.setUpdatedAt(date);
+        bean.setAppId(orderParamBean.getAppId());
+
+        return bean;
     }
 
     /**
@@ -681,6 +766,8 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setStatus(3);
 
             // adminOrderDao.updateOrderDetailStatus(orderDetail);
+            // TODO 怡亚通商品确认收货 1.调怡亚通确认收货接口，2.更新状态是已完成，3.定时任务7天后出发完成时间
+
 
             adminOrderDao.updateOrderDetailStatusForReceived(orderDetail);
         }
@@ -820,7 +907,7 @@ public class OrderServiceImpl implements OrderService {
                 OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(Logistics.getSubOrderId()) ;
                 if (orderDetail.getStatus() == 1) {
                     orderDetailXMapper.updateByOrderId(orderDetailX);
-                    JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+                    JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
                 }
             });
         }
@@ -836,18 +923,64 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OperaResult getLogist(String merchantNo, String orderId) {
         OperaResult result = new OperaResult();
-        JSONArray jsonArray = new JSONArray();
+        JSONArray jsonArray = new JSONArray(); // 物流信息
+
+        // 1. 校验
         List<Orders> orders = ordersDao.selectOrdersByTradeNo(orderId);
         if (orders == null || orders.size() == 0) {
             result.setCode(4000001);
             result.setMsg("订单号不存在");
-            return result ;
+            return result;
         }
+
+        // 2. 获取子定单子
         List<OrderDetailX> logistics = orderDetailXMapper.selectBySubOrderId(orderId + "%");
+        // List<OrderDetail> logistics = orderDetailDao.selectBySubOrderIdPrefix(orderId);
+        logger.info("物流查询 获取到子订单:{}", JSONUtil.toJsonString(logistics));
+
+        // 3. 处理唯品会的子订单
+        List<Logisticsbean> weipinhuiLogisticsBean = new ArrayList<>();
+        for (OrderDetailX orderDetailX : logistics) {
+            if (orderDetailX.getSkuId().startsWith(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的单子
+
+                if (org.apache.commons.lang.StringUtils.isBlank(orderDetailX.getLogisticsId())) { // 如果没有物流信息
+                    // rpc 查询唯品会物流信息
+                    AoyiLogisticsResDto aoyiLogisticsResDto =
+                            aoyiRpcService.weipinhuiQueryOrderLogistics(orderDetailX.getSubOrderId());
+
+                    if (aoyiLogisticsResDto != null) { // 如果获取到物流信息
+                        // 查询comcode
+                        KuaidiCode kuaidiCode =
+                                kuaidiCodeDao.selectByKudiName(aoyiLogisticsResDto.getExpressName());
+
+                        orderDetailX.setLogisticsId(aoyiLogisticsResDto.getExpressNo());
+                        orderDetailX.setComCode(kuaidiCode == null ? null : kuaidiCode.getCode());
+
+                        //
+                        Logisticsbean logisticsbean = new Logisticsbean();
+                        logisticsbean.setLogisticsContent(aoyiLogisticsResDto.getExpressName());
+                        logisticsbean.setLogisticsId(aoyiLogisticsResDto.getExpressNo());
+                        logisticsbean.setSubOrderId(orderDetailX.getSubOrderId());
+                        logisticsbean.setComCode(kuaidiCode == null ? null : kuaidiCode.getCode());
+
+                        weipinhuiLogisticsBean.add(logisticsbean);
+                    }
+                }
+            }
+        }
+
+        logger.info("物流查询 唯品会物流信息:{}", JSONUtil.toJsonString(weipinhuiLogisticsBean));
+        // 调用创建任务，和保存物流信息
+        if (CollectionUtils.isNotEmpty(weipinhuiLogisticsBean)) {
+            logistics(weipinhuiLogisticsBean);
+        }
+
+        // 6. 商户查询快递信息
+        logger.info("物流查询 ");
         if (logistics != null && logistics.size() > 0) {
             for (OrderDetailX logist : logistics) {
                 if (logist != null && logist.getLogisticsId() != null && logist.getComCode() != null) {
-                    OperaResponse<JSONObject> response =  baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode()) ;
+                    OperaResponse<JSONObject> response = baseService.kuaidi100(logist.getLogisticsId(), logist.getComCode());
                     if (response.getCode() == 200) {
                         JSONObject jsonObject = response.getData();
                         jsonArray.add(jsonObject);
@@ -855,10 +988,13 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
         }
-        logger.info("物流查询结果： {}", JSONUtils.toJSONString(jsonArray));
-        result.getData().put("result", jsonArray) ;
+
+        logger.info("OrderServiceImpl#getLogist 物流查询结果: {}", JSONUtils.toJSONString(jsonArray));
+        result.getData().put("result", jsonArray);
+
         return result;
     }
+
 
     @Override
     public OperaResult getWorkOrderLogist(String logisticNo, String code, String merchantNo) {
@@ -1244,7 +1380,7 @@ public class OrderServiceImpl implements OrderService {
             OrderDetail orderDetail = orderDetailDao.selectBySubOrderId(logistics.getSubOrderId()) ;
             if (orderDetail.getStatus() == 1) {
                 orderDetailDao.updateBySubOrderId(logistics) ;
-                JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
+                JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
             }
         }
         if (logisticsbeanList != null && logisticsbeanList.size() > 0) {
@@ -1264,7 +1400,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer finishOrderDetail(Integer id) {
         OrderDetail orderDetail = orderDetailMapper.selectByPrimaryKey(id) ;
-        if (orderDetail != null && orderDetail.getStatus() == 2) {
+        if (orderDetail != null && (orderDetail.getStatus() == 2 || 3 == orderDetail.getStatus())) {
             orderDetail.setStatus(3);
             orderDetailDao.updateOrderDetailStatus(orderDetail) ;
         }
@@ -1355,7 +1491,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             checkOrderDetail.setStatus(2);
             // 启动定时完成任务
-            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetailId);
+            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetailId, checkOrderDetail.getMerchantId());
         }
         Date date = new Date() ;
         checkOrderDetail.setUpdatedAt(date);
@@ -1480,7 +1616,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OperaResponse deliverStatus(Orders orders) {
+    public OperaResponse deliverStatus(StarBackBean bean) {
+        Orders orders = new Orders() ;
+        orders.setTradeNo(bean.getOutOrderNo());
+        orders.setAoyiId(bean.getOrderSn());
         OperaResponse response = new OperaResponse() ;
         List<Orders> ordersList = ordersDao.selectOrdersByTradeNoAndAoyiId(orders) ;
         List<Integer> ids = new ArrayList<>() ;
@@ -1489,16 +1628,32 @@ public class OrderServiceImpl implements OrderService {
                 ids.add(temp.getId()) ;
             });
             List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailsByOrdersIdsAndThirdOrderSn(ids, orders.getAoyiId()) ;
-            if (orderDetails != null && orderDetails.size() > 0) {
-                orderDetails.forEach(orderDetail -> {
-                    if (orderDetail.getStatus() == 1) {
-                        orderDetail.setStatus(2);
-                        orderDetail.setUpdatedAt(new Date());
-                        orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
-                        JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId());
-                    }
-                });
+            if ("20".equals(bean.getOldStatus()) && "30".equals(bean.getNewStatus())) {
+                if (orderDetails != null && orderDetails.size() > 0) {
+                    orderDetails.forEach(orderDetail -> {
+                        if (orderDetail.getStatus() == 1) {
+                            orderDetail.setStatus(2);
+                            orderDetail.setUpdatedAt(new Date());
+                            orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
+//                            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
+                        }
+                    });
+                }
+            } else if ("30".equals(bean.getOldStatus()) && "40".equals(bean.getNewStatus())) {
+                // 怡亚通系统自动确认收货，发邮件监控一下吧
+                AlarmUtil.alarmAsync("怡亚通系统自动确认收货", JSONUtil.toJsonString(bean));
+                if (orderDetails != null && orderDetails.size() > 0) {
+                    orderDetails.forEach(orderDetail -> {
+                        if (orderDetail.getStatus() == 2) {
+                            orderDetail.setStatus(3);
+                            orderDetail.setUpdatedAt(new Date());
+                            orderDetailMapper.updateByPrimaryKeySelective(orderDetail) ;
+                            JobClientUtils.subOrderFinishTrigger(environment, jobClient, orderDetail.getId(), orderDetail.getMerchantId());
+                        }
+                    });
+                }
             }
+
         }
         return response;
     }
@@ -1516,6 +1671,57 @@ public class OrderServiceImpl implements OrderService {
             orders.add(order) ;
         });
         response.setData(orders);
+        return response;
+    }
+
+    @Override
+    public OperaResponse sendTradeInfo(String openId, String paymentNo) {
+        OperaResponse response = new OperaResponse() ;
+        List<Orders> orders = ordersDao.selectOrdersByOpenIdAndPaymentNo(openId, paymentNo) ;
+        SendTradeInfoBean sendTradeInfoBean = new SendTradeInfoBean() ;
+        sendTradeInfoBean.setOuter_trade_no(paymentNo);
+        TradeInfoBean tradeInfoBean = new TradeInfoBean() ;
+        tradeInfoBean.setIs_third_orders(1);
+        List<ThirdOrdersBean> thirdOrdersBeans = new ArrayList<>() ;
+        List<GoodsDetailBean> goodsDetailBeans = new ArrayList<>() ;
+        if (orders != null && orders.size() > 0) {
+            tradeInfoBean.setThird_trade_no(orders.get(0).getOutTradeNo());
+            for (Orders orders1 : orders) {
+                ThirdOrdersBean thirdOrdersBean = new ThirdOrdersBean() ;
+                thirdOrdersBean.setThird_sub_trade_no(orders1.getTradeNo());
+                thirdOrdersBean.setThird_sub_delivery_fee(new BigDecimal(orders1.getServFee()));
+                thirdOrdersBean.setThird_sub_total_amount(new BigDecimal(orders1.getSaleAmount()));
+                thirdOrdersBean.setThird_sub_cost_amount(thirdOrdersBean.getThird_sub_total_amount());
+                thirdOrdersBean.setThird_sub_pay_amount(thirdOrdersBean.getThird_sub_total_amount());
+
+                tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()));
+                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()));
+                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
+                List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
+                orderDetails.forEach(orderDetail -> {
+                    GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;
+                    goodsDetailBean.setSku_id(orderDetail.getSkuId());
+                    if (orderDetail.getName().length() > 45) {
+                        goodsDetailBean.setName(orderDetail.getName().substring(0, 45));
+                    } else {
+                        goodsDetailBean.setName(orderDetail.getName());
+                    }
+                    goodsDetailBean.setQuantity(orderDetail.getNum());
+                    goodsDetailBean.setGood_price(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
+                    goodsDetailBean.setGood_pay_amount(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
+                    goodsDetailBean.setGood_cost_amount(orderDetail.getUnitPrice().add(new BigDecimal(orders1.getServFee())));
+                    goodsDetailBeans.add(goodsDetailBean) ;
+                });
+            }
+            tradeInfoBean.setThird_orders(thirdOrdersBeans);
+            sendTradeInfoBean.setTrade_info(tradeInfoBean);
+            logger.info("发送订单详情到关爱通，入口参数：{}", JSONUtil.toJsonString(sendTradeInfoBean));
+            OperaResponse guanaitongResponse = guanaitongClientService.sendTradeInfo(sendTradeInfoBean) ;
+            if (guanaitongResponse.getCode() != 200) {
+                response.setCode(guanaitongResponse.getCode());
+                response.setMsg(guanaitongResponse.getMsg());
+            }
+        }
         return response;
     }
 

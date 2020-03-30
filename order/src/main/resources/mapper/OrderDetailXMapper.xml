@@ -58,7 +58,7 @@
     limit #{pageNo},#{pageSize}
   </select>
   <select id="selectBySubOrderId" resultType="com.fengchao.order.model.OrderDetailX">
-    SELECT DISTINCT(logistics_id) logisticsId, comcode comCode
+    SELECT DISTINCT(logistics_id) logisticsId, comcode comCode, sku_id skuId, sub_order_id subOrderId
     FROM order_detail WHERE sub_order_id like #{orderId}
   </select>
   <select id="selectComCode" resultType="java.lang.String" parameterType="java.lang.String">

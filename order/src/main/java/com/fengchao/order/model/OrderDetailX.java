@@ -59,6 +59,8 @@ public class OrderDetailX implements Serializable {
 
     private String thirdOrderSn;
 
+    private BigDecimal sprice;
+
     public Integer getId() {
         return id;
     }
@@ -273,5 +275,13 @@ public class OrderDetailX implements Serializable {
 
     public void setThirdOrderSn(String thirdOrderSn) {
         this.thirdOrderSn = thirdOrderSn;
+    }
+
+    public BigDecimal getSprice() {
+        return sprice;
+    }
+
+    public void setSprice(BigDecimal sprice) {
+        this.sprice = sprice;
     }
 }

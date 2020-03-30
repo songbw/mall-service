@@ -15,6 +15,7 @@ import com.fengchao.equity.utils.MyErrorEnum;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -82,8 +83,8 @@ public class CardTicketServiceImpl implements CardTicketService {
         Date date = new Date();
         for(CardTicket ticket: beans){
             CardTicketX cardTicketX = ticketDao.findbyCard(ticket.getCard());
-            CardInfoX cardInfoX = infoDao.findByCardId(cardTicketX.getCardId());
-            Date fetureDate = DataUtils.getFetureDate(date, cardInfoX.getEffectiveDays());
+            CardInfo cardInfo = infoDao.findByCardId(cardTicketX.getCardId());
+            Date fetureDate = DataUtils.getFetureDate(date, cardInfo.getEffectiveDays());
             ticket.setEndTime(fetureDate);
             JobClientUtils.cardInvalidTrigger(environment, jobClient, ticket.getId(), fetureDate);
         }
@@ -94,14 +95,18 @@ public class CardTicketServiceImpl implements CardTicketService {
     @Override
     public List<CardInfoX> exportCardTicket(ExportCardBean bean) {
 
-        List<CardInfoX> list = infoDao.findByIds(bean);
-        for (CardInfoX infoX: list){
+        List<CardInfoX> result = new ArrayList<>();
+        List<CardInfo> list = infoDao.findByIds(bean);
+        for (CardInfo info: list){
+            CardInfoX infoX = new CardInfoX();
+            BeanUtils.copyProperties(info,infoX);
             List<CardAndCoupon> couponIds= cardAndCouponDao.findCouponIdByCardId(infoX.getId());
             infoX.setCouponIds(couponIds);
             List<CardTicket> tickets = ticketDao.findbyCardId(infoX.getId(), bean.getStatus());
             infoX.setTickets(tickets);
+            result.add(infoX);
         }
-        return list;
+        return result;
     }
 
     @Override
@@ -159,11 +164,11 @@ public class CardTicketServiceImpl implements CardTicketService {
         if (null == cardTicket || null == cardTicket.getId()){
             throw new EquityException(MyErrorEnum.CARD_TICKET_MISSING);
         }
-        CardInfoX cardInfoX = infoDao.findByCardId(cardTicket.getCardId());
-        if (null == cardInfoX){
+        CardInfo cardInfo = infoDao.findByCardId(cardTicket.getCardId());
+        if (null == cardInfo){
             throw new EquityException(MyErrorEnum.CARD_TICKET_MISSING);
         }
-        if (!bean.getAppId().equals(cardInfoX.getAppId())){
+        if (!bean.getAppId().equals(cardInfo.getAppId())){
             throw new EquityException(MyErrorEnum.CARD_INFO_APP_ID_NOT_MATCH);
         }
         if(coupon.getCouponType() == 4 && cardTicket.getStatus() == CardTicketStatusEnum.BOUND.getCode()){
@@ -173,7 +178,7 @@ public class CardTicketServiceImpl implements CardTicketService {
             couponUseInfo.setCollectedTime(date);
             couponUseInfo.setCouponId(coupon.getId());
             couponUseInfo.setEffectiveStartDate(date);
-            Date fetureDate = DataUtils.getFetureDate(date, cardInfoX.getEffectiveDays());
+            Date fetureDate = DataUtils.getFetureDate(date, cardInfo.getEffectiveDays());
             couponUseInfo.setEffectiveEndDate(fetureDate);
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserOpenId(cardTicket.getOpenId());

@@ -26,6 +26,11 @@ import java.util.Objects;
 @Slf4j
 public class OrderDetailDao {
 
+    /**
+     * 唯品会的mpu前缀
+     */
+    private static final String WEIPINHUI_MPU_PREFIX = "30";
+
     private OrderDetailMapper orderDetailMapper;
     private OrdersMapper ordersMapper;
     private KuaidiCodeMapper kuaidiCodeMapper;
@@ -445,6 +450,58 @@ public class OrderDetailDao {
 
         List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
 
+        return orderDetailList;
+    }
+
+    /**
+     * 该方法仅用于查询唯品会的订单详情
+     *
+     * @param ordersIds
+     * @return
+     */
+    public List<OrderDetail> selectWeipinhuiOrderDetails(List<Integer> ordersIds) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andOrderIdIn(ordersIds);
+
+        criteria.andMpuLike(WEIPINHUI_MPU_PREFIX + "%");
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
+    /**
+     * 根据子订单号的前缀查询
+     *
+     * @param subOrderIdPrefix
+     * @return
+     */
+    public List<OrderDetail> selectBySubOrderIdPrefix(String subOrderIdPrefix) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample();
+
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+        criteria.andSubOrderIdLike(subOrderIdPrefix + "%");
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
+
+        return orderDetailList;
+    }
+
+    /**
+     * 根据主订单ID查询
+     *
+     * @param ordersId
+     * @return
+     */
+    public List<OrderDetail> selectOrderDetailListByOrdersId(int ordersId) {
+        OrderDetailExample orderDetailExample = new OrderDetailExample() ;
+        OrderDetailExample.Criteria criteria = orderDetailExample.createCriteria();
+
+        criteria.andOrderIdEqualTo(ordersId);
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.selectByExample(orderDetailExample);
         return orderDetailList;
     }
 

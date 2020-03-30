@@ -23,6 +23,8 @@ public class CardInfo {
 
     private String appId;
 
+    private String corporationCode;
+
     public Integer getId() {
         return id;
     }
@@ -101,5 +103,13 @@ public class CardInfo {
 
     public void setAppId(String appId) {
         this.appId = appId == null ? null : appId.trim();
+    }
+
+    public String getCorporationCode() {
+        return corporationCode;
+    }
+
+    public void setCorporationCode(String corporationCode) {
+        this.corporationCode = corporationCode == null ? null : corporationCode.trim();
     }
 }

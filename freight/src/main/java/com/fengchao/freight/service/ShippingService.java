@@ -16,7 +16,7 @@ public interface ShippingService {
 
     ShipTemplateBean findShipTemplateById(Integer id);
 
-    PageableData<ShippingTemplate> findShipTemplate(Integer pageNo, Integer pageSize);
+    PageableData<ShippingTemplate> findShipTemplate(Integer pageNo, Integer pageSize,Integer merchantId);
 
     int deleteShipRegions(Integer id);
 
@@ -29,4 +29,7 @@ public interface ShippingService {
     TemplateBean getMpuTemplate(ShipMpuParam bean);
 
     CarriagePriceBean getMpuCarriage(CarriageBean bean);
+
+    List<ShipTemplateBean>
+    findByIdList(List<Integer> idList);
 }

@@ -5,6 +5,8 @@ import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.OrderService;
+import com.fengchao.order.service.weipinhui.WeipinhuiOrderService;
+import com.fengchao.order.utils.AlarmUtil;
 import com.fengchao.order.utils.JSONUtil;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,9 @@ public class OrderController {
     @Autowired
     private OrderService service;
 
+    @Autowired
+    private WeipinhuiOrderService weipinhuiOrderService;
+
 
     @PostMapping("/all")
     private OperaResult findList(@RequestBody OrderQueryBean queryBean, OperaResult result, @RequestHeader("appId") String appId) {
@@ -42,19 +47,25 @@ public class OrderController {
 
     @PostMapping
     private OperaResult add(@RequestBody OrderParamBean bean, OperaResult result, @RequestHeader("appId") String appId) {
-        if (StringUtils.isEmpty(appId)) {
-            result.setCode(4000002);
-            result.setMsg("appId 不能为空");
-            return result ;
+        try {
+            if (StringUtils.isEmpty(appId)) {
+                result.setCode(4000002);
+                result.setMsg("appId 不能为空");
+                return result;
+            }
+            bean.setAppId(appId);
+            log.debug("创建订单 入参:{}", JSONUtil.toJsonString(bean));
+
+            OperaResult operaResult = service.add2(bean);
+
+            log.debug("创建订单 返回:{}", JSONUtil.toJsonString(operaResult));
+
+            return operaResult;
+        } catch (Exception e) {
+            log.error("创建订单 异常:{}", e.getMessage(), e);
+
+            throw new RuntimeException(e);
         }
-        bean.setAppId(appId);
-        log.debug("创建订单 入参:{}", JSONUtil.toJsonString(bean));
-
-        OperaResult operaResult = service.add2(bean);
-
-        log.debug("创建订单 返回:{}", JSONUtil.toJsonString(operaResult));
-
-        return operaResult;
     }
 
     @DeleteMapping
@@ -151,7 +162,12 @@ public class OrderController {
 
     @GetMapping("/logistics")
     private OperaResult getLogistics(String orderId, String merchantNo, OperaResult result) {
-        return service.getLogist(merchantNo, orderId);
+        log.info("物流查询 入参 orderId:{}, merchantNo:{}", orderId, merchantNo);
+
+        OperaResult operaResult = service.getLogist(merchantNo, orderId);
+
+        log.info("物流查询 返回:{}", JSONUtil.toJsonString(operaResult));
+        return operaResult;
     }
 
     @GetMapping("/sub/logistics")
@@ -206,6 +222,7 @@ public class OrderController {
         OperaResponse operaResponse = new OperaResponse();
         log.info("根据主订单id集合批量更新子订单的状态 入参 orderIdList:{}, status:{}", orderIdList, status);
 
+        // 1. 更新子订单状态
         try {
             int count = service.batchUpdateOrderDetailStatus(orderIdList, status);
             operaResponse.setData(count);
@@ -214,13 +231,26 @@ public class OrderController {
 
             operaResponse.setCode(500);
             operaResponse.setMsg("根据主订单id集合批量更新子订单的状态异常" + e.getMessage());
+
+            AlarmUtil.alarmAsync("确认订单警告", "更新子订单状态失败 orderIdList:" + JSONUtil.toJsonString(orderIdList));
         }
 
         log.info("根据主订单id集合批量更新子订单的状态 返回:{}", JSONUtil.toJsonString(operaResponse));
 
-        OperaResponse operaResponse1 = service.confirmStarOrder(orderIdList) ;
-        if (operaResponse1.getCode() != 200) {
-            log.info("怡亚通订单下单结果：{}", JSONUtil.toJsonString(operaResponse1));
+        // 2. 更新
+        // 星链 确认订单
+        OperaResponse operaResponseStar = service.confirmStarOrder(orderIdList) ;
+        if (operaResponseStar.getCode() != 200) {
+            log.warn("怡亚通订单下单结果：{}", JSONUtil.toJsonString(operaResponseStar));
+            AlarmUtil.alarmAsync("怡亚通确认订单失败", operaResponseStar.getMsg());
+        }
+
+        // 唯品会 确认订单
+        OperaResponse operaResponseWeipinhui = weipinhuiOrderService.createOrder(orderIdList);
+        if (operaResponseWeipinhui.getCode() != 200) {
+            log.warn("唯品会订单确认订单结果：{}", JSONUtil.toJsonString(operaResponseStar));
+            AlarmUtil.alarmAsync("唯品会确认订单失败",
+                    operaResponseStar.getMsg() + "; 本次处理的订单id:" + JSONUtil.toJsonString(orderIdList));
         }
 
         return operaResponse;
@@ -454,7 +484,7 @@ public class OrderController {
     }
 
     @PutMapping("/status/deliver")
-    private OperaResponse deliver(@RequestBody Orders bean) {
+    private OperaResponse deliver(@RequestBody StarBackBean bean) {
         log.info("怡亚通发货通知： {}", JSONUtil.toJsonString(bean));
         return service.deliverStatus(bean);
     }
@@ -468,5 +498,10 @@ public class OrderController {
             return response ;
         }
         return service.batchSelectByIds(orderIds);
+    }
+
+    @GetMapping("/send/tradeInfo")
+    private OperaResponse sendOrderDetailByOutTradeNoAndPaymentNo(String openId, String paymentNo) {
+        return service.sendTradeInfo(openId, paymentNo);
     }
 }

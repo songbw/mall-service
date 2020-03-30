@@ -4,7 +4,9 @@ import com.fengchao.freight.bean.CarriageBean;
 import com.fengchao.freight.bean.*;
 import com.fengchao.freight.bean.page.PageVo;
 import com.fengchao.freight.bean.page.PageableData;
+import com.fengchao.freight.constant.MyErrorEnum;
 import com.fengchao.freight.dao.*;
+import com.fengchao.freight.exception.MyException;
 import com.fengchao.freight.model.*;
 import com.fengchao.freight.service.ShippingService;
 import com.fengchao.freight.utils.ConvertUtil;
@@ -12,7 +14,9 @@ import com.fengchao.freight.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,6 +41,15 @@ public class ShippingServiceImpl implements ShippingService {
     @Override
     public int createShipTemplate(ShipTemplateBean bean) {
         int num = 1;
+        //merchantId 非0的需要额外检查是否存在该供货商的模板
+        Integer merchantId = bean.getMerchantId();
+        if (null != merchantId && 0 != merchantId){
+            List<ShippingTemplate> list = shipTemplateDao.findShipTemplateByMerchantId(merchantId);
+            if(null != list && 0 < list.size()){
+                throw new MyException(MyErrorEnum.TEMPLATE_EXISTED);
+            }
+        }
+
         ShippingTemplate template = new ShippingTemplate();
         template.setMerchantId(bean.getMerchantId());
         template.setName(bean.getName());
@@ -132,9 +145,31 @@ public class ShippingServiceImpl implements ShippingService {
     }
 
     @Override
-    public PageableData<ShippingTemplate> findShipTemplate(Integer pageNo, Integer pageSize) {
+    public List<ShipTemplateBean>
+    findByIdList(List<Integer> idList){
+
+        if(null == idList || 0 == idList.size()){
+            return null;
+        }
+        List<ShippingTemplate> templateList = shipTemplateDao.selectByIdList(idList);
+        if(null == templateList || 0 == templateList.size()){
+            return null;
+        }
+        List<ShipTemplateBean> result = new ArrayList<>();
+        for(ShippingTemplate i: templateList){
+            List<ShippingRegionsX> regionsByTemplateId = shipRegionsDao.findRegionsByTemplateId(i.getId());
+            ShippingTemplateX templateX = new ShippingTemplateX();
+            BeanUtils.copyProperties(i,templateX);
+            templateX.setRegions(regionsByTemplateId);
+            result.add(convertToTemplateBean(templateX));
+        }
+        return result;
+    }
+
+    @Override
+    public PageableData<ShippingTemplate> findShipTemplate(Integer pageNo, Integer pageSize,Integer merchantId) {
         PageableData<ShippingTemplate> pageableData = new PageableData<>();
-        PageInfo<ShippingTemplate> shipTemplate = shipTemplateDao.findShipTemplate(pageNo, pageSize);
+        PageInfo<ShippingTemplate> shipTemplate = shipTemplateDao.findShipTemplate(pageNo, pageSize,merchantId);
 
         PageVo pageVo = ConvertUtil.convertToPageVo(shipTemplate);
         List<ShippingTemplate> templateList = shipTemplate.getList();
