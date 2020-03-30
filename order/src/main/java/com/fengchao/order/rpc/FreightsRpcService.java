@@ -38,23 +38,25 @@ public class FreightsRpcService {
         // 返回值
         List<ShipTemplateBean> shipTemplateBeanList = new ArrayList<>();
 
-        log.info("查询商户运费模版 调用product rpc服务 入参:{}", JSONUtil.toJsonString(merchantIdList));
+        log.info("查询商户运费模版 调用freight rpc服务 入参:{}", JSONUtil.toJsonString(merchantIdList));
 
         if (CollectionUtils.isNotEmpty(merchantIdList)) {
             OperaResponse operaResponse =
                     freightsServiceClient.queryMerchantExceptionFee(StringUtils.join(merchantIdList, ","));
 
-            log.info("查询商户运费模版 调用product rpc服务 原始返回:{}", JSONUtil.toJsonString(operaResponse));
+            log.info("查询商户运费模版 调用freight rpc服务 原始返回:{}", JSONUtil.toJsonString(operaResponse));
 
             if (operaResponse.getCode() == 200) {
                 log.info("查询商户运费模版 ====={}", operaResponse.getData());
                 log.info("查询商户运费模版 ====={}", JSONUtil.toJsonString(operaResponse.getData()));
-                shipTemplateBeanList = (List<ShipTemplateBean>) operaResponse.getData();
+
+                if (operaResponse.getData() != null) {
+                    shipTemplateBeanList = (List<ShipTemplateBean>) operaResponse.getData();
+                }
             } else {
                 log.warn("查询商户运费模版 调用freight rpc服务 错误");
                 throw new Exception("查询商户运费模版错误");
             }
-
         }
 
         log.debug("FreightsRpcService#findProductListByMpuIdList 调用product rpc服务 返回:{}",
