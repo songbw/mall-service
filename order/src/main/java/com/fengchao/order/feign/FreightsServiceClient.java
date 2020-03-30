@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(value = "freights", url = "${rpc.feign.client.equit.url:}", fallback = FreightsServiceClientFallbackFactory.class)
+@FeignClient(value = "freights", url = "${rpc.feign.client.equit.url:}", fallbackFactory = FreightsServiceClientFallbackFactory.class)
 public interface FreightsServiceClient {
 
     /**
