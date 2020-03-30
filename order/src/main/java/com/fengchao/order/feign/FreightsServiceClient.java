@@ -20,7 +20,7 @@ public interface FreightsServiceClient {
      * @param merchantIdList
      * @return
      */
-    @RequestMapping(value = "/freights/adminShip/findIdList", method = RequestMethod.GET)
+    @RequestMapping(value = "/freight/adminShip/findIdList", method = RequestMethod.GET)
     OperaResponse<List<ShipTemplateBean>> queryMerchantExceptionFee(@RequestParam List<Integer> merchantIdList);
 
 }
