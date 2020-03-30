@@ -66,13 +66,16 @@ public class ExportStatisticController {
 //                throw new Exception("参数不合法, 查询开始时间为空");
 //            }
 
-            List<String> appList = Arrays.asList(appIds.split(","));
+            List<String> appIdList = new ArrayList<>();
+            if (StringUtils.isNotBlank(appIds)) {
+                appIdList = Arrays.asList(appIds.split(","));
+            }
 
             // 1.根据条件获取订单集合
             Date startDate = DateUtil.parseDateTime(startTime + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             Date endDate = DateUtil.parseDateTime(endTime + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             ExportLoanSettlementVo exportLoanSettlementVo =
-                    exportStatisticService.exportSettlement(startDate, endDate, appList, merchantId);
+                    exportStatisticService.exportSettlement(startDate, endDate, appIdList, merchantId);
 
             if (exportLoanSettlementVo == null) {
                 log.info("导出商户货款结算表 未找出有效的导出数据!");
@@ -221,13 +224,16 @@ public class ExportStatisticController {
 //                throw new Exception("参数不合法, 查询开始时间为空");
 //            }
 
-            List<String> appList = Arrays.asList(appIds.split(","));
+            List<String> appIdList = new ArrayList<>();
+            if (StringUtils.isNotBlank(appIds)) {
+                appIdList = Arrays.asList(appIds.split(","));
+            }
 
             // 1. 获取导出数据
             Date startDate = DateUtil.parseDateTime(startTime + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             Date endDate = DateUtil.parseDateTime(endTime + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             List<ExportExpressFeeVo> exportExpressFeeVoList =
-                    exportStatisticService.exportExpressFee(startDate, endDate, appList);
+                    exportStatisticService.exportExpressFee(startDate, endDate, appIdList);
 
             if (CollectionUtils.isEmpty(exportExpressFeeVoList)) {
                 log.warn("导出运费实际收款报表 未找出有效的导出数据!");
@@ -357,7 +363,10 @@ public class ExportStatisticController {
 //                throw new Exception("参数不合法, 查询开始时间为空");
 //            }
 
-            List<String> appIdList = Arrays.asList(appIds.split(","));
+            List<String> appIdList = new ArrayList<>();
+            if (StringUtils.isNotBlank(appIds)) {
+                appIdList = Arrays.asList(appIds.split(","));
+            }
 
             // 1. 获取导出数据
             Date startDate = DateUtil.parseDateTime(startTime + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
