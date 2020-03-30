@@ -2,6 +2,7 @@ package com.fengchao.order.feign.hystric;
 
 import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.FreightsServiceClient;
+import com.fengchao.order.rpc.extmodel.ShipTemplateBean;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class FreightsServiceClientFallbackFactory implements FallbackFactory<Fre
         return new FreightsServiceClient() {
 
             @Override
-            public OperaResponse queryMerchantExceptionFee(List<Integer> merchantIdList) {
+            public OperaResponse<List<ShipTemplateBean>> queryMerchantExceptionFee(List<Integer> merchantIdList) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
         };
