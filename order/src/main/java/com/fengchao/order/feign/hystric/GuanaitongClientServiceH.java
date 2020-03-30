@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.bean.SendTradeInfoBean;
 import com.fengchao.order.feign.GuanaitongClientService;
+import org.springframework.stereotype.Component;
 
 /**
  * @author songbw
  * @date 2019/12/24 15:21
  */
+@Component
 public class GuanaitongClientServiceH implements GuanaitongClientService {
     @Override
     public OperaResponse sendTradeInfo(SendTradeInfoBean bean) {
