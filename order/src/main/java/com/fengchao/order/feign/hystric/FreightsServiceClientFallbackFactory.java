@@ -22,7 +22,7 @@ public class FreightsServiceClientFallbackFactory implements FallbackFactory<Fre
         return new FreightsServiceClient() {
 
             @Override
-            public OperaResponse<List<ShipTemplateBean>> queryMerchantExceptionFee(List<Integer> merchantIdList) {
+            public OperaResponse<List<ShipTemplateBean>> queryMerchantExceptionFee(String idList) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
         };

@@ -6,6 +6,7 @@ import com.fengchao.order.rpc.extmodel.ShipTemplateBean;
 import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class FreightsRpcService {
 
         if (CollectionUtils.isNotEmpty(merchantIdList)) {
             OperaResponse<List<ShipTemplateBean>> operaResponse =
-                    freightsServiceClient.queryMerchantExceptionFee(merchantIdList);
+                    freightsServiceClient.queryMerchantExceptionFee(StringUtils.join(merchantIdList, ","));
 
             if (operaResponse.getCode() == 200) {
                 shipTemplateBeanList = operaResponse.getData();

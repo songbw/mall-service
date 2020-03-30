@@ -17,10 +17,10 @@ public interface FreightsServiceClient {
     /**
      * 查询运费
      *
-     * @param merchantIdList
+     * @param idList
      * @return
      */
     @RequestMapping(value = "/freight/adminShip/findIdList", method = RequestMethod.GET)
-    OperaResponse<List<ShipTemplateBean>> queryMerchantExceptionFee(@RequestParam List<Integer> merchantIdList);
+    OperaResponse<List<ShipTemplateBean>> queryMerchantExceptionFee(@RequestParam("idList") String idList);
 
 }
