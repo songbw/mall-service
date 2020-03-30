@@ -69,8 +69,8 @@ public class ExportStatisticController {
             List<String> appList = Arrays.asList(appIds.split(","));
 
             // 1.根据条件获取订单集合
-            Date startDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            Date endDate = DateUtil.parseDateTime(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date startDate = DateUtil.parseDateTime(startTime + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDate = DateUtil.parseDateTime(endTime + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             ExportLoanSettlementVo exportLoanSettlementVo =
                     exportStatisticService.exportSettlement(startDate, endDate, appList, merchantId);
 
@@ -224,8 +224,8 @@ public class ExportStatisticController {
             List<String> appList = Arrays.asList(appIds.split(","));
 
             // 1. 获取导出数据
-            Date startDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            Date endDate = DateUtil.parseDateTime(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date startDate = DateUtil.parseDateTime(startTime + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDate = DateUtil.parseDateTime(endTime + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             List<ExportExpressFeeVo> exportExpressFeeVoList =
                     exportStatisticService.exportExpressFee(startDate, endDate, appList);
 
@@ -360,8 +360,8 @@ public class ExportStatisticController {
             List<String> appIdList = Arrays.asList(appIds.split(","));
 
             // 1. 获取导出数据
-            Date startDate = DateUtil.parseDateTime(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
-            Date endDate = DateUtil.parseDateTime(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date startDate = DateUtil.parseDateTime(startTime + " 00:00:00", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
+            Date endDate = DateUtil.parseDateTime(endTime + " 23:59:59", DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
             List<ExportMerchantReceiptVo>  exportMerchantReceiptVoList =
                     exportStatisticService.exportMerchantReceipt(startDate, endDate, appIdList, merchantId);
 
