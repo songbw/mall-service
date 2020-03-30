@@ -21,6 +21,6 @@ public interface FreightsServiceClient {
      * @return
      */
     @RequestMapping(value = "/adminShip/findIdList", method = RequestMethod.GET)
-    OperaResponse<List<ShipTemplateBean>> queryMerchantExceptionFee(@RequestParam("idList") String idList);
+    OperaResponse queryMerchantExceptionFee(@RequestParam("idList") String idList);
 
 }

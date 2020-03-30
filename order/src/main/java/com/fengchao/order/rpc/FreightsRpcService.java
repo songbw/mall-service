@@ -41,13 +41,13 @@ public class FreightsRpcService {
         log.info("查询商户运费模版 调用product rpc服务 入参:{}", JSONUtil.toJsonString(merchantIdList));
 
         if (CollectionUtils.isNotEmpty(merchantIdList)) {
-            OperaResponse<List<ShipTemplateBean>> operaResponse =
+            OperaResponse operaResponse =
                     freightsServiceClient.queryMerchantExceptionFee(StringUtils.join(merchantIdList, ","));
 
             log.info("查询商户运费模版 调用product rpc服务 原始返回:{}", JSONUtil.toJsonString(operaResponse));
 
             if (operaResponse.getCode() == 200) {
-                shipTemplateBeanList = operaResponse.getData();
+                log.info("查询商户运费模版 ====={}", operaResponse.getData());
             } else {
                 log.warn("查询商户运费模版 调用freight rpc服务 错误");
                 throw new Exception("查询商户运费模版错误");
