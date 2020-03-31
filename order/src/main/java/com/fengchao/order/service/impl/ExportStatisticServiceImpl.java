@@ -137,8 +137,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
                     CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
         }
 
-        log.info("导出商户货款结算表 completeOrderAmount = {}", expressAmount);
-        log.info("导出商户货款结算表 refundOrderAmount = {}", expressAmount);
+        log.info("导出商户货款结算表 completeOrderAmount = {}", completeOrderAmount);
+        log.info("导出商户货款结算表 refundOrderAmount = {}", refundOrderAmount);
         log.info("导出商户货款结算表 expressAmount = {}", expressAmount);
 
         // 5.3 组装导出数据
