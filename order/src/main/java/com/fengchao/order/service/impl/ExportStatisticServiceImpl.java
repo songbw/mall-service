@@ -293,6 +293,12 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // 1. 获取入账子订单集合
         List<OrderDetail> incomeOrderDetailList = queryIncomeOrderDetails(startTime, endTime, appIdList, merchantId);
 
+        log.info("导出供应商发票 获取入账子订单:{}", JSONUtil.toJsonString(incomeOrderDetailList));
+        if (CollectionUtils.isEmpty(incomeOrderDetailList)) {
+            log.warn("导出供应商发票 数据为空!!");
+            return null;
+        }
+
         // 2. 查询出账的订单
         // 获取已退款的子订单信息集合
         List<WorkOrder> workOrderList = new ArrayList<>();
