@@ -121,7 +121,12 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // 5.2 处理出账
         // 查询子订单
         List<String> subOrderIdList = workOrderList.stream().map(w -> w.getOrderId()).collect(Collectors.toList());
-        List<OrderDetail> outOrderDetailList = orderDetailDao.selectOrderDetailListBySubOrderIds(subOrderIdList);
+        log.info("导出商户货款结算表 数据库入参: {}", JSONUtil.toJsonString(subOrderIdList));
+
+        List<OrderDetail> outOrderDetailList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(subOrderIdList)) {
+            outOrderDetailList = orderDetailDao.selectOrderDetailListBySubOrderIds(subOrderIdList);
+        }
         log.info("导出商户货款结算表 出账子订单是:{}", JSONUtil.toJsonString(outOrderDetailList));
         // 计算退款总价
         Integer refundOrderAmount = 0;
@@ -255,7 +260,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // x. 查询一下供应商名称
         List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
         // 转map key:merchantId
-        Map<Integer, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(s -> Integer.valueOf(s.getCorporationId()), s -> s));
+        Map<Integer, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(s -> s.getId().intValue(), s -> s));
         log.info("导出运费实际收款报表 获取供应商map:{}", JSONUtil.toJsonString(merchantMap));
 
         // 6 组装导出数据
