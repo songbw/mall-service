@@ -118,6 +118,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
                 CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
         }
 
+
+
         // 5.2 处理出账
         // 查询子订单
         List<String> subOrderIdList = workOrderList.stream().map(w -> w.getOrderId()).collect(Collectors.toList());
@@ -134,6 +136,10 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             refundOrderAmount = refundOrderAmount +
                     CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
         }
+
+        log.info("导出商户货款结算表 completeOrderAmount = {}", expressAmount);
+        log.info("导出商户货款结算表 refundOrderAmount = {}", expressAmount);
+        log.info("导出商户货款结算表 expressAmount = {}", expressAmount);
 
         // 5.3 组装导出数据
         ExportLoanSettlementVo exportLoanSettlementVo = new ExportLoanSettlementVo();
