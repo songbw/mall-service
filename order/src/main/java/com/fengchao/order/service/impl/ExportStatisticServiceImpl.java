@@ -276,6 +276,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         List<ExportExpressFeeVo> exportExpressFeeVoList = new ArrayList<>();
         for (Integer merchantId : orderDetailMap.keySet()) {
             ExportExpressFeeVo exportExpressFeeVo = new ExportExpressFeeVo();
+            exportExpressFeeVo.setMerchantId(merchantId);
             exportExpressFeeVo.setMerchantName(merchantMap.get(merchantId) == null ? "--" : merchantMap.get(merchantId).getName()); // 商户名称
             exportExpressFeeVo.setUserExpressFee(CalculateUtil.converFenToYuan(userExpressFeeMap.get(merchantId))); // 用户支付运费金额 单位元
             exportExpressFeeVo.setMerchantExpressFee(CalculateUtil.converFenToYuan(merchantExpressFeeMap.get(merchantId))); // 供应商运费金额 单位元

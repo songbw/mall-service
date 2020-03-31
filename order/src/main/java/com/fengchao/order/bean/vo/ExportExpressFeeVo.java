@@ -15,6 +15,8 @@ public class ExportExpressFeeVo {
      */
     private String merchantName;
 
+    private Integer merchantId;
+
     /**
      * 用户支付运费金额 单位元
      */

@@ -273,6 +273,8 @@ public class ExportStatisticController {
 
                 HSSFCell cell2 = row.createCell(2);
                 cell2.setCellValue(exportExpressFeeVo.getMerchantExpressFee());
+
+                index++;
             }
 
 
