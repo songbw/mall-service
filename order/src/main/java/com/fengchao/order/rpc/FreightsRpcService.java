@@ -51,11 +51,12 @@ public class FreightsRpcService {
 
             if (operaResponse.getCode() == 200) {
                 log.info("查询商户运费模版 ====={}", operaResponse.getData());
-                log.info("查询商户运费模版 ====={}", JSONUtil.toJsonString(operaResponse.getData()));
+                log.info("查询商户运费模版 ======={}", JSONUtil.toJsonString(operaResponse.getData()));
 
                 Map<String, Object> data = (Map) operaResponse.getData();
                 Object object = data.get("result");
                 String jsonString = JSON.toJSONString(object);
+                log.info("查询商户运费模版 转字符串======={}", jsonString);
                 shipTemplateBeanList = JSONObject.parseArray(jsonString, ShipTemplateBean.class);
             } else {
                 log.warn("查询商户运费模版 调用freight rpc服务 错误");
