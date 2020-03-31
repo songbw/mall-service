@@ -102,7 +102,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // x. 查询一下供应商名称
         List<SysCompanyX> sysCompanyXList = vendorsRpcService.queryAllCompanyList();
         // 转map key:merchantId
-        Map<Integer, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(s -> Integer.valueOf(s.getCorporationId()), s -> s));
+        Map<Integer, SysCompanyX> merchantMap = sysCompanyXList.stream().collect(Collectors.toMap(s -> s.getId().intValue(), s -> s));
         log.info("导出商户货款结算表 获取供应商map:{}", JSONUtil.toJsonString(merchantMap));
 
         // 5. 计算导出数据遍历入账的子订单
