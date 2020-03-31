@@ -1,5 +1,7 @@
 package com.fengchao.order.rpc;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.FreightsServiceClient;
 import com.fengchao.order.rpc.extmodel.ShipTemplateBean;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author tom
@@ -50,9 +53,10 @@ public class FreightsRpcService {
                 log.info("查询商户运费模版 ====={}", operaResponse.getData());
                 log.info("查询商户运费模版 ====={}", JSONUtil.toJsonString(operaResponse.getData()));
 
-                if (operaResponse.getData() != null) {
-                    shipTemplateBeanList = (List<ShipTemplateBean>) operaResponse.getData();
-                }
+                Map<String, Object> data = (Map) operaResponse.getData();
+                Object object = data.get("result");
+                String jsonString = JSON.toJSONString(object);
+                shipTemplateBeanList = JSONObject.parseArray(jsonString, ShipTemplateBean.class);
             } else {
                 log.warn("查询商户运费模版 调用freight rpc服务 错误");
                 throw new Exception("查询商户运费模版错误");
