@@ -1,23 +1,21 @@
 package com.fengchao.order.service.impl;
 
-import com.fengchao.order.bean.bo.OrderDetailBo;
 import com.fengchao.order.bean.vo.ExportExpressFeeVo;
 import com.fengchao.order.bean.vo.ExportLoanSettlementVo;
 import com.fengchao.order.bean.vo.ExportMerchantReceiptVo;
-import com.fengchao.order.bean.vo.ExportReceiptBillVo;
 import com.fengchao.order.dao.OrderDetailDao;
 import com.fengchao.order.dao.OrdersDao;
-import com.fengchao.order.feign.FreightsServiceClient;
 import com.fengchao.order.model.OrderDetail;
-import com.fengchao.order.model.OrderDetailX;
 import com.fengchao.order.model.Orders;
-import com.fengchao.order.rpc.*;
+import com.fengchao.order.rpc.FreightsRpcService;
+import com.fengchao.order.rpc.ProductRpcService;
+import com.fengchao.order.rpc.VendorsRpcService;
+import com.fengchao.order.rpc.WorkOrderRpcService;
 import com.fengchao.order.rpc.extmodel.*;
 import com.fengchao.order.service.ExportStatisticService;
 import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
-import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -321,7 +319,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         log.info("导出供应商发票 获取商品map:{}", JSONUtil.toJsonString(productInfoBeanMap));
 
         // 3. 合并出账入账订单 & 根据mpu的纬度聚合
-        Map<String, List<OrderDetail>> orderDetailInMpu = new HashMap<>();
+        Map<String, List<OrderDetail>> mergeOrderDetailInMpu = new HashMap<>();
         for (OrderDetail incomeOrderDetail : incomeOrderDetailList) { // 遍历入账子订单
             // 设置商品名称
             String productName = productInfoBeanMap.get(incomeOrderDetail.getMpu()) == null ?
@@ -336,36 +334,42 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             }
 
             //
-            List<OrderDetail> orderDetailList = orderDetailInMpu.get(incomeOrderDetail.getMpu());
+            List<OrderDetail> orderDetailList = mergeOrderDetailInMpu.get(incomeOrderDetail.getMpu());
             if (orderDetailList == null) {
                 orderDetailList = new ArrayList<>();
-                orderDetailInMpu.put(incomeOrderDetail.getMpu(), orderDetailList);
+                mergeOrderDetailInMpu.put(incomeOrderDetail.getMpu(), orderDetailList);
             }
             orderDetailList.add(incomeOrderDetail);
         }
-        log.info("导出供应商发票 合并出账入账后的以mpu纬度聚合的子订单map:{}", JSONUtil.toJsonString(orderDetailInMpu));
+        log.info("导出供应商发票 合并出账入账后的以mpu纬度聚合的子订单map:{}", JSONUtil.toJsonString(mergeOrderDetailInMpu));
 
         // 7. 组装导出数据
         List<ExportMerchantReceiptVo> exportMerchantReceiptVoList = new ArrayList<>();
-        for (String mpu : orderDetailInMpu.keySet()) {
-            List<OrderDetail> orderDetailList = orderDetailInMpu.get(mpu);
+        for (String mpu : mergeOrderDetailInMpu.keySet()) {
+            List<OrderDetail> orderDetailList = mergeOrderDetailInMpu.get(mpu);
 
-            String productName = "";
-            String categoryName = "";
+            String productName = productInfoBeanMap.get(mpu) == null ?
+                    "--" : productInfoBeanMap.get(mpu).getName();
+            String categoryName = productInfoBeanMap.get(mpu) == null ?
+                    "--" : productInfoBeanMap.get(mpu).getCategoryName();
             Integer num = 0;
             String taxRate = productInfoBeanMap.get(mpu).getTaxRate(); // 税率
+
             Integer orderDetailAmount = 0; // 子订单的总价(含税金额)
             for (OrderDetail orderDetail : orderDetailList) {
-                productName = orderDetail.getName();
-                categoryName = orderDetail.getCategory();
+//                productName = orderDetail.getName();
+//                categoryName = orderDetail.getCategory();
                 num = num + orderDetail.getNum();
-                orderDetailAmount = orderDetailAmount +
-                        CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
+
+                if (orderDetail.getSprice() != null) {
+                    orderDetailAmount = orderDetailAmount +
+                            CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
+                }
             }
 
             ExportMerchantReceiptVo exportMerchantReceiptVo = new ExportMerchantReceiptVo();
             exportMerchantReceiptVo.setProductName(productName); // 商品名称
-            exportMerchantReceiptVo.setCategoryId(""); // 品类
+            exportMerchantReceiptVo.setCategoryId(categoryName); // 品类
             exportMerchantReceiptVo.setCategoryName(categoryName); // 品类
             exportMerchantReceiptVo.setNum(num); // 数量
             exportMerchantReceiptVo.setTaxRate(taxRate); // 税率
