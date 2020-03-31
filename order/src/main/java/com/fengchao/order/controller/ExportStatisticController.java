@@ -129,7 +129,7 @@ public class ExportStatisticController {
             HSSFCell cell60 = row6.createCell(0);
             cell60.setCellValue("本期运费金额（元）"); //
             HSSFCell cell61 = row6.createCell(1);
-            cell61.setCellValue(exportLoanSettlementVo.getCouponAmount());
+            cell61.setCellValue(exportLoanSettlementVo.getExpressFee());
 
             HSSFRow row7 = sheet.createRow(7);
             HSSFCell cell70 = row7.createCell(0);
