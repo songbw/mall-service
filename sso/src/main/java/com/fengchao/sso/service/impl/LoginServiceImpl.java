@@ -252,7 +252,6 @@ public class LoginServiceImpl implements ILoginService {
         temp.setOpenId(openId.getOpen_id());
         temp.setiAppId(iAppId);
         User user = userMapper.selectByOpenId(temp);
-
         if (user == null) {
             GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id()) ;
             SUser userByTel = userDao.selectUserByTel(iAppId, guanaitongUserBean.getMobile()) ;
@@ -280,13 +279,17 @@ public class LoginServiceImpl implements ILoginService {
                 // 添加子账户
                 bindSubAccountMapper.insertSelective(bindSubAccount) ;
             } else {
-                bindSubAccount.setUserId(userByTel.getId());
-                bindSubAccount.setOpenId(openId.getOpen_id());
-                bindSubAccount.setAppId("00");
-                // 添加子账户
-                bindSubAccountMapper.insertSelective(bindSubAccount) ;
-                BeanUtils.copyProperties(userByTel, user);
-                accessToken.setOpenId(userByTel.getOpenId());
+                // 查询openId是否存在
+                BindSubAccount checkBind = bindSubAccountDao.selectByUserIdAndAppId("00", userByTel.getId()) ;
+                if (checkBind == null) {
+                    bindSubAccount.setUserId(userByTel.getId());
+                    bindSubAccount.setOpenId(openId.getOpen_id());
+                    bindSubAccount.setAppId("00");
+                    // 添加子账户
+                    bindSubAccountMapper.insertSelective(bindSubAccount) ;
+                    BeanUtils.copyProperties(userByTel, user);
+                    accessToken.setOpenId(userByTel.getOpenId());
+                }
             }
         }
         result.getData().put("result", accessToken);
