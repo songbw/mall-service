@@ -392,19 +392,19 @@ public class ExportStatisticController {
             HSSFRow titleRow0 = sheet.createRow(0);
             HSSFCell titlecell0 = titleRow0.createCell(0);
             titlecell0.setCellValue("商品名称"); //
-            HSSFCell titlecell1 = titleRow0.createCell(0);
+            HSSFCell titlecell1 = titleRow0.createCell(1);
             titlecell1.setCellValue("品类"); //
-            HSSFCell titlecell2 = titleRow0.createCell(0);
+            HSSFCell titlecell2 = titleRow0.createCell(2);
             titlecell2.setCellValue("销售单位"); //
-            HSSFCell titlecell3 = titleRow0.createCell(0);
+            HSSFCell titlecell3 = titleRow0.createCell(3);
             titlecell3.setCellValue("数量"); //
-            HSSFCell titlecell4 = titleRow0.createCell(0);
+            HSSFCell titlecell4 = titleRow0.createCell(4);
             titlecell4.setCellValue("进货单价(元)"); //
-            HSSFCell titlecell5 = titleRow0.createCell(0);
+            HSSFCell titlecell5 = titleRow0.createCell(5);
             titlecell5.setCellValue("税率"); //
-            HSSFCell titlecell6 = titleRow0.createCell(0);
+            HSSFCell titlecell6 = titleRow0.createCell(6);
             titlecell6.setCellValue("含税金额"); //
-            HSSFCell titlecell7 = titleRow0.createCell(0);
+            HSSFCell titlecell7 = titleRow0.createCell(7);
             titlecell7.setCellValue("税额"); //
 
 
@@ -436,6 +436,8 @@ public class ExportStatisticController {
 
                 HSSFCell cell7 = row.createCell(7);
                 cell7.setCellValue(exportMerchantReceiptVo.getTaxAmount());
+
+                index++;
             }
 
 

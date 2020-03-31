@@ -309,7 +309,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         }
         log.info("导出供应商发票 获取退款信息:{}", JSONUtil.toJsonString(workOrderList));
 
-        // 将退款的子订单按照子订单号唯独转map
+        // 将退款的子订单按照子订单号纬度转map
         Map<String, WorkOrder> workOrderMap = workOrderList.stream().collect(Collectors.toMap(w -> w.getOrderId(), w -> w));
         log.info("导出供应商发票 获取退款信息转map:{}", JSONUtil.toJsonString(workOrderMap));
 
@@ -322,26 +322,26 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
         // 3. 合并出账入账订单 & 根据mpu的纬度聚合
         Map<String, List<OrderDetail>> orderDetailInMpu = new HashMap<>();
-        for (OrderDetail orderDetail : incomeOrderDetailList) { // 遍历入账子订单
+        for (OrderDetail incomeOrderDetail : incomeOrderDetailList) { // 遍历入账子订单
             // 设置商品名称
-            String productName = productInfoBeanMap.get(orderDetail.getMpu()) == null ?
-                    orderDetail.getName() : productInfoBeanMap.get(orderDetail.getMpu()).getName();
-            orderDetail.setName(productName);
+            String productName = productInfoBeanMap.get(incomeOrderDetail.getMpu()) == null ?
+                    incomeOrderDetail.getName() : productInfoBeanMap.get(incomeOrderDetail.getMpu()).getName();
+            incomeOrderDetail.setName(productName);
 
             // 合并
-            String subOrderId = orderDetail.getSubOrderId();
+            String subOrderId = incomeOrderDetail.getSubOrderId();
             WorkOrder _workOrder = workOrderMap.get(subOrderId);
             if (_workOrder != null) {
-                orderDetail.setNum(orderDetail.getNum() - _workOrder.getReturnedNum());
+                incomeOrderDetail.setNum(incomeOrderDetail.getNum() - _workOrder.getReturnedNum());
             }
 
             //
-            List<OrderDetail> orderDetailList = orderDetailInMpu.get(orderDetail.getMpu());
+            List<OrderDetail> orderDetailList = orderDetailInMpu.get(incomeOrderDetail.getMpu());
             if (orderDetailList == null) {
                 orderDetailList = new ArrayList<>();
-                orderDetailInMpu.put(orderDetail.getMpu(), orderDetailList);
+                orderDetailInMpu.put(incomeOrderDetail.getMpu(), orderDetailList);
             }
-            orderDetailList.add(orderDetail);
+            orderDetailList.add(incomeOrderDetail);
         }
         log.info("导出供应商发票 合并出账入账后的以mpu纬度聚合的子订单map:{}", JSONUtil.toJsonString(orderDetailInMpu));
 
