@@ -114,8 +114,11 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         Integer expressAmount = 0; // 总计快递费 单位分
         for (OrderDetail orderDetail : incomeOrderDetailList) {
             expressAmount = expressAmount + calcExpressFee(orderDetail, shipTemplateBeanMap);
-            completeOrderAmount = completeOrderAmount +
-                CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
+
+            if (orderDetail.getSprice() != null) {
+                completeOrderAmount = completeOrderAmount +
+                        CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
+            }
         }
 
         // 5.2 处理出账
@@ -131,8 +134,10 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // 计算退款总价
         Integer refundOrderAmount = 0; // 单位 分
         for (OrderDetail orderDetail : outOrderDetailList) {
-            refundOrderAmount = refundOrderAmount +
-                    CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
+            if (orderDetail.getSprice() != null) {
+                refundOrderAmount = refundOrderAmount +
+                        CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
+            }
         }
 
         log.info("导出商户货款结算表 completeOrderAmount = {}", completeOrderAmount);
