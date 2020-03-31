@@ -110,12 +110,12 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         String endTimeStr = DateUtil.dateTimeFormat(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
         // 5.1 处理入账相关的导出信息
-        Integer completeOrderAmount = 0; // 总计完成订单金额
-        Integer expressAmount = 0; // 总计快递费
+        Integer completeOrderAmount = 0; // 总计完成订单金额 单位分
+        Integer expressAmount = 0; // 总计快递费 单位分
         for (OrderDetail orderDetail : incomeOrderDetailList) {
             expressAmount = expressAmount + calcExpressFee(orderDetail, shipTemplateBeanMap);
             completeOrderAmount = completeOrderAmount +
-                    orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).intValue();
+                CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
         }
 
         // 5.2 处理出账
@@ -129,7 +129,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         }
         log.info("导出商户货款结算表 出账子订单是:{}", JSONUtil.toJsonString(outOrderDetailList));
         // 计算退款总价
-        Integer refundOrderAmount = 0;
+        Integer refundOrderAmount = 0; // 单位 分
         for (OrderDetail orderDetail : outOrderDetailList) {
             refundOrderAmount = refundOrderAmount +
                     CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
@@ -412,10 +412,10 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         }
 
         ShipRegionsBean shipRegionsBean = shipTemplateBean.getRegions().get(0);
-        int basePrice = shipRegionsBean.getBasePrice();
+        int basePrice = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getBasePrice()));
         int baseAmount = shipRegionsBean.getBaseAmount();
-        int cumulativePrice = shipRegionsBean.getCumulativePrice();
-        int cumulativeUnit = shipRegionsBean.getCumulativeUnit();
+        int cumulativePrice = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativePrice()));
+        int cumulativeUnit = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativeUnit()));
 
         //
         int num = orderDetail.getNum();
