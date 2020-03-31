@@ -118,8 +118,6 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
                 CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
         }
 
-
-
         // 5.2 处理出账
         // 查询子订单
         List<String> subOrderIdList = workOrderList.stream().map(w -> w.getOrderId()).collect(Collectors.toList());
