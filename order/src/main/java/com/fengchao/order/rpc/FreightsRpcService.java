@@ -55,6 +55,11 @@ public class FreightsRpcService {
 
                 Map<String, Object> data = (Map) operaResponse.getData();
                 Object object = data.get("result");
+
+                if (object == null) {
+                    return shipTemplateBeanList;
+                }
+
                 String jsonString = JSON.toJSONString(object);
                 log.info("查询商户运费模版 转字符串======={}", jsonString);
                 shipTemplateBeanList = JSONObject.parseArray(jsonString, ShipTemplateBean.class);
