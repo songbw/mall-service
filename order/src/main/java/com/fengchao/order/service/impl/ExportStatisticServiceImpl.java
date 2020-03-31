@@ -49,12 +49,14 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
                                       OrderDetailDao orderDetailDao,
                                       FreightsRpcService freightsRpcService,
                                       WorkOrderRpcService workOrderRpcService,
-                                      ProductRpcService productRpcService) {
+                                      ProductRpcService productRpcService,
+                                      VendorsRpcService vendorsRpcService) {
         this.ordersDao = ordersDao;
         this.orderDetailDao = orderDetailDao;
         this.freightsRpcService = freightsRpcService;
         this.workOrderRpcService = workOrderRpcService;
         this.productRpcService = productRpcService;
+        this.vendorsRpcService = vendorsRpcService;
     }
 
     @Override
