@@ -355,14 +355,14 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             Integer num = 0;
             String taxRate = productInfoBeanMap.get(mpu).getTaxRate(); // 税率
 
-            Integer orderDetailAmount = 0; // 子订单的总价(含税金额)
+            Integer orderDetailTotalAmountInMpu = 0; // 子订单的总价(含税金额)
             for (OrderDetail orderDetail : orderDetailList) {
 //                productName = orderDetail.getName();
 //                categoryName = orderDetail.getCategory();
                 num = num + orderDetail.getNum();
 
                 if (orderDetail.getSprice() != null) {
-                    orderDetailAmount = orderDetailAmount +
+                    orderDetailTotalAmountInMpu = orderDetailTotalAmountInMpu +
                             CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
                 }
             }
@@ -373,11 +373,11 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             exportMerchantReceiptVo.setCategoryName(categoryName); // 品类
             exportMerchantReceiptVo.setNum(num); // 数量
             exportMerchantReceiptVo.setTaxRate(taxRate); // 税率
-            exportMerchantReceiptVo.setAmount(CalculateUtil.converFenToYuan(orderDetailAmount)); // 含税金额
+            exportMerchantReceiptVo.setAmount(CalculateUtil.converFenToYuan(orderDetailTotalAmountInMpu)); // 含税金额
 
             // 税额
             if (StringUtils.isNotBlank(taxRate)) {
-                int taxPrice = new BigDecimal(orderDetailAmount)
+                int taxPrice = new BigDecimal(orderDetailTotalAmountInMpu)
                         .divide(new BigDecimal(taxRate).add(new BigDecimal(1)),2, BigDecimal.ROUND_HALF_UP)
                         .multiply(new BigDecimal(taxRate))
                         .setScale(0, BigDecimal.ROUND_HALF_UP)
@@ -387,7 +387,11 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             }
 
             // 进货单价
-            exportMerchantReceiptVo.setSprice(CalculateUtil.converFenToYuan(orderDetailAmount / num)); // 进货单价
+            if (num == 0) {
+                exportMerchantReceiptVo.setSprice("0");
+            } else {
+                exportMerchantReceiptVo.setSprice(CalculateUtil.converFenToYuan(orderDetailTotalAmountInMpu / num)); // 进货单价
+            }
             exportMerchantReceiptVo.setTaxType(""); // 税收类型
 
             exportMerchantReceiptVoList.add(exportMerchantReceiptVo);
