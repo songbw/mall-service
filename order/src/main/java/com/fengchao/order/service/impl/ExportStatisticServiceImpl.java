@@ -321,7 +321,10 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         List<String> mpuList = incomeOrderDetailList.stream().map(i -> i.getMpu()).collect(Collectors.toList());
         List<ProductInfoBean> productInfoBeanList = productRpcService.findProductListByMpuIdList(mpuList);
         // 转map key：mpu
-        Map<String, ProductInfoBean> productInfoBeanMap = productInfoBeanList.stream().collect(Collectors.toMap(p -> p.getMpu(), p -> p));
+        Map<String, ProductInfoBean> productInfoBeanMap = productInfoBeanList.stream()
+                .collect(Collectors.toMap(p -> p.getMpu(), p -> p, (value1, value2) -> {
+                    return value2;
+                }));
         log.info("导出供应商发票 获取商品map:{}", JSONUtil.toJsonString(productInfoBeanMap));
 
         // 3. 合并出账入账订单 & 根据mpu的纬度聚合
