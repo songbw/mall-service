@@ -117,6 +117,7 @@ public class ProductRpcService {
             return platformList;
         }
 
+        log.info("根据appIdList获取平台信息 调用product rpc服务 入参:{}", JSONUtil.toJsonString(appIdList));
         OperaResponse operaResult = productService.selectPlatformByAppIdList(appIdList);
 
         log.info("根据appIdList获取平台信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
