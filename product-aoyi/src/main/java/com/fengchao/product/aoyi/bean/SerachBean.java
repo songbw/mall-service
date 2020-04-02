@@ -21,4 +21,5 @@ public class SerachBean {
     private String mpu;
     private Integer minPrice;
     private Integer maxPrice;
+    private String mpuPrefix ;
 }

@@ -374,6 +374,9 @@
     <if test="mpu !=null and mpu !=''">
       and mpu = #{mpu}
     </if>
+    <if test="mpuPrefix !=null and mpuPrefix !=''">
+      and mpu like #{mpuPrefix}
+    </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
       and aoyi_prod_index.brand LIKE #{pattern4}
@@ -411,6 +414,9 @@
     </if>
     <if test="mpu !=null and mpu !=''">
       and mpu = #{mpu}
+    </if>
+    <if test="mpuPrefix !=null and mpuPrefix !=''">
+      and mpu like #{mpuPrefix}
     </if>
     <if test="brand !=null and brand !=''">
       <bind name="pattern4" value="'%' + brand + '%'"/>
