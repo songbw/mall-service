@@ -12,10 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author tom
@@ -112,12 +109,19 @@ public class ProductRpcService {
     public List<Platform> findPlatformByAppIdList(List<String> appIdList) {
         List<Platform> platformList = new ArrayList<>();
 
+        log.info("根据appIdList获取平台信息 调用product rpc服务 原始入参:{}", JSONUtil.toJsonString(appIdList));
+
         if (CollectionUtils.isEmpty(appIdList)) {
             log.info("根据appIdList获取平台信息 rpc 入参为空 返回");
             return platformList;
         }
 
-        OperaResponse operaResult = productService.selectPlatformByAppIdList(appIdList);
+        // 处理一下appIdList
+        Set<String> appIdSet = new HashSet<>(appIdList);
+        // 再转list
+        List<String> _appIdList = new ArrayList<>(appIdSet);
+        log.info("根据appIdList获取平台信息 调用product rpc服务 入参:{}", JSONUtil.toJsonString(_appIdList));
+        OperaResponse operaResult = productService.selectPlatformByAppIdList(_appIdList);
 
         log.info("根据appIdList获取平台信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
         // 处理返回
