@@ -797,6 +797,11 @@ public class AdminProdServiceImpl implements AdminProdService {
                     ids.add(bean.getId()) ;
                     continue;
                 }
+                if (StringUtils.isEmpty(aoyiProdIndex.getSprice())) {
+                    logger.info("sprice is {}", bean.getId());
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
                 if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
                     if (starDetailImgs == null || starDetailImgs.size() == 0) {
                         logger.info("image url is {}", bean.getId());
