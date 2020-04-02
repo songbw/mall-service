@@ -442,7 +442,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
             // 进货单价
             if (num == 0) {
-                exportMerchantReceiptVo.setSprice("0");
+                exportMerchantReceiptVo.setSprice(productInfoBeanMap.get(mpu) == null ?
+                        "--" : productInfoBeanMap.get(mpu).getSprice());
             } else {
                 exportMerchantReceiptVo.setSprice(CalculateUtil.converFenToYuan(orderDetailTotalAmountInMpu / num)); // 进货单价
             }
