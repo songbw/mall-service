@@ -456,6 +456,7 @@ public class LoginServiceImpl implements ILoginService {
         SMSPostBean smsPostBean = new SMSPostBean() ;
         smsPostBean.setPhone(telephone);
         String code = baseService.send(smsPostBean).getData() ;
+        log.info("获取到的验证码是：", code);
         redisDAO.setKey(type + ":sso:" + appId + appSrc + telephone, code, 5 * 60 * 1000);
         return result;
     }
