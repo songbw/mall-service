@@ -2062,7 +2062,7 @@ public class AdminOrderController {
                         cell45.setCellValue(ordersVo.getAppId());
                         // 子订单外部订单号
                         HSSFCell cell46 = currentRow.createCell(46);
-                        cell46.setCellValue("--");
+                        cell46.setCellValue(ordersVo.getThirdOrderSn());
                         //
                         currentRowNum++;
                     }
