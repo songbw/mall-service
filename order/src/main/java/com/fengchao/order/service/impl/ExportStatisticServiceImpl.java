@@ -138,7 +138,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         for (Integer orderId : incomeOrderMap.keySet()) {
             List<OrderDetail> _orderDetailList = incomeOrderMap.get(orderId);
             //
-            Integer merchantExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(orderId));
+            Integer merchantExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
             logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + merchantExpressFee + "\r\n");
             expressAmount = expressAmount + merchantExpressFee;
         }
@@ -279,7 +279,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             Integer merchantExpressFee = 0;
             for (Integer orderId : _orderMap.keySet()) {
                 List<OrderDetail> _orderDetailList = _orderMap.get(orderId);
-                Integer _tmpExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId));
+                Integer _tmpExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
 
                 logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + _tmpExpressFee + "\r\n");
 
@@ -510,11 +510,11 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
      * @param shipTemplateBean
      * @return
      */
-    private Integer calcExpressFee(List<OrderDetail> orderDetailList, ShipTemplateBean shipTemplateBean) {
+    private Integer calcExpressFee(List<OrderDetail> orderDetailList, ShipTemplateBean shipTemplateBean, Integer merchantId) {
         Integer fee = 0;
 
         if (shipTemplateBean == null) {
-            log.warn("商户ID:{} 没有运费模版", shipTemplateBean.getMerchantId());
+            log.warn("商户ID:{} 没有运费模版", merchantId);
             return 0;
         }
 
