@@ -115,6 +115,10 @@ public class AdminProdServiceImpl implements AdminProdService {
         map.put("order",bean.getOrder());
         map.put("minPrice",bean.getMinPrice());
         map.put("maxPrice",bean.getMaxPrice());
+        if (StringUtils.isNotBlank(bean.getMpuPrefix())) {
+            map.put("mpuPrefix",bean.getMpuPrefix() + "%");
+        }
+
         if (bean.getMerchantHeader() == 0) {
             map.put("merchantId", bean.getMerchantId());
         } else if (bean.getMerchantHeader().equals(bean.getMerchantId())) {
@@ -790,6 +794,11 @@ public class AdminProdServiceImpl implements AdminProdService {
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
                     logger.info("price is {}", bean.getId());
+                    ids.add(bean.getId()) ;
+                    continue;
+                }
+                if (StringUtils.isEmpty(aoyiProdIndex.getSprice())) {
+                    logger.info("sprice is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
