@@ -536,6 +536,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             totalNum = totalNum + orderDetail.getNum();
         }
 
+        log.info("=====================totalNum:{}", totalNum);
+
         // 计算运费
         if (baseAmount >= totalNum)  {
             fee = basePrice;
