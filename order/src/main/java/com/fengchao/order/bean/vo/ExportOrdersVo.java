@@ -278,4 +278,9 @@ public class ExportOrdersVo {
      */
     private String appId;
 
+    /**
+     * 外部订单号
+     */
+    private String thirdOrderSn;
+
 }
