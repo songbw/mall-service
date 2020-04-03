@@ -352,7 +352,7 @@ public class ExportStatisticController {
     public void exportMerchantReceipt(@RequestParam("startTime") String startTime,
                                       @RequestParam("endTime") String endTime,
                                       @RequestParam("merchantId") Integer merchantId,
-                                      @RequestParam(value = "appId", required = false) String appIds,
+                                      @RequestParam(value = "appIds", required = false) String appIds,
                                  HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;
         // 创建HSSFWorkbook对象
