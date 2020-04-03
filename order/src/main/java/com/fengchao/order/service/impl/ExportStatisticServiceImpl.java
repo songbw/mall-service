@@ -140,6 +140,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             //
             Integer merchantExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
             logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + merchantExpressFee + "\r\n");
+            log.info("======================== 明细:{}", logBuilder.toString());
             expressAmount = expressAmount + merchantExpressFee;
         }
 
@@ -544,6 +545,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         } else {
             fee = basePrice + ((totalNum - baseAmount) / cumulativeUnit) * cumulativePrice;
         }
+
+        log.info("=======================fee:{}", fee);
 
         return fee;
     }
