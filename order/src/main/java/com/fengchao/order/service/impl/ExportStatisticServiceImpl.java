@@ -537,7 +537,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         }
 
         // 计算运费
-        if (baseAmount <= totalNum)  {
+        if (baseAmount >= totalNum)  {
             fee = basePrice;
         } else {
             fee = basePrice + ((totalNum - baseAmount) / cumulativeUnit) * cumulativePrice;
