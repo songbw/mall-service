@@ -16,6 +16,7 @@ import com.fengchao.order.service.ExportStatisticService;
 import com.fengchao.order.utils.CalculateUtil;
 import com.fengchao.order.utils.DateUtil;
 import com.fengchao.order.utils.JSONUtil;
+import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -137,6 +138,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         StringBuilder logBuilder = new StringBuilder();
         for (Integer orderId : incomeOrderMap.keySet()) {
             List<OrderDetail> _orderDetailList = incomeOrderMap.get(orderId);
+            log.info("导出商户货款结算表 计算订单运费:{}", JSONUtil.toJsonString(_orderDetailList));
             //
             Integer merchantExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
             logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + merchantExpressFee + "\r\n");
@@ -531,6 +533,9 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         int cumulativePrice = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativePrice()));
         int cumulativeUnit = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativeUnit()));
 
+        log.info("运费模版:basePrice:{}, baseAmount:{}, cumulativePrice:{}, cumulativeUnit:{}",
+                basePrice, baseAmount, cumulativePrice, cumulativeUnit);
+
         // 计算子订单的总数量
         int totalNum = 0;
         for (OrderDetail orderDetail : orderDetailList) {
@@ -544,6 +549,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             fee = basePrice;
         } else {
             fee = basePrice + ((totalNum - baseAmount) / cumulativeUnit) * cumulativePrice;
+            log.info("********************* 计算:{}", fee);
         }
 
         log.info("=======================fee:{}", fee);
