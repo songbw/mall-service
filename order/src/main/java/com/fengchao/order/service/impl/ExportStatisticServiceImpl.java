@@ -73,7 +73,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         }
 
         // 2. 查询出账的订单
-        // 获取已退款的子订单信息集合
+        // 获取已退款的信息集合
         List<WorkOrder> workOrderList = new ArrayList<>();
         if (CollectionUtils.isEmpty(appIdList)) {
             workOrderList = workOrderRpcService.queryRefundedOrderDetailList(merchantId, null, startTime, endTime);
@@ -107,17 +107,43 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         String startTimeStr = DateUtil.dateTimeFormat(startTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
         String endTimeStr = DateUtil.dateTimeFormat(endTime, DateUtil.DATE_YYYY_MM_DD_HH_MM_SS);
 
-        // 5.1 处理入账相关的导出信息
+        // 5.1 处理完成订单金额
         Integer completeOrderAmount = 0; // 总计完成订单金额 单位分
-        Integer expressAmount = 0; // 总计快递费 单位分
+
+        // 将入账子订单以主订单的纬度 转map
+        Map<Integer, List<OrderDetail>> incomeOrderMap = new HashMap<>();
         for (OrderDetail orderDetail : incomeOrderDetailList) {
-            expressAmount = expressAmount + calcExpressFee(orderDetail, shipTemplateBeanMap);
+            // expressAmount = expressAmount + calcExpressFee(orderDetail, shipTemplateBeanMap);
 
             if (orderDetail.getSprice() != null) {
                 completeOrderAmount = completeOrderAmount +
                         CalculateUtil.convertYuanToFen(orderDetail.getSprice().multiply(new BigDecimal(orderDetail.getNum())).toString());
             }
+
+            // 转主订单
+            List<OrderDetail> _orderDetailList = incomeOrderMap.get(orderDetail.getOrderId());
+            if (_orderDetailList == null) {
+                _orderDetailList = new ArrayList<>();
+                incomeOrderMap.put(orderDetail.getOrderId(), _orderDetailList);
+            }
+            _orderDetailList.add(orderDetail);
         }
+
+        log.info("导出商户货款结算表 将入账子订单转以主订单的纬度Map<Integer, List<OrderDetail>>:{}",
+                JSONUtil.toJsonString(incomeOrderMap));
+
+        // 5.2 处理运费
+        Integer expressAmount = 0; // 总计快递费 单位分
+        StringBuilder logBuilder = new StringBuilder();
+        for (Integer orderId : incomeOrderMap.keySet()) {
+            List<OrderDetail> _orderDetailList = incomeOrderMap.get(orderId);
+            //
+            Integer merchantExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
+            logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + merchantExpressFee + "\r\n");
+            expressAmount = expressAmount + merchantExpressFee;
+        }
+
+        log.info("导出商户货款结算表 商户运费计算明细:{}", logBuilder.toString());
 
         // 5.2 处理出账
         // 查询子订单
@@ -234,17 +260,36 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         // 5. 处理导出数据
         // 5.1 计算供应商的运费
         Map<Integer, Integer> merchantExpressFeeMap = new HashMap<>();
-        for (Integer merchantId : orderDetailMap.keySet()) {
-            List<OrderDetail> orderDetailList = orderDetailMap.get(merchantId);
+        StringBuilder logBuilder = new StringBuilder(); // 记录计算明细log
+        for (Integer merchantId : orderDetailMap.keySet()) { // 遍历供应商
+            List<OrderDetail> orderDetailList = orderDetailMap.get(merchantId); // 该供应商下的子订单列表
 
+            // 将子订单按照主订单的纬度转map
+            Map<Integer, List<OrderDetail>> _orderMap = new HashMap<>();
+            for (OrderDetail _orderDetail : orderDetailList) {
+                List<OrderDetail> _tmpList = _orderMap.get(_orderDetail.getOrderId());
+                if (_tmpList == null) {
+                    _tmpList = new ArrayList<>();
+                    _orderMap.put(_orderDetail.getOrderId(), _tmpList);
+                }
+                _tmpList.add(_orderDetail);
+            }
+
+            // 计算该供应商的运费
             Integer merchantExpressFee = 0;
-            for (OrderDetail orderDetail : orderDetailList) {
-                Integer orderDetailExpressFee = calcExpressFee(orderDetail, shipTemplateBeanMap);
-                merchantExpressFee = merchantExpressFee + orderDetailExpressFee;
+            for (Integer orderId : _orderMap.keySet()) {
+                List<OrderDetail> _orderDetailList = _orderMap.get(orderId);
+                Integer _tmpExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
+
+                logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + _tmpExpressFee + "\r\n");
+
+                merchantExpressFee = merchantExpressFee + _tmpExpressFee;
             }
 
             merchantExpressFeeMap.put(merchantId, merchantExpressFee);
         }
+
+        log.info("导出运费实际收款报表 商户运费计算明细:{}", logBuilder.toString());
 
         log.info("导出运费实际收款报表 计算供应商的运费:{}", JSONUtil.toJsonString(merchantExpressFeeMap));
 
@@ -397,7 +442,8 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
 
             // 进货单价
             if (num == 0) {
-                exportMerchantReceiptVo.setSprice("0");
+                exportMerchantReceiptVo.setSprice(productInfoBeanMap.get(mpu) == null ?
+                        "--" : productInfoBeanMap.get(mpu).getSprice());
             } else {
                 exportMerchantReceiptVo.setSprice(CalculateUtil.converFenToYuan(orderDetailTotalAmountInMpu / num)); // 进货单价
             }
@@ -422,6 +468,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
      * @param expressFeeMap
      * @return
      */
+    @Deprecated
     private Integer calcExpressFee(OrderDetail orderDetail, Map<Integer, ShipTemplateBean> expressFeeMap) {
         Integer fee = 0;
 
@@ -450,6 +497,50 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             fee = basePrice;
         } else {
             fee = basePrice + ((num - baseAmount) / cumulativeUnit) * cumulativePrice;
+        }
+
+        return fee;
+    }
+
+
+    /**
+     * 计算子订单集合的运费（主订单纬度）
+     *
+     * @param orderDetailList
+     * @param shipTemplateBean
+     * @return
+     */
+    private Integer calcExpressFee(List<OrderDetail> orderDetailList, ShipTemplateBean shipTemplateBean, Integer merchantId) {
+        Integer fee = 0;
+
+        if (shipTemplateBean == null) {
+            log.warn("商户ID:{} 没有运费模版", merchantId);
+            return 0;
+        }
+
+        List<ShipRegionsBean> shipRegionsBeanList = shipTemplateBean.getRegions();
+        if (CollectionUtils.isEmpty(shipRegionsBeanList)) {
+            log.warn("商户ID:{} 没有区域运费模版", shipTemplateBean.getMerchantId());
+            return 0;
+        }
+
+        ShipRegionsBean shipRegionsBean = shipTemplateBean.getRegions().get(0);
+        int basePrice = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getBasePrice()));
+        int baseAmount = shipRegionsBean.getBaseAmount();
+        int cumulativePrice = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativePrice()));
+        int cumulativeUnit = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativeUnit()));
+
+        // 计算子订单的总数量
+        int totalNum = 0;
+        for (OrderDetail orderDetail : orderDetailList) {
+            totalNum = totalNum + orderDetail.getNum();
+        }
+
+        // 计算运费
+        if (baseAmount <= totalNum)  {
+            fee = basePrice;
+        } else {
+            fee = basePrice + ((totalNum - baseAmount) / cumulativeUnit) * cumulativePrice;
         }
 
         return fee;
