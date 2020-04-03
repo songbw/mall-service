@@ -39,7 +39,7 @@ public class LoginController {
             result.setMsg("用户名已存在");
             return result;
         }
-        String value = redisDAO.getValue("zc:sso:" + loginBean.getAppId() + loginBean.getUsername()) ;
+        String value = redisDAO.getValue("zc:sso:" + loginBean.getAppId() + "00" + loginBean.getUsername()) ;
         if(StringUtils.isEmpty(value)) {
             result.setCode(10008);
             result.setMsg("验证码不正确");
