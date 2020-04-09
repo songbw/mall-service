@@ -10,7 +10,6 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -51,6 +50,10 @@ public class CardInfoDao {
         if(bean.getName() != null){
             criteria.andNameLike("%" +bean.getName()+ "%");
         }
+        String code = bean.getCode();
+        if(null != code && !code.isEmpty()){
+            criteria.andCodeEqualTo(code);
+        }
         example.setOrderByClause("id DESC");
 
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
@@ -70,5 +73,24 @@ public class CardInfoDao {
         }
 
         return mapper.selectByExample(example);
+    }
+
+    public CardInfo
+    findByCardCode(String code){
+        if(null == code || code.isEmpty()){
+            return null;
+        }
+
+        CardInfoExample example = new CardInfoExample();
+        CardInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andCodeEqualTo(code);
+
+        List<CardInfo> list = mapper.selectByExample(example);
+        if(null == list || 0 == list.size()){
+            return null;
+        }else{
+            return list.get(0);
+        }
     }
 }

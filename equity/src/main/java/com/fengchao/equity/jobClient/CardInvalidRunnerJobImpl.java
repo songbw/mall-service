@@ -20,12 +20,12 @@ public class CardInvalidRunnerJobImpl implements JobRunner {
 
             // TODO 业务逻辑
             LOGGER.info("我要执行用户礼券卡失效操作：" + jobContext);
-            String id = jobContext.getJob().getParam("cardId") ;
+            String cardCode = jobContext.getJob().getParam("cardCode") ;
             CardTicketService cardTicketService = BeanContext.getApplicationContext().getBean(CardTicketService.class);
-            int cardId = Integer.parseInt(id) ;
-            CardTicket ticket = cardTicketService.findById(cardId);
+
+            CardTicket ticket = cardTicketService.findByCardCode(cardCode);
             if (ticket != null) {
-                cardTicketService.invalid(cardId) ;
+                cardTicketService.invalid(ticket.getId()) ;
                 // 会发送到 LTS (JobTracker上)
                 bizLogger.info("用户礼券卡失效成功");
             }

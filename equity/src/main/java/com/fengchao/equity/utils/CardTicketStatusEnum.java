@@ -1,5 +1,6 @@
 package com.fengchao.equity.utils;
 
+import com.fengchao.equity.exception.EquityException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,10 @@ public enum CardTicketStatusEnum {
     CardTicketStatusEnum(int code, String msg) {
         this.code = code;
         this.msg = msg;
+    }
+
+    public static boolean canNotTimeout(int code){
+        return !(ACTIVE.getCode() == code || BOUND.getCode()==code || EXCHANGED.getCode() == code);
     }
 
     /*
@@ -60,4 +65,21 @@ public enum CardTicketStatusEnum {
         return "";
     }
 
+    public static
+    Integer normalizeCode(Integer code){
+        boolean isRightValue = false;
+        if (null != code) {
+            for (CardTicketStatusEnum item : CardTicketStatusEnum.values()) {
+                if (item.getCode() == code) {
+                    isRightValue = true;
+                    break;
+                }
+            }
+        }
+        if (isRightValue){
+            return code;
+        }else{
+            throw new EquityException(MyErrorEnum.PARAM_TICKET_STATUS_WRONG);
+        }
+    }
 }

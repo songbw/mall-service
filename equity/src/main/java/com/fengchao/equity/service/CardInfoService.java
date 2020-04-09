@@ -8,7 +8,7 @@ import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
 
 public interface CardInfoService {
-    int createCardInfo(CardInfoBean bean);
+    CardInfo createCardInfo(CardInfoBean bean);
 
     int updateCardInfo(CardInfo bean);
 

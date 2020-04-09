@@ -3,10 +3,7 @@ package com.fengchao.equity.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.equity.bean.CardInfoBean;
-import com.fengchao.equity.bean.CardTicketBean;
-import com.fengchao.equity.bean.ExportCardBean;
-import com.fengchao.equity.bean.OperaResult;
+import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.feign.OrderService;
 import com.fengchao.equity.model.CardAndCoupon;
@@ -63,10 +60,46 @@ public class AdminCardInfoController {
     }
 
     @GetMapping("find")
-    public OperaResult findCardInfo(CardInfoBean bean, OperaResult result){
+    public OperaResult findCardInfo(CardInfoBean bean){
         PageableData<CardInfoX> coupon = service.findCardInfo(bean);
+        OperaResult result = new OperaResult();
         result.getData().put("result", coupon);
         return result;
+    }
+
+    @GetMapping("tickets")
+    public OperaResponse<PageableData<CardTicket>>
+    findCardTickets(
+            @RequestParam(required=false) Integer pageNo,
+            @RequestParam(required=false) Integer pageSize,
+            @RequestParam(required=false) String cardCode,
+            @RequestParam(required=false) String welfareOrderNo,
+            @RequestParam(required=false) String corporationCode,
+            @RequestParam(required=false) Integer status,
+            @RequestParam(required=false) String activateStartTime,
+            @RequestParam(required=false) String activateEndTime,
+            @RequestParam(required=false) String consumeStartTime,
+            @RequestParam(required=false) String consumeEndTime) {
+
+        CardTicketBean bean = new CardTicketBean();
+        if(null != pageNo){
+            bean.setPageNo(pageNo);
+        }
+        if(null != pageSize){
+            bean.setPageSize(pageSize);
+        }
+        if(null != welfareOrderNo && !welfareOrderNo.isEmpty()) {
+            bean.setWelfareOrderNo(welfareOrderNo);
+        }
+        if (null != corporationCode && !corporationCode.isEmpty()) {
+            bean.setCorporationCode(corporationCode);
+        }
+        if (null != cardCode && !cardCode.isEmpty()){
+            bean.setCardInfoCode(cardCode);
+        }
+        PageableData<CardTicket> ticketPage = ticketService.findTickets(activateStartTime,activateEndTime,consumeStartTime,consumeEndTime,status,bean);
+
+        return new OperaResponse<>(ticketPage);
     }
 
 //    @PostMapping("search")
@@ -114,6 +147,12 @@ public class AdminCardInfoController {
         return result;
     }
 
+    @PostMapping("TicketsByOrder")
+    public OperaResult createActiveCardTicket(@RequestBody CardTicketBean bean, OperaResult result){
+        log.info("订单产生礼品券参数 入参:{}", JSONUtil.toJsonString(bean));
+        result.getData().put("result",ticketService.batchCreateActiveCardTickets(bean));
+        return result;
+    }
 
     @GetMapping("export")
     public void  exportCardTicket(ExportCardBean bean, HttpServletResponse response) throws Exception {

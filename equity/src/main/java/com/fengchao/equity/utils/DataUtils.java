@@ -1,5 +1,8 @@
 package com.fengchao.equity.utils;
 
+import com.fengchao.equity.exception.EquityException;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.DecimalFormat;
@@ -11,8 +14,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Slf4j
 public class DataUtils {
+
+    private static final String DATE_TIME_PATTERN = "^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
 
     public static boolean isValidDate(String s){
         try {
@@ -108,6 +116,35 @@ public class DataUtils {
         String dateTime = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         return dateTime;
+    }
+
+    public static Date String2Date(String stringDate) {
+        if (null == stringDate) {
+            return null;
+        }
+        if (stringDate.isEmpty()) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile(DATE_TIME_PATTERN);
+        Matcher matcher = pattern.matcher(stringDate);
+        if (!matcher.matches()){
+            throw new EquityException(MyErrorEnum.PARAM_DATE_TIME_STRING_WRONG);
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date returnDate;
+        try {
+            Date tmpDate = sdf.parse(stringDate);
+            returnDate = tmpDate;
+            //System.out.println("== tmpDate: " + tmpDate + " resultDate: " + returnDate);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(),ex);
+            return null;
+        }
+
+        return returnDate;
+
     }
 
     public static void main(String[] args) {

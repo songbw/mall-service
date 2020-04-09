@@ -126,13 +126,13 @@ public class JobClientUtils {
 
     /**
      * 礼券卡失效任务
-     * @param id
+     * @param cardCode
      */
-    public static void cardInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
+    public static void cardInvalidTrigger(Environment environment, JobClient jobClient, String cardCode, Date triggerTime) {
         Job job = new Job();
-        job.setTaskId("card_invalid_trigger_" + id);
+        job.setTaskId("card_invalid_trigger_" + cardCode);
         job.setParam("type", "cardInvalid");
-        job.setParam("cardId", id + "");
+        job.setParam("cardCode", cardCode + "");
         job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新

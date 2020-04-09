@@ -1,15 +1,11 @@
 package com.fengchao.equity.dao;
 
-import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.CouponUseInfoBean;
 import com.fengchao.equity.mapper.CouponUseInfoMapper;
-import com.fengchao.equity.mapper.CouponUseInfoXMapper;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoExample;
-import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.utils.CouponUseStatusEnum;
 import com.fengchao.equity.utils.DataUtils;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -29,20 +25,17 @@ import java.util.List;
 public class CouponUseInfoDao {
 
     private CouponUseInfoMapper couponUseInfoMapper;
-    private CouponUseInfoXMapper couponUseInfoXMapper;
 
     @Autowired
-    public CouponUseInfoDao(CouponUseInfoMapper couponUseInfoMapper,
-                            CouponUseInfoXMapper couponUseInfoXMapper) {
+    public CouponUseInfoDao(CouponUseInfoMapper couponUseInfoMapper) {
         this.couponUseInfoMapper = couponUseInfoMapper;
-        this.couponUseInfoXMapper = couponUseInfoXMapper;
     }
 
     /**
      * 根据id集合查询coupon_use_info列表
      *
-     * @param idList
-     * @return
+     * @param idList id集合
+     * @return list
      */
     public List<CouponUseInfo> selectByIdList(List<Integer> idList) {
         CouponUseInfoExample couponUseInfoExample = new CouponUseInfoExample();
@@ -143,8 +136,22 @@ public class CouponUseInfoDao {
         return couponUseInfoMapper.updateByPrimaryKeySelective(couponUseInfo);
     }
 
-    public CouponUseInfoX findByUserCouponCode(String userCouponCode) {
-        return couponUseInfoXMapper.selectByUserCode(userCouponCode);
+    public CouponUseInfo findByUserCouponCode(String userCouponCode) {
+
+        CouponUseInfoExample example = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteFlagEqualTo(0);
+        if (null != userCouponCode && !userCouponCode.isEmpty()){
+            criteria.andUserCouponCodeLike(userCouponCode);
+        }
+
+        List<CouponUseInfo> list = couponUseInfoMapper.selectByExample(example);
+        if(null == list || 0 == list.size()){
+            return null;
+        }else{
+            return list.get(0);
+        }
+
     }
 
     public List<CouponUseInfo> selectByCouponIdList(List<Integer> idList) {
@@ -175,5 +182,44 @@ public class CouponUseInfoDao {
         List<CouponUseInfo> couponUseInfoList = couponUseInfoMapper.selectByExample(example);
 
         return couponUseInfoList;
+    }
+
+    public List<CouponUseInfo>
+    selectCollect(CouponUseInfoBean couponUseInfoBean){
+        if (null == couponUseInfoBean){
+            log.error("CouponUseInfo: selectCollect couponUseInfoBean is null");
+            return new ArrayList<>();
+        }
+        if(null == couponUseInfoBean.getCouponId() || null == couponUseInfoBean.getUserOpenId()){
+            log.error("CouponUseInfo: selectCollect couponId or userOpenId is null");
+            return new ArrayList<>();
+        }
+        CouponUseInfoExample example = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteFlagEqualTo(0);
+        criteria.andCouponIdEqualTo(couponUseInfoBean.getCouponId());
+        criteria.andUserOpenIdEqualTo(couponUseInfoBean.getUserOpenId());
+
+        return couponUseInfoMapper.selectByExample(example);
+
+    }
+
+    public int
+    selectCollectCount(Integer couponId, String userOpenId, String appId){
+
+        if(null == couponId || null == userOpenId){
+            log.error("CouponUseInfo: selectCollectCount couponId or userOpenId is null");
+            return 0;
+        }
+        CouponUseInfoExample example = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteFlagEqualTo(0);
+        criteria.andCouponIdEqualTo(couponId);
+        criteria.andUserOpenIdEqualTo(userOpenId);
+        if(null != appId && !appId.isEmpty()){
+            criteria.andAppIdEqualTo(appId);
+        }
+
+        return (int)couponUseInfoMapper.countByExample(example);
     }
 }

@@ -3,6 +3,7 @@ package com.fengchao.equity.service;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.Coupon;
+import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoX;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public interface CouponService {
 
     CouponBean selectSkuByCouponId(CouponUseInfoBean bean);
 
-    CouponUseInfoX consumeCoupon(CouponUseInfoBean bean);
+    CouponUseInfo consumeCoupon(CouponUseInfoBean bean);
 
     List<CouponBean> selectCouponByMpu(AoyiProdBean bean);
 

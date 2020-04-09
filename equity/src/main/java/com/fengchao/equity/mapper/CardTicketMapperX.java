@@ -12,35 +12,11 @@ import java.util.List;
 @Mapper
 @Component
 public interface CardTicketMapperX {
-    long countByExample(CardTicketExample example);
-
-    int deleteByExample(CardTicketExample example);
-
-    int deleteByPrimaryKey(Integer id);
-
-    int insert(CardTicket record);
-
-    int insertSelective(CardTicket record);
-
-    List<CardTicketX> selectByExample(CardTicketExample example);
-
-    CardTicketX selectByPrimaryKey(Integer id);
-
-    int updateByExampleSelective(@Param("record") CardTicketX record, @Param("example") CardTicketExample example);
-
-    int updateByExample(@Param("record") CardTicketX record, @Param("example") CardTicketExample example);
-
-    int updateByPrimaryKeySelective(CardTicketX record);
-
-    int updateByPrimaryKey(CardTicketX record);
 
     int inserBatch(List<CardTicket> tickets);
 
     int activatesCardTicket(List<CardTicket> beans);
 
-    CardTicketX selectByCard(String card);
+    int batchInsertActiveTickets(List<CardTicket> tickets);
 
-    CardTicketX seleteCardTicketByCard(@Param("openId") String openId, @Param("card") String card);
-
-    CardTicketX selectByUseCouponCode(String userCouponCode);
 }

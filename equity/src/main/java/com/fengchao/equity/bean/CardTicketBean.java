@@ -7,6 +7,9 @@ import lombok.Setter;
 @Getter
 public class CardTicketBean {
 
+    private Integer pageNo = 1;
+    private Integer pageSize = 10;
+
     private int cardId;
     private int num = 1;
     private String remark;
@@ -16,5 +19,9 @@ public class CardTicketBean {
     private Integer couponId;
     private Integer id;
     private String appId;
+    private String corporationCode;
+    private String welfareOrderNo;
+    private String cardInfoCode;
+    private String employeeCode;
 
 }

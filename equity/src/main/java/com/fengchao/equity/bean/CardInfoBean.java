@@ -39,4 +39,5 @@ public class CardInfoBean {
     private String corporationCode;
 
     private String code;
+
 }

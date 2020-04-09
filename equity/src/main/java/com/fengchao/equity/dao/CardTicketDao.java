@@ -8,6 +8,7 @@ import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketExample;
 import com.fengchao.equity.model.CardTicketX;
 import com.fengchao.equity.utils.CardTicketStatusEnum;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +36,30 @@ public class CardTicketDao {
         return mapper.selectByExample(example);
     }
 
+    public CardTicket findbyCardCode(String cardCode) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andCardEqualTo(cardCode);
+        criteria.andIsDeleteEqualTo((short) 1);
+
+        List<CardTicket> list = mapper.selectByExample(example);
+        if(null == list || 0 == list.size()){
+            return null;
+        }else{
+            return list.get(0);
+        }
+    }
+
     public int insertBatch(List<CardTicket> tickets) {
         return mapperX.inserBatch(tickets);
     }
 
     public int activatesCardTicket(List<CardTicket> beans) {
         return mapperX.activatesCardTicket(beans);
+    }
+
+    public int batchInsertActiveCardTickets(List<CardTicket> beans) {
+        return mapperX.batchInsertActiveTickets(beans);
     }
 
     public List<CardTicket> selectCardTicketByCard(CardTicketBean bean) {
@@ -57,13 +76,13 @@ public class CardTicketDao {
         return mapper.updateByPrimaryKeySelective(ticket);
     }
 
-    public List<CardTicketX> seleteCardTicketByOpenId(String openId) {
+    public List<CardTicket> selectCardTicketByOpenId(String openId) {
         CardTicketExample example = new CardTicketExample();
         CardTicketExample.Criteria criteria = example.createCriteria();
         criteria.andIsDeleteEqualTo((short) 1);
         criteria.andOpenIdEqualTo(openId);
 
-        return mapperX.selectByExample(example);
+        return mapper.selectByExample(example);
     }
 
     public CardTicket findById(int id) {
@@ -92,12 +111,77 @@ public class CardTicketDao {
         return  new PageInfo<>(tickets);
     }
 
-    public CardTicketX findbyCard(String card) {
-        return mapperX.selectByCard(card);
+    public PageInfo<CardTicket> getTicketPages(CardTicketBean bean,
+                                               Integer status,Date activateStart,Date activateEnd,
+                                               Date consumeStart, Date consumeEnd) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+
+        criteria.andIsDeleteEqualTo((short) 1);
+        example.setOrderByClause("update_time DESC");
+
+        if(null != status){
+            criteria.andStatusEqualTo((short)(int)status);
+        }
+        if (null != activateStart){
+            criteria.andActivateTimeGreaterThanOrEqualTo(activateStart);
+        }
+        if (null != activateEnd){
+            criteria.andActivateTimeLessThanOrEqualTo(activateEnd);
+        }
+        if (null != consumeStart){
+            criteria.andConsumedTimeGreaterThanOrEqualTo(consumeStart);
+        }
+        if (null != consumeEnd){
+            criteria.andConsumedTimeLessThanOrEqualTo(consumeEnd);
+        }
+
+        if(null != bean.getWelfareOrderNo() && !bean.getWelfareOrderNo().isEmpty()){
+            criteria.andWelfareOrderNoEqualTo(bean.getWelfareOrderNo());
+        }
+        if(null != bean.getCorporationCode() && !bean.getCorporationCode().isEmpty()){
+            criteria.andCorporationCodeEqualTo(bean.getCorporationCode());
+        }
+        if(null != bean.getEmployeeCode() && !bean.getEmployeeCode().isEmpty()){
+            criteria.andEmployeeCodeEqualTo(bean.getEmployeeCode());
+        }
+        if(null != bean.getCardInfoCode() && !bean.getCardInfoCode().isEmpty()){
+            criteria.andCardInfoCodeEqualTo(bean.getCardInfoCode());
+        }
+        PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
+        List<CardTicket> tickets = mapper.selectByExample(example);
+        return new PageInfo<>(tickets);
     }
 
-    public CardTicketX seleteCardTicketByCard(String openId, String card) {
-        return mapperX.seleteCardTicketByCard(openId, card);
+    public CardTicket findByCard(String card) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andCardEqualTo(card);
+
+        List<CardTicket> list = mapper.selectByExample(example);
+        if(null == list || 0 == list.size()){
+            return null;
+        }else{
+            return list.get(0);
+        }
+
+    }
+
+    public CardTicket selectCardTicketByCardOpenId(String openId, String card) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andOpenIdEqualTo(openId);
+        criteria.andCardEqualTo(card);
+
+        List<CardTicket> list = mapper.selectByExample(example);
+        if(null != list && 0 < list.size()){
+            return list.get(0);
+        }else{
+            return null;
+        }
+
     }
 
     public int consumeCard(String userCouponCode) {
@@ -124,8 +208,19 @@ public class CardTicketDao {
         return mapper.updateByExampleSelective(ticket, example);
     }
 
-    public CardTicketX findByuseCouponCode(String userCouponCode) {
-        return mapperX.selectByUseCouponCode(userCouponCode);
+    public CardTicket findByUseCouponCode(String userCouponCode) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andUserCouponCodeEqualTo(userCouponCode);
+
+        List<CardTicket> list = mapper.selectByExample(example);
+        if(null == list || 0 == list.size()){
+            return null;
+        }else{
+            return list.get(0);
+        }
+
     }
 
     public List<CardTicket> findActivateTicket(List<String> cards) {
@@ -133,7 +228,7 @@ public class CardTicketDao {
         CardTicketExample.Criteria criteria = example.createCriteria();
         criteria.andIsDeleteEqualTo((short) 1);
         criteria.andCardIn(cards);
-        criteria.andStatusNotEqualTo((short) 1);
+        criteria.andStatusNotEqualTo((short)CardTicketStatusEnum.CREATED.getCode());
 
         return mapper.selectByExample(example);
     }
@@ -152,7 +247,7 @@ public class CardTicketDao {
         criteria.andUserCouponCodeEqualTo(userCouponCode);
 
         CardTicket ticket = new CardTicket();
-        ticket.setStatus((short) 4);
+        ticket.setStatus((short)CardTicketStatusEnum.EXCHANGED.getCode());
         return mapper.updateByExampleSelective(ticket, example);
     }
 }

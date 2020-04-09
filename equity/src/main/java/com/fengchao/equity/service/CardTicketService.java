@@ -2,6 +2,7 @@ package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.bean.ExportCardBean;
+import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketX;
@@ -15,6 +16,9 @@ public interface CardTicketService {
 
     List<String> activatesCardTicket(List<CardTicket> beans);
 
+    List<String>
+    batchCreateActiveCardTickets(CardTicketBean bean);
+
     List<CardInfoX> exportCardTicket(ExportCardBean bean);
 
     int verifyCardTicket(CardTicketBean bean) throws Exception;
@@ -24,6 +28,8 @@ public interface CardTicketService {
     List<CardTicketX> getCardTicket(String openId);
 
     CardTicket findById(int id);
+
+    CardTicket findByCardCode(String cardCode);
 
     int invalid(int id);
 
@@ -38,4 +44,8 @@ public interface CardTicketService {
 
     List<CouponUseInfo>
     selectByUserCouponCodeList(List<String> codeList);
+
+    PageableData<CardTicket> findTickets(String activateStartTime, String activateEndTime,
+                                         String consumeStartTime, String consumeEndTime,
+                                         Integer status,CardTicketBean bean);
 }

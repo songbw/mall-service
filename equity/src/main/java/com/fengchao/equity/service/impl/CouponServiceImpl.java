@@ -9,7 +9,9 @@ import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.CardTicketDao;
 import com.fengchao.equity.dao.CouponDao;
+import com.fengchao.equity.dao.CouponUseInfoDao;
 import com.fengchao.equity.dao.PromotionScheduleDao;
+import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.feign.ProdService;
 import com.fengchao.equity.feign.SSOService;
 import com.fengchao.equity.mapper.*;
@@ -40,6 +42,10 @@ public class CouponServiceImpl implements CouponService {
     private CouponMapper mapper;
     @Autowired
     private CouponUseInfoXMapper useInfoXMapper;
+
+    @Autowired
+    private CouponUseInfoDao useInfoDao;
+
     @Autowired
     private CouponUseInfoMapper couponUseInfoMapper;
     @Autowired
@@ -65,18 +71,19 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public int createCoupon(CouponBean bean) {
-        CouponX couponx = beanToCoupon(bean);
-        couponx.setCreateDate(new Date());
+        Coupon coupon = beanToCoupon(bean);
+        coupon.setCreateDate(new Date());
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
-        if(couponx.getCode() == null || "".equals(couponx.getCode())){
-            couponx.setCode(bean.getAppId() + uuid);
+        if(coupon.getCode() == null || "".equals(coupon.getCode())){
+            coupon.setCode(bean.getAppId() + uuid);
         }
-        int num = XMapper.insertSelective(couponx);
-        return couponx.getId();
+        mapper.insertSelective(coupon);
+        return coupon.getId();
     }
 
     @Override
     public PageBean findCoupon(Integer offset, Integer limit, String appId) {
+        /*
         PageBean pageBean = new PageBean();
         int total = 0;
         int pageNo = PageBean.getOffset(offset, limit);
@@ -91,57 +98,80 @@ public class CouponServiceImpl implements CouponService {
         }
         pageBean = PageBean.build(pageBean, coupons, total, offset, limit);
         return pageBean;
+        */
+
+        int pageNo = (null == offset || 1 > offset)?1:offset;
+        Integer pageSize = (null == limit || 1 > limit)?10:limit;
+
+        CouponExample example = new CouponExample();
+        CouponExample.Criteria criteria = example.createCriteria();
+        criteria.andCouponTypeNotIn(CouponTypeEnum.getWelfareTypeCode());
+
+        if (null != appId && !appId.isEmpty()){
+            criteria.andAppIdEqualTo(appId);
+        }
+        example.setOrderByClause("create_date DESC");
+
+        return getPage(example,pageNo,pageSize);
+
     }
 
     @Override
     public int updateCoupon(CouponBean bean) {
-        CouponX coupon = beanToCoupon(bean);
+        Coupon coupon = beanToCoupon(bean);
         coupon.setId(bean.getId());
-        CouponX couponById;
-        if(bean.getStatus() != null && bean.getStatus() == 2){
-            couponById = XMapper.selectByPrimaryKey(bean.getId());
+        Coupon couponById = mapper.selectByPrimaryKey(bean.getId());
+        if (null == couponById){
+            throw new EquityException(MyErrorEnum.COUPON_NOT_FOUND);
+        }
+        if(null != bean.getStatus() && CouponStatusEnum.RELEASED.getCode().equals(bean.getStatus()) &&
+           CouponTypeEnum.needTrigger(couponById.getCouponType())
+           ){
+            if (null == couponById.getReleaseStartDate() || null == couponById.getReleaseEndDate()){
+                throw new EquityException(MyErrorEnum.COUPON_ABNORMAL_RELEASE_DATE_BLANK);
+            }
             Date now = new Date();
             if(couponById.getReleaseStartDate().after(now)){
 
                 coupon.setStatus(CouponStatusEnum.READY_GO.getCode());
                 JobClientUtils.couponEffectiveTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseStartDate());
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                if (null != coupon.getCouponType() &&
-                        !CouponTypeEnum.GIFT_PACKAGE.equals(coupon.getCouponType())) {
+                if (null != coupon.getCouponType() &&  CouponTypeEnum.needTrigger(coupon.getCouponType())
+                    ) {
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }else if(couponById.getReleaseStartDate().before(now)  && couponById.getReleaseEndDate().after(now)){
 
                 coupon.setStatus(CouponStatusEnum.UNDERGOING.getCode());
                 JobClientUtils.couponEndTrigger(environment, jobClient, coupon.getId(), couponById.getReleaseEndDate());
-                if (null != coupon.getCouponType() &&
-                        !CouponTypeEnum.GIFT_PACKAGE.equals(coupon.getCouponType())) {
+                if (null != coupon.getCouponType() && CouponTypeEnum.needTrigger(coupon.getCouponType())
+                   ) {
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }else if(couponById.getReleaseEndDate().before(now)){
 
                 coupon.setStatus(CouponStatusEnum.INVALID.getCode());
-                if (null != coupon.getCouponType() &&
-                        !CouponTypeEnum.GIFT_PACKAGE.equals(coupon.getCouponType())) {
+                if (null != coupon.getCouponType() && CouponTypeEnum.needTrigger(coupon.getCouponType())
+                    ) {
                     JobClientUtils.couponInvalidTrigger(environment, jobClient, coupon.getId(), couponById.getEffectiveEndDate());
                 }
             }
         }
-        return XMapper.updateByPrimaryKeySelective(coupon);
+        return mapper.updateByPrimaryKeySelective(coupon);
     }
 
     @Override
     public int deleteCoupon(Integer id) {
-        CouponX couponX = XMapper.selectByPrimaryKey(id);
-        if(couponX.getStatus() != 1){
+        Coupon coupon = mapper.selectByPrimaryKey(id);
+        if(coupon.getStatus() != 1){
             return 2;
         }
-        return XMapper.deleteByPrimaryKey(id);
+        return mapper.deleteByPrimaryKey(id);
     }
 
     @Override
     public CouponBean findByCouponId(Integer id) {
-        CouponX coupon = XMapper.selectByPrimaryKey(id);
+        Coupon coupon = mapper.selectByPrimaryKey(id);
         CouponBean couponBean = couponToBean(coupon);
         return couponBean;
     }
@@ -169,9 +199,10 @@ public class CouponServiceImpl implements CouponService {
         if (total > 0) {
             List<CouponX> coupons = XMapper.selectActiveCouponLimit(map);
             coupons.forEach(coupon -> {
-                int num = useInfoXMapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), bean.getAppId());
+                //int num = useInfoXMapper.selectCollectCount(coupon.getId(), bean.getUserOpenId(), bean.getAppId());
+                int num = useInfoDao.selectCollectCount(coupon.getId(), bean.getUserOpenId(), bean.getAppId());
                 coupon.setUserCollectNum(num);
-                couponBeans.add(couponToBean(coupon));
+                couponBeans.add(couponXToBean(coupon));
             });
         }
         pageBean = PageBean.build(pageBean, couponBeans, total, bean.getOffset(), bean.getLimit());
@@ -204,7 +235,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponBean selectSkuByCouponId(CouponUseInfoBean bean) {
         QueryProdBean queryProdBean = new QueryProdBean();
-        CouponX coupon = XMapper.selectByPrimaryKey(bean.getId());
+        Coupon coupon = mapper.selectByPrimaryKey(bean.getId());
         if(coupon == null){
             return null;
         }
@@ -258,9 +289,10 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponUseInfoX consumeCoupon(CouponUseInfoBean bean) {
+    public CouponUseInfo consumeCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX useInfo = new CouponUseInfoX();
-        CouponUseInfoX couponUseInfo = useInfoXMapper.selectByUserCode(bean.getUserCouponCode());
+        //CouponUseInfoX couponUseInfo = useInfoXMapper.selectByUserCode(bean.getUserCouponCode());
+        CouponUseInfo couponUseInfo = useInfoDao.findByUserCouponCode(bean.getUserCouponCode());
         if(couponUseInfo == null){
             return null;
         }else if (couponUseInfo.getStatus() == CouponUseStatusEnum.USED.getCode()){
@@ -282,7 +314,7 @@ public class CouponServiceImpl implements CouponService {
 
         log.info("首次核销 {}",JSON.toJSONString(couponUseInfo));
         Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
-        if(null != coupon.getCouponType() && CouponTypeEnum.GIFT_PACKAGE.getCode().equals(coupon.getCouponType())){
+        if(CouponTypeEnum.isWelfareTicket(coupon.getCouponType())){
             ticketDao.consumeCard(bean.getUserCouponCode());
         }
         useInfo.setId(bean.getId());
@@ -303,21 +335,35 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public List<CouponBean> selectCouponByMpu(AoyiProdBean bean) {
         List<CouponBean> couponBeans =  new ArrayList<>();
+
         XMapper.selectCouponByMpu(bean).forEach(coupon -> {
-            couponBeans.add(couponToBean(coupon));
+            couponBeans.add(couponXToBean(coupon));
         });
         return couponBeans;
     }
 
     @Override
     public int effective(int couponId) {
-        return XMapper.couponEffective(couponId);
+        return updateCouponStatus(couponId,CouponStatusEnum.UNDERGOING.getCode());
     }
 
     @Override
     public int end(int couponId) {
-        int num = XMapper.couponEnd(couponId);
-        return num;
+        return updateCouponStatus(couponId,CouponStatusEnum.INVALID.getCode());
+    }
+
+    private int
+    updateCouponStatus(int id, Integer status){
+        Coupon record = mapper.selectByPrimaryKey(id);
+        if (null == record){
+            throw new EquityException(MyErrorEnum.COUPON_ID_NOT_FOUND);
+        }
+        //TODO 状态转换逻辑
+        Coupon updateCoupon = new Coupon();
+        updateCoupon.setId(id);
+        updateCoupon.setStatus(status);
+        return mapper.updateByPrimaryKeySelective(updateCoupon);
+
     }
 
     private
@@ -419,121 +465,95 @@ public class CouponServiceImpl implements CouponService {
         if (null != releaseEndDate){
             criteria.andReleaseEndDateEqualTo(releaseEndDate);
         }
+        example.setOrderByClause("create_date DESC");
 
-        Page<Coupon> pages;
-        List<Coupon> list;
-
-        try{
-            pages = PageHelper.startPage(pageNo, pageSize, true);
-            list = mapper.selectByExample(example);
-            List<CouponResultBean> coupons = new ArrayList<>();
-            for(Coupon coupon: list){
-                CouponResultBean b = new CouponResultBean();
-                BeanUtils.copyProperties(coupon,b);
-                coupons.add(b);
-            }
-
-            pageBean = PageBean.build(pageBean, coupons, (int)pages.getTotal(), pageNo, pageSize);
-
-        }catch (Exception e) {
-            log.error(e.getMessage(),e);
-            pageBean = PageBean.build(pageBean, null, 0, bean.getOffset(), pageSize);
-        }
-
-        return pageBean;
+        return getPage(example,pageNo,pageSize);
     }
 
-    public PageBean searchXCoupon(CouponSearchBean bean) {
-        PageBean pageBean = new PageBean();
-        int total = 0;
-        int pageNo = PageBean.getOffset(bean.getOffset(), bean.getLimit());
-        HashMap map = new HashMap();
-        map.put("pageNo", pageNo);
-        map.put("pageSize",bean.getLimit());
-        map.put("name",bean.getName());
-        map.put("status",bean.getStatus());
-        map.put("releaseTotal",bean.getReleaseTotal());
-        map.put("releaseStartDate",bean.getReleaseStartDate());
-        map.put("releaseEndDate",bean.getReleaseEndDate());
-        map.put("couponType", bean.getCouponType());
-        map.put("scenarioType",bean.getScenarioType());
-        map.put("appId",bean.getAppId());
-        List<CouponResultBean> coupons = new ArrayList<>();
-        total = XMapper.selectCount(map);
-        if (total > 0) {
-            coupons = XMapper.selectLimit(map);
+    private CouponBean couponToBean(Coupon coupon){
+
+        CouponBean couponBean = new CouponBean();
+
+        couponBean.setId(coupon.getId());
+        couponBean.setName(coupon.getName());
+        couponBean.setSupplierMerchantId(coupon.getSupplierMerchantId());
+        couponBean.setSupplierMerchantName(coupon.getSupplierMerchantName());
+        couponBean.setReleaseTotal(coupon.getReleaseTotal());
+        couponBean.setReleaseNum(coupon.getReleaseNum());
+        couponBean.setReleaseStartDate(coupon.getReleaseStartDate());
+        couponBean.setReleaseEndDate(coupon.getReleaseEndDate());
+        couponBean.setStatus(coupon.getStatus());
+        couponBean.setEffectiveStartDate(coupon.getEffectiveStartDate());
+        couponBean.setEffectiveEndDate(coupon.getEffectiveEndDate());
+        couponBean.setDescription(coupon.getDescription());
+        couponBean.setEffectiveDays(coupon.getEffectiveDays());
+        if(coupon.getExcludeDates()!= null && !"".equals(coupon.getExcludeDates())) {
+            couponBean.setExcludeDates(JSONArray.parseArray(coupon.getExcludeDates()));
         }
-        pageBean = PageBean.build(pageBean, coupons, total, bean.getOffset(), bean.getLimit());
-        return pageBean;
+        couponBean.setUrl(coupon.getUrl());
+        couponBean.setCreateDate(coupon.getCreateDate());
+        couponBean.setCategory(coupon.getCategory());
+        if(coupon.getTags() != null && !"".equals(coupon.getTags())){
+            String[] tagsStr = coupon.getTags().split(", ");
+            int[] tagsNum = new int[tagsStr.length];
+            for (int i = 0; i < tagsStr.length; i++) {
+                tagsNum[i] = Integer.parseInt(tagsStr[i]);
+            }
+            couponBean.setTags(tagsNum);
+        }
+        couponBean.setImageUrl(coupon.getImageUrl());
+        couponBean.setAppId(coupon.getAppId());
+        Rules rules = new Rules();
+        Scenario scenario = new Scenario();
+        rules.setScenario(scenario);
+        Collect collect = new Collect();
+        rules.setCollect(collect);
+        Customer customer = new Customer();
+        rules.setCustomer(customer);
+        couponBean.setRules(rules);
+        if(couponBean.getRules() != null){
+            couponBean.getRules().setCode(coupon.getCode());
+            couponBean.getRules().setRulesDescription(coupon.getRulesDescription());
+            couponBean.getRules().setPerLimited(coupon.getPerLimited());
+            if(coupon.getScopes() != null){
+                couponBean.getRules().setScopes(coupon.getScopes().split(","));
+            }
+            couponBean.getRules().getScenario().setType(coupon.getScenarioType());
+            if(coupon.getCouponMpus() != null){
+                couponBean.getRules().getScenario().setCouponMpus(coupon.getCouponMpus().split(","));
+            }
+            if(coupon.getExcludeMpus() != null){
+                couponBean.getRules().getScenario().setExcludeMpus(coupon.getExcludeMpus().split(","));
+            }
+            if(coupon.getCouponSkus() != null){
+                couponBean.getRules().getScenario().setCouponSkus(JSONArray.parseArray(coupon.getCouponSkus()));
+            }
+            if(coupon.getExcludeSkus() != null){
+                couponBean.getRules().getScenario().setExcludeSkus(JSONArray.parseArray(coupon.getExcludeSkus()));
+            }
+            if(coupon.getCategories() != null){
+                couponBean.getRules().getScenario().setCategories(coupon.getCategories().split(","));
+            }
+            if(coupon.getBrands() != null){
+                couponBean.getRules().getScenario().setBrands(coupon.getBrands().split(","));
+            }
+            couponBean.getRules().getCollect().setType(coupon.getCollectType());
+            if(coupon.getPoints() != null){
+                couponBean.getRules().getCollect().setPoints(coupon.getPoints());
+            }
+            couponBean.getRules().getCustomer().setType(coupon.getCustomerType());
+            if(coupon.getUsers() != null){
+                couponBean.getRules().getCustomer().setUsers(coupon.getUsers().split(","));
+            }
+            if(coupon.getCouponRules()!= null && !"".equals(coupon.getCouponRules())) {
+                couponBean.getRules().setCouponRules(JSONArray.parseObject(coupon.getCouponRules()));
+            }
+        }
+
+        return couponBean;
     }
 
-    private CouponX beanToCoupon(CouponBean bean){
-
-        CouponX coupon = new CouponX();
-
-        coupon.setName(bean.getName());
-        coupon.setSupplierMerchantId(bean.getSupplierMerchantId());
-        coupon.setSupplierMerchantName(bean.getSupplierMerchantName());
-        coupon.setReleaseTotal(bean.getReleaseTotal());
-        coupon.setReleaseNum(bean.getReleaseNum());
-        coupon.setReleaseStartDate(bean.getReleaseStartDate());
-        coupon.setReleaseEndDate(bean.getReleaseEndDate());
-        coupon.setStatus(bean.getStatus());
-        coupon.setEffectiveStartDate(bean.getEffectiveStartDate());
-        coupon.setEffectiveEndDate(bean.getEffectiveEndDate());
-        coupon.setDescription(bean.getDescription());
-        coupon.setAppId(bean.getAppId());
-        coupon.setEffectiveDays(bean.getEffectiveDays());
-        if(bean.getExcludeDates()!= null && !"".equals(bean.getExcludeDates())){
-            List<Object> excludeDates = bean.getExcludeDates();
-            JSONArray json = new JSONArray();
-            for(Object object : excludeDates){
-                json.add(object);
-            }
-            coupon.setExcludeDates(json.toJSONString());
-        }
-        coupon.setUrl(bean.getUrl());
-        coupon.setCategory(bean.getCategory());
-        if(bean.getTags() != null){
-            String tagStr = Arrays.toString(bean.getTags());
-            coupon.setTags(tagStr.substring(1, tagStr.length()-1));
-        }
-        coupon.setImageUrl(bean.getImageUrl());
-        if(bean.getRules() != null){
-            if(bean.getRules().getCode() != null && !"".equals(bean.getRules().getCode())){
-                coupon.setCode(bean.getRules().getCode());
-            }
-            coupon.setRulesDescription(bean.getRules().getRulesDescription());
-            coupon.setPerLimited(bean.getRules().getPerLimited());
-            coupon.setScopes(StringUtils.join(bean.getRules().getScopes(),","));
-            if(bean.getRules().getScenario() != null){
-                coupon.setScenarioType(bean.getRules().getScenario().getType());
-                coupon.setCouponMpus(StringUtils.join(bean.getRules().getScenario().getCouponMpus(),","));
-                coupon.setExcludeMpus(StringUtils.join(bean.getRules().getScenario().getExcludeMpus(),","));
-                if(bean.getRules().getScenario().getCouponSkus() != null){
-                    coupon.setCouponSkus(bean.getRules().getScenario().getCouponSkus().toJSONString());
-                }
-//                coupon.setExcludeSkus(bean.getRules().getScenario().getExcludeSkus().toJSONString());
-                coupon.setCategories(StringUtils.join(bean.getRules().getScenario().getCategories(),","));
-                coupon.setBrands(StringUtils.join(bean.getRules().getScenario().getBrands(),","));
-            }
-            if(bean.getRules().getCollect() != null){
-                coupon.setCollectType(bean.getRules().getCollect().getType());
-                coupon.setPoints(bean.getRules().getCollect().getPoints());
-            }
-            if(bean.getRules().getCustomer() != null){
-                coupon.setCustomerType(bean.getRules().getCustomer().getType());
-                coupon.setUsers( StringUtils.join(bean.getRules().getCustomer().getUsers(),","));
-            }
-            if(bean.getRules().getCouponRules() != null){
-                coupon.setCouponType(bean.getRules().getCouponRules().getInteger("type"));
-                coupon.setCouponRules(bean.getRules().getCouponRules().toJSONString());
-            }
-        }
-        return coupon;
-    }
-
-    private CouponBean couponToBean(CouponX coupon){
+    private CouponBean couponXToBean(CouponX coupon){
 
         CouponBean couponBean = new CouponBean();
 
@@ -617,6 +637,71 @@ public class CouponServiceImpl implements CouponService {
         return couponBean;
     }
 
+    private Coupon beanToCoupon(CouponBean bean){
+
+        Coupon coupon = new Coupon();
+
+        coupon.setName(bean.getName());
+        coupon.setSupplierMerchantId(bean.getSupplierMerchantId());
+        coupon.setSupplierMerchantName(bean.getSupplierMerchantName());
+        coupon.setReleaseTotal(bean.getReleaseTotal());
+        coupon.setReleaseNum(bean.getReleaseNum());
+        coupon.setReleaseStartDate(bean.getReleaseStartDate());
+        coupon.setReleaseEndDate(bean.getReleaseEndDate());
+        coupon.setStatus(bean.getStatus());
+        coupon.setEffectiveStartDate(bean.getEffectiveStartDate());
+        coupon.setEffectiveEndDate(bean.getEffectiveEndDate());
+        coupon.setDescription(bean.getDescription());
+        coupon.setAppId(bean.getAppId());
+        coupon.setEffectiveDays(bean.getEffectiveDays());
+        if(bean.getExcludeDates()!= null && !"".equals(bean.getExcludeDates())){
+            List<Object> excludeDates = bean.getExcludeDates();
+            JSONArray json = new JSONArray();
+            for(Object object : excludeDates){
+                json.add(object);
+            }
+            coupon.setExcludeDates(json.toJSONString());
+        }
+        coupon.setUrl(bean.getUrl());
+        coupon.setCategory(bean.getCategory());
+        if(bean.getTags() != null){
+            String tagStr = Arrays.toString(bean.getTags());
+            coupon.setTags(tagStr.substring(1, tagStr.length()-1));
+        }
+        coupon.setImageUrl(bean.getImageUrl());
+        if(bean.getRules() != null){
+            if(bean.getRules().getCode() != null && !"".equals(bean.getRules().getCode())){
+                coupon.setCode(bean.getRules().getCode());
+            }
+            coupon.setRulesDescription(bean.getRules().getRulesDescription());
+            coupon.setPerLimited(bean.getRules().getPerLimited());
+            coupon.setScopes(StringUtils.join(bean.getRules().getScopes(),","));
+            if(bean.getRules().getScenario() != null){
+                coupon.setScenarioType(bean.getRules().getScenario().getType());
+                coupon.setCouponMpus(StringUtils.join(bean.getRules().getScenario().getCouponMpus(),","));
+                coupon.setExcludeMpus(StringUtils.join(bean.getRules().getScenario().getExcludeMpus(),","));
+                if(bean.getRules().getScenario().getCouponSkus() != null){
+                    coupon.setCouponSkus(bean.getRules().getScenario().getCouponSkus().toJSONString());
+                }
+//                coupon.setExcludeSkus(bean.getRules().getScenario().getExcludeSkus().toJSONString());
+                coupon.setCategories(StringUtils.join(bean.getRules().getScenario().getCategories(),","));
+                coupon.setBrands(StringUtils.join(bean.getRules().getScenario().getBrands(),","));
+            }
+            if(bean.getRules().getCollect() != null){
+                coupon.setCollectType(bean.getRules().getCollect().getType());
+                coupon.setPoints(bean.getRules().getCollect().getPoints());
+            }
+            if(bean.getRules().getCustomer() != null){
+                coupon.setCustomerType(bean.getRules().getCustomer().getType());
+                coupon.setUsers( StringUtils.join(bean.getRules().getCustomer().getUsers(),","));
+            }
+            if(bean.getRules().getCouponRules() != null){
+                coupon.setCouponType(bean.getRules().getCouponRules().getInteger("type"));
+                coupon.setCouponRules(bean.getRules().getCouponRules().toJSONString());
+            }
+        }
+        return coupon;
+    }
 
     @Override
     public List<CouponBean> queryCouponBeanListIdList(List<Integer> idList) throws Exception {
@@ -691,7 +776,7 @@ public class CouponServiceImpl implements CouponService {
         coupons.forEach(couponX -> {
             int num = useInfoXMapper.selectCollectCount(couponX.getId(), openId, iAppId);
             couponX.setUserCollectNum(num);
-            couponBeans.add(couponToBean(couponX));
+            couponBeans.add(couponXToBean(couponX));
         });
         return couponBeans;
     }
@@ -714,7 +799,7 @@ public class CouponServiceImpl implements CouponService {
         for (CouponX coupon : couponList) {
             int num = useInfoXMapper.selectCollectCount(coupon.getId(), openId, appId);
             coupon.setUserCollectNum(num);
-            CouponBean couponBean = couponToBean(coupon);
+            CouponBean couponBean = couponXToBean(coupon);
             couponBeanList.add(couponBean);
         }
         return couponBeanList;
@@ -761,7 +846,7 @@ public class CouponServiceImpl implements CouponService {
 
             List<CouponBean> couponBeans =  new ArrayList<>();
             XMapper.selectCouponByMpu(bean).forEach(coupon -> {
-                couponBeans.add(couponToBean(coupon));
+                couponBeans.add(couponXToBean(coupon));
             });
             couponAndPromBean.setCoupons(couponBeans);
             couponAndPromBean.setMpu(bean.getMpu());
@@ -771,6 +856,33 @@ public class CouponServiceImpl implements CouponService {
     }
 
     //============================== private =========================
+
+    private PageBean
+    getPage(CouponExample example, Integer pageNo, Integer pageSize){
+
+        PageBean pageBean = new PageBean();
+        Page<Coupon> pages;
+        List<Coupon> list;
+
+        try {
+            pages = PageHelper.startPage(pageNo, pageSize, true);
+            list = mapper.selectByExample(example);
+            List<CouponResultBean> coupons = new ArrayList<>();
+            for(Coupon coupon: list){
+                CouponResultBean b = new CouponResultBean();
+                BeanUtils.copyProperties(coupon,b);
+                coupons.add(b);
+            }
+
+            pageBean = PageBean.build(pageBean, coupons, (int)pages.getTotal(), pageNo, pageSize);
+
+        }catch (Exception e) {
+            log.error(e.getMessage(),e);
+            pageBean = PageBean.build(pageBean, null, 0, pageNo, pageSize);
+        }
+
+        return pageBean;
+    }
 
     /**
      *

@@ -1,5 +1,6 @@
 package com.fengchao.equity.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.CardDetailsBean;
 import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.page.PageableData;
@@ -8,10 +9,14 @@ import com.fengchao.equity.dao.CardAndCouponDao;
 import com.fengchao.equity.dao.CardTicketDao;
 import com.fengchao.equity.dao.CardInfoDao;
 import com.fengchao.equity.dao.CouponUseInfoDao;
+import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CardInfoService;
+import com.fengchao.equity.utils.CardInfoStatusEnum;
 import com.fengchao.equity.utils.ConvertUtil;
+import com.fengchao.equity.utils.MyErrorEnum;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class CardInfoServiceImpl implements CardInfoService {
 
@@ -34,7 +40,7 @@ public class CardInfoServiceImpl implements CardInfoService {
     private CouponUseInfoDao couponUseInfoDao;
 
     @Override
-    public int createCardInfo(CardInfoBean bean) {
+    public CardInfo createCardInfo(CardInfoBean bean) {
         CardInfo cardInfo = new CardInfo();
         cardInfo.setAmount(bean.getAmount());
         cardInfo.setName(bean.getName());
@@ -43,8 +49,8 @@ public class CardInfoServiceImpl implements CardInfoService {
         cardInfo.setAppId(bean.getAppId());
         cardInfo.setCorporationCode(bean.getCorporationCode());
         cardInfo.setCode(bean.getCode());
-        int cardTicket = dao.createCardTicket(cardInfo);
-        if(cardTicket == 1){
+        int index = dao.createCardTicket(cardInfo);
+        if(0 < index && null != bean.getCouponIds() && 0 < bean.getCouponIds().size()){
             for (int i = 0; i < bean.getCouponIds().size(); i++){
                 CardAndCoupon cardAndCoupon = new CardAndCoupon();
                 cardAndCoupon.setCardId(cardInfo.getId());
@@ -52,11 +58,41 @@ public class CardInfoServiceImpl implements CardInfoService {
                 cardAndCouponDao.create(cardAndCoupon);
             }
         }
-        return cardTicket;
+
+        return cardInfo;
     }
 
     @Override
     public int updateCardInfo(CardInfo bean) {
+        Integer id = bean.getId();
+        if (null == id || 0 == id){
+            throw new EquityException(MyErrorEnum.CARD_INFO_ID_BLANK);
+        }
+        CardInfo record = dao.findById(id);
+        if(null == record){
+            throw new EquityException(MyErrorEnum.CARD_INFO_NOT_FOUND);
+        }
+
+        Integer updateStatus = (int)bean.getStatus();
+        if (null != updateStatus){
+            Integer status = (int)record.getStatus();
+            if (CardInfoStatusEnum.INVALID.getCode().equals(status)) {
+                if(!CardInfoStatusEnum.RELEASED.getCode().equals(updateStatus)) {
+                    throw new EquityException(MyErrorEnum.CARD_INFO_WAS_INVALID);
+                }
+            }else if (CardInfoStatusEnum.RELEASED.getCode().equals(status)) {
+                if(CardInfoStatusEnum.EDITING.getCode().equals(updateStatus)) {
+                    throw new EquityException(MyErrorEnum.CARD_INFO_HAS_RELEASE);
+                }
+                log.info("已经发布的提货券只能更改状态,当前记录为： {}", JSON.toJSONString(record));
+                CardInfo updateBean = new CardInfo();
+                updateBean.setId(bean.getId());
+                updateBean.setStatus(bean.getStatus());
+                return dao.updateCardTicket(updateBean);
+            }
+
+        }
+
         return dao.updateCardTicket(bean);
     }
 

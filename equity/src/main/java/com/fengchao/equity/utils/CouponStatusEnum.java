@@ -10,7 +10,7 @@ public enum CouponStatusEnum {
     READY_GO(3, "未开始"),
     UNDERGOING(4, "进行中"),
     INVALID(5, "已下线"),
-    READY_ASSIGN(6, "已下线"),
+    READY_ASSIGN(6, "待分配"),
     ;
 
     private Integer code;

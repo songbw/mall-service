@@ -46,5 +46,8 @@
         <!--table tableName="card_info" domainObjectName="CardInfo" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="id">
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table-->
+        <!--table tableName="card_ticket" domainObjectName="CardTicket" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="id">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table-->
     </context>
 </generatorConfiguration>

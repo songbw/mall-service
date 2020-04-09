@@ -45,7 +45,7 @@ public class ShipTemplateDao {
         ShippingTemplateExample example = new ShippingTemplateExample();
         ShippingTemplateExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(1);
-        criteria.andIdIn(idList);
+        criteria.andMerchantIdIn(idList);
 
         return mapper.selectByExample(example);
     }

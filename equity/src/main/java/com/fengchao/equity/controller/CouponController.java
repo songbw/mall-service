@@ -2,6 +2,7 @@ package com.fengchao.equity.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.model.CouponUseInfoX;
 import com.fengchao.equity.service.CouponService;
 import com.fengchao.equity.service.CouponUseInfoService;
@@ -139,7 +140,7 @@ public class CouponController {
         String description = MyFunctions.WEB_CONSUME_COUPON;
         log.info("{} 入参:{}", description,JSONUtil.toJsonString(bean));
 
-        CouponUseInfoX coupon = couponService.consumeCoupon(bean);
+        CouponUseInfo coupon = couponService.consumeCoupon(bean);
         if(coupon == null){
             result.setCode(40012);
             result.setMsg("优惠券不存在");

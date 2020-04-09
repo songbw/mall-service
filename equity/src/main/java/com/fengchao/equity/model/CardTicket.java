@@ -31,6 +31,14 @@ public class CardTicket {
 
     private Short isDelete;
 
+    private String corporationCode;
+
+    private String welfareOrderNo;
+
+    private String cardInfoCode;
+
+    private String employeeCode;
+
     public Integer getId() {
         return id;
     }
@@ -141,5 +149,37 @@ public class CardTicket {
 
     public void setIsDelete(Short isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public String getCorporationCode() {
+        return corporationCode;
+    }
+
+    public void setCorporationCode(String corporationCode) {
+        this.corporationCode = corporationCode == null ? null : corporationCode.trim();
+    }
+
+    public String getWelfareOrderNo() {
+        return welfareOrderNo;
+    }
+
+    public void setWelfareOrderNo(String welfareOrderNo) {
+        this.welfareOrderNo = welfareOrderNo == null ? null : welfareOrderNo.trim();
+    }
+
+    public String getCardInfoCode() {
+        return cardInfoCode;
+    }
+
+    public void setCardInfoCode(String cardInfoCode) {
+        this.cardInfoCode = cardInfoCode == null ? null : cardInfoCode.trim();
+    }
+
+    public String getEmployeeCode() {
+        return employeeCode;
+    }
+
+    public void setEmployeeCode(String employeeCode) {
+        this.employeeCode = employeeCode == null ? null : employeeCode.trim();
     }
 }

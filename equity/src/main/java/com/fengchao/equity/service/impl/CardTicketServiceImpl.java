@@ -1,18 +1,21 @@
 package com.fengchao.equity.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.*;
+import com.fengchao.equity.bean.page.PageableData;
+import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.*;
 import com.fengchao.equity.exception.EquityException;
+import com.fengchao.equity.feign.VendorsService;
 import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.rpc.ProductRpcService;
 import com.fengchao.equity.service.CardTicketService;
-import com.fengchao.equity.utils.CardTicketStatusEnum;
-import com.fengchao.equity.utils.DataUtils;
-import com.fengchao.equity.utils.JobClientUtils;
-import com.fengchao.equity.utils.MyErrorEnum;
+import com.fengchao.equity.utils.*;
 import com.github.ltsopensource.jobclient.JobClient;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +52,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     private Environment environment;
     @Autowired
     private ProductRpcService prodService;
+    @Autowired
+    private VendorsService vendorsService;
 
     @Override
     public int assignsCardTicket(CardTicketBean bean) {
@@ -60,6 +65,9 @@ public class CardTicketServiceImpl implements CardTicketService {
             ticket.setCard(code);
             ticket.setPassword(String.valueOf((int)((Math.random()*9+1)*100000)));
             ticket.setRemark(bean.getRemark());
+            ticket.setCorporationCode(bean.getCorporationCode());
+            ticket.setCardInfoCode(bean.getCardInfoCode());
+            ticket.setWelfareOrderNo(bean.getWelfareOrderNo());
             tickets.add(ticket);
         }
         return ticketDao.insertBatch(tickets);
@@ -82,14 +90,46 @@ public class CardTicketServiceImpl implements CardTicketService {
 
         Date date = new Date();
         for(CardTicket ticket: beans){
-            CardTicketX cardTicketX = ticketDao.findbyCard(ticket.getCard());
-            CardInfo cardInfo = infoDao.findByCardId(cardTicketX.getCardId());
+            CardTicket cardTicket = ticketDao.findByCard(ticket.getCard());
+            CardInfo cardInfo = infoDao.findByCardId(cardTicket.getCardId());
             Date fetureDate = DataUtils.getFetureDate(date, cardInfo.getEffectiveDays());
             ticket.setEndTime(fetureDate);
-            JobClientUtils.cardInvalidTrigger(environment, jobClient, ticket.getId(), fetureDate);
+            JobClientUtils.cardInvalidTrigger(environment, jobClient, ticket.getCard(), fetureDate);
         }
         ticketDao.activatesCardTicket(beans);
         return resultCards;
+    }
+
+    @Override
+    public List<String>
+    batchCreateActiveCardTickets(CardTicketBean bean){
+
+        List<String> cardCodeList = new ArrayList<>();
+        Date date = new Date();
+        CardInfo cardInfo = infoDao.findByCardCode(bean.getCardInfoCode());
+        Date futureDate = DataUtils.getFetureDate(date, cardInfo.getEffectiveDays());
+
+        List<CardTicket> tickets = new ArrayList<>();
+        for (int i = 0; i < bean.getNum(); i++){
+            CardTicket ticket = new CardTicket();
+            String code = String.valueOf(System.currentTimeMillis()) + (int)((Math.random()*9+1)*100000);
+            cardCodeList.add(code);
+            ticket.setCardId(cardInfo.getId());
+            ticket.setCard(code);
+            ticket.setPassword(String.valueOf((int)((Math.random()*9+1)*100000)));
+            ticket.setRemark(bean.getRemark());
+            ticket.setCorporationCode(bean.getCorporationCode());
+            ticket.setCardInfoCode(bean.getCardInfoCode());
+            ticket.setWelfareOrderNo(bean.getWelfareOrderNo());
+            ticket.setEndTime(futureDate);
+            tickets.add(ticket);
+            JobClientUtils.cardInvalidTrigger(environment, jobClient, ticket.getCard(), futureDate);
+
+        }
+        ticketDao.batchInsertActiveCardTickets(tickets);
+
+        return cardCodeList;
+
     }
 
     @Override
@@ -160,7 +200,7 @@ public class CardTicketServiceImpl implements CardTicketService {
         if (null == coupon){
             throw new EquityException(MyErrorEnum.COUPON_NOT_FOUND);
         }
-        CardTicketX cardTicket = ticketDao.findbyCard(bean.getCard());
+        CardTicket cardTicket = ticketDao.findByCard(bean.getCard());
         if (null == cardTicket || null == cardTicket.getId()){
             throw new EquityException(MyErrorEnum.CARD_TICKET_MISSING);
         }
@@ -171,7 +211,7 @@ public class CardTicketServiceImpl implements CardTicketService {
         if (!bean.getAppId().equals(cardInfo.getAppId())){
             throw new EquityException(MyErrorEnum.CARD_INFO_APP_ID_NOT_MATCH);
         }
-        if(coupon.getCouponType() == 4 && cardTicket.getStatus() == CardTicketStatusEnum.BOUND.getCode()){
+        if((!CouponTypeEnum.needTrigger(coupon.getCouponType())) && cardTicket.getStatus() == CardTicketStatusEnum.BOUND.getCode()){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
             CouponUseInfo couponUseInfo = new CouponUseInfo();
@@ -205,22 +245,27 @@ public class CardTicketServiceImpl implements CardTicketService {
 
     @Override
     public List<CardTicketX> getCardTicket(String openId) {
-        List<CardTicketX> tickets = ticketDao.seleteCardTicketByOpenId(openId);
-        for(CardTicketX ticket: tickets){
+        List<CardTicket> tickets = ticketDao.selectCardTicketByOpenId(openId);
+        List<CardTicketX> ticketXES = new ArrayList<>();
+        for(CardTicket ticket: tickets){
+            CardTicketX cardTicketX = new CardTicketX();
+            BeanUtils.copyProperties(ticket,cardTicketX);
             CardInfo infoX = infoDao.findById(ticket.getCardId());
-            ticket.setCardInfo(infoX);
+            cardTicketX.setCardInfo(infoX);
 
             List<CouponBean> couponBeanList = new ArrayList<>();
             if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
                 ArrayList<CouponUseInfoX> useInfoXList = new ArrayList<>();
-                CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
+                CouponUseInfo userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
                 if(userCouponCode != null){
                     CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
                     CouponBean couponBean = couponToBean(coupon);
                     couponBean.setCouponUseInfo(useInfoXList);
                     couponBeanList.add(couponBean);
                 }
-                useInfoXList.add(userCouponCode);
+                CouponUseInfoX useInfoX = new CouponUseInfoX();
+                BeanUtils.copyProperties(userCouponCode,useInfoX);
+                useInfoXList.add(useInfoX);
             }else{
                 List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
                 for (CardAndCoupon cardAndCoupon: cardAndCoupons){
@@ -231,9 +276,10 @@ public class CardTicketServiceImpl implements CardTicketService {
                     }
                 }
             }
-            ticket.setCoupons(couponBeanList);
+            cardTicketX.setCoupons(couponBeanList);
+            ticketXES.add(cardTicketX);
         }
-        return tickets;
+        return ticketXES;
     }
 
     @Override
@@ -242,9 +288,24 @@ public class CardTicketServiceImpl implements CardTicketService {
     }
 
     @Override
+    public CardTicket
+    findByCardCode(String cardCode){
+        return ticketDao.findbyCardCode(cardCode);
+    }
+
+    @Override
     public int invalid(int id) {
         if (1> id){
             log.error("invalid failed for id = {}",String.valueOf(id));
+            return 0;
+        }
+        CardTicket record =ticketDao.findById(id);
+        if(null == record){
+            log.error("未找到id={}的记录",id);
+            return 0;
+        }
+        if (CardTicketStatusEnum.canNotTimeout(record.getStatus())){
+            log.error("该记录处于不可过期状态 {}", JSON.toJSONString(record));
             return 0;
         }
         CardTicket ticket = new CardTicket();
@@ -267,22 +328,26 @@ public class CardTicketServiceImpl implements CardTicketService {
 
     @Override
     public CardTicketX getCardTicketByCard(String openId, String card) {
-        CardTicketX ticket = ticketDao.seleteCardTicketByCard(openId, card);
+        CardTicket ticket = ticketDao.selectCardTicketByCardOpenId(openId, card);
+        CardTicketX ticketX = new CardTicketX();
         if(ticket != null){
+            BeanUtils.copyProperties(ticket,ticketX);
             CardInfo infoX = infoDao.findById(ticket.getCardId());
-            ticket.setCardInfo(infoX);
+            ticketX.setCardInfo(infoX);
 
             List<CouponBean> couponBeanList = new ArrayList<>();
             if(StringUtils.isNotEmpty(ticket.getUserCouponCode())){
                 ArrayList<CouponUseInfoX> useInfoXList = new ArrayList<>();
-                CouponUseInfoX userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
+                CouponUseInfo userCouponCode = useInfoDao.findByUserCouponCode(ticket.getUserCouponCode());
                 if(userCouponCode != null){
                     CouponX coupon = couponDao.selectCouponXById(userCouponCode.getCouponId());
                     CouponBean couponBean = couponToBean(coupon);
                     couponBean.setCouponUseInfo(useInfoXList);
                     couponBeanList.add(couponBean);
                 }
-                useInfoXList.add(userCouponCode);
+                CouponUseInfoX useInfoX = new CouponUseInfoX();
+                BeanUtils.copyProperties(userCouponCode,useInfoX);
+                useInfoXList.add(useInfoX);
             }else{
                 List<CardAndCoupon> cardAndCoupons = cardAndCouponDao.findCouponIdByCardId(ticket.getCardId());
                 for (CardAndCoupon cardAndCoupon: cardAndCoupons){
@@ -293,9 +358,9 @@ public class CardTicketServiceImpl implements CardTicketService {
                     }
                 }
             }
-            ticket.setCoupons(couponBeanList);
+            ticketX.setCoupons(couponBeanList);
         }
-        return ticket;
+        return ticketX;
     }
 
     @Override
@@ -328,6 +393,54 @@ public class CardTicketServiceImpl implements CardTicketService {
     selectByUserCouponCodeList(List<String> codeList){
 
         return useInfoDao.selectByUserCouponCodeList(codeList);
+    }
+
+    @Override
+    public PageableData<CardTicket>
+    findTickets(String activateStartTime, String activateEndTime,
+                String consumeStartTime, String consumeEndTime,
+                Integer status,
+                CardTicketBean bean) {
+
+        if(null != status){
+            CardTicketStatusEnum.normalizeCode(status);
+        }
+        Date activeStart = DataUtils.String2Date(activateStartTime);
+        Date activeEnd = DataUtils.String2Date(activateEndTime);
+        Date consumeStart = DataUtils.String2Date(consumeStartTime);
+        Date consumeEnd = DataUtils.String2Date(consumeEndTime);
+
+        PageableData<CardTicket> pageableData = new PageableData<>();
+
+        PageInfo<CardTicket> cardTicketPageInfo = ticketDao.getTicketPages(bean,status,activeStart,activeEnd,consumeStart,consumeEnd);
+        // 2.处理结果
+        PageVo pageVo = ConvertUtil.convertToPageVo(cardTicketPageInfo);
+        pageableData.setList(cardTicketPageInfo.getList());
+        pageableData.setPageInfo(pageVo);
+
+        return pageableData;
+    }
+
+    private String
+    getEmployeeCodeByPhone(String phone){
+
+        OperaResult result = vendorsService.getEmployeeInfoByPhone(phone);
+        log.info(JSON.toJSONString(result));
+        if(200 != result.getCode()){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
+        Map<String,Object> data = result.getData();
+        Object employeeObj = data.get("employee");
+        if (null == employeeObj){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
+        JSONObject json = JSON.parseObject(employeeObj.toString());
+        if (null == json || null == json.get("code")){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
+
+        return  json.get("code").toString();
+
     }
 
     private CouponBean couponToBean(CouponX coupon){
