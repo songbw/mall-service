@@ -97,6 +97,8 @@ public class OrderStarServiceImpl implements OrderStarService {
         params.put("reason", bean.getReason());
         params.put("code", bean.getCode());
         params.put("returnType", bean.getReturnType());
+        params.put("applyAmount", bean.getApplyAmount());
+        params.put("picList", JSONUtil.toJsonString(bean.getPicList()));
         OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_ORDER_APPLY_REFUND_GOODS, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
         log.info("退货退款, 返回结果：{}", JSONUtil.toJsonString(response));
         if (response.getCode() == 0) {
