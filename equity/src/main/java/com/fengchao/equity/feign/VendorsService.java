@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @FeignClient(value = "vendors", fallback = VendorsServiceH.class)
 public interface VendorsService {
 
@@ -16,5 +18,8 @@ public interface VendorsService {
 
     @RequestMapping(value = "/welfare/employees/byPhone", method = RequestMethod.GET)
     OperaResult getEmployeeInfoByPhone(@RequestParam("phone")String phone);
+
+    @RequestMapping(value = "/welfare/employees/byPhoneList", method = RequestMethod.GET)
+    OperaResult getEmployeeInfoByPhoneList(@RequestParam("phoneList") List<String> phoneList);
 
 }

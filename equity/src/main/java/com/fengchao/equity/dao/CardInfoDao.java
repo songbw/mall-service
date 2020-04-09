@@ -10,6 +10,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -54,6 +55,10 @@ public class CardInfoDao {
         if(null != code && !code.isEmpty()){
             criteria.andCodeEqualTo(code);
         }
+        String corporationCode = bean.getCorporationCode();
+        if (null != corporationCode && !corporationCode.isEmpty()){
+            criteria.andCorporationCodeEqualTo(corporationCode);
+        }
         example.setOrderByClause("id DESC");
 
         PageHelper.startPage(bean.getPageNo(), bean.getPageSize());
@@ -75,6 +80,19 @@ public class CardInfoDao {
         return mapper.selectByExample(example);
     }
 
+    public List<CardInfo> findByCodeList(List<String> codeList) {
+        if(null == codeList || 0 == codeList.size()){
+            return new ArrayList<>();
+        }
+
+        CardInfoExample example = new CardInfoExample();
+        CardInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andCodeIn(codeList);
+
+        return mapper.selectByExample(example);
+    }
+
     public CardInfo
     findByCardCode(String code){
         if(null == code || code.isEmpty()){
@@ -92,5 +110,19 @@ public class CardInfoDao {
         }else{
             return list.get(0);
         }
+    }
+
+    public List<CardInfo> findByCorporation(String corporationCode, Integer status) {
+        CardInfoExample example = new CardInfoExample();
+        CardInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        if(null != status){
+            criteria.andStatusEqualTo((short)(int)status);
+        }
+        if (null != corporationCode && !corporationCode.isEmpty()){
+            criteria.andCorporationCodeEqualTo(corporationCode);
+        }
+
+        return mapper.selectByExample(example);
     }
 }

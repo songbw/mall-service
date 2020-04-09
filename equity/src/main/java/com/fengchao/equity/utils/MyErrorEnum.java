@@ -38,10 +38,10 @@ public enum MyErrorEnum {
     COUPON_ABNORMAL_RELEASE_DATE_BLANK(420208,"优惠券异常, 发布时间缺失"),
 
     EMPLOYEE_NOT_FIND_BY_PHONE(420210,"根据电话未找到企业员工记录"),
-
+    WELFARE_NOT_GET_CARD_INFO_CODE_LIST_FAILED(420211,"服务调用福利失败"),
     /* 内部异常错误*/
     COUPON_USE_INFO_INSERT_ERROR(500101,"兑换失败,增加记录失败"),
-
+    ASSIGN_TICKETS_ERROR(500102,"分配失败,批量更新记录失败"),
     ;
 
     private Integer code;

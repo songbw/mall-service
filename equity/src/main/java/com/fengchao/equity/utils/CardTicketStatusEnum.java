@@ -14,7 +14,7 @@ public enum CardTicketStatusEnum {
     OCCUPIED(5, "已占用"),
     USED(6, "已使用"),
     TIMEOUT(7, "已过期"),
-
+    ASSIGNED(8, "已分配"),
     ;
 
     private int code;

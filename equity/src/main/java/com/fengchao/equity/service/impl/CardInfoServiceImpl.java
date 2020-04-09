@@ -1,8 +1,12 @@
 package com.fengchao.equity.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.CardDetailsBean;
 import com.fengchao.equity.bean.CardInfoBean;
+import com.fengchao.equity.bean.CardInfoOfCorporationBean;
+import com.fengchao.equity.bean.OperaResponse;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.dao.CardAndCouponDao;
@@ -10,6 +14,7 @@ import com.fengchao.equity.dao.CardTicketDao;
 import com.fengchao.equity.dao.CardInfoDao;
 import com.fengchao.equity.dao.CouponUseInfoDao;
 import com.fengchao.equity.exception.EquityException;
+import com.fengchao.equity.feign.IWelfareClient;
 import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.utils.CardInfoStatusEnum;
@@ -25,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,6 +44,8 @@ public class CardInfoServiceImpl implements CardInfoService {
     private CardAndCouponDao cardAndCouponDao;
     @Autowired
     private CouponUseInfoDao couponUseInfoDao;
+    @Autowired
+    private IWelfareClient welfareClient;
 
     @Override
     public CardInfo createCardInfo(CardInfoBean bean) {
@@ -176,5 +184,42 @@ public class CardInfoServiceImpl implements CardInfoService {
         pageableData.setList(beans);
 
         return pageableData;
+    }
+
+    @Override
+    public List<CardInfoOfCorporationBean>
+    getByCorporation(String corporationCode){
+
+        log.info("服务调用福利模块,获取cardInfoCode列表, corporationCode={}",corporationCode);
+        JSONObject remoteResult = welfareClient.getCardInfoCodes(corporationCode);
+        if(null == remoteResult){
+            throw new EquityException(MyErrorEnum.WELFARE_NOT_GET_CARD_INFO_CODE_LIST_FAILED);
+        }
+        log.info("服务调用福利模块,获取cardInfoCode列表 返回： {}",JSON.toJSONString(remoteResult));
+        Integer code = remoteResult.getInteger("code");
+        if(null == code || 200 != code){
+            throw new EquityException(MyErrorEnum.WELFARE_NOT_GET_CARD_INFO_CODE_LIST_FAILED);
+        }
+        Object data = remoteResult.get("data");
+        if (null == data){
+            throw new EquityException(MyErrorEnum.WELFARE_NOT_GET_CARD_INFO_CODE_LIST_FAILED);
+        }
+
+        List<String> list = JSON.parseArray(JSON.toJSONString(data), String.class);
+        if(null == list || 0 == list.size()){
+            return new ArrayList<>();
+        }
+
+        List<CardInfo> cardInfoList = dao.findByCodeList(list);
+        List<CardInfoOfCorporationBean> result = new ArrayList<>();
+        Map<String, List<CardInfo>> map = cardInfoList.stream().collect(Collectors.groupingBy(CardInfo::getCorporationCode));
+        for (Map.Entry<String, List<CardInfo>> infos : map.entrySet()) {
+            CardInfoOfCorporationBean bean = new CardInfoOfCorporationBean();
+            bean.setCorporationCode(infos.getKey());
+            bean.setCardInfoList(infos.getValue());
+            result.add(bean);
+        }
+
+        return result;
     }
 }

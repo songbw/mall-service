@@ -2,6 +2,7 @@ package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.CardTicketBean;
 import com.fengchao.equity.bean.ExportCardBean;
+import com.fengchao.equity.bean.TicketToEmployeeBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
@@ -18,6 +19,12 @@ public interface CardTicketService {
 
     List<String>
     batchCreateActiveCardTickets(CardTicketBean bean);
+
+    List<CardTicket>
+    batchGetTicketsByCodeList(List<String> codeList);
+
+    List<TicketToEmployeeBean>
+    batchAssignTicketsByPhone(List<TicketToEmployeeBean> list);
 
     List<CardInfoX> exportCardTicket(ExportCardBean bean);
 

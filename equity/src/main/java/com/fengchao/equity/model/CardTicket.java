@@ -39,6 +39,8 @@ public class CardTicket {
 
     private String employeeCode;
 
+    private Date assignTime;
+
     public Integer getId() {
         return id;
     }
@@ -181,5 +183,13 @@ public class CardTicket {
 
     public void setEmployeeCode(String employeeCode) {
         this.employeeCode = employeeCode == null ? null : employeeCode.trim();
+    }
+
+    public Date getAssignTime() {
+        return assignTime;
+    }
+
+    public void setAssignTime(Date assignTime) {
+        this.assignTime = assignTime;
     }
 }

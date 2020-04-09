@@ -154,6 +154,25 @@ public class AdminCardInfoController {
         return result;
     }
 
+    @PostMapping("ticketToEmployee")
+    public OperaResult assignTicketByPhone(@RequestBody List<TicketToEmployeeBean> list, OperaResult result){
+        log.info("分配提货卡到员工 入参:{}", JSONUtil.toJsonString(list));
+        result.getData().put("result",ticketService.batchAssignTicketsByPhone(list));
+        return result;
+    }
+
+    @GetMapping("ticketsByCodeList")
+    public OperaResult findTicketsByCardList(@RequestParam List<String> list, OperaResult result){
+        result.getData().put("result",ticketService.batchGetTicketsByCodeList(list));
+        return result;
+    }
+
+    @GetMapping("cardInfoGroup")
+    public OperaResult findCardInfoGroupByCorporation(@RequestParam(required = false) String corporationCode, OperaResult result){
+        result.getData().put("result",service.getByCorporation(corporationCode));
+        return result;
+    }
+
     @GetMapping("export")
     public void  exportCardTicket(ExportCardBean bean, HttpServletResponse response) throws Exception {
         OutputStream outputStream = null;

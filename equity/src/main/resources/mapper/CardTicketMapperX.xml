@@ -46,4 +46,16 @@
             )
         </foreach>
     </insert>
+
+    <insert id="batchAssignCardTicket" parameterType="java.util.List" >
+        <foreach collection="list" item="item" index="index" separator=";">
+            update card_ticket
+            set status = #{item.status,jdbcType=SMALLINT},
+            update_time = current_timestamp,
+            assign_time = current_timestamp,
+            employee_code = #{item.employeeCode,jdbcType=VARCHAR}
+            where
+            id = #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </insert>
 </mapper>

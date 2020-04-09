@@ -2,20 +2,23 @@ package com.fengchao.equity.dao;
 
 import com.fengchao.equity.bean.CardInfoBean;
 import com.fengchao.equity.bean.CardTicketBean;
+import com.fengchao.equity.exception.EquityException;
 import com.fengchao.equity.mapper.CardTicketMapper;
 import com.fengchao.equity.mapper.CardTicketMapperX;
 import com.fengchao.equity.model.CardTicket;
 import com.fengchao.equity.model.CardTicketExample;
-import com.fengchao.equity.model.CardTicketX;
 import com.fengchao.equity.utils.CardTicketStatusEnum;
-import com.github.pagehelper.Page;
+import com.fengchao.equity.utils.MyErrorEnum;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+
+@Slf4j
 @Component
 public class CardTicketDao {
 
@@ -50,8 +53,31 @@ public class CardTicketDao {
         }
     }
 
+    public List<CardTicket> batchFindByCardCodeList(List<String> cardCodes, CardTicketStatusEnum statusEnum) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andCardIn(cardCodes);
+        criteria.andIsDeleteEqualTo((short) 1);
+        if (null != statusEnum){
+            criteria.andStatusEqualTo((short)statusEnum.getCode());
+        }
+
+       return mapper.selectByExample(example);
+
+    }
+
     public int insertBatch(List<CardTicket> tickets) {
         return mapperX.inserBatch(tickets);
+    }
+
+    public int batchAssignCardTicket(List<CardTicket> beans) {
+
+        try {
+            return mapperX.activatesCardTicket(beans);
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            throw new EquityException(MyErrorEnum.ASSIGN_TICKETS_ERROR);
+        }
     }
 
     public int activatesCardTicket(List<CardTicket> beans) {

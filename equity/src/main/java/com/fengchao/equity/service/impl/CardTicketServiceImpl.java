@@ -133,6 +133,51 @@ public class CardTicketServiceImpl implements CardTicketService {
     }
 
     @Override
+    public List<CardTicket>
+    batchGetTicketsByCodeList(List<String> codeList){
+       return ticketDao.batchFindByCardCodeList(codeList,null);
+    }
+
+    @Override
+    public List<TicketToEmployeeBean>
+    batchAssignTicketsByPhone(List<TicketToEmployeeBean> list){
+
+        List<TicketToEmployeeBean> unAssignedList = new ArrayList<>();
+        List<String> phoneList = new ArrayList<>();
+        List<String> codeList = new ArrayList<>();
+        Map<String,String> codePhoneMap = new HashMap<>();
+        for(TicketToEmployeeBean bean: list){
+            phoneList.add(bean.getPhone());
+            codeList.add(bean.getCard());
+            codePhoneMap.put(bean.getCard(),bean.getPhone());
+        }
+
+        Map<String,Object> map = getEmployeeCodeMapByPhoneList(phoneList);
+        List<CardTicket> tickets = ticketDao.batchFindByCardCodeList(codeList,CardTicketStatusEnum.ACTIVE);
+
+        if(null != tickets && null != map && 0 < tickets.size() && 0 < map.size()){
+            for(CardTicket ticket: tickets){
+                ticket.setEmployeeCode(map.get(codePhoneMap.get(ticket.getCard())).toString());
+                ticket.setStatus((short)CardTicketStatusEnum.ASSIGNED.getCode());
+            }
+            for(CardTicket ticket: tickets){
+                if(null == ticket.getEmployeeCode() || CardTicketStatusEnum.ASSIGNED.getCode() != ticket.getStatus()){
+                    TicketToEmployeeBean faultBean = new TicketToEmployeeBean();
+                    faultBean.setCard(ticket.getCard());
+                    faultBean.setPhone(codePhoneMap.get(ticket.getCard()));
+                    unAssignedList.add(faultBean);
+                }
+            }
+            int updateNum = ticketDao.batchAssignCardTicket(tickets);
+            if(1 > updateNum){
+                throw new EquityException(MyErrorEnum.ASSIGN_TICKETS_ERROR);
+            }
+        }
+
+        return unAssignedList;
+    }
+
+    @Override
     public List<CardInfoX> exportCardTicket(ExportCardBean bean) {
 
         List<CardInfoX> result = new ArrayList<>();
@@ -440,6 +485,25 @@ public class CardTicketServiceImpl implements CardTicketService {
         }
 
         return  json.get("code").toString();
+
+    }
+
+    private Map<String,Object>
+    getEmployeeCodeMapByPhoneList(List<String> phoneList){
+        String functionName = "服务调用批量获取员工号";
+        log.info("{} 入参 {}",functionName,JSON.toJSONString(phoneList));
+        OperaResult result = vendorsService.getEmployeeInfoByPhoneList(phoneList);
+        log.info(JSON.toJSONString(result));
+        if(200 != result.getCode()){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
+
+        Map<String,Object> map = result.getData();
+        if (null == map){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
+        log.info("{} 出参 {}",functionName,JSON.toJSONString(map));
+        return map;
 
     }
 

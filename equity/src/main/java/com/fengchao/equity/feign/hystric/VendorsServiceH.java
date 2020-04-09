@@ -5,6 +5,8 @@ import com.fengchao.equity.feign.VendorsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Component
 public class VendorsServiceH implements VendorsService {
 
@@ -22,6 +24,15 @@ public class VendorsServiceH implements VendorsService {
         OperaResult result = new OperaResult();
         result.setCode(404);
         result.setMsg("多商户服务获取员工信息失败 phone=" + phone);
+        return result;
+    }
+
+    @Override
+    public OperaResult
+    getEmployeeInfoByPhoneList(@RequestParam("phoneList") List<String> phoneList){
+        OperaResult result = new OperaResult();
+        result.setCode(404);
+        result.setMsg("多商户服务获取员工号列表失败 ");
         return result;
     }
 }

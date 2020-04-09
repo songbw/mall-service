@@ -2,10 +2,13 @@ package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.CardDetailsBean;
 import com.fengchao.equity.bean.CardInfoBean;
+import com.fengchao.equity.bean.CardInfoOfCorporationBean;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.model.CardInfo;
 import com.fengchao.equity.model.CardInfoX;
 import com.fengchao.equity.model.CardTicket;
+
+import java.util.List;
 
 public interface CardInfoService {
     CardInfo createCardInfo(CardInfoBean bean);
@@ -19,4 +22,8 @@ public interface CardInfoService {
     int deleteCardInfo(Integer id);
 
     PageableData<CardDetailsBean> details(CardInfoBean bean);
+
+    List<CardInfoOfCorporationBean>
+    getByCorporation(String corporationCode);
+
 }

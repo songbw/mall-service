@@ -19,4 +19,5 @@ public interface CardTicketMapperX {
 
     int batchInsertActiveTickets(List<CardTicket> tickets);
 
+    int batchAssignCardTicket(List<CardTicket> beans);
 }

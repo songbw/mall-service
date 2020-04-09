@@ -1274,6 +1274,66 @@ public class CardTicketExample {
             addCriterion("employee_code not between", value1, value2, "employeeCode");
             return (Criteria) this;
         }
+
+        public Criteria andAssignTimeIsNull() {
+            addCriterion("assign_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeIsNotNull() {
+            addCriterion("assign_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeEqualTo(Date value) {
+            addCriterion("assign_time =", value, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeNotEqualTo(Date value) {
+            addCriterion("assign_time <>", value, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeGreaterThan(Date value) {
+            addCriterion("assign_time >", value, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("assign_time >=", value, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeLessThan(Date value) {
+            addCriterion("assign_time <", value, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeLessThanOrEqualTo(Date value) {
+            addCriterion("assign_time <=", value, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeIn(List<Date> values) {
+            addCriterion("assign_time in", values, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeNotIn(List<Date> values) {
+            addCriterion("assign_time not in", values, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeBetween(Date value1, Date value2) {
+            addCriterion("assign_time between", value1, value2, "assignTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAssignTimeNotBetween(Date value1, Date value2) {
+            addCriterion("assign_time not between", value1, value2, "assignTime");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

@@ -20,6 +20,7 @@
     <result column="welfare_order_no" jdbcType="VARCHAR" property="welfareOrderNo" />
     <result column="card_info_code" jdbcType="VARCHAR" property="cardInfoCode" />
     <result column="employee_code" jdbcType="VARCHAR" property="employeeCode" />
+    <result column="assign_time" jdbcType="TIMESTAMP" property="assignTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -82,7 +83,7 @@
   <sql id="Base_Column_List">
     id, card_id, card, password, user_coupon_code, open_id, create_time, update_time, 
     activate_time, consumed_time, end_time, status, remark, is_delete, corporation_code, 
-    welfare_order_no, card_info_code, employee_code
+    welfare_order_no, card_info_code, employee_code, assign_time
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.equity.model.CardTicketExample" resultMap="BaseResultMap">
     select
@@ -124,13 +125,15 @@
       update_time, activate_time, consumed_time, 
       end_time, status, remark, 
       is_delete, corporation_code, welfare_order_no, 
-      card_info_code, employee_code)
+      card_info_code, employee_code, assign_time
+      )
     values (#{cardId,jdbcType=INTEGER}, #{card,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{userCouponCode,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{updateTime,jdbcType=TIMESTAMP}, #{activateTime,jdbcType=TIMESTAMP}, #{consumedTime,jdbcType=TIMESTAMP}, 
       #{endTime,jdbcType=TIMESTAMP}, #{status,jdbcType=SMALLINT}, #{remark,jdbcType=VARCHAR}, 
       #{isDelete,jdbcType=SMALLINT}, #{corporationCode,jdbcType=VARCHAR}, #{welfareOrderNo,jdbcType=VARCHAR}, 
-      #{cardInfoCode,jdbcType=VARCHAR}, #{employeeCode,jdbcType=VARCHAR})
+      #{cardInfoCode,jdbcType=VARCHAR}, #{employeeCode,jdbcType=VARCHAR}, #{assignTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.fengchao.equity.model.CardTicket">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -189,6 +192,9 @@
       <if test="employeeCode != null">
         employee_code,
       </if>
+      <if test="assignTime != null">
+        assign_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="cardId != null">
@@ -241,6 +247,9 @@
       </if>
       <if test="employeeCode != null">
         #{employeeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="assignTime != null">
+        #{assignTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -307,6 +316,9 @@
       <if test="record.employeeCode != null">
         employee_code = #{record.employeeCode,jdbcType=VARCHAR},
       </if>
+      <if test="record.assignTime != null">
+        assign_time = #{record.assignTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -331,7 +343,8 @@
       corporation_code = #{record.corporationCode,jdbcType=VARCHAR},
       welfare_order_no = #{record.welfareOrderNo,jdbcType=VARCHAR},
       card_info_code = #{record.cardInfoCode,jdbcType=VARCHAR},
-      employee_code = #{record.employeeCode,jdbcType=VARCHAR}
+      employee_code = #{record.employeeCode,jdbcType=VARCHAR},
+      assign_time = #{record.assignTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -390,6 +403,9 @@
       <if test="employeeCode != null">
         employee_code = #{employeeCode,jdbcType=VARCHAR},
       </if>
+      <if test="assignTime != null">
+        assign_time = #{assignTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -411,7 +427,8 @@
       corporation_code = #{corporationCode,jdbcType=VARCHAR},
       welfare_order_no = #{welfareOrderNo,jdbcType=VARCHAR},
       card_info_code = #{cardInfoCode,jdbcType=VARCHAR},
-      employee_code = #{employeeCode,jdbcType=VARCHAR}
+      employee_code = #{employeeCode,jdbcType=VARCHAR},
+      assign_time = #{assignTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
