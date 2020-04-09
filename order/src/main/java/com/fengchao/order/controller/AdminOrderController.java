@@ -1789,6 +1789,9 @@ public class AdminOrderController {
 
         HSSFCell titleCell45 = titleRow.createCell(45);
         titleCell45.setCellValue("运营平台");
+
+        HSSFCell titleCell46 = titleRow.createCell(46);
+        titleCell46.setCellValue("子订单外部订单号");
     }
 
     /**
@@ -2057,7 +2060,9 @@ public class AdminOrderController {
                         // 运营平台
                         HSSFCell cell45 = currentRow.createCell(45);
                         cell45.setCellValue(ordersVo.getAppId());
-
+                        // 子订单外部订单号
+                        HSSFCell cell46 = currentRow.createCell(46);
+                        cell46.setCellValue(ordersVo.getThirdOrderSn());
                         //
                         currentRowNum++;
                     }

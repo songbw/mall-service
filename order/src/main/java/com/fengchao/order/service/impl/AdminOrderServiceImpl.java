@@ -674,6 +674,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     exportOrdersVo.setCreateTime(ordersBo.getCreatedAt()); // 订单生成时间
                     exportOrdersVo.setAoyiID(ordersBo.getAoyiId());
                     exportOrdersVo.setAppId(ordersBo.getAppId());
+                    exportOrdersVo.setThirdOrderSn(orderDetailBo.getThirdOrderSn()); // 外部订单号
 
                     ProductInfoBean productInfoBean = productInfoBeanMap.get(orderDetailBo.getMpu());
                     exportOrdersVo.setCategory(productInfoBean == null ? "" : productInfoBean.getCategoryName()); // 品类
@@ -958,6 +959,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         orderDetailBo.setSkuCouponDiscount(orderDetail.getSkuCouponDiscount());
         orderDetailBo.setRemark(orderDetail.getRemark());
         orderDetailBo.setSprice(orderDetail.getSprice());
+        orderDetailBo.setThirdOrderSn(orderDetail.getThirdOrderSn());
 
         return orderDetailBo;
     }

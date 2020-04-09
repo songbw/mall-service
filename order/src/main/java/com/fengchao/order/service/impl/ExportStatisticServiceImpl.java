@@ -139,7 +139,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
             List<OrderDetail> _orderDetailList = incomeOrderMap.get(orderId);
             //
             Integer merchantExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
-            logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + merchantExpressFee + "\r\n");
+            logBuilder.append("商户 " + merchantId + " 主订单:" + orderId + " 运费:" + merchantExpressFee + ";;");
             expressAmount = expressAmount + merchantExpressFee;
         }
 
@@ -281,7 +281,7 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
                 List<OrderDetail> _orderDetailList = _orderMap.get(orderId);
                 Integer _tmpExpressFee = calcExpressFee(_orderDetailList, shipTemplateBeanMap.get(merchantId), merchantId);
 
-                logBuilder.append("商户:" + merchantId + " 主订单:" + orderId + " 运费:" + _tmpExpressFee + "\r\n");
+                logBuilder.append("商户 " + merchantId + " 主订单:" + orderId + " 运费:" + _tmpExpressFee + ";");
 
                 merchantExpressFee = merchantExpressFee + _tmpExpressFee;
             }
@@ -528,7 +528,10 @@ public class ExportStatisticServiceImpl implements ExportStatisticService {
         int basePrice = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getBasePrice()));
         int baseAmount = shipRegionsBean.getBaseAmount();
         int cumulativePrice = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativePrice()));
-        int cumulativeUnit = CalculateUtil.convertYuanToFen(String.valueOf(shipRegionsBean.getCumulativeUnit()));
+        int cumulativeUnit = shipRegionsBean.getCumulativeUnit();
+
+        log.info("运费模版:basePrice:{}, baseAmount:{}, cumulativePrice:{}, cumulativeUnit:{}",
+                basePrice, baseAmount, cumulativePrice, cumulativeUnit);
 
         // 计算子订单的总数量
         int totalNum = 0;
