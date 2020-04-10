@@ -25,6 +25,7 @@ public class JobRunnerDispatcher implements JobRunner {
     static {
         JOB_RUNNER_MAP.put("downUp", new ImageDownUpRunnerJobImpl());
         JOB_RUNNER_MAP.put("starSync", new StarProductSyncRunnerJobImpl());
+        JOB_RUNNER_MAP.put("starSyncPrice", new StarProductSyncRunnerJobImpl());
     }
 
     @Override

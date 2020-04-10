@@ -11,19 +11,19 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 
 
-public class StarProductSyncRunnerJobImpl implements JobRunner {
+public class StarProductPriceSyncRunnerJobImpl implements JobRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StarProductSyncRunnerJobImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StarProductPriceSyncRunnerJobImpl.class);
 
     @Override
     public Result run(JobContext jobContext) throws Throwable {
         try {
             BizLogger bizLogger = jobContext.getBizLogger();
 
-            LOGGER.info("我要同步怡亚通商品操作：{}", JSONUtil.toJsonString(jobContext));
+            LOGGER.info("我要同步怡亚通商品价格操作：{}", JSONUtil.toJsonString(jobContext));
             ThirdProdService thirdProdService = BeanContext.getApplicationContext().getBean(ThirdProdService.class) ;
-            thirdProdService.syncStarProd();
-            bizLogger.info("同步怡亚通商品成功");
+            thirdProdService.syncStarProdPrice() ;
+            bizLogger.info("同步怡亚通商品价格成功");
         } catch (Exception e) {
             LOGGER.info("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
