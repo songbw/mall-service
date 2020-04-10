@@ -160,18 +160,17 @@ public class CardTicketServiceImpl implements CardTicketService {
                 ticket.setEmployeeCode(map.get(codePhoneMap.get(ticket.getCard())).toString());
                 ticket.setStatus((short)CardTicketStatusEnum.ASSIGNED.getCode());
             }
-            for(CardTicket ticket: tickets){
-                if(null == ticket.getEmployeeCode() || CardTicketStatusEnum.ASSIGNED.getCode() != ticket.getStatus()){
-                    TicketToEmployeeBean faultBean = new TicketToEmployeeBean();
-                    faultBean.setCard(ticket.getCard());
-                    faultBean.setPhone(codePhoneMap.get(ticket.getCard()));
-                    unAssignedList.add(faultBean);
-                }
-            }
-            int updateNum = ticketDao.batchAssignCardTicket(tickets);
-            if(1 > updateNum){
-                throw new EquityException(MyErrorEnum.ASSIGN_TICKETS_ERROR);
-            }
+
+            ticketDao.batchAssignCardTicket(tickets);
+
+        }
+        List<CardTicket> unAssignedTickets = ticketDao.batchFindByCardCodeList(codeList,CardTicketStatusEnum.ACTIVE);
+        for(CardTicket ticket: unAssignedTickets) {
+            TicketToEmployeeBean faultBean = new TicketToEmployeeBean();
+            faultBean.setCard(ticket.getCard());
+            faultBean.setPhone(codePhoneMap.get(ticket.getCard()));
+            unAssignedList.add(faultBean);
+
         }
 
         return unAssignedList;

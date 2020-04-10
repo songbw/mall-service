@@ -73,7 +73,7 @@ public class CardTicketDao {
     public int batchAssignCardTicket(List<CardTicket> beans) {
 
         try {
-            return mapperX.activatesCardTicket(beans);
+            return mapperX.batchAssignCardTicket(beans);
         }catch (Exception e){
             log.error(e.getMessage(),e);
             throw new EquityException(MyErrorEnum.ASSIGN_TICKETS_ERROR);
