@@ -465,25 +465,58 @@ public class CardTicketServiceImpl implements CardTicketService {
         return pageableData;
     }
 
+    @Override
+    public int
+    putOpenIdByPhone(String openId, String phone){
+        if(null == openId || null == phone || openId.isEmpty() || phone.isEmpty()){
+            return 0;
+        }
+
+        String employeeCode = getEmployeeCodeByPhone(phone);
+        if(null == employeeCode || employeeCode.isEmpty()){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
+
+        return ticketDao.updateOpenIdByEmployeeCode(openId,employeeCode);
+
+    }
+
     private String
     getEmployeeCodeByPhone(String phone){
 
         OperaResult result = vendorsService.getEmployeeInfoByPhone(phone);
-        log.info(JSON.toJSONString(result));
+        log.info("服务调用用户返回: {}",JSON.toJSONString(result));
         if(200 != result.getCode()){
             throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
         }
         Map<String,Object> data = result.getData();
+        if (null == data){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
         Object employeeObj = data.get("employee");
         if (null == employeeObj){
             throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
         }
-        JSONObject json = JSON.parseObject(employeeObj.toString());
-        if (null == json || null == json.get("code")){
+        log.info("服务调用用户返回: employee={}",JSON.toJSONString(employeeObj));
+        JSONObject employee = JSON.parseObject(JSON.toJSONString(employeeObj));
+        if (null == employee){
             throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
         }
 
-        return  json.get("code").toString();
+        Integer employeeStatus = employee.getInteger("status");
+        String code = employee.getString("code");
+        if (null == code || null == employeeStatus){
+            throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
+        }
+
+        if(1 == employeeStatus) {
+            //INCUMBENT(1,"在职"),
+            //OUTGOING(2,"离职"),
+            return code;
+        }else{
+            log.error("phone={}的员工已经离职",phone);
+            return null;
+        }
 
     }
 

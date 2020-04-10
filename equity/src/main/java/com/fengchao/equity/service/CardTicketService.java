@@ -55,4 +55,6 @@ public interface CardTicketService {
     PageableData<CardTicket> findTickets(String activateStartTime, String activateEndTime,
                                          String consumeStartTime, String consumeEndTime,
                                          Integer status,CardTicketBean bean);
+
+    int putOpenIdByPhone(String openId, String phone);
 }

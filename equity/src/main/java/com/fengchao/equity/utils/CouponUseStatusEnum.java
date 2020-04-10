@@ -2,6 +2,9 @@ package com.fengchao.equity.utils;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public enum CouponUseStatusEnum {
     /**/
@@ -19,6 +22,17 @@ public enum CouponUseStatusEnum {
         this.msg = msg;
     }
 
+    public static List<Integer> canRefundStatusList(){
+        List<Integer> list = new ArrayList<>();
+        list.add(AVAILABLE.getCode());
+        list.add(INVALID.getCode());
+
+        return list;
+    }
+
+    public static boolean canRefund(Integer code){
+        return (AVAILABLE.getCode() == code || INVALID.getCode() == code);
+    }
 
     public static int String2Int(String status) {
         if (null != status && !status.isEmpty()) {

@@ -1,5 +1,7 @@
 package com.fengchao.equity.feign;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fengchao.equity.bean.OperaResponse;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.feign.hystric.VendorsServiceH;
 import org.springframework.cloud.openfeign.FeignClient;

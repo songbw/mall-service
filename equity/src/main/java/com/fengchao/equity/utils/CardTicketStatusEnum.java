@@ -4,6 +4,9 @@ import com.fengchao.equity.exception.EquityException;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public enum CardTicketStatusEnum {
     /**/
@@ -15,6 +18,7 @@ public enum CardTicketStatusEnum {
     USED(6, "已使用"),
     TIMEOUT(7, "已过期"),
     ASSIGNED(8, "已分配"),
+    REFUNDED(9, "已赎回"),
     ;
 
     private int code;
@@ -23,6 +27,25 @@ public enum CardTicketStatusEnum {
     CardTicketStatusEnum(int code, String msg) {
         this.code = code;
         this.msg = msg;
+    }
+
+    public static List<Integer> canRefundStatusList(){
+        List<Integer> list = new ArrayList<>();
+        list.add(CREATED.getCode());
+        list.add(ACTIVE.getCode());
+        list.add(BOUND.getCode());
+        list.add(EXCHANGED.getCode());
+        list.add(ASSIGNED.getCode());
+        list.add(TIMEOUT.getCode());
+
+        return list;
+    }
+
+    public static boolean canRefund(Integer code){
+        return (CREATED.getCode() == code || ACTIVE.getCode() == code ||
+                BOUND.getCode() == code || EXCHANGED.getCode() == code ||
+                ASSIGNED.getCode() == code || TIMEOUT.getCode() == code
+                );
     }
 
     public static boolean canNotTimeout(int code){

@@ -111,6 +111,15 @@ public class CardTicketDao {
         return mapper.selectByExample(example);
     }
 
+    public List<CardTicket> selectCardTicketByEmployeeCode(String employeeCode) {
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andEmployeeCodeEqualTo(employeeCode);
+
+        return mapper.selectByExample(example);
+    }
+
     public CardTicket findById(int id) {
         return mapper.selectByPrimaryKey(id);
     }
@@ -275,5 +284,21 @@ public class CardTicketDao {
         CardTicket ticket = new CardTicket();
         ticket.setStatus((short)CardTicketStatusEnum.EXCHANGED.getCode());
         return mapper.updateByExampleSelective(ticket, example);
+    }
+
+    public int updateOpenIdByEmployeeCode(String openId,String employeeCode){
+
+        CardTicket updateTicket = new CardTicket();
+        updateTicket.setOpenId(openId);
+        updateTicket.setUpdateTime(new Date());
+
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andEmployeeCodeEqualTo(employeeCode);
+        criteria.andOpenIdIsNull();
+
+        return mapper.updateByExampleSelective(updateTicket,example);
+
     }
 }
