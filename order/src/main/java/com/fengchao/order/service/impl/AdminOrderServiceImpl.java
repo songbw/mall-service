@@ -348,29 +348,37 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         billExportReqVo.setStartDate(startDate);
         billExportReqVo.setEndDate(endDate);
 
-        //获取支付流水
+        // 获取支付流水
         billExportReqVo.setTradeType("consume");
         List<OrderPayMethodInfoBean> payMethodInfoBeans = wsPayRpcService.queryPayCandRList(billExportReqVo);
         log.info("导出交易流水单 入账信息:{}", JSONUtil.toJsonString(payMethodInfoBeans));
 
-        //获取退款流水
+        // 获取退款流水
         billExportReqVo.setPageNum(1);
         billExportReqVo.setTradeType("refund");
         List<OrderPayMethodInfoBean> refundMethodInfoBeans = wsPayRpcService.queryPayCandRList(billExportReqVo);
         log.info("导出交易流水单 出账信息:{}", JSONUtil.toJsonString(refundMethodInfoBeans));
 
-        //获取平台信息
+        // 获取平台信息
         Platform platform = productRpcService.findPlatformByAppId(billExportReqVo.getAppId());
 
-        Map<String, Orders> ordersMap = new HashMap<>();
+
+
+        // 获取支付的支付单号集合
         List<String> paymentNos = new ArrayList<>();
         for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
             paymentNos.add(bean.getOrderNo());
         }
+        // 根据支付单号获取主订单
         List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentNos(paymentNos);
+
+        // 转map， key ： paymentNo value: 主订单
+        Map<String, Orders> ordersMap = new HashMap<>();
         for (Orders orders : ordersList) {
             ordersMap.put(orders.getPaymentNo(), orders);
         }
+
+        // 再次转map  key: 主订单号  value：主订单
         Map<String, OrderPayMethodInfoBean> parInfoMap = new HashMap<>();
         for (OrderPayMethodInfoBean bean : payMethodInfoBeans) {
             Orders orders = ordersMap.get(bean.getOrderNo());
@@ -382,6 +390,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             parInfoMap.put(bean.getOutTradeNo(), bean);
         }
 
+        //
         for (OrderPayMethodInfoBean bean : refundMethodInfoBeans) {
             OrderPayMethodInfoBean payMethodInfoBean = parInfoMap.get(bean.getOutTradeNo());
             if (payMethodInfoBean != null) {
@@ -390,6 +399,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             }
             bean.setTradeType("已退款");
         }
+
+        //
         PayMethodInfoBeanMap.put("consume", payMethodInfoBeans);
         PayMethodInfoBeanMap.put("refund", refundMethodInfoBeans);
         return PayMethodInfoBeanMap;
