@@ -56,5 +56,10 @@ public interface CardTicketService {
                                          String consumeStartTime, String consumeEndTime,
                                          Integer status,CardTicketBean bean);
 
-    int putOpenIdByPhone(String openId, String phone);
+    Integer putOpenIdByPhone(String openId, String phone,String appId);
+
+    int countTicketsCanRefund(String cardInfoCode);
+
+    Integer
+    refundTickets(String welfareOrderNo, Integer count);
 }

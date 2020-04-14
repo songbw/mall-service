@@ -255,14 +255,16 @@ public class CardTicketServiceImpl implements CardTicketService {
         if (!bean.getAppId().equals(cardInfo.getAppId())){
             throw new EquityException(MyErrorEnum.CARD_INFO_APP_ID_NOT_MATCH);
         }
-        if((!CouponTypeEnum.needTrigger(coupon.getCouponType())) && cardTicket.getStatus() == CardTicketStatusEnum.BOUND.getCode()){
+        if((!CouponTypeEnum.needTrigger(coupon.getCouponType())) &&
+                cardTicket.getStatus() == CardTicketStatusEnum.BOUND.getCode()){
             Date date = new Date();
             DecimalFormat df=new DecimalFormat("0000");
             CouponUseInfo couponUseInfo = new CouponUseInfo();
             couponUseInfo.setCollectedTime(date);
             couponUseInfo.setCouponId(coupon.getId());
             couponUseInfo.setEffectiveStartDate(date);
-            Date fetureDate = DataUtils.getFetureDate(date, cardInfo.getEffectiveDays());
+            //Date fetureDate = DataUtils.getFetureDate(date, cardInfo.getEffectiveDays());
+            Date fetureDate = cardTicket.getEndTime();
             couponUseInfo.setEffectiveEndDate(fetureDate);
             couponUseInfo.setCode(coupon.getCode());
             couponUseInfo.setUserOpenId(cardTicket.getOpenId());
@@ -466,8 +468,8 @@ public class CardTicketServiceImpl implements CardTicketService {
     }
 
     @Override
-    public int
-    putOpenIdByPhone(String openId, String phone){
+    public Integer
+    putOpenIdByPhone(String openId, String phone,String appId){
         if(null == openId || null == phone || openId.isEmpty() || phone.isEmpty()){
             return 0;
         }
@@ -477,8 +479,97 @@ public class CardTicketServiceImpl implements CardTicketService {
             throw new EquityException(MyErrorEnum.EMPLOYEE_NOT_FIND_BY_PHONE);
         }
 
-        return ticketDao.updateOpenIdByEmployeeCode(openId,employeeCode);
+        List<CardTicket> cardTickets = ticketDao.selectCardTicketByEmployeeCode(employeeCode);
+        if(null == cardTickets || 0 == cardTickets.size()){
+            log.error("没有找到员工编码={} 的提货卡",employeeCode);
+            return 0;
+        }
+        log.info("找到员工编码={} 的提货卡 {}",employeeCode,JSON.toJSONString(cardTickets));
 
+        List<Integer> cardInfoIdList = new ArrayList<>();
+        cardTickets.forEach(cardTicket -> cardInfoIdList.add(cardTicket.getCardId()));
+
+        ExportCardBean queryBean = new ExportCardBean();
+        queryBean.setIds(cardInfoIdList);
+        queryBean.setStatus((short)(int)CardInfoStatusEnum.RELEASED.getCode());
+        List<CardInfo> cardInfoList = infoDao.findByIds(queryBean);
+        List<String> cardInfoCodeList = new ArrayList<>();
+        if(null == cardInfoList || 0 == cardInfoIdList.size()){
+            log.error("没有找到员工编码={} 的兑换记录",employeeCode);
+            return 0;
+        }
+        cardInfoList.forEach(cardInfo->{
+            if(cardInfo.getAppId().equals(appId)){
+                cardInfoCodeList.add(cardInfo.getCode());
+            }
+        });
+
+        if(0 == cardInfoCodeList.size()){
+            log.error("没有找到员工编码={} appId={} 的可用优惠券",employeeCode,appId);
+            return 0;
+        }
+
+        return ticketDao.updateOpenIdByEmployeeCode(openId,employeeCode,cardInfoCodeList);
+        //return ticketDao.selectByOpenId(openId,employeeCode);
+
+    }
+
+    @Override
+    public int
+    countTicketsCanRefund(String welfareOrderNo){
+        List<CardTicket> tickets = ticketDao.getTicketsCanRefund(welfareOrderNo);
+        return tickets.size();
+    }
+
+    @Override
+    public Integer
+    refundTickets(String welfareOrderNo, Integer count){
+
+        List<CardTicket> tickets = ticketDao.getTicketsCanRefund(welfareOrderNo);
+        if(null == tickets || 0 == tickets.size()){
+            String errorMsg = "没有发现 welfareOrderNo="+welfareOrderNo+" 可以赎回的提货卡";
+            log.error(errorMsg);
+            return -1;
+
+        }
+
+        List<Integer> ticketIdList = new ArrayList<>();
+        List<String> userCouponInfoCodeList = new ArrayList<>();
+        if(null == count){
+            tickets.forEach(ticket->{
+                ticketIdList.add(ticket.getId());
+                if(null != ticket.getUserCouponCode()){
+                    userCouponInfoCodeList.add(ticket.getUserCouponCode());
+                }
+            });
+        }else{
+            int total = tickets.size();
+            int i;
+            for(i = 0; i < total && i < count; i++){
+                CardTicket ticket = tickets.get(i);
+                ticketIdList.add(ticket.getId());
+                if(null != ticket.getUserCouponCode()){
+                    userCouponInfoCodeList.add(ticket.getUserCouponCode());
+                }
+            }
+        }
+        log.info("赎回的提货卡 TicketIdList={}", JSON.toJSONString(ticketIdList));
+        if (0 < userCouponInfoCodeList.size()) {
+            List<CouponUseInfo> infos = useInfoDao.selectByUserCouponCodeList(userCouponInfoCodeList);
+
+            List<Integer> couponIdList = new ArrayList<>();
+            infos.forEach(info -> couponIdList.add(info.getCouponId()));
+
+            log.info("赎回的提货卡 userCouponCodeList={}", JSON.toJSONString(userCouponInfoCodeList));
+            log.info("赎回的提货卡 couponIdList={}", JSON.toJSONString(couponIdList));
+            if(0 < couponIdList.size()) {
+                couponDao.invalidCouponsByIdList(couponIdList);
+            }
+            useInfoDao.invalidUserCouponByCodeList(userCouponInfoCodeList);
+        }
+        int countTicket = ticketDao.invalidTicketsByIdList(ticketIdList);
+        log.info("赎回的提货卡 数量={}", String.valueOf(countTicket));
+        return countTicket;
     }
 
     private String

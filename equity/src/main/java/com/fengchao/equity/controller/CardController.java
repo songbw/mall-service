@@ -26,15 +26,15 @@ public class CardController {
     public OperaResult
     putCardTicketOpenId(@RequestBody OpenIdPhoneBean bean,
                      @RequestHeader(value = "appId") String appId,
-                     OperaResult result) throws Exception {
+                     OperaResult result) {
         log.info("设置礼品券openId: appId={} 入参:{}", appId,JSONUtil.toJsonString(bean));
-        //if (null == appId){
-        //    result.setCode(500);
-        //    result.setMsg("应用缺失appId");
-        //    return result;
-        //}
+        if (null == appId){
+            result.setCode(500);
+            result.setMsg("应用缺失appId");
+            return result;
+        }
 
-        result.getData().put("result",ticketService.putOpenIdByPhone(bean.getOpenId(),bean.getPhone()));
+        result.getData().put("result",ticketService.putOpenIdByPhone(bean.getOpenId(),bean.getPhone(),appId));
         return result;
     }
 

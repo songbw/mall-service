@@ -81,7 +81,7 @@ public class CardInfoServiceImpl implements CardInfoService {
             throw new EquityException(MyErrorEnum.CARD_INFO_NOT_FOUND);
         }
 
-        Integer updateStatus = (int)bean.getStatus();
+        Short updateStatus = bean.getStatus();
         if (null != updateStatus){
             Integer status = (int)record.getStatus();
             if (CardInfoStatusEnum.INVALID.getCode().equals(status)) {

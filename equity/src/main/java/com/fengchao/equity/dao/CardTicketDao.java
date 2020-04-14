@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -286,10 +287,11 @@ public class CardTicketDao {
         return mapper.updateByExampleSelective(ticket, example);
     }
 
-    public int updateOpenIdByEmployeeCode(String openId,String employeeCode){
+    public int updateOpenIdByEmployeeCode(String openId,String employeeCode, List<String> cardInfoCodeList){
 
         CardTicket updateTicket = new CardTicket();
         updateTicket.setOpenId(openId);
+        updateTicket.setStatus((short)CardTicketStatusEnum.BOUND.getCode());
         updateTicket.setUpdateTime(new Date());
 
         CardTicketExample example = new CardTicketExample();
@@ -297,8 +299,54 @@ public class CardTicketDao {
         criteria.andIsDeleteEqualTo((short) 1);
         criteria.andEmployeeCodeEqualTo(employeeCode);
         criteria.andOpenIdIsNull();
+        criteria.andCardInfoCodeIn(cardInfoCodeList);
 
         return mapper.updateByExampleSelective(updateTicket,example);
 
+    }
+
+    public List<CardTicket> selectByOpenId(String openId,String employeeCode){
+
+
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andEmployeeCodeEqualTo(employeeCode);
+        criteria.andOpenIdEqualTo(openId);
+
+        return mapper.selectByExample(example);
+
+    }
+
+    public List<CardTicket> getTicketsCanRefund(String welfareOrderNo){
+        if (null == welfareOrderNo || welfareOrderNo.isEmpty()){
+            log.warn("try countCanRefund, but welfareOrderNo is empty");
+            return new ArrayList<>(0);
+        }
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andWelfareOrderNoEqualTo(welfareOrderNo);
+        criteria.andStatusIn(CardTicketStatusEnum.canRefundStatusList());
+
+        return mapper.selectByExample(example);
+    }
+
+    public int invalidTicketsByIdList(List<Integer> list){
+        if (null == list || 0 == list.size()){
+            log.warn("try countCanRefund, but list=null");
+            return 0;
+        }
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        criteria.andIdIn(list);
+        criteria.andStatusIn(CardTicketStatusEnum.canRefundStatusList());
+
+        CardTicket updateRecord = new CardTicket();
+        updateRecord.setStatus((short)CardTicketStatusEnum.REFUNDED.getCode());
+        updateRecord.setUpdateTime(new Date());
+
+        return mapper.updateByExampleSelective(updateRecord,example);
     }
 }

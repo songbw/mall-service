@@ -29,14 +29,14 @@ public enum CardTicketStatusEnum {
         this.msg = msg;
     }
 
-    public static List<Integer> canRefundStatusList(){
-        List<Integer> list = new ArrayList<>();
-        list.add(CREATED.getCode());
-        list.add(ACTIVE.getCode());
-        list.add(BOUND.getCode());
-        list.add(EXCHANGED.getCode());
-        list.add(ASSIGNED.getCode());
-        list.add(TIMEOUT.getCode());
+    public static List<Short> canRefundStatusList(){
+        List<Short> list = new ArrayList<>();
+        list.add((short)CREATED.getCode());
+        list.add((short)ACTIVE.getCode());
+        list.add((short)BOUND.getCode());
+        list.add((short)EXCHANGED.getCode());
+        list.add((short)ASSIGNED.getCode());
+        list.add((short)TIMEOUT.getCode());
 
         return list;
     }

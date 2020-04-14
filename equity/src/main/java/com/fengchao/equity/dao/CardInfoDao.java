@@ -5,6 +5,7 @@ import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.mapper.CardInfoMapper;
 import com.fengchao.equity.model.CardInfo;
 import com.fengchao.equity.model.CardInfoExample;
+import com.fengchao.equity.utils.CardInfoStatusEnum;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,9 @@ public class CardInfoDao {
         }
         if(bean.getAppId() != null){
             criteria.andAppIdEqualTo(bean.getAppId());
+        }
+        if(null != bean.getStatus() && 0 != bean.getStatus()){
+            criteria.andStatusEqualTo(bean.getStatus());
         }
 
         return mapper.selectByExample(example);

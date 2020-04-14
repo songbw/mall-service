@@ -155,6 +155,9 @@ public class CouponUseInfoDao {
     }
 
     public List<CouponUseInfo> selectByCouponIdList(List<Integer> idList) {
+        if(null == idList || 0 == idList.size()){
+            return new ArrayList<>(0);
+        }
         CouponUseInfoExample example = new CouponUseInfoExample();
         CouponUseInfoExample.Criteria criteria = example.createCriteria();
         criteria.andDeleteFlagEqualTo(0);
@@ -221,5 +224,23 @@ public class CouponUseInfoDao {
         }
 
         return (int)couponUseInfoMapper.countByExample(example);
+    }
+
+    public int
+    invalidUserCouponByCodeList(List<String> codeLst){
+
+        if (null == codeLst || 0 == codeLst.size()){
+            return 0;
+        }
+        CouponUseInfoExample example = new CouponUseInfoExample();
+        CouponUseInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(CouponUseStatusEnum.AVAILABLE.getCode());
+        criteria.andUserCouponCodeIn(codeLst);
+
+        CouponUseInfo updateRecord = new CouponUseInfo();
+        updateRecord.setStatus(CouponUseStatusEnum.INVALID.getCode());
+
+        return couponUseInfoMapper.updateByExampleSelective(updateRecord,example);
+
     }
 }

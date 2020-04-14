@@ -5,6 +5,7 @@ import com.fengchao.equity.mapper.CouponXMapper;
 import com.fengchao.equity.model.Coupon;
 import com.fengchao.equity.model.CouponExample;
 import com.fengchao.equity.model.CouponX;
+import com.fengchao.equity.utils.CouponStatusEnum;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,5 +91,20 @@ public class CouponDao {
     public CouponX selectCouponXById(Integer id) {
 
         return couponXMapper.selectByPrimaryKey(id);
+    }
+
+    public int invalidCouponsByIdList(List<Integer> idList){
+        if (null == idList || 0 == idList.size()){
+            return 0;
+        }
+        Coupon updateRecord = new Coupon();
+        updateRecord.setStatus(CouponStatusEnum.INVALID.getCode());
+
+        CouponExample couponExample = new CouponExample();
+        CouponExample.Criteria criteria = couponExample.createCriteria();
+        criteria.andIdIn(idList);
+
+        return couponMapper.updateByExampleSelective(updateRecord,couponExample);
+
     }
 }

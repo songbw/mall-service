@@ -147,7 +147,7 @@ public class AdminCardInfoController {
         return result;
     }
 
-    @PostMapping("TicketsByOrder")
+    @PostMapping("api/ticketsByOrder")
     public OperaResult createActiveCardTicket(@RequestBody CardTicketBean bean, OperaResult result){
         log.info("订单产生礼品券参数 入参:{}", JSONUtil.toJsonString(bean));
         result.getData().put("result",ticketService.batchCreateActiveCardTickets(bean));
@@ -170,6 +170,37 @@ public class AdminCardInfoController {
     @GetMapping("cardInfoGroup")
     public OperaResult findCardInfoGroupByCorporation(@RequestParam(required = false) String corporationCode, OperaResult result){
         result.getData().put("result",service.getByCorporation(corporationCode));
+        return result;
+    }
+
+    @GetMapping("api/countTicketsCanRefund")
+    public OperaResult findTicketsCanRefund(@RequestParam(required = false) String welfareOrderNo, OperaResult result){
+        result.getData().put("result",ticketService.countTicketsCanRefund(welfareOrderNo));
+        return result;
+    }
+
+    @PostMapping("api/refundTickets")
+    public OperaResult refundTickets(@RequestBody Map<String,Object> map, OperaResult result){
+        log.info("赎回提货卡 入参: {}",JSON.toJSONString(map));
+        Object welfareOrderNoObj = map.get("welfareOrderNo");
+        if(null == welfareOrderNoObj){
+            result.setCode(500);
+            result.setMsg("缺少参数 welfareOrderNo");
+            return result;
+        }
+        Object countObj = map.get("refundCount");
+        String welfareOrderNo = welfareOrderNoObj.toString();
+        Integer count =(null == countObj)?null:Integer.valueOf(countObj.toString());
+
+        Integer integer = ticketService.refundTickets(welfareOrderNo, count);
+        Integer refundedCount = integer;
+        if(-1 == refundedCount){
+            result.setCode(400);
+            result.setMsg("没有发现 welfareOrderNo="+welfareOrderNo+" 可以赎回的提货卡");
+            return result;
+        }
+
+        result.getData().put("result",refundedCount);
         return result;
     }
 
