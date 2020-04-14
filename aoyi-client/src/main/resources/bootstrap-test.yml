@@ -1,18 +1,18 @@
-spring.cloud.service-registry.auto-registration.enabled: false
-
-spring:
-  profiles:
-    active: dev
-  application:
-    name: aoyi-client
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        service-id: config-server
-      profile: ${spring.profiles.active}
-      retry:
-        max-attempts: 3
-        max-interval: 2000
-        initial-interval: 2000
-        request-read-timeout: 10000
+#spring.cloud.service-registry.auto-registration.enabled: false
+#
+#spring:
+#  profiles:
+#    active: dev
+#  application:
+#    name: aoyi-client
+#  cloud:
+#    config:
+#      discovery:
+#        enabled: true
+#        service-id: config-server
+#      profile: ${spring.profiles.active}
+#      retry:
+#        max-attempts: 3
+#        max-interval: 2000
+#        initial-interval: 2000
+#        request-read-timeout: 10000
