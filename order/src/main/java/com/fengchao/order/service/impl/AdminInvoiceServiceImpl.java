@@ -434,7 +434,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                             Integer _tp = _paymentInfoByMpuDimension.getTotalPrice() == null ? 0 : _paymentInfoByMpuDimension.getTotalPrice();
                             _paymentInfoByMpuDimension.setTotalPrice(_tp + CalculateUtil.convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum());
 
-                            totalAmount = totalAmount + CalculateUtil.convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum(); // 单位 分
+                            totalAmount = totalAmount + CalculateUtil.convertYuanToFen(_orderDetail.getUnitPrice().toString()) * _orderDetail.getNum(); // 单位 分
                         } // end 遍历子订单
                     } // end 遍历主订单
 
