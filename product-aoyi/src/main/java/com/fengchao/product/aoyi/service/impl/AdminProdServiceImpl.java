@@ -797,7 +797,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                     ids.add(bean.getId()) ;
                     continue;
                 }
-                if (StringUtils.isEmpty(aoyiProdIndex.getSprice()) && aoyiProdIndex.getMerchantId() == 4) {
+                if (StringUtils.isEmpty(aoyiProdIndex.getSprice()) && aoyiProdIndex.getMerchantId() != 4) {
                     logger.info("sprice is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
