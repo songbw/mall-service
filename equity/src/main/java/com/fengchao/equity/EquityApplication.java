@@ -2,6 +2,7 @@ package com.fengchao.equity;
 
 import com.fengchao.equity.db.config.DynamicDataSourceConfig;
 import com.github.ltsopensource.spring.boot.annotation.EnableJobClient;
+import com.github.ltsopensource.spring.boot.annotation.EnableMonitor;
 import com.github.ltsopensource.spring.boot.annotation.EnableTaskTracker;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +16,7 @@ import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
 @EnableTaskTracker      // 启动TaskTracker
-//@EnableMonitor          // 启动Monitor
+///@EnableMonitor()          // 启动Monitor
 @EnableJobClient
 @EnableFeignClients
 @EnableDiscoveryClient

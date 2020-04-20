@@ -161,6 +161,13 @@ public class CouponController {
         return result;
     }
 
+    @PostMapping("testLts/{id}")
+    public OperaResult testLts(@PathVariable Integer id, OperaResult result){
+        useInfoService.testLts(id);
+        result.getData().put("result","ok");
+        return result;
+    }
+
     @PostMapping("occupy")//占用优惠券
     public OperaResult occupyCoupon(@RequestBody CouponUseInfoBean bean, OperaResult result){
         String description = MyFunctions.WEB_OCCUPY_COUPON;

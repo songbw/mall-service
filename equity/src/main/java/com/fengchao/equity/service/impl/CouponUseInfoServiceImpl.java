@@ -480,6 +480,14 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
     }
 
     @Override
+    public void testLts(Integer testId) {
+
+       JobClientUtils.TestLtsTrigger(environment, jobClient, testId);
+       log.info("Test LTS Trigger {}",testId);
+
+    }
+
+    @Override
     public int releaseCoupon(CouponUseInfoBean bean) {
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfoX couponUseInfo = mapper.selectByPrimaryKey(bean);

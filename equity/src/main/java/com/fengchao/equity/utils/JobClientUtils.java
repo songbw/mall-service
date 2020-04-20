@@ -1,14 +1,17 @@
 package com.fengchao.equity.utils;
 
+import com.fengchao.equity.jobClient.JobTypeName;
 import com.github.ltsopensource.core.commons.utils.DateUtils;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JobClientUtils {
 
@@ -19,9 +22,9 @@ public class JobClientUtils {
     public static void promotionEffectiveTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("promotion_effective_trigger_" + id);
-        job.setParam("type", "promotionEffective");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.PROMOTION_EFFECTIVE);
         job.setParam("promotionId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -35,9 +38,9 @@ public class JobClientUtils {
     public static void promotionEndTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("promotion_end_trigger_" + id);
-        job.setParam("type", "promotionEnd");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.PROMOTION_END);
         job.setParam("promotionId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -51,9 +54,9 @@ public class JobClientUtils {
     public static void couponEffectiveTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("coupon_effective_trigger_" + id);
-        job.setParam("type", "couponEffective");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.COUPON_EFFECTIVE);
         job.setParam("couponId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -67,9 +70,9 @@ public class JobClientUtils {
     public static void couponEndTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("coupon_end_trigger_" + id);
-        job.setParam("type", "couponEnd");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.COUPON_END);
         job.setParam("couponId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -83,9 +86,9 @@ public class JobClientUtils {
     public static void couponInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("coupon_invalid_trigger_" + id);
-        job.setParam("type", "couponInvalid");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.COUPON_INVALID);
         job.setParam("couponId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());   // 1 小时之后执行
@@ -99,9 +102,9 @@ public class JobClientUtils {
     public static void virtualTicketsInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("virtual_invalid_trigger_" + id);
-        job.setParam("type", "virtualInvalid");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.VIRTUAL_INVALID);
         job.setParam("virtualId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());
@@ -115,13 +118,28 @@ public class JobClientUtils {
     public static void couponReleaseTrigger(Environment environment, JobClient jobClient, Integer id) {
         Job job = new Job();
         job.setTaskId("coupon_release_trigger_" + id);
-        job.setParam("type", "couponRelease");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.COUPON_RELEASE);
         job.setParam("couponUserId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(DateUtils.addMinute(new Date(), 30).getTime());   // 半小时之后执行
         jobClient.submitJob(job);
+    }
+
+    public static void TestLtsTrigger(Environment environment, JobClient jobClient, Integer id) {
+        Job job = new Job();
+        job.setTaskId("test_lts_trigger_" + id);
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.TEST_LTS);
+        job.setParam("id", id + "");
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
+        job.setNeedFeedback(true);
+        job.setReplaceOnExist(true);
+        job.setMaxRetryTimes(10);
+        job.setRepeatCount(10);
+        job.setTriggerTime(DateUtils.addMinute(new Date(), 1).getTime());
+        jobClient.submitJob(job);
+        log.info("提交任务: {}","equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
     }
 
     /**
@@ -131,9 +149,9 @@ public class JobClientUtils {
     public static void cardInvalidTrigger(Environment environment, JobClient jobClient, String cardCode, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("card_invalid_trigger_" + cardCode);
-        job.setParam("type", "cardInvalid");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.CARD_INVALID);
         job.setParam("cardCode", cardCode + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());
@@ -147,9 +165,9 @@ public class JobClientUtils {
     public static void couponUseInfoInvalidTrigger(Environment environment, JobClient jobClient, Integer id, Date triggerTime) {
         Job job = new Job();
         job.setTaskId("coupon_use_invalid_trigger_" + id);
-        job.setParam("type", "couponUseInvalid");
+        job.setParam(JobTypeName.TYPE_FILED, JobTypeName.COUPON_USE_INVALID);
         job.setParam("couponUseId", id + "");
-        job.setTaskTrackerNodeGroup("equity_trade_TaskTracker_" + environment.getActiveProfiles()[0]);
+        job.setTaskTrackerNodeGroup(JobTypeName.TASK_TRACKER_NODE_GROUP_PREFIX + environment.getActiveProfiles()[0]);
         job.setNeedFeedback(true);
         job.setReplaceOnExist(true);        // 当任务队列中存在这个任务的时候，是否替换更新
         job.setTriggerTime(triggerTime.getTime());

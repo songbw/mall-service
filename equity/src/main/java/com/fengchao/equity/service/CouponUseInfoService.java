@@ -31,6 +31,8 @@ public interface CouponUseInfoService {
 
     int occupyCoupon(CouponUseInfoBean bean);
 
+    void testLts(Integer testId);
+
     CouponUseInfoX findById(CouponUseInfoBean bean);
 
     /**
