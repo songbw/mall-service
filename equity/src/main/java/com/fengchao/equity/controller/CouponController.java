@@ -172,13 +172,14 @@ public class CouponController {
             result.setMsg("优惠券不在有效期，不能使用");
         }else if(num == 3){
             result.setCode(700002);
-            result.setMsg("优惠券存在");
+            result.setMsg("优惠券不存在");
         }else if(num == 4){
             result.setCode(700003);
             result.setMsg("优惠券已使用");
         }else {
             result.getData().put("result",num);
         }
+        logParamOut(description,JSON.toJSONString(result));
         return result;
     }
 

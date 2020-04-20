@@ -463,15 +463,20 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
         useInfo.setId(bean.getId());
         useInfo.setUserCouponCode(bean.getUserCouponCode());
         useInfo.setStatus(CouponUseStatusEnum.OCCUPIED.getCode());
-        int num = mapper.updateStatusByUserCode(useInfo);
-        if(num == 1){
+        mapper.updateStatusByUserCode(useInfo);
+        CouponUseInfo updatedRecord = couponUseInfoDao.findBycouponUserId(useInfo.getId());
+        if(null != updatedRecord && updatedRecord.getStatus().equals(CouponUseStatusEnum.OCCUPIED.getCode())){
             Coupon coupon = couponDao.selectCouponById(couponUseInfo.getCouponId());
             if(CouponTypeEnum.isWelfareTicket(coupon.getCouponType())){
                 ticketDao.occupyCard(bean.getUserCouponCode());
             }
             JobClientUtils.couponReleaseTrigger(environment, jobClient, bean.getId());
+            log.info("占用优惠券成功 {}",JSON.toJSONString(coupon));
+            return 1;
+        }else{
+            log.error("占用优惠券失败 未发现优惠券编码对应的券信息 ");
         }
-        return num;
+        return 3;
     }
 
     @Override
@@ -649,6 +654,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
     @Override
     public int triggerRelease(int couponUserId) {
+        log.info("开始释放coupon  couponUserId=",String.valueOf(couponUserId));
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfo couponUseInfo = couponUseInfoDao.findBycouponUserId(couponUserId);
         Date date = new Date();
@@ -665,6 +671,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             }else{
                 useInfo.setStatus(CouponUseStatusEnum.AVAILABLE.getCode());
             }
+            log.info("释放coupon 释放couponUseInfo = {}",JSON.toJSONString(useInfo));
+        }else{
+            log.warn("释放coupon 没有找到couponUseInfo");
         }
         useInfo.setId(couponUserId);
 
@@ -677,6 +686,9 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             }else{
                 ticket.setStatus((short)CardTicketStatusEnum.EXCHANGED.getCode());
             }
+            log.info("释放coupon 释放cardTicket = {}",JSON.toJSONString(ticket));
+        }else{
+            log.warn("释放coupon 没有找到cardTicket");
         }
         ticketDao.update(ticket);
         return mapper.updateByPrimaryKeySelective(useInfo);

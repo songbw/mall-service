@@ -1,5 +1,6 @@
 package com.fengchao.equity.jobClient;
 
+import com.alibaba.fastjson.JSON;
 import com.fengchao.equity.model.CouponUseInfo;
 import com.fengchao.equity.service.CouponUseInfoService;
 import com.fengchao.equity.utils.CouponUseStatusEnum;
@@ -33,9 +34,12 @@ public class CouponReleaseRunnerJobImpl implements JobRunner {
                 couponUseInfoService.triggerRelease(couponUserId) ;
                 // 会发送到 LTS (JobTracker上)
                 bizLogger.info("优惠券释放成功");
+            }else{
+                LOGGER.warn("执行优惠券释放操作： 没有找到 id={} 的CouponUseInfo 或者处于非占用状态 {}",id,
+                        (null == couponUseInfo)?"null": JSON.toJSON(couponUseInfo));
             }
         } catch (Exception e) {
-            LOGGER.info("Run job failed!", e);
+            LOGGER.error("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
         }
         return new Result(Action.EXECUTE_SUCCESS, "优惠券释放执行成功");
