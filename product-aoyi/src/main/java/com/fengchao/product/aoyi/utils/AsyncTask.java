@@ -15,6 +15,7 @@ import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
+import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -190,7 +191,6 @@ public class AsyncTask {
     @Async
     public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
         List<StarSku> starSkus = starSkuDao.selectAll() ;
-        log.info("test star sku count: {}", starSkus.size());
         List<String> codes = new ArrayList<>() ;
         String code = "" ;
         int i = 1 ;
@@ -198,6 +198,7 @@ public class AsyncTask {
             if (i%200 == 0) {
                 codes.add(code) ;
                 code = "";
+                i = 1;
             }
             if (StringUtils.isEmpty(code)) {
                 i = i + 1;
@@ -208,8 +209,10 @@ public class AsyncTask {
             }
             if (i >= starSkus.size()) {
                 codes.add(code) ;
+                i = 1;
             }
         }
+        log.info("test star codes count: {}", codes.size());
         List<String> spus = new ArrayList<>();
         codes.forEach(c -> {
             OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(c) ;
