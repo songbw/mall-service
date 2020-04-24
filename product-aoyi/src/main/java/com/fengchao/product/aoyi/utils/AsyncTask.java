@@ -190,6 +190,7 @@ public class AsyncTask {
     @Async
     public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
         List<StarSku> starSkus = starSkuDao.selectAll() ;
+        log.info("test star sku count: {}", starSkus.size());
         List<String> codes = new ArrayList<>() ;
         String code = "" ;
         int i = 1 ;
