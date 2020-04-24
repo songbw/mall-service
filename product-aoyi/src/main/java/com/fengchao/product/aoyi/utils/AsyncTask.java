@@ -205,7 +205,7 @@ public class AsyncTask {
                 i = i + 1;
                 code = code + "," + starSku.getCode() ;
             }
-            if (i > starSkus.size()) {
+            if (i >= starSkus.size()) {
                 codes.add(code) ;
             }
         }
