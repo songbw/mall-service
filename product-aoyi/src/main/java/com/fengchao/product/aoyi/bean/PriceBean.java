@@ -10,4 +10,5 @@ public class PriceBean implements Serializable {
     private String price;
     private String sPrice;
     private int merchantId;
+    private String spuId ;
 }

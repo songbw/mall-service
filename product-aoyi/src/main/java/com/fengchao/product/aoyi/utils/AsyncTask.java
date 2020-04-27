@@ -93,7 +93,6 @@ public class AsyncTask {
                 JSONArray spuArray = resJson.getJSONObject("data").getJSONArray("spuIdList") ;
                 for (int i = 0; i < spuArray.size(); i++) {
                     String detailParam = "" ;
-                    System.out.println(i);
                     if ((i + 29) > spuArray.size()) {
                         detailParam = JSONUtil.toJsonString(spuArray.subList(i, spuArray.size()));
                     } else {

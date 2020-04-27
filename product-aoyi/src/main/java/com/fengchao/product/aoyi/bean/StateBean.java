@@ -10,4 +10,5 @@ public class StateBean implements Serializable {
     // 0：下架；1：上架
     private String state;
     private int merchantId;
+    private String spuId;
 }

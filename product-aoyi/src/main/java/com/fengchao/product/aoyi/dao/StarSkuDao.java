@@ -1,5 +1,7 @@
 package com.fengchao.product.aoyi.dao;
 
+import com.fengchao.product.aoyi.bean.PriceBean;
+import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.constants.IStatusEnum;
 import com.fengchao.product.aoyi.mapper.StarSkuMapper;
 import com.fengchao.product.aoyi.mapper.StarSkuXMapper;
@@ -9,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -181,6 +184,56 @@ public class StarSkuDao {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeEqualTo(starSku.getCode()) ;
+        starSkuMapper.updateByExampleSelective(starSku, example);
+    }
+
+    /**
+     * 根据code和spuId更新上下架状态
+     * @param bean
+     */
+    public void updateStatusByCodeAndSpuId(StateBean bean) {
+        StarSku starSku = new StarSku() ;
+        starSku.setCode(bean.getSkuId());
+        starSku.setSpuId(bean.getSpuId());
+        starSku.setStatus(Integer.valueOf(bean.getState()));
+        starSku.setUpdateTime(new Date());
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andCodeEqualTo(starSku.getCode()) ;
+        criteria.andSpuIdEqualTo(starSku.getSpuId()) ;
+        starSkuMapper.updateByExampleSelective(starSku, example);
+    }
+
+    /**
+     * 根据code和spuId更新上下架价格
+     * @param bean
+     */
+    public void updatePriceByCodeAndSpuId(PriceBean bean) {
+        StarSku starSku = new StarSku() ;
+        starSku.setCode(bean.getSkuId());
+        starSku.setSpuId(bean.getSpuId());
+        // 建议销售价
+        BigDecimal bigDecimal = new BigDecimal(bean.getPrice()) ;
+        int advisePrice = bigDecimal.multiply(new BigDecimal("100")).intValue() ;
+        starSku.setAdvisePrice(advisePrice);
+        // 进货价
+        BigDecimal bigDecimalS = new BigDecimal(bean.getSPrice()) ;
+        int sprice = bigDecimalS.multiply(new BigDecimal("100")).intValue() ;
+        starSku.setSprice(sprice);
+        // 计算销售价
+        BigDecimal bigDecimalPrice = new BigDecimal(0) ;
+        bigDecimalPrice = bigDecimalS.divide(new BigDecimal(0.9), 2, BigDecimal.ROUND_HALF_UP) ;
+        int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
+        if (price > advisePrice) {
+            starSku.setPrice(price);
+        } else {
+            starSku.setPrice(advisePrice);
+        }
+        starSku.setUpdateTime(new Date());
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andCodeEqualTo(starSku.getCode()) ;
+        criteria.andSpuIdEqualTo(starSku.getSpuId()) ;
         starSkuMapper.updateByExampleSelective(starSku, example);
     }
 

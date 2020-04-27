@@ -223,13 +223,22 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Override
     public void updatePrice(PriceBean bean) {
         productDao.updatePrice(bean);
+        if (!StringUtils.isEmpty(bean.getSpuId())) {
+            // 更新价格
+            starSkuDao.updatePriceByCodeAndSpuId(bean) ;
+        }
     }
 
     @Override
     public OperaResponse updateState(StateBean bean) {
         OperaResponse operaResponse = new OperaResponse();
         if ("1".equals(bean.getState())) {
-            AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(bean.getSkuId()) ;
+            AoyiProdIndex aoyiProdIndex = new AoyiProdIndex() ;
+            if (StringUtils.isEmpty(bean.getSpuId())) {
+                aoyiProdIndex = productDao.selectByMpu(bean.getSkuId()) ;
+            } else {
+                aoyiProdIndex = productDao.selectByMpu(bean.getSpuId()) ;
+            }
             logger.info("第三方更新状态接口，商品信息：{}", JSONUtil.toJsonString(aoyiProdIndex));
             if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                 operaResponse.setCode(200100);
@@ -258,6 +267,10 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             }
         }
         productDao.updateState(bean);
+        if (!StringUtils.isEmpty(bean.getSpuId())) {
+            // 更新状态
+            starSkuDao.updateStatusByCodeAndSpuId(bean) ;
+        }
         return operaResponse ;
     }
 
