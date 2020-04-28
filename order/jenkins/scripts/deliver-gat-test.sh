@@ -18,17 +18,17 @@ expect "$ "
 
 ##登录目标机器
 spawn ssh $user@$host -p $port
-##expect "password:"
-##send "${passwd}\n"
+expect "password:"
+send "${passwd}\n"
 expect "]$ "
 send "cd $tag_dir\n"
 expect "]$ "
 
 ##
-##send "rm $name\n"
-##expect "]$ "
-##send "mv $tag_dir$tmp_dir/$name .\n"
-##expect "]$ "
+send "rm $name\n"
+expect "]$ "
+send "mv $tag_dir$tmp_dir/$name .\n"
+expect "]$ "
 
 
 ## 重启
