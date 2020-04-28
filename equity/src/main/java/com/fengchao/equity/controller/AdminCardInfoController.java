@@ -6,10 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fengchao.equity.bean.*;
 import com.fengchao.equity.bean.page.PageableData;
 import com.fengchao.equity.feign.OrderService;
-import com.fengchao.equity.model.CardAndCoupon;
-import com.fengchao.equity.model.CardInfo;
-import com.fengchao.equity.model.CardInfoX;
-import com.fengchao.equity.model.CardTicket;
+import com.fengchao.equity.model.*;
 import com.fengchao.equity.service.CardAndCouponService;
 import com.fengchao.equity.service.CardInfoService;
 import com.fengchao.equity.service.CardTicketService;
@@ -24,6 +21,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +66,7 @@ public class AdminCardInfoController {
     }
 
     @GetMapping("tickets")
-    public OperaResponse<PageableData<CardTicket>>
+    public OperaResponse<PageableData<CardTicketIncludeOrderIdBean>>
     findCardTickets(
             @RequestParam(required=false) Integer pageNo,
             @RequestParam(required=false) Integer pageSize,
@@ -98,8 +96,44 @@ public class AdminCardInfoController {
             bean.setCardInfoCode(cardCode);
         }
         PageableData<CardTicket> ticketPage = ticketService.findTickets(activateStartTime,activateEndTime,consumeStartTime,consumeEndTime,status,bean);
+        List<CardTicket> cardTicketList = ticketPage.getList();
+        List<CardTicketIncludeOrderIdBean> resultList = new ArrayList<>();
+        Map<String,String> orderIdMap = new HashMap<>();
+        if(null != cardTicketList && 0 < cardTicketList.size()) {
+            List<String> useInfoCodeList = new ArrayList<>();
+            cardTicketList.forEach(ticket->{
+                CardTicketIncludeOrderIdBean resultBean = new CardTicketIncludeOrderIdBean();
+                BeanUtils.copyProperties(ticket,resultBean);
+                if(null != ticket.getUserCouponCode()){
+                    useInfoCodeList.add(ticket.getUserCouponCode());
+                }
+                resultList.add(resultBean);
+            });
 
-        return new OperaResponse<>(ticketPage);
+            if(0 != useInfoCodeList.size()){
+                List<CouponUseInfo> useInfoList = ticketService.selectByUserCouponCodeList(useInfoCodeList);
+                if(null != useInfoList && 0 < useInfoList.size()){
+                    useInfoList.forEach(info->{
+                        if(null != info.getOrderId() && !info.getOrderId().isEmpty()){
+                            orderIdMap.put(info.getUserCouponCode(),info.getOrderId());
+                        }
+                    });
+                }
+            }
+
+            resultList.forEach(ticketIncludeOrderIdBean->{
+                if(orderIdMap.containsKey(ticketIncludeOrderIdBean.getUserCouponCode())){
+                    ticketIncludeOrderIdBean.setOrderIdList(orderIdMap.get(ticketIncludeOrderIdBean.getUserCouponCode()));
+                }else{
+                    ticketIncludeOrderIdBean.setOrderIdList("");
+                }
+            });
+        }
+
+        PageableData<CardTicketIncludeOrderIdBean> result = new PageableData<>();
+        result.setPageInfo(ticketPage.getPageInfo());
+        result.setList(resultList);
+        return new OperaResponse<>(result);
     }
 
 //    @PostMapping("search")
@@ -170,6 +204,12 @@ public class AdminCardInfoController {
     @GetMapping("cardInfoGroup")
     public OperaResult findCardInfoGroupByCorporation(@RequestParam(required = false) String corporationCode, OperaResult result){
         result.getData().put("result",service.getByCorporation(corporationCode));
+        return result;
+    }
+
+    @GetMapping("ticketStatusCount")
+    public OperaResult countTicketsGroupByCorporation(@RequestParam(required = false) String corporationCode, OperaResult result){
+        result.getData().put("result",ticketService.countCardTicketStatus(corporationCode));
         return result;
     }
 

@@ -1,6 +1,7 @@
 package com.fengchao.equity.service;
 
 import com.fengchao.equity.bean.CardTicketBean;
+import com.fengchao.equity.bean.CorporationCardTicketStatusCountBean;
 import com.fengchao.equity.bean.ExportCardBean;
 import com.fengchao.equity.bean.TicketToEmployeeBean;
 import com.fengchao.equity.bean.page.PageableData;
@@ -62,4 +63,7 @@ public interface CardTicketService {
 
     Integer
     refundTickets(String welfareOrderNo, Integer count);
+
+    List<CorporationCardTicketStatusCountBean>
+    countCardTicketStatus(String corporationCode);
 }

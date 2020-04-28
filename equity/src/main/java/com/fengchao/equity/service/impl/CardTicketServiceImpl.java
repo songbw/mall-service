@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author fengchao
@@ -519,6 +520,44 @@ public class CardTicketServiceImpl implements CardTicketService {
     countTicketsCanRefund(String welfareOrderNo){
         List<CardTicket> tickets = ticketDao.getTicketsCanRefund(welfareOrderNo);
         return tickets.size();
+    }
+
+
+    @Override
+    public List<CorporationCardTicketStatusCountBean>
+    countCardTicketStatus(String corporationCode){
+        List<CardTicket> tickets = ticketDao.findByCorporationCode(corporationCode);
+        List<CorporationCardTicketStatusCountBean> result = new ArrayList<>();
+
+        if(null == tickets || 0 == tickets.size()){
+            return result;
+        }
+
+        Map<String, List<CardTicket>> corporationGroup = tickets.stream().collect(Collectors.groupingBy(CardTicket::getCorporationCode));
+        for (Map.Entry<String, List<CardTicket>> map : corporationGroup.entrySet()) {
+            CorporationCardTicketStatusCountBean bean = new CorporationCardTicketStatusCountBean();
+            bean.setCorporationCode(map.getKey());
+
+            List<CardTicket> ticketList = map.getValue();
+            if(null != ticketList && 0 < ticketList.size()){
+                List<CardTicketStatusCountBean> beanList = new ArrayList<>(ticketList.size());
+                Map<Short, List<CardTicket>> statusGroup = ticketList.stream().collect(Collectors.groupingBy(CardTicket::getStatus));
+                for(Map.Entry<Short,List<CardTicket>> statusMap: statusGroup.entrySet()){
+                    List<CardTicket> listByStatus = statusMap.getValue();
+                    CardTicketStatusCountBean statusCountBean = new CardTicketStatusCountBean();
+                    statusCountBean.setStatus((int)statusMap.getKey());
+                    if(null == listByStatus){
+                        statusCountBean.setCount(0);
+                    }else{
+                        statusCountBean.setCount(listByStatus.size());
+                    }
+                    beanList.add(statusCountBean);
+                }
+                bean.setStatusCount(beanList);
+            }
+            result.add(bean);
+        }
+        return result;
     }
 
     @Override

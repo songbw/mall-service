@@ -349,4 +349,17 @@ public class CardTicketDao {
 
         return mapper.updateByExampleSelective(updateRecord,example);
     }
+
+    public List<CardTicket> findByCorporationCode(String corporationCode){
+        CardTicketExample example = new CardTicketExample();
+        CardTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeleteEqualTo((short) 1);
+        if(null != corporationCode && !corporationCode.isEmpty()){
+            criteria.andCorporationCodeEqualTo(corporationCode);
+        }else{
+            criteria.andCorporationCodeIsNotNull();
+        }
+
+        return mapper.selectByExample(example);
+    }
 }
