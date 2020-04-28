@@ -25,10 +25,10 @@ send "cd $tag_dir\n"
 expect "]$ "
 
 ##
-send "rm $name\n"
-expect "]$ "
-send "mv $tmp_dir/$name .\n"
-expect "]$ "
+#send "rm $name\n"
+#expect "]$ "
+#send "mv $tmp_dir/$name .\n"
+#expect "]$ "
 
 
 ## 重启
