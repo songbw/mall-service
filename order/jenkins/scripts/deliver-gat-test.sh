@@ -27,7 +27,7 @@ expect "]$ "
 ##
 send "rm $name\n"
 expect "]$ "
-send "mv $tag_dir$tmp_dir/$name .\n"
+send "mv $tmp_dir/$name .\n"
 expect "]$ "
 
 
