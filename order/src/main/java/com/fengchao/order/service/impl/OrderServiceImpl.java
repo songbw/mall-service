@@ -955,14 +955,14 @@ public class OrderServiceImpl implements OrderService {
             for (Orders orders1 : orders) {
                 ThirdOrdersBean thirdOrdersBean = new ThirdOrdersBean() ;
                 thirdOrdersBean.setThird_sub_trade_no(orders1.getTradeNo());
-                thirdOrdersBean.setThird_sub_delivery_fee(new BigDecimal(orders1.getServFee()));
-                thirdOrdersBean.setThird_sub_total_amount(new BigDecimal(orders1.getSaleAmount()));
-                thirdOrdersBean.setThird_sub_cost_amount(thirdOrdersBean.getThird_sub_total_amount());
-                thirdOrdersBean.setThird_sub_pay_amount(thirdOrdersBean.getThird_sub_total_amount());
+                thirdOrdersBean.setThird_sub_delivery_fee(new BigDecimal(orders1.getServFee()).setScale(2, BigDecimal.ROUND_HALF_UP));
+                thirdOrdersBean.setThird_sub_total_amount(new BigDecimal(orders1.getSaleAmount()).setScale(2, BigDecimal.ROUND_HALF_UP));
+                thirdOrdersBean.setThird_sub_cost_amount(thirdOrdersBean.getThird_sub_total_amount().setScale(2, BigDecimal.ROUND_HALF_UP));
+                thirdOrdersBean.setThird_sub_pay_amount(thirdOrdersBean.getThird_sub_total_amount().setScale(2, BigDecimal.ROUND_HALF_UP));
 
-                tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()));
-                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()));
-                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
+                tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()).setScale(2, BigDecimal.ROUND_HALF_UP));
+                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()).setScale(2, BigDecimal.ROUND_HALF_UP));
+                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()).setScale(2, BigDecimal.ROUND_HALF_UP));
 
                 List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
                 for (int i = 0; i < orderDetails.size(); i++) {
@@ -976,13 +976,13 @@ public class OrderServiceImpl implements OrderService {
                     }
                     goodsDetailBean.setQuantity(orderDetail.getNum());
                     if (i == 0) {
-                        goodsDetailBean.setGood_price(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())));
-                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())));
-                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())));
+                        goodsDetailBean.setGood_price(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())).setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())).setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())).setScale(2, BigDecimal.ROUND_HALF_UP));
                     } else {
-                        goodsDetailBean.setGood_price(orderDetail.getSalePrice());
-                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice());
-                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice());
+                        goodsDetailBean.setGood_price(orderDetail.getSalePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
                     }
                     goodsDetailBeans.add(goodsDetailBean) ;
                 }
