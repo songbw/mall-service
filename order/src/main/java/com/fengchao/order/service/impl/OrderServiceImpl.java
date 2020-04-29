@@ -977,12 +977,12 @@ public class OrderServiceImpl implements OrderService {
                     goodsDetailBean.setQuantity(orderDetail.getNum());
                     if (i == 0) {
                         goodsDetailBean.setGood_price(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())).setScale(2, BigDecimal.ROUND_HALF_UP));
-                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())).setScale(2, BigDecimal.ROUND_HALF_UP));
-                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice().add(new BigDecimal(orders1.getServFee())).setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().multiply(new BigDecimal(goodsDetailBean.getQuantity())).add(new BigDecimal(orders1.getServFee())).setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_cost_amount(goodsDetailBean.getGood_pay_amount());
                     } else {
                         goodsDetailBean.setGood_price(orderDetail.getSalePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
-                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
-                        goodsDetailBean.setGood_cost_amount(orderDetail.getSalePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_pay_amount(orderDetail.getSalePrice().multiply(new BigDecimal(goodsDetailBean.getQuantity())).setScale(2, BigDecimal.ROUND_HALF_UP));
+                        goodsDetailBean.setGood_cost_amount(goodsDetailBean.getGood_pay_amount());
                     }
                     goodsDetailBeans.add(goodsDetailBean) ;
                 }
