@@ -76,7 +76,7 @@ public class StarSkuDao {
      */
     public List<StarSku> selectAll() {
         StarSkuExample example = new StarSkuExample();
-        example.setOrderByClause("update_time desc");
+        example.setOrderByClause("create_time desc");
         List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }
