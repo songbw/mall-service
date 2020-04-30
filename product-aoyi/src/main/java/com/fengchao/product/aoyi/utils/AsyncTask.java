@@ -197,7 +197,7 @@ public class AsyncTask {
             if (i%200 == 0) {
                 codes.add(code) ;
                 code = "";
-                i = 1;
+//                i = 1;
             }
             if (StringUtils.isEmpty(code)) {
                 i = i + 1;
@@ -208,7 +208,7 @@ public class AsyncTask {
             }
             if (i >= starSkus.size()) {
                 codes.add(code) ;
-                i = 1;
+//                i = 1;
             }
         }
         log.info("test star codes count: {}", codes.size());
