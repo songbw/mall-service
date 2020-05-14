@@ -370,7 +370,12 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             paymentNos.add(bean.getOrderNo());
         }
         // 根据支付单号获取主订单
-        List<Orders> ordersList = ordersDao.selectPayedOrdersListByPaymentNos(paymentNos);
+        log.info("导出交易流水单 数据库入参paymentNos:{}", JSONUtil.toJsonString(paymentNos));
+
+        List<Orders> ordersList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(paymentNos)) {
+            ordersList = ordersDao.selectPayedOrdersListByPaymentNos(paymentNos);
+        }
 
         // 转map， key ： paymentNo value: 主订单
         Map<String, Orders> ordersMap = new HashMap<>();
