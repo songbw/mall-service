@@ -88,7 +88,7 @@ public class ProductRpcService {
     public Platform findPlatformByAppId(String appId) {
         Platform platform = new Platform();
         OperaResult operaResult = productService.selectPlatformByAppId(appId);
-        log.debug("根据appId获取平台信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
+        log.info("根据appId获取平台信息 调用product rpc服务 返回:{}", JSONUtil.toJsonString(operaResult));
         // 处理返回
         if (operaResult.getCode() == 200) {
             Object object = operaResult.getData();
