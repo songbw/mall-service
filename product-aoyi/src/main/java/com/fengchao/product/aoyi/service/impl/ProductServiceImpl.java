@@ -200,7 +200,7 @@ public class ProductServiceImpl implements ProductService {
                         aoyiClientRpcService.weipinhuiQueryItemInventory(starSku.getSpuId(), sku.getSkuId(),
                                 Integer.valueOf(sku.getRemainNum()), weipinhuiAddress.getWphCode());
 
-                if (aoyiQueryInventoryResDto != null) {
+                if (aoyiQueryInventoryResDto != null && aoyiQueryInventoryResDto.getInventoy()) {
                     inventoryBean.setRemainNum(sku.getRemainNum());
                     inventoryBean.setState("1");
                 } else {
