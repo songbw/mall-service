@@ -101,6 +101,9 @@ public class PaymentServiceImpl implements PaymentService {
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
         String sign = Pkcs8Util.getSM3(messageString + pingAnConfigBean.getPayAppKey()) ;
         paramBean.setSign(sign);
+        if (StringUtils.isEmpty(props.get("memberNo"))) {
+            props.remove("memberNo");
+        }
         paramBean.setMessage(props);
         logger.info("请求平安 create payment order 参数： {}",JSONUtil.toJsonString(paramBean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
