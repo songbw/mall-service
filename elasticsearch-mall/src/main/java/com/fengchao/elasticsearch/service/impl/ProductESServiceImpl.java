@@ -79,6 +79,7 @@ public class ProductESServiceImpl implements ProductESService {
         request.source(builder);
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
+            log.info("result: {}", request.toString());
             List<ProductInfoBean> aoyiProdIndices = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);

@@ -87,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
     public OperaResponse<CreatePaymentOrderBean> createPaymentOrder(CreatePaymentOrderRequestBean paymentBean) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(paymentBean.getAppId()) ;
         logger.info("ping an url is "+ pingAnConfigBean.getPayBasePath() + HttpClient.CREATE_PAYMENT_ORDER);
-        PaymentParamBean<CreatePaymentOrderRequestBean> paramBean = new PaymentParamBean<CreatePaymentOrderRequestBean>() ;
+        PaymentParamBean<Map<String, Object>> paramBean = new PaymentParamBean<Map<String, Object>>() ;
         paramBean.setAppId(pingAnConfigBean.getPayAppId());
         paymentBean.setMerchantNo(pingAnConfigBean.getPayMerchantNo());
         paymentBean.setNotifyUrl(pingAnConfigBean.getNotifyUrl());
@@ -101,7 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
         String sign = Pkcs8Util.getSM3(messageString + pingAnConfigBean.getPayAppKey()) ;
         paramBean.setSign(sign);
-        paramBean.setMessage(paymentBean);
+        paramBean.setMessage(props);
         logger.info("请求平安 create payment order 参数： {}",JSONUtil.toJsonString(paramBean));
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(paramBean, MediaType.APPLICATION_JSON));
