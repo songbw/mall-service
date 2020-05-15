@@ -41,6 +41,6 @@ public interface OrderServiceClient {
     OperaResult findOrderListByOpenId(@RequestParam("openId") String openId);
 
     @RequestMapping(value = "/order/send/tradeInfo", method = RequestMethod.GET)
-    OperaResponse sendTradeInfo(@RequestParam("openId") String openId, @RequestParam("paymentNo") String paymentNo);
+    OperaResponse sendTradeInfo(@RequestParam("openId") String openId, @RequestParam("paymentNo") String paymentNo, @RequestParam("appId") String appId);
 
 }

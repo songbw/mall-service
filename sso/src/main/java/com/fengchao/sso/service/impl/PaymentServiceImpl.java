@@ -121,7 +121,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
         ObjectMapper oMapper = new ObjectMapper();
         Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
-        Result result1 = guanaitongClientService.payment(map) ;
+        Result result1 = guanaitongClientService.payment(map, paymentBean.gettAppId()) ;
         JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
         String guanaitongUrl = configBean.getGatUrl() + jsonObject.getString("data") ;
         orderList.forEach(order -> {
@@ -198,7 +198,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
         // 批量更新子订单状态为"待发货"
         orderRpcService.batchUpdateOrderDetailStatusByOrderIds(orderIdList, 1); // 0：已下单；1：待发货；2：已发货（15天后自动变为已完成）；3：已完成；4：已取消；5：失败
-        OperaResponse operaResponse = orderService.sendTradeInfo(appId + backBean.getBuyer_open_id(), backBean.getOuter_trade_no()) ;
+        OperaResponse operaResponse = orderService.sendTradeInfo(appId + backBean.getBuyer_open_id(), backBean.getOuter_trade_no(), appId) ;
         log.info("发送订单信息给关爱通，返回结果：{}", JSONUtil.toJsonString(operaResponse));
         return "success";
     }

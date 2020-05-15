@@ -15,7 +15,7 @@ import java.util.Map;
 public class GuanaitongClientServiceH implements GuanaitongClientService {
 
     @Override
-    public Result payment(Map<String, String> map) {
+    public Result payment(Map<String, String> map, String appId) {
         Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
@@ -45,7 +45,7 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
     }
 
     @Override
-    public Result findOpenId(AuthCode authCode) {
+    public Result findOpenId(AuthCode authCode, String appId) {
         Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
@@ -60,7 +60,7 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
     }
 
     @Override
-    public Result findUser(OpenId openId) {
+    public Result findUser(OpenId openId, String appId) {
         Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";
@@ -75,7 +75,7 @@ public class GuanaitongClientServiceH implements GuanaitongClientService {
     }
 
     @Override
-    public Result refund(Map<String, String> map) {
+    public Result refund(Map<String, String> map, String appId) {
         Result result = new Result();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";

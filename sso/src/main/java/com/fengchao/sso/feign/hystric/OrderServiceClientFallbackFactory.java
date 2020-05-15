@@ -130,7 +130,7 @@ public class OrderServiceClientFallbackFactory implements FallbackFactory<OrderS
             }
 
             @Override
-            public OperaResponse sendTradeInfo(String openId, String paymentNo) {
+            public OperaResponse sendTradeInfo(String openId, String paymentNo, String appId) {
                 OperaResponse result = new OperaResponse();
                 ObjectMapper objectMapper = new ObjectMapper();
                 String msg = "";

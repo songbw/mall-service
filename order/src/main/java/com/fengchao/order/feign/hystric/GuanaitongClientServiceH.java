@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GuanaitongClientServiceH implements GuanaitongClientService {
     @Override
-    public OperaResponse sendTradeInfo(SendTradeInfoBean bean) {
+    public OperaResponse sendTradeInfo(SendTradeInfoBean bean, String appId) {
         OperaResponse result = new OperaResponse();
         ObjectMapper objectMapper = new ObjectMapper();
         String msg = "";

@@ -4,7 +4,6 @@ import com.fengchao.order.bean.*;
 import com.fengchao.order.model.Order;
 import com.fengchao.order.model.OrderDetail;
 import com.fengchao.order.model.Orders;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -148,5 +147,5 @@ public interface OrderService {
 
     OperaResponse batchSelectByIds(List<Integer> orderIds) ;
 
-    OperaResponse sendTradeInfo(String outerTradeNo, String paymentNo) ;
+    OperaResponse sendTradeInfo(String outerTradeNo, String paymentNo, String appId) ;
 }

@@ -1675,7 +1675,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OperaResponse sendTradeInfo(String openId, String paymentNo) {
+    public OperaResponse sendTradeInfo(String openId, String paymentNo, String appId) {
         OperaResponse response = new OperaResponse() ;
         List<Orders> orders = ordersDao.selectOrdersByOpenIdAndPaymentNo(openId, paymentNo) ;
         SendTradeInfoBean sendTradeInfoBean = new SendTradeInfoBean() ;
@@ -1716,7 +1716,7 @@ public class OrderServiceImpl implements OrderService {
             tradeInfoBean.setThird_orders(thirdOrdersBeans);
             sendTradeInfoBean.setTrade_info(tradeInfoBean);
             logger.info("发送订单详情到关爱通，入口参数：{}", JSONUtil.toJsonString(sendTradeInfoBean));
-            OperaResponse guanaitongResponse = guanaitongClientService.sendTradeInfo(sendTradeInfoBean) ;
+            OperaResponse guanaitongResponse = guanaitongClientService.sendTradeInfo(sendTradeInfoBean, appId) ;
             if (guanaitongResponse.getCode() != 200) {
                 response.setCode(guanaitongResponse.getCode());
                 response.setMsg(guanaitongResponse.getMsg());

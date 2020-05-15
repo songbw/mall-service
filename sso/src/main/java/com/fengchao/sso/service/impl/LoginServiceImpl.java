@@ -241,7 +241,7 @@ public class LoginServiceImpl implements ILoginService {
         OperaResult result = new OperaResult();
         AccessToken accessToken = new AccessToken() ;
         // 获取关爱通登录信息
-        OpenId openId = getGuanaitongOpenId(initCode) ;
+        OpenId openId = getGuanaitongOpenId(initCode, iAppId) ;
         if (openId ==null || openId.getOpen_id() == null || "".equals(openId.getOpen_id())) {
             result.setCode(9000001);
             result.setMsg("关爱通获取openId失败。");
@@ -253,7 +253,7 @@ public class LoginServiceImpl implements ILoginService {
         temp.setiAppId(iAppId);
         User user = userMapper.selectByOpenId(temp);
         if (user == null) {
-            GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id()) ;
+            GuanaitongUserBean guanaitongUserBean = getGuanaitongUser(openId.getOpen_id(), iAppId) ;
             SUser userByTel = userDao.selectUserByTel(iAppId, guanaitongUserBean.getMobile()) ;
             Date date = new Date() ;
             user = new User();
@@ -578,10 +578,10 @@ public class LoginServiceImpl implements ILoginService {
         return null;
     }
 
-    private OpenId getGuanaitongOpenId(String authCode) {
+    private OpenId getGuanaitongOpenId(String authCode, String appId) {
         AuthCode authCode1 = new AuthCode();
         authCode1.setAuth_code(authCode);
-        Result result = guanaitongClientService.findOpenId(authCode1);
+        Result result = guanaitongClientService.findOpenId(authCode1, appId);
         if (result.getCode() == 200) {
             Object object = result.getData() ;
             String jsonString = JSON.toJSONString(object);
@@ -591,10 +591,10 @@ public class LoginServiceImpl implements ILoginService {
         return null;
     }
 
-    private GuanaitongUserBean getGuanaitongUser(String openId) {
+    private GuanaitongUserBean getGuanaitongUser(String openId, String appId) {
         OpenId openId1 = new OpenId();
         openId1.setOpen_id(openId);
-        Result result = guanaitongClientService.findUser(openId1);
+        Result result = guanaitongClientService.findUser(openId1, appId);
         if (result.getCode() == 200) {
             Object object = result.getData() ;
             String jsonString = JSON.toJSONString(object);
