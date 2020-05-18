@@ -121,7 +121,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
         ObjectMapper oMapper = new ObjectMapper();
         Map<String, String> map = oMapper.convertValue(guanaitongPaymentBean, Map.class);
-        Result result1 = guanaitongClientService.payment(map, paymentBean.gettAppId()) ;
+        Result result1 = guanaitongClientService.payment(map, paymentBean.getiAppId()) ;
         JSONObject jsonObject = (JSONObject) JSON.toJSON(result1);
         String guanaitongUrl = configBean.getGatUrl() + jsonObject.getString("data") ;
         orderList.forEach(order -> {
