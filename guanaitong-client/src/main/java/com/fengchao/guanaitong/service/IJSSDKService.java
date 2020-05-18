@@ -4,9 +4,9 @@ import com.fengchao.guanaitong.bean.JssdkSignBean;
 import com.netflix.discovery.converters.jackson.EurekaXmlJacksonCodec;
 
 public interface IJSSDKService {
-    String getAccessToken() throws Exception;
+    String getAccessToken(String iAppId) throws Exception;
 
-    String getApiTicket() throws Exception;
+    String getApiTicket(String iAppId) throws Exception;
 
-    JssdkSignBean getJsApiSign(String url) throws Exception;
+    JssdkSignBean getJsApiSign(String url,String iAppId) throws Exception;
 }

@@ -18,11 +18,13 @@ eureka:
     service-url:
       defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
 
-GAT_APP_ID: appId which got from guan ai tong
-GAT_APP_SECRET: appSceret which got from guan ai tong
-GAT_URL_PREFIX: url to access guan ai tong
+GAT_APP_ID: 20091390
+GAT_APP_SECRET: f9d6639e19a68bf1e61425b1fdcd45aa
+GAT_URL_PREFIX: https://openapi.guanaitong.com/
 
-WECHAT_JSSDK_APP_ID: appId which got from wechat-JSSDK
-WECHAT_JSSDK_APP_SECRET: appSceret which got from wechat-JSSDK
-WECHAT_JSSDK_URL_PREFIX: url to access wechat-JSSDK
+#微信公众号SDK
+WECHAT_JSSDK_APP_ID: wx060d200a5a513106
+WECHAT_JSSDK_APP_SECRET: 09134de628f25245652f34367b38c025
+WECHAT_JSSDK_URL_PREFIX: https://api.weixin.qq.com/cgi-bin/
+
 
