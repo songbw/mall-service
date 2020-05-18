@@ -88,8 +88,9 @@ public class WsPayRpcService {
                 try {
                     if(OrderPayMethodInfoBean.getTradeDate() != null
                             && !OrderPayMethodInfoBean.getTradeDate().equals("")
-                            && !OrderPayMethodInfoBean.getPayType().equals("fcalipay")
-                            && !OrderPayMethodInfoBean.getPayType().equals("pingan")){
+//                            && !OrderPayMethodInfoBean.getPayType().equals("fcalipay")
+//                            && !OrderPayMethodInfoBean.getPayType().equals("pingan")
+                    ){
                         orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
                         tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                         OrderPayMethodInfoBean.setTradeDate(tradeDate);
@@ -110,8 +111,9 @@ public class WsPayRpcService {
                         try {
                             if(OrderPayMethodInfoBean.getTradeDate() != null
                                     && !OrderPayMethodInfoBean.getTradeDate().equals("")
-                                    && !OrderPayMethodInfoBean.getPayType().equals("fcalipay")
-                                    && !OrderPayMethodInfoBean.getPayType().equals("pingan")){
+//                                    && !OrderPayMethodInfoBean.getPayType().equals("fcalipay")
+//                                    && !OrderPayMethodInfoBean.getPayType().equals("pingan")
+                            ){
                                 orderDateEnd = new SimpleDateFormat("yyyyMMddHHmmss").parse(OrderPayMethodInfoBean.getTradeDate() );
                                 tradeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderDateEnd);
                                 OrderPayMethodInfoBean.setTradeDate(tradeDate);
