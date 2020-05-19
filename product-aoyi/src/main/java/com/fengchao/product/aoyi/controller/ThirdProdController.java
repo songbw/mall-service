@@ -10,6 +10,7 @@ import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.BrandService;
 import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ThirdProdService;
+import com.fengchao.product.aoyi.service.weipinhui.WeipinhuiDataService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ public class ThirdProdController {
     private BrandService brandService ;
     @Autowired
     private AdminProdService adminProdService ;
+    @Autowired
+    private WeipinhuiDataService weipinhuiDataService;
 
     /**
      * 新增商品
@@ -179,6 +182,19 @@ public class ThirdProdController {
     public OperaResponse starCategory() {
         log.info("开始同步星链类目");
         return service.syncStarCategory();
+    }
+
+    @GetMapping("wph")
+    public OperaResponse wphProd() {
+        OperaResponse response = new OperaResponse();
+        log.info("开始同步唯品会商品");
+        try {
+            weipinhuiDataService.syncItemIdList(1, -1);
+            weipinhuiDataService.syncItemDetail(1, -1);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return response;
     }
 
 }
