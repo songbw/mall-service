@@ -299,6 +299,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     List<AoyiProdIndex> insertAoyiProdIndexList = new ArrayList<>(); // 准备插入的数据
                     for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
                         if (!exsitItemIdList.contains(aoyiProdIndex.getSkuid())) {
+                            aoyiProdIndex.setState("0");
                             insertAoyiProdIndexList.add(aoyiProdIndex);
                         }
                     }
