@@ -238,4 +238,18 @@ public class StarSkuDao {
         starSkuMapper.updateByExampleSelective(starSku, example);
     }
 
+    /**
+     * 根据spuId查询上架SKU信息
+     *
+     * @return
+     */
+    public List<StarSku> selectUBySpuId(String spuId) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andSpuIdEqualTo(spuId) ;
+        criteria.andStatusEqualTo(1) ;
+        List<StarSku> list = starSkuMapper.selectByExample(example);
+        return list;
+    }
+
 }

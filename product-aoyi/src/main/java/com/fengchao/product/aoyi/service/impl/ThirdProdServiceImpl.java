@@ -266,11 +266,24 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 return operaResponse ;
             }
         }
-        productDao.updateState(bean);
+
         if (!StringUtils.isEmpty(bean.getSpuId())) {
             // 更新状态
             starSkuDao.updateStatusByCodeAndSpuId(bean) ;
+            bean.setSkuId(bean.getSpuId());
+            // 上架状态数量
+            if ("0".equals(bean.getState())) {
+                List<StarSku> starSkus = starSkuDao.selectUBySpuId(bean.getSpuId());
+                if ((starSkus == null || starSkus.size()==0)) {
+                    productDao.updateState(bean);
+                }
+            } else {
+                productDao.updateState(bean);
+            }
+        } else {
+            productDao.updateState(bean);
         }
+
         return operaResponse ;
     }
 
