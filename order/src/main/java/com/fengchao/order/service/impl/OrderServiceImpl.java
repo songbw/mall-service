@@ -234,7 +234,7 @@ public class OrderServiceImpl implements OrderService {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return operaResult;
                 }
-
+                logger.info("验证销售价格是否小于进货价格:{}, {}, {}", sPrice.toString(),orderSku.getSalePrice().toString(), sPrice.compareTo(orderSku.getSalePrice()));
                 // 添加扣除库存列表
                 if (orderSku.getMerchantId() != 2 && orderSku.getMerchantId() != 4) {
                     InventoryMpus inventoryMpus = new InventoryMpus();
