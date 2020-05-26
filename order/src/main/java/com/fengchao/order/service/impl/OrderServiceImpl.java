@@ -215,6 +215,26 @@ public class OrderServiceImpl implements OrderService {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return operaResult;
                 }
+
+                // TODO 验证销售价格是否小于进货价格
+                BigDecimal sPrice = new BigDecimal(0) ;
+                if (prodIndexWithBLOBs.getStarSku() == null) {
+                    if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                        sPrice = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                    }
+                } else {
+                    if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
+                        sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
+                    }
+                }
+                if (sPrice.compareTo(orderSku.getSalePrice()) == 1) {
+                    operaResult.setCode(400503);
+                    operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "已下架。");
+                    // 异常数据库回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return operaResult;
+                }
+
                 // 添加扣除库存列表
                 if (orderSku.getMerchantId() != 2 && orderSku.getMerchantId() != 4) {
                     InventoryMpus inventoryMpus = new InventoryMpus();
