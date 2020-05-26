@@ -229,7 +229,7 @@ public class OrderServiceImpl implements OrderService {
                 }
                 if (sPrice.compareTo(orderSku.getSalePrice()) == 1) {
                     operaResult.setCode(400503);
-                    operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "已下架。");
+                    operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "无货。");
                     // 异常数据库回滚
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return operaResult;
