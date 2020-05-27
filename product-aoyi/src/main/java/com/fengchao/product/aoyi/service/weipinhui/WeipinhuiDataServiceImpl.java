@@ -583,7 +583,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
                             pageNum, itemIdIndex, itemId, mainSpuImageList.size(), JSONUtil.toJsonStringWithoutNull(mainSpuImageList));
                     if (CollectionUtils.isNotEmpty(mainSpuImageList)) {
-                        // ayFcImagesDao.batchInsert(mainSpuImageList);
+                         ayFcImagesDao.batchInsert(mainSpuImageList);
                     }
                 }// end for
 
