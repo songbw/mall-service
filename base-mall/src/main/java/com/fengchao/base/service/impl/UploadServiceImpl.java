@@ -51,6 +51,7 @@ public class UploadServiceImpl implements UploadService {
             URLConnectionDownloader.download(img.getAyImage(), fileName, base + img.getPath() + img.getType());
         } catch (Exception e) {
             log.error("下载上传图片异常:{}", e.getMessage(), e);
+            productService.imageBack(img.getId(), 2) ;
         }
         log.info("下载上传图片 本地路径:{} 上传路径:{}",
                 base + img.getPath() + img.getType() + "/" + fileName, img.getPath() + img.getType() + "/" + fileName);
