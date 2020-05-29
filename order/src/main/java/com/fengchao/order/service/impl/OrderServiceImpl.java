@@ -224,7 +224,7 @@ public class OrderServiceImpl implements OrderService {
                     }
                 } else {
                     if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
-                        sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
+                        sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
                     }
                 }
                 if (sPrice.compareTo(orderSku.getSalePrice()) == 1) {
