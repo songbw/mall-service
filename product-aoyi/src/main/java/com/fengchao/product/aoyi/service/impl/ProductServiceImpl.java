@@ -84,6 +84,8 @@ public class ProductServiceImpl implements ProductService {
             map.put("brand", queryBean.getBrand());
         if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
             map.put("priceOrder", queryBean.getPriceOrder());
+        if(queryBean.getAppId()!=null&&!queryBean.getAppId().equals(""))
+            map.put("appId", "%" + queryBean.getAppId() + "%");
         List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {

@@ -328,6 +328,12 @@
     <if test="brand !=null and brand !=''">
       and brand = #{brand}
     </if>
+    <if test="renterId !=null and renterId !=''">
+      and renter_id = #{renterId}
+    </if>
+    <if test="appId !=null and appId !=''">
+      and app_id like #{appId}
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -339,6 +345,12 @@
     </if>
     <if test="brand !=null and brand !=''">
       and brand = #{brand}
+    </if>
+    <if test="renterId !=null and renterId !=''">
+      and renter_id = #{renterId}
+    </if>
+    <if test="appId !=null and appId !=''">
+      and app_id like #{appId}
     </if>
     <if test="priceOrder !=null and priceOrder !=''">
       order by CAST(price AS DECIMAL) ${priceOrder}

@@ -63,6 +63,10 @@ public class AoyiProdIndex {
 
     private Integer crossBorder;
 
+    private String renterId;
+
+    private String appId;
+
     public Integer getId() {
         return id;
     }
@@ -301,5 +305,21 @@ public class AoyiProdIndex {
 
     public void setCrossBorder(Integer crossBorder) {
         this.crossBorder = crossBorder;
+    }
+
+    public String getRenterId() {
+        return renterId;
+    }
+
+    public void setRenterId(String renterId) {
+        this.renterId = renterId == null ? null : renterId.trim();
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 }

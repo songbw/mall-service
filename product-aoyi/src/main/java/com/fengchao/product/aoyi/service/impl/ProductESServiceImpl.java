@@ -1,13 +1,14 @@
-package com.fengchao.elasticsearch.service.impl;
+package com.fengchao.product.aoyi.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fengchao.elasticsearch.config.ESConfig;
-import com.fengchao.elasticsearch.domain.*;
-import com.fengchao.elasticsearch.feign.EquityService;
-import com.fengchao.elasticsearch.service.ProductESService;
-import com.fengchao.elasticsearch.utils.ProductHandle;
+import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.config.ESConfig;
+import com.fengchao.product.aoyi.feign.EquityService;
+import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.service.ProductESService;
+import com.fengchao.product.aoyi.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -93,7 +94,7 @@ public class ProductESServiceImpl implements ProductESService {
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
+                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex);
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);
@@ -114,12 +115,7 @@ public class ProductESServiceImpl implements ProductESService {
     }
 
     @Override
-    public Page<AoyiProdIndex> query(QueryDTO queryDTO, int pageNo, int size) {
-        return null;
-    }
-
-    @Override
-    public AoyiProdIndex get(java.lang.String skuId) {
+    public AoyiProdIndex get(String skuId) {
         return null;
     }
 
@@ -170,7 +166,7 @@ public class ProductESServiceImpl implements ProductESService {
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
+                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex);
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);

@@ -282,6 +282,10 @@ public class ProductDao {
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         if (queryBean.getBrand() != null && !queryBean.getBrand().equals(""))
             criteria.andBrandEqualTo(queryBean.getBrand());
+        if (queryBean.getRenterId() != null && !queryBean.getRenterId().equals(""))
+            criteria.andRenterIdEqualTo(queryBean.getRenterId());
+        if (queryBean.getAppId() != null && !queryBean.getAppId().equals(""))
+            criteria.andAppIdLike("%" + queryBean.getAppId() + "%");
         if (queryBean.getPriceOrder() != null && !queryBean.getPriceOrder().equals(""))
             aoyiProdIndexExample.setOrderByClause("CAST(price AS DECIMAL) " + queryBean.getPriceOrder());
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
