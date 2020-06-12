@@ -490,7 +490,12 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             // String code;
                             // purchaseQty;
 
-                            // starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
+                            // c. 组装该sku的图片信息
+                            List<AyFcImages> _ayFcImagesList = handleAyFcImages(Arrays.asList(aoyiSkuResDto.getSkuImageUrl()),
+                                    aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
+                            skuImageList.addAll(_ayFcImagesList);
+//                            starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
+                            starSku.setGoodsLogo(productConfig.getFengchaoImagePrefix() + _ayFcImagesList.get(0).getFcImage());
                             starSku.setSkuId(aoyiSkuResDto.getSkuId());
                             starSku.setCode(aoyiSkuResDto.getSkuId());
                             starSku.setStatus("false".equals(aoyiSkuResDto.getCanSell()) ? 0 : 1);
@@ -509,14 +514,8 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             if (CollectionUtils.isNotEmpty(_starPropertyList)) {
                                 candidateStarPropertyList.addAll(_starPropertyList);
                             }
-
-                            // c. 组装该sku的图片信息
-                            List<AyFcImages> _ayFcImagesList = handleAyFcImages(Arrays.asList(aoyiSkuResDto.getSkuImageUrl()),
-                                    aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
-                            skuImageList.addAll(_ayFcImagesList);
-
                             //
-                            starSku.setGoodsLogo(productConfig.getFengchaoImagePrefix() + _ayFcImagesList.get(0).getFcImage());
+
                         }
                     }
 
