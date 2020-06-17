@@ -21,5 +21,7 @@ public class OperaResponse<T> implements Serializable {
 	private T data;
 
 	private boolean success;
+
+	private String info ;
 	
 }
