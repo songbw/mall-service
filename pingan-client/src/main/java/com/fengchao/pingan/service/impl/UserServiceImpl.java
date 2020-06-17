@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<InitCodeBean> getInitCode(String appId) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath() + HttpClient.INIT_CODE_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath() + pingAnConfigBean.getInitCodeUri());
         InitCodeRequestBean bean = new InitCodeRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setTimestamp(new Date().getTime() + "");
