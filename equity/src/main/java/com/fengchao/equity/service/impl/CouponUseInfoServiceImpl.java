@@ -662,7 +662,7 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
 
     @Override
     public int triggerRelease(int couponUserId) {
-        log.info("开始释放coupon  couponUserId=",String.valueOf(couponUserId));
+        log.info("开始释放coupon  couponUserId={}",String.valueOf(couponUserId));
         CouponUseInfoX useInfo = new CouponUseInfoX();
         CouponUseInfo couponUseInfo = couponUseInfoDao.findBycouponUserId(couponUserId);
         Date date = new Date();
@@ -679,27 +679,40 @@ public class CouponUseInfoServiceImpl implements CouponUseInfoService {
             }else{
                 useInfo.setStatus(CouponUseStatusEnum.AVAILABLE.getCode());
             }
-            log.info("释放coupon 释放couponUseInfo = {}",JSON.toJSONString(useInfo));
+            log.info("准备释放coupon 释放couponUseInfo = {}",JSON.toJSONString(useInfo));
         }else{
             log.warn("释放coupon 没有找到couponUseInfo");
         }
         useInfo.setId(couponUserId);
 
-        CardTicket cardTicket = ticketDao.findByUseCouponCode(couponUseInfo.getUserCouponCode());
-        CardTicket ticket = new CardTicket();
+        CardTicket cardTicket= null;
+        try {
+            cardTicket = ticketDao.findByUseCouponCode(couponUseInfo.getUserCouponCode());
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }
+
         if(cardTicket != null){
+            CardTicket ticket = new CardTicket();
             ticket.setId(cardTicket.getId());
             if(cardTicket.getEndTime().before(date)){
                 ticket.setStatus((short)CardTicketStatusEnum.TIMEOUT.getCode());
             }else{
                 ticket.setStatus((short)CardTicketStatusEnum.EXCHANGED.getCode());
             }
+            try {
+                ticketDao.update(ticket);
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+            }
             log.info("释放coupon 释放cardTicket = {}",JSON.toJSONString(ticket));
         }else{
-            log.warn("释放coupon 没有找到cardTicket");
+            log.warn("释放coupon 没有找到cardTicket,不需要处理cardTicket");
         }
-        ticketDao.update(ticket);
-        return mapper.updateByPrimaryKeySelective(useInfo);
+
+        int updated = mapper.updateByPrimaryKeySelective(useInfo);
+        log.info("释放couponUseInfo完成 {}",JSON.toJSONString(useInfo));
+        return updated;
     }
 
     @Override

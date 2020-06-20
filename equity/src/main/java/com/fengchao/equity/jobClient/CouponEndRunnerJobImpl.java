@@ -2,6 +2,7 @@ package com.fengchao.equity.jobClient;
 
 import com.fengchao.equity.bean.CouponBean;
 import com.fengchao.equity.service.CouponService;
+import com.fengchao.equity.utils.CouponStatusEnum;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
@@ -22,20 +23,22 @@ public class CouponEndRunnerJobImpl implements JobRunner {
             BizLogger bizLogger = jobContext.getBizLogger();
 
             // TODO 业务逻辑
-            LOGGER.info("我要执行优惠券结束操作：" + jobContext);
+            LOGGER.info("执行优惠券结束操作使其失效：" + jobContext);
             String id = jobContext.getJob().getParam("couponId") ;
             CouponService couponService = BeanContext.getApplicationContext().getBean(CouponService.class);
             int couponId = Integer.parseInt(id) ;
             CouponBean couponBean = couponService.findByCouponId(couponId);
-            if (couponBean != null && couponBean.getStatus() != 5) {
+            if (couponBean != null && !CouponStatusEnum.INVALID.getCode().equals(couponBean.getStatus())) {
                 couponService.end(couponId) ;
                 // 会发送到 LTS (JobTracker上)
-                bizLogger.info("优惠券结束成功");
+                bizLogger.info("优惠券结束成功，优惠券失效");
+            }else{
+                LOGGER.info("优惠券 {}",(null == couponBean)?"不存在":"已经失效");
             }
         } catch (Exception e) {
             LOGGER.info("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
         }
-        return new Result(Action.EXECUTE_SUCCESS, "执行成功了，哈哈");
+        return new Result(Action.EXECUTE_SUCCESS, "执行优惠券结束操作使其失效 成功");
     }
 }
