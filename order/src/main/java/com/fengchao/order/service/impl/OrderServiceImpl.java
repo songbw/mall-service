@@ -216,7 +216,7 @@ public class OrderServiceImpl implements OrderService {
                     return operaResult;
                 }
 
-                // TODO 验证销售价格是否小于进货价格
+                // TODO 验证活动后价格是否小于进货价格
                 BigDecimal sPrice = new BigDecimal(0) ;
                 if (prodIndexWithBLOBs.getStarSku() == null) {
                     if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
@@ -227,14 +227,21 @@ public class OrderServiceImpl implements OrderService {
                         sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
                     }
                 }
-                if (sPrice.compareTo(orderSku.getSalePrice()) == 1) {
+                if (sPrice.compareTo(orderSku.getUnitPrice()) == 1) {
                     operaResult.setCode(400503);
                     operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "无货。");
                     // 异常数据库回滚
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    if (coupon != null) {
+                        boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                        if (!couponRelease) {
+                            // 订单失败,释放优惠券，
+                            logger.info("订单" + bean.getId() + "释放优惠券失败");
+                        }
+                    }
                     return operaResult;
                 }
-                logger.info("验证销售价格是否小于进货价格:{}, {}, {}", sPrice.toString(),orderSku.getSalePrice().toString(), sPrice.compareTo(orderSku.getSalePrice()));
+                logger.info("验证活动后价格是否小于进货价格:{}, {}, {}", sPrice.toString(),orderSku.getUnitPrice().toString(), sPrice.compareTo(orderSku.getUnitPrice()));
                 // 添加扣除库存列表
                 if (orderSku.getMerchantId() != 2 && orderSku.getMerchantId() != 4) {
                     InventoryMpus inventoryMpus = new InventoryMpus();

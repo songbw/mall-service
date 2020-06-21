@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AuthCodeBean> getAuthCode(String appId) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.AUTH_CODE_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getAuthCodeUri());
         InitCodeRequestBean bean = new InitCodeRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setTimestamp(new Date().getTime() + "");
@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AccessToken> getAuthAccessToken(String appId, String authCode) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.ACCESS_TOKEN_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getAccessTokenUri());
         AccessTokenRequestBean bean = new AccessTokenRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setAuthCode(authCode);
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AccessToken> getRefreshToken(String appId, String refreshToken) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.REFRESH_TOKEN_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getRefreshTokenUri());
         RefreshTokenRequestBean bean = new RefreshTokenRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setRefreshToken(refreshToken);
@@ -171,7 +171,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<CheckTokenBean> checkToken(String appId, String accessToken) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.CHECK_TOKEN_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getCheckTokenUri());
         CheckTokenRequestBean bean = new CheckTokenRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setAccessToken(accessToken);
