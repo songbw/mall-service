@@ -211,7 +211,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AuthUserBean> getAuthUserInfo(String appId, String userAccessToken) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        logger.info("获取用户信息参数是：{}", userAccessToken);
+        logger.info("获取用户信息参数是：appId: {}, userAccessToken: {}",appId, userAccessToken);
         AuthUserRequestBean bean = new AuthUserRequestBean();
         bean.setUserAccessToken(userAccessToken);
         WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getUserInfoUri());
