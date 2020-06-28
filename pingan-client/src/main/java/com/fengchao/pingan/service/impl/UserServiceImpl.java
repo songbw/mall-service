@@ -214,6 +214,8 @@ public class UserServiceImpl implements UserService {
         logger.info("获取用户信息参数是：appId: {}, userAccessToken: {}",appId, userAccessToken);
         AuthUserRequestBean bean = new AuthUserRequestBean();
         bean.setUserAccessToken(userAccessToken);
+        bean.setAppId(pingAnConfigBean.getAppId());
+        logger.info("获取用户信息请求参数是：{}",JSONUtil.toJsonString(bean));
         WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getUserInfoUri());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
