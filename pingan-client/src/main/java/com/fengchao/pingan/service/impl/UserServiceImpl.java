@@ -199,6 +199,7 @@ public class UserServiceImpl implements UserService {
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setRequestCode(requestCode);
         bean.setAccessToken(accessToken.getAccessToken());
+        logger.info("校验 RequestCode 请求参数是：{}", bean);
         WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getCheckRequestCodeUri());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
