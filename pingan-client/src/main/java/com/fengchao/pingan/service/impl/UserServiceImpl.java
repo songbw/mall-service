@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setRequestCode(requestCode);
         bean.setAccessToken(accessToken.getAccessToken());
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.CHECK_REQUEST_CODE_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getCheckRequestCodeUri());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         OperaResponse result = response.readEntity(OperaResponse.class);
@@ -213,7 +213,7 @@ public class UserServiceImpl implements UserService {
         logger.info("获取用户信息参数是：{}", userAccessToken);
         AuthUserRequestBean bean = new AuthUserRequestBean();
         bean.setUserAccessToken(userAccessToken);
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.USER_iNFO_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getUserInfoUri());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         OperaResponse result = response.readEntity(OperaResponse.class);

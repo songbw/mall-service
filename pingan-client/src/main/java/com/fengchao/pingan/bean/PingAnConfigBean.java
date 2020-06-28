@@ -24,4 +24,6 @@ public class PingAnConfigBean {
     private String accessTokenUri ;
     private String checkTokenUri ;
     private String refreshTokenUri ;
+    private String checkRequestCodeUri;
+    private String userInfoUri;
 }
