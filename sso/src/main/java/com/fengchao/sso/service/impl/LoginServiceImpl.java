@@ -368,13 +368,22 @@ public class LoginServiceImpl implements ILoginService {
             result.setMsg("获取openId失败。");
             return  result;
         }
+        String mobile = "";
+        String authBeanNickname = "";
+        if ("15".equals(iAppId)) {
+            mobile = authUserBean.getMobile() ;
+            authBeanNickname = authUserBean.getNickname() ;
+        } else {
+            mobile = authUserBean.getMobileNo() ;
+            authBeanNickname = authUserBean.getNickName() ;
+        }
         accessToken.setOpenId(authUserBean.getOpenId());
         accessToken.setPayId(authUserBean.getPayId());
         User temp = new User();
         temp.setOpenId(authUserBean.getOpenId());
         temp.setiAppId(iAppId);
         User user = userMapper.selectByOpenId(temp);
-        SUser userByTel = userDao.selectUserByTel(iAppId, authUserBean.getMobileNo()) ;
+        SUser userByTel = userDao.selectUserByTel(iAppId, mobile) ;
         if (user == null) {
             // 生成自己的OpenId, 并且把第三方OpenId写到子账户
             Date date = new Date() ;
@@ -384,13 +393,13 @@ public class LoginServiceImpl implements ILoginService {
             bindSubAccount.setUpdatedAt(date);
             if (userByTel == null) {
                 user.setOpenId(authUserBean.getOpenId());
-                if (!StringUtils.isEmpty(authUserBean.getNickName())) {
-                    user.setNickname(authUserBean.getNickName());
+                if (!StringUtils.isEmpty(authBeanNickname)) {
+                    user.setNickname(authBeanNickname);
                 } else {
                     String nickname = "fc_" + authUserBean.getOpenId().substring(user.getOpenId().length() - 8);
                     user.setNickname(nickname);
                 }
-                user.setTelephone(authUserBean.getMobileNo());
+                user.setTelephone(mobile);
                 user.setiAppId(iAppId);
                 user.setCreatedAt(new Date());
                 userMapper.insertSelective(user);
