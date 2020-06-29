@@ -424,7 +424,7 @@ public class LoginServiceImpl implements ILoginService {
             }
 
         }
-        if ("11".equals(iAppId)) {
+        if ("11".equals(iAppId) || "15".equals(iAppId)) {
             balanceDao.updateOpenIdByTel(user.getTelephone(), user.getOpenId());
         }
         result.getData().put("result", accessToken);
