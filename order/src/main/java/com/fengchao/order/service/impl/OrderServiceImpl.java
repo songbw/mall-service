@@ -241,6 +241,21 @@ public class OrderServiceImpl implements OrderService {
                     }
                     return operaResult;
                 }
+                // 判断唯品会只能售卖30的商品
+                if ("08".equals(bean.getAppId()) && !prodIndexWithBLOBs.getMpu().startsWith("30")) {
+                    operaResult.setCode(400503);
+                    operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "无货。");
+                    // 异常数据库回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    if (coupon != null) {
+                        boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                        if (!couponRelease) {
+                            // 订单失败,释放优惠券，
+                            logger.info("订单" + bean.getId() + "释放优惠券失败");
+                        }
+                    }
+                    return operaResult;
+                }
                 logger.info("验证活动后价格是否小于进货价格:{}, {}, {}", sPrice.toString(),orderSku.getUnitPrice().toString(), sPrice.compareTo(orderSku.getUnitPrice()));
                 // 添加扣除库存列表
                 if (orderSku.getMerchantId() != 2 && orderSku.getMerchantId() != 4) {
