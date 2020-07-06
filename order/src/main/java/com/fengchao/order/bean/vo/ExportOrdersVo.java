@@ -210,6 +210,11 @@ public class ExportOrdersVo {
     private String fcwxFee;
 
     /**
+     * 平安支付 单位 元
+     */
+    private String pinganFee;
+
+    /**
      * 子订单退款金额 单位 元
      */
     private String orderDetailRefundAmount;

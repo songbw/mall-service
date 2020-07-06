@@ -829,6 +829,12 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         exportOrdersVo.setFcwxFee(exportOrdersVo.getFcwxFee() + "(异常)");
                                     }
+                                } else if (OrderPayMethodTypeEnum.PINGAN.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setPinganFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setPinganFee(exportOrdersVo.getPinganFee() + "(异常)");
+                                    }
                                 }
                             }
 

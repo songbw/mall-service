@@ -1664,134 +1664,140 @@ public class AdminOrderController {
         titleCell6.setCellValue("微信支付 单位:元"); // 主订单
 
         HSSFCell titleCell7 = titleRow.createCell(7);
-        titleCell7.setCellValue("主订单号"); // 主订单
+        titleCell7.setCellValue("平安支付 单位:元"); // 主订单
+
+        /////////
+        /////////
 
         HSSFCell titleCell8 = titleRow.createCell(8);
-        titleCell8.setCellValue("实际支付价格 单位:元"); // 主订单
+        titleCell8.setCellValue("主订单号"); // 主订单
 
         HSSFCell titleCell9 = titleRow.createCell(9);
-        titleCell9.setCellValue("优惠券价格 单位:元"); // 主订单
+        titleCell9.setCellValue("实际支付价格 单位:元"); // 主订单
 
         HSSFCell titleCell10 = titleRow.createCell(10);
-        titleCell10.setCellValue("优惠券码"); // 主订单
+        titleCell10.setCellValue("优惠券价格 单位:元"); // 主订单
 
         HSSFCell titleCell11 = titleRow.createCell(11);
-        titleCell11.setCellValue("券来源"); // 主订单
+        titleCell11.setCellValue("优惠券码"); // 主订单
 
         HSSFCell titleCell12 = titleRow.createCell(12);
-        titleCell12.setCellValue("运费 单位:元"); // 主订单
+        titleCell12.setCellValue("券来源"); // 主订单
+
+        HSSFCell titleCell13 = titleRow.createCell(13);
+        titleCell13.setCellValue("运费 单位:元"); // 主订单
 
         // ---子订单
-        HSSFCell titleCell13 = titleRow.createCell(13);
-        titleCell13.setCellValue("用户id");
-
         HSSFCell titleCell14 = titleRow.createCell(14);
-        titleCell14.setCellValue("子订单编号");
+        titleCell14.setCellValue("用户id");
 
         HSSFCell titleCell15 = titleRow.createCell(15);
-        titleCell15.setCellValue("子订单状态");
+        titleCell15.setCellValue("子订单编号");
 
         HSSFCell titleCell16 = titleRow.createCell(16);
-        titleCell16.setCellValue("订单支付时间");
+        titleCell16.setCellValue("子订单状态");
 
         HSSFCell titleCell17 = titleRow.createCell(17);
-        titleCell17.setCellValue("订单生成时间");
+        titleCell17.setCellValue("订单支付时间");
 
         HSSFCell titleCell18 = titleRow.createCell(18);
-        titleCell18.setCellValue("品类");
+        titleCell18.setCellValue("订单生成时间");
 
         HSSFCell titleCell19 = titleRow.createCell(19);
-        titleCell19.setCellValue("品牌");
+        titleCell19.setCellValue("品类");
 
         HSSFCell titleCell20 = titleRow.createCell(20);
-        titleCell20.setCellValue("供应商");
+        titleCell20.setCellValue("品牌");
 
         HSSFCell titleCell21 = titleRow.createCell(21);
-        titleCell21.setCellValue("sku");
+        titleCell21.setCellValue("供应商");
 
         HSSFCell titleCell22 = titleRow.createCell(22);
-        titleCell22.setCellValue("mpu");
+        titleCell22.setCellValue("sku");
 
         HSSFCell titleCell23 = titleRow.createCell(23);
-        titleCell23.setCellValue("商品名称");
+        titleCell23.setCellValue("mpu");
 
         HSSFCell titleCell24 = titleRow.createCell(24);
-        titleCell24.setCellValue("购买数量");
+        titleCell24.setCellValue("商品名称");
 
         HSSFCell titleCell25 = titleRow.createCell(25);
-        titleCell25.setCellValue("结算类型");
+        titleCell25.setCellValue("购买数量");
 
         HSSFCell titleCell26 = titleRow.createCell(26);
-        titleCell26.setCellValue("销售价 单位：元");
+        titleCell26.setCellValue("结算类型");
 
         HSSFCell titleCell27 = titleRow.createCell(27);
-        titleCell27.setCellValue("sku券支付金额 单位：元");
+        titleCell27.setCellValue("销售价 单位：元");
 
         HSSFCell titleCell28 = titleRow.createCell(28);
-        titleCell28.setCellValue("进货价 单位：元");
+        titleCell28.setCellValue("sku券支付金额 单位：元");
+
+        HSSFCell titleCell29 = titleRow.createCell(29);
+        titleCell29.setCellValue("进货价 单位：元");
 
         //退款号
-        HSSFCell titleCell29 = titleRow.createCell(29);
-        titleCell29.setCellValue("退款号");
+        HSSFCell titleCell30 = titleRow.createCell(30);
+        titleCell30.setCellValue("退款号");
 
         //余额退款
-        HSSFCell titleCell30 = titleRow.createCell(30);
-        titleCell30.setCellValue("余额退款 单位：元");
+        HSSFCell titleCell31 = titleRow.createCell(31);
+        titleCell31.setCellValue("余额退款 单位：元");
 
         //惠民卡退款
-        HSSFCell titleCell31 = titleRow.createCell(31);
-        titleCell31.setCellValue("惠民卡退款 单位：元");
+        HSSFCell titleCell32 = titleRow.createCell(32);
+        titleCell32.setCellValue("惠民卡退款 单位：元");
 
         //联机账户退款
-        HSSFCell titleCell32 = titleRow.createCell(32);
-        titleCell32.setCellValue("联机账户退款 单位：元");
+        HSSFCell titleCell33 = titleRow.createCell(33);
+        titleCell33.setCellValue("联机账户退款 单位：元");
 
         //快捷支付退款
-        HSSFCell titleCell33 = titleRow.createCell(33);
-        titleCell33.setCellValue("快捷支付退款 单位：元");
+        HSSFCell titleCell34 = titleRow.createCell(34);
+        titleCell34.setCellValue("快捷支付退款 单位：元");
 
         //支付宝退款
-        HSSFCell titleCell34 = titleRow.createCell(34);
-        titleCell34.setCellValue("支付宝退款 单位：元");
+        HSSFCell titleCell35 = titleRow.createCell(35);
+        titleCell35.setCellValue("支付宝退款 单位：元");
 
         //微信退款
-        HSSFCell titleCell35 = titleRow.createCell(35);
-        titleCell35.setCellValue("微信退款 单位：元");
+        HSSFCell titleCell36 = titleRow.createCell(36);
+        titleCell36.setCellValue("微信退款 单位：元");
 
         // aoyiID
-        HSSFCell titleCell36 = titleRow.createCell(36);
-        titleCell36.setCellValue("奥弋订单号");
+        HSSFCell titleCell37 = titleRow.createCell(37);
+        titleCell37.setCellValue("奥弋订单号");
 
         // 收件人名
-        HSSFCell titleCell37 = titleRow.createCell(37);
-        titleCell37.setCellValue("收件人名");
-
         HSSFCell titleCell38 = titleRow.createCell(38);
-        titleCell38.setCellValue("省");
+        titleCell38.setCellValue("收件人名");
 
         HSSFCell titleCell39 = titleRow.createCell(39);
-        titleCell39.setCellValue("市");
+        titleCell39.setCellValue("省");
 
         HSSFCell titleCell40 = titleRow.createCell(40);
-        titleCell40.setCellValue("区");
+        titleCell40.setCellValue("市");
 
         HSSFCell titleCell41 = titleRow.createCell(41);
-        titleCell41.setCellValue("详细地址");
+        titleCell41.setCellValue("区");
 
         HSSFCell titleCell42 = titleRow.createCell(42);
-        titleCell42.setCellValue("收件人手机号");
+        titleCell42.setCellValue("详细地址");
 
         HSSFCell titleCell43 = titleRow.createCell(43);
-        titleCell43.setCellValue("物流单号");
+        titleCell43.setCellValue("收件人手机号");
 
         HSSFCell titleCell44 = titleRow.createCell(44);
-        titleCell44.setCellValue("备注信息");
+        titleCell44.setCellValue("物流单号");
 
         HSSFCell titleCell45 = titleRow.createCell(45);
-        titleCell45.setCellValue("运营平台");
+        titleCell45.setCellValue("备注信息");
 
         HSSFCell titleCell46 = titleRow.createCell(46);
-        titleCell46.setCellValue("子订单外部订单号");
+        titleCell46.setCellValue("运营平台");
+
+        HSSFCell titleCell47 = titleRow.createCell(47);
+        titleCell47.setCellValue("子订单外部订单号");
     }
 
     /**
@@ -1855,6 +1861,7 @@ public class AdminOrderController {
                         HSSFCell cell4 = currentRow.createCell(4); // 快捷支付 单位:元
                         HSSFCell cell5 = currentRow.createCell(5); // 支付宝 单位:元
                         HSSFCell cell6 = currentRow.createCell(6); // 微信 单位:元
+                        HSSFCell cell7 = currentRow.createCell(7); // 平安 单位:元
 
                         if (checkFlag.add(paymentNo)) {
                             cell0.setCellValue(paymentNo); // 主订单号
@@ -1864,21 +1871,33 @@ public class AdminOrderController {
                             cell4.setCellValue(ordersVo.getQuickPayFee()); // 快捷支付 单位:元
                             cell5.setCellValue(ordersVo.getFcalipayFee()); // 支付宝 单位:元
                             cell6.setCellValue(ordersVo.getFcwxFee()); // 微信 单位:元
+                            cell7.setCellValue(ordersVo.getPinganFee()); // 平安 单位:元
                         }
-                        HSSFCell cell7 = currentRow.createCell(7); // 主订单号
-                        HSSFCell cell8 = currentRow.createCell(8); // 实际支付价格 单位:元
-                        HSSFCell cell9 = currentRow.createCell(9); // 优惠券价格 单位:元
-                        HSSFCell cell10 = currentRow.createCell(10); //  优惠券码
-                        HSSFCell cell11 = currentRow.createCell(11); // 券来源
-                        HSSFCell cell12 = currentRow.createCell(12); // 运费 单位:元
+
+
+                        ///////
+
+                        /////
+
+
+                        /////
+
+
+
+                        HSSFCell cell8 = currentRow.createCell(8); // 主订单号
+                        HSSFCell cell9 = currentRow.createCell(9); // 实际支付价格 单位:元
+                        HSSFCell cell10 = currentRow.createCell(10); // 优惠券价格 单位:元
+                        HSSFCell cell11 = currentRow.createCell(11); //  优惠券码
+                        HSSFCell cell12 = currentRow.createCell(12); // 券来源
+                        HSSFCell cell13 = currentRow.createCell(13); // 运费 单位:元
 
                         if (tradeFlag.add(tradeNo)) {
-                            cell7.setCellValue(tradeNo); // 券来源
-                            cell8.setCellValue(new BigDecimal(ordersVo.getPayPrice()).divide(new BigDecimal(100)).toString()); // 运费 单位:元
-                            cell9.setCellValue(new BigDecimal(ordersVo.getCouponPrice()).divide(new BigDecimal(100)).toString()); // 余额消费 单位:元
-                            cell10.setCellValue(StringUtils.isBlank(ordersVo.getCouponCode()) ? "-" : ordersVo.getCouponCode()); // 惠民卡消费 单位:元
-                            cell11.setCellValue(StringUtils.isBlank(ordersVo.getCouponSupplier()) ? "-" : ordersVo.getCouponSupplier()); // 联机账户消费 单位:元
-                            cell12.setCellValue(ordersVo.getExpressFee()); // 快捷支付 单位:元
+                            cell8.setCellValue(tradeNo); // 券来源
+                            cell9.setCellValue(new BigDecimal(ordersVo.getPayPrice()).divide(new BigDecimal(100)).toString()); // 运费 单位:元
+                            cell10.setCellValue(new BigDecimal(ordersVo.getCouponPrice()).divide(new BigDecimal(100)).toString()); // 余额消费 单位:元
+                            cell11.setCellValue(StringUtils.isBlank(ordersVo.getCouponCode()) ? "-" : ordersVo.getCouponCode()); // 惠民卡消费 单位:元
+                            cell12.setCellValue(StringUtils.isBlank(ordersVo.getCouponSupplier()) ? "-" : ordersVo.getCouponSupplier()); // 联机账户消费 单位:元
+                            cell13.setCellValue(ordersVo.getExpressFee()); // 快捷支付 单位:元
                         } else {
                             // 主订单号
                             //cell0.setCellValue("");
@@ -1895,96 +1914,96 @@ public class AdminOrderController {
                                 // 该子订单记录集合在excel中的结束行
                                 int endNum = currentRowNum;
 
-                                sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 7, 7));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 8, 8));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 9, 9));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 10, 10));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 11, 11));
                                 sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 12, 12));
+                                sheet.addMergedRegion(new CellRangeAddress(startNum, endNum, 13, 13));
                             }
                         }
 
                         // -- 子订单
                         // 用户id
-                        HSSFCell cell13 = currentRow.createCell(13);
-                        cell13.setCellValue(ordersVo.getOpenId());
+                        HSSFCell cell14 = currentRow.createCell(14);
+                        cell14.setCellValue(ordersVo.getOpenId());
 
                         // 子订单编号，
-                        HSSFCell cell14 = currentRow.createCell(14);
-                        cell14.setCellValue(ordersVo.getSubOrderId());
+                        HSSFCell cell15 = currentRow.createCell(15);
+                        cell15.setCellValue(ordersVo.getSubOrderId());
 
                         // 子订单状态
-                        HSSFCell cell15 = currentRow.createCell(15);
-                        cell15.setCellValue(ordersVo.getOrderDetailStatus());
+                        HSSFCell cell16 = currentRow.createCell(16);
+                        cell16.setCellValue(ordersVo.getOrderDetailStatus());
 
                         // 订单支付时间，
-                        HSSFCell cell16 = currentRow.createCell(16);
-                        cell16.setCellValue("");
+                        HSSFCell cell17 = currentRow.createCell(17);
+                        cell17.setCellValue("");
                         if (ordersVo.getPaymentTime() != null) {
-                            cell16.setCellValue(DateUtil.dateTimeFormat(ordersVo.getPaymentTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                            cell17.setCellValue(DateUtil.dateTimeFormat(ordersVo.getPaymentTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                         }
 
                         // 订单生成时间，
-                        HSSFCell cell17 = currentRow.createCell(17);
-                        cell17.setCellValue("");
+                        HSSFCell cell18 = currentRow.createCell(18);
+                        cell18.setCellValue("");
                         if (ordersVo.getCreateTime() != null) {
-                            cell17.setCellValue(DateUtil.dateTimeFormat(ordersVo.getCreateTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
+                            cell18.setCellValue(DateUtil.dateTimeFormat(ordersVo.getCreateTime(), DateUtil.DATE_YYYY_MM_DD_HH_MM_SS));
                         }
 
                         // 品类，
-                        HSSFCell cell18 = currentRow.createCell(18);
-                        cell18.setCellValue(ordersVo.getCategory());
+                        HSSFCell cell19 = currentRow.createCell(19);
+                        cell19.setCellValue(ordersVo.getCategory());
 
                         // 品牌（通过mpu获取）
-                        HSSFCell cell19 = currentRow.createCell(19);
-                        cell19.setCellValue(ordersVo.getBrand());
+                        HSSFCell cell20 = currentRow.createCell(20);
+                        cell20.setCellValue(ordersVo.getBrand());
 
                         // 供应商
-                        HSSFCell cell20 = currentRow.createCell(20);
-                        cell20.setCellValue(ordersVo.getMerchantName());
+                        HSSFCell cell21 = currentRow.createCell(21);
+                        cell21.setCellValue(ordersVo.getMerchantName());
 
                         // sku，
-                        HSSFCell cell21 = currentRow.createCell(21);
-                        cell21.setCellValue(ordersVo.getSku());
+                        HSSFCell cell22 = currentRow.createCell(22);
+                        cell22.setCellValue(ordersVo.getSku());
 
                         // mpu，
-                        HSSFCell cell22 = currentRow.createCell(22);
-                        cell22.setCellValue(ordersVo.getMpu());
+                        HSSFCell cell23 = currentRow.createCell(23);
+                        cell23.setCellValue(ordersVo.getMpu());
 
                         // 商品名称，
-                        HSSFCell cell23 = currentRow.createCell(23);
-                        cell23.setCellValue(ordersVo.getCommodityName());
+                        HSSFCell cell24 = currentRow.createCell(24);
+                        cell24.setCellValue(ordersVo.getCommodityName());
 
                         // 购买数量 ，
-                        HSSFCell cell24 = currentRow.createCell(24);
-                        cell24.setCellValue(ordersVo.getQuantity());
+                        HSSFCell cell25 = currentRow.createCell(25);
+                        cell25.setCellValue(ordersVo.getQuantity());
 
                         // 结算类型
-                        HSSFCell cell25 = currentRow.createCell(25);
-                        cell25.setCellValue(ordersVo.getSettlementType());
+                        HSSFCell cell26 = currentRow.createCell(26);
+                        cell26.setCellValue(ordersVo.getSettlementType());
 
                         // 销售价，(单位：元)
-                        HSSFCell cell26 = currentRow.createCell(26);
-                        cell26.setCellValue("无");
-                        if (ordersVo.getSkuPayPrice() != null) {
-                            String _price = new BigDecimal(ordersVo.getSkuPayPrice()).divide(new BigDecimal(100)).toString();
-                            cell26.setCellValue(_price);
-                        }
-
-                        // 券支付金额，(单位：元)
                         HSSFCell cell27 = currentRow.createCell(27);
                         cell27.setCellValue("无");
-                        if (ordersVo.getSkuCouponDiscount() > 0) {
-                            String _price = new BigDecimal(ordersVo.getSkuCouponDiscount()).divide(new BigDecimal(100)).toString();
+                        if (ordersVo.getSkuPayPrice() != null) {
+                            String _price = new BigDecimal(ordersVo.getSkuPayPrice()).divide(new BigDecimal(100)).toString();
                             cell27.setCellValue(_price);
                         }
 
-                        // 进货价 单位：元
+                        // 券支付金额，(单位：元)
                         HSSFCell cell28 = currentRow.createCell(28);
                         cell28.setCellValue("无");
+                        if (ordersVo.getSkuCouponDiscount() > 0) {
+                            String _price = new BigDecimal(ordersVo.getSkuCouponDiscount()).divide(new BigDecimal(100)).toString();
+                            cell28.setCellValue(_price);
+                        }
+
+                        // 进货价 单位：元
+                        HSSFCell cell29 = currentRow.createCell(29);
+                        cell29.setCellValue("无");
                         if (ordersVo.getPurchasePrice() != null && ordersVo.getPurchasePrice() >= 0) {
                             String _price = new BigDecimal(ordersVo.getPurchasePrice()).divide(new BigDecimal(100)).toString();
-                            cell28.setCellValue(_price);
+                            cell29.setCellValue(_price);
                         }
 
 //                // 退款金额 单位：元
@@ -1997,72 +2016,77 @@ public class AdminOrderController {
 //                }
 
                             //退款号
-                        HSSFCell cell29 = currentRow.createCell(29);
-                        cell29.setCellValue(ordersVo.getRefundNo());
+                        HSSFCell cell30 = currentRow.createCell(30);
+                        cell30.setCellValue(ordersVo.getRefundNo());
 
                         //余额退款
-                        HSSFCell cell30 = currentRow.createCell(30);
-                        cell30.setCellValue(ordersVo.getBalanceRefund());
+                        HSSFCell cell31 = currentRow.createCell(31);
+                        cell31.setCellValue(ordersVo.getBalanceRefund());
 
                         //惠民卡退款
-                        HSSFCell cell31 = currentRow.createCell(31);
-                        cell31.setCellValue(ordersVo.getHuiminCardRefund());
+                        HSSFCell cell32 = currentRow.createCell(32);
+                        cell32.setCellValue(ordersVo.getHuiminCardRefund());
 
                         //联机账户退款
-                        HSSFCell cell32 = currentRow.createCell(32);
-                        cell32.setCellValue(ordersVo.getWoaRefund());
+                        HSSFCell cell33 = currentRow.createCell(33);
+                        cell33.setCellValue(ordersVo.getWoaRefund());
 
                         //快捷支付退款
-                        HSSFCell cell33 = currentRow.createCell(33);
-                        cell33.setCellValue(ordersVo.getQuickPayRefund());
+                        HSSFCell cell34 = currentRow.createCell(34);
+                        cell34.setCellValue(ordersVo.getQuickPayRefund());
 
                         //支付宝退款
-                        HSSFCell cell34 = currentRow.createCell(34);
-                        cell34.setCellValue(ordersVo.getFcalipayRefund());
+                        HSSFCell cell35 = currentRow.createCell(35);
+                        cell35.setCellValue(ordersVo.getFcalipayRefund());
 
                         //微信退款
-                        HSSFCell cell35 = currentRow.createCell(35);
-                        cell35.setCellValue(ordersVo.getFcwxRefund());
+                        HSSFCell cell36 = currentRow.createCell(36);
+                        cell36.setCellValue(ordersVo.getFcwxRefund());
 
                         // aoyiID
-                        HSSFCell cell36 = currentRow.createCell(36);
-                        cell36.setCellValue(ordersVo.getAoyiID());
+                        HSSFCell cell37 = currentRow.createCell(37);
+                        cell37.setCellValue(ordersVo.getAoyiID());
 
                         // 收件人名
-                        HSSFCell cell37 = currentRow.createCell(37);
-                        cell37.setCellValue(ordersVo.getBuyerName());
+                        HSSFCell cell38 = currentRow.createCell(38);
+                        cell38.setCellValue(ordersVo.getBuyerName());
 
                         // 省
-                        HSSFCell cell38 = currentRow.createCell(38);
-                        cell38.setCellValue(ordersVo.getProvinceName());
+                        HSSFCell cell39 = currentRow.createCell(39);
+                        cell39.setCellValue(ordersVo.getProvinceName());
 
                         // 市
-                        HSSFCell cell39 = currentRow.createCell(39);
-                        cell39.setCellValue(ordersVo.getCityName());
+                        HSSFCell cell40 = currentRow.createCell(40);
+                        cell40.setCellValue(ordersVo.getCityName());
 
                         // 区
-                        HSSFCell cell40 = currentRow.createCell(40);
-                        cell40.setCellValue(ordersVo.getCountyName());
+                        HSSFCell cell41 = currentRow.createCell(41);
+                        cell41.setCellValue(ordersVo.getCountyName());
 
                         // 详细地址
-                        HSSFCell cell41 = currentRow.createCell(41);
-                        cell41.setCellValue(ordersVo.getAddress());
+                        HSSFCell cell42 = currentRow.createCell(42);
+                        cell42.setCellValue(ordersVo.getAddress());
 
                         // 收件人手机号
-                        HSSFCell cell42 = currentRow.createCell(42);
-                        cell42.setCellValue(ordersVo.getMobile());
-                        // 物流单号
                         HSSFCell cell43 = currentRow.createCell(43);
-                        cell43.setCellValue(ordersVo.getLogisticsId());
-                        // 备注信息
+                        cell43.setCellValue(ordersVo.getMobile());
+
+                        // 物流单号
                         HSSFCell cell44 = currentRow.createCell(44);
-                        cell44.setCellValue(ordersVo.getRemark());
-                        // 运营平台
+                        cell44.setCellValue(ordersVo.getLogisticsId());
+
+                        // 备注信息
                         HSSFCell cell45 = currentRow.createCell(45);
-                        cell45.setCellValue(ordersVo.getAppId());
-                        // 子订单外部订单号
+                        cell45.setCellValue(ordersVo.getRemark());
+
+                        // 运营平台
                         HSSFCell cell46 = currentRow.createCell(46);
-                        cell46.setCellValue(ordersVo.getThirdOrderSn());
+                        cell46.setCellValue(ordersVo.getAppId());
+
+                        // 子订单外部订单号
+                        HSSFCell cell47 = currentRow.createCell(47);
+                        cell47.setCellValue(ordersVo.getThirdOrderSn());
+
                         //
                         currentRowNum++;
                     }
