@@ -635,6 +635,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private MerchantCodeBean getMerchantCodesByAppId(String appId) {
+        log.info(JSONUtil.toJsonString(config.getRegion()));
         return  config.getRegion().get(appId) ;
     }
 
