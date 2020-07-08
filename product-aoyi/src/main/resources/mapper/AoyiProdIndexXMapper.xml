@@ -333,7 +333,7 @@
     </if>
     <if test="merchantCodes != null">
       merchant_code in
-      <foreach item="item" index="index" collection="list"
+      <foreach item="item" index="index" collection="merchantCodes"
                open="(" separator="," close=")">
         #{item}
       </foreach>
