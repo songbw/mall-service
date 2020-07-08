@@ -331,9 +331,14 @@
     <if test="renterId !=null and renterId !=''">
       and renter_id = #{renterId}
     </if>
-    <if test="appId !=null and appId !=''">
-      and app_id like #{appId}
+    <if test="merchantCodes != null">
+      merchant_code in
+      <foreach item="item" index="index" collection="list"
+               open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
+
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -349,8 +354,12 @@
     <if test="renterId !=null and renterId !=''">
       and renter_id = #{renterId}
     </if>
-    <if test="appId !=null and appId !=''">
-      and app_id like #{appId}
+    <if test="merchantCodes != null">
+      merchant_code in
+      <foreach item="item" index="index" collection="list"
+               open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test="priceOrder !=null and priceOrder !=''">
       order by CAST(price AS DECIMAL) ${priceOrder}

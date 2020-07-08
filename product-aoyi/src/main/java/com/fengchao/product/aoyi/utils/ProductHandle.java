@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.utils;
 
+import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs;

@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
@@ -256,6 +257,8 @@ public class ProductController {
         }
         return service.findSpuAndSku(mpu, code);
     }
+
+
 
 
 }

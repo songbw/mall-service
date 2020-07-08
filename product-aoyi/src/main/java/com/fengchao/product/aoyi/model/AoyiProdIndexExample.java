@@ -2175,73 +2175,73 @@ public class AoyiProdIndexExample {
             return (Criteria) this;
         }
 
-        public Criteria andAppIdIsNull() {
-            addCriterion("app_id is null");
+        public Criteria andMerchantCodeIsNull() {
+            addCriterion("merchant_code is null");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdIsNotNull() {
-            addCriterion("app_id is not null");
+        public Criteria andMerchantCodeIsNotNull() {
+            addCriterion("merchant_code is not null");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdEqualTo(String value) {
-            addCriterion("app_id =", value, "appId");
+        public Criteria andMerchantCodeEqualTo(String value) {
+            addCriterion("merchant_code =", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdNotEqualTo(String value) {
-            addCriterion("app_id <>", value, "appId");
+        public Criteria andMerchantCodeNotEqualTo(String value) {
+            addCriterion("merchant_code <>", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdGreaterThan(String value) {
-            addCriterion("app_id >", value, "appId");
+        public Criteria andMerchantCodeGreaterThan(String value) {
+            addCriterion("merchant_code >", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdGreaterThanOrEqualTo(String value) {
-            addCriterion("app_id >=", value, "appId");
+        public Criteria andMerchantCodeGreaterThanOrEqualTo(String value) {
+            addCriterion("merchant_code >=", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdLessThan(String value) {
-            addCriterion("app_id <", value, "appId");
+        public Criteria andMerchantCodeLessThan(String value) {
+            addCriterion("merchant_code <", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdLessThanOrEqualTo(String value) {
-            addCriterion("app_id <=", value, "appId");
+        public Criteria andMerchantCodeLessThanOrEqualTo(String value) {
+            addCriterion("merchant_code <=", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdLike(String value) {
-            addCriterion("app_id like", value, "appId");
+        public Criteria andMerchantCodeLike(String value) {
+            addCriterion("merchant_code like", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdNotLike(String value) {
-            addCriterion("app_id not like", value, "appId");
+        public Criteria andMerchantCodeNotLike(String value) {
+            addCriterion("merchant_code not like", value, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdIn(List<String> values) {
-            addCriterion("app_id in", values, "appId");
+        public Criteria andMerchantCodeIn(List<String> values) {
+            addCriterion("merchant_code in", values, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdNotIn(List<String> values) {
-            addCriterion("app_id not in", values, "appId");
+        public Criteria andMerchantCodeNotIn(List<String> values) {
+            addCriterion("merchant_code not in", values, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdBetween(String value1, String value2) {
-            addCriterion("app_id between", value1, value2, "appId");
+        public Criteria andMerchantCodeBetween(String value1, String value2) {
+            addCriterion("merchant_code between", value1, value2, "merchantCode");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdNotBetween(String value1, String value2) {
-            addCriterion("app_id not between", value1, value2, "appId");
+        public Criteria andMerchantCodeNotBetween(String value1, String value2) {
+            addCriterion("merchant_code not between", value1, value2, "merchantCode");
             return (Criteria) this;
         }
     }

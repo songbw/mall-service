@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.config.ESConfig;
+import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.service.ProductESService;
@@ -52,6 +53,9 @@ public class ProductESServiceImpl implements ProductESService {
 
     @Override
     public PageBean query(ProductQueryBean queryBean) {
+        // 获取可读取的商户配置
+        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
+        List<String> codes = merchantCodeBean.getCodes() ;
         SearchRequest request = new SearchRequest();
         request.indices(esConfig.getEsIndex());
         if (esConfig.getEsType() != null) {
@@ -69,6 +73,10 @@ public class ProductESServiceImpl implements ProductESService {
         }
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
         boolQueryBuilder.must(termQueryBuilder);
+        for (String code: codes) {
+            TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
+            boolQueryBuilder.should(shouldTermQueryBuilder) ;
+        }
         builder.query(boolQueryBuilder);
 
 
@@ -202,5 +210,9 @@ public class ProductESServiceImpl implements ProductESService {
             return subOrderTS;
         }
         return null;
+    }
+
+    private MerchantCodeBean getMerchantCodesByAppId(String appId) {
+        return  esConfig.getRegion().get(appId) ;
     }
 }

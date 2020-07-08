@@ -65,7 +65,7 @@ public class AoyiProdIndex {
 
     private String renterId;
 
-    private String appId;
+    private String merchantCode;
 
     public Integer getId() {
         return id;
@@ -315,11 +315,11 @@ public class AoyiProdIndex {
         this.renterId = renterId == null ? null : renterId.trim();
     }
 
-    public String getAppId() {
-        return appId;
+    public String getMerchantCode() {
+        return merchantCode;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId == null ? null : appId.trim();
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode == null ? null : merchantCode.trim();
     }
 }
