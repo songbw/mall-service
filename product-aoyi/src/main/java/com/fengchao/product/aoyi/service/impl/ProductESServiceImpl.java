@@ -72,9 +72,9 @@ public class ProductESServiceImpl implements ProductESService {
 //            boolQueryBuilder.must(matchQueryAppIdBuilder) ;
 //        }
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
-        boolQueryBuilder.must(termQueryBuilder);
+        boolQueryBuilder.must(termQueryBuilder).must(QueryBuilders.boolQuery());
         for (String code: codes) {
-            MatchQueryBuilder shouldTermQueryBuilder = QueryBuilders.matchQuery("merchant_code", code) ;
+            TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
             boolQueryBuilder.should(shouldTermQueryBuilder) ;
         }
         builder.query(boolQueryBuilder);
