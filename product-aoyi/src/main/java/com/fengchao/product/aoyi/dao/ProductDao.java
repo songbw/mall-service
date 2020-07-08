@@ -278,7 +278,6 @@ public class ProductDao {
      */
     public PageInfo<AoyiProdIndex> selectListByCategories(ProductQueryBean queryBean, List<String> codes) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
-
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         if (queryBean.getBrand() != null && !queryBean.getBrand().equals(""))
             criteria.andBrandEqualTo(queryBean.getBrand());
