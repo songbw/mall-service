@@ -8,6 +8,7 @@ import com.fengchao.product.aoyi.config.ESConfig;
 import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.ProductESService;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +98,7 @@ public class ProductESServiceImpl implements ProductESService {
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
             log.info("result: {}", request.toString());
-            log.info("response: {}", response.toString());
+//            log.info("response: {}", response.toString());
             List<ProductInfoBean> aoyiProdIndices = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
@@ -106,8 +107,8 @@ public class ProductESServiceImpl implements ProductESService {
                 // doc 转 json
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
-                AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
-                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex);
+                AoyiProdIndexX aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndexX.class) ;
+                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);

@@ -1,11 +1,13 @@
 package com.fengchao.product.aoyi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fengchao.product.aoyi.bean.StarSkuBean;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AoyiProdIndexX implements Serializable {
     private Integer id;
 
