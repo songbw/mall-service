@@ -80,7 +80,10 @@ public class ProductServiceImpl implements ProductService {
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
-        List<String> codes = merchantCodeBean.getCodes() ;
+        List<String> codes = new ArrayList<>() ;
+        if (merchantCodeBean != null) {
+            codes = merchantCodeBean.getCodes() ;
+        }
         PageBean pageBean = new PageBean();
         int total = 0;
         int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
@@ -119,7 +122,10 @@ public class ProductServiceImpl implements ProductService {
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
-        List<String> codes = merchantCodeBean.getCodes() ;
+        List<String> codes = new ArrayList<>() ;
+        if (merchantCodeBean != null) {
+            codes = merchantCodeBean.getCodes() ;
+        }
         log.info("codes: {}", JSONUtil.toJsonString(codes));
         PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, codes);
         log.info("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));

@@ -56,7 +56,10 @@ public class ProductESServiceImpl implements ProductESService {
     public PageBean query(ProductQueryBean queryBean) {
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
-        List<String> codes = merchantCodeBean.getCodes() ;
+        List<String> codes = new ArrayList<>() ;
+        if (merchantCodeBean != null) {
+            codes = merchantCodeBean.getCodes() ;
+        }
         SearchRequest request = new SearchRequest();
         request.indices(esConfig.getEsIndex());
         if (esConfig.getEsType() != null) {
