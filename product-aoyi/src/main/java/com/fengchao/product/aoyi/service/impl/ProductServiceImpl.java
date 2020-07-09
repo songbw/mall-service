@@ -122,6 +122,7 @@ public class ProductServiceImpl implements ProductService {
         List<String> codes = merchantCodeBean.getCodes() ;
         log.info("codes: {}", JSONUtil.toJsonString(codes));
         PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, codes);
+        log.info("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
         productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
         productInfoBeanPageInfo.setPageSize(prodIndexPageInfo.getPageSize());
