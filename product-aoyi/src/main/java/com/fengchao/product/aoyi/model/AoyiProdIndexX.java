@@ -98,6 +98,8 @@ public class AoyiProdIndexX implements Serializable {
 
     private StarSku starSku ;
 
+    private String merchantCode ;
+
     public String getSubTitle() {
         return subTitle;
     }
@@ -392,5 +394,13 @@ public class AoyiProdIndexX implements Serializable {
 
     public void setStarSku(StarSku starSku) {
         this.starSku = starSku;
+    }
+
+    public String getMerchantCode() {
+        return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode;
     }
 }

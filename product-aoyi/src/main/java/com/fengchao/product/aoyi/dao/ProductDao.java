@@ -187,6 +187,7 @@ public class ProductDao {
         aoyiProdIndexWithBLOBs.setModel(aoyiProdIndexX.getModel());
         aoyiProdIndexWithBLOBs.setMpu(aoyiProdIndexX.getMpu());
         aoyiProdIndexWithBLOBs.setMerchantId(aoyiProdIndexX.getMerchantId());
+        aoyiProdIndexWithBLOBs.setMerchantCode(aoyiProdIndexX.getMerchantCode());
         aoyiProdIndexWithBLOBs.setState(aoyiProdIndexX.getState());
         aoyiProdIndexWithBLOBs.setName(aoyiProdIndexX.getName());
         aoyiProdIndexWithBLOBs.setPrice(aoyiProdIndexX.getPrice());

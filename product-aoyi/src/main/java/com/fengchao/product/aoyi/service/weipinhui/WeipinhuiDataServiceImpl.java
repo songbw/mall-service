@@ -282,6 +282,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         aoyiProdIndex.setSkuid(aoyiItemDetailResDto.getItemId());
                         aoyiProdIndex.setMpu(aoyiItemDetailResDto.getItemId());
                         aoyiProdIndex.setMerchantId(2);
+                        aoyiProdIndex.setMerchantCode(aoyiProdIndex.getSkuid().substring(0,2));
                         aoyiProdIndex.setState(String.valueOf(ProductStatusEnum.PUT_ON.getValue())); // 下架状态
 
                         itemIdList.add(aoyiItemDetailResDto.getItemId());
