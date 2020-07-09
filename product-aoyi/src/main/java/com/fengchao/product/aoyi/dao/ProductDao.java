@@ -283,8 +283,8 @@ public class ProductDao {
             criteria.andBrandEqualTo(queryBean.getBrand());
         if (queryBean.getRenterId() != null && !queryBean.getRenterId().equals(""))
             criteria.andRenterIdEqualTo(queryBean.getRenterId());
-        if (codes != null && codes.size()>0)
-            criteria.andMerchantCodeIn(codes);
+//        if (codes != null && codes.size()>0)
+//            criteria.andMerchantCodeIn(codes);
         if (queryBean.getPriceOrder() != null && !queryBean.getPriceOrder().equals(""))
             aoyiProdIndexExample.setOrderByClause("CAST(price AS DECIMAL) " + queryBean.getPriceOrder());
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
