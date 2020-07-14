@@ -575,6 +575,11 @@ public class LoginServiceImpl implements ILoginService {
         return tokenBean;
     }
 
+    @Override
+    public SUser findByUser(LoginBean loginBean) {
+        return userDao.selectUserByTel(loginBean.getAppId(), loginBean.getUsername());
+    }
+
     private AccessToken getPingAnToken(String initCode) {
         OperaResult result = pinganClientService.findToken(initCode);
         if (result.getCode() == 200) {

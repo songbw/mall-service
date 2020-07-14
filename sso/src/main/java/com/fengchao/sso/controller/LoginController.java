@@ -4,6 +4,7 @@ import com.fengchao.sso.bean.*;
 import com.fengchao.sso.config.SMSConfig;
 import com.fengchao.sso.feign.BaseService;
 import com.fengchao.sso.model.Login;
+import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
@@ -275,11 +276,12 @@ public class LoginController {
             result.setMsg("APPID不能为空");
             return result;
         }
-        Login login = loginService.selectByPrimaryName(bean.getTelephone());
+
         LoginBean loginBean = new LoginBean() ;
         loginBean.setAppId(bean.getAppId());
         loginBean.setUsername(bean.getTelephone());
-        if(login == null){
+        SUser user = loginService.findByUser(loginBean);
+        if(user == null){
             // 注册用户并登录
             loginService.insertSelective(loginBean) ;
 
