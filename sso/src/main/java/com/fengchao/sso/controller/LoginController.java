@@ -261,5 +261,31 @@ public class LoginController {
         }
         return loginService.findThirdPartyTokenWX(iAppId, code) ;
     }
+
+    @PostMapping("/login/tel")
+    private OperaResult login4tel(@RequestBody SignBean bean){
+        OperaResult result = new OperaResult();
+        if(StringUtils.isEmpty(bean.getTelephone())) {
+            result.setCode(10008);
+            result.setMsg("手机号不能为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getAppId())) {
+            result.setCode(10008);
+            result.setMsg("APPID不能为空");
+            return result;
+        }
+        Login login = loginService.selectByPrimaryName(bean.getTelephone());
+        LoginBean loginBean = new LoginBean() ;
+        loginBean.setAppId(bean.getAppId());
+        loginBean.setUsername(bean.getTelephone());
+        if(login == null){
+            // 注册用户并登录
+            loginService.insertSelective(loginBean) ;
+
+        }
+        result.getData().put("result",loginService.login(loginBean));
+        return result;
+    }
 }
 
