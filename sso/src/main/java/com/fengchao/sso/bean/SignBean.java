@@ -14,4 +14,5 @@ public class SignBean {
     private String appId ;
     private String telephone;
     private String sign ;
+    private String timestamp ;
 }
