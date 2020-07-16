@@ -8,10 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 @Slf4j
 public class RandomUtil {
@@ -41,6 +38,7 @@ public class RandomUtil {
      * @return
      */
     public static String getSign(Map<String, String> params, String appSecret) {
+        Map<String, String> paramsBody = new HashMap<>() ;
         for (Map.Entry<String, String> entry : params.entrySet()) {
             if (!entry.getKey().equals("sign")) {
                 // 拼接参数值字符串并进行utf-8解码，防止中文乱码产生
@@ -53,11 +51,11 @@ public class RandomUtil {
                 if (StringUtils.isEmpty(value)) {
                     continue;
                 }
-                params.put(entry.getKey(), value);
+                paramsBody.put(entry.getKey(), value);
             }
         }
         // 将参数以参数名的字典升序排序
-        Map<String, String> sortParams = new TreeMap<>(params);
+        Map<String, String> sortParams = new TreeMap<>(paramsBody);
         Set<Map.Entry<String, String>> entrys = sortParams.entrySet();
         // 遍历排序的字典,并拼接格式
         StringBuilder valueSb = new StringBuilder();
