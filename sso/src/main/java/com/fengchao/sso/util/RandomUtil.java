@@ -1,5 +1,8 @@
 package com.fengchao.sso.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fengchao.sso.bean.SignBean;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -10,6 +13,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
+@Slf4j
 public class RandomUtil {
 
     public static final String JY_APP_KEY = "yd44be8744649862e4" ;
@@ -64,6 +68,7 @@ public class RandomUtil {
         }
         valueSb.append(appSecret);
         String sign = valueSb.toString();
+        log.info("sign string is : {}", sign);
         try {
             sign = DigestUtils.md5Hex(sign.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -73,8 +78,17 @@ public class RandomUtil {
     }
 
     public static void main(String args[]) {
-        StringBuilder sb = new StringBuilder("10MFD21F@@E@5@D5GG2AM2EE26MLF051B84596948");
-        sb.insert(2, "%");
-        System.out.println(sb);
+//        StringBuilder sb = new StringBuilder("10MFD21F@@E@5@D5GG2AM2EE26MLF051B84596948");
+//        sb.insert(2, "%");
+//        System.out.println(sb);
+        SignBean signBean = new SignBean() ;
+        signBean.setAppId("16");
+        signBean.setAppKey(RandomUtil.JY_APP_KEY);
+        signBean.setTelephone("13811463960");
+        signBean.setTimestamp("1545804554075");
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map = mapper.convertValue(signBean, Map.class) ;
+        String sign = RandomUtil.getSign(map ,RandomUtil.JY_APP_SECRET) ;
+        System.out.println(sign);
     }
 }
