@@ -75,7 +75,7 @@ public class ProductESServiceImpl implements ProductESService {
         boolQueryBuilder.must(termQueryBuilder);
         for (String code: codes) {
             TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
-            boolQueryBuilder.should(shouldTermQueryBuilder) ;
+            boolQueryBuilder.filter(shouldTermQueryBuilder) ;
         }
         builder.query(boolQueryBuilder);
 
