@@ -53,7 +53,7 @@ public class ProductESServiceImpl implements ProductESService {
     }
 
     private void saveKeyword(Map<String, Object> map) {
-        IndexRequest request = new IndexRequest("productkeyword"); // 这里最后一个参数是es里储存的id，如果不填，es会自动生成一个，个人建议跟自己的数据库表里id保持一致，后面更新删除都会很方便
+        IndexRequest request = new IndexRequest("productkeyword", "keyword"); // 这里最后一个参数是es里储存的id，如果不填，es会自动生成一个，个人建议跟自己的数据库表里id保持一致，后面更新删除都会很方便
         request.source(map);
         IndexResponse response = null;
         try {
