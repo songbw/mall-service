@@ -71,12 +71,17 @@ public class ProductESServiceImpl implements ProductESService {
             MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", queryBean.getKeyword());
             boolQueryBuilder.must(matchQueryBuilder) ;
         }
-        TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
-        boolQueryBuilder.filter(termQueryBuilder);
+        // merchant code
+        BoolQueryBuilder merchantCodeBoolQuery = QueryBuilders.boolQuery() ;
         for (String code: codes) {
             TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
-            boolQueryBuilder.should(shouldTermQueryBuilder) ;
+            merchantCodeBoolQuery.should(shouldTermQueryBuilder) ;
         }
+        boolQueryBuilder.must(merchantCodeBoolQuery) ;
+
+        TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
+        boolQueryBuilder.must(termQueryBuilder);
+
         builder.query(boolQueryBuilder);
 
 
