@@ -302,7 +302,7 @@ public class ProductDao {
      */
     public PageInfo<AoyiProdIndex> selectPageable(ProductQueryBean queryBean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
-
+        aoyiProdIndexExample.setOrderByClause("create_time desc");
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
 
         if (queryBean.getMerchantId() != null) {
