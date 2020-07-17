@@ -2,6 +2,7 @@ package com.fengchao.sso.service;
 
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.model.Login;
+import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.util.OperaResult;
 
 public interface ILoginService {
@@ -33,5 +34,7 @@ public interface ILoginService {
     OperaResponse wxBindVerify(String appId, String appSrc, String openId) ;
 
     TokenBean login(LoginBean loginBean) ;
+
+    SUser findByUser(LoginBean loginBean) ;
 
 }

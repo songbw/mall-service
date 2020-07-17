@@ -216,7 +216,7 @@ public class OrderServiceImpl implements OrderService {
                     return operaResult;
                 }
 
-                // TODO 验证销售价格是否小于进货价格
+                // TODO 验证活动后价格是否小于进货价格
                 BigDecimal sPrice = new BigDecimal(0) ;
                 if (prodIndexWithBLOBs.getStarSku() == null) {
                     if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
@@ -224,17 +224,39 @@ public class OrderServiceImpl implements OrderService {
                     }
                 } else {
                     if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
-                        sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()) ;
+                        sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
                     }
                 }
-                if (sPrice.compareTo(orderSku.getSalePrice()) == 1) {
+                if (sPrice.compareTo(orderSku.getUnitPrice()) == 1) {
                     operaResult.setCode(400503);
                     operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "无货。");
                     // 异常数据库回滚
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    if (coupon != null) {
+                        boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                        if (!couponRelease) {
+                            // 订单失败,释放优惠券，
+                            logger.info("订单" + bean.getId() + "释放优惠券失败");
+                        }
+                    }
                     return operaResult;
                 }
-                logger.info("验证销售价格是否小于进货价格:{}, {}, {}", sPrice.toString(),orderSku.getSalePrice().toString(), sPrice.compareTo(orderSku.getSalePrice()));
+                // 判断唯品会只能售卖30的商品
+                if ("08".equals(bean.getAppId()) && !prodIndexWithBLOBs.getMpu().startsWith("30")) {
+                    operaResult.setCode(400503);
+                    operaResult.setMsg("商品" + prodIndexWithBLOBs.getName() + "无货。");
+                    // 异常数据库回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    if (coupon != null) {
+                        boolean couponRelease = release(coupon.getId(), coupon.getCode());
+                        if (!couponRelease) {
+                            // 订单失败,释放优惠券，
+                            logger.info("订单" + bean.getId() + "释放优惠券失败");
+                        }
+                    }
+                    return operaResult;
+                }
+                logger.info("验证活动后价格是否小于进货价格:{}, {}, {}", sPrice.toString(),orderSku.getUnitPrice().toString(), sPrice.compareTo(orderSku.getUnitPrice()));
                 // 添加扣除库存列表
                 if (orderSku.getMerchantId() != 2 && orderSku.getMerchantId() != 4) {
                     InventoryMpus inventoryMpus = new InventoryMpus();
@@ -1713,10 +1735,21 @@ public class OrderServiceImpl implements OrderService {
                 thirdOrdersBean.setThird_sub_total_amount(new BigDecimal(orders1.getSaleAmount()));
                 thirdOrdersBean.setThird_sub_cost_amount(thirdOrdersBean.getThird_sub_total_amount());
                 thirdOrdersBean.setThird_sub_pay_amount(thirdOrdersBean.getThird_sub_total_amount());
-
-                tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()));
-                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()));
-                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
+                if (tradeInfoBean.getThird_total_amount() == null) {
+                    tradeInfoBean.setThird_total_amount(thirdOrdersBean.getThird_sub_total_amount());
+                } else {
+                    tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()));
+                }
+                if (tradeInfoBean.getThird_pay_amount() == null) {
+                    tradeInfoBean.setThird_pay_amount(thirdOrdersBean.getThird_sub_pay_amount());
+                } else {
+                    tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()));
+                }
+                if (tradeInfoBean.getThird_cost_amount() == null) {
+                    tradeInfoBean.setThird_cost_amount(thirdOrdersBean.getThird_sub_cost_amount());
+                } else {
+                    tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
+                }
                 List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
                 orderDetails.forEach(orderDetail -> {
                     GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;

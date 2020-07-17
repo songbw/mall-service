@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.service.weipinhui;
 
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
+import com.fengchao.product.aoyi.bean.StarPropertyBean;
 import com.fengchao.product.aoyi.config.ProductConfig;
 import com.fengchao.product.aoyi.constants.ProductStatusEnum;
 import com.fengchao.product.aoyi.dao.*;
@@ -481,7 +482,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     // 4.2.2 过滤掉已经存在sku
                     List<StarSku> insertStarSkuList = new ArrayList<>(); // 过滤掉已存在的sku之后，剩下的需要插入的sku信息
-                    List<StarProperty> candidateStarPropertyList = new ArrayList<>(); // 待插入的商品规格列表信息
+                    List<StarPropertyBean> candidateStarPropertyList = new ArrayList<>(); // 待插入的商品规格列表信息
                     List<AyFcImages> skuImageList = new ArrayList<>(); // 待插入ay_fc_images表的信息
                     // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                     for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) { // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
@@ -491,7 +492,12 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             // String code;
                             // purchaseQty;
 
-                            // starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
+                            // c. 组装该sku的图片信息
+                            List<AyFcImages> _ayFcImagesList = handleAyFcImages(Arrays.asList(aoyiSkuResDto.getSkuImageUrl()),
+                                    aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
+                            skuImageList.addAll(_ayFcImagesList);
+//                            starSku.setGoodsLogo(aoyiSkuResDto.getSkuImageUrl());
+                            starSku.setGoodsLogo(productConfig.getFengchaoImagePrefix() + _ayFcImagesList.get(0).getFcImage());
                             starSku.setSkuId(aoyiSkuResDto.getSkuId());
                             starSku.setCode(aoyiSkuResDto.getSkuId());
                             starSku.setStatus("false".equals(aoyiSkuResDto.getCanSell()) ? 0 : 1);
@@ -504,20 +510,14 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             insertStarSkuList.add(starSku); //
 
                             // b.组装该sku的商品规格
-                            List<StarProperty> _starPropertyList = assembleProdSepc(aoyiSkuResDto.getSkuId(),
+                            List<StarPropertyBean> _starPropertyList = assembleProdSepc(aoyiSkuResDto.getSkuId(),
                                     aoyiSkuResDto.getSepca(), aoyiSkuResDto.getSepcb(), aoyiSkuResDto.getSepcc());
 
                             if (CollectionUtils.isNotEmpty(_starPropertyList)) {
                                 candidateStarPropertyList.addAll(_starPropertyList);
                             }
-
-                            // c. 组装该sku的图片信息
-                            List<AyFcImages> _ayFcImagesList = handleAyFcImages(Arrays.asList(aoyiSkuResDto.getSkuImageUrl()),
-                                    aoyiItemDetailResDto.getCategoryId(), itemId, IMAGE_TYPE_XQ);
-                            skuImageList.addAll(_ayFcImagesList);
-
                             //
-                            starSku.setGoodsLogo(productConfig.getFengchaoImagePrefix() + _ayFcImagesList.get(0).getFcImage());
+
                         }
                     }
 
@@ -556,10 +556,10 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         List<StarProperty> insertStarPropertyList = new ArrayList<>();
 
                         // 过滤
-                        for (StarProperty candidateStarProperty : candidateStarPropertyList) {
+                        for (StarPropertyBean candidateStarProperty : candidateStarPropertyList) {
                             if (!exsitPropertyIdList.contains(candidateStarProperty.getProductId())) {
                                 // !!xx  将productId修改为startSku中的id
-                                StarSku _starSku = starSkuMap.get(String.valueOf(candidateStarProperty.getProductId()));
+                                StarSku _starSku = starSkuMap.get(candidateStarProperty.getWphSkuId());
                                 if (_starSku != null) {
                                     candidateStarProperty.setProductId(_starSku.getId());
                                 }
@@ -651,34 +651,34 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
      * @param sepcc
      * @return
      */
-    private List<StarProperty> assembleProdSepc(String skuId, String sepca, String sepcb, String sepcc) {
-        List<StarProperty> starPropertyList = new ArrayList<>();
+    private List<StarPropertyBean> assembleProdSepc(String skuId, String sepca, String sepcb, String sepcc) {
+        List<StarPropertyBean> starPropertyList = new ArrayList<>();
 
         if (StringUtils.isNotBlank(sepca)) {
-            StarProperty starProperty = new StarProperty();
+            StarPropertyBean starProperty = new StarPropertyBean();
             starProperty.setType(1);
             starProperty.setName("sepca");
-            starProperty.setProductId(Integer.valueOf(skuId));
+            starProperty.setWphSkuId(skuId);
             starProperty.setVal(sepca);
 
             starPropertyList.add(starProperty);
         }
 
         if (StringUtils.isNotBlank(sepcb)) {
-            StarProperty starProperty = new StarProperty();
+            StarPropertyBean starProperty = new StarPropertyBean();
             starProperty.setType(1);
             starProperty.setName("sepcb");
-            starProperty.setProductId(Integer.valueOf(skuId));
+            starProperty.setWphSkuId(skuId);
             starProperty.setVal(sepcb);
 
             starPropertyList.add(starProperty);
         }
 
         if (StringUtils.isNotBlank(sepcc)) {
-            StarProperty starProperty = new StarProperty();
+            StarPropertyBean starProperty = new StarPropertyBean();
             starProperty.setType(1);
             starProperty.setName("sepcc");
-            starProperty.setProductId(Integer.valueOf(skuId));
+            starProperty.setWphSkuId(skuId);
             starProperty.setVal(sepcc);
 
             starPropertyList.add(starProperty);

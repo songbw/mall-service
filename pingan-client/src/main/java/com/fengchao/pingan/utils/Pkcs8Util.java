@@ -142,4 +142,20 @@ public class Pkcs8Util {
         return s.toUpperCase();
     }
 
+    public static void main(String args[]) {
+        long time = System.currentTimeMillis();
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("appId")
+                .append("B71521817075456KN")
+                .append("appKey")
+                .append("c7fd455192de4ca2a247042df5b25b42")
+                .append("randomSeries")
+                .append("123456789")
+                .append("timestamp")
+                .append(time);
+        String cipher = DigestUtils.md5Hex(buffer.toString());
+        System.out.println("timestamp: " + time);
+        System.out.println("cipher: " + cipher);
+    }
+
 }

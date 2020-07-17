@@ -19,4 +19,11 @@ public class PingAnConfigBean {
     private String payAppKey ;
     private String payMerchantNo;
     private String paySceneId ;
+    private String initCodeUri ;
+    private String authCodeUri ;
+    private String accessTokenUri ;
+    private String checkTokenUri ;
+    private String refreshTokenUri ;
+    private String checkRequestCodeUri;
+    private String userInfoUri;
 }

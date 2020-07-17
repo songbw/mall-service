@@ -1,16 +1,15 @@
 package com.fengchao.order.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.fengchao.order.bean.*;
-import com.fengchao.order.model.Order;
-import com.fengchao.order.model.OrderDetail;
+import com.fengchao.order.bean.Logisticsbean;
+import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.service.OrderService;
-import com.fengchao.order.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

@@ -54,6 +54,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             result.setMsg(bean.getMpu() + " 商品不存在");
             return result ;
         }
+        if ("08".equals(bean.getAppId()) && !bean.getMpu().startsWith("30")) {
+            result.setCode(4000003);
+            result.setMsg(bean.getMpu() + " 商品库存不足");
+            return result ;
+        }
         ShoppingCart temp = mapper.selectByOpenIdAndSku(bean) ;
         int perLimit = findPromotionBySku(bean.getMpu(), bean.getOpenId(), bean.getAppId()) ;
         if (perLimit != -1) {

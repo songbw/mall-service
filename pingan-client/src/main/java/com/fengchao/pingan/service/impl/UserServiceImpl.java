@@ -106,7 +106,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<InitCodeBean> getInitCode(String appId) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath() + HttpClient.INIT_CODE_URL);
+        logger.info("pingAnConfigBean： {}", JSONUtil.toJsonString(pingAnConfigBean));
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath() + pingAnConfigBean.getInitCodeUri());
         InitCodeRequestBean bean = new InitCodeRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setTimestamp(new Date().getTime() + "");
@@ -126,7 +127,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AuthCodeBean> getAuthCode(String appId) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.AUTH_CODE_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getAuthCodeUri());
         InitCodeRequestBean bean = new InitCodeRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setTimestamp(new Date().getTime() + "");
@@ -142,7 +143,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AccessToken> getAuthAccessToken(String appId, String authCode) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.ACCESS_TOKEN_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getAccessTokenUri());
         AccessTokenRequestBean bean = new AccessTokenRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setAuthCode(authCode);
@@ -156,7 +157,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AccessToken> getRefreshToken(String appId, String refreshToken) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.REFRESH_TOKEN_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getRefreshTokenUri());
         RefreshTokenRequestBean bean = new RefreshTokenRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setRefreshToken(refreshToken);
@@ -170,7 +171,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<CheckTokenBean> checkToken(String appId, String accessToken) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.CHECK_TOKEN_URL);
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getCheckTokenUri());
         CheckTokenRequestBean bean = new CheckTokenRequestBean();
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setAccessToken(accessToken);
@@ -198,7 +199,8 @@ public class UserServiceImpl implements UserService {
         bean.setAppId(pingAnConfigBean.getAppId());
         bean.setRequestCode(requestCode);
         bean.setAccessToken(accessToken.getAccessToken());
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.CHECK_REQUEST_CODE_URL);
+        logger.info("校验 RequestCode 请求参数是：{}", JSONUtil.toJsonString(bean));
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getCheckRequestCodeUri());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         OperaResponse result = response.readEntity(OperaResponse.class);
@@ -209,10 +211,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public OperaResponse<AuthUserBean> getAuthUserInfo(String appId, String userAccessToken) {
         PingAnConfigBean pingAnConfigBean = getPingAnConfig(appId) ;
-        logger.info("获取用户信息参数是：{}", userAccessToken);
+        logger.info("获取用户信息参数是：appId: {}, userAccessToken: {}",appId, userAccessToken);
         AuthUserRequestBean bean = new AuthUserRequestBean();
         bean.setUserAccessToken(userAccessToken);
-        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ HttpClient.USER_iNFO_URL);
+        bean.setAppId(pingAnConfigBean.getAppId());
+        logger.info("获取用户信息请求参数是：{}",JSONUtil.toJsonString(bean));
+        WebTarget webTarget = HttpClient.createClient().target(pingAnConfigBean.getAuthBasePath()+ pingAnConfigBean.getUserInfoUri());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.post(Entity.entity(bean, MediaType.APPLICATION_JSON));
         OperaResponse result = response.readEntity(OperaResponse.class);

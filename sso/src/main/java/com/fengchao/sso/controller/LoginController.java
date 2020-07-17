@@ -1,9 +1,11 @@
 package com.fengchao.sso.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.sso.bean.*;
 import com.fengchao.sso.config.SMSConfig;
 import com.fengchao.sso.feign.BaseService;
 import com.fengchao.sso.model.Login;
+import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.service.ILoginService;
 import com.fengchao.sso.util.*;
 import com.github.pagehelper.util.StringUtil;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -260,6 +263,57 @@ public class LoginController {
             return result;
         }
         return loginService.findThirdPartyTokenWX(iAppId, code) ;
+    }
+
+    @PostMapping("/login/tel")
+    private OperaResult login4tel(@RequestBody SignBean bean){
+        OperaResult result = new OperaResult();
+        if(StringUtils.isEmpty(bean.getTelephone())) {
+            result.setCode(10008);
+            result.setMsg("手机号不能为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getAppId())) {
+            result.setCode(10008);
+            result.setMsg("APPID不能为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getSign())) {
+            result.setCode(10008);
+            result.setMsg("sign不能为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getAppKey())) {
+            result.setCode(10008);
+            result.setMsg("appKey不能为空");
+            return result;
+        }
+        if(StringUtils.isEmpty(bean.getTimestamp())) {
+            result.setCode(10008);
+            result.setMsg("timestamp不能为空");
+            return result;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map = mapper.convertValue(bean, Map.class) ;
+        String sign = RandomUtil.getSign(map ,RandomUtil.JY_APP_SECRET) ;
+        logger.info("bean sign is : {}, sign is : {}", bean.getSign(), sign);
+        if (!sign.equals(bean.getSign())) {
+            result.setCode(10008);
+            result.setMsg("验签失败。");
+            return result;
+        }
+        LoginBean loginBean = new LoginBean() ;
+        loginBean.setAppId(bean.getAppId());
+        loginBean.setUsername(bean.getTelephone());
+        SUser user = loginService.findByUser(loginBean);
+        if(user == null){
+            // 注册用户并登录
+            loginService.insertSelective(loginBean) ;
+
+        }
+        result.getData().put("result",loginService.login(loginBean));
+        return result;
     }
 }
 
