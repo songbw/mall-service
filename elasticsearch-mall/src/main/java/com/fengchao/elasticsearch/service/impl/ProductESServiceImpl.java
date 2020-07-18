@@ -29,10 +29,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @EnableConfigurationProperties({ESConfig.class})
@@ -77,6 +74,7 @@ public class ProductESServiceImpl implements ProductESService {
         Map<String, Object> map = new HashMap<>() ;
         map.put("keyword", queryBean.getKeyword()) ;
         map.put("appId", queryBean.getAppId()) ;
+        map.put("createdAt", new Date()) ;
         saveKeyword(map);
 
         SearchSourceBuilder builder = new SearchSourceBuilder();
