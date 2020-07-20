@@ -772,6 +772,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         exportOrdersVo.setQuickPayFee("0"); // 快捷支付 单位 元
                         exportOrdersVo.setFcalipayFee("0"); // 支付宝支付 单位 元
                         exportOrdersVo.setFcwxFee("0"); // 微信支付 单位 元
+                        exportOrdersVo.setPinganFee("0"); // 平安支付 单位 元
+                        exportOrdersVo.setYunchengFee("0"); // 云城支付 单位 元
                         if (CollectionUtils.isNotEmpty(orderPayMethodInfoBeanList)) {
 
                             boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
@@ -835,6 +837,12 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         exportOrdersVo.setPinganFee(exportOrdersVo.getPinganFee() + "(异常)");
                                     }
+                                } else if (OrderPayMethodTypeEnum.YUNCHENG.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setYunchengFee(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setYunchengFee(exportOrdersVo.getYunchengFee() + "(异常)");
+                                    }
                                 }
                             }
 
@@ -856,6 +864,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                         exportOrdersVo.setQuickPayRefund("0"); // 快捷支付 单位 元
                         exportOrdersVo.setFcalipayRefund("0"); // 支付宝支付 单位 元
                         exportOrdersVo.setFcwxRefund("0"); // 微信支付 单位 元
+                        exportOrdersVo.setPinanRefund("0"); // 平安退款 单位元
+                        exportOrdersVo.setYunchengRefund("0"); // 云城退款 单位元
                         if (CollectionUtils.isNotEmpty(refundMethodInfoList)) {
 
                             boolean checkHuiminCardUnNormalPayStatus = true; // 检验是否存在有异常的支付状态
@@ -912,6 +922,18 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
                                     if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
                                         exportOrdersVo.setFcwxRefund(exportOrdersVo.getFcwxRefund()+ "(异常)");
+                                    }
+                                } else if (OrderPayMethodTypeEnum.PINGAN.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setPinanRefund(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setPinanRefund(exportOrdersVo.getPinanRefund()+ "(异常)");
+                                    }
+                                } else if (OrderPayMethodTypeEnum.YUNCHENG.getValue().equalsIgnoreCase(payType)) {
+                                    exportOrdersVo.setYunchengRefund(_fee);
+
+                                    if (payStatus != 1) { // 注意，这里如果不是1， 表示支付状态不是‘成功’， 这里需要将该数据标识出来
+                                        exportOrdersVo.setYunchengRefund(exportOrdersVo.getYunchengRefund()+ "(异常)");
                                     }
                                 }
                             }

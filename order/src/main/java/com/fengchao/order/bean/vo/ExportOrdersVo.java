@@ -215,6 +215,11 @@ public class ExportOrdersVo {
     private String pinganFee;
 
     /**
+     * 云城支付 单位 元
+     */
+    private String yunchengFee;
+
+    /**
      * 子订单退款金额 单位 元
      */
     private String orderDetailRefundAmount;
@@ -247,6 +252,16 @@ public class ExportOrdersVo {
      * 微信退款 单位 元
      */
     private String fcwxRefund;
+
+    /**
+     * 平安退款 单位 元
+     */
+    private String pinanRefund;
+
+    /**
+     * 云城退款 单位 元
+     */
+    private String yunchengRefund;
 
     /**
      * 收件人手机号
