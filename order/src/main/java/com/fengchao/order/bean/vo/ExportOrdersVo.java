@@ -256,7 +256,7 @@ public class ExportOrdersVo {
     /**
      * 平安退款 单位 元
      */
-    private String pinanRefund;
+    private String pinganRefund;
 
     /**
      * 云城退款 单位 元

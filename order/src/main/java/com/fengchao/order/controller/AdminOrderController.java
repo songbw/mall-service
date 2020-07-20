@@ -1767,40 +1767,48 @@ public class AdminOrderController {
         HSSFCell titleCell37 = titleRow.createCell(37);
         titleCell37.setCellValue("微信退款 单位：元");
 
-        // aoyiID
+        // 平安退款
         HSSFCell titleCell38 = titleRow.createCell(38);
-        titleCell38.setCellValue("奥弋订单号");
+        titleCell38.setCellValue("平安退款 单位：元");
+
+        // 云城退款
+        HSSFCell titleCell39 = titleRow.createCell(39);
+        titleCell39.setCellValue("云城退款 单位：元");
+
+        // aoyiID
+        HSSFCell titleCell40 = titleRow.createCell(40);
+        titleCell40.setCellValue("奥弋订单号");
 
         // 收件人名
-        HSSFCell titleCell39 = titleRow.createCell(39);
-        titleCell39.setCellValue("收件人名");
-
-        HSSFCell titleCell40 = titleRow.createCell(40);
-        titleCell40.setCellValue("省");
-
         HSSFCell titleCell41 = titleRow.createCell(41);
-        titleCell41.setCellValue("市");
+        titleCell41.setCellValue("收件人名");
 
         HSSFCell titleCell42 = titleRow.createCell(42);
-        titleCell42.setCellValue("区");
+        titleCell42.setCellValue("省");
 
         HSSFCell titleCell43 = titleRow.createCell(43);
-        titleCell43.setCellValue("详细地址");
+        titleCell43.setCellValue("市");
 
         HSSFCell titleCell44 = titleRow.createCell(44);
-        titleCell44.setCellValue("收件人手机号");
+        titleCell44.setCellValue("区");
 
         HSSFCell titleCell45 = titleRow.createCell(45);
-        titleCell45.setCellValue("物流单号");
+        titleCell45.setCellValue("详细地址");
 
         HSSFCell titleCell46 = titleRow.createCell(46);
-        titleCell46.setCellValue("备注信息");
+        titleCell46.setCellValue("收件人手机号");
 
         HSSFCell titleCell47 = titleRow.createCell(47);
-        titleCell47.setCellValue("运营平台");
+        titleCell47.setCellValue("物流单号");
 
         HSSFCell titleCell48 = titleRow.createCell(48);
-        titleCell48.setCellValue("子订单外部订单号");
+        titleCell48.setCellValue("备注信息");
+
+        HSSFCell titleCell49 = titleRow.createCell(49);
+        titleCell49.setCellValue("运营平台");
+
+        HSSFCell titleCell50 = titleRow.createCell(50);
+        titleCell50.setCellValue("子订单外部订单号");
     }
 
     /**
@@ -2049,49 +2057,57 @@ public class AdminOrderController {
                         HSSFCell cell37 = currentRow.createCell(37);
                         cell37.setCellValue(ordersVo.getFcwxRefund());
 
-                        // aoyiID
+                        // 平安退款
                         HSSFCell cell38 = currentRow.createCell(38);
-                        cell38.setCellValue(ordersVo.getAoyiID());
+                        cell38.setCellValue(ordersVo.getPinganRefund());
+
+                        // 云城退款
+                        HSSFCell cell39 = currentRow.createCell(39);
+                        cell39.setCellValue(ordersVo.getYunchengRefund());
+
+                        // aoyiID
+                        HSSFCell cell40 = currentRow.createCell(40);
+                        cell40.setCellValue(ordersVo.getAoyiID());
 
                         // 收件人名
-                        HSSFCell cell39 = currentRow.createCell(39);
-                        cell39.setCellValue(ordersVo.getBuyerName());
+                        HSSFCell cell41 = currentRow.createCell(41);
+                        cell41.setCellValue(ordersVo.getBuyerName());
 
                         // 省
-                        HSSFCell cell40 = currentRow.createCell(40);
-                        cell40.setCellValue(ordersVo.getProvinceName());
+                        HSSFCell cell42 = currentRow.createCell(42);
+                        cell42.setCellValue(ordersVo.getProvinceName());
 
                         // 市
-                        HSSFCell cell41 = currentRow.createCell(41);
-                        cell41.setCellValue(ordersVo.getCityName());
+                        HSSFCell cell43 = currentRow.createCell(43);
+                        cell43.setCellValue(ordersVo.getCityName());
 
                         // 区
-                        HSSFCell cell42 = currentRow.createCell(42);
-                        cell42.setCellValue(ordersVo.getCountyName());
+                        HSSFCell cell44 = currentRow.createCell(44);
+                        cell44.setCellValue(ordersVo.getCountyName());
 
                         // 详细地址
-                        HSSFCell cell43 = currentRow.createCell(43);
-                        cell43.setCellValue(ordersVo.getAddress());
+                        HSSFCell cell45 = currentRow.createCell(45);
+                        cell45.setCellValue(ordersVo.getAddress());
 
                         // 收件人手机号
-                        HSSFCell cell44 = currentRow.createCell(44);
-                        cell44.setCellValue(ordersVo.getMobile());
+                        HSSFCell cell46 = currentRow.createCell(46);
+                        cell46.setCellValue(ordersVo.getMobile());
 
                         // 物流单号
-                        HSSFCell cell45 = currentRow.createCell(45);
-                        cell45.setCellValue(ordersVo.getLogisticsId());
+                        HSSFCell cell47 = currentRow.createCell(47);
+                        cell47.setCellValue(ordersVo.getLogisticsId());
 
                         // 备注信息
-                        HSSFCell cell46 = currentRow.createCell(46);
-                        cell46.setCellValue(ordersVo.getRemark());
+                        HSSFCell cell48 = currentRow.createCell(48);
+                        cell48.setCellValue(ordersVo.getRemark());
 
                         // 运营平台
-                        HSSFCell cell47 = currentRow.createCell(47);
-                        cell47.setCellValue(ordersVo.getAppId());
+                        HSSFCell cell49 = currentRow.createCell(49);
+                        cell49.setCellValue(ordersVo.getAppId());
 
                         // 子订单外部订单号
-                        HSSFCell cell48 = currentRow.createCell(48);
-                        cell48.setCellValue(ordersVo.getThirdOrderSn());
+                        HSSFCell cell50 = currentRow.createCell(50);
+                        cell50.setCellValue(ordersVo.getThirdOrderSn());
 
                         //
                         currentRowNum++;
