@@ -49,19 +49,7 @@ public class ProductESServiceImpl implements ProductESService {
         return false;
     }
 
-    private void saveKeyword(Map<String, Object> map) {
-        IndexRequest request = new IndexRequest("productkeyword", "keyword"); // 这里最后一个参数是es里储存的id，如果不填，es会自动生成一个，个人建议跟自己的数据库表里id保持一致，后面更新删除都会很方便
-        request.source(map);
-        IndexResponse response = null;
-        try {
-            response = restHighLevelClient.index(request, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // not exist: result: code: 201, status: CREATED
-        // exist: result: code: 200, status: OK
-        log.info("result: code: {}, status: {}", response.status().getStatus(), response.status().name());
-    }
+
 
     @Override
     public PageBean query(ProductQueryBean queryBean) {
@@ -227,5 +215,19 @@ public class ProductESServiceImpl implements ProductESService {
             return subOrderTS;
         }
         return null;
+    }
+
+    private void saveKeyword(Map<String, Object> map) {
+        IndexRequest request = new IndexRequest("productkeyword", "keyword"); // 这里最后一个参数是es里储存的id，如果不填，es会自动生成一个，个人建议跟自己的数据库表里id保持一致，后面更新删除都会很方便
+        request.source(map);
+        IndexResponse response = null;
+        try {
+            response = restHighLevelClient.index(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // not exist: result: code: 201, status: CREATED
+        // exist: result: code: 200, status: OK
+        log.info("result: code: {}, status: {}", response.status().getStatus(), response.status().name());
     }
 }
