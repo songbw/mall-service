@@ -116,7 +116,7 @@ public class LoginServiceImpl implements ILoginService {
     public TokenBean thirdLogin(ThirdLoginBean loginBean) {
         log.info("第三方登录，入参：{}", JSONUtil.toJsonString(loginBean));
         // 获取用户信息
-        getUserInfo(loginBean) ;
+        User userInfo = getUserInfo(loginBean) ;
         String token = JwtTokenUtil.generateToken(loginBean);
         log.info("第三方登录，token ：{}", token);
         TokenBean bean = new TokenBean();
@@ -147,13 +147,17 @@ public class LoginServiceImpl implements ILoginService {
             User user = userMapper.selectByOpenId(tempU);
             if (user == null) {
                 bean.setNewUser(true);
-                user = new User();
-                user.setOpenId(loginBean.getOpenId());
-                String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
-                user.setNickname(nickname);
-                user.setCreatedAt(new Date());
-                user.setiAppId(loginBean.getiAppId());
-                userMapper.insertSelective(user);
+                if (userInfo != null) {
+                    userMapper.insertSelective(userInfo) ;
+                } else {
+                    SUser sUser = new SUser() ;
+                    sUser.setOpenId(loginBean.getOpenId());
+                    String nickname = "fc_" + user.getOpenId().substring(user.getOpenId().length() - 8);
+                    sUser.setNickname(nickname);
+                    sUser.setCreatedAt(new Date());
+                    sUser.setiAppId(loginBean.getiAppId());
+                    mapper.insertSelective(sUser) ;
+                }
             }
         }
         redisDAO.setKey("sso:" + loginBean.getiAppId() + loginBean.getOpenId(), token, JwtTokenUtil.EXPIRATIONTIME);
@@ -165,7 +169,7 @@ public class LoginServiceImpl implements ILoginService {
      * 获取用户信息
      * @param loginBean
      */
-    private void getUserInfo(ThirdLoginBean loginBean) {
+    private User getUserInfo(ThirdLoginBean loginBean) {
         User tempU = new User();
         tempU.setOpenId(loginBean.getOpenId());
         tempU.setiAppId(loginBean.getiAppId());
@@ -190,10 +194,12 @@ public class LoginServiceImpl implements ILoginService {
                     user.setTelephone(jsonObject.getString("mobilePhone"));
                     user.setName(jsonObject.getString("userName"));
                     user.setHeadImg(jsonObject.getString("headIconUrl"));
-                    userMapper.insertSelective(user);
+                    user.setCreatedAt(new Date());
+                    return user ;
                 }
             }
         }
+        return null ;
 
     }
 
@@ -573,6 +579,11 @@ public class LoginServiceImpl implements ILoginService {
         tokenBean.setOpenId(user.getOpenId());
         redisDAO.setKey("sso:" + loginBean.getAppId() + loginBean.getUsername(), token, JwtTokenUtil.EXPIRATIONTIME);
         return tokenBean;
+    }
+
+    @Override
+    public SUser findByUser(LoginBean loginBean) {
+        return userDao.selectUserByTel(loginBean.getAppId(), loginBean.getUsername());
     }
 
     private AccessToken getPingAnToken(String initCode) {

@@ -1735,10 +1735,21 @@ public class OrderServiceImpl implements OrderService {
                 thirdOrdersBean.setThird_sub_total_amount(new BigDecimal(orders1.getSaleAmount()));
                 thirdOrdersBean.setThird_sub_cost_amount(thirdOrdersBean.getThird_sub_total_amount());
                 thirdOrdersBean.setThird_sub_pay_amount(thirdOrdersBean.getThird_sub_total_amount());
-
-                tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()));
-                tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()));
-                tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
+                if (tradeInfoBean.getThird_total_amount() == null) {
+                    tradeInfoBean.setThird_total_amount(thirdOrdersBean.getThird_sub_total_amount());
+                } else {
+                    tradeInfoBean.setThird_total_amount(tradeInfoBean.getThird_total_amount().add(thirdOrdersBean.getThird_sub_total_amount()));
+                }
+                if (tradeInfoBean.getThird_pay_amount() == null) {
+                    tradeInfoBean.setThird_pay_amount(thirdOrdersBean.getThird_sub_pay_amount());
+                } else {
+                    tradeInfoBean.setThird_pay_amount(tradeInfoBean.getThird_pay_amount().add(thirdOrdersBean.getThird_sub_pay_amount()));
+                }
+                if (tradeInfoBean.getThird_cost_amount() == null) {
+                    tradeInfoBean.setThird_cost_amount(thirdOrdersBean.getThird_sub_cost_amount());
+                } else {
+                    tradeInfoBean.setThird_cost_amount(tradeInfoBean.getThird_cost_amount().add(thirdOrdersBean.getThird_sub_cost_amount()));
+                }
                 List<OrderDetail> orderDetails = orderDetailDao.selectOrderDetailListByOrdersId(orders1.getId()) ;
                 orderDetails.forEach(orderDetail -> {
                     GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;

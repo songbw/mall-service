@@ -11,6 +11,8 @@ import com.fengchao.elasticsearch.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -27,9 +29,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @EnableConfigurationProperties({ESConfig.class})
@@ -49,6 +49,20 @@ public class ProductESServiceImpl implements ProductESService {
         return false;
     }
 
+    private void saveKeyword(Map<String, Object> map) {
+        IndexRequest request = new IndexRequest("productkeyword", "keyword"); // 这里最后一个参数是es里储存的id，如果不填，es会自动生成一个，个人建议跟自己的数据库表里id保持一致，后面更新删除都会很方便
+        request.source(map);
+        IndexResponse response = null;
+        try {
+            response = restHighLevelClient.index(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // not exist: result: code: 201, status: CREATED
+        // exist: result: code: 200, status: OK
+        log.info("result: code: {}, status: {}", response.status().getStatus(), response.status().name());
+    }
+
     @Override
     public PageBean query(ProductQueryBean queryBean) {
         SearchRequest request = new SearchRequest();
@@ -56,6 +70,13 @@ public class ProductESServiceImpl implements ProductESService {
         if (esConfig.getEsType() != null) {
             request.searchType(esConfig.getEsType()) ;
         }
+
+        Map<String, Object> map = new HashMap<>() ;
+        map.put("keyword", queryBean.getKeyword()) ;
+        map.put("appId", queryBean.getAppId()) ;
+        map.put("createdAt", new Date()) ;
+        saveKeyword(map);
+
         SearchSourceBuilder builder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         if (!StringUtils.isEmpty(queryBean.getKeyword())) {
