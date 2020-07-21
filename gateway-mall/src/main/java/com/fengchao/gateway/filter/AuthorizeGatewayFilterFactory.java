@@ -149,7 +149,6 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 //封装request，传给下一级
                 ServerRequest serverRequest = new DefaultServerRequest(exchange);
                 // mediaType
-                MediaType mediaType = exchange.getRequest().getHeaders().getContentType();
                 Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
                         .flatMap(body -> {
                             log.info("请求参数：{}", body);
@@ -167,6 +166,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
 //                            }
                             return Mono.just(body);
                         });
+                log.info("请求参数11122：{}", modifiedBody);
                 BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
                 CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
                 return bodyInserter.insert(outputMessage,  new BodyInserterContext())
@@ -194,13 +194,6 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                             return chain.filter(exchange.mutate().request(decorator).build());
                         }));
             } else if ("GET".equals(method) || "DELETE".equals(method)) {
-                MultiValueMap<String, String> requestQueryParams = request.getQueryParams();
-                // 得到Get请求的请求参数后，做你想做的事
-                StringBuilder builder = new StringBuilder("");
-                for (Map.Entry<String, List<String>> entry : requestQueryParams.entrySet()) {
-                    builder.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
-                }
-                log.info("请求参数：{}", builder.toString());
                 return chain.filter(exchange);
 
             }
