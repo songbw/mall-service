@@ -9,18 +9,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.cloud.gateway.support.BodyInserterContext;
+import org.springframework.cloud.gateway.support.CachedBodyOutputMessage;
+import org.springframework.cloud.gateway.support.DefaultServerRequest;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.nio.CharBuffer;
@@ -32,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @EnableConfigurationProperties({GatewayConfig.class})
 @Slf4j
-@Component
+//@Component
 public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthorizeGatewayFilterFactory.Config> {
 
     private static final String AUTHORIZE_TOKEN = "Authorization";
@@ -116,9 +124,9 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 return response.setComplete();
             }
 
-//            String method = request.getMethodValue();
-//            log.info("请求方法：{}", method);
-//            if ("POST".equals(method) || "PUT".equals(method)) {
+            String method = request.getMethodValue();
+            log.info("请求方法：{}", method);
+            if ("POST".equals(method) || "PUT".equals(method)) {
 //                //从请求里获取Post请求体
 //                String bodyStr = resolveBodyFromRequest(request);
 //                if (bodyStr == null) {
@@ -138,19 +146,64 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
 //                        return bodyFlux;
 //                    }
 //                };
-//                //封装request，传给下一级
-//                return chain.filter(exchange.mutate().request(requestChain).build());
-//            } else if ("GET".equals(method) || "DELETE".equals(method)) {
-//                MultiValueMap<String, String> requestQueryParams = request.getQueryParams();
-//                // 得到Get请求的请求参数后，做你想做的事
-//                StringBuilder builder = new StringBuilder("");
-//                for (Map.Entry<String, List<String>> entry : requestQueryParams.entrySet()) {
-//                    builder.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
-//                }
-//                log.info("请求参数：{}", builder.toString());
-//                return chain.filter(exchange);
+                //封装request，传给下一级
+                ServerRequest serverRequest = new DefaultServerRequest(exchange);
+                // mediaType
+                MediaType mediaType = exchange.getRequest().getHeaders().getContentType();
+                Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
+                        .flatMap(body -> {
+                            log.info("请求参数：{}", body);
+//                            if (MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(mediaType)) {
 //
-//            }
+//                                // origin body map
+//                                Map<String, Object> bodyMap = decodeBody(body);
+//
+//                                // TODO decrypt & auth
+//
+//                                // new body map
+//                                Map<String, Object> newBodyMap = new HashMap<>();
+//
+//                                return Mono.just(encodeBody(newBodyMap));
+//                            }
+                            return Mono.empty();
+                        });
+                BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
+                CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
+                return bodyInserter.insert(outputMessage,  new BodyInserterContext())
+                        .then(Mono.defer(() -> {
+                            ServerHttpRequestDecorator decorator = new ServerHttpRequestDecorator(
+                                    exchange.getRequest()) {
+                                @Override
+                                public HttpHeaders getHeaders() {
+                                    long contentLength = headers.getContentLength();
+                                    HttpHeaders httpHeaders = new HttpHeaders();
+                                    httpHeaders.putAll(super.getHeaders());
+                                    if (contentLength > 0) {
+                                        httpHeaders.setContentLength(contentLength);
+                                    } else {
+                                        httpHeaders.set(HttpHeaders.TRANSFER_ENCODING, "chunked");
+                                    }
+                                    return httpHeaders;
+                                }
+
+                                @Override
+                                public Flux<DataBuffer> getBody() {
+                                    return outputMessage.getBody();
+                                }
+                            };
+                            return chain.filter(exchange.mutate().request(decorator).build());
+                        }));
+            } else if ("GET".equals(method) || "DELETE".equals(method)) {
+                MultiValueMap<String, String> requestQueryParams = request.getQueryParams();
+                // 得到Get请求的请求参数后，做你想做的事
+                StringBuilder builder = new StringBuilder("");
+                for (Map.Entry<String, List<String>> entry : requestQueryParams.entrySet()) {
+                    builder.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
+                }
+                log.info("请求参数：{}", builder.toString());
+                return chain.filter(exchange);
+
+            }
 //            if ("Bearer".equals(type)) {
 //                exchange.getRequest().getHeaders().add("username", jwtValue);
 ////                headers.add("username", jwtValue);
