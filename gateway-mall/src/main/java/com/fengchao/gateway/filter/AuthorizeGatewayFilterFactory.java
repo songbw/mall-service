@@ -127,25 +127,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
             String method = request.getMethodValue();
             log.info("请求方法：{}", method);
             if ("POST".equals(method) || "PUT".equals(method)) {
-//                //从请求里获取Post请求体
-//                String bodyStr = resolveBodyFromRequest(request);
-//                if (bodyStr == null) {
-//                    bodyStr = "" ;
-//                }
-//                // 得到Post请求的请求参数后，做你想做的事
-//                log.info("请求参数：{}", bodyStr);
-//                //下面的将请求体再次封装写回到request里，传到下一级，否则，由于请求体已被消费，后续的服务将取不到值
-//                URI uri = request.getURI();
-//                ServerHttpRequest requestChain = request.mutate().uri(uri).build();
-//                DataBuffer bodyDataBuffer = stringBuffer(bodyStr);
-//                Flux<DataBuffer> bodyFlux = Flux.just(bodyDataBuffer);
-//
-//                requestChain = new ServerHttpRequestDecorator(requestChain) {
-//                    @Override
-//                    public Flux<DataBuffer> getBody() {
-//                        return bodyFlux;
-//                    }
-//                };
+
                 //封装request，传给下一级
                 ServerRequest serverRequest = new DefaultServerRequest(exchange);
                 // mediaType

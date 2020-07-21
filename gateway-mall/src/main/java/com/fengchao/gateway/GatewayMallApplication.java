@@ -20,7 +20,7 @@ public class GatewayMallApplication {
 		return new AuthorizeGatewayFilterFactory();
 	}
 
-	@Bean
+//	@Bean
 	public AuthGlobalFilter authGlobalFilter() {
 		return new AuthGlobalFilter() ;
 	}
