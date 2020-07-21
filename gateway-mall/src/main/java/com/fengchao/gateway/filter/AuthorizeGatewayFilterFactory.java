@@ -126,59 +126,59 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
 
             String method = request.getMethodValue();
             log.info("请求方法：{}", method);
-            if ("POST".equals(method) || "PUT".equals(method)) {
-
-                //封装request，传给下一级
-                ServerRequest serverRequest = new DefaultServerRequest(exchange);
-                // mediaType
-                Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
-                        .flatMap(body -> {
-                            log.info("请求参数：{}", body);
-//                            if (MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(mediaType)) {
+//            if ("POST".equals(method) || "PUT".equals(method)) {
 //
-//                                // origin body map
-//                                Map<String, Object> bodyMap = decodeBody(body);
+//                //封装request，传给下一级
+//                ServerRequest serverRequest = new DefaultServerRequest(exchange);
+//                // mediaType
+//                Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
+//                        .flatMap(body -> {
+//                            log.info("请求参数：{}", body);
+////                            if (MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(mediaType)) {
+////
+////                                // origin body map
+////                                Map<String, Object> bodyMap = decodeBody(body);
+////
+////                                // TODO decrypt & auth
+////
+////                                // new body map
+////                                Map<String, Object> newBodyMap = new HashMap<>();
+////
+////                                return Mono.just(encodeBody(newBodyMap));
+////                            }
+//                            return Mono.just(body);
+//                        });
+//                log.info("请求参数11122：{}", modifiedBody);
+//                BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
+//                CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
+//                return bodyInserter.insert(outputMessage,  new BodyInserterContext())
+//                        .then(Mono.defer(() -> {
+//                            ServerHttpRequestDecorator decorator = new ServerHttpRequestDecorator(
+//                                    exchange.getRequest()) {
+//                                @Override
+//                                public HttpHeaders getHeaders() {
+//                                    long contentLength = headers.getContentLength();
+//                                    HttpHeaders httpHeaders = new HttpHeaders();
+//                                    httpHeaders.putAll(super.getHeaders());
+//                                    if (contentLength > 0) {
+//                                        httpHeaders.setContentLength(contentLength);
+//                                    } else {
+//                                        httpHeaders.set(HttpHeaders.TRANSFER_ENCODING, "chunked");
+//                                    }
+//                                    return httpHeaders;
+//                                }
 //
-//                                // TODO decrypt & auth
+//                                @Override
+//                                public Flux<DataBuffer> getBody() {
+//                                    return outputMessage.getBody();
+//                                }
+//                            };
+//                            return chain.filter(exchange.mutate().request(decorator).build());
+//                        }));
+//            } else if ("GET".equals(method) || "DELETE".equals(method)) {
+//                return chain.filter(exchange);
 //
-//                                // new body map
-//                                Map<String, Object> newBodyMap = new HashMap<>();
-//
-//                                return Mono.just(encodeBody(newBodyMap));
-//                            }
-                            return Mono.just(body);
-                        });
-                log.info("请求参数11122：{}", modifiedBody);
-                BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
-                CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
-                return bodyInserter.insert(outputMessage,  new BodyInserterContext())
-                        .then(Mono.defer(() -> {
-                            ServerHttpRequestDecorator decorator = new ServerHttpRequestDecorator(
-                                    exchange.getRequest()) {
-                                @Override
-                                public HttpHeaders getHeaders() {
-                                    long contentLength = headers.getContentLength();
-                                    HttpHeaders httpHeaders = new HttpHeaders();
-                                    httpHeaders.putAll(super.getHeaders());
-                                    if (contentLength > 0) {
-                                        httpHeaders.setContentLength(contentLength);
-                                    } else {
-                                        httpHeaders.set(HttpHeaders.TRANSFER_ENCODING, "chunked");
-                                    }
-                                    return httpHeaders;
-                                }
-
-                                @Override
-                                public Flux<DataBuffer> getBody() {
-                                    return outputMessage.getBody();
-                                }
-                            };
-                            return chain.filter(exchange.mutate().request(decorator).build());
-                        }));
-            } else if ("GET".equals(method) || "DELETE".equals(method)) {
-                return chain.filter(exchange);
-
-            }
+//            }
 //            if ("Bearer".equals(type)) {
 //                exchange.getRequest().getHeaders().add("username", jwtValue);
 ////                headers.add("username", jwtValue);
