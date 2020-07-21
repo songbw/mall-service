@@ -165,7 +165,7 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
 //
 //                                return Mono.just(encodeBody(newBodyMap));
 //                            }
-                            return Mono.empty();
+                            return Mono.just(body);
                         });
                 BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
                 CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
