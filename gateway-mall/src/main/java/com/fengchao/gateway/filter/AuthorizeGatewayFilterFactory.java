@@ -175,10 +175,8 @@ public class AuthorizeGatewayFilterFactory extends AbstractGatewayFilterFactory<
 //                            };
 //                            return chain.filter(exchange.mutate().request(decorator).build());
 //                        }));
-//            } else if ("GET".equals(method) || "DELETE".equals(method)) {
-//                return chain.filter(exchange);
-//
 //            }
+
 //            if ("Bearer".equals(type)) {
 //                exchange.getRequest().getHeaders().add("username", jwtValue);
 ////                headers.add("username", jwtValue);
