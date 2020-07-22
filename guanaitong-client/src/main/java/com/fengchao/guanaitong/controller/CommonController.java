@@ -1,5 +1,7 @@
 package com.fengchao.guanaitong.controller;
 
+import com.fengchao.guanaitong.constant.MyErrorEnum;
+import com.fengchao.guanaitong.exception.MyException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fengchao.guanaitong.service.impl.GuanAiTongServiceImpl;
 import com.fengchao.guanaitong.util.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
@@ -27,17 +30,21 @@ public class CommonController {
         this.guanAiTongService = guanAiTongService;
     }
 
-
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("token")
-    public ResultObject<TokenData> getToken(HttpServletResponse response
-                         ) {
+    public ResultObject<TokenData>
+    getToken(HttpServletRequest request
+            ) {
 
-        log.info("===getToken enter");
+        String iAppId = request.getHeader("appId");
+        if (null == iAppId){
+            throw new MyException(MyErrorEnum.HTTP_HEADER_APPID_BLANK);
+        }
+        log.info("===getToken enter iAppId={}",iAppId);
 
         String token = null;
         try {
-            token = guanAiTongService.getAccessToken();
+            token = guanAiTongService.getAccessToken(iAppId);
         } catch (Exception e) {
             log.info("getAccessToken got exception : {}",e.getMessage());
 

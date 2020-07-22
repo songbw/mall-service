@@ -1,0 +1,45 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+      discovery:
+        enabled: false
+    service-registry:
+      auto-registration:
+        enabled: false
+
+
+weixin:
+  ids[0]:
+    iAppId: "01"
+    appId: wxe5b7d5b7722a1577
+    appSecret: f17f8edb74126bb95538194ec79ffde7
+    urlPrefix: https://api.weixin.qq.com/cgi-bin/
+  ids[1]:
+    iAppId: "02"
+    appId: wxe5b7d5b7722a1577
+    appSecret: f17f8edb74126bb95538194ec79ffde7
+    urlPrefix: https://api.weixin.qq.com/cgi-bin/
+
+
+#唯品会：（08）
+#品牌直供：（09）
+#苏宁易购：（10）
+guanaitong:
+  config[0]:
+    iAppId: "08"
+    appId: "20110908"
+    appSecret: "cdbbe8838363006d244fbb214876348f"
+    urlPrefix: "https://openapi.guanaitong.tech/"
+  config[1]:
+    iAppId: "09"
+    appId: "20110867"
+    appSecret: "d09469d7a5b1a8c57d980d6ee3eff5eb"
+    urlPrefix: "https://openapi.guanaitong.tech/"
+  config[2]:
+    iAppId: "10"
+    appId: "20110843"
+    appSecret: "78dde3cc1e3cab6cbbabbc1bf88faa4e"
+    urlPrefix: "https://openapi.guanaitong.tech/"
+
+
