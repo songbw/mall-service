@@ -157,7 +157,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         String cacheToken = redisDAO.getValue(buildTokenKey(iAppId));
         if (null != cacheToken && !cacheToken.isEmpty()) {
-            log.info("get cached token: {" + cacheToken + "} ttl=" + redisDAO.ttl(TOKEN_KEY) + "s");
+            log.info("get cached token: {" + cacheToken + "} ttl=" + redisDAO.ttl(TOKEN_KEY + configuration.getConfigAppId(iAppId)) + "s");
             return cacheToken;
         }
 
@@ -340,6 +340,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xFormString = map2stringTradeInfo(m);
+        log.info("getTradeInfoFormSign, parameters for sign : {}" , xFormString);
         if (log.isDebugEnabled()) {
             log.info("getTradeInfoFormSign, parameters for sign : " + xFormString);
         }
@@ -520,7 +521,7 @@ private String map2stringTradeInfo(Map map) {
             throw new MyException(MyErrorEnum.GAT_HTTP_ERROR);
         }
 
-        //tMap.put(VERSION_KEY, VERSION_VALUE);
+//        tMap.put(VERSION_KEY, VERSION_VALUE);
 
         Set<String> keySet = m.keySet();
         Iterator<String> iter = keySet.iterator();
