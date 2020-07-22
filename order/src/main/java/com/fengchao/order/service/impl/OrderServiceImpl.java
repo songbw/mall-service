@@ -1766,6 +1766,7 @@ public class OrderServiceImpl implements OrderService {
                     goodsDetailBeans.add(goodsDetailBean) ;
                 });
             }
+            tradeInfoBean.setGoods_detail(goodsDetailBeans);
             tradeInfoBean.setThird_orders(thirdOrdersBeans);
             sendTradeInfoBean.setTrade_info(tradeInfoBean);
             logger.info("发送订单详情到关爱通，入口参数：{}", JSONUtil.toJsonString(sendTradeInfoBean));
