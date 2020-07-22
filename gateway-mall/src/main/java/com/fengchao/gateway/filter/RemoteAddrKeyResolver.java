@@ -16,6 +16,7 @@ public class RemoteAddrKeyResolver implements KeyResolver {
 
     @Override
     public Mono<String> resolve(ServerWebExchange exchange) {
+        log.info("Remote addr key is : {}", exchange.getRequest().getRemoteAddress().getAddress().getHostAddress());
         return Mono.just(exchange.getRequest().getRemoteAddress().getAddress().getHostAddress());
     }
 }
