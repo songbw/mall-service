@@ -12,4 +12,6 @@ public interface IGuanAiTongService {
     String buildUrlXFormBody(Map map,String iAppId) throws Exception;
 
     JSONObject guanAiTongPost(String path, Map map,String iAppId) throws Exception;
+
+    JSONObject guanAiTongXFormUrlEncodedPost(String path, Map map,String iAppId) throws Exception;
 }

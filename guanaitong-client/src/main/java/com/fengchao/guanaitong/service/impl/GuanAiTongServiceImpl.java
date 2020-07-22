@@ -49,13 +49,12 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     //private final String VERSION_KEY = "version";
     //private final String VERSION_VALUE = "1.0.0";
 
-    private final String TOKEN_KEY = "access_token";
+    private final String TOKEN_KEY = "access_token";//关爱通关键字
     private final String TIME_STAMP_KEY = "timestamp";
     private final String SIGN_KEY = "sign";
 
     private static final int HTTP_STATUS_OK = 200;
     private static final int RESPONSE_DATA_OK = 0;
-
 
     @Autowired
     public GuanAiTongServiceImpl(GuanAiTongConfiguration configuration,RedisDAO redisDAO) {
@@ -103,8 +102,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         }
 
         String xForm = map2string(theMap);
-        log.info("buildXForm: {}" ,xForm);
-        return xForm;
+        String newXFrom = xForm.replaceAll("\\+", "%20");
+        log.info("buildUrlXFormBody newXForm = {}" ,newXFrom);
+        return newXFrom;
 
     }
 
@@ -275,9 +275,164 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 */
     }
 
+    @Override
+    public JSONObject guanAiTongXFormUrlEncodedPost(String path, Map map,String iAppId) throws Exception{
+        if (null == path || path.isEmpty()) {
+            log.info("path is null");
+            return null;
+        }
+
+        for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
+            Map.Entry<String, Object> item = it.next();
+            if (null == item.getValue()) {
+                it.remove();
+                log.info("find null value in map" + item.getKey());
+            }
+        }
+
+        String xForm = buildTradeInfoApiBody(map,iAppId);
+        if (null == xForm || xForm.isEmpty()) {
+            String msg = "构建参数错误";
+            throw new Exception(msg);
+        }
+
+        try {
+            JSONObject json = tryPost(path, xForm, iAppId);
+            if (null == json) {
+                log.error("response data from remote is null");
+            }
+            return json;
+        } catch (Exception e) {
+            //log.warn("access GuanAiTong {} , got exception: {}" ,path, e.getMessage());
+            throw new Exception(e);
+        }
+
+/*
+        Integer code = json.getInteger("code");
+        if (null == code || 0 != code) {
+            return null;
+        }
+
+        JSONObject data = json.getJSONObject("data");
+        if (null == data) {
+            System.out.println("get data is null");
+        } else {
+            System.out.println("got data====== ");
+            System.out.println(data.toJSONString());
+        }
+
+        return data;
+*/
+    }
+
     private String
     buildTokenKey(String iAppId){
         return TOKEN_KEY+configuration.getConfigAppId(iAppId);
+    }
+
+    private String getTradeInfoFormSign(Map map,String iAppId) throws Exception{
+
+        Map m;
+        try {
+            m = buildFormSignMap(map,iAppId);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+
+        String xFormString = map2stringTradeInfo(m);
+        if (log.isDebugEnabled()) {
+            log.info("getTradeInfoFormSign, parameters for sign : " + xFormString);
+        }
+        byte[] bytes = xFormString.getBytes();
+        return DigestUtils.sha1Hex(bytes);
+    }
+
+    private String buildTradeInfoApiBody(Map map,String iAppId) throws Exception{
+        if (log.isDebugEnabled()) {
+            log.debug("buildTradeInfoApiBody map : {}", JSON.toJSONString(map));
+        }
+        for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext();){
+            Map.Entry<String, Object> item = it.next();
+            if (null == item.getValue()) {
+                it.remove();
+                log.info("find null value in map: " + item.getKey());
+            }
+        }
+
+        Map<String, Object> theMap = new TreeMap<>();//new HashMap<>();
+        Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        Long timeStampS = timeStampMs/1000;
+        String timeStamp = timeStampS.toString();
+        map.put(TIME_STAMP_KEY,timeStamp);
+
+        try {
+            String sign = getTradeInfoFormSign(map,iAppId);
+            String token = getAccessToken(iAppId);
+            theMap.put(TOKEN_KEY, token);
+            theMap.put(SIGN_KEY, sign);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+        Set<String> keySet = map.keySet();
+        Iterator<String> iter = keySet.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                if ("trade_info".equals(key)) {
+                    log.info("{} is String ",key);
+                    String encodedStr = URLEncoder.encode(JSON.toJSONString(map.get(key)), StandardCharsets.UTF_8.toString());
+                    theMap.put(key,encodedStr);
+                }else {
+                    String urlValue = URLEncoder.encode(map.get(key).toString(), StandardCharsets.UTF_8.toString());
+                    theMap.put(key, urlValue);
+                }
+            } catch (UnsupportedEncodingException ex) {
+                log.info("urlEncode error: " + ex.getMessage());
+                throw new Exception(ex);
+            }
+        }
+
+        String xForm = map2string(theMap);
+        if (log.isDebugEnabled()) {
+            log.debug("buildTradeInfoApiBody xForm = {}" ,xForm);
+        }
+        String newXFrom = xForm.replaceAll("\\+", "%20");
+        log.info("buildTradeInfoApiBody newXForm = {}" ,newXFrom);
+        return newXFrom;
+
+    }
+
+private String map2stringTradeInfo(Map map) {
+        StringBuilder sb = new StringBuilder();
+
+        Set<String> keySet = map.keySet();
+        Iterator<String> iter = keySet.iterator();
+        int i = 0;
+        while (iter.hasNext()) {
+            String key = iter.next();
+            if (0 < i ) {
+                sb.append("&");
+                sb.append(key);
+                sb.append("=");
+                if ("trade_info".equals(key)){
+                    sb.append(JSON.toJSONString(map.get(key)));
+                }else {
+                    sb.append(map.get(key));
+                }
+            } else {
+                sb.append(key);
+                sb.append("=");
+                if ("trade_info".equals(key)){
+                    sb.append(JSON.toJSONString(map.get(key)));
+                }else {
+                    sb.append(map.get(key));
+                }
+            }
+            i++;
+        }
+
+        return sb.toString();
+
     }
 
     private String getTokenSign(String timeStamp,String iAppId){
@@ -312,11 +467,11 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             String key = iter.next();
             if (0 < i ) {
                 sb.append("&");
-                sb.append(key);
+                sb.append(key.trim());
                 sb.append("=");
                 sb.append(map.get(key));
             } else {
-                sb.append(key);
+                sb.append(key.trim());
                 sb.append("=");
                 sb.append(map.get(key));
             }
@@ -381,7 +536,9 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         Map m =buildFormSignMap(map,iAppId);
         String xFormString = map2string(m);
-        log.info("getFormSign, parameters for sign : " + xFormString);
+        if (log.isDebugEnabled()) {
+            log.info("getFormSign, parameters for sign : " + xFormString);
+        }
         byte[] bytes = xFormString.getBytes();
         return DigestUtils.sha1Hex(bytes);
     }
