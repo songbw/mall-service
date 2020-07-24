@@ -531,7 +531,7 @@ public class SellerController {
         }
 
         String tradeInfoStr = JSON.toJSONString(tradeInfo);
-        log.info("post Trade Info String is ：{}",JSON.toJSONString(map));
+        log.info("post Trade Info String is ：{}", tradeInfoStr);
         Map<String,Object> params = new TreeMap<>();
         params.put(GuanAiTong.OUTER_TRADE_NO_KEY,tradeNo);
         params.put(GuanAiTong.TRADE_INFO_KEY,tradeInfoStr);

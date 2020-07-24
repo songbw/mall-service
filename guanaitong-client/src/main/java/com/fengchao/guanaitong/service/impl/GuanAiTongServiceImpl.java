@@ -338,7 +338,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         } catch (Exception e) {
             throw new Exception(e);
         }
-
+        log.info("getTradeInfoFormSign, pre map to string trade info is : {}" , m.get("trade_info"));
         String xFormString = map2stringTradeInfo(m);
         log.info("getTradeInfoFormSign, parameters for sign : {}" , xFormString);
         if (log.isDebugEnabled()) {
