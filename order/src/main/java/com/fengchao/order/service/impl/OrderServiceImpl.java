@@ -1723,7 +1723,7 @@ public class OrderServiceImpl implements OrderService {
         SendTradeInfoBean sendTradeInfoBean = new SendTradeInfoBean() ;
         sendTradeInfoBean.setOuter_trade_no(paymentNo);
         TradeInfoBean tradeInfoBean = new TradeInfoBean() ;
-        tradeInfoBean.setIs_third_orders(1);
+        tradeInfoBean.setIs_third_orders(2);
         List<ThirdOrdersBean> thirdOrdersBeans = new ArrayList<>() ;
         List<GoodsDetailBean> goodsDetailBeans = new ArrayList<>() ;
         if (orders != null && orders.size() > 0) {
