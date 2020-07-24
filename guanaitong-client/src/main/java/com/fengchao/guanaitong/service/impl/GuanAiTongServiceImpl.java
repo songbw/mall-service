@@ -334,11 +334,12 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
         Map m;
         try {
+            log.info("getTradeInfoFormSign, pre map to string trade info is : {}" , map.get("trade_info"));
             m = buildFormSignMap(map,iAppId);
         } catch (Exception e) {
             throw new Exception(e);
         }
-        log.info("getTradeInfoFormSign, pre map to string trade info is : {}" , m.get("trade_info"));
+
         String xFormString = map2stringTradeInfo(m);
         log.info("getTradeInfoFormSign, parameters for sign : {}" , xFormString);
         if (log.isDebugEnabled()) {
@@ -365,7 +366,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
         Long timeStampS = timeStampMs/1000;
         String timeStamp = timeStampS.toString();
         map.put(TIME_STAMP_KEY,timeStamp);
-
+        log.info("buildTradeInfoApiBody, pre map to string trade info is : {}" , map.get("trade_info"));
         try {
             String sign = getTradeInfoFormSign(map,iAppId);
             String token = getAccessToken(iAppId);
