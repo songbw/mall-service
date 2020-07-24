@@ -277,6 +277,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
     @Override
     public JSONObject guanAiTongXFormUrlEncodedPost(String path, Map map,String iAppId) throws Exception{
+        log.info("guanAiTongXFormUrlEncodedPost, pre map to string trade info is : {}" , map.get("trade_info"));
         if (null == path || path.isEmpty()) {
             log.info("path is null");
             return null;
@@ -350,6 +351,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
     }
 
     private String buildTradeInfoApiBody(Map map,String iAppId) throws Exception{
+        log.info("buildTradeInfoApiBody, pre map to string trade info is : {}" , map.get("trade_info"));
         if (log.isDebugEnabled()) {
             log.debug("buildTradeInfoApiBody map : {}", JSON.toJSONString(map));
         }
@@ -360,13 +362,12 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
                 log.info("find null value in map: " + item.getKey());
             }
         }
-
         Map<String, Object> theMap = new TreeMap<>();//new HashMap<>();
         Long timeStampMs = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         Long timeStampS = timeStampMs/1000;
         String timeStamp = timeStampS.toString();
         map.put(TIME_STAMP_KEY,timeStamp);
-        log.info("buildTradeInfoApiBody, pre map to string trade info is : {}" , map.get("trade_info"));
+
         try {
             String sign = getTradeInfoFormSign(map,iAppId);
             String token = getAccessToken(iAppId);
