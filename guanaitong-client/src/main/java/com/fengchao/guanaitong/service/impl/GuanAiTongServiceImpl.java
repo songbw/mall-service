@@ -383,7 +383,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
             try {
                 if ("trade_info".equals(key)) {
                     log.info("{} is String ",key);
-                    String encodedStr = URLEncoder.encode(JSON.toJSONString(map.get(key)), StandardCharsets.UTF_8.toString());
+                    String encodedStr = URLEncoder.encode((String) map.get(key), StandardCharsets.UTF_8.toString());
                     theMap.put(key,encodedStr);
                 }else {
                     String urlValue = URLEncoder.encode(map.get(key).toString(), StandardCharsets.UTF_8.toString());
