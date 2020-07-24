@@ -418,7 +418,7 @@ private String map2stringTradeInfo(Map map) {
                 sb.append(key);
                 sb.append("=");
                 if ("trade_info".equals(key)){
-                    sb.append(JSON.toJSONString(map.get(key)));
+                    sb.append(map.get(key));
                 }else {
                     sb.append(map.get(key));
                 }
@@ -426,7 +426,7 @@ private String map2stringTradeInfo(Map map) {
                 sb.append(key);
                 sb.append("=");
                 if ("trade_info".equals(key)){
-                    sb.append(JSON.toJSONString(map.get(key)));
+                    sb.append(map.get(key));
                 }else {
                     sb.append(map.get(key));
                 }
