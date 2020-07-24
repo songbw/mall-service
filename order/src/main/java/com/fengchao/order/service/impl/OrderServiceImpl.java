@@ -1754,8 +1754,8 @@ public class OrderServiceImpl implements OrderService {
                 orderDetails.forEach(orderDetail -> {
                     GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;
                     goodsDetailBean.setSku_id(orderDetail.getSkuId());
-                    if (orderDetail.getName().length() > 45) {
-                        goodsDetailBean.setName(orderDetail.getName().substring(0, 45));
+                    if (orderDetail.getName().length() > 40) {
+                        goodsDetailBean.setName(orderDetail.getName().substring(0, 40));
                     } else {
                         goodsDetailBean.setName(orderDetail.getName());
                     }
