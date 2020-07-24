@@ -540,10 +540,10 @@ public class SellerController {
             params.put(GuanAiTong.OUTER_REFUND_NO_KEY,refundNo.toString());
         }
         JSONObject json = new JSONObject();
-        log.info("postTradeInfo, pre map to string trade info is : {}" , map.get("trade_info"));
+        log.info("postTradeInfo, pre map to string trade info is : {}" , params.get("trade_info"));
         try {
             //json = guanAiTongService.guanAiTongPost(GuanAiTong.POST_TRADE_INFO_PATH, params);
-            json = guanAiTongService.guanAiTongXFormUrlEncodedPost(GuanAiTong.POST_TRADE_INFO_PATH, map,iAppId);
+            json = guanAiTongService.guanAiTongXFormUrlEncodedPost(GuanAiTong.POST_TRADE_INFO_PATH, params,iAppId);
         } catch (Exception ex) {
             String msg = ex.getMessage();
             log.error(msg,ex);
