@@ -407,7 +407,7 @@ public class GuanAiTongServiceImpl implements IGuanAiTongService {
 
 private String map2stringTradeInfo(Map map) {
         StringBuilder sb = new StringBuilder();
-
+        log.info("map2stringTradeInfo trade info is  : {}" , map.get("trade_info"));
         Set<String> keySet = map.keySet();
         Iterator<String> iter = keySet.iterator();
         int i = 0;
