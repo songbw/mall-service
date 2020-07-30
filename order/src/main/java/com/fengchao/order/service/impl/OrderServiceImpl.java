@@ -1001,6 +1001,17 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public OperaResponse getAll() {
+        OperaResponse response = new OperaResponse() ;
+        List<Order> orders = orderMapper.selectAll();
+        orders.forEach(order -> {
+            order.setSkus(orderDetailXMapper.selectByOrderId(order.getId()));
+        });
+        response.setData(orders);
+        return response;
+    }
+
     // ========================================= private ======================================
 
     private AoyiProdIndex findProduct(String skuId) {

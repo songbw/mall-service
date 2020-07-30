@@ -30,5 +30,10 @@ public class ThirdOrderController {
         return service.logistics(bean);
     }
 
+    @GetMapping("all")
+    private OperaResponse getAll() {
+        return service.getAll();
+    }
+
 
 }

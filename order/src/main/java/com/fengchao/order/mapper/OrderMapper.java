@@ -74,4 +74,6 @@ public interface OrderMapper {
     List<MerchantPaymentBean> selectDayMerchantPaymentCount(HashMap map) ;
 
     List<CategoryPaymentBean> selectDayCategoryPaymentList(HashMap map) ;
+
+    List<Order> selectAll() ;
 }

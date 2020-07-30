@@ -71,14 +71,14 @@ public class QueryAbnormalOrderSchedule {
             List<Integer> orderIdList = ordersList.stream().map(o -> o.getId()).collect(Collectors.toList());
 
             // 4.报警
-            AlarmUtil.alarmAsync("gat-获取未取消的异常订单任务", JSONUtil.toJsonString(orderIdList));
+//            AlarmUtil.alarmAsync("gat-获取未取消的异常订单任务", JSONUtil.toJsonString(orderIdList));
 
             log.info("获取未取消的异常订单任务 <==");
         } catch (Exception e) {
             log.info("获取未取消的异常订单任务:{}", e.getMessage(), e);
 
             // 报警
-            AlarmUtil.alarmAsync("gat-获取未取消的异常订单任务", e.getMessage());
+//            AlarmUtil.alarmAsync("gat-获取未取消的异常订单任务", e.getMessage());
         }
     }
 }

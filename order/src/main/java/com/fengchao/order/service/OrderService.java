@@ -121,4 +121,6 @@ public interface OrderService {
     OperaResponse logistics(List<Logisticsbean> logisticsbeans) ;
 
     OperaResponse sendTradeInfo(String outerTradeNo, String paymentNo) ;
+
+    OperaResponse getAll() ;
 }
