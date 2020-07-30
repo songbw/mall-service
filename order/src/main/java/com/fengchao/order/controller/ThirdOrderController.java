@@ -2,6 +2,8 @@ package com.fengchao.order.controller;
 
 import com.fengchao.order.bean.Logisticsbean;
 import com.fengchao.order.bean.OperaResponse;
+import com.fengchao.order.model.Order;
+import com.fengchao.order.model.Orders;
 import com.fengchao.order.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,11 @@ public class ThirdOrderController {
     @PostMapping(value = "logistics", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private OperaResponse updateStatus(@RequestBody List<Logisticsbean> bean) {
         return service.logistics(bean);
+    }
+
+    @PostMapping
+    private OperaResponse add(@RequestBody Order bean) {
+        return service.syncAdd(bean);
     }
 
 

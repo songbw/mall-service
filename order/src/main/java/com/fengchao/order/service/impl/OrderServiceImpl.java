@@ -403,6 +403,24 @@ public class OrderServiceImpl implements OrderService {
         return operaResult;
     }
 
+    @Override
+    public OperaResponse syncAdd(Order bean) {
+        OperaResponse response = new OperaResponse() ;
+        bean.setId(null);
+        Orders orders = new Orders() ;
+        BeanUtils.copyProperties(bean, orders);
+        mapper.insertSelective(orders) ;
+        List<OrderDetailX> orderDetailXES = bean.getSkus() ;
+        orderDetailXES.forEach(orderDetailX -> {
+            OrderDetail orderDetail = new OrderDetail() ;
+            orderDetailX.setId(null);
+            orderDetailX.setOrderId(orders.getId());
+            BeanUtils.copyProperties(orderDetailX, orderDetail);
+            orderDetailMapper.insertSelective(orderDetail) ;
+        });
+        return response;
+    }
+
     /**
      * 赋值-地址
      */
