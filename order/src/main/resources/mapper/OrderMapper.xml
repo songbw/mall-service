@@ -220,7 +220,10 @@
   </select>
   <select id="selectAll" resultType="com.fengchao.order.model.Order">
     select
-    <include refid="Base_Column_List" />
+    id, open_id openId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, merchant_id merchantId, merchant_no merchantNo, receiver_name receiverName, telephone, mobile,
+    email, province_id provinceId, province_name provinceName, city_id cityId, city_name cityName, county_id countyId, county_name countyName, town_id townId, address, zip, remark, invoice_state invoiceState,
+    invoice_type invoiceType, invoice_title invoiceTitle, invoice_content invoiceContent, payment, serv_Fee servFee, amount, status,
+    type,out_trade_no outTradeNo, payment_no paymentNo, payment_at paymentAt, payment_amount paymentAmount, payee, refund_fee refundFee, pay_type payType, payment_total_fee paymentTotalFee, payer, pay_status payStatus, pay_order_category payOrderCategory, created_at createdAt, updated_at updatedAt, coupon_id couponId, coupon_code couponCode, coupon_discount couponDiscount, sale_amount saleAmount
     from orders
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
