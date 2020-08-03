@@ -410,6 +410,7 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = new Orders() ;
         BeanUtils.copyProperties(bean, orders);
         mapper.insertSelective(orders) ;
+        response.setData(orders);
         List<OrderDetailX> orderDetailXES = bean.getSkus() ;
         orderDetailXES.forEach(orderDetailX -> {
             OrderDetail orderDetail = new OrderDetail() ;
