@@ -336,7 +336,7 @@ public class OrderServiceImpl implements OrderService {
         // 调用预占商品库存星链模块接口
         logger.info("订单怡亚通商品信息, {}", JSONUtil.toJsonString(starOrderMerchantBeanList));
         if (starOrderMerchantBeanList != null && starOrderMerchantBeanList.size() > 0) {
-            OperaResponse preHoldSkuInventoryResponse = preHoldSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList, coupon, inventories) ;
+            OperaResponse preHoldSkuInventoryResponse = preHoldSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList, coupon, inventories, orderBean.getRegionId()) ;
             if (preHoldSkuInventoryResponse.getCode() != 200) {
                 operaResult.setCode(preHoldSkuInventoryResponse.getCode());
                 operaResult.setMsg(preHoldSkuInventoryResponse.getMsg());
@@ -556,9 +556,10 @@ public class OrderServiceImpl implements OrderService {
      * @param starOrderMerchantBeanList
      * @return
      */
-    private OperaResponse preHoldSkuInventory(String tradeNo, List<OrderMerchantBean> starOrderMerchantBeanList, OrderCouponBean coupon,List<InventoryMpus> inventories) {
+    private OperaResponse preHoldSkuInventory(String tradeNo, List<OrderMerchantBean> starOrderMerchantBeanList, OrderCouponBean coupon,List<InventoryMpus> inventories, String regionId) {
         OperaResponse operaResponse = new OperaResponse() ;
         HoldSkuInventoryQueryBean bean = new HoldSkuInventoryQueryBean() ;
+        bean.setRegionId(regionId);
         bean.setOutOrderNo(tradeNo);
         List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
         starOrderMerchantBeanList.forEach(orderMerchantBean -> {
