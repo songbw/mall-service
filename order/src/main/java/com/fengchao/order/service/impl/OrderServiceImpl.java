@@ -450,6 +450,10 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetailX> aoyiOrderDetail = new ArrayList<>();
         orderMerchantBean.getSkus().forEach(orderDetailX -> {
             orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+            AoyiProdIndex prodIndexWithBLOBs = findProductSpu(orderDetailX.getMpu(), orderDetailX.getSkuId());
+            BigDecimal sPrice = new BigDecimal(0) ;
+            sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+            orderDetailX.setSprice(sPrice);
             aoyiOrderDetail.add(orderDetailX) ;
         });
         orderMerchantBean.setSkus(aoyiOrderDetail);
