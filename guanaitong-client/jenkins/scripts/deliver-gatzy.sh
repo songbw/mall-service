@@ -2,11 +2,11 @@
 
 set user smartadmin
 set passwd Smartautotech@123
-set host 121.36.52.130
-set port 22051
-set src_dir ./gateway-mall/target/
-set tag_dir /data/server/gateway/userapps
-set name gateway-mall-0.0.1-SNAPSHOT.jar
+set host 119.3.249.174
+set port 22205
+set src_dir ./guanaitong-client/target/
+set tag_dir /data/server/guanaitong-client/userapps
+set name guanaitong-client-0.0.1-SNAPSHOT.jar
 set tmp_dir /tmp
 
 ##拷贝jar文件到目标机器

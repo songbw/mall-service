@@ -2,8 +2,8 @@
 
 set user smartadmin
 set passwd Smartautotech@123
-set host 121.36.52.130
-set port 22051
+set host 121.36.47.144
+set port 22207
 set src_dir ./gateway-mall/target/
 set tag_dir /data/server/gateway/userapps
 set name gateway-mall-0.0.1-SNAPSHOT.jar
@@ -23,12 +23,6 @@ send "${passwd}\n"
 expect "]$ "
 send "cd $tag_dir\n"
 expect "]$ "
-
-##
-##send "rm $name\n"
-##expect "]$ "
-##send "mv $tag_dir$tmp_dir/$name .\n"
-##expect "]$ "
 
 
 ## 重启

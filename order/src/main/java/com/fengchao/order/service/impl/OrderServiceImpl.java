@@ -336,7 +336,7 @@ public class OrderServiceImpl implements OrderService {
         // 调用预占商品库存星链模块接口
         logger.info("订单怡亚通商品信息, {}", JSONUtil.toJsonString(starOrderMerchantBeanList));
         if (starOrderMerchantBeanList != null && starOrderMerchantBeanList.size() > 0) {
-            OperaResponse preHoldSkuInventoryResponse = preHoldSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList, coupon, inventories) ;
+            OperaResponse preHoldSkuInventoryResponse = preHoldSkuInventory(orderBean.getTradeNo(), starOrderMerchantBeanList, coupon, inventories, orderBean.getRegionId()) ;
             if (preHoldSkuInventoryResponse.getCode() != 200) {
                 operaResult.setCode(preHoldSkuInventoryResponse.getCode());
                 operaResult.setMsg(preHoldSkuInventoryResponse.getMsg());
@@ -403,6 +403,25 @@ public class OrderServiceImpl implements OrderService {
         return operaResult;
     }
 
+    @Override
+    public OperaResponse syncAdd(Order bean) {
+        OperaResponse response = new OperaResponse() ;
+        bean.setId(null);
+        Orders orders = new Orders() ;
+        BeanUtils.copyProperties(bean, orders);
+        mapper.insertSelective(orders) ;
+        response.setData(orders);
+        List<OrderDetailX> orderDetailXES = bean.getSkus() ;
+        orderDetailXES.forEach(orderDetailX -> {
+            OrderDetail orderDetail = new OrderDetail() ;
+            orderDetailX.setId(null);
+            orderDetailX.setOrderId(orders.getId());
+            BeanUtils.copyProperties(orderDetailX, orderDetail);
+            orderDetailMapper.insertSelective(orderDetail) ;
+        });
+        return response;
+    }
+
     /**
      * 赋值-地址
      */
@@ -431,6 +450,18 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetailX> aoyiOrderDetail = new ArrayList<>();
         orderMerchantBean.getSkus().forEach(orderDetailX -> {
             orderDetailX.setUnitPrice(orderDetailX.getCheckedPrice());
+            AoyiProdIndex prodIndexWithBLOBs = findProductSpu(orderDetailX.getMpu(), orderDetailX.getSkuId());
+            BigDecimal sPrice = new BigDecimal(0) ;
+            if (prodIndexWithBLOBs.getStarSku() == null) {
+                if (!StringUtils.isEmpty(prodIndexWithBLOBs.getSprice())) {
+                    sPrice = new BigDecimal(prodIndexWithBLOBs.getSprice()) ;
+                }
+            } else {
+                if (prodIndexWithBLOBs.getStarSku().getSprice() != null && prodIndexWithBLOBs.getStarSku().getSprice() != 0) {
+                    sPrice = new BigDecimal(prodIndexWithBLOBs.getStarSku().getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+                }
+            }
+            orderDetailX.setSprice(sPrice);
             aoyiOrderDetail.add(orderDetailX) ;
         });
         orderMerchantBean.setSkus(aoyiOrderDetail);
@@ -537,9 +568,10 @@ public class OrderServiceImpl implements OrderService {
      * @param starOrderMerchantBeanList
      * @return
      */
-    private OperaResponse preHoldSkuInventory(String tradeNo, List<OrderMerchantBean> starOrderMerchantBeanList, OrderCouponBean coupon,List<InventoryMpus> inventories) {
+    private OperaResponse preHoldSkuInventory(String tradeNo, List<OrderMerchantBean> starOrderMerchantBeanList, OrderCouponBean coupon,List<InventoryMpus> inventories, String regionId) {
         OperaResponse operaResponse = new OperaResponse() ;
         HoldSkuInventoryQueryBean bean = new HoldSkuInventoryQueryBean() ;
+        bean.setRegionId(regionId);
         bean.setOutOrderNo(tradeNo);
         List<StarCodeBean> starCodeBeans = new ArrayList<>() ;
         starOrderMerchantBeanList.forEach(orderMerchantBean -> {
@@ -1723,7 +1755,7 @@ public class OrderServiceImpl implements OrderService {
         SendTradeInfoBean sendTradeInfoBean = new SendTradeInfoBean() ;
         sendTradeInfoBean.setOuter_trade_no(paymentNo);
         TradeInfoBean tradeInfoBean = new TradeInfoBean() ;
-        tradeInfoBean.setIs_third_orders(1);
+        tradeInfoBean.setIs_third_orders(2);
         List<ThirdOrdersBean> thirdOrdersBeans = new ArrayList<>() ;
         List<GoodsDetailBean> goodsDetailBeans = new ArrayList<>() ;
         if (orders != null && orders.size() > 0) {
@@ -1754,8 +1786,8 @@ public class OrderServiceImpl implements OrderService {
                 orderDetails.forEach(orderDetail -> {
                     GoodsDetailBean goodsDetailBean = new GoodsDetailBean() ;
                     goodsDetailBean.setSku_id(orderDetail.getSkuId());
-                    if (orderDetail.getName().length() > 45) {
-                        goodsDetailBean.setName(orderDetail.getName().substring(0, 45));
+                    if (orderDetail.getName().length() > 40) {
+                        goodsDetailBean.setName(orderDetail.getName().substring(0, 40));
                     } else {
                         goodsDetailBean.setName(orderDetail.getName());
                     }
@@ -1766,6 +1798,7 @@ public class OrderServiceImpl implements OrderService {
                     goodsDetailBeans.add(goodsDetailBean) ;
                 });
             }
+            tradeInfoBean.setGoods_detail(goodsDetailBeans);
             tradeInfoBean.setThird_orders(thirdOrdersBeans);
             sendTradeInfoBean.setTrade_info(tradeInfoBean);
             logger.info("发送订单详情到关爱通，入口参数：{}", JSONUtil.toJsonString(sendTradeInfoBean));

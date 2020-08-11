@@ -19,4 +19,5 @@ public class HoldSkuInventoryQueryBean {
     private String outOrderNo ;
     // 商品及库存信息json, 参考下面的demo
     private List<StarCodeBean> codeInvList = new ArrayList<>();
+    private String regionId ;
 }

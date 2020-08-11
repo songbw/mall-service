@@ -8,7 +8,9 @@ public class GuanAiTong {
     public static final String GET_ENTERPRISE_INFO_PATH = "seller/enterprise/getByOpenId";
     public static final String SEND_MESSAGE_PATH = "seller/msg/sendTplMsg";
     public static final String POST_SYNC_REFUND_PATH = "seller/pay/syncRefund";
+    public static final String POST_V2_REFUND_PATH = "seller/payV2/refund";
     public static final String GET_PAY_RECORD_PATH = "seller/pay/record";
+    public static final String POST_TRADE_INFO_PATH = "seller/payV2/transfer_trade_info";
     public static final String GET_REFUND_RECORD_PATH = "seller/pay/refundRecord";
     public static final String POST_ORDER_DELIVERY_PATH = "seller/pay/order/delivery";
     public static final String GET_PERSON_ADDRESS_PATH = "seller/address/getPersonAddress";
@@ -30,6 +32,7 @@ public class GuanAiTong {
     public static final String OPEN_ID_KEY = "open_id";
     public static final String ENTERPRISE_OPEN_ID_KEY = "enterprise_open_id";
     public static final String OUTER_TRADE_NO_KEY ="outer_trade_no";
+    public static final String TRADE_INFO_KEY ="trade_info";
     public static final String OUTER_REFUND_NO_KEY ="outer_refund_no";
     public static final String REASON_KEY ="reason";
     public static final String REFUND_AMOUNT_KEY = "refund_amount";

@@ -2,6 +2,7 @@ package com.fengchao.gateway;
 
 import com.fengchao.gateway.filter.AuthGlobalFilter;
 import com.fengchao.gateway.filter.AuthorizeGatewayFilterFactory;
+import com.fengchao.gateway.filter.RemoteAddrKeyResolver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -20,9 +21,15 @@ public class GatewayMallApplication {
 		return new AuthorizeGatewayFilterFactory();
 	}
 
-	@Bean
+
+//	@Bean
 	public AuthGlobalFilter authGlobalFilter() {
 		return new AuthGlobalFilter() ;
 	}
 
+
+	@Bean(name = RemoteAddrKeyResolver.BEAN_NAME)
+	public RemoteAddrKeyResolver remoteAddrKeyResolver() {
+		return new RemoteAddrKeyResolver();
+	}
 }

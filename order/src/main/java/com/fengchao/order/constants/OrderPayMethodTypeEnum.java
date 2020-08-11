@@ -11,7 +11,9 @@ public enum OrderPayMethodTypeEnum {
     WOA(3, "WOA", "联机账户支付"),
     BANK(4, "BANK", "快捷支付"),
     FCALIPAY(5, "FCALIPAY", "支付宝支付"),
-    FCWX(6, "FCWX", "微信支付");
+    FCWX(6, "FCWX", "微信支付"),
+    PINGAN(7, "pingan", "惠民商城平安统一支付"),
+    YUNCHENG(8, "yuncheng", "云城支付");
 
     private int code;
 
