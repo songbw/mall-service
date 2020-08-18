@@ -227,24 +227,32 @@ public class AsyncTask {
                 if (StarSkuStatusEnum.PUT_ON.getValue() == status) {
                     BigDecimal bigDecimalC = new BigDecimal(channelPrice) ;
                     int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue() ;
-                    BigDecimal bigDecimalPrice = new BigDecimal(0) ;
-                    bigDecimalPrice = bigDecimalC.divide(new BigDecimal(1), 2, BigDecimal.ROUND_HALF_UP) ;
-                    int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
+
+//                    BigDecimal bigDecimalPrice = new BigDecimal(0) ;
+//                    bigDecimalPrice = bigDecimalC.divide(new BigDecimal(0.9), 2, BigDecimal.ROUND_HALF_UP) ;
+//                    int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
+
                     BigDecimal bigDecimalR = new BigDecimal(retailPrice) ;
                     int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue() ;
                     StarSku starSku = new StarSku() ;
                     starSku.setCode(skuCode);
                     starSku.setSprice(sprice);
                     starSku.setAdvisePrice(advisePrice);
-                    if (price > advisePrice) {
-                        starSku.setPrice(price);
-                    } else {
-                        starSku.setPrice(advisePrice);
-                    }
+
+
+//                    if (price > advisePrice) {
+//                        starSku.setPrice(price);
+//                    } else {
+//                        starSku.setPrice(advisePrice);
+//                    }
+                    // 销售价格使用建议销售价
+                    starSku.setPrice(advisePrice);
+
                     starSku.setStatus(ProductStatusEnum.PUT_OFF.getValue());
                     List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
                     if (!starSkus1.isEmpty()) {
                         StarSku checkSku = starSkus1.get(0) ;
+                        // 销售价格哪个小就用那个
                         if (checkSku.getPrice() < starSku.getPrice()) {
                             starSku.setPrice(checkSku.getPrice());
                         }
