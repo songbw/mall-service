@@ -253,7 +253,7 @@ public class AsyncTask {
                     if (!starSkus1.isEmpty()) {
                         StarSku checkSku = starSkus1.get(0) ;
                         // 销售价格哪个小就用那个
-                        if (checkSku.getPrice() < starSku.getPrice()) {
+                        if (checkSku.getPrice() < starSku.getPrice() && checkSku.getPrice() > starSku.getSprice()) {
                             starSku.setPrice(checkSku.getPrice());
                         }
                         starSkuDao.updatePriceByCode(starSku);
