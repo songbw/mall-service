@@ -18,7 +18,8 @@ public enum PaymentTypeEnum {
     FCWXH5("fcwxh5", "凤巢微信H5支付", "async", "async"),
     FCALIPAY("fcalipay", "凤巢支付宝H5支付", "async", "async"),
     FCWX("fcwx", "凤巢微信公众号支付", "async", "async"),
-    FCWXXCX("fcwxxcx", "凤巢微信小程序支付", "async", "async");
+    FCWXXCX("fcwxxcx", "凤巢微信小程序支付", "async", "async"),
+    FCZFBZF("fcalijssdk", "凤巢支付宝jsSdk支付", "async", "async");
 
     private String name;
     private String desc;
@@ -57,6 +58,8 @@ public enum PaymentTypeEnum {
                 return FCWX;
             case "fcwxxcx":
                 return FCWXXCX;
+            case "fcalijssdk":
+                return FCZFBZF;
             default:
                 log.warn("根据name没有找到定义的支付方式枚举值: {}", name);
                 return null;
