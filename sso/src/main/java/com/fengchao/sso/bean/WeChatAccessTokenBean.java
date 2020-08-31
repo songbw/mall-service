@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 public class WeChatAccessTokenBean {
     private String access_token ;
+    private String session_key ;
     private long expires_in ;
     private String refresh_token ;
     private String openid ;

@@ -37,4 +37,6 @@ public interface ILoginService {
 
     SUser findByUser(LoginBean loginBean) ;
 
+    OperaResult findThirdPartyTokenMiniWX(String iAppId, String code);
+
 }

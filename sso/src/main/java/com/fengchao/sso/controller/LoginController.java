@@ -265,6 +265,17 @@ public class LoginController {
         return loginService.findThirdPartyTokenWX(iAppId, code) ;
     }
 
+    @GetMapping("/thirdParty/token/mini")
+    public OperaResult getThirdOpenIdMini(String iAppId, String code) {
+        OperaResult result = new OperaResult() ;
+        if (StringUtil.isEmpty(code)){
+            result.setCode(100000);
+            result.setMsg("code不正确");
+            return result;
+        }
+        return loginService.findThirdPartyTokenMiniWX(iAppId, code) ;
+    }
+
     @PostMapping("/login/tel")
     private OperaResult login4tel(@RequestBody SignBean bean){
         OperaResult result = new OperaResult();

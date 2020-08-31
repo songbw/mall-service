@@ -51,6 +51,30 @@ public class WeChatServiceImpl implements WeChatService {
     }
 
     @Override
+    public OperaResponse<WeChatAccessTokenBean> getMiniAccessToken(String appId, String code) {
+        OperaResponse response = new OperaResponse() ;
+        SSOConfigBean configBean = getSSOConfig(appId) ;
+        String bean = HttpClient.getMiniAccessToken(configBean.getWxAppId(), configBean.getWxAppSecret(), code, String.class) ;
+        log.info("微信小程序获取accessToken返回值： " + bean);
+        JSONObject jsonObject = JSON.parseObject(bean) ;
+        if (bean == null) {
+            response.setCode(900003);
+            response.setMsg("获取微信小程序openId失败");
+            return response ;
+        }
+        String openId = jsonObject.getString("openid") ;
+        if (StringUtils.isEmpty(openId)) {
+            WeChatErrorBean weChatErrorBean = JSONObject.parseObject(bean, WeChatErrorBean.class) ;
+            response.setCode(weChatErrorBean.getErrcode());
+            response.setMsg(weChatErrorBean.getErrmsg());
+            return response ;
+        }
+        WeChatAccessTokenBean weChatAccessTokenBean = JSONObject.parseObject(bean, WeChatAccessTokenBean.class) ;
+        response.setData(weChatAccessTokenBean);
+        return response;
+    }
+
+    @Override
     public OperaResponse<WeChatUserInfoBean> getUserInfo(String accessToken, String openId) {
         OperaResponse response = new OperaResponse() ;
         String bean = HttpClient.getUserInfo(accessToken, openId, String.class) ;

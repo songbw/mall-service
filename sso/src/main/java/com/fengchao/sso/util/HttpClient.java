@@ -18,6 +18,7 @@ public class HttpClient {
 
     private static final String BASE_URL = "https://api.weixin.qq.com" ;
     private static final String ACCESS_TOKEN_PATH = "/sns/oauth2/access_token" ;
+    private static final String MIMI_ACCESS_TOKEN_PATH = "/sns/jscode2session" ;
     private static final String USER_INFO_PATH = "/sns/userinfo" ;
 
     private static Logger logger = LoggerFactory.getLogger(HttpClient.class);
@@ -65,6 +66,15 @@ public class HttpClient {
     public static <T> T getAccessToken(String appId, String secret, String code, Class<T> obj){
         client = createClient();
         WebTarget target = client.target(BASE_URL).path(ACCESS_TOKEN_PATH).queryParam("appid", appId).queryParam("secret", secret).queryParam("code", code).queryParam("grant_type", "authorization_code");
+        logger.info(target.getUri().toString());
+        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
+        T bean = response.readEntity(obj);
+        return bean;
+    }
+
+    public static <T> T getMiniAccessToken(String appId, String secret, String code, Class<T> obj){
+        client = createClient();
+        WebTarget target = client.target(BASE_URL).path(MIMI_ACCESS_TOKEN_PATH).queryParam("appid", appId).queryParam("secret", secret).queryParam("js_code", code).queryParam("grant_type", "authorization_code");
         logger.info(target.getUri().toString());
         Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
         T bean = response.readEntity(obj);

@@ -12,5 +12,7 @@ public interface WeChatService {
 
     OperaResponse<WeChatAccessTokenBean> getAccessToken(String appId, String code) ;
 
+    OperaResponse<WeChatAccessTokenBean> getMiniAccessToken(String appId, String code) ;
+
     OperaResponse<WeChatUserInfoBean> getUserInfo(String accessToken, String openId) ;
 }

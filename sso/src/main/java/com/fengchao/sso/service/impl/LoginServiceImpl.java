@@ -586,6 +586,36 @@ public class LoginServiceImpl implements ILoginService {
         return userDao.selectUserByTel(loginBean.getAppId(), loginBean.getUsername());
     }
 
+    @Override
+    public OperaResult findThirdPartyTokenMiniWX(String iAppId, String code) {
+        OperaResult result = new OperaResult();
+        AccessToken accessToken = new AccessToken() ;
+        // 获取微信登录信息
+        OperaResponse<WeChatAccessTokenBean> accessTokenBeanOperaResponse = weChatService.getMiniAccessToken(iAppId, code) ;
+        if (accessTokenBeanOperaResponse.getCode() != 200) {
+            result.setCode(accessTokenBeanOperaResponse.getCode());
+            result.setMsg(accessTokenBeanOperaResponse.getMsg());
+            return result ;
+        }
+        WeChatAccessTokenBean weChatAccessTokenBean = accessTokenBeanOperaResponse.getData() ;
+        accessToken.setOpenId(weChatAccessTokenBean.getOpenid());
+        User temp = new User();
+        temp.setOpenId(weChatAccessTokenBean.getOpenid());
+        temp.setiAppId(iAppId);
+        User user = userMapper.selectByOpenId(temp);
+        if (user == null) {
+            user = new User();
+            String nickname = "ds_" + weChatAccessTokenBean.getOpenid().substring(weChatAccessTokenBean.getOpenid().length() - 8);
+            user.setNickname(nickname);
+            user.setOpenId(weChatAccessTokenBean.getOpenid());
+            user.setCreatedAt(new Date());
+            user.setiAppId(iAppId);
+            userMapper.insertSelective(user);
+        }
+        result.getData().put("result", accessToken);
+        return result ;
+    }
+
     private AccessToken getPingAnToken(String initCode) {
         OperaResult result = pinganClientService.findToken(initCode);
         if (result.getCode() == 200) {
