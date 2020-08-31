@@ -285,8 +285,12 @@ public class ProductDao {
         // 租户
 //        if (queryBean.getRenterId() != null && !queryBean.getRenterId().equals(""))
 //            criteria.andRenterIdEqualTo(queryBean.getRenterId());
-        if (codes != null && codes.size()>0)
-            criteria.andMerchantCodeIn(codes);
+        if (null != queryBean.getMerchantIds() && queryBean.getMerchantIds().size() > 0) {
+            criteria.andMerchantIdIn(queryBean.getMerchantIds()) ;
+        }
+        if (null != queryBean.getMerchantCodes() && queryBean.getMerchantCodes().size() > 0) {
+            criteria.andMerchantCodeIn(queryBean.getMerchantCodes()) ;
+        }
         if (queryBean.getPriceOrder() != null && !queryBean.getPriceOrder().equals(""))
             aoyiProdIndexExample.setOrderByClause("CAST(price AS DECIMAL) " + queryBean.getPriceOrder());
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
@@ -307,7 +311,11 @@ public class ProductDao {
      */
     public PageInfo<AoyiProdIndex> selectPageable(ProductQueryBean queryBean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
-        aoyiProdIndexExample.setOrderByClause("created_at desc");
+        if (StringUtils.isBlank(queryBean.getPriceOrder())) {
+            aoyiProdIndexExample.setOrderByClause("created_at desc");
+        } else {
+            aoyiProdIndexExample.setOrderByClause("price " + queryBean.getPriceOrder());
+        }
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
 
         if (queryBean.getMerchantId() != null) {
@@ -315,6 +323,18 @@ public class ProductDao {
         }
         if (StringUtils.isNotBlank(queryBean.getSkuProfix())) {
             criteria.andSkuidLike(queryBean.getSkuProfix() + "%");
+        }
+        if (StringUtils.isNotBlank(queryBean.getCategory())) {
+            criteria.andCategoryEqualTo(queryBean.getCategory()) ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getBrand())) {
+            criteria.andBrandEqualTo(queryBean.getBrand()) ;
+        }
+        if (null != queryBean.getMerchantIds() && queryBean.getMerchantIds().size() > 0) {
+            criteria.andMerchantIdIn(queryBean.getMerchantIds()) ;
+        }
+        if (null != queryBean.getMerchantCodes() && queryBean.getMerchantCodes().size() > 0) {
+            criteria.andMerchantCodeIn(queryBean.getMerchantCodes()) ;
         }
 
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());

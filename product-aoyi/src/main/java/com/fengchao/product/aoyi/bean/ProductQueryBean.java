@@ -16,5 +16,7 @@ public class ProductQueryBean extends QueryBean implements Serializable{
     private Integer merchantId;
     private List<String> categories = new ArrayList<>();
     private String skuPrefix;
+    private List<Integer> merchantIds = new ArrayList<>() ;
+    private List<String> merchantCodes = new ArrayList<>() ;
 
 }

@@ -29,7 +29,15 @@ public class ProductController {
     @PostMapping("/all")
     private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId, OperaResult result) throws ProductException {
         queryBean.setAppId(appId);
-//        queryBean.setRenterId(renterId);
+        result.getData().put("result", service.findList(queryBean)) ;
+        return result;
+    }
+
+    @PostMapping("/all/v2")
+    private OperaResult findListV2(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId, @RequestHeader("renterId") String renterId) throws ProductException {
+        OperaResult result = new OperaResult() ;
+        queryBean.setAppId(appId);
+        queryBean.setRenterId(renterId);
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }
@@ -37,7 +45,15 @@ public class ProductController {
     @PostMapping("/all/categories")
     private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, OperaResult result) throws ProductException {
         queryBean.setAppId(appId);
-//        queryBean.setRenterId(renterId);
+        result.getData().put("result", service.findListByCategories(queryBean)) ;
+        return result;
+    }
+
+    @PostMapping("/all/categories")
+    private OperaResult findListByCategoriesV2(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, @RequestHeader("renterId") String renterId) throws ProductException {
+        OperaResult result = new OperaResult() ;
+        queryBean.setAppId(appId);
+        queryBean.setRenterId(renterId);
         result.getData().put("result", service.findListByCategories(queryBean)) ;
         return result;
     }

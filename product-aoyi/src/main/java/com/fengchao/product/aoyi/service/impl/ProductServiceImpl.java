@@ -118,7 +118,43 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public PageInfo<ProductInfoBean> findListV2(ProductQueryBean queryBean) throws ProductException {
+        // TODO 根据renderId获取商户ID列表，并设置queryBean
+        PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
+        // 获取可读取的商户配置
+        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
+        List<String> merchantCodes = new ArrayList<>() ;
+        if (merchantCodeBean != null) {
+            merchantCodes = merchantCodeBean.getCodes() ;
+        }
+        log.debug("codes: {}", JSONUtil.toJsonString(merchantCodes));
+        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectPageable(queryBean);
+        log.debug("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
+        productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
+        productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
+        productInfoBeanPageInfo.setPageSize(prodIndexPageInfo.getPageSize());
+        productInfoBeanPageInfo.setSize(prodIndexPageInfo.getSize());
+        productInfoBeanPageInfo.setStartRow(prodIndexPageInfo.getStartRow());
+        productInfoBeanPageInfo.setPages(prodIndexPageInfo.getPages());
+        productInfoBeanPageInfo.setEndRow(prodIndexPageInfo.getEndRow());
+
+        List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
+        List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
+        aoyiProdIndices.forEach(aoyiProdIndex -> {
+            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            ProductInfoBean infoBean = new ProductInfoBean() ;
+            BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+            infoBean.setPromotion(promotionInfoBeans);
+            productInfoBeans.add(infoBean) ;
+        });
+        productInfoBeanPageInfo.setList(productInfoBeans);
+        return productInfoBeanPageInfo ;
+    }
+
+    @Override
     public PageInfo<ProductInfoBean> findListByCategories(ProductQueryBean queryBean) throws ProductException {
+        // TODO 根据renderId获取商户ID列表，并设置queryBean,
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
@@ -126,9 +162,9 @@ public class ProductServiceImpl implements ProductService {
         if (merchantCodeBean != null) {
             codes = merchantCodeBean.getCodes() ;
         }
-        log.info("codes: {}", JSONUtil.toJsonString(codes));
+        log.debug("codes: {}", JSONUtil.toJsonString(codes));
         PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, codes);
-        log.info("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
+        log.debug("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
         productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
         productInfoBeanPageInfo.setPageSize(prodIndexPageInfo.getPageSize());
