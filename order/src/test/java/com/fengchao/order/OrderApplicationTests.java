@@ -21,7 +21,7 @@ public class OrderApplicationTests {
 	@Autowired
 	private Environment environment;
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void contextLoads() {
 		String[] active = environment.getActiveProfiles() ;
