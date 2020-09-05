@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface AdminProdService {
     PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId);
+    PageBean findProdListV2(Integer offset, Integer limit, String state, Integer merchantId,Integer renterId);
 
     PageBean selectNameList(SerachBean bean);
 

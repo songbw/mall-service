@@ -49,7 +49,7 @@ public class ProductController {
         return result;
     }
 
-    @PostMapping("/all/categories")
+    @PostMapping("/all/categories/v2")
     private OperaResult findListByCategoriesV2(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, @RequestHeader("renterId") String renterId) throws ProductException {
         OperaResult result = new OperaResult() ;
         queryBean.setAppId(appId);

@@ -94,6 +94,11 @@ public class AdminProdServiceImpl implements AdminProdService {
         return pageBean;
     }
 
+    @Override
+    public PageBean findProdListV2(Integer offset, Integer limit, String state, Integer merchantId, Integer renterId) {
+        return null;
+    }
+
     @DataSource(DataSourceNames.TWO)
     @Override
     @Deprecated

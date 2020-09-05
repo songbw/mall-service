@@ -52,6 +52,21 @@ public class AdminProdController {
         return result;
     }
 
+    @GetMapping("prodList/v2")
+    public OperaResult findProdListV2(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchantId,@RequestHeader("renterId") Integer renterId, OperaResult result) {
+        if (offset < 0) {
+            offset = 1;
+        }
+        if (limit > 100) {
+            result.setCode(200500);
+            result.setMsg("limit 不能大于100");
+            return result;
+        }
+        PageBean prod = prodService.findProdList(offset, limit, state, merchantId);
+        result.getData().put("result", prod);
+        return result;
+    }
+
     /**
      * 搜索商品
      *
