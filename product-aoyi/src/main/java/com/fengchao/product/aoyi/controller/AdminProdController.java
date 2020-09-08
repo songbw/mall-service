@@ -97,7 +97,7 @@ public class AdminProdController {
     }
 
     @PostMapping("search/v2")
-    public OperaResult searchProdV2(@Valid @RequestBody ProductQueryBean queryBean, @RequestHeader("merchant") Integer merchantHeader,@RequestHeader("renterId") Integer renterId
+    public OperaResult searchProdV2(@Valid @RequestBody ProductQueryBean queryBean, @RequestHeader("merchant") Integer merchantHeader,@RequestHeader("renterId") String renterId
                                   ) {
         OperaResult result = new OperaResult() ;
         log.info("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(queryBean), merchantHeader);

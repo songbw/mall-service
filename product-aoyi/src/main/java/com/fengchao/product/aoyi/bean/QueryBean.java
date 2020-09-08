@@ -20,5 +20,5 @@ public class QueryBean implements Serializable {
         private String key="";
         private String openId;
         private String appId ;
-        private Integer renterId ;
+        private String renterId ;
 }
