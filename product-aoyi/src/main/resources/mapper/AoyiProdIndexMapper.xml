@@ -32,8 +32,6 @@
     <result column="tax_rate" jdbcType="VARCHAR" property="taxRate" />
     <result column="floor_price" jdbcType="VARCHAR" property="floorPrice" />
     <result column="cross_border" jdbcType="INTEGER" property="crossBorder" />
-    <result column="renter_id" jdbcType="VARCHAR" property="renterId" />
-    <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
     <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
@@ -101,7 +99,7 @@
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
     iprice, sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, 
     created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate, 
-    floor_price, cross_border, renter_id, merchant_code
+    floor_price, cross_border
   </sql>
   <sql id="Blob_Column_List">
     introduction, prodParams
@@ -164,9 +162,8 @@
       mpu, created_at, updated_at, 
       sync_at, type, compare_url, 
       sub_title, compare_price, tax_rate, 
-      floor_price, cross_border, renter_id, 
-      merchant_code, introduction, prodParams
-      )
+      floor_price, cross_border, introduction, 
+      prodParams)
     values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, #{saleunit,jdbcType=VARCHAR}, 
@@ -176,9 +173,8 @@
       #{mpu,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
       #{syncAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{compareUrl,jdbcType=VARCHAR}, 
       #{subTitle,jdbcType=VARCHAR}, #{comparePrice,jdbcType=VARCHAR}, #{taxRate,jdbcType=VARCHAR}, 
-      #{floorPrice,jdbcType=VARCHAR}, #{crossBorder,jdbcType=INTEGER}, #{renterId,jdbcType=VARCHAR}, 
-      #{merchantCode,jdbcType=VARCHAR}, #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR}
-      )
+      #{floorPrice,jdbcType=VARCHAR}, #{crossBorder,jdbcType=INTEGER}, #{introduction,jdbcType=LONGVARCHAR}, 
+      #{prodparams,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
     insert into aoyi_prod_index
@@ -269,12 +265,6 @@
       </if>
       <if test="crossBorder != null">
         cross_border,
-      </if>
-      <if test="renterId != null">
-        renter_id,
-      </if>
-      <if test="merchantCode != null">
-        merchant_code,
       </if>
       <if test="introduction != null">
         introduction,
@@ -370,12 +360,6 @@
       </if>
       <if test="crossBorder != null">
         #{crossBorder,jdbcType=INTEGER},
-      </if>
-      <if test="renterId != null">
-        #{renterId,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantCode != null">
-        #{merchantCode,jdbcType=VARCHAR},
       </if>
       <if test="introduction != null">
         #{introduction,jdbcType=LONGVARCHAR},
@@ -484,12 +468,6 @@
       <if test="record.crossBorder != null">
         cross_border = #{record.crossBorder,jdbcType=INTEGER},
       </if>
-      <if test="record.renterId != null">
-        renter_id = #{record.renterId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.merchantCode != null">
-        merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
-      </if>
       <if test="record.introduction != null">
         introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -533,8 +511,6 @@
       tax_rate = #{record.taxRate,jdbcType=VARCHAR},
       floor_price = #{record.floorPrice,jdbcType=VARCHAR},
       cross_border = #{record.crossBorder,jdbcType=INTEGER},
-      renter_id = #{record.renterId,jdbcType=VARCHAR},
-      merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
       introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       prodParams = #{record.prodparams,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -572,9 +548,7 @@
       compare_price = #{record.comparePrice,jdbcType=VARCHAR},
       tax_rate = #{record.taxRate,jdbcType=VARCHAR},
       floor_price = #{record.floorPrice,jdbcType=VARCHAR},
-      cross_border = #{record.crossBorder,jdbcType=INTEGER},
-      renter_id = #{record.renterId,jdbcType=VARCHAR},
-      merchant_code = #{record.merchantCode,jdbcType=VARCHAR}
+      cross_border = #{record.crossBorder,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -669,12 +643,6 @@
       <if test="crossBorder != null">
         cross_border = #{crossBorder,jdbcType=INTEGER},
       </if>
-      <if test="renterId != null">
-        renter_id = #{renterId,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantCode != null">
-        merchant_code = #{merchantCode,jdbcType=VARCHAR},
-      </if>
       <if test="introduction != null">
         introduction = #{introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -715,8 +683,6 @@
       tax_rate = #{taxRate,jdbcType=VARCHAR},
       floor_price = #{floorPrice,jdbcType=VARCHAR},
       cross_border = #{crossBorder,jdbcType=INTEGER},
-      renter_id = #{renterId,jdbcType=VARCHAR},
-      merchant_code = #{merchantCode,jdbcType=VARCHAR},
       introduction = #{introduction,jdbcType=LONGVARCHAR},
       prodParams = #{prodparams,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
@@ -751,9 +717,7 @@
       compare_price = #{comparePrice,jdbcType=VARCHAR},
       tax_rate = #{taxRate,jdbcType=VARCHAR},
       floor_price = #{floorPrice,jdbcType=VARCHAR},
-      cross_border = #{crossBorder,jdbcType=INTEGER},
-      renter_id = #{renterId,jdbcType=VARCHAR},
-      merchant_code = #{merchantCode,jdbcType=VARCHAR}
+      cross_border = #{crossBorder,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
