@@ -63,6 +63,8 @@ public class AoyiProdIndex {
 
     private Integer crossBorder;
 
+    private String merchantCode;
+
     public Integer getId() {
         return id;
     }
@@ -301,5 +303,13 @@ public class AoyiProdIndex {
 
     public void setCrossBorder(Integer crossBorder) {
         this.crossBorder = crossBorder;
+    }
+
+    public String getMerchantCode() {
+        return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode == null ? null : merchantCode.trim();
     }
 }

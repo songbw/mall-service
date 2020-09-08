@@ -2104,6 +2104,76 @@ public class AoyiProdIndexExample {
             addCriterion("cross_border not between", value1, value2, "crossBorder");
             return (Criteria) this;
         }
+
+        public Criteria andMerchantCodeIsNull() {
+            addCriterion("merchant_code is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeIsNotNull() {
+            addCriterion("merchant_code is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeEqualTo(String value) {
+            addCriterion("merchant_code =", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotEqualTo(String value) {
+            addCriterion("merchant_code <>", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeGreaterThan(String value) {
+            addCriterion("merchant_code >", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeGreaterThanOrEqualTo(String value) {
+            addCriterion("merchant_code >=", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeLessThan(String value) {
+            addCriterion("merchant_code <", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeLessThanOrEqualTo(String value) {
+            addCriterion("merchant_code <=", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeLike(String value) {
+            addCriterion("merchant_code like", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotLike(String value) {
+            addCriterion("merchant_code not like", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeIn(List<String> values) {
+            addCriterion("merchant_code in", values, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotIn(List<String> values) {
+            addCriterion("merchant_code not in", values, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeBetween(String value1, String value2) {
+            addCriterion("merchant_code between", value1, value2, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotBetween(String value1, String value2) {
+            addCriterion("merchant_code not between", value1, value2, "merchantCode");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
