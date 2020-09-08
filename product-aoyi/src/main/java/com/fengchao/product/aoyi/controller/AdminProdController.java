@@ -9,6 +9,7 @@ import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -62,7 +63,12 @@ public class AdminProdController {
             result.setMsg("limit 不能大于100");
             return result;
         }
-        PageBean prod = prodService.findProdList(offset, limit, state, merchantId);
+        ProductQueryBean queryBean = new ProductQueryBean();
+        queryBean.setPageNo(offset);
+        queryBean.setPageSize(limit);
+        queryBean.setState(state);
+        queryBean.setMerchantId(merchantId);
+        PageInfo prod = prodService.findProdListV2(queryBean);
         result.getData().put("result", prod);
         return result;
     }
@@ -82,6 +88,23 @@ public class AdminProdController {
 
         bean.setMerchantHeader(merchantHeader);
         PageBean pageBean = prodService.selectNameList(bean);
+//        PageBean pageBean = prodService.selectProductListPageable(bean);
+        result.getData().put("result", pageBean);
+
+        log.info("搜索商品 返回:{}", JSONUtil.toJsonString(result));
+
+        return result;
+    }
+
+    @PostMapping("search/v2")
+    public OperaResult searchProdV2(@Valid @RequestBody ProductQueryBean queryBean, @RequestHeader("merchant") Integer merchantHeader,@RequestHeader("renterId") Integer renterId
+                                  ) {
+        OperaResult result = new OperaResult() ;
+        log.info("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(queryBean), merchantHeader);
+
+        queryBean.setMerchantHeader(merchantHeader);
+        queryBean.setRenterId(renterId);
+        PageInfo pageBean = prodService.selectNameListV2(queryBean);
 //        PageBean pageBean = prodService.selectProductListPageable(bean);
         result.getData().put("result", pageBean);
 

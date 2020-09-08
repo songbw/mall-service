@@ -22,6 +22,7 @@ import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -95,11 +96,29 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public PageBean findProdListV2(Integer offset, Integer limit, String state, Integer merchantId, Integer renterId) {
-        return null;
+    public PageInfo<AoyiProdIndex> findProdListV2(ProductQueryBean queryBean) {
+        if (queryBean.getMerchantId() == 0) {
+            // TODO 获取租户下的所有商户信息
+            List<Integer> merchantIds = new ArrayList<>() ;
+            queryBean.setMerchantIds(merchantIds);
+        } else {
+            queryBean.setMerchantId(queryBean.getMerchantId());
+        }
+        PageInfo<AoyiProdIndex> pageInfoBean = new PageInfo<>() ;
+        List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
+        PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
+        BeanUtils.copyProperties(pageInfo, pageInfoBean);
+        List<AoyiProdIndex> list = pageInfo.getList();
+        if (list != null) {
+            list.forEach(aoyiProdIndex -> {
+                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+                aoyiProdIndices.add(aoyiProdIndex) ;
+            });
+        }
+        pageInfoBean.setList(aoyiProdIndices);
+        return pageInfoBean;
     }
 
-    @DataSource(DataSourceNames.TWO)
     @Override
     @Deprecated
     public PageBean selectNameList(SerachBean bean) {
@@ -151,6 +170,40 @@ public class AdminProdServiceImpl implements AdminProdService {
 
         pageBean = PageBean.build(pageBean, prods, total, bean.getOffset(), bean.getLimit());
         return pageBean;
+    }
+
+    @Override
+    public PageInfo<AoyiProdIndexX> selectNameListV2(ProductQueryBean queryBean) {
+        if (queryBean.getMerchantId() == 0) {
+            // TODO 获取租户下的所有商户信息
+            List<Integer> merchantIds = new ArrayList<>() ;
+            queryBean.setMerchantIds(merchantIds);
+        } else {
+            queryBean.setMerchantId(queryBean.getMerchantId());
+        }
+        PageInfo<AoyiProdIndexX> pageInfoBean = new PageInfo<>() ;
+        List<AoyiProdIndexX> aoyiProdIndices = new ArrayList<>() ;
+        PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
+        BeanUtils.copyProperties(pageInfo, pageInfoBean);
+        List<AoyiProdIndex> list = pageInfo.getList();
+        if (list != null) {
+            list.forEach(aoyiProdIndex -> {
+                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+                AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+                BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
+                List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+                List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+                starSkus.forEach(starSku -> {
+                    StarSkuBean starSkuBean = new StarSkuBean() ;
+                    BeanUtils.copyProperties(starSku, starSkuBean);
+                    starSkuBeans.add(starSkuBean) ;
+                });
+                aoyiProdIndexX.setSkuList(starSkuBeans);
+                aoyiProdIndices.add(aoyiProdIndexX) ;
+            });
+        }
+        pageInfoBean.setList(aoyiProdIndices);
+        return pageInfoBean;
     }
 
     @DataSource(DataSourceNames.TWO)

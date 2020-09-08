@@ -6,14 +6,17 @@ import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.StarSku;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
 public interface AdminProdService {
     PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId);
-    PageBean findProdListV2(Integer offset, Integer limit, String state, Integer merchantId,Integer renterId);
+    PageInfo<AoyiProdIndex> findProdListV2(ProductQueryBean queryBean);
 
     PageBean selectNameList(SerachBean bean);
+
+    PageInfo<AoyiProdIndexX> selectNameListV2(ProductQueryBean queryBean);
 
     /**
      * 分页查询商品列表

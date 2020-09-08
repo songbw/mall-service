@@ -336,6 +336,37 @@ public class ProductDao {
         if (null != queryBean.getMerchantCodes() && queryBean.getMerchantCodes().size() > 0) {
             criteria.andMerchantCodeIn(queryBean.getMerchantCodes()) ;
         }
+        if (StringUtils.isNotBlank(queryBean.getState())) {
+            criteria.andStateEqualTo(queryBean.getState()) ;
+        }
+        if (null!=queryBean.getId() && queryBean.getId() !=0) {
+            criteria.andIdEqualTo(queryBean.getId()) ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getName())) {
+            criteria.andNameLike("%" + queryBean.getName() + "%") ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getCategoryId())) {
+            criteria.andCategoryLike(queryBean.getCategoryId() + "%") ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getSkuid())) {
+            criteria.andSkuidEqualTo(queryBean.getSkuid()) ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getMpu())) {
+            criteria.andMpuEqualTo(queryBean.getMpu()) ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getMpuPrefix())) {
+            criteria.andMpuLike(queryBean.getMpuPrefix() + "%") ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getMinPrice()) && StringUtils.isNotBlank(queryBean.getMaxPrice())) {
+            criteria.andPriceBetween(queryBean.getMinPrice(), queryBean.getMaxPrice()) ;
+        }
+        if (StringUtils.isNotBlank(queryBean.getOrder())) {
+            if ("asc".equals(queryBean.getOrder())) {
+                aoyiProdIndexExample.setOrderByClause("created_at asc");
+            } else if ("desc".equals(queryBean.getOrder())){
+                aoyiProdIndexExample.setOrderByClause("created_at desc");
+            }
+        }
 
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
 
