@@ -65,7 +65,7 @@
     <root>
         <level value="INFO" />
         <appender-ref ref="FILE"/>
-        <appender-ref ref="STDOUT"/>
+<!--        <appender-ref ref="STDOUT"/>-->
     </root>
     <!-- 出错日志 appender  -->
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
