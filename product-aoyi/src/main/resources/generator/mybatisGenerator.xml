@@ -41,9 +41,9 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="aoyi_prod_index" enableInsert="true">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
+<!--        <table tableName="aoyi_prod_index" enableInsert="true">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
 <!--        <table tableName="star_brand" enableInsert="true">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
@@ -66,5 +66,14 @@
 <!--        <table tableName="weipinhui_address">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
+        <table tableName="renter_category" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="app_sku_price" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="app_rate_price" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
     </context>
 </generatorConfiguration>
