@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <settings>
-        <!-- 打印查询语句 -->
-        <setting name="logImpl" value="SLF4J" />
-    </settings>
-
     <property name="server_name" value="product"/>
     <property name="maxFileSize" value="100MB"/>
     <property name="maxHistory" value="180"/>
