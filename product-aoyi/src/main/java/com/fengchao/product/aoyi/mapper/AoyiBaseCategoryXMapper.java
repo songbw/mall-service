@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.mapper;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.CategoryQueryBean;
+import com.fengchao.product.aoyi.bean.RenterCategoryQueryBean;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 
@@ -48,5 +49,5 @@ public interface AoyiBaseCategoryXMapper {
      */
     void batchInsert(List<AoyiBaseCategory> aoyiBaseCategoryList);
 
-    List<CategoryBean> selectRentIdList() ;
+    List<CategoryBean> selectRentIdList(HashMap map) ;
 }

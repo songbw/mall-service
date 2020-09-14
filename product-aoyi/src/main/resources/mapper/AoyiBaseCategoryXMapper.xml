@@ -238,7 +238,7 @@
     <include refid="Base_Column_List" />
     from aoyi_base_category
   </select>
-  <select id="selectRentIdList" resultType="com.fengchao.product.aoyi.bean.CategoryBean">
+  <select id="selectRentIdList" resultType="com.fengchao.product.aoyi.bean.CategoryBean" parameterType="Map">
     select
     ac.category_id categoryId,
     ac.category_name categoryName,
@@ -253,7 +253,8 @@
     rc.app_id appId,
     rc.created_at createdAt,
     rc.updated_at updatedAt
-    FROM renter_category rc left JOIN aoyi_base_category ac ON rc.category_id = ac.category_id;
+    FROM renter_category rc left JOIN aoyi_base_category ac ON rc.category_id = ac.category_id
+    WHERE app_id = #{appId} and renter_id = #{renterId}
   </select>
 
 

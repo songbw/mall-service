@@ -29,7 +29,7 @@ public class RenterCategoryServiceImpl implements RenterCategoryService {
 
     @Override
     public List<CategoryBean> findListByRenterId(RenterCategoryQueryBean bean) {
-        return dao.selectByRenterId() ;
+        return dao.selectByRenterId(bean) ;
     }
 
     @Override
