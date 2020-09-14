@@ -28,11 +28,24 @@ public class SMSConfig implements InitializingBean {
     @Value("${TemplateID2}")
     public  int templateID2;
 
+    @Value("${iWalletBucketName}")
+    private String iWalletBucketName ;
+    @Value("${cosSecretId}")
+    private String cosSecretId ;
+    @Value("${cosSecretKey}")
+    private String cosSecretKey ;
+    @Value(("${cosRegion}"))
+    private String cosRegion ;
+
     public static int TENT_AppkeyTXAPP_ID         ;
     public static String TENT_AppSecretTXAPP_KEY     ;
     public static String TENT_ActiveTime ;
     public static int TENT_TemplateID1     ;
     public static int TENT_TemplateID2    ;
+    public static String TENT_iWalletBucketName ;
+    public static String TENT_cosSecretId ;
+    public static String TENT_cosSecretKey ;
+    public static String TENT_cosRegion ;
 
     @Override
     public void afterPropertiesSet() throws Exception {

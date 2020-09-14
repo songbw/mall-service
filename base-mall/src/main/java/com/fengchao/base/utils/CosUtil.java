@@ -1,19 +1,18 @@
 package com.fengchao.base.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qcloud.cos.COSClient;
-import com.tencent.cloud.CosStsClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.region.Region;
+import com.tencent.cloud.CosStsClient;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.*;
+import java.util.TreeMap;
 
 @Slf4j
 public class CosUtil {

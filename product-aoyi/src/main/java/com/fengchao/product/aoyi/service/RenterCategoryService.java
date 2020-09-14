@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.service;
 
 import com.fengchao.product.aoyi.bean.OperaResponse;
+import com.fengchao.product.aoyi.bean.RenterCategoryQueryBean;
 import com.fengchao.product.aoyi.model.RenterCategory;
 
 import java.util.List;
@@ -10,11 +11,15 @@ import java.util.List;
  */
 public interface RenterCategoryService {
 
-    List<RenterCategory> findListById(int id) ;
+    List<RenterCategory> findListByRenterId(RenterCategoryQueryBean bean) ;
 
     OperaResponse add(RenterCategory bean);
 
+    OperaResponse addBatch(List<RenterCategory> bean);
+
     OperaResponse update(RenterCategory bean);
+
+    OperaResponse updateBatch(List<RenterCategory> beans);
 
     List<RenterCategory> findByIds(List<Integer> categoryIds) ;
 

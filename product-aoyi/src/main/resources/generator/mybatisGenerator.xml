@@ -69,11 +69,11 @@
         <table tableName="renter_category" enableInsert="true">
             <generatedKey column="id" sqlStatement="JDBC" />
         </table>
-        <table tableName="app_sku_price" enableInsert="true">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
-        <table tableName="app_rate_price" enableInsert="true">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
+<!--        <table tableName="app_sku_price" enableInsert="true">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
+<!--        <table tableName="app_rate_price" enableInsert="true">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
     </context>
 </generatorConfiguration>

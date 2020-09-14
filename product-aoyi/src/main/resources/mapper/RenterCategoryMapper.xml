@@ -3,6 +3,8 @@
 <mapper namespace="com.fengchao.product.aoyi.mapper.RenterCategoryMapper">
   <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.RenterCategory">
     <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="renter_id" jdbcType="INTEGER" property="renterId" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="category_id" jdbcType="INTEGER" property="categoryId" />
     <result column="is_show" jdbcType="BIT" property="isShow" />
     <result column="sort_order" jdbcType="INTEGER" property="sortOrder" />
@@ -68,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, category_id, is_show, sort_order, created_at, updated_at
+    id, renter_id, app_id, category_id, is_show, sort_order, created_at, updated_at
   </sql>
   <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.RenterCategoryExample" resultMap="BaseResultMap">
     select
@@ -101,14 +103,22 @@
     </if>
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.RenterCategory" useGeneratedKeys="true">
-    insert into renter_category (category_id, is_show, sort_order, 
-      created_at, updated_at)
-    values (#{categoryId,jdbcType=INTEGER}, #{isShow,jdbcType=BIT}, #{sortOrder,jdbcType=INTEGER}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+    insert into renter_category (renter_id, app_id, category_id, 
+      is_show, sort_order, created_at, 
+      updated_at)
+    values (#{renterId,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR}, #{categoryId,jdbcType=INTEGER}, 
+      #{isShow,jdbcType=BIT}, #{sortOrder,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.RenterCategory" useGeneratedKeys="true">
     insert into renter_category
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="renterId != null">
+        renter_id,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
       <if test="categoryId != null">
         category_id,
       </if>
@@ -126,6 +136,12 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="renterId != null">
+        #{renterId,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
       <if test="categoryId != null">
         #{categoryId,jdbcType=INTEGER},
       </if>
@@ -155,6 +171,12 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=INTEGER},
       </if>
+      <if test="record.renterId != null">
+        renter_id = #{record.renterId,jdbcType=INTEGER},
+      </if>
+      <if test="record.appId != null">
+        app_id = #{record.appId,jdbcType=VARCHAR},
+      </if>
       <if test="record.categoryId != null">
         category_id = #{record.categoryId,jdbcType=INTEGER},
       </if>
@@ -178,6 +200,8 @@
   <update id="updateByExample" parameterType="map">
     update renter_category
     set id = #{record.id,jdbcType=INTEGER},
+      renter_id = #{record.renterId,jdbcType=INTEGER},
+      app_id = #{record.appId,jdbcType=VARCHAR},
       category_id = #{record.categoryId,jdbcType=INTEGER},
       is_show = #{record.isShow,jdbcType=BIT},
       sort_order = #{record.sortOrder,jdbcType=INTEGER},
@@ -190,6 +214,12 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.RenterCategory">
     update renter_category
     <set>
+      <if test="renterId != null">
+        renter_id = #{renterId,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
       <if test="categoryId != null">
         category_id = #{categoryId,jdbcType=INTEGER},
       </if>
@@ -210,7 +240,9 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.RenterCategory">
     update renter_category
-    set category_id = #{categoryId,jdbcType=INTEGER},
+    set renter_id = #{renterId,jdbcType=INTEGER},
+      app_id = #{appId,jdbcType=VARCHAR},
+      category_id = #{categoryId,jdbcType=INTEGER},
       is_show = #{isShow,jdbcType=BIT},
       sort_order = #{sortOrder,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},

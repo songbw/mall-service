@@ -2,7 +2,9 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
+import com.fengchao.product.aoyi.model.RenterCategory;
 import com.fengchao.product.aoyi.service.AdminCategoryService;
+import com.fengchao.product.aoyi.service.RenterCategoryService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ public class AdminCategoryController {
 
     @Autowired
     private AdminCategoryService service;
+    @Autowired
+    private RenterCategoryService renterCategoryService ;
 
     @GetMapping("search")
     public OperaResult search(Integer offset, Integer limit, String query, OperaResult result){
@@ -37,6 +41,14 @@ public class AdminCategoryController {
 
     @GetMapping("all")
     public OperaResult all(OperaResult result){
+        List<AoyiBaseCategoryX> category = service.selectAll();
+        result.getData().put("result", category) ;
+        return result;
+    }
+
+    @GetMapping("all/v2")
+    public OperaResult allV2(@RequestHeader("renterId") Integer renterId){
+        OperaResult result = new OperaResult() ;
         List<AoyiBaseCategoryX> category = service.selectAll();
         result.getData().put("result", category) ;
         return result;
@@ -130,5 +142,29 @@ public class AdminCategoryController {
         log.info("根据id集合查询品类列表 返回:{}", JSONUtil.toJsonString(categoryQueryBeanList));
 
         return operaResponse;
+    }
+
+    @PostMapping("/renter")
+    private OperaResponse saveRenterCategory(@RequestBody List<RenterCategory> bean) {
+        return renterCategoryService.addBatch(bean) ;
+    }
+
+    @PutMapping("/renter")
+    private OperaResponse updateRenterCategory(@RequestBody List<RenterCategory> bean) {
+        return renterCategoryService.updateBatch(bean) ;
+    }
+
+    @DeleteMapping("/renter")
+    private OperaResponse deleteRenterCategory(Integer id) {
+        OperaResponse response = new OperaResponse() ;
+        renterCategoryService.delete(id);
+        return  response;
+    }
+
+    @PostMapping("/renter/all")
+    private OperaResponse findRenterCategorys(@RequestBody RenterCategoryQueryBean bean) {
+        OperaResponse response = new OperaResponse() ;
+        response.setData(renterCategoryService.findListByRenterId(bean) );
+        return response;
     }
 }

@@ -5,6 +5,10 @@ import java.util.Date;
 public class RenterCategory {
     private Integer id;
 
+    private Integer renterId;
+
+    private String appId;
+
     private Integer categoryId;
 
     private Boolean isShow;
@@ -21,6 +25,22 @@ public class RenterCategory {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getRenterId() {
+        return renterId;
+    }
+
+    public void setRenterId(Integer renterId) {
+        this.renterId = renterId;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 
     public Integer getCategoryId() {

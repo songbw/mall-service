@@ -28,13 +28,11 @@ public class RenterCategoryDao {
      *
      * @return
      */
-    public List<RenterCategory> selectById(Integer spuId) {
+    public List<RenterCategory> selectByRenterId(Integer renterId) {
         RenterCategoryExample example = new RenterCategoryExample();
         RenterCategoryExample.Criteria criteria = example.createCriteria();
-//        criteria.andSpuIdEqualTo(spuId) ;
-
+        criteria.andRenterIdEqualTo(renterId) ;
         List<RenterCategory> list = mapper.selectByExample(example);
-
         return list;
     }
 }
