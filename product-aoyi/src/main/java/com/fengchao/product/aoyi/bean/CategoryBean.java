@@ -1,15 +1,17 @@
 package com.fengchao.product.aoyi.bean;
 
-import lombok.Data;
+import com.fengchao.product.aoyi.model.AoyiBaseCategory;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class CategoryBean {
-    private Integer categoryId;
-    private String categoryName;
-    private Integer parentId;
-    private String categoryClass;
-    private String categoryIcon;
-    private String categoryDesc;
-    private Integer sortOrder;
-    private Boolean isShow;
+import java.util.Date;
+
+@Setter
+@Getter
+public class CategoryBean extends AoyiBaseCategory {
+    private Integer id ;
+    private Integer renterId ;
+    private String appId ;
+    private Date createdAt ;
+    private Date updatedAt ;
 }

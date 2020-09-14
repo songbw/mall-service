@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.service.impl;
 
+import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.RenterCategoryQueryBean;
 import com.fengchao.product.aoyi.dao.RenterCategoryDao;
@@ -27,8 +28,8 @@ public class RenterCategoryServiceImpl implements RenterCategoryService {
     private RenterCategoryDao dao;
 
     @Override
-    public List<RenterCategory> findListByRenterId(RenterCategoryQueryBean bean) {
-        return null ;
+    public List<CategoryBean> findListByRenterId(RenterCategoryQueryBean bean) {
+        return dao.selectByRenterId() ;
     }
 
     @Override

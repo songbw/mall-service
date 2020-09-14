@@ -1,5 +1,7 @@
 package com.fengchao.product.aoyi.dao;
 
+import com.fengchao.product.aoyi.bean.CategoryBean;
+import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper;
 import com.fengchao.product.aoyi.mapper.RenterCategoryMapper;
 import com.fengchao.product.aoyi.model.RenterCategory;
 import com.fengchao.product.aoyi.model.RenterCategoryExample;
@@ -17,10 +19,12 @@ import java.util.List;
 public class RenterCategoryDao {
 
     private RenterCategoryMapper mapper;
+    private AoyiBaseCategoryXMapper mapperX ;
 
     @Autowired
-    public RenterCategoryDao(RenterCategoryMapper mapper) {
+    public RenterCategoryDao(RenterCategoryMapper mapper, AoyiBaseCategoryXMapper mapperX ) {
         this.mapper = mapper;
+        this.mapperX = mapperX ;
     }
 
     /**
@@ -28,11 +32,8 @@ public class RenterCategoryDao {
      *
      * @return
      */
-    public List<RenterCategory> selectByRenterId(Integer renterId) {
-        RenterCategoryExample example = new RenterCategoryExample();
-        RenterCategoryExample.Criteria criteria = example.createCriteria();
-        criteria.andRenterIdEqualTo(renterId) ;
-        List<RenterCategory> list = mapper.selectByExample(example);
+    public List<CategoryBean> selectByRenterId() {
+        List<CategoryBean> list = mapperX.selectRentIdList() ;
         return list;
     }
 }
