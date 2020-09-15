@@ -36,6 +36,10 @@ public class SMSConfig implements InitializingBean {
     private String cosSecretKey ;
     @Value(("${cosRegion}"))
     private String cosRegion ;
+    @Value(("${cosBaseUrl}"))
+    private String cosBaseUrl ;
+    @Value(("${cosCDNUrl}"))
+    private String cosCDNUrl ;
 
     public static int TENT_AppkeyTXAPP_ID         ;
     public static String TENT_AppSecretTXAPP_KEY     ;
@@ -46,6 +50,8 @@ public class SMSConfig implements InitializingBean {
     public static String TENT_cosSecretId ;
     public static String TENT_cosSecretKey ;
     public static String TENT_cosRegion ;
+    public static String TENT_cosBaseUrl ;
+    public static String TENT_cosCDNUrl ;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -58,5 +64,7 @@ public class SMSConfig implements InitializingBean {
         TENT_iWalletBucketName = iWalletBucketName;
         TENT_cosSecretKey = cosSecretKey;
         TENT_cosRegion = cosRegion;
+        TENT_cosBaseUrl = cosBaseUrl;
+        TENT_cosCDNUrl = cosCDNUrl;
     }
 }

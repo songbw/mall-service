@@ -3,6 +3,7 @@ package com.fengchao.base.controller;
 import com.fengchao.base.bean.AyFcImages;
 import com.fengchao.base.bean.OperaResponse;
 import com.fengchao.base.bean.OperaResult;
+import com.fengchao.base.config.SMSConfig;
 import com.fengchao.base.service.UploadService;
 import com.fengchao.base.utils.Config;
 import com.fengchao.base.utils.CosUtil;
@@ -38,10 +39,8 @@ public class UploadController {
 
     @GetMapping("/cos/url")
     private OperaResult url(OperaResult result) {
-        String cdnUrl = Config.getString("base.cdn.url");
-        String baseUrl = Config.getString("base.url");
-        result.getData().put("baseUrl", baseUrl) ;
-        result.getData().put("cdnUrl", cdnUrl) ;
+        result.getData().put("baseUrl", SMSConfig.TENT_cosBaseUrl) ;
+        result.getData().put("cdnUrl", SMSConfig.TENT_cosCDNUrl) ;
         return result;
     }
 
