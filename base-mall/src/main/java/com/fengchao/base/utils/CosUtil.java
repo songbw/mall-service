@@ -22,14 +22,20 @@ public class CosUtil {
     public static String baseAoyiProdUrl = "http://aoyiprod-1252099010.cossh.myqcloud.com/";
     public static String iWalletUrlT = "https://iwallet-1258175138.cos.ap-beijing.myqcloud.com";
     public static String iWalletBucketName = "iwallet-1258175138";
+    private static COSClient cosClient ;
 
-    private  static COSCredentials cred =  new BasicCOSCredentials(SMSConfig.TENT_cosSecretId,SMSConfig.TENT_cosSecretKey) ;
-    private static ClientConfig clientConfig = new ClientConfig(new Region(SMSConfig.TENT_cosRegion));
-    private static COSClient cosClient = new COSClient(cred, clientConfig);
+    public static COSClient getInstance() {
+        if (null != cosClient)
+            return cosClient;
+        COSCredentials cred =  new BasicCOSCredentials(SMSConfig.TENT_cosSecretId,SMSConfig.TENT_cosSecretKey) ;
+        ClientConfig clientConfig = new ClientConfig(new Region(SMSConfig.TENT_cosRegion));
+        cosClient = new COSClient(cred, clientConfig);
+        return cosClient;
+    }
 
     public static String upload(String bucketName, File file, String path) {
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, path, file);
-        PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+        PutObjectResult putObjectResult = CosUtil.getInstance().putObject(putObjectRequest);
         log.info("腾讯云COS上传图片返回： {}", JSONUtil.toJsonString(putObjectResult));
         return path;
     }
