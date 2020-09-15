@@ -1,6 +1,7 @@
 package com.fengchao.base.utils;
 
 import com.alibaba.fastjson.JSONArray;
+import com.fengchao.base.config.SMSConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -44,7 +45,7 @@ public class Kuaidi100 {
             if (StringUtils.isBlank(logisticsID)) {
                 return null;
             }
-            String typeResult = get(kuaidi100URL + "/autonumber/auto?num=" + logisticsID + "&key" + KEY);
+            String typeResult = get(SMSConfig.TENT_kuaidiUrl + "/autonumber/auto?num=" + logisticsID + "&key" + SMSConfig.TENT_kuaidiKey);
             JSONArray jsonArray = JSONArray.parseArray(typeResult);
             for (int i = 0; i < jsonArray.size(); i++){
                 String comCode = jsonArray.getJSONObject(i).getString("comCode");
@@ -81,11 +82,11 @@ public class Kuaidi100 {
             param.append(",\"resultv2\":0");
         }
         Map<String, String> params = new HashMap<String, String>();
-        params.put("customer", CUSTOMER);
+        params.put("customer", SMSConfig.TENT_kuaidiCustomer);
 
         param.append(",\"com\":\"").append(comCode).append("\"");
         param.append("}");
-        String s = param + KEY + CUSTOMER;
+        String s = param + SMSConfig.TENT_kuaidiKey + SMSConfig.TENT_kuaidiCustomer;
         String sign = MD5Utils.MD5(s);
         params.put("sign", sign);
         params.put("param", param.toString());
@@ -110,7 +111,7 @@ public class Kuaidi100 {
             }
             byte[] bytes = builder.toString().getBytes("UTF-8");
 
-            URL url = new URL(kuaidi100URL + "/poll/query.do");
+            URL url = new URL(SMSConfig.TENT_kuaidiUrl + "/poll/query.do");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(3000);
             conn.setReadTimeout(3000);

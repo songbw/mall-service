@@ -41,6 +41,13 @@ public class SMSConfig implements InitializingBean {
     @Value(("${cosCDNUrl}"))
     private String cosCDNUrl ;
 
+    @Value(("${kuaidiUrl}"))
+    private String kuaidiUrl ;
+    @Value(("${kuaidiKey}"))
+    private String kuaidiKey ;
+    @Value(("${kuaidiCustomer}"))
+    private String kuaidiCustomer ;
+
     public static int TENT_AppkeyTXAPP_ID         ;
     public static String TENT_AppSecretTXAPP_KEY     ;
     public static String TENT_ActiveTime ;
@@ -52,6 +59,9 @@ public class SMSConfig implements InitializingBean {
     public static String TENT_cosRegion ;
     public static String TENT_cosBaseUrl ;
     public static String TENT_cosCDNUrl ;
+    public static String TENT_kuaidiUrl ;
+    public static String TENT_kuaidiKey ;
+    public static String TENT_kuaidiCustomer ;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -66,5 +76,8 @@ public class SMSConfig implements InitializingBean {
         TENT_cosRegion = cosRegion;
         TENT_cosBaseUrl = cosBaseUrl;
         TENT_cosCDNUrl = cosCDNUrl;
+        TENT_kuaidiUrl = kuaidiUrl;
+        TENT_kuaidiKey = kuaidiKey;
+        TENT_kuaidiCustomer = kuaidiCustomer;
     }
 }

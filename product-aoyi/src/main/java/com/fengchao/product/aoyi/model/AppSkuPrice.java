@@ -6,9 +6,9 @@ import java.util.Date;
 public class AppSkuPrice {
     private Integer id;
 
-    private Integer renterId;
+    private String renterId;
 
-    private Integer appId;
+    private String appId;
 
     private String mpu;
 
@@ -28,20 +28,20 @@ public class AppSkuPrice {
         this.id = id;
     }
 
-    public Integer getRenterId() {
+    public String getRenterId() {
         return renterId;
     }
 
-    public void setRenterId(Integer renterId) {
-        this.renterId = renterId;
+    public void setRenterId(String renterId) {
+        this.renterId = renterId == null ? null : renterId.trim();
     }
 
-    public Integer getAppId() {
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(Integer appId) {
-        this.appId = appId;
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
     }
 
     public String getMpu() {

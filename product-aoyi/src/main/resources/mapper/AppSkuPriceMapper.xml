@@ -3,8 +3,8 @@
 <mapper namespace="com.fengchao.product.aoyi.mapper.AppSkuPriceMapper">
   <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.AppSkuPrice">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="renter_id" jdbcType="INTEGER" property="renterId" />
-    <result column="app_id" jdbcType="INTEGER" property="appId" />
+    <result column="renter_id" jdbcType="VARCHAR" property="renterId" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="mpu" jdbcType="VARCHAR" property="mpu" />
     <result column="sku_id" jdbcType="VARCHAR" property="skuId" />
     <result column="price" jdbcType="DECIMAL" property="price" />
@@ -106,7 +106,7 @@
     insert into app_sku_price (renter_id, app_id, mpu, 
       sku_id, price, created_at, 
       updated_at)
-    values (#{renterId,jdbcType=INTEGER}, #{appId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, 
+    values (#{renterId,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{mpu,jdbcType=VARCHAR}, 
       #{skuId,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, #{createdAt,jdbcType=TIMESTAMP}, 
       #{updatedAt,jdbcType=TIMESTAMP})
   </insert>
@@ -137,10 +137,10 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="renterId != null">
-        #{renterId,jdbcType=INTEGER},
+        #{renterId,jdbcType=VARCHAR},
       </if>
       <if test="appId != null">
-        #{appId,jdbcType=INTEGER},
+        #{appId,jdbcType=VARCHAR},
       </if>
       <if test="mpu != null">
         #{mpu,jdbcType=VARCHAR},
@@ -172,10 +172,10 @@
         id = #{record.id,jdbcType=INTEGER},
       </if>
       <if test="record.renterId != null">
-        renter_id = #{record.renterId,jdbcType=INTEGER},
+        renter_id = #{record.renterId,jdbcType=VARCHAR},
       </if>
       <if test="record.appId != null">
-        app_id = #{record.appId,jdbcType=INTEGER},
+        app_id = #{record.appId,jdbcType=VARCHAR},
       </if>
       <if test="record.mpu != null">
         mpu = #{record.mpu,jdbcType=VARCHAR},
@@ -200,8 +200,8 @@
   <update id="updateByExample" parameterType="map">
     update app_sku_price
     set id = #{record.id,jdbcType=INTEGER},
-      renter_id = #{record.renterId,jdbcType=INTEGER},
-      app_id = #{record.appId,jdbcType=INTEGER},
+      renter_id = #{record.renterId,jdbcType=VARCHAR},
+      app_id = #{record.appId,jdbcType=VARCHAR},
       mpu = #{record.mpu,jdbcType=VARCHAR},
       sku_id = #{record.skuId,jdbcType=VARCHAR},
       price = #{record.price,jdbcType=DECIMAL},
@@ -215,10 +215,10 @@
     update app_sku_price
     <set>
       <if test="renterId != null">
-        renter_id = #{renterId,jdbcType=INTEGER},
+        renter_id = #{renterId,jdbcType=VARCHAR},
       </if>
       <if test="appId != null">
-        app_id = #{appId,jdbcType=INTEGER},
+        app_id = #{appId,jdbcType=VARCHAR},
       </if>
       <if test="mpu != null">
         mpu = #{mpu,jdbcType=VARCHAR},
@@ -240,8 +240,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.AppSkuPrice">
     update app_sku_price
-    set renter_id = #{renterId,jdbcType=INTEGER},
-      app_id = #{appId,jdbcType=INTEGER},
+    set renter_id = #{renterId,jdbcType=VARCHAR},
+      app_id = #{appId,jdbcType=VARCHAR},
       mpu = #{mpu,jdbcType=VARCHAR},
       sku_id = #{skuId,jdbcType=VARCHAR},
       price = #{price,jdbcType=DECIMAL},

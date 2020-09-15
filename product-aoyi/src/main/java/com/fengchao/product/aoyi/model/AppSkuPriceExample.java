@@ -176,52 +176,62 @@ public class AppSkuPriceExample {
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdEqualTo(Integer value) {
+        public Criteria andRenterIdEqualTo(String value) {
             addCriterion("renter_id =", value, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdNotEqualTo(Integer value) {
+        public Criteria andRenterIdNotEqualTo(String value) {
             addCriterion("renter_id <>", value, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdGreaterThan(Integer value) {
+        public Criteria andRenterIdGreaterThan(String value) {
             addCriterion("renter_id >", value, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdGreaterThanOrEqualTo(Integer value) {
+        public Criteria andRenterIdGreaterThanOrEqualTo(String value) {
             addCriterion("renter_id >=", value, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdLessThan(Integer value) {
+        public Criteria andRenterIdLessThan(String value) {
             addCriterion("renter_id <", value, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdLessThanOrEqualTo(Integer value) {
+        public Criteria andRenterIdLessThanOrEqualTo(String value) {
             addCriterion("renter_id <=", value, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdIn(List<Integer> values) {
+        public Criteria andRenterIdLike(String value) {
+            addCriterion("renter_id like", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdNotLike(String value) {
+            addCriterion("renter_id not like", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdIn(List<String> values) {
             addCriterion("renter_id in", values, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdNotIn(List<Integer> values) {
+        public Criteria andRenterIdNotIn(List<String> values) {
             addCriterion("renter_id not in", values, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdBetween(Integer value1, Integer value2) {
+        public Criteria andRenterIdBetween(String value1, String value2) {
             addCriterion("renter_id between", value1, value2, "renterId");
             return (Criteria) this;
         }
 
-        public Criteria andRenterIdNotBetween(Integer value1, Integer value2) {
+        public Criteria andRenterIdNotBetween(String value1, String value2) {
             addCriterion("renter_id not between", value1, value2, "renterId");
             return (Criteria) this;
         }
@@ -236,52 +246,62 @@ public class AppSkuPriceExample {
             return (Criteria) this;
         }
 
-        public Criteria andAppIdEqualTo(Integer value) {
+        public Criteria andAppIdEqualTo(String value) {
             addCriterion("app_id =", value, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdNotEqualTo(Integer value) {
+        public Criteria andAppIdNotEqualTo(String value) {
             addCriterion("app_id <>", value, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdGreaterThan(Integer value) {
+        public Criteria andAppIdGreaterThan(String value) {
             addCriterion("app_id >", value, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdGreaterThanOrEqualTo(Integer value) {
+        public Criteria andAppIdGreaterThanOrEqualTo(String value) {
             addCriterion("app_id >=", value, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdLessThan(Integer value) {
+        public Criteria andAppIdLessThan(String value) {
             addCriterion("app_id <", value, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdLessThanOrEqualTo(Integer value) {
+        public Criteria andAppIdLessThanOrEqualTo(String value) {
             addCriterion("app_id <=", value, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdIn(List<Integer> values) {
+        public Criteria andAppIdLike(String value) {
+            addCriterion("app_id like", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdNotLike(String value) {
+            addCriterion("app_id not like", value, "appId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdIn(List<String> values) {
             addCriterion("app_id in", values, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdNotIn(List<Integer> values) {
+        public Criteria andAppIdNotIn(List<String> values) {
             addCriterion("app_id not in", values, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdBetween(Integer value1, Integer value2) {
+        public Criteria andAppIdBetween(String value1, String value2) {
             addCriterion("app_id between", value1, value2, "appId");
             return (Criteria) this;
         }
 
-        public Criteria andAppIdNotBetween(Integer value1, Integer value2) {
+        public Criteria andAppIdNotBetween(String value1, String value2) {
             addCriterion("app_id not between", value1, value2, "appId");
             return (Criteria) this;
         }
