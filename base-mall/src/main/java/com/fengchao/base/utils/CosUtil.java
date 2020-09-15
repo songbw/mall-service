@@ -1,5 +1,6 @@
 package com.fengchao.base.utils;
 
+import com.fengchao.base.config.SMSConfig;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -10,18 +11,20 @@ import com.qcloud.cos.region.Region;
 import com.tencent.cloud.CosStsClient;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.TreeMap;
 
 @Slf4j
+@Component
 public class CosUtil {
     public static String baseAoyiProdUrl = "http://aoyiprod-1252099010.cossh.myqcloud.com/";
     public static String iWalletUrlT = "https://iwallet-1258175138.cos.ap-beijing.myqcloud.com";
     public static String iWalletBucketName = "iwallet-1258175138";
 
-    private  static COSCredentials cred =  new BasicCOSCredentials("AKIDmMgkY6GO9h16vUQsgEW8WfZGjyzlq8f4","c4OVP5ZqxrY2FCtKUO2QYR3QXP1NVO3T") ;
-    private static ClientConfig clientConfig = new ClientConfig(new Region("ap-beijing"));
+    private  static COSCredentials cred =  new BasicCOSCredentials(SMSConfig.TENT_cosSecretId,SMSConfig.TENT_cosSecretKey) ;
+    private static ClientConfig clientConfig = new ClientConfig(new Region(SMSConfig.TENT_cosRegion));
     private static COSClient cosClient = new COSClient(cred, clientConfig);
 
     public static String upload(String bucketName, File file, String path) {
@@ -36,17 +39,19 @@ public class CosUtil {
 
         try {
             // 替换为您的 SecretId
-            config.put("SecretId", "AKIDH97EBUxbYxGOJTtTSU9mGsY0mVNjpu8I");
+//            config.put("SecretId", "AKIDH97EBUxbYxGOJTtTSU9mGsY0mVNjpu8I");
+            config.put("SecretId", SMSConfig.TENT_cosSecretId);
             // 替换为您的 SecretKey
-            config.put("SecretKey", "AC7UN8kYGn8G8C4ToKfnkhYGLhzCDlP8");
+//            config.put("SecretKey", "AC7UN8kYGn8G8C4ToKfnkhYGLhzCDlP8");
+            config.put("SecretKey", SMSConfig.TENT_cosSecretKey);
 
             // 临时密钥有效时长，单位是秒，默认1800秒，最长可设定有效期为7200秒
             config.put("durationSeconds", 1800);
 
             // 换成您的 bucket
-            config.put("bucket", "iwallet-1258175138");
+            config.put("bucket", SMSConfig.TENT_iWalletBucketName);
             // 换成 bucket 所在地区
-            config.put("region", "ap-beijing");
+            config.put("region", SMSConfig.TENT_cosRegion);
 
             // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子：a.jpg 或者 a/* 或者 * 。
             // 如果填写了“*”，将允许用户访问所有资源；除非业务需要，否则请按照最小权限原则授予用户相应的访问权限范围。

@@ -54,5 +54,9 @@ public class SMSConfig implements InitializingBean {
         TENT_ActiveTime = activeTime;
         TENT_TemplateID1 = templateID1;
         TENT_TemplateID2 = templateID2;
+        TENT_cosSecretId = cosSecretId;
+        TENT_iWalletBucketName = iWalletBucketName;
+        TENT_cosSecretKey = cosSecretKey;
+        TENT_cosRegion = cosRegion;
     }
 }

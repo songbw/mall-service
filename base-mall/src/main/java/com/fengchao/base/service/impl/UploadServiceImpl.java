@@ -1,6 +1,7 @@
 package com.fengchao.base.service.impl;
 
 import com.fengchao.base.bean.AyFcImages;
+import com.fengchao.base.config.SMSConfig;
 import com.fengchao.base.feign.ProductService;
 import com.fengchao.base.service.UploadService;
 import com.fengchao.base.utils.CosUtil;
@@ -26,7 +27,7 @@ public class UploadServiceImpl implements UploadService {
     @Override
     public String upload(MultipartFile file) {
         String path = "/" + new Date().getTime() + "." + file.getOriginalFilename().split("\\.")[1];
-        String url = CosUtil.upload(CosUtil.iWalletBucketName,saveFile(file),path) ;
+        String url = CosUtil.upload(SMSConfig.TENT_iWalletBucketName,saveFile(file),path) ;
         return url;
     }
 
@@ -34,7 +35,7 @@ public class UploadServiceImpl implements UploadService {
     public String uploadRelative(MultipartFile file, String path) {
 
         path = "/" + path + "/" + new Date().getTime() + "." + file.getOriginalFilename().split("\\.")[1];
-        String url = CosUtil.upload(CosUtil.iWalletBucketName,saveFile(file),path) ;
+        String url = CosUtil.upload(SMSConfig.TENT_iWalletBucketName,saveFile(file),path) ;
         return url;
     }
 
@@ -55,7 +56,7 @@ public class UploadServiceImpl implements UploadService {
         }
         log.info("下载上传图片 本地路径:{} 上传路径:{}",
                 base + img.getPath() + img.getType() + "/" + fileName, img.getPath() + img.getType() + "/" + fileName);
-        CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + "/" + fileName),img.getPath() + img.getType() + "/" + fileName) ;
+        CosUtil.upload(SMSConfig.TENT_iWalletBucketName, new File(base + img.getPath() + img.getType() + "/" + fileName),img.getPath() + img.getType() + "/" + fileName) ;
         productService.imageBack(img.getId(), 1) ;
     }
 
