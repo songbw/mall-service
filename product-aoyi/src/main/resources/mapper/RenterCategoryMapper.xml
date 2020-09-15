@@ -3,7 +3,7 @@
 <mapper namespace="com.fengchao.product.aoyi.mapper.RenterCategoryMapper">
   <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.RenterCategory">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="renter_id" jdbcType="INTEGER" property="renterId" />
+    <result column="renter_id" jdbcType="VARCHAR" property="renterId" />
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="category_id" jdbcType="INTEGER" property="categoryId" />
     <result column="is_show" jdbcType="BIT" property="isShow" />
@@ -106,7 +106,7 @@
     insert into renter_category (renter_id, app_id, category_id, 
       is_show, sort_order, created_at, 
       updated_at)
-    values (#{renterId,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR}, #{categoryId,jdbcType=INTEGER}, 
+    values (#{renterId,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{categoryId,jdbcType=INTEGER}, 
       #{isShow,jdbcType=BIT}, #{sortOrder,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, 
       #{updatedAt,jdbcType=TIMESTAMP})
   </insert>
@@ -137,7 +137,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="renterId != null">
-        #{renterId,jdbcType=INTEGER},
+        #{renterId,jdbcType=VARCHAR},
       </if>
       <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
@@ -172,7 +172,7 @@
         id = #{record.id,jdbcType=INTEGER},
       </if>
       <if test="record.renterId != null">
-        renter_id = #{record.renterId,jdbcType=INTEGER},
+        renter_id = #{record.renterId,jdbcType=VARCHAR},
       </if>
       <if test="record.appId != null">
         app_id = #{record.appId,jdbcType=VARCHAR},
@@ -200,7 +200,7 @@
   <update id="updateByExample" parameterType="map">
     update renter_category
     set id = #{record.id,jdbcType=INTEGER},
-      renter_id = #{record.renterId,jdbcType=INTEGER},
+      renter_id = #{record.renterId,jdbcType=VARCHAR},
       app_id = #{record.appId,jdbcType=VARCHAR},
       category_id = #{record.categoryId,jdbcType=INTEGER},
       is_show = #{record.isShow,jdbcType=BIT},
@@ -215,7 +215,7 @@
     update renter_category
     <set>
       <if test="renterId != null">
-        renter_id = #{renterId,jdbcType=INTEGER},
+        renter_id = #{renterId,jdbcType=VARCHAR},
       </if>
       <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
@@ -240,7 +240,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.RenterCategory">
     update renter_category
-    set renter_id = #{renterId,jdbcType=INTEGER},
+    set renter_id = #{renterId,jdbcType=VARCHAR},
       app_id = #{appId,jdbcType=VARCHAR},
       category_id = #{categoryId,jdbcType=INTEGER},
       is_show = #{isShow,jdbcType=BIT},

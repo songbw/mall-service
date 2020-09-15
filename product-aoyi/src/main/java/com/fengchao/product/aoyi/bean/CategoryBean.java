@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 public class CategoryBean extends AoyiBaseCategory {
     private Integer id ;
-    private Integer renterId ;
+    private String renterId ;
     private String appId ;
     private Date createdAt ;
     private Date updatedAt ;

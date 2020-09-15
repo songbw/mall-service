@@ -5,7 +5,7 @@ import java.util.Date;
 public class RenterCategory {
     private Integer id;
 
-    private Integer renterId;
+    private String renterId;
 
     private String appId;
 
@@ -27,12 +27,12 @@ public class RenterCategory {
         this.id = id;
     }
 
-    public Integer getRenterId() {
+    public String getRenterId() {
         return renterId;
     }
 
-    public void setRenterId(Integer renterId) {
-        this.renterId = renterId;
+    public void setRenterId(String renterId) {
+        this.renterId = renterId == null ? null : renterId.trim();
     }
 
     public String getAppId() {
