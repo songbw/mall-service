@@ -59,10 +59,10 @@ public class VendorsRpcService {
         return sysCompanyList;
     }
 
-    public List<RenterCompany> queryRenterMerhantList(String renterId){
-        List<RenterCompany> renterCompanyList = new ArrayList<>();
+    public List<Integer> queryRenterMerhantList(String renterId){
+        List<Integer> renterCompanyList = new ArrayList<>();
 
-        OperaResponse<List<RenterCompany>> response = vendorsServiceClient.queryRenterMerchantList(renterId) ;
+        OperaResponse<List<Integer>> response = vendorsServiceClient.queryRenterMerchantList(renterId) ;
 
         log.debug("vendor 服务 queryRenterMerhantList 返回值：{}",JSONUtil.toJsonString(response));
         if (response.getCode() == 200) {

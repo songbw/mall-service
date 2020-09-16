@@ -26,7 +26,7 @@ public class VendorsServiceClientFallbackFactory implements FallbackFactory<Vend
             }
 
             @Override
-            public OperaResponse queryRenterMerchantList(String renterId) {
+            public OperaResponse<List<Integer>> queryRenterMerchantList(String renterId) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
 
