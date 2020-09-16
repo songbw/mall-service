@@ -19,6 +19,6 @@ public interface VendorsServiceClient {
     OperaResponse<List<SysCompany>> queryAllMerchantList();
 
     @RequestMapping(value = "/renter/company/pages", method = RequestMethod.GET)
-    OperaResponse<List<SysCompany>> queryRenterMerchantList(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, @RequestParam("renterId ") String renterId );
+    OperaResponse queryRenterMerchantList(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, @RequestParam("renterId ") String renterId );
 
 }
