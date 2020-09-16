@@ -58,7 +58,7 @@ public class AdminProdController {
     }
 
     @GetMapping("prodList/v2")
-    public OperaResult findProdListV2(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchantId,@RequestHeader("renterId") Integer renterId, OperaResult result) {
+    public OperaResult findProdListV2(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchant,@RequestHeader("renterId") Integer renterId, OperaResult result) {
         if (offset < 0) {
             offset = 1;
         }
@@ -71,7 +71,7 @@ public class AdminProdController {
         queryBean.setPageNo(offset);
         queryBean.setPageSize(limit);
         queryBean.setState(state);
-        queryBean.setMerchantId(merchantId);
+        queryBean.setMerchantId(merchant);
         PageInfo prod = prodService.findProdListV2(queryBean);
         result.getData().put("result", prod);
         return result;
@@ -101,7 +101,7 @@ public class AdminProdController {
     }
 
     @PostMapping("search/v2")
-    public OperaResult searchProdV2(@Valid @RequestBody ProductQueryBean queryBean, @RequestHeader("merchantId") Integer merchantHeader,@RequestHeader("renterId") String renterId
+    public OperaResult searchProdV2(@Valid @RequestBody ProductQueryBean queryBean, @RequestHeader("merchant") Integer merchantHeader,@RequestHeader("renterId") String renterId
                                   ) {
         OperaResult result = new OperaResult() ;
         log.info("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(queryBean), merchantHeader);
