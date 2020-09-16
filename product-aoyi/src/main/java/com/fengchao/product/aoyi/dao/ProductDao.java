@@ -318,7 +318,7 @@ public class ProductDao {
         }
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
 
-        if (queryBean.getMerchantId() != null) {
+        if (queryBean.getMerchantId() != null && queryBean.getMerchantId() != 0) {
             criteria.andMerchantIdEqualTo(queryBean.getMerchantId());
         }
         if (StringUtils.isNotBlank(queryBean.getSkuProfix())) {
