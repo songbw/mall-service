@@ -11,6 +11,4 @@ import lombok.Setter;
 @Getter
 public class RenterCompany {
     private Integer companyId ;
-    private String companyName ;
-    private Integer status ;
 }

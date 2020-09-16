@@ -178,7 +178,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
             // 获取所有租户下的所有商户信息
-            List<RenterCompany> renterCompanyList = vendorsRpcService.queryRenterMerhantList(1,10000, "") ;
+            List<RenterCompany> renterCompanyList = vendorsRpcService.queryRenterMerhantList("") ;
             List<Integer> merchantIds = renterCompanyList.stream().map(x ->x.getCompanyId()).collect(Collectors.toList());
             //  判断商户中是否存在merchantId
             if (merchantIds.contains(queryBean.getMerchantId()))  {
@@ -190,7 +190,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 租户
             if (queryBean.getMerchantHeader() == 0) {
                 // 获取当前租户下的所有商户信息
-                List<RenterCompany> renterCompanyList = vendorsRpcService.queryRenterMerhantList(1,10000, queryBean.getRenterHeader()) ;
+                List<RenterCompany> renterCompanyList = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
                 List<Integer> merchantIds = renterCompanyList.stream().map(x ->x.getCompanyId()).collect(Collectors.toList());
                 queryBean.setMerchantIds(merchantIds);
             }

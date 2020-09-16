@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.OperaResponse;
-import com.fengchao.product.aoyi.bean.PromotionInfoBean;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
 import com.fengchao.product.aoyi.rpc.extmodel.RenterCompany;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author tom
@@ -61,18 +59,14 @@ public class VendorsRpcService {
         return sysCompanyList;
     }
 
-    public List<RenterCompany> queryRenterMerhantList(Integer pageIndex, Integer pageSize, String renterId){
+    public List<RenterCompany> queryRenterMerhantList(String renterId){
         List<RenterCompany> renterCompanyList = new ArrayList<>();
 
-        OperaResponse response = vendorsServiceClient.queryRenterMerchantList(pageIndex, pageSize, renterId) ;
+        OperaResponse<List<RenterCompany>> response = vendorsServiceClient.queryRenterMerchantList(renterId) ;
 
         log.debug("vendor 服务 queryRenterMerhantList 返回值：{}",JSONUtil.toJsonString(response));
         if (response.getCode() == 200) {
-            Object object = response.getData();
-            String jsonString = JSON.toJSONString(object);
-            JSONObject jsonObject = JSONObject.parseObject(jsonString) ;
-            JSONArray rows = jsonObject.getJSONArray("rows") ;
-            renterCompanyList = JSONObject.parseArray(rows.toJSONString(), RenterCompany.class) ;
+            renterCompanyList = response.getData() ;
         } else {
             log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
         }
