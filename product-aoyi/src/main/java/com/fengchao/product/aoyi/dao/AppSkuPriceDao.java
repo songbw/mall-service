@@ -1,9 +1,6 @@
 package com.fengchao.product.aoyi.dao;
 
-import com.fengchao.product.aoyi.mapper.AppRatePriceMapper;
 import com.fengchao.product.aoyi.mapper.AppSkuPriceMapper;
-import com.fengchao.product.aoyi.model.AppRatePrice;
-import com.fengchao.product.aoyi.model.AppRatePriceExample;
 import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.model.AppSkuPriceExample;
 import org.springframework.beans.factory.annotation.Autowired;

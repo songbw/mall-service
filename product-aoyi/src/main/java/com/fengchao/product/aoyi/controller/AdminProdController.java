@@ -5,8 +5,10 @@ import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.service.AdminProdService;
+import com.fengchao.product.aoyi.service.AppSkuPriceService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
@@ -37,6 +39,8 @@ public class AdminProdController {
 
     @Autowired
     private AdminProdService prodService;
+    @Autowired
+    private AppSkuPriceService appSkuPriceService ;
 
     @GetMapping("prodList")
     public OperaResult findProdList(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
@@ -707,6 +711,23 @@ public class AdminProdController {
     @PutMapping("batch/star/sku")
     public OperaResponse batchUpdateStarSku(@RequestBody List<StarSku> beans) {
         return prodService.batchUpdateSkuPriceAndState(beans) ;
+    }
+
+    @PostMapping("renter")
+    public OperaResponse batchAddRenterPrice(@RequestBody List<AppSkuPrice> beans) {
+        return appSkuPriceService.addBatch(beans) ;
+    }
+
+    @PutMapping("renter")
+    public OperaResponse batchUpdateRenterPrice(@RequestBody List<AppSkuPrice> beans) {
+        return appSkuPriceService.updateBatch(beans) ;
+    }
+
+    @DeleteMapping("renter")
+    public OperaResponse deleteRenterPrice(Integer id) {
+        OperaResponse response = new OperaResponse() ;
+        appSkuPriceService.delete(id);
+        return response ;
     }
 
 }

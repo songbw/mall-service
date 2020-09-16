@@ -14,7 +14,11 @@ public interface AppSkuPriceService {
 
     OperaResponse add(AppSkuPrice bean);
 
+    OperaResponse addBatch(List<AppSkuPrice> beans);
+
     OperaResponse update(AppSkuPrice bean);
+
+    OperaResponse updateBatch(List<AppSkuPrice> beans);
 
     List<AppSkuPrice> findByIds(List<Integer> ids) ;
 
