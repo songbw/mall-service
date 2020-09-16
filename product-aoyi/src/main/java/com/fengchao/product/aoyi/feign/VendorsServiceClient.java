@@ -5,10 +5,7 @@ import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.feign.hystric.VendorsServiceClientFallbackFactory;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +17,8 @@ public interface VendorsServiceClient {
 
     @RequestMapping(value = "/vendors/company/list", method = RequestMethod.GET)
     OperaResponse<List<SysCompany>> queryAllMerchantList();
+
+    @RequestMapping(value = "/renter/company/pages", method = RequestMethod.GET)
+    OperaResponse<List<SysCompany>> queryRenterMerchantList(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, @RequestParam("renterId ") String renterId );
 
 }

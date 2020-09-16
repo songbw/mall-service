@@ -38,9 +38,17 @@ public class AppSkuPriceServiceImpl implements AppSkuPriceService {
     public OperaResponse add(AppSkuPrice bean) {
         OperaResponse response = new OperaResponse() ;
         Date date = new Date();
-        bean.setCreatedAt(date);
-        bean.setUpdatedAt(date);
-        mapper.insertSelective(bean) ;
+        List<AppSkuPrice> list = dao.selectByRenterIdAndMpuAndSku(bean) ;
+        if (list != null && list.size() > 0) {
+            bean.setId(list.get(0).getId());
+            bean.setUpdatedAt(date);
+            mapper.updateByPrimaryKeySelective(bean) ;
+        } else {
+            bean.setUpdatedAt(date);
+            bean.setCreatedAt(date);
+            mapper.insertSelective(bean) ;
+        }
+
         response.setData(bean);
         return response;
     }
@@ -48,11 +56,18 @@ public class AppSkuPriceServiceImpl implements AppSkuPriceService {
     @Override
     public OperaResponse addBatch(List<AppSkuPrice> beans) {
         OperaResponse response = new OperaResponse() ;
-        Date date = new Date();
         beans.forEach(bean -> {
-            bean.setCreatedAt(date);
-            bean.setUpdatedAt(date);
-            mapper.insertSelective(bean) ;
+            Date date = new Date();
+            List<AppSkuPrice> list = dao.selectByRenterIdAndMpuAndSku(bean) ;
+            if (list != null && list.size() > 0) {
+                bean.setId(list.get(0).getId());
+                bean.setUpdatedAt(date);
+                mapper.updateByPrimaryKeySelective(bean) ;
+            } else {
+                bean.setUpdatedAt(date);
+                bean.setCreatedAt(date);
+                mapper.insertSelective(bean) ;
+            }
         });
         response.setData(beans);
         return response;

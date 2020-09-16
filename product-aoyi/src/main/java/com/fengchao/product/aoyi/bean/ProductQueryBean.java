@@ -29,5 +29,6 @@ public class ProductQueryBean extends QueryBean implements Serializable{
     private String maxPrice ;
     private String mpuPrefix ;
     private Integer merchantHeader;
+    private String renterHeader;
 
 }

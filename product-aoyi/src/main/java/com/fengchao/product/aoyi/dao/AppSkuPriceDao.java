@@ -36,4 +36,16 @@ public class AppSkuPriceDao {
 
         return list;
     }
+
+    public List<AppSkuPrice> selectByRenterIdAndMpuAndSku(AppSkuPrice bean) {
+        AppSkuPriceExample example = new AppSkuPriceExample();
+        AppSkuPriceExample.Criteria criteria = example.createCriteria();
+        criteria.andRenterIdEqualTo(bean.getRenterId()) ;
+        criteria.andMpuEqualTo(bean.getMpu()) ;
+        criteria.andSkuIdEqualTo(bean.getSkuId()) ;
+
+        List<AppSkuPrice> list = mapper.selectByExample(example);
+
+        return list;
+    }
 }

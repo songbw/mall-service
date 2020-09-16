@@ -16,6 +16,7 @@ import com.fengchao.product.aoyi.feign.VendorsServiceClient;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
+import com.fengchao.product.aoyi.rpc.extmodel.RenterCompany;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
 //import com.fengchao.product.aoyi.utils.RedisUtil;
@@ -174,12 +175,25 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @Override
     public PageInfo<AoyiProdIndexX> selectNameListV2(ProductQueryBean queryBean) {
-        if (queryBean.getMerchantId() == 0) {
-            // TODO 获取租户下的所有商户信息
-            List<Integer> merchantIds = new ArrayList<>() ;
-            queryBean.setMerchantIds(merchantIds);
+        if ("0".equals(queryBean.getRenterHeader())) {
+            // 平台管理员
+            // 获取所有租户下的所有商户信息
+            List<RenterCompany> renterCompanyList = vendorsRpcService.queryRenterMerhantList(1,10000, null) ;
+            List<Integer> merchantIds = renterCompanyList.stream().map(x ->x.getCompanyId()).collect(Collectors.toList());
+            //  判断商户中是否存在merchantId
+            if (merchantIds.contains(queryBean.getMerchantId()))  {
+                queryBean.setMerchantIds(null);
+            } else {
+                queryBean.setMerchantIds(merchantIds);
+            }
         } else {
-            queryBean.setMerchantId(queryBean.getMerchantId());
+            // 租户
+            if (queryBean.getMerchantHeader() == 0) {
+                // 获取当前租户下的所有商户信息
+                List<RenterCompany> renterCompanyList = vendorsRpcService.queryRenterMerhantList(1,10000, queryBean.getRenterHeader()) ;
+                List<Integer> merchantIds = renterCompanyList.stream().map(x ->x.getCompanyId()).collect(Collectors.toList());
+                queryBean.setMerchantIds(merchantIds);
+            }
         }
         PageInfo<AoyiProdIndexX> pageInfoBean = new PageInfo<>() ;
         List<AoyiProdIndexX> aoyiProdIndices = new ArrayList<>() ;

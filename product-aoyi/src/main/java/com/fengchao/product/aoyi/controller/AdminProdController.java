@@ -101,16 +101,14 @@ public class AdminProdController {
     }
 
     @PostMapping("search/v2")
-    public OperaResult searchProdV2(@Valid @RequestBody ProductQueryBean queryBean, @RequestHeader("merchant") Integer merchantHeader,@RequestHeader("renterId") String renterId
+    public OperaResult searchProdV2(@Valid @RequestBody ProductQueryBean queryBean, @RequestHeader("merchant") Integer merchantHeader,@RequestHeader("renter") String renterHeader
                                   ) {
         OperaResult result = new OperaResult() ;
-        log.info("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(queryBean), merchantHeader);
+        log.info("搜索商品 入参 bean:{}, merchant:{}, renter: {}", JSONUtil.toJsonString(queryBean), merchantHeader,renterHeader);
 
-        queryBean.setMerchantHeader(merchantHeader);
+        queryBean.setRenterHeader(renterHeader);
         queryBean.setMerchantId(merchantHeader);
-        queryBean.setRenterId(renterId);
         PageInfo pageBean = prodService.selectNameListV2(queryBean);
-//        PageBean pageBean = prodService.selectProductListPageable(bean);
         result.getData().put("result", pageBean);
 
         log.info("搜索商品 返回:{}", JSONUtil.toJsonString(result));
