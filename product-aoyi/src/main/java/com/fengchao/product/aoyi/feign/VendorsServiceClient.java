@@ -18,6 +18,6 @@ public interface VendorsServiceClient {
     OperaResponse<List<SysCompany>> queryAllMerchantList();
 
     @RequestMapping(value = "/renter/api/companies", method = RequestMethod.GET)
-    OperaResponse<List<Integer>> queryRenterMerchantList(@RequestParam("renterId ") String renterId );
+    OperaResponse<List<Integer>> queryRenterMerchantList(@RequestParam("renterId") String renterId );
 
 }
