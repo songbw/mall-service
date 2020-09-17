@@ -35,6 +35,8 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
 
     private BigDecimal renterPrice ;
 
+    private List<AppSkuPrice> appSkuPriceList ;
+
     public String getImageExtend() {
         return imageExtend;
     }
@@ -105,5 +107,13 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
 
     public void setRenterPrice(BigDecimal renterPrice) {
         this.renterPrice = renterPrice;
+    }
+
+    public List<AppSkuPrice> getAppSkuPriceList() {
+        return appSkuPriceList;
+    }
+
+    public void setAppSkuPriceList(List<AppSkuPrice> appSkuPriceList) {
+        this.appSkuPriceList = appSkuPriceList;
     }
 }

@@ -72,6 +72,8 @@ public class AdminProdServiceImpl implements AdminProdService {
     private StarSkuDao starSkuDao ;
     @Autowired
     private StarDetailImgDao starDetailImgDao ;
+    @Autowired
+    private AppSkuPriceDao appSkuPriceDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -208,14 +210,28 @@ public class AdminProdServiceImpl implements AdminProdService {
                 aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
                 AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
                 BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
-                List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
                 List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
-                starSkus.forEach(starSku -> {
-                    StarSkuBean starSkuBean = new StarSkuBean() ;
-                    BeanUtils.copyProperties(starSku, starSkuBean);
-                    starSkuBeans.add(starSkuBean) ;
-                });
-                aoyiProdIndexX.setSkuList(starSkuBeans);
+                AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+                appSkuPrice.setRenterId(queryBean.getRenterId());
+                List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+                if (starSkus != null && starSkus.size() >0) {
+                    // 查询 renterId price
+                    starSkus.forEach(starSku -> {
+                        StarSkuBean starSkuBean = new StarSkuBean() ;
+                        BeanUtils.copyProperties(starSku, starSkuBean);
+                        appSkuPrice.setMpu(starSku.getSpuId());
+                        appSkuPrice.setSkuId(starSku.getCode());
+                        List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+                        starSkuBean.setAppSkuPriceList(appSkuPrices);
+                        starSkuBeans.add(starSkuBean) ;
+                    });
+                    aoyiProdIndexX.setSkuList(starSkuBeans);
+                } else {
+                    appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+                    appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
+                    List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+                    aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
+                }
                 aoyiProdIndices.add(aoyiProdIndexX) ;
             });
         }

@@ -1,6 +1,8 @@
 package com.fengchao.product.aoyi.bean;
 
+import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.model.StarProperty;
+import com.fengchao.product.aoyi.model.StarSku;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,26 +14,9 @@ import java.util.List;
  **/
 @Getter
 @Setter
-public class StarSkuBean {
-    private Integer id;
-
-    private String code;
-
-    private String goodsLogo;
-
-    private Integer purchaseQty;
-
-    private String skuId;
-
-    private Integer status;
-
-    private String spuId;
-
-    private Integer advisePrice;
-
-    private Integer sprice;
-
-    private Integer price;
+public class StarSkuBean extends StarSku {
 
     private List<StarProperty> propertyList ;
+
+    private List<AppSkuPrice> appSkuPriceList ;
 }

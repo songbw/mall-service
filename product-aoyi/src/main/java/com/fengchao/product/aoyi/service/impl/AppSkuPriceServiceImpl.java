@@ -9,9 +9,11 @@ import com.fengchao.product.aoyi.model.AppRatePrice;
 import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.service.AppSkuPriceService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +40,11 @@ public class AppSkuPriceServiceImpl implements AppSkuPriceService {
     public OperaResponse add(AppSkuPrice bean) {
         OperaResponse response = new OperaResponse() ;
         Date date = new Date();
+        if (StringUtils.isBlank(bean.getRenterId())) {
+            response.setCode(1000000);
+            response.setMsg("renterId 不能为null");
+            return response;
+        }
         List<AppSkuPrice> list = dao.selectByRenterIdAndMpuAndSku(bean) ;
         if (list != null && list.size() > 0) {
             bean.setId(list.get(0).getId());
@@ -56,20 +63,29 @@ public class AppSkuPriceServiceImpl implements AppSkuPriceService {
     @Override
     public OperaResponse addBatch(List<AppSkuPrice> beans) {
         OperaResponse response = new OperaResponse() ;
+        List<AppSkuPrice> errors = new ArrayList<>() ;
         beans.forEach(bean -> {
             Date date = new Date();
-            List<AppSkuPrice> list = dao.selectByRenterIdAndMpuAndSku(bean) ;
-            if (list != null && list.size() > 0) {
-                bean.setId(list.get(0).getId());
-                bean.setUpdatedAt(date);
-                mapper.updateByPrimaryKeySelective(bean) ;
+            if (StringUtils.isBlank(bean.getRenterId())) {
+                errors.add(bean) ;
             } else {
-                bean.setUpdatedAt(date);
-                bean.setCreatedAt(date);
-                mapper.insertSelective(bean) ;
+                List<AppSkuPrice> list = dao.selectByRenterIdAndMpuAndSku(bean) ;
+                if (list != null && list.size() > 0) {
+                    bean.setId(list.get(0).getId());
+                    bean.setUpdatedAt(date);
+                    mapper.updateByPrimaryKeySelective(bean) ;
+                } else {
+                    bean.setUpdatedAt(date);
+                    bean.setCreatedAt(date);
+                    mapper.insertSelective(bean) ;
+                }
             }
         });
-        response.setData(beans);
+        if (errors != null && errors.size() > 0) {
+            response.setData(errors);
+        } else {
+            response.setData(beans);
+        }
         return response;
     }
 
