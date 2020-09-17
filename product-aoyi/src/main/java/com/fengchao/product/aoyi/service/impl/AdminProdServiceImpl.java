@@ -189,7 +189,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 租户
             if (queryBean.getMerchantHeader() == 0) {
                 // 获取当前租户下的所有商户信息
-                List<Integer> merchantIds = vendorsRpcService.queryRenterMerhantList("") ;
+                List<Integer> merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterId()) ;
                 queryBean.setMerchantIds(merchantIds);
             }
         }
