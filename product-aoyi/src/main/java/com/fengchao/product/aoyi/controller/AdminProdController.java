@@ -107,7 +107,7 @@ public class AdminProdController {
         log.info("搜索商品 入参 bean:{}, merchant:{}, renter: {}", JSONUtil.toJsonString(queryBean), merchantHeader,renterHeader);
 
         queryBean.setRenterHeader(renterHeader);
-        queryBean.setMerchantId(merchantHeader);
+        queryBean.setMerchantHeader(merchantHeader);
         PageInfo pageBean = prodService.selectNameListV2(queryBean);
         result.getData().put("result", pageBean);
 
