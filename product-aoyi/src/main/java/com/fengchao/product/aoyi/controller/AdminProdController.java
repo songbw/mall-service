@@ -9,6 +9,7 @@ import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.AppSkuPriceService;
+import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
@@ -41,6 +42,8 @@ public class AdminProdController {
     private AdminProdService prodService;
     @Autowired
     private AppSkuPriceService appSkuPriceService ;
+    @Autowired
+    private ProductService productService ;
 
     @GetMapping("prodList")
     public OperaResult findProdList(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
@@ -726,6 +729,18 @@ public class AdminProdController {
         OperaResponse response = new OperaResponse() ;
         appSkuPriceService.delete(id);
         return response ;
+    }
+
+    @GetMapping
+    private OperaResponse find(String mpu){
+        OperaResponse result = new OperaResponse();
+        if (org.springframework.util.StringUtils.isEmpty(mpu)) {
+            result.setCode(200501);
+            result.setMsg("mpu 不能为空");
+            return result;
+        }
+        result.setData(productService.findByMpu(mpu)) ;
+        return result;
     }
 
 }
