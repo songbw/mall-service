@@ -74,6 +74,8 @@ public class ProductServiceImpl implements ProductService {
     private WeipinhuiAddressDao weipinhuiAddressDao;
     @Autowired
     private ESConfig config;
+    @Autowired
+    private AppSkuPriceDao appSkuPriceDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -401,14 +403,28 @@ public class ProductServiceImpl implements ProductService {
         // 查询sku
         List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
         List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
-        starSkus.forEach(starSku -> {
-            StarSkuBean starSkuBean = new StarSkuBean() ;
-            BeanUtils.copyProperties(starSku, starSkuBean);
-            // 查询sku属性
-            List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
-            starSkuBean.setPropertyList(skuProperties);
-            starSkuBeans.add(starSkuBean) ;
-        });
+        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+//        appSkuPrice.setRenterId(queryBean.getRenterId());
+        if (starSkus != null && starSkus.size() > 0) {
+            starSkus.forEach(starSku -> {
+                StarSkuBean starSkuBean = new StarSkuBean() ;
+                BeanUtils.copyProperties(starSku, starSkuBean);
+                // 查询sku属性
+                List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+                starSkuBean.setPropertyList(skuProperties);
+                // 租户商品价格
+                appSkuPrice.setMpu(starSku.getSpuId());
+                appSkuPrice.setSkuId(starSku.getCode());
+                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+                starSkuBean.setAppSkuPriceList(appSkuPrices);
+                starSkuBeans.add(starSkuBean) ;
+            });
+        } else {
+            appSkuPrice.setMpu(aoyiProdIndexX.getMpu());
+            appSkuPrice.setSkuId(aoyiProdIndexX.getSkuid());
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+            aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
+        }
 
         aoyiProdIndexX.setSkuList(starSkuBeans);
         return aoyiProdIndexX;
