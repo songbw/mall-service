@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.QueryBean;
-import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.exception.ProductException;
@@ -18,8 +17,6 @@ import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.service.weipinhui.WeipinhuiDataService;
-import com.fengchao.product.aoyi.starBean.SkuBean;
-import com.fengchao.product.aoyi.starBean.SpuBean;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Ignore;
@@ -32,7 +29,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -327,7 +323,7 @@ public class ProductAoyiApplicationTests {
 	@Ignore
 	@Test
 	public void testFindByMpu() {
-		AoyiProdIndexXWithBLOBs aoyiProdIndexXWithBLOBs = productService.findByMpu("6109515") ;
+		AoyiProdIndexXWithBLOBs aoyiProdIndexXWithBLOBs = productService.findByMpu("6109515", ) ;
 		System.out.println(JSONUtil.toJsonString(aoyiProdIndexXWithBLOBs));
 	}
 

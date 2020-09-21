@@ -338,6 +338,13 @@
         #{item}
       </foreach>
     </if>
+    <if test="merchantIds != null">
+      and merchant_id in
+      <foreach item="item" index="index" collection="merchantIds"
+               open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
 
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
@@ -357,6 +364,13 @@
     <if test="merchantCodes != null">
       and merchant_code in
       <foreach item="item" index="index" collection="merchantCodes"
+               open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    <if test="merchantIds != null">
+      and merchant_id in
+      <foreach item="item" index="index" collection="merchantIds"
                open="(" separator="," close=")">
         #{item}
       </foreach>

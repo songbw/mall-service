@@ -16,27 +16,22 @@ import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
+import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.service.ProductService;
-import com.fengchao.product.aoyi.utils.CosUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,11 +71,16 @@ public class ProductServiceImpl implements ProductService {
     private ESConfig config;
     @Autowired
     private AppSkuPriceDao appSkuPriceDao ;
+    @Autowired
+    private VendorsRpcService vendorsRpcService;
 
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
+        // 根据APPID查询renterId
+        String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
         // 获取可读取的商户配置
+        List<Integer> merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
         List<String> codes = new ArrayList<>() ;
         if (merchantCodeBean != null) {
@@ -103,10 +103,22 @@ public class ProductServiceImpl implements ProductService {
         if (codes != null && codes.size()>0) {
             map.put("merchantCodes", codes) ;
         }
+        if (codes != null && codes.size()>0) {
+            map.put("merchantIds", merchantIds) ;
+        }
         List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
+        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+        appSkuPrice.setRenterId(renterId);
         if (total > 0) {
             mapper.selectLimit(map).forEach(aoyiProdIndex -> {
+                // 查询star_sku表
+                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+                appSkuPrice.setSkuId(appSkuPrice.getSkuId());
+                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+                if (appSkuPrices != null && appSkuPrices.size() >0) {
+                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
+                }
                 ProductInfoBean infoBean = new ProductInfoBean();
                 aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
@@ -157,6 +169,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageInfo<ProductInfoBean> findListByCategories(ProductQueryBean queryBean) throws ProductException {
         // TODO 根据renderId获取商户ID列表，并设置queryBean,
+        // 根据APPID查询renterId
+        String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
+        // 获取可读取的商户配置
+        List<Integer> merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
+        queryBean.setMerchantIds(merchantIds);
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
@@ -177,7 +194,17 @@ public class ProductServiceImpl implements ProductService {
 
         List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
         List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
+        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+        appSkuPrice.setRenterId(renterId);
         aoyiProdIndices.forEach(aoyiProdIndex -> {
+            // 查询star_sku表
+            appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+            appSkuPrice.setSkuId(appSkuPrice.getSkuId());
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+            if (appSkuPrices != null && appSkuPrices.size() >0) {
+                aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
+            }
+
             aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
             ProductInfoBean infoBean = new ProductInfoBean() ;
             BeanUtils.copyProperties(aoyiProdIndex, infoBean);
@@ -364,7 +391,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductInfoBean findAndPromotion(String mpu, String appId) throws ProductException {
         ProductInfoBean infoBean = new ProductInfoBean();
-        AoyiProdIndexXWithBLOBs aoyiProdIndexX = findByMpu(mpu) ;
+        AoyiProdIndexXWithBLOBs aoyiProdIndexX = findByMpu(mpu, appId) ;
         if (aoyiProdIndexX != null) {
             BeanUtils.copyProperties(aoyiProdIndexX, infoBean);
             List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndexX.getMpu(), appId);
@@ -377,7 +404,8 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public AoyiProdIndexXWithBLOBs findByMpu(String mpu) {
+    public AoyiProdIndexXWithBLOBs findByMpu(String mpu, String appId) {
+        String renterId = vendorsRpcService.queryRenterId(appId) ;
         AoyiProdIndexXWithBLOBs aoyiProdIndexX = mapper.selectByMpu(mpu);
         if (aoyiProdIndexX != null) {
             aoyiProdIndexX = ProductHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
@@ -404,7 +432,7 @@ public class ProductServiceImpl implements ProductService {
         List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
         List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
         AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-//        appSkuPrice.setRenterId(queryBean.getRenterId());
+        appSkuPrice.setRenterId(renterId);
         if (starSkus != null && starSkus.size() > 0) {
             starSkus.forEach(starSku -> {
                 StarSkuBean starSkuBean = new StarSkuBean() ;
@@ -416,13 +444,18 @@ public class ProductServiceImpl implements ProductService {
                 appSkuPrice.setMpu(starSku.getSpuId());
                 appSkuPrice.setSkuId(starSku.getCode());
                 List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                starSkuBean.setAppSkuPriceList(appSkuPrices);
+                if (appSkuPrices != null && appSkuPrices.size() > 0) {
+                    starSkuBean.setPrice(appSkuPrices.get(0).getPrice().intValue());
+                }
                 starSkuBeans.add(starSkuBean) ;
             });
         } else {
             appSkuPrice.setMpu(aoyiProdIndexX.getMpu());
             appSkuPrice.setSkuId(aoyiProdIndexX.getSkuid());
             List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+            if (appSkuPrices != null && appSkuPrices.size() > 0) {
+                aoyiProdIndexX.setPrice(appSkuPrices.get(0).getPrice().toString());
+            }
             aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
         }
 

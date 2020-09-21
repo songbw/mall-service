@@ -34,10 +34,9 @@ public class ProductController {
     }
 
     @PostMapping("/all/v2")
-    private OperaResult findListV2(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId, @RequestHeader("renterId") String renterId) throws ProductException {
+    private OperaResult findListV2(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId) throws ProductException {
         OperaResult result = new OperaResult() ;
         queryBean.setAppId(appId);
-        queryBean.setRenterId(renterId);
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }

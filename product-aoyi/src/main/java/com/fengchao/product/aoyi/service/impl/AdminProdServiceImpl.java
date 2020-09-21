@@ -74,6 +74,8 @@ public class AdminProdServiceImpl implements AdminProdService {
     private StarDetailImgDao starDetailImgDao ;
     @Autowired
     private AppSkuPriceDao appSkuPriceDao ;
+    @Autowired
+    private StarPropertyDao starPropertyDao ;
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -963,5 +965,59 @@ public class AdminProdServiceImpl implements AdminProdService {
         });
         response.setData(beans);
         return response;
+    }
+
+    @Override
+    public AoyiProdIndexXWithBLOBs findByMpu(String mpu) {
+        AoyiProdIndexXWithBLOBs aoyiProdIndexX = aoyiProdIndexXMapper.selectByMpu(mpu);
+        if (aoyiProdIndexX != null) {
+            aoyiProdIndexX = ProductHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
+        }
+        // 查询spu图片
+        if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
+            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
+            String imageUrl = "" ;
+            if (starDetailImgs != null && starDetailImgs.size() > 0) {
+                for (int i = 0; i < starDetailImgs.size(); i++) {
+                    if (i == 0) {
+                        imageUrl = starDetailImgs.get(i).getImgUrl() ;
+                    } else {
+                        imageUrl = imageUrl + ";" + starDetailImgs.get(i).getImgUrl() ;
+                    }
+                }
+                aoyiProdIndexX.setImagesUrl(imageUrl);
+            }
+        }
+        // 查询spu属性
+        List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(aoyiProdIndexX.getId(), 0) ;
+        aoyiProdIndexX.setProperties(starProperties);
+        // 查询sku
+        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
+        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+//        appSkuPrice.setRenterId(queryBean.getRenterId());
+        if (starSkus != null && starSkus.size() > 0) {
+            starSkus.forEach(starSku -> {
+                StarSkuBean starSkuBean = new StarSkuBean() ;
+                BeanUtils.copyProperties(starSku, starSkuBean);
+                // 查询sku属性
+                List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+                starSkuBean.setPropertyList(skuProperties);
+                // 租户商品价格
+                appSkuPrice.setMpu(starSku.getSpuId());
+                appSkuPrice.setSkuId(starSku.getCode());
+                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+                starSkuBean.setAppSkuPriceList(appSkuPrices);
+                starSkuBeans.add(starSkuBean) ;
+            });
+        } else {
+            appSkuPrice.setMpu(aoyiProdIndexX.getMpu());
+            appSkuPrice.setSkuId(aoyiProdIndexX.getSkuid());
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+            aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
+        }
+
+        aoyiProdIndexX.setSkuList(starSkuBeans);
+        return aoyiProdIndexX;
     }
 }

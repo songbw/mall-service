@@ -739,7 +739,7 @@ public class AdminProdController {
             result.setMsg("mpu 不能为空");
             return result;
         }
-        result.setData(productService.findByMpu(mpu)) ;
+        result.setData(prodService.findByMpu(mpu)) ;
         return result;
     }
 

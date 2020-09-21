@@ -32,7 +32,7 @@ public interface ProductService {
 
     ProductInfoBean findAndPromotion(String mpu, String appId) throws ProductException;
 
-    AoyiProdIndexXWithBLOBs findByMpu(String mpu) ;
+    AoyiProdIndexXWithBLOBs findByMpu(String mpu, String appId) ;
 
     /**
      * 根据mpuId集合查询product列表

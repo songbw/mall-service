@@ -73,4 +73,48 @@ public class VendorsRpcService {
         return renterCompanyList;
 
     }
+
+    public List<String> queryAppIdList(String renterId){
+        List<String> renterCompanyList = new ArrayList<>();
+
+        OperaResponse<List<String>> response = vendorsServiceClient.queryAppIdList(renterId) ;
+
+        log.debug("vendor 服务 queryAppIdList 入参renterId： {},  返回值：{}",renterId, JSONUtil.toJsonString(response));
+        if (response.getCode() == 200) {
+            renterCompanyList = response.getData() ;
+        } else {
+            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+        }
+        return renterCompanyList;
+
+    }
+
+    public String queryRenterId(String appId){
+        String renterId = "" ;
+        OperaResponse<String> response = vendorsServiceClient.queryRenterId(appId) ;
+
+        log.debug("vendor 服务 queryRenterId 入参appId ： {},  返回值：{}",appId, JSONUtil.toJsonString(response));
+        if (response.getCode() == 200) {
+            renterId = response.getData() ;
+        } else {
+            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+        }
+        return renterId;
+
+    }
+
+    public List<Integer> queryMerhantListByAppId(String appId){
+        List<Integer> renterCompanyList = new ArrayList<>();
+
+        OperaResponse<List<Integer>> response = vendorsServiceClient.queryAppIdMerchantList(appId) ;
+
+        log.debug("vendor 服务 queryMerhantListByAppId 入参appId： {},  返回值：{}",appId, JSONUtil.toJsonString(response));
+        if (response.getCode() == 200) {
+            renterCompanyList = response.getData() ;
+        } else {
+            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+        }
+        return renterCompanyList;
+
+    }
 }
