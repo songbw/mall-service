@@ -323,7 +323,7 @@ public class ProductAoyiApplicationTests {
 	@Ignore
 	@Test
 	public void testFindByMpu() {
-		AoyiProdIndexXWithBLOBs aoyiProdIndexXWithBLOBs = productService.findByMpu("6109515", ) ;
+		AoyiProdIndexXWithBLOBs aoyiProdIndexXWithBLOBs = productService.findByMpu("6109515", "11") ;
 		System.out.println(JSONUtil.toJsonString(aoyiProdIndexXWithBLOBs));
 	}
 
