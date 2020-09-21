@@ -158,7 +158,7 @@ public class AggregationServiceImpl implements AggregationService {
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
         Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
-            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus);
+            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, appId);
             for(AoyiProdIndex prod: aoyiProdIndices){
                 aoyiProdMap.put(prod.getMpu(), prod);
             }

@@ -557,10 +557,23 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList) {
+    public List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList, String appId) {
         // 1. 查询商品信息
+        String renterId = vendorsRpcService.queryRenterId(appId) ;
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+        appSkuPrice.setRenterId(renterId);
         List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+            appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+            appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+            if (appSkuPrices != null && appSkuPrices.size() > 0) {
+                aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
+            }
+        });
+
+
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;
     }

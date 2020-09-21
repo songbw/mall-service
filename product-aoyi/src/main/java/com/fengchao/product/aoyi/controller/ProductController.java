@@ -1,7 +1,6 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
-import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
@@ -182,7 +181,7 @@ public class ProductController {
     }
 
     @GetMapping("/getByMpus")
-    private OperaResult getProdsByMpus(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
+    private OperaResult getProdsByMpus(@RequestParam("mpuIdList") List<String> mpuIdList, @RequestParam("appId") String appId, OperaResult result) throws ProductException {
         log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
         if (mpuIdList.size() > 60) {
             result.setCode(200001);
@@ -191,7 +190,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndex> productInfoBeanList = service.getProdsByMpus(mpuIdList);
+            List<AoyiProdIndex> productInfoBeanList = service.getProdsByMpus(mpuIdList, appId);
 
             result.getData().put("result", productInfoBeanList);
         } catch (Exception e) {

@@ -32,7 +32,7 @@ public class ProductRpcService {
      * @param mpuIdList
      * @return
      */
-    public List<AoyiProdIndex> findProductListByMpuIdList(List<String> mpuIdList) {
+    public List<AoyiProdIndex> findProductListByMpuIdList(List<String> mpuIdList, String appId) {
         // 返回值
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public class ProductRpcService {
                     subMpuList = mpuIdList.subList(i, i + 50) ;
                 }
                 i = i + 49 ;
-                couponBeanList.addAll(findProductListByMpus(subMpuList)) ;
+                couponBeanList.addAll(findProductListByMpus(subMpuList, appId)) ;
             }
         }
         return couponBeanList;
@@ -54,11 +54,12 @@ public class ProductRpcService {
     /**
      * 根据mpu 获取产品信息
      * @param mpus
+     * @param appId
      * @return
      */
-    private List<AoyiProdIndex> findProductListByMpus(List<String> mpus) {
+    private List<AoyiProdIndex> findProductListByMpus(List<String> mpus, String appId) {
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
-        OperaResult operaResult = productService.findProductListByMpuIdList(mpus);
+        OperaResult operaResult = productService.findProductListByMpuIdList(mpus, appId);
         // 处理返回
         if (operaResult.getCode() == 200) {
             List<AoyiProdIndex> _couponBeanList = (List<AoyiProdIndex>) operaResult.getData().get("result");
