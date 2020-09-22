@@ -180,10 +180,10 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public PageInfo<AoyiProdIndexX> selectNameListV2(ProductQueryBean queryBean) {
         PageInfo<AoyiProdIndexX> pageInfoBean = new PageInfo<>() ;
+        List<Integer> merchantIds = null ;
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
             // 获取所有租户下的所有商户信息
-            List<Integer> merchantIds = null;
             if (StringUtils.isNotBlank(queryBean.getAppId())) {
                 merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
             } else {
@@ -206,7 +206,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             // 租户
             if (queryBean.getMerchantHeader() == 0) {
                 // 获取当前租户下的所有商户信息
-                List<Integer> merchantIds = null ;
+
                 if (StringUtils.isNotBlank(queryBean.getAppId())) {
                     merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
                 } else {
@@ -216,6 +216,14 @@ public class AdminProdServiceImpl implements AdminProdService {
                     return pageInfoBean ;
                 }
                 queryBean.setMerchantIds(merchantIds);
+            } else {
+                // 租户的商户
+                merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
+                if (merchantIds.contains(queryBean.getMerchantHeader())) {
+                    queryBean.setMerchantId(queryBean.getMerchantHeader());
+                } else {
+                    return pageInfoBean ;
+                }
             }
         }
 
