@@ -26,16 +26,13 @@ public class AppSkuPriceDao {
     /**
      * 根据spuId查询图片详情
      *
-     * @return
      */
-    public List<AppSkuPrice> selectById(Integer spuId) {
+    public List<AppSkuPrice> selectById() {
         AppSkuPriceExample example = new AppSkuPriceExample();
-        AppSkuPriceExample.Criteria criteria = example.createCriteria();
+//        AppSkuPriceExample.Criteria criteria = example.createCriteria();
 //        criteria.andSpuIdEqualTo(spuId) ;
 
-        List<AppSkuPrice> list = mapper.selectByExample(example);
-
-        return list;
+        return mapper.selectByExample(example);
     }
 
     public List<AppSkuPrice> selectByRenterIdAndMpuAndSku(AppSkuPrice bean) {
@@ -47,8 +44,6 @@ public class AppSkuPriceDao {
         criteria.andMpuEqualTo(bean.getMpu()) ;
         criteria.andSkuIdEqualTo(bean.getSkuId()) ;
 
-        List<AppSkuPrice> list = mapper.selectByExample(example);
-
-        return list;
+        return mapper.selectByExample(example);
     }
 }

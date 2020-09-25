@@ -5,7 +5,6 @@ import com.fengchao.product.aoyi.bean.StarSkuBean;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -36,6 +35,8 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
     private BigDecimal renterPrice ;
 
     private List<AppSkuPrice> appSkuPriceList ;
+
+    private List<AppSkuState> appSkuStateList ;
 
     public String getImageExtend() {
         return imageExtend;
@@ -115,5 +116,13 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
 
     public void setAppSkuPriceList(List<AppSkuPrice> appSkuPriceList) {
         this.appSkuPriceList = appSkuPriceList;
+    }
+
+    public List<AppSkuState> getAppSkuStateList() {
+        return appSkuStateList;
+    }
+
+    public void setAppSkuStateList(List<AppSkuState> appSkuStateList) {
+        this.appSkuStateList = appSkuStateList;
     }
 }

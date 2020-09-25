@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.bean;
 
 import com.fengchao.product.aoyi.model.AppSkuPrice;
+import com.fengchao.product.aoyi.model.AppSkuState;
 import com.fengchao.product.aoyi.model.StarProperty;
 import com.fengchao.product.aoyi.model.StarSku;
 import lombok.Getter;
@@ -19,4 +20,6 @@ public class StarSkuBean extends StarSku {
     private List<StarProperty> propertyList ;
 
     private List<AppSkuPrice> appSkuPriceList ;
+
+    private List<AppSkuState> appSkuStateList ;
 }

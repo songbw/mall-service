@@ -33,7 +33,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @EnableConfigurationProperties({ESConfig.class})
@@ -41,38 +44,42 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
     private AoyiProdIndexXMapper mapper;
-    @Autowired
     private AoyiClientService aoyiClientService;
-    @Autowired
     private EquityService equityService;
-    @Autowired
     private ProductDao productDao;
-    @Autowired
     private CategoryService categoryService;
-    @Autowired
     private ESService esService;
-    @Autowired
     private InventoryDao inventoryDao ;
-    @Autowired
     private StarDetailImgDao starDetailImgDao ;
-    @Autowired
     private StarPropertyDao starPropertyDao ;
-    @Autowired
     private StarSkuDao starSkuDao ;
-
-    @Autowired
     private AoyiClientRpcService aoyiClientRpcService;
+    private WeipinhuiAddressDao weipinhuiAddressDao;
+    private ESConfig config;
+    private AppSkuPriceDao appSkuPriceDao ;
+    private VendorsRpcService vendorsRpcService;
+    private ProductHandle productHandle ;
 
     @Autowired
-    private WeipinhuiAddressDao weipinhuiAddressDao;
-    @Autowired
-    private ESConfig config;
-    @Autowired
-    private AppSkuPriceDao appSkuPriceDao ;
-    @Autowired
-    private VendorsRpcService vendorsRpcService;
+    public ProductServiceImpl(AoyiProdIndexXMapper mapper, AoyiClientService aoyiClientService, EquityService equityService, ProductDao productDao, CategoryService categoryService, ESService esService, InventoryDao inventoryDao, StarDetailImgDao starDetailImgDao, StarPropertyDao starPropertyDao, StarSkuDao starSkuDao, AoyiClientRpcService aoyiClientRpcService, WeipinhuiAddressDao weipinhuiAddressDao, ESConfig config, AppSkuPriceDao appSkuPriceDao, VendorsRpcService vendorsRpcService, ProductHandle productHandle) {
+        this.mapper = mapper;
+        this.aoyiClientService = aoyiClientService;
+        this.equityService = equityService;
+        this.productDao = productDao;
+        this.categoryService = categoryService;
+        this.esService = esService;
+        this.inventoryDao = inventoryDao;
+        this.starDetailImgDao = starDetailImgDao;
+        this.starPropertyDao = starPropertyDao;
+        this.starSkuDao = starSkuDao;
+        this.aoyiClientRpcService = aoyiClientRpcService;
+        this.weipinhuiAddressDao = weipinhuiAddressDao;
+        this.config = config;
+        this.appSkuPriceDao = appSkuPriceDao;
+        this.vendorsRpcService = vendorsRpcService;
+        this.productHandle = productHandle;
+    }
 
     @DataSource(DataSourceNames.TWO)
     @Override
@@ -120,7 +127,7 @@ public class ProductServiceImpl implements ProductService {
                     aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
                 }
                 ProductInfoBean infoBean = new ProductInfoBean();
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
+                aoyiProdIndex = productHandle.updateImage(aoyiProdIndex) ;
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);
@@ -155,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
         List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
         List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
         aoyiProdIndices.forEach(aoyiProdIndex -> {
-            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
             ProductInfoBean infoBean = new ProductInfoBean() ;
             BeanUtils.copyProperties(aoyiProdIndex, infoBean);
             List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
@@ -205,7 +212,7 @@ public class ProductServiceImpl implements ProductService {
                 aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
             }
 
-            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
             ProductInfoBean infoBean = new ProductInfoBean() ;
             BeanUtils.copyProperties(aoyiProdIndex, infoBean);
             List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
@@ -382,7 +389,7 @@ public class ProductServiceImpl implements ProductService {
         map.put("pageSize",1000);
         List<AoyiProdIndexX> prodIndices = new ArrayList<>();
         mapper.selectAll(map).forEach(aoyiProdIndex -> {
-            aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
+            aoyiProdIndex = productHandle.updateImage(aoyiProdIndex) ;
             prodIndices.add(aoyiProdIndex);
         });
         return prodIndices;
@@ -408,7 +415,7 @@ public class ProductServiceImpl implements ProductService {
         String renterId = vendorsRpcService.queryRenterId(appId) ;
         AoyiProdIndexXWithBLOBs aoyiProdIndexX = mapper.selectByMpu(mpu);
         if (aoyiProdIndexX != null) {
-            aoyiProdIndexX = ProductHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
+            aoyiProdIndexX = productHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
         }
         // 查询spu图片
         if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
@@ -513,7 +520,7 @@ public class ProductServiceImpl implements ProductService {
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
         productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-            aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+            aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
             BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
             List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
             List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
@@ -656,7 +663,7 @@ public class ProductServiceImpl implements ProductService {
             if (appSkuPrices != null && appSkuPrices.size() >0) {
                 aoyiProdIndex1.setPrice(appSkuPrices.get(0).getPrice().toString());
             }
-            aoyiProdIndex1 = ProductHandle.updateImageExample(aoyiProdIndex1) ;
+            aoyiProdIndex1 = productHandle.updateImageExample(aoyiProdIndex1) ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
             if (StringUtils.isNotBlank(aoyiProdIndex.getSkuid())) {
@@ -682,7 +689,7 @@ public class ProductServiceImpl implements ProductService {
     public OperaResponse findSpuAndSku(String mpu, String code) {
         OperaResponse response = new OperaResponse() ;
         AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(mpu) ;
-        aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+        aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
         AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
         BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
         List<String> codes = new ArrayList<>();

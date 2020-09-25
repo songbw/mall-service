@@ -16,10 +16,8 @@ import com.fengchao.product.aoyi.feign.VendorsServiceClient;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
-import com.fengchao.product.aoyi.rpc.extmodel.RenterCompany;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
-//import com.fengchao.product.aoyi.utils.RedisUtil;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
@@ -40,50 +38,56 @@ import java.util.stream.Collectors;
 @Service
 public class AdminProdServiceImpl implements AdminProdService {
 
-    private static Logger logger = LoggerFactory.getLogger(AdminProdServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminProdServiceImpl.class);
+
+    private AoyiProdIndexXMapper aoyiProdIndexXMapper;
+    private ProdExtendXMapper prodExtendMapper;
+    private SkuCodeXMapper skuCodeMapper;
+    private EquityService equityService;
+    private VendorsServiceClient vendorsService;
+    private AoyiBaseCategoryXMapper categoryMapper;
+    private AoyiBaseBrandMapper brandMapper;
+    private AoyiProdIndexMapper mapper ;
+    private ProductDao productDao;
+    private ProductExtendDao productExtendDao;
+    private VendorsRpcService vendorsRpcService;
+    private CategoryDao categoryDao;
+    private StarSkuMapper starSkuMapper ;
+    private StarSkuDao starSkuDao ;
+    private StarDetailImgDao starDetailImgDao ;
+    private AppSkuPriceDao appSkuPriceDao ;
+    private StarPropertyDao starPropertyDao ;
+    private ProductHandle productHandle ;
 
     @Autowired
-    private AoyiProdIndexXMapper aoyiProdIndexXMapper;
-    @Autowired
-    private ProdExtendXMapper prodExtendMapper;
-    @Autowired
-    private SkuCodeXMapper skuCodeMapper;
-    @Autowired
-    private EquityService equityService;
-    @Autowired
-    private VendorsServiceClient vendorsService;
-    @Autowired
-    private AoyiBaseCategoryXMapper categoryMapper;
-    @Autowired
-    private AoyiBaseBrandMapper brandMapper;
-    @Autowired
-    private AoyiProdIndexMapper mapper ;
-    @Autowired
-    private ProductDao productDao;
-    @Autowired
-    private ProductExtendDao productExtendDao;
-    @Autowired
-    private VendorsRpcService vendorsRpcService;
-    @Autowired
-    private CategoryDao categoryDao;
-    @Autowired
-    private StarSkuMapper starSkuMapper ;
-    @Autowired
-    private StarSkuDao starSkuDao ;
-    @Autowired
-    private StarDetailImgDao starDetailImgDao ;
-    @Autowired
-    private AppSkuPriceDao appSkuPriceDao ;
-    @Autowired
-    private StarPropertyDao starPropertyDao ;
+    public AdminProdServiceImpl(AoyiProdIndexXMapper aoyiProdIndexXMapper, ProdExtendXMapper prodExtendMapper, SkuCodeXMapper skuCodeMapper, EquityService equityService, VendorsServiceClient vendorsService, AoyiBaseCategoryXMapper categoryMapper, AoyiBaseBrandMapper brandMapper, AoyiProdIndexMapper mapper, ProductDao productDao, ProductExtendDao productExtendDao, VendorsRpcService vendorsRpcService, CategoryDao categoryDao, StarSkuMapper starSkuMapper, StarSkuDao starSkuDao, StarDetailImgDao starDetailImgDao, AppSkuPriceDao appSkuPriceDao, StarPropertyDao starPropertyDao, ProductHandle productHandle) {
+        this.aoyiProdIndexXMapper = aoyiProdIndexXMapper;
+        this.prodExtendMapper = prodExtendMapper;
+        this.skuCodeMapper = skuCodeMapper;
+        this.equityService = equityService;
+        this.vendorsService = vendorsService;
+        this.categoryMapper = categoryMapper;
+        this.brandMapper = brandMapper;
+        this.mapper = mapper;
+        this.productDao = productDao;
+        this.productExtendDao = productExtendDao;
+        this.vendorsRpcService = vendorsRpcService;
+        this.categoryDao = categoryDao;
+        this.starSkuMapper = starSkuMapper;
+        this.starSkuDao = starSkuDao;
+        this.starDetailImgDao = starDetailImgDao;
+        this.appSkuPriceDao = appSkuPriceDao;
+        this.starPropertyDao = starPropertyDao;
+        this.productHandle = productHandle;
+    }
 
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId) {
         PageBean pageBean = new PageBean();
-        int total = 0;
+        int total ;
         int pageNo = PageBean.getOffset(offset, limit);
-        HashMap map = new HashMap();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("pageNo", pageNo);
         map.put("pageSize",limit);
         map.put("state",state);
@@ -92,11 +96,11 @@ public class AdminProdServiceImpl implements AdminProdService {
         total = aoyiProdIndexXMapper.selectSearchCount(map);
         if (total > 0) {
             aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
-                aoyiProdIndex = ProductHandle.updateImageWithBLOBS(aoyiProdIndex) ;
+                aoyiProdIndex = productHandle.updateImageWithBLOBS(aoyiProdIndex) ;
                 prods.add(aoyiProdIndex);
             });
         }
-        pageBean = PageBean.build(pageBean, prods, total, offset, limit);
+        PageBean.build(pageBean, prods, total, offset, limit);
         return pageBean;
     }
 
@@ -116,7 +120,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         List<AoyiProdIndex> list = pageInfo.getList();
         if (list != null) {
             list.forEach(aoyiProdIndex -> {
-                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
+                aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
                 aoyiProdIndices.add(aoyiProdIndex) ;
             });
         }
@@ -160,7 +164,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         if (total > 0) {
             aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
                 spus.add(aoyiProdIndex.getSkuid()) ;
-                aoyiProdIndex = ProductHandle.updateImageWithBLOBS(aoyiProdIndex) ;
+                aoyiProdIndex = productHandle.updateImageWithBLOBS(aoyiProdIndex) ;
                 List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
                 List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
                 starSkus.forEach(starSku -> {
@@ -226,41 +230,11 @@ public class AdminProdServiceImpl implements AdminProdService {
                 }
             }
         }
-
-        List<AoyiProdIndexX> aoyiProdIndices = new ArrayList<>() ;
         PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
         BeanUtils.copyProperties(pageInfo, pageInfoBean);
         List<AoyiProdIndex> list = pageInfo.getList();
-        if (list != null) {
-            list.forEach(aoyiProdIndex -> {
-                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
-                AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-                BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
-                List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
-                AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-                appSkuPrice.setRenterId(queryBean.getRenterId());
-                List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
-                if (starSkus != null && starSkus.size() >0) {
-                    // 查询 renterId price
-                    starSkus.forEach(starSku -> {
-                        StarSkuBean starSkuBean = new StarSkuBean() ;
-                        BeanUtils.copyProperties(starSku, starSkuBean);
-                        appSkuPrice.setMpu(starSku.getSpuId());
-                        appSkuPrice.setSkuId(starSku.getCode());
-                        List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                        starSkuBean.setAppSkuPriceList(appSkuPrices);
-                        starSkuBeans.add(starSkuBean) ;
-                    });
-                    aoyiProdIndexX.setSkuList(starSkuBeans);
-                } else {
-                    appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-                    appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
-                    List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                    aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
-                }
-                aoyiProdIndices.add(aoyiProdIndexX) ;
-            });
-        }
+        // 关联属性添加
+        List<AoyiProdIndexX> aoyiProdIndices = productHandle.convertProdIndexListToXList(list, queryBean) ;
         pageInfoBean.setList(aoyiProdIndices);
         return pageInfoBean;
     }
@@ -298,7 +272,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
             // 组装数据
             for (AoyiProdIndexX aoyiProdIndexX : aoyiProdIndexXList) {
-                ProductHandle.updateImage(aoyiProdIndexX);
+                productHandle.updateImage(aoyiProdIndexX);
             }
         }
 
@@ -317,7 +291,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             num = 1;
         }
         aoyiProdIndices.forEach(aoyiProdIndex -> {
-            aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
+            aoyiProdIndex = productHandle.updateImage(aoyiProdIndex) ;
             String jsonObject = JSON.toJSONString(aoyiProdIndex) ;
 //            RedisUtil.putRedis(aoyiProdIndex.getSkuid(), jsonObject , RedisUtil.webexpire);
         });
@@ -483,7 +457,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         if (total > 0) {
             aoyiProdIndexXMapper.selectSkuByCouponIdLimit(bean).forEach(aoyiProdIndex -> {
                 ProductInfoBean infoBean = new ProductInfoBean();
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex) ;
+                aoyiProdIndex = productHandle.updateImage(aoyiProdIndex) ;
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 OperaResult operaResult = equityService.findPromotionBySkuId(aoyiProdIndex.getSkuid(), appId);
                 Object object = operaResult.getData().get("result");
@@ -995,7 +969,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     public AoyiProdIndexXWithBLOBs findByMpu(String mpu) {
         AoyiProdIndexXWithBLOBs aoyiProdIndexX = aoyiProdIndexXMapper.selectByMpu(mpu);
         if (aoyiProdIndexX != null) {
-            aoyiProdIndexX = ProductHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
+            aoyiProdIndexX = productHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
         }
         // 查询spu图片
         if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {

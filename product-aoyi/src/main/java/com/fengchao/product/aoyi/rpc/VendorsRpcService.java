@@ -1,11 +1,7 @@
 package com.fengchao.product.aoyi.rpc;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
-import com.fengchao.product.aoyi.rpc.extmodel.RenterCompany;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;

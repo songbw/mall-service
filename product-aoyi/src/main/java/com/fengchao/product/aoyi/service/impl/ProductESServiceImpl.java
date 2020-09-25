@@ -40,12 +40,18 @@ import java.util.*;
 @Slf4j
 public class ProductESServiceImpl implements ProductESService {
 
-    @Autowired
     private RestHighLevelClient restHighLevelClient;
-    @Autowired
     private ESConfig esConfig;
-    @Autowired
     private EquityService equityService ;
+    private ProductHandle productHandle ;
+
+    @Autowired
+    public ProductESServiceImpl(RestHighLevelClient restHighLevelClient, ESConfig esConfig, EquityService equityService, ProductHandle productHandle) {
+        this.restHighLevelClient = restHighLevelClient;
+        this.esConfig = esConfig;
+        this.equityService = equityService;
+        this.productHandle = productHandle;
+    }
 
     @Override
     public boolean save(AoyiProdIndex product) {
@@ -115,7 +121,7 @@ public class ProductESServiceImpl implements ProductESService {
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndexX aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndexX.class) ;
-                aoyiProdIndex = ProductHandle.updateImage(aoyiProdIndex);
+                aoyiProdIndex = productHandle.updateImage(aoyiProdIndex);
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);
@@ -187,7 +193,7 @@ public class ProductESServiceImpl implements ProductESService {
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
-                aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex);
+                aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex);
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);

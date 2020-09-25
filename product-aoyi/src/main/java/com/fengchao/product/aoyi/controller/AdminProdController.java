@@ -40,14 +40,18 @@ import java.util.Map;
 @Slf4j
 public class AdminProdController {
 
-    @Autowired
     private AdminProdService prodService;
-    @Autowired
     private AppSkuPriceService appSkuPriceService ;
-    @Autowired
     private ProductService productService ;
-    @Autowired
     private AppSkuStateService appSkuStateService ;
+
+    @Autowired
+    public AdminProdController(AdminProdService prodService, AppSkuPriceService appSkuPriceService, ProductService productService, AppSkuStateService appSkuStateService) {
+        this.prodService = prodService;
+        this.appSkuPriceService = appSkuPriceService;
+        this.productService = productService;
+        this.appSkuStateService = appSkuStateService;
+    }
 
     @GetMapping("prodList")
     public OperaResult findProdList(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
@@ -99,7 +103,6 @@ public class AdminProdController {
 
         bean.setMerchantHeader(merchantHeader);
         PageBean pageBean = prodService.selectNameList(bean);
-//        PageBean pageBean = prodService.selectProductListPageable(bean);
         result.getData().put("result", pageBean);
 
         log.info("搜索商品 返回:{}", JSONUtil.toJsonString(result));
