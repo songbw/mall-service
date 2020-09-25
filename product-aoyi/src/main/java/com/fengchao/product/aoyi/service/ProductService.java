@@ -72,7 +72,7 @@ public interface ProductService {
 
     OperaResult inventoryAdd(List<InventoryMpus> inventories) ;
 
-    List<AoyiProdIndexX> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) ;
+    List<AoyiProdIndexX> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean, String appId) ;
 
     OperaResponse findSpuAndSku(String mpu, String code) ;
 

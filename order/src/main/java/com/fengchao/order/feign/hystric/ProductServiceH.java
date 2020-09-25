@@ -47,7 +47,7 @@ public class ProductServiceH implements ProductService {
     }
 
     @Override
-    public OperaResponse selectByMpuIdListAndSkuCodes(List<AoyiProdIndex> mpuIdList) {
+    public OperaResponse selectByMpuIdListAndSkuCodes(List<AoyiProdIndex> mpuIdList, String appId) {
         return HystrixDefaultFallback.fallbackResponse(cause);
     }
 

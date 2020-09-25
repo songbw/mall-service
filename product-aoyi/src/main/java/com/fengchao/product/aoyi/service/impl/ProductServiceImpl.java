@@ -641,18 +641,35 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<AoyiProdIndexX> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean) {
+    public List<AoyiProdIndexX> selectProductListByMpuIdListAndCode(List<AoyiProdIndex> bean, String appId) {
+        // 根据APPID查询renterId
+        String renterId = vendorsRpcService.queryRenterId(appId) ;
         // 根据MPU查询商品表
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
+        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+        appSkuPrice.setRenterId(renterId);
         bean.forEach(aoyiProdIndex -> {
             AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
+            appSkuPrice.setMpu(aoyiProdIndex1.getMpu());
+            appSkuPrice.setSkuId(appSkuPrice.getSkuId());
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+            if (appSkuPrices != null && appSkuPrices.size() >0) {
+                aoyiProdIndex1.setPrice(appSkuPrices.get(0).getPrice().toString());
+            }
             aoyiProdIndex1 = ProductHandle.updateImageExample(aoyiProdIndex1) ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
             if (StringUtils.isNotBlank(aoyiProdIndex.getSkuid())) {
                 List<StarSku> starSkus = starSkuDao.selectByCode(aoyiProdIndex.getSkuid()) ;
                 if (starSkus != null && starSkus.size() > 0) {
-                    aoyiProdIndexX.setStarSku(starSkus.get(0));
+                    StarSku starSku = starSkus.get(0) ;
+                    appSkuPrice.setMpu(starSku.getSpuId());
+                    appSkuPrice.setSkuId(starSku.getCode());
+                    List<AppSkuPrice> appSkuPrices1 = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+                    if (appSkuPrices1 != null && appSkuPrices1.size() >0) {
+                        starSku.setPrice(appSkuPrices1.get(0).getPrice().intValue());
+                    }
+                    aoyiProdIndexX.setStarSku(starSku);
                 }
             }
             aoyiProdIndexList.add(aoyiProdIndexX);

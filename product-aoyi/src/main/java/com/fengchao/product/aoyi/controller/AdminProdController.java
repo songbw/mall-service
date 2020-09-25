@@ -6,9 +6,11 @@ import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AppSkuPrice;
+import com.fengchao.product.aoyi.model.AppSkuState;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.AppSkuPriceService;
+import com.fengchao.product.aoyi.service.AppSkuStateService;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -44,6 +46,8 @@ public class AdminProdController {
     private AppSkuPriceService appSkuPriceService ;
     @Autowired
     private ProductService productService ;
+    @Autowired
+    private AppSkuStateService appSkuStateService ;
 
     @GetMapping("prodList")
     public OperaResult findProdList(Integer offset, Integer limit, String state, @RequestHeader("merchant") Integer merchantId, OperaResult result) {
@@ -741,6 +745,11 @@ public class AdminProdController {
         }
         result.setData(prodService.findByMpu(mpu)) ;
         return result;
+    }
+
+    @PutMapping("renter/state")
+    public OperaResponse batchUpdateRenterState(@RequestBody List<AppSkuState> beans) {
+        return appSkuStateService.updateBatchState(beans) ;
     }
 
 }

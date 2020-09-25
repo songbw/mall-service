@@ -160,7 +160,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
             log.info("获取购物车列表 获取购物车数据List<ShoppingCart>:{}", JSONUtil.toJsonString(shoppingCartList));
 
-            List<AoyiProdIndex> aoyiProdIndices = findProductByMpuList(shoppingCartList) ;
+            List<AoyiProdIndex> aoyiProdIndices = findProductByMpuList(shoppingCartList, queryBean.getAppId()) ;
             log.info("获取购物车列表 查询的商品列表List<AoyiProdIndex>:{}", JSONUtil.toJsonString(aoyiProdIndices));
 
             List<CouponAndPromBean>  couponAndPromBeans =  findCouponListByMpuList(aoyiProdIndices, queryBean.getAppId()) ;
@@ -230,7 +230,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return null ;
     }
 
-    private List<AoyiProdIndex> findProductByMpuList(List<ShoppingCart> shoppingCarts) {
+    private List<AoyiProdIndex> findProductByMpuList(List<ShoppingCart> shoppingCarts, String appId) {
         List<AoyiProdIndex> mpus = new ArrayList<>();
         shoppingCarts.forEach(shoppingCart -> {
             AoyiProdIndex aoyiProdIndex = new AoyiProdIndex() ;
@@ -238,7 +238,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             aoyiProdIndex.setSkuid(shoppingCart.getSkuId());
             mpus.add(aoyiProdIndex) ;
         });
-        OperaResponse result = productService.selectByMpuIdListAndSkuCodes(mpus);
+        OperaResponse result = productService.selectByMpuIdListAndSkuCodes(mpus, appId);
         if (result.getCode() == 200) {
 //            Map<String, Object> data = result.getData();
             Object object = result.getData();

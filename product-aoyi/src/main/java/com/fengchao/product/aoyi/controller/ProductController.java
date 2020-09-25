@@ -239,7 +239,7 @@ public class ProductController {
      * @throws ProductException
      */
     @PostMapping("/sku/mpuIds")
-    private OperaResponse selectByMpuIdListAndSkuCodes(@RequestBody List<AoyiProdIndex> mpuIdList) {
+    private OperaResponse selectByMpuIdListAndSkuCodes(@RequestHeader("appId") String appId, @RequestBody List<AoyiProdIndex> mpuIdList) {
         OperaResponse response = new OperaResponse() ;
         if (mpuIdList.size() > 100) {
             response.setCode(200001);
@@ -248,7 +248,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndexX> productInfoBeanList = service.selectProductListByMpuIdListAndCode(mpuIdList);
+            List<AoyiProdIndexX> productInfoBeanList = service.selectProductListByMpuIdListAndCode(mpuIdList, appId);
 
             response.setData(productInfoBeanList);
         } catch (Exception e) {

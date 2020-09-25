@@ -70,10 +70,11 @@ public interface ProductService {
      * 根据mpu,code集合查询产品信息
      *
      * @param mpuIdList
+     * @param appId
      * @return
      */
     @RequestMapping(value = "/prod/sku/mpuIds", method = RequestMethod.GET)
-    OperaResponse selectByMpuIdListAndSkuCodes(@RequestBody List<AoyiProdIndex> mpuIdList);
+    OperaResponse selectByMpuIdListAndSkuCodes(@RequestBody List<AoyiProdIndex> mpuIdList, @RequestHeader("appId") String appId);
 
     @RequestMapping(value = "/prod/spu", method = RequestMethod.GET)
     OperaResponse findSpu(@RequestParam("mpu") String mpu, @RequestParam("code") String code);
