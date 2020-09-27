@@ -42,14 +42,12 @@ public class AdminProdController {
 
     private AdminProdService prodService;
     private AppSkuPriceService appSkuPriceService ;
-    private ProductService productService ;
     private AppSkuStateService appSkuStateService ;
 
     @Autowired
-    public AdminProdController(AdminProdService prodService, AppSkuPriceService appSkuPriceService, ProductService productService, AppSkuStateService appSkuStateService) {
+    public AdminProdController(AdminProdService prodService, AppSkuPriceService appSkuPriceService, AppSkuStateService appSkuStateService) {
         this.prodService = prodService;
         this.appSkuPriceService = appSkuPriceService;
-        this.productService = productService;
         this.appSkuStateService = appSkuStateService;
     }
 

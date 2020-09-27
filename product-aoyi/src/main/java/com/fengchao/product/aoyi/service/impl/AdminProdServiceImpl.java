@@ -184,51 +184,13 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public PageInfo<AoyiProdIndexX> selectNameListV2(ProductQueryBean queryBean) {
         PageInfo<AoyiProdIndexX> pageInfoBean = new PageInfo<>() ;
-        List<Integer> merchantIds = null ;
-        if ("0".equals(queryBean.getRenterHeader())) {
-            // 平台管理员
-            // 获取所有租户下的所有商户信息
-            if (StringUtils.isNotBlank(queryBean.getAppId())) {
-                merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
-            } else {
-                if (StringUtils.isNotBlank(queryBean.getRenterId())) {
-                    merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterId()) ;
-                } else {
-                    merchantIds = vendorsRpcService.queryRenterMerhantList("") ;
-                }
-            }
-            if (merchantIds == null || merchantIds.size() == 0) {
-                return pageInfoBean ;
-            }
-            //  判断商户中是否存在merchantId
-            if (merchantIds.contains(queryBean.getMerchantId()))  {
-                queryBean.setMerchantIds(null);
-            } else {
-                queryBean.setMerchantIds(merchantIds);
-            }
-        } else {
-            // 租户
-            if (queryBean.getMerchantHeader() == 0) {
-                // 获取当前租户下的所有商户信息
-
-                if (StringUtils.isNotBlank(queryBean.getAppId())) {
-                    merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
-                } else {
-                    merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
-                }
-                if (merchantIds == null || merchantIds.size() == 0) {
-                    return pageInfoBean ;
-                }
-                queryBean.setMerchantIds(merchantIds);
-            } else {
-                // 租户的商户
-                merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
-                if (merchantIds.contains(queryBean.getMerchantHeader())) {
-                    queryBean.setMerchantId(queryBean.getMerchantHeader());
-                } else {
-                    return pageInfoBean ;
-                }
-            }
+        // 根据系统权限设置merchantIds
+        productHandle.setMerchantListForProductQueryBean(queryBean);
+        if (queryBean.getMerchantIds() == null || queryBean.getMerchantIds().size() == 0) {
+            return pageInfoBean ;
+        }
+        if (!queryBean.getMerchantIds().contains(queryBean.getMerchantHeader())) {
+            return pageInfoBean ;
         }
         PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
         BeanUtils.copyProperties(pageInfo, pageInfoBean);
@@ -966,56 +928,12 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public AoyiProdIndexXWithBLOBs findByMpu(String mpu) {
-        AoyiProdIndexXWithBLOBs aoyiProdIndexX = aoyiProdIndexXMapper.selectByMpu(mpu);
-        if (aoyiProdIndexX != null) {
-            aoyiProdIndexX = productHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
+    public AoyiProdIndexX findByMpu(String mpu) {
+        AoyiProdIndexXWithBLOBs prodIndexXWithBLOBs = aoyiProdIndexXMapper.selectByMpu(mpu);
+        AoyiProdIndexX prodIndexX = prodIndexXWithBLOBs ;
+        if (prodIndexX != null) {
+            productHandle.setProductX(prodIndexX, ""); ;
         }
-        // 查询spu图片
-        if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
-            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
-            String imageUrl = "" ;
-            if (starDetailImgs != null && starDetailImgs.size() > 0) {
-                for (int i = 0; i < starDetailImgs.size(); i++) {
-                    if (i == 0) {
-                        imageUrl = starDetailImgs.get(i).getImgUrl() ;
-                    } else {
-                        imageUrl = imageUrl + ";" + starDetailImgs.get(i).getImgUrl() ;
-                    }
-                }
-                aoyiProdIndexX.setImagesUrl(imageUrl);
-            }
-        }
-        // 查询spu属性
-        List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(aoyiProdIndexX.getId(), 0) ;
-        aoyiProdIndexX.setProperties(starProperties);
-        // 查询sku
-        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
-        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
-        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-//        appSkuPrice.setRenterId(queryBean.getRenterId());
-        if (starSkus != null && starSkus.size() > 0) {
-            starSkus.forEach(starSku -> {
-                StarSkuBean starSkuBean = new StarSkuBean() ;
-                BeanUtils.copyProperties(starSku, starSkuBean);
-                // 查询sku属性
-                List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
-                starSkuBean.setPropertyList(skuProperties);
-                // 租户商品价格
-                appSkuPrice.setMpu(starSku.getSpuId());
-                appSkuPrice.setSkuId(starSku.getCode());
-                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                starSkuBean.setAppSkuPriceList(appSkuPrices);
-                starSkuBeans.add(starSkuBean) ;
-            });
-        } else {
-            appSkuPrice.setMpu(aoyiProdIndexX.getMpu());
-            appSkuPrice.setSkuId(aoyiProdIndexX.getSkuid());
-            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-            aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
-        }
-
-        aoyiProdIndexX.setSkuList(starSkuBeans);
-        return aoyiProdIndexX;
+        return prodIndexX;
     }
 }

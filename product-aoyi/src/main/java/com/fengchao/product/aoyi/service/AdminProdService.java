@@ -5,7 +5,6 @@ import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
-import com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.github.pagehelper.PageInfo;
 
@@ -85,5 +84,5 @@ public interface AdminProdService {
      */
     OperaResponse updateBatch(List<AoyiProdIndex> beans);
 
-    AoyiProdIndexXWithBLOBs findByMpu(String mpu) ;
+    AoyiProdIndexX findByMpu(String mpu) ;
 }

@@ -2,11 +2,11 @@ package com.fengchao.product.aoyi.utils;
 
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StarSkuBean;
-import com.fengchao.product.aoyi.dao.AppSkuPriceDao;
-import com.fengchao.product.aoyi.dao.AppSkuStateDao;
-import com.fengchao.product.aoyi.dao.StarSkuDao;
+import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.model.*;
+import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,12 +21,18 @@ public class ProductHandle {
     private StarSkuDao starSkuDao ;
     private AppSkuPriceDao appSkuPriceDao ;
     private AppSkuStateDao appSkuStateDao ;
+    private StarDetailImgDao starDetailImgDao ;
+    private StarPropertyDao starPropertyDao ;
+    private VendorsRpcService vendorsRpcService;
 
     @Autowired
-    public ProductHandle(StarSkuDao starSkuDao, AppSkuPriceDao appSkuPriceDao, AppSkuStateDao appSkuStateDao) {
+    public ProductHandle(StarSkuDao starSkuDao, AppSkuPriceDao appSkuPriceDao, AppSkuStateDao appSkuStateDao, StarDetailImgDao starDetailImgDao,StarPropertyDao starPropertyDao, VendorsRpcService vendorsRpcService) {
         this.starSkuDao = starSkuDao;
         this.appSkuPriceDao = appSkuPriceDao;
         this.appSkuStateDao = appSkuStateDao;
+        this.starDetailImgDao = starDetailImgDao;
+        this.starPropertyDao = starPropertyDao ;
+        this.vendorsRpcService = vendorsRpcService;
     }
 
     public AoyiProdIndexX updateImage(AoyiProdIndexX aoyiProdIndexX) {
@@ -43,6 +49,27 @@ public class ProductHandle {
             }
         }
         return aoyiProdIndexX;
+    }
+
+    /**
+     * 获取多sku的商品主图
+     * @param aoyiProdIndexX
+     */
+    public void getStarSkuImagesUrl(AoyiProdIndexX aoyiProdIndexX) {
+        if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
+            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
+            String imageUrl = "" ;
+            if (starDetailImgs != null && starDetailImgs.size() > 0) {
+                for (int i = 0; i < starDetailImgs.size(); i++) {
+                    if (i == 0) {
+                        imageUrl = starDetailImgs.get(i).getImgUrl() ;
+                    } else {
+                        imageUrl = imageUrl + ";" + starDetailImgs.get(i).getImgUrl() ;
+                    }
+                }
+                aoyiProdIndexX.setImagesUrl(imageUrl);
+            }
+        }
     }
 
     public AoyiProdIndex updateImageExample(AoyiProdIndex aoyiProdIndex) {
@@ -87,31 +114,63 @@ public class ProductHandle {
         List<AoyiProdIndexX> prodIndexXList = new ArrayList<>() ;
         if (prodIndexList != null) {
             prodIndexList.forEach(aoyiProdIndex -> {
-                aoyiProdIndex = updateImageExample(aoyiProdIndex) ;
-                AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-                BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
-                // 添加star sku列表
-                addStarSkuList(aoyiProdIndexX, queryBean) ;
-                prodIndexXList.add(aoyiProdIndexX) ;
+                // 获取全部商品信息
+                prodIndexXList.add(convertProductXByProd(aoyiProdIndex, queryBean.getRenterId())) ;
             });
         }
         return prodIndexXList ;
     }
 
     /**
+     * 获取商品详情
+     * @param prodIndex 商品信息
+     * @param renterId  租户ID
+     * @return 商品详情
+     */
+    public AoyiProdIndexX convertProductXByProd(AoyiProdIndex prodIndex, String renterId) {
+        AoyiProdIndexX prodIndexX = new AoyiProdIndexX() ;
+        BeanUtils.copyProperties(prodIndex, prodIndexX);
+        // 图片全路径
+        updateImage(prodIndexX) ;
+        // 获取多sku主图信息
+        getStarSkuImagesUrl(prodIndexX);
+        // 添加star sku列表
+        addStarSkuList(prodIndexX, renterId) ;
+        // 添加property
+        setPropertyList(prodIndexX);
+        return prodIndexX;
+    }
+
+    /**
+     * 设置ProductX
+     * @param prodIndexX 商品详情
+     * @param renterId  租户ID
+     */
+    public void setProductX(AoyiProdIndexX prodIndexX, String renterId) {
+        // 图片全路径
+        updateImage(prodIndexX) ;
+        // 获取多sku主图信息
+        getStarSkuImagesUrl(prodIndexX);
+        // 添加star sku列表
+        addStarSkuList(prodIndexX, renterId) ;
+        // 添加property
+        setPropertyList(prodIndexX);
+    }
+
+    /**
      * 为MPU 添加 SKU
      * @param prodIndexX 源MPU
-     * @param queryBean  查询条件
+     * @param renterId  租户ID
      */
-    private void addStarSkuList(AoyiProdIndexX prodIndexX, ProductQueryBean queryBean) {
-        if (!prodIndexX.getSkuid().equals(prodIndexX.getMpu())) {
+    private void addStarSkuList(AoyiProdIndexX prodIndexX, String renterId) {
+        if (prodIndexX.getType() == 2) {
             // 添加 star sku
-            prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), queryBean.getRenterId()));
+            prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
         } else {
             // 租户价格列表
-            prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(queryBean.getRenterId(), prodIndexX.getMpu()));
+            prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
             // 租户状态列表
-            prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(queryBean.getRenterId(), prodIndexX.getMpu()));
+            prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(renterId, prodIndexX.getMpu()));
         }
     }
 
@@ -192,5 +251,60 @@ public class ProductHandle {
         appSkuState.setMpu(mpu);
         appSkuState.setSkuId(mpu);
         return appSkuStateDao.selectByRenterIdAndMpuAndSku(appSkuState) ;
+    }
+
+    /**
+     * 设置商品property
+     * @param prodIndexX 商品详情
+     */
+    private void setPropertyList(AoyiProdIndexX prodIndexX) {
+        if (prodIndexX.getType() == 2) {
+            List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(prodIndexX.getId(), 0) ;
+            prodIndexX.setProperties(starProperties);
+        }
+    }
+
+    /**
+     * 根据平台权限设置merchant list 参数
+     * @param queryBean  产品查询条件
+     */
+    public void setMerchantListForProductQueryBean(ProductQueryBean queryBean) {
+        List<Integer> merchantIds = null ;
+        if ("0".equals(queryBean.getRenterHeader())) {
+            // 平台管理员
+            // 获取所有租户下的所有商户信息
+            if (StringUtils.isNotBlank(queryBean.getAppId())) {
+                merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
+            } else {
+                if (StringUtils.isNotBlank(queryBean.getRenterId())) {
+                    merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterId()) ;
+                } else {
+                    merchantIds = vendorsRpcService.queryRenterMerhantList("") ;
+                }
+            }
+            //  判断商户中是否存在merchantId
+            if (merchantIds.contains(queryBean.getMerchantId()))  {
+                queryBean.setMerchantIds(null);
+            } else {
+                queryBean.setMerchantIds(merchantIds);
+            }
+        } else {
+            // 租户
+            if (queryBean.getMerchantHeader() == 0) {
+                // 获取当前租户下的所有商户信息
+                if (StringUtils.isNotBlank(queryBean.getAppId())) {
+                    merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
+                } else {
+                    merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
+                }
+                queryBean.setMerchantIds(merchantIds);
+            } else {
+                // 租户的商户
+                merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
+                if (merchantIds.contains(queryBean.getMerchantHeader())) {
+                    queryBean.setMerchantId(queryBean.getMerchantHeader());
+                }
+            }
+        }
     }
 }
