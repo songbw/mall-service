@@ -2,6 +2,8 @@ package com.fengchao.product.aoyi.utils;
 
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StarSkuBean;
+import com.fengchao.product.aoyi.config.ESConfig;
+import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
@@ -9,11 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EnableConfigurationProperties({ESConfig.class})
 @Service
 @Slf4j
 public class ProductHandle {
@@ -24,15 +28,17 @@ public class ProductHandle {
     private StarDetailImgDao starDetailImgDao ;
     private StarPropertyDao starPropertyDao ;
     private VendorsRpcService vendorsRpcService;
+    private ESConfig config;
 
     @Autowired
-    public ProductHandle(StarSkuDao starSkuDao, AppSkuPriceDao appSkuPriceDao, AppSkuStateDao appSkuStateDao, StarDetailImgDao starDetailImgDao,StarPropertyDao starPropertyDao, VendorsRpcService vendorsRpcService) {
+    public ProductHandle(StarSkuDao starSkuDao, AppSkuPriceDao appSkuPriceDao, AppSkuStateDao appSkuStateDao, StarDetailImgDao starDetailImgDao,StarPropertyDao starPropertyDao, VendorsRpcService vendorsRpcService, ESConfig config) {
         this.starSkuDao = starSkuDao;
         this.appSkuPriceDao = appSkuPriceDao;
         this.appSkuStateDao = appSkuStateDao;
         this.starDetailImgDao = starDetailImgDao;
         this.starPropertyDao = starPropertyDao ;
         this.vendorsRpcService = vendorsRpcService;
+        this.config = config ;
     }
 
     public AoyiProdIndexX updateImage(AoyiProdIndexX aoyiProdIndexX) {
@@ -306,5 +312,33 @@ public class ProductHandle {
                 }
             }
         }
+    }
+
+    /**
+     * 客户端获取商户相关信息并设置产品查询bean
+     * @param queryBean 产品查询bean
+     */
+    public void setClientProductQueryBean(ProductQueryBean queryBean) {
+        String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
+        queryBean.setRenterId(renterId);
+        // 获取可读取的商户配置
+        List<Integer> merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
+        queryBean.setMerchantIds(merchantIds);
+        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
+        List<String> codes = new ArrayList<>() ;
+        if (merchantCodeBean != null) {
+            codes = merchantCodeBean.getCodes() ;
+        }
+        queryBean.setMerchantCodes(codes);
+    }
+
+    /**
+     * 配置文件中获取端的 code配置
+     * @param appId
+     * @return
+     */
+    private MerchantCodeBean getMerchantCodesByAppId(String appId) {
+        log.info(JSONUtil.toJsonString(config.getRegion()));
+        return  config.getRegion().get(appId) ;
     }
 }

@@ -3,7 +3,6 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
-import com.fengchao.product.aoyi.config.ESConfig;
 import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.constants.ProductConstant;
 import com.fengchao.product.aoyi.dao.*;
@@ -28,7 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@EnableConfigurationProperties({ESConfig.class})
 @Service
 @Slf4j
 public class ProductServiceImpl implements ProductService {
@@ -56,13 +53,12 @@ public class ProductServiceImpl implements ProductService {
     private StarSkuDao starSkuDao ;
     private AoyiClientRpcService aoyiClientRpcService;
     private WeipinhuiAddressDao weipinhuiAddressDao;
-    private ESConfig config;
     private AppSkuPriceDao appSkuPriceDao ;
     private VendorsRpcService vendorsRpcService;
     private ProductHandle productHandle ;
 
     @Autowired
-    public ProductServiceImpl(AoyiProdIndexXMapper mapper, AoyiClientService aoyiClientService, EquityService equityService, ProductDao productDao, CategoryService categoryService, ESService esService, InventoryDao inventoryDao, StarDetailImgDao starDetailImgDao, StarPropertyDao starPropertyDao, StarSkuDao starSkuDao, AoyiClientRpcService aoyiClientRpcService, WeipinhuiAddressDao weipinhuiAddressDao, ESConfig config, AppSkuPriceDao appSkuPriceDao, VendorsRpcService vendorsRpcService, ProductHandle productHandle) {
+    public ProductServiceImpl(AoyiProdIndexXMapper mapper, AoyiClientService aoyiClientService, EquityService equityService, ProductDao productDao, CategoryService categoryService, ESService esService, InventoryDao inventoryDao, StarDetailImgDao starDetailImgDao, StarPropertyDao starPropertyDao, StarSkuDao starSkuDao, AoyiClientRpcService aoyiClientRpcService, WeipinhuiAddressDao weipinhuiAddressDao, AppSkuPriceDao appSkuPriceDao, VendorsRpcService vendorsRpcService, ProductHandle productHandle) {
         this.mapper = mapper;
         this.aoyiClientService = aoyiClientService;
         this.equityService = equityService;
@@ -75,7 +71,6 @@ public class ProductServiceImpl implements ProductService {
         this.starSkuDao = starSkuDao;
         this.aoyiClientRpcService = aoyiClientRpcService;
         this.weipinhuiAddressDao = weipinhuiAddressDao;
-        this.config = config;
         this.appSkuPriceDao = appSkuPriceDao;
         this.vendorsRpcService = vendorsRpcService;
         this.productHandle = productHandle;
@@ -85,14 +80,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
         // 根据APPID查询renterId
-        String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
-        // 获取可读取的商户配置
-        List<Integer> merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
-        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
-        List<String> codes = new ArrayList<>() ;
-        if (merchantCodeBean != null) {
-            codes = merchantCodeBean.getCodes() ;
-        }
+        productHandle.setClientProductQueryBean(queryBean);
         PageBean pageBean = new PageBean();
         int total = 0;
         int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
@@ -107,16 +95,16 @@ public class ProductServiceImpl implements ProductService {
             map.put("priceOrder", queryBean.getPriceOrder());
         if(queryBean.getAppId()!=null&&!queryBean.getAppId().equals(""))
             map.put("appId", "%" + queryBean.getAppId() + "%");
-        if (codes != null && codes.size()>0) {
-            map.put("merchantCodes", codes) ;
+        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size()>0) {
+            map.put("merchantCodes", queryBean.getMerchantCodes()) ;
         }
-        if (codes != null && codes.size()>0) {
-            map.put("merchantIds", merchantIds) ;
+        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size()>0) {
+            map.put("merchantIds", queryBean.getMerchantIds()) ;
         }
         List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-        appSkuPrice.setRenterId(renterId);
+        appSkuPrice.setRenterId(queryBean.getRenterId());
         if (total > 0) {
             mapper.selectLimit(map).forEach(aoyiProdIndex -> {
                 // 查询star_sku表
@@ -143,12 +131,7 @@ public class ProductServiceImpl implements ProductService {
         // TODO 根据renderId获取商户ID列表，并设置queryBean
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
         // 获取可读取的商户配置
-        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
-        List<String> merchantCodes = new ArrayList<>() ;
-        if (merchantCodeBean != null) {
-            merchantCodes = merchantCodeBean.getCodes() ;
-        }
-        log.debug("codes: {}", JSONUtil.toJsonString(merchantCodes));
+        productHandle.setClientProductQueryBean(queryBean);
         PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectPageable(queryBean);
         log.debug("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
@@ -175,21 +158,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageInfo<ProductInfoBean> findListByCategories(ProductQueryBean queryBean) throws ProductException {
-        // TODO 根据renderId获取商户ID列表，并设置queryBean,
         // 根据APPID查询renterId
-        String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
-        // 获取可读取的商户配置
-        List<Integer> merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
-        queryBean.setMerchantIds(merchantIds);
+        productHandle.setClientProductQueryBean(queryBean);
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
-        // 获取可读取的商户配置
-        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
-        List<String> codes = new ArrayList<>() ;
-        if (merchantCodeBean != null) {
-            codes = merchantCodeBean.getCodes() ;
-        }
-        log.debug("codes: {}", JSONUtil.toJsonString(codes));
-        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, codes);
+        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, queryBean.getMerchantCodes());
         log.debug("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
         productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
@@ -202,7 +174,7 @@ public class ProductServiceImpl implements ProductService {
         List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
         List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
         AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-        appSkuPrice.setRenterId(renterId);
+        appSkuPrice.setRenterId(queryBean.getRenterId());
         aoyiProdIndices.forEach(aoyiProdIndex -> {
             // 查询star_sku表
             appSkuPrice.setMpu(aoyiProdIndex.getMpu());
@@ -762,11 +734,6 @@ public class ProductServiceImpl implements ProductService {
         productInfoBean.setTaxRate(aoyiProdIndex.getTaxRate());
 
         return productInfoBean;
-    }
-
-    private MerchantCodeBean getMerchantCodesByAppId(String appId) {
-        log.info(JSONUtil.toJsonString(config.getRegion()));
-        return  config.getRegion().get(appId) ;
     }
 
 }
