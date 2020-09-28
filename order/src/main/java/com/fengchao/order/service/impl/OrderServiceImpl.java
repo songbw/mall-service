@@ -19,6 +19,7 @@ import com.fengchao.order.feign.*;
 import com.fengchao.order.mapper.*;
 import com.fengchao.order.model.*;
 import com.fengchao.order.rpc.AoyiRpcService;
+import com.fengchao.order.rpc.VendorsRpcService;
 import com.fengchao.order.rpc.extmodel.weipinhui.AoyiLogisticsResDto;
 import com.fengchao.order.service.OrderService;
 import com.fengchao.order.service.weipinhui.WeipinhuiOrderService;
@@ -101,6 +102,8 @@ public class OrderServiceImpl implements OrderService {
     private KuaidiCodeDao kuaidiCodeDao;
     @Autowired
     private GuanaitongClientService guanaitongClientService ;
+    @Autowired
+    private VendorsRpcService vendorsRpcService;
 
     @Transactional
     @Override
@@ -852,6 +855,7 @@ public class OrderServiceImpl implements OrderService {
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean searchOrderList(OrderBean orderBean) {
+        vendorsRpcService.setMerchantListForOrderBean(orderBean);
         PageBean pageBean = new PageBean();
         int total = 0;
         int offset = PageBean.getOffset(orderBean.getPageIndex(), orderBean.getPageSize());
@@ -881,7 +885,7 @@ public class OrderServiceImpl implements OrderService {
         if(orderBean.getCompleteDateEnd() != null && !orderBean.getCompleteDateEnd().equals("")){
             map.put("completeDateEnd", orderBean.getCompleteDateEnd() + " 23:59:59");
         }
-
+        map.put("merchantIds", orderBean.getMerchantIds());
         logger.info("查询订单 数据库查询入参:{}", JSONUtil.toJsonString(map));
 
         List<OrderDetailBean> orderBeans = new ArrayList<>();

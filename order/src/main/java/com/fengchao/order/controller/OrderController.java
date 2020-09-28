@@ -104,12 +104,15 @@ public class OrderController {
 
     @PostMapping("/searchOrder")
     private OperaResult searchOrderList(@RequestBody OrderBean orderBean,
-                                        @RequestHeader("merchant") Integer merchantId, OperaResult result) {
-        log.info("查询订单 入参 OrderBean:{}, merchantId:{}", JSONUtil.toJsonString(orderBean), merchantId);
+                                        @RequestHeader("merchant") Integer merchantHeader, @RequestHeader("renter") String renterHeader) {
+        OperaResult result = new OperaResult() ;
+        log.info("查询订单 入参 OrderBean:{}, merchantHeader:{}, renterHeader: {}", JSONUtil.toJsonString(orderBean), merchantHeader, renterHeader);
 
-        if (merchantId != null && merchantId > 0) {
-            orderBean.setMerchantId(merchantId);
-        }
+//        if (merchantHeader != null && merchantHeader > 0) {
+//            orderBean.setMerchantId(merchantHeader);
+//        }
+        orderBean.setRenterHeader(renterHeader);
+        orderBean.setMerchantHeader(merchantHeader);
         result.getData().put("result", service.searchOrderList(orderBean)) ;
 
         log.info("查询订单 返回:{}", JSONUtil.toJsonString(result));

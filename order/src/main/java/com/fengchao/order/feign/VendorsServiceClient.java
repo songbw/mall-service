@@ -4,8 +4,10 @@ import com.fengchao.order.bean.OperaResponse;
 import com.fengchao.order.feign.hystric.VendorsServiceClientFallbackFactory;
 import com.fengchao.order.rpc.extmodel.SysCompanyX;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,4 +20,16 @@ public interface VendorsServiceClient {
 
     @RequestMapping(value = "/vendors/company/list", method = RequestMethod.GET)
     OperaResponse<List<SysCompanyX>> queryAllCompanyList();
+
+    @RequestMapping(value = "/renter/api/companies", method = RequestMethod.GET)
+    OperaResponse<List<Integer>> queryRenterMerchantList(@RequestParam("renterId") String renterId);
+
+    @RequestMapping(value = "/renter/api/renterId", method = RequestMethod.GET)
+    OperaResponse<String> queryRenterId(@RequestParam("appId") String appId );
+
+    @RequestMapping(value = "/renter/api/appIdList", method = RequestMethod.GET)
+    OperaResponse<List<String>> queryAppIdList(@RequestParam("renterId") String renterId);
+
+    @RequestMapping(value = "/renter/api/companiesByAppId/{appId}", method = RequestMethod.GET)
+    OperaResponse<List<Integer>> queryAppIdMerchantList(@PathVariable("appId") String appId);
 }

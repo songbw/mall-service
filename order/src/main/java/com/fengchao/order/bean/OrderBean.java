@@ -42,4 +42,8 @@ public class OrderBean implements Serializable {
     private String completeDateEnd;
     private String appId;
     private String receiverName;
+    private Integer merchantHeader;
+    private String renterHeader;
+    private List<Integer> merchantIds ;
+    private String renterId ;
 }
