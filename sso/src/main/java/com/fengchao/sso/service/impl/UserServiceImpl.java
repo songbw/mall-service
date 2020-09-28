@@ -4,6 +4,7 @@ import com.fengchao.sso.bean.UserBean;
 import com.fengchao.sso.dao.UserDao;
 import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.model.SUser;
+import com.fengchao.sso.rpc.VendorsRpcService;
 import com.fengchao.sso.util.OperaResult;
 import com.github.pagehelper.PageHelper;
 import com.fengchao.sso.mapper.UserMapper;
@@ -34,6 +35,8 @@ public class UserServiceImpl implements IUserService {
     private PinganClientService pinganClientService;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private VendorsRpcService vendorsRpcService ;
 
     public User selectById(Integer id) {
         return mapper.selectByPrimaryKey(id);
@@ -72,8 +75,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public PageInfo<SUser> selectUser(Integer page, Integer limit, String name, String sex, String telephone, String appId, String openId, String nickName) {
-        PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit, name, sex, telephone, appId, openId, nickName);
+    public PageInfo<SUser> selectUser(String renterHeader, Integer page, Integer limit, String name, String sex, String telephone, String appId, String openId, String nickName) {
+        List<String> appIds = vendorsRpcService.queryAppIdList(renterHeader) ;
+        PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit, name, sex, telephone, appId, openId, nickName, appIds);
         return users;
     }
 

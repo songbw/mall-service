@@ -21,7 +21,7 @@ public interface IUserService {
 
     User selectUserByOpenId(String openId, String iAppId);
 
-    PageInfo<SUser> selectUser(Integer page, Integer limit, String name, String sex, String telephone, String appId, String openId, String nickName);
+    PageInfo<SUser> selectUser(String renterHeader, Integer page, Integer limit, String name, String sex, String telephone, String appId, String openId, String nickName);
 
     int updateByUsername(UserBean userBean);
 

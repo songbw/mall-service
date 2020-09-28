@@ -33,7 +33,7 @@ public class UserDao {
      * @param pageSize
      * @return
      */
-    public PageInfo<SUser> selectUserByPageable(Integer pageNo, Integer pageSize, String name, String sex, String telephone, String appId, String openId, String nickName) {
+    public PageInfo<SUser> selectUserByPageable(Integer pageNo, Integer pageSize, String name, String sex, String telephone, String appId, String openId, String nickName, List<String> appIds) {
         SUserExample userExample = new SUserExample();
         SUserExample.Criteria criteria = userExample.createCriteria();
         if (name != null && (!"".equals(name))) {
@@ -53,6 +53,9 @@ public class UserDao {
         }
         if (nickName != null && (!"".equals(nickName))) {
             criteria.andNicknameLike("%" + nickName + "%");
+        }
+        if (appIds != null && appIds.size() > 0) {
+            criteria.andIAppIdIn(appIds) ;
         }
         PageHelper.startPage(pageNo, pageSize);
         List<SUser> userList = mapper.selectByExample(userExample);
