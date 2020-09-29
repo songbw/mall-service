@@ -111,6 +111,5 @@ public class VendorsRpcService {
             log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
         }
         return renterCompanyList;
-
     }
 }

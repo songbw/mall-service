@@ -189,7 +189,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         if (queryBean.getMerchantIds() == null || queryBean.getMerchantIds().size() == 0) {
             return pageInfoBean ;
         }
-        if (!queryBean.getMerchantIds().contains(queryBean.getMerchantHeader())) {
+        if (!queryBean.getMerchantIds().contains(queryBean.getMerchantHeader()) && (!"0".equals(queryBean.getRenterHeader())) && queryBean.getMerchantHeader() != 0) {
             return pageInfoBean ;
         }
         PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
