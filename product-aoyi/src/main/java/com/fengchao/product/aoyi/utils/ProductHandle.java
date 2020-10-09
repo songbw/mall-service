@@ -342,6 +342,7 @@ public class ProductHandle {
      * @param queryBean  产品查询条件
      */
     public void setMerchantListForProductQueryBean(ProductQueryBean queryBean) {
+        log.info("setMerchantListForProductQueryBean 入参：{}",queryBean);
         List<Integer> merchantIds = null ;
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
@@ -379,6 +380,7 @@ public class ProductHandle {
                 }
             }
         }
+        log.info("setMerchantListForProductQueryBean  返回值：{}", queryBean);
     }
 
     /**
