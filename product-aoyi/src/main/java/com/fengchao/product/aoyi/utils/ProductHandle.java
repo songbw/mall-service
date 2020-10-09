@@ -356,6 +356,9 @@ public class ProductHandle {
                     merchantIds = vendorsRpcService.queryRenterMerhantList("") ;
                 }
             }
+            if (merchantIds == null || merchantIds.size() == 0) {
+                queryBean = null ;
+            }
             //  判断商户中是否存在merchantId
             if (merchantIds.contains(queryBean.getMerchantId()))  {
                 queryBean.setMerchantIds(null);
@@ -370,6 +373,9 @@ public class ProductHandle {
                     merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
                 } else {
                     merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
+                }
+                if (merchantIds == null || merchantIds.size() == 0) {
+                    queryBean = null;
                 }
                 queryBean.setMerchantIds(merchantIds);
             } else {

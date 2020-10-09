@@ -186,10 +186,7 @@ public class AdminProdServiceImpl implements AdminProdService {
         PageInfo<AoyiProdIndexX> pageInfoBean = new PageInfo<>() ;
         // 根据系统权限设置merchantIds
         productHandle.setMerchantListForProductQueryBean(queryBean);
-        if (queryBean.getMerchantIds() == null || queryBean.getMerchantIds().size() == 0) {
-            return pageInfoBean ;
-        }
-        if ((!"0".equals(queryBean.getRenterHeader())) && queryBean.getMerchantHeader() != 0  &&  !queryBean.getMerchantIds().contains(queryBean.getMerchantHeader())) {
+        if (queryBean == null) {
             return pageInfoBean ;
         }
         PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
