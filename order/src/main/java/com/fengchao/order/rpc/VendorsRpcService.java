@@ -101,45 +101,38 @@ public class VendorsRpcService {
 
     }
 
+    public List<String> queryAppIdListByRenterId(String renterId) {
+        List<String> appIds = new ArrayList<>();
+
+        OperaResponse<List<String>> response = vendorsServiceClient.queryAppIdList(renterId) ;
+
+        log.info("vendor 服务 queryAppIdListByRenterId 入参renterId： {},  返回值：{}",renterId, JSONUtil.toJsonString(response));
+        if (response.getCode() == 200) {
+            appIds = response.getData() ;
+        } else {
+            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+        }
+        return appIds;
+    }
+
     public void setMerchantListForOrderBean(OrderBean queryBean) {
         log.info("setMerchantListForOrderBean 入参：{}", JSONUtil.toJsonString(queryBean));
-        List<Integer> merchantIds = null ;
+        List<String> appIds = null ;
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
             // 获取所有租户下的所有商户信息
-            if (StringUtils.isNotBlank(queryBean.getAppId())) {
-                merchantIds = queryMerhantListByAppId(queryBean.getAppId()) ;
-            } else {
+            if (StringUtils.isBlank(queryBean.getAppId())) {
                 if (StringUtils.isNotBlank(queryBean.getRenterId())) {
-                    merchantIds = queryRenterMerhantList(queryBean.getRenterId()) ;
+                    appIds = queryAppIdListByRenterId(queryBean.getRenterId()) ;
                 } else {
-                    merchantIds = queryRenterMerhantList("") ;
+                    appIds = queryAppIdListByRenterId("") ;
                 }
-            }
-            //  判断商户中是否存在merchantId
-            if (merchantIds.contains(queryBean.getMerchantId()))  {
-                queryBean.setMerchantIds(null);
-            } else {
-                queryBean.setMerchantIds(merchantIds);
             }
         } else {
             // 租户
-            if (queryBean.getMerchantHeader() == 0) {
-                // 获取当前租户下的所有商户信息
-                if (StringUtils.isNotBlank(queryBean.getAppId())) {
-                    merchantIds = queryMerhantListByAppId(queryBean.getAppId()) ;
-                } else {
-                    merchantIds = queryRenterMerhantList(queryBean.getRenterHeader()) ;
-                }
-                queryBean.setMerchantIds(merchantIds);
-            } else {
-                // 租户的商户
-                merchantIds = queryRenterMerhantList(queryBean.getRenterHeader()) ;
-                if (merchantIds.contains(queryBean.getMerchantHeader())) {
-                    queryBean.setMerchantId(queryBean.getMerchantHeader());
-                }
-            }
+            appIds = queryAppIdListByRenterId(queryBean.getRenterHeader()) ;
         }
+        queryBean.setAppIds(appIds);
         log.info("setMerchantListForOrderBean 返回值：{}", JSONUtil.toJsonString(queryBean));
     }
 }
