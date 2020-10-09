@@ -102,6 +102,7 @@ public class VendorsRpcService {
     }
 
     public void setMerchantListForOrderBean(OrderBean queryBean) {
+        log.info("setMerchantListForOrderBean 入参：{}", JSONUtil.toJsonString(queryBean));
         List<Integer> merchantIds = null ;
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
@@ -139,5 +140,6 @@ public class VendorsRpcService {
                 }
             }
         }
+        log.info("setMerchantListForOrderBean 返回值：{}", JSONUtil.toJsonString(queryBean));
     }
 }
