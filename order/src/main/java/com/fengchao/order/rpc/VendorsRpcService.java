@@ -62,7 +62,7 @@ public class VendorsRpcService {
 
         OperaResponse<List<Integer>> response = vendorsServiceClient.queryRenterMerchantList(renterId) ;
 
-        log.debug("vendor 服务 queryRenterMerhantList 入参renterId： {},  返回值：{}",renterId, JSONUtil.toJsonString(response));
+        log.info("vendor 服务 queryRenterMerhantList 入参renterId： {},  返回值：{}",renterId, JSONUtil.toJsonString(response));
         if (response.getCode() == 200) {
             renterCompanyList = response.getData() ;
         } else {
