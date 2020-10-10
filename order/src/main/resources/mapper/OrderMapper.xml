@@ -128,9 +128,9 @@
     <if test="receiverName != null">
       and orders.receiver_name = #{receiverName}
     </if>
-    <if test="merchantIds != null">
-      and orders.merchant_id in
-      <foreach item="item" index="index" collection="merchantIds"
+    <if test="appIds != null">
+      and orders.app_id in
+      <foreach item="item" index="index" collection="appIds"
                open="(" separator="," close=")">
         #{item}
       </foreach>
@@ -226,9 +226,9 @@
     <if test="receiverName != null">
       and orders.receiver_name = #{receiverName}
     </if>
-    <if test="merchantIds != null">
-      and orders.merchant_id in
-      <foreach item="item" index="index" collection="merchantIds"
+    <if test="appIds != null">
+      and orders.app_id in
+      <foreach item="item" index="index" collection="appIds"
                open="(" separator="," close=")">
         #{item}
       </foreach>
