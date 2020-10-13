@@ -19,22 +19,25 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author songbw
- * @date 2020/9/8 18:22
+ * @ author songbw
+ * @ date 2020/9/8 18:22
  */
 @Service
 @Slf4j
 public class AppSkuStateServiceImpl implements AppSkuStateService {
 
-    @Autowired
     private AppSkuStateMapper mapper ;
-    @Autowired
     private AppSkuStateDao dao;
-    @Autowired
     private ProductDao productDao;
-    @Autowired
     private StarSkuDao starSkuDao ;
 
+    @Autowired
+    public AppSkuStateServiceImpl(AppSkuStateMapper mapper, AppSkuStateDao dao, ProductDao productDao, StarSkuDao starSkuDao) {
+        this.mapper = mapper;
+        this.dao = dao;
+        this.productDao = productDao;
+        this.starSkuDao = starSkuDao;
+    }
 
     @Override
     public List<AppSkuState> findListById(int id) {

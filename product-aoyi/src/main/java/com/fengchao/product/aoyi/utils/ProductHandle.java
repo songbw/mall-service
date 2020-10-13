@@ -188,12 +188,11 @@ public class ProductHandle {
         if (prodIndexX.getType() == 2) {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
-        } else {
-            // 租户价格列表
-            prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
-            // 租户状态列表
-            prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(renterId, prodIndexX.getMpu()));
         }
+        // 租户价格列表
+        prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
+        // 租户状态列表
+        prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(renterId, prodIndexX.getMpu()));
     }
 
     /**
@@ -205,12 +204,11 @@ public class ProductHandle {
         if (prodIndexX.getType() == 2) {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
-        } else {
-            // 租户价格列表
-            prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
-            // 租户状态列表
-            prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(renterId, prodIndexX.getMpu()));
         }
+        // 租户价格列表
+        prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
+        // 租户状态列表
+        prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(renterId, prodIndexX.getMpu()));
     }
 
     /**
