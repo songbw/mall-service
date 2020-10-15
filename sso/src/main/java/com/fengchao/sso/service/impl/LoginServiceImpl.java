@@ -175,7 +175,7 @@ public class LoginServiceImpl implements ILoginService {
         tempU.setiAppId(loginBean.getiAppId());
         User user = userMapper.selectByOpenId(tempU);
         if (user == null) {
-            if ("14".equals(loginBean.getiAppId())) {
+//            if ("14".equals(loginBean.getiAppId())) {
                 // 获取万科云城用户信息
                 OperaResponse response = pinganClientService.findWKUser(loginBean.getOpenId(), loginBean.getAccessToken()) ;
                 if (response.getCode() == 200) {
@@ -197,7 +197,7 @@ public class LoginServiceImpl implements ILoginService {
                     user.setCreatedAt(new Date());
                     return user ;
                 }
-            }
+//            }
         }
         return null ;
 
