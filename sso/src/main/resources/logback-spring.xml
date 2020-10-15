@@ -54,6 +54,8 @@
         </filter>
     </appender>
 
+    <logger name="com.fengchao.sso.mapper" level="DEBUG"/>
+
     <!-- 出错日志 appender  -->
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -113,6 +115,12 @@
         <appender-ref ref="INFO" />
         <appender-ref ref="ERROR" />
     </root>-->
+
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="INFO"/>
+        <appender-ref ref="ERROR"/>
+    </root>
 
 
 
