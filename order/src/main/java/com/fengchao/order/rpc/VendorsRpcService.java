@@ -120,7 +120,7 @@ public class VendorsRpcService {
 
         OperaResponse<List<String>> response = vendorsServiceClient.queryAppIdsByMerchantId(merchantId) ;
 
-        log.info("vendor 服务 queryAppIdListByRenterId 入参merchantId： {},  返回值：{}",merchantId, JSONUtil.toJsonString(response));
+        log.info("vendor 服务 queryAppIdListByMerchantId 入参merchantId： {},  返回值：{}",merchantId, JSONUtil.toJsonString(response));
         if (response.getCode() == 200) {
             appIds = response.getData() ;
         } else {
