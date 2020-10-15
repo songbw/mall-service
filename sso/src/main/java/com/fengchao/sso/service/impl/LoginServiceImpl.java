@@ -134,7 +134,7 @@ public class LoginServiceImpl implements ILoginService {
         tokenBean.setOpenId(loginBean.getiAppId() + bean.getOpenId());
         tokenBean.setThirdToken(bean.getThirdToken());
         tokenBean.setExpireDate(bean.getExpireDate());
-        Token temp = tokenMapper.selectByOpenId(loginBean.getOpenId());
+        Token temp = tokenMapper.selectByOpenId(loginBean.getiAppId() + loginBean.getOpenId());
         if (temp != null) {
             tokenBean.setUpdatedAt(new Date());
             tokenMapper.updateByPrimaryKey(tokenBean);
