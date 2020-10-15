@@ -115,17 +115,35 @@ public class VendorsRpcService {
         return appIds;
     }
 
+    public List<String> queryAppIdListByMerchantId(Integer merchantId) {
+        List<String> appIds = new ArrayList<>();
+
+        OperaResponse<List<String>> response = vendorsServiceClient.queryAppIdsByMerchantId(merchantId) ;
+
+        log.info("vendor 服务 queryAppIdListByRenterId 入参merchantId： {},  返回值：{}",merchantId, JSONUtil.toJsonString(response));
+        if (response.getCode() == 200) {
+            appIds = response.getData() ;
+        } else {
+            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+        }
+        return appIds;
+    }
+
     public void setMerchantListForOrderBean(OrderBean queryBean) {
         log.info("setMerchantListForOrderBean 入参：{}", JSONUtil.toJsonString(queryBean));
         List<String> appIds = null ;
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
             // 获取所有租户下的所有商户信息
-            if (StringUtils.isBlank(queryBean.getAppId())) {
+            if (queryBean.getMerchantHeader() != 0) {
+                appIds = queryAppIdListByMerchantId(queryBean.getMerchantHeader()) ;
+            }
+            if (StringUtils.isBlank(queryBean.getAppId()) && queryBean.getMerchantHeader() == 0) {
                 if (StringUtils.isNotBlank(queryBean.getRenterId())) {
                     appIds = queryAppIdListByRenterId(queryBean.getRenterId()) ;
                 }
             }
+
         } else {
             // 租户
             appIds = queryAppIdListByRenterId(queryBean.getRenterHeader()) ;

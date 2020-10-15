@@ -46,6 +46,11 @@ public class VendorsServiceClientFallbackFactory implements FallbackFactory<Vend
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
 
+            @Override
+            public OperaResponse<List<String>> queryAppIdsByMerchantId(Integer merchantId) {
+                return HystrixDefaultFallback.fallbackResponse(throwable);
+            }
+
         };
     }
 
