@@ -76,6 +76,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public PageInfo<SUser> selectUser(String renterHeader, Integer page, Integer limit, String name, String sex, String telephone, String appId, String openId, String nickName) {
+        if ("0".equals(renterHeader)) {
+            renterHeader = "";
+        }
         List<String> appIds = vendorsRpcService.queryAppIdList(renterHeader) ;
         PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit, name, sex, telephone, appId, openId, nickName, appIds);
         return users;
