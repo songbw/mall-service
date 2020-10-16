@@ -26,4 +26,6 @@ public interface RenterCategoryService {
 
     void delete(Integer id) ;
 
+    void deleteBatch(List<Integer> ids) ;
+
 }

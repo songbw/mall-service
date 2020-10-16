@@ -90,4 +90,11 @@ public class RenterCategoryServiceImpl implements RenterCategoryService {
     public void delete(Integer id) {
         mapper.deleteByPrimaryKey(id) ;
     }
+
+    @Override
+    public void deleteBatch(List<Integer> ids) {
+        ids.forEach(id -> {
+            delete(id);
+        });
+    }
 }

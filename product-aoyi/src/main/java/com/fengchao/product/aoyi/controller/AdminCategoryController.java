@@ -167,4 +167,11 @@ public class AdminCategoryController {
         response.setData(renterCategoryService.findListByRenterId(bean) );
         return response;
     }
+
+    @DeleteMapping("/renter/batch")
+    private OperaResponse deleteRenterCategoryBatch(@RequestBody List<Integer> ids) {
+        OperaResponse response = new OperaResponse() ;
+        renterCategoryService.deleteBatch(ids);
+        return  response;
+    }
 }
