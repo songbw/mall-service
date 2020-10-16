@@ -168,7 +168,7 @@ public class AdminCategoryController {
         return response;
     }
 
-    @PutMapping("/renter/batch")
+    @DeleteMapping("/renter/batch")
     private OperaResponse deleteRenterCategoryBatch(@RequestBody List<Integer> ids) {
         OperaResponse response = new OperaResponse() ;
         renterCategoryService.deleteBatch(ids);
