@@ -2,7 +2,6 @@ package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
-import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -13,11 +12,12 @@ import com.fengchao.product.aoyi.service.CategoryService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -81,6 +81,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<AoyiBaseCategory> findByIds(List<Integer> categoryIds) {
         return categoryDao.selectByCategoryIds(categoryIds);
+    }
+
+    @Override
+    public List<AoyiBaseCategoryX> findOneLevelByAppId(String appId) {
+        HashMap<String, String> map = new HashMap<>() ;
+        map.put("appId", appId) ;
+        map.put("categoryClass", "1");
+        return mapper.selectRenterCategory(map);
     }
 
     //============================== private =======================

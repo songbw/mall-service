@@ -50,4 +50,6 @@ public interface AoyiBaseCategoryXMapper {
     void batchInsert(List<AoyiBaseCategory> aoyiBaseCategoryList);
 
     List<CategoryBean> selectRentIdList(HashMap map) ;
+
+    List<AoyiBaseCategoryX> selectRenterCategory(HashMap map);
 }

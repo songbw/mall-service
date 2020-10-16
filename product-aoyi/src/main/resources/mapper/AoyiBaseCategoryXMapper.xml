@@ -256,6 +256,11 @@
     FROM renter_category rc left JOIN aoyi_base_category ac ON rc.category_id = ac.category_id
     WHERE app_id = #{appId} and renter_id = #{renterId}
   </select>
+  <select id="selectRenterCategory" resultType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" parameterType="Map">
+    select ac.category_id, ac.category_name, ac.parent_id, ac.category_class,ac.category_icon, ac.category_desc,rc.is_show, rc.sort_order
+    FROM renter_category rc LEFT JOIN aoyi_base_category ac ON rc.category_id = ac.category_id
+    WHERE rc.app_id = #{appId} AND ac.category_class = #{categoryClass};
+  </select>
 
 
   <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">

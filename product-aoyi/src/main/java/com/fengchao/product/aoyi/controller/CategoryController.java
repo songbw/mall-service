@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,8 +26,9 @@ public class CategoryController {
     }
 
     @GetMapping("/ones")
-    private OperaResult findOneLevelList(OperaResult result) {
-        List<AoyiBaseCategoryX> categoryList = service.findOneLevelList();
+    private OperaResult findOneLevelList(@RequestHeader("appId") String appId) {
+        OperaResult result = new OperaResult();
+        List<AoyiBaseCategoryX> categoryList = service.findOneLevelByAppId(appId);
         result.getData().put("list", categoryList) ;
         return result ;
     }
