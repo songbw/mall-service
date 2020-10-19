@@ -340,7 +340,7 @@ public class ProductHandle {
      * @param queryBean  产品查询条件
      */
     public void setMerchantListForProductQueryBean(ProductQueryBean queryBean) {
-        log.info("setMerchantListForProductQueryBean 入参：{}",queryBean);
+        log.info("setMerchantListForProductQueryBean 入参：{}",JSONUtil.toJsonString(queryBean));
         List<Integer> merchantIds = null ;
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
@@ -384,7 +384,7 @@ public class ProductHandle {
                 }
             }
         }
-        log.info("setMerchantListForProductQueryBean  返回值：{}", queryBean);
+        log.info("setMerchantListForProductQueryBean  返回值：{}", JSONUtil.toJsonString(queryBean));
     }
 
     /**
@@ -392,7 +392,7 @@ public class ProductHandle {
      * @param queryBean 产品查询bean
      */
     public void setClientProductQueryBean(ProductQueryBean queryBean) {
-        log.info("setClientProductQueryBean 入参：{}",queryBean);
+        log.info("setClientProductQueryBean 入参：{}", JSONUtil.toJsonString(queryBean));
         String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
         queryBean.setRenterId(renterId);
         // 获取可读取的商户配置
@@ -404,7 +404,7 @@ public class ProductHandle {
             codes = merchantCodeBean.getCodes() ;
         }
         queryBean.setMerchantCodes(codes);
-        log.info("setClientProductQueryBean  返回值：{}", queryBean);
+        log.info("setClientProductQueryBean  返回值：{}", JSONUtil.toJsonString(queryBean));
     }
 
     /**
