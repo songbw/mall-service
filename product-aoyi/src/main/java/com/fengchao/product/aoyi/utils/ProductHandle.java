@@ -5,6 +5,7 @@ import com.fengchao.product.aoyi.bean.StarSkuBean;
 import com.fengchao.product.aoyi.config.ESConfig;
 import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.dao.*;
+import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @EnableConfigurationProperties({ESConfig.class})
 @Service
@@ -29,9 +32,10 @@ public class ProductHandle {
     private StarPropertyDao starPropertyDao ;
     private VendorsRpcService vendorsRpcService;
     private ESConfig config;
+    private AoyiBaseCategoryXMapper categoryXMapper ;
 
     @Autowired
-    public ProductHandle(StarSkuDao starSkuDao, AppSkuPriceDao appSkuPriceDao, AppSkuStateDao appSkuStateDao, StarDetailImgDao starDetailImgDao,StarPropertyDao starPropertyDao, VendorsRpcService vendorsRpcService, ESConfig config) {
+    public ProductHandle(StarSkuDao starSkuDao, AppSkuPriceDao appSkuPriceDao, AppSkuStateDao appSkuStateDao, StarDetailImgDao starDetailImgDao,StarPropertyDao starPropertyDao, VendorsRpcService vendorsRpcService, ESConfig config,AoyiBaseCategoryXMapper categoryXMapper) {
         this.starSkuDao = starSkuDao;
         this.appSkuPriceDao = appSkuPriceDao;
         this.appSkuStateDao = appSkuStateDao;
@@ -39,6 +43,7 @@ public class ProductHandle {
         this.starPropertyDao = starPropertyDao ;
         this.vendorsRpcService = vendorsRpcService;
         this.config = config ;
+        this.categoryXMapper = categoryXMapper ;
     }
 
     public AoyiProdIndexX updateImage(AoyiProdIndexX aoyiProdIndexX) {
@@ -395,6 +400,13 @@ public class ProductHandle {
         log.info("setClientProductQueryBean 入参：{}", JSONUtil.toJsonString(queryBean));
         String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
         queryBean.setRenterId(renterId);
+        // 设置类别
+        HashMap map = new HashMap();
+        map.put("appId", queryBean.getAppId()) ;
+        map.put("categoryClass", "3");
+        List<AoyiBaseCategoryX> categoryXES = categoryXMapper.selectRenterCategory(map) ;
+        List<String> categories = categoryXES.stream().map(c -> String.valueOf(c.getCategoryId())).collect(Collectors.toList()) ;
+        queryBean.setCategories(categories);
         // 获取可读取的商户配置
         List<Integer> merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
         queryBean.setMerchantIds(merchantIds);

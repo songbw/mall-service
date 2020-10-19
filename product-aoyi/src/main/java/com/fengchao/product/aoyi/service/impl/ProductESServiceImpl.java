@@ -101,6 +101,14 @@ public class ProductESServiceImpl implements ProductESService {
         }
         boolQueryBuilder.must(merchantIdBoolQuery) ;
 
+        // category
+        BoolQueryBuilder categoryBoolQuery = QueryBuilders.boolQuery() ;
+        for (String category: queryBean.getCategories()) {
+            TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("category", category) ;
+            categoryBoolQuery.should(shouldTermQueryBuilder) ;
+        }
+        boolQueryBuilder.must(categoryBoolQuery) ;
+
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
         boolQueryBuilder.must(termQueryBuilder);
 
