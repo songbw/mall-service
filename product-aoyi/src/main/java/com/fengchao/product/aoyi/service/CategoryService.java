@@ -34,4 +34,6 @@ public interface CategoryService {
 
     List<AoyiBaseCategoryX> findOneLevelByAppId(String appId) ;
 
+    List<AoyiBaseCategoryX> findTwoLevelByAppId(String appId, int id) ;
+
 }

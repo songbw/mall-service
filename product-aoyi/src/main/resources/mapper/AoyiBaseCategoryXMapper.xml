@@ -266,7 +266,10 @@
     rc.is_show isShow,
     rc.sort_order sortOrder
     FROM renter_category rc LEFT JOIN aoyi_base_category ac ON rc.category_id = ac.category_id
-    WHERE rc.app_id = #{appId} AND ac.category_class = #{categoryClass};
+    WHERE rc.app_id = #{appId} AND ac.category_class = #{categoryClass}
+    <if test="parentId != null">
+      and ac.parent_id = #{parentId}
+    </if>
   </select>
 
 
