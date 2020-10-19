@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
             mapper.selectLimit(map).forEach(aoyiProdIndex -> {
                 // 查询star_sku表
                 appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-                appSkuPrice.setSkuId(appSkuPrice.getSkuId());
+                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
                 List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
                 if (appSkuPrices != null && appSkuPrices.size() >0) {
                     aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
