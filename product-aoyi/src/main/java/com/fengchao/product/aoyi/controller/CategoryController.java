@@ -42,8 +42,9 @@ public class CategoryController {
     }
 
     @GetMapping("/allsub")
-    private OperaResult findList(Integer id, OperaResult result) {
-        List<AoyiBaseCategoryX> categoryList = service.findListById(id);
+    private OperaResult findList(@RequestHeader("appId") String appId, Integer id) {
+        OperaResult result = new OperaResult();
+        List<AoyiBaseCategoryX> categoryList = service.findListByIdAndAppId(appId, id);
         result.getData().put("list", categoryList) ;
         return result ;
     }

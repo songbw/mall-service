@@ -100,6 +100,15 @@ public class CategoryServiceImpl implements CategoryService {
         return mapper.selectRenterCategory(map);
     }
 
+    @Override
+    public List<AoyiBaseCategoryX> findListByIdAndAppId(String appId, int id) {
+        List<AoyiBaseCategoryX> categories = findTwoLevelByAppId(appId, id) ;
+        categories.forEach(element -> {
+            element.setSubs(findTwoLevelByAppId(appId, element.getCategoryId()));
+        });
+        return categories;
+    }
+
     //============================== private =======================
 
     /**
