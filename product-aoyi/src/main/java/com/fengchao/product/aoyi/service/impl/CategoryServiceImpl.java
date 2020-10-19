@@ -104,7 +104,11 @@ public class CategoryServiceImpl implements CategoryService {
     public List<AoyiBaseCategoryX> findListByIdAndAppId(String appId, int id) {
         List<AoyiBaseCategoryX> categories = findTwoLevelByAppId(appId, id) ;
         categories.forEach(element -> {
-            element.setSubs(findTwoLevelByAppId(appId, element.getCategoryId()));
+            HashMap<String, Object> map = new HashMap<>() ;
+            map.put("appId", appId) ;
+            map.put("categoryClass", "3");
+            map.put("parentId", element.getCategoryId());
+            element.setSubs(mapper.selectRenterCategory(map));
         });
         return categories;
     }
