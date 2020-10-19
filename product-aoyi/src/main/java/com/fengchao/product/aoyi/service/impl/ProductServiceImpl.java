@@ -81,47 +81,62 @@ public class ProductServiceImpl implements ProductService {
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
         // 根据APPID查询renterId
         productHandle.setClientProductQueryBean(queryBean);
+        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, queryBean.getMerchantCodes());
         PageBean pageBean = new PageBean();
-        int total = 0;
-        int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
-        HashMap map = new HashMap();
-        map.put("pageNo", offset);
-        map.put("pageSize", queryBean.getPageSize());
-        if(queryBean.getCategory()!=null&&!queryBean.getCategory().equals(""))
-            map.put("category", queryBean.getCategory());
-        if(queryBean.getBrand()!=null&&!queryBean.getBrand().equals(""))
-            map.put("brand", queryBean.getBrand());
-        if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
-            map.put("priceOrder", queryBean.getPriceOrder());
-        if(queryBean.getAppId()!=null&&!queryBean.getAppId().equals(""))
-            map.put("appId", "%" + queryBean.getAppId() + "%");
-        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size()>0) {
-            map.put("merchantCodes", queryBean.getMerchantCodes()) ;
-        }
-        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size()>0) {
-            map.put("merchantIds", queryBean.getMerchantIds()) ;
-        }
+        int total = (int) prodIndexPageInfo.getTotal();
+        List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
         List<ProductInfoBean> prodIndices = new ArrayList<>();
-        total = mapper.selectLimitCount(map);
-        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-        appSkuPrice.setRenterId(queryBean.getRenterId());
-        if (total > 0) {
-            mapper.selectLimit(map).forEach(aoyiProdIndex -> {
-                // 查询star_sku表
-                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
-                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                if (appSkuPrices != null && appSkuPrices.size() >0) {
-                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
-                }
-                ProductInfoBean infoBean = new ProductInfoBean();
-                aoyiProdIndex = productHandle.updateImage(aoyiProdIndex) ;
-                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
-                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
-                infoBean.setPromotion(promotionInfoBeans);
-                prodIndices.add(infoBean);
-            });
-        }
+        aoyiProdIndices.forEach(prodIndex -> {
+            ProductInfoBean infoBean = new ProductInfoBean();
+            AoyiProdIndexX prodIndexX = new AoyiProdIndexX();
+            BeanUtils.copyProperties(prodIndex, prodIndexX);
+            productHandle.setProductXClient(prodIndexX, queryBean.getRenterId());
+            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(prodIndexX.getMpu(), queryBean.getAppId());
+            infoBean.setPromotion(promotionInfoBeans);
+            prodIndices.add(infoBean);
+
+        });
+//        int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
+//        HashMap map = new HashMap();
+//        map.put("pageNo", offset);
+//        map.put("pageSize", queryBean.getPageSize());
+//        if(queryBean.getCategory()!=null&&!queryBean.getCategory().equals(""))
+//            map.put("category", queryBean.getCategory());
+//        if(queryBean.getBrand()!=null&&!queryBean.getBrand().equals(""))
+//            map.put("brand", queryBean.getBrand());
+//        if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
+//            map.put("priceOrder", queryBean.getPriceOrder());
+//        if(queryBean.getAppId()!=null&&!queryBean.getAppId().equals(""))
+//            map.put("appId", "%" + queryBean.getAppId() + "%");
+//
+//        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size() > 0) {
+//            map.put("merchantCodes", queryBean.getMerchantCodes()) ;
+//        }
+//        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size()>0) {
+//            map.put("merchantIds", queryBean.getMerchantIds()) ;
+//        }
+
+//        total = mapper.selectLimitCount(map);
+//        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+//        appSkuPrice.setRenterId(queryBean.getRenterId());
+//        if (total > 0) {
+//            mapper.selectLimit(map).forEach(aoyiProdIndex -> {
+//                // 查询star_sku表
+//                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+//                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
+//                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+//                if (appSkuPrices != null && appSkuPrices.size() >0) {
+//                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
+//                }
+//                ProductInfoBean infoBean = new ProductInfoBean();
+//                aoyiProdIndex = productHandle.updateImage(aoyiProdIndex) ;
+//                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+//                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+//                infoBean.setPromotion(promotionInfoBeans);
+//                prodIndices.add(infoBean);
+//            });
+//        }
+
         pageBean = PageBean.build(pageBean, prodIndices, total, queryBean.getPageNo(), queryBean.getPageSize());
         return pageBean;
     }

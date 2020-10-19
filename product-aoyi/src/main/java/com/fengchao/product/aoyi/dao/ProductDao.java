@@ -282,6 +282,9 @@ public class ProductDao {
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         if (queryBean.getBrand() != null && !queryBean.getBrand().equals(""))
             criteria.andBrandEqualTo(queryBean.getBrand());
+        if (StringUtils.isNotBlank(queryBean.getCategory())) {
+            criteria.andCategoryEqualTo(queryBean.getCategory()) ;
+        }
         // 租户
 //        if (queryBean.getRenterId() != null && !queryBean.getRenterId().equals(""))
 //            criteria.andRenterIdEqualTo(queryBean.getRenterId());
