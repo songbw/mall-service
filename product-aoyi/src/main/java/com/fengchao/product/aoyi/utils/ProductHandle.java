@@ -392,6 +392,7 @@ public class ProductHandle {
      * @param queryBean 产品查询bean
      */
     public void setClientProductQueryBean(ProductQueryBean queryBean) {
+        log.info("setClientProductQueryBean 入参：{}",queryBean);
         String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
         queryBean.setRenterId(renterId);
         // 获取可读取的商户配置
@@ -403,6 +404,7 @@ public class ProductHandle {
             codes = merchantCodeBean.getCodes() ;
         }
         queryBean.setMerchantCodes(codes);
+        log.info("setClientProductQueryBean  返回值：{}", queryBean);
     }
 
     /**
