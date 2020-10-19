@@ -60,6 +60,7 @@ public class ProductESServiceImpl implements ProductESService {
 
     @Override
     public PageBean query(ProductQueryBean queryBean) {
+        productHandle.setClientProductQueryBean(queryBean);
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
         List<String> codes = new ArrayList<>() ;
@@ -91,6 +92,14 @@ public class ProductESServiceImpl implements ProductESService {
             merchantCodeBoolQuery.should(shouldTermQueryBuilder) ;
         }
         boolQueryBuilder.must(merchantCodeBoolQuery) ;
+
+        // merchant id
+        BoolQueryBuilder merchantIdBoolQuery = QueryBuilders.boolQuery() ;
+        for (int merchantId: queryBean.getMerchantIds()) {
+            TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_id", merchantId) ;
+            merchantIdBoolQuery.should(shouldTermQueryBuilder) ;
+        }
+        boolQueryBuilder.must(merchantIdBoolQuery) ;
 
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
         boolQueryBuilder.must(termQueryBuilder);
