@@ -91,6 +91,7 @@ public class ProductServiceImpl implements ProductService {
             AoyiProdIndexX prodIndexX = new AoyiProdIndexX();
             BeanUtils.copyProperties(prodIndex, prodIndexX);
             productHandle.setProductXClient(prodIndexX, queryBean.getRenterId());
+            BeanUtils.copyProperties(prodIndexX, infoBean);
             List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(prodIndexX.getMpu(), queryBean.getAppId());
             infoBean.setPromotion(promotionInfoBeans);
             prodIndices.add(infoBean);
