@@ -646,7 +646,7 @@ public class ProductServiceImpl implements ProductService {
         bean.forEach(aoyiProdIndex -> {
             AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
             appSkuPrice.setMpu(aoyiProdIndex1.getMpu());
-            appSkuPrice.setSkuId(appSkuPrice.getSkuId());
+            appSkuPrice.setSkuId(aoyiProdIndex1.getSkuid());
             List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
             if (appSkuPrices != null && appSkuPrices.size() >0) {
                 aoyiProdIndex1.setPrice(appSkuPrices.get(0).getPrice().toString());
