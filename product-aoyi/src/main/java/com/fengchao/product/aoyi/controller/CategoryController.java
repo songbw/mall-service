@@ -34,8 +34,9 @@ public class CategoryController {
     }
 
     @GetMapping("/subs")
-    private OperaResult findSubList(Integer id, OperaResult result) {
-        List<AoyiBaseCategoryX> categoryList = service.findTwoLevelListByOneLevelId(id);
+    private OperaResult findSubList(@RequestHeader("appId") String appId, Integer id) {
+        OperaResult result = new OperaResult();
+        List<AoyiBaseCategoryX> categoryList = service.findTwoLevelByAppId(appId, id);
         result.getData().put("list", categoryList) ;
         return result ;
     }
