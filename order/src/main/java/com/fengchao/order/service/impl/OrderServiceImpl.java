@@ -858,7 +858,9 @@ public class OrderServiceImpl implements OrderService {
         vendorsRpcService.setMerchantListForOrderBean(orderBean);
         PageBean pageBean = new PageBean();
         if (orderBean.getAppIds() == null || orderBean.getAppIds().size() <= 0) {
-            return pageBean;
+            if (!"0".equals(orderBean.getRenterHeader()) && orderBean.getMerchantHeader() != 0) {
+                return pageBean ;
+            }
         }
         int total = 0;
         int offset = PageBean.getOffset(orderBean.getPageIndex(), orderBean.getPageSize());
