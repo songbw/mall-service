@@ -32,4 +32,9 @@ public class AoyiRenderOrderRequest extends BaseRquestParam {
      * 订单地址信息
      */
     private AoyiDeliverAddress deliveryAddress;
+
+    /**
+     * 数据来源。智慧城市唯品会传参，ZhCityVip，关爱通：不填为null
+     */
+    private String sourceCode ;
 }
