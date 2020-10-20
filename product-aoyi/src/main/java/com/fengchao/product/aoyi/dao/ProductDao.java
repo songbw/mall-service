@@ -363,9 +363,6 @@ public class ProductDao {
         if (StringUtils.isNotBlank(queryBean.getMinPrice()) && StringUtils.isNotBlank(queryBean.getMaxPrice())) {
             criteria.andPriceBetween(queryBean.getMinPrice(), queryBean.getMaxPrice()) ;
         }
-        if (StringUtils.isNotBlank(queryBean.getName())) {
-            criteria.andNameLike("%" + queryBean.getName() + "%");
-        }
         if (StringUtils.isNotBlank(queryBean.getOrder())) {
             if ("asc".equals(queryBean.getOrder())) {
                 aoyiProdIndexExample.setOrderByClause("created_at asc");
