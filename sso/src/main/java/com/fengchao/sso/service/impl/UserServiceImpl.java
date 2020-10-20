@@ -80,6 +80,11 @@ public class UserServiceImpl implements IUserService {
             renterHeader = "";
         }
         List<String> appIds = vendorsRpcService.queryAppIdList(renterHeader) ;
+        if (!"0".equals(renterHeader)) {
+            if (appIds == null || appIds.size() <= 0) {
+                return new PageInfo<SUser>() ;
+            }
+        }
         PageInfo<SUser> users =  userDao.selectUserByPageable(page, limit, name, sex, telephone, appId, openId, nickName, appIds);
         return users;
     }
