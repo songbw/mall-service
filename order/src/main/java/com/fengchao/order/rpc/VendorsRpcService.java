@@ -141,6 +141,8 @@ public class VendorsRpcService {
             if (StringUtils.isBlank(queryBean.getAppId()) && queryBean.getMerchantHeader() == 0) {
                 if (StringUtils.isNotBlank(queryBean.getRenterId())) {
                     appIds = queryAppIdListByRenterId(queryBean.getRenterId()) ;
+                } else {
+                    appIds = queryAppIdListByRenterId("0") ;
                 }
             }
 
