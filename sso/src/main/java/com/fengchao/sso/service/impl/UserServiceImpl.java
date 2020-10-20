@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -76,11 +77,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public PageInfo<SUser> selectUser(String renterHeader, Integer page, Integer limit, String name, String sex, String telephone, String appId, String openId, String nickName) {
-        if ("0".equals(renterHeader)) {
-            renterHeader = "";
-        }
-        List<String> appIds = vendorsRpcService.queryAppIdList(renterHeader) ;
+        List<String> appIds = new ArrayList<>();
         if (!"0".equals(renterHeader)) {
+            appIds = vendorsRpcService.queryAppIdList(renterHeader) ;
             if (appIds == null || appIds.size() <= 0) {
                 return new PageInfo<SUser>() ;
             }
