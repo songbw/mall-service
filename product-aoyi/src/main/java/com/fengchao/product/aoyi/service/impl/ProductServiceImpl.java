@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -402,59 +403,61 @@ public class ProductServiceImpl implements ProductService {
     public AoyiProdIndexXWithBLOBs findByMpu(String mpu, String appId) {
         String renterId = vendorsRpcService.queryRenterId(appId) ;
         AoyiProdIndexXWithBLOBs aoyiProdIndexX = mapper.selectByMpu(mpu);
-        if (aoyiProdIndexX != null) {
-            aoyiProdIndexX = productHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
-        }
-        // 查询spu图片
-        if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
-            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
-            String imageUrl = "" ;
-            if (starDetailImgs != null && starDetailImgs.size() > 0) {
-                for (int i = 0; i < starDetailImgs.size(); i++) {
-                    if (i == 0) {
-                        imageUrl = starDetailImgs.get(i).getImgUrl() ;
-                    } else {
-                        imageUrl = imageUrl + ";" + starDetailImgs.get(i).getImgUrl() ;
-                    }
-                }
-                aoyiProdIndexX.setImagesUrl(imageUrl);
-            }
-        }
-        // 查询spu属性
-        List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(aoyiProdIndexX.getId(), 0) ;
-        aoyiProdIndexX.setProperties(starProperties);
-        // 查询sku
-        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
-        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
-        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-        appSkuPrice.setRenterId(renterId);
-        if (starSkus != null && starSkus.size() > 0) {
-            starSkus.forEach(starSku -> {
-                StarSkuBean starSkuBean = new StarSkuBean() ;
-                BeanUtils.copyProperties(starSku, starSkuBean);
-                // 查询sku属性
-                List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
-                starSkuBean.setPropertyList(skuProperties);
-                // 租户商品价格
-                appSkuPrice.setMpu(starSku.getSpuId());
-                appSkuPrice.setSkuId(starSku.getCode());
-                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                if (appSkuPrices != null && appSkuPrices.size() > 0) {
-                    starSkuBean.setPrice(appSkuPrices.get(0).getPrice().intValue());
-                }
-                starSkuBeans.add(starSkuBean) ;
-            });
-        } else {
-            appSkuPrice.setMpu(aoyiProdIndexX.getMpu());
-            appSkuPrice.setSkuId(aoyiProdIndexX.getSkuid());
-            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-            if (appSkuPrices != null && appSkuPrices.size() > 0) {
-                aoyiProdIndexX.setPrice(appSkuPrices.get(0).getPrice().toString());
-            }
-            aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
-        }
-
-        aoyiProdIndexX.setSkuList(starSkuBeans);
+        productHandle.setProductXClient(aoyiProdIndexX, renterId);
+//        if (aoyiProdIndexX != null) {
+//            aoyiProdIndexX = productHandle.updateImageWithBLOBS(aoyiProdIndexX) ;
+//        }
+//        // 查询spu图片
+//        if (StringUtils.isEmpty(aoyiProdIndexX.getImagesUrl())) {
+//            List<StarDetailImg> starDetailImgs = starDetailImgDao.selectBySpuId(aoyiProdIndexX.getId()) ;
+//            String imageUrl = "" ;
+//            if (starDetailImgs != null && starDetailImgs.size() > 0) {
+//                for (int i = 0; i < starDetailImgs.size(); i++) {
+//                    if (i == 0) {
+//                        imageUrl = starDetailImgs.get(i).getImgUrl() ;
+//                    } else {
+//                        imageUrl = imageUrl + ";" + starDetailImgs.get(i).getImgUrl() ;
+//                    }
+//                }
+//                aoyiProdIndexX.setImagesUrl(imageUrl);
+//            }
+//        }
+//        // 查询spu属性
+//        List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(aoyiProdIndexX.getId(), 0) ;
+//        aoyiProdIndexX.setProperties(starProperties);
+//        // 查询sku
+//        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+//        List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndexX.getSkuid()) ;
+//        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
+//        appSkuPrice.setRenterId(renterId);
+//        if (starSkus != null && starSkus.size() > 0) {
+//            starSkus.forEach(starSku -> {
+//                StarSkuBean starSkuBean = new StarSkuBean() ;
+//                BeanUtils.copyProperties(starSku, starSkuBean);
+//                // 查询sku属性
+//                List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+//                starSkuBean.setPropertyList(skuProperties);
+//                // 租户商品价格
+//                appSkuPrice.setMpu(starSku.getSpuId());
+//                appSkuPrice.setSkuId(starSku.getCode());
+//                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+//                if (appSkuPrices != null && appSkuPrices.size() > 0) {
+//                    starSkuBean.setPrice(appSkuPrices.get(0).getPrice().intValue());
+//                }
+//                starSkuBeans.add(starSkuBean) ;
+//            });
+//        } else {
+//            appSkuPrice.setMpu(aoyiProdIndexX.getMpu());
+//            appSkuPrice.setSkuId(aoyiProdIndexX.getSkuid());
+//            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+//            if (appSkuPrices != null && appSkuPrices.size() > 0) {
+//                BigDecimal bigDecimalPrice = appSkuPrice.getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP) ;
+//                aoyiProdIndexX.setPrice(bigDecimalPrice.toString());
+//            }
+//            aoyiProdIndexX.setAppSkuPriceList(appSkuPrices);
+//        }
+//
+//        aoyiProdIndexX.setSkuList(starSkuBeans);
         return aoyiProdIndexX;
     }
 

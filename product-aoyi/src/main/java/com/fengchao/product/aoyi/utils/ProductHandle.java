@@ -180,7 +180,9 @@ public class ProductHandle {
         // 获取多sku主图信息
         getStarSkuImagesUrl(prodIndexX);
         // 添加star sku列表
-        addStarSkuList(prodIndexX, renterId) ;
+//        addStarSkuClient(prodIndexX, renterId) ;
+        // 添加 star sku
+        prodIndexX.setSkuList(getStarSkuListByMpuForClient(prodIndexX.getSkuid(), renterId));
         // 设置租户价格
         setRenterPriceByMpu(renterId, prodIndexX);
         // 设置租户状态
@@ -195,22 +197,6 @@ public class ProductHandle {
      * @param renterId  租户ID
      */
     private void addStarSkuList(AoyiProdIndexX prodIndexX, String renterId) {
-        if (prodIndexX.getType() == 2) {
-            // 添加 star sku
-            prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
-        }
-        // 租户价格列表
-        prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
-        // 租户状态列表
-        prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(renterId, prodIndexX.getMpu()));
-    }
-
-    /**
-     * 为MPU 添加 SKU
-     * @param prodIndexX 源MPU
-     * @param renterId  租户ID
-     */
-    private void addStarSku(AoyiProdIndexX prodIndexX, String renterId) {
         if (prodIndexX.getType() == 2) {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
@@ -238,6 +224,35 @@ public class ProductHandle {
                 starSkuBean.setAppSkuPriceList(getAppSkuPriceListByStarSku(renterId,starSku));
                 // 租户状态列表
                 starSkuBean.setAppSkuStateList(getAppSkuStateListByStarSku(renterId, starSku));
+                starSkuBeans.add(starSkuBean) ;
+            });
+        }
+        return starSkuBeans ;
+    }
+
+    /**
+     * 根据Mpu中的skuId获取star sku 列表
+     * @param skuId sku
+     * @param renterId 租户ID
+     * @return  star sku 列表
+     */
+    private List<StarSkuBean> getStarSkuListByMpuForClient(String skuId, String renterId) {
+        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+        List<StarSku> starSkus = starSkuDao.selectBySpuId(skuId) ;
+        if (starSkus != null && starSkus.size() >0) {
+            starSkus.forEach(starSku -> {
+                StarSkuBean starSkuBean = new StarSkuBean() ;
+                BeanUtils.copyProperties(starSku, starSkuBean);
+                // 租户价格列表
+                List<AppSkuPrice> appSkuPrices = getAppSkuPriceListByStarSku(renterId,starSku) ;
+                if (appSkuPrices != null && appSkuPrices.size() > 0) {
+                    starSku.setPrice(appSkuPrices.get(0).getPrice().intValue());
+                }
+                // 租户状态列表
+                List<AppSkuState> appSkuStates =  getAppSkuStateListByStarSku(renterId, starSku) ;
+                if (appSkuStates != null && appSkuStates.size() > 0) {
+                    starSku.setStatus(appSkuStates.get(0).getState());
+                }
                 starSkuBeans.add(starSkuBean) ;
             });
         }
