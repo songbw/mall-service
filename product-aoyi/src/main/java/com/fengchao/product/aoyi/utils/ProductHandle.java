@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -180,6 +181,10 @@ public class ProductHandle {
         getStarSkuImagesUrl(prodIndexX);
         // 添加star sku列表
         addStarSkuList(prodIndexX, renterId) ;
+        // 设置租户价格
+        setRenterPriceByMpu(renterId, prodIndexX);
+        // 设置租户状态
+        setRenterStateByMpu(renterId, prodIndexX);
         // 添加property
         setPropertyList(prodIndexX);
     }
@@ -280,7 +285,8 @@ public class ProductHandle {
         List<AppSkuPrice> appSkuPriceList = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
         if (appSkuPriceList != null && appSkuPriceList.size() > 0) {
             appSkuPrice = appSkuPriceList.get(0);
-            prodIndexX.setPrice(appSkuPrice.getPrice().toString());
+            BigDecimal bigDecimalPrice = appSkuPrice.getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP) ;
+            prodIndexX.setPrice(bigDecimalPrice.toString());
         }
     }
 
