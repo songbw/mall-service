@@ -138,11 +138,14 @@ public class ProductESServiceImpl implements ProductESService {
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
                 AoyiProdIndexX aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndexX.class) ;
-                aoyiProdIndex = productHandle.updateImage(aoyiProdIndex);
-                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
-                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
-                infoBean.setPromotion(promotionInfoBeans);
-                aoyiProdIndices.add(infoBean);
+
+                productHandle.setProductXClient(aoyiProdIndex, queryBean.getRenterId());
+                if ("1".equals(aoyiProdIndex.getState())) {
+                    BeanUtils.copyProperties(aoyiProdIndex, infoBean);
+                    List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
+                    infoBean.setPromotion(promotionInfoBeans);
+                    aoyiProdIndices.add(infoBean);
+                }
                 log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
             return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits() + ""), queryBean.getPageNo(), queryBean.getPageSize());

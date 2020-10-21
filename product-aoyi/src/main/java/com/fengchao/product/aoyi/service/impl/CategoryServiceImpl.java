@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -88,7 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
         HashMap<String, String> map = new HashMap<>() ;
         map.put("appId", appId) ;
         map.put("categoryClass", "1");
-        return mapper.selectRenterCategory(map);
+        return mapper.selectRenterCategoryByAppId(map);
     }
 
     @Override
@@ -97,7 +96,7 @@ public class CategoryServiceImpl implements CategoryService {
         map.put("appId", appId) ;
         map.put("categoryClass", "2");
         map.put("parentId", id);
-        return mapper.selectRenterCategory(map);
+        return mapper.selectRenterCategoryByAppId(map);
     }
 
     @Override
@@ -108,7 +107,7 @@ public class CategoryServiceImpl implements CategoryService {
             map.put("appId", appId) ;
             map.put("categoryClass", "3");
             map.put("parentId", element.getCategoryId());
-            element.setSubs(mapper.selectRenterCategory(map));
+            element.setSubs(mapper.selectRenterCategoryByAppId(map));
         });
         return categories;
     }

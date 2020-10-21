@@ -374,23 +374,27 @@ public class ProductHandle {
         if ("0".equals(queryBean.getRenterHeader())) {
             // 平台管理员
             // 获取所有租户下的所有商户信息
-            if (StringUtils.isNotBlank(queryBean.getAppId())) {
-                merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
-            } else {
-                if (StringUtils.isNotBlank(queryBean.getRenterId())) {
-                    merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterId()) ;
+            if (queryBean.getMerchantHeader() == 0) {
+                if (StringUtils.isNotBlank(queryBean.getAppId())) {
+                    merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
                 } else {
-                    merchantIds = vendorsRpcService.queryRenterMerhantList("") ;
+                    if (StringUtils.isNotBlank(queryBean.getRenterId())) {
+                        merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterId()) ;
+                    } else {
+                        merchantIds = vendorsRpcService.queryRenterMerhantList("") ;
+                    }
                 }
-            }
-            if (merchantIds == null || merchantIds.size() == 0) {
-                queryBean = null ;
-            }
-            //  判断商户中是否存在merchantId
-            if (merchantIds.contains(queryBean.getMerchantId()))  {
-                queryBean.setMerchantIds(null);
+                if (merchantIds == null || merchantIds.size() == 0) {
+                    queryBean = null ;
+                }
+                //  判断商户中是否存在merchantId
+                if (merchantIds.contains(queryBean.getMerchantId()))  {
+                    queryBean.setMerchantIds(null);
+                } else {
+                    queryBean.setMerchantIds(merchantIds);
+                }
             } else {
-                queryBean.setMerchantIds(merchantIds);
+                queryBean.setMerchantId(queryBean.getMerchantHeader());
             }
         } else {
             // 租户
@@ -405,6 +409,13 @@ public class ProductHandle {
                     queryBean = null;
                 }
                 queryBean.setMerchantIds(merchantIds);
+                // 查询租户的类目
+                HashMap map = new HashMap();
+                map.put("renterId", queryBean.getRenterHeader()) ;
+                map.put("categoryClass", 3) ;
+                List<AoyiBaseCategoryX> categoryXES = categoryXMapper.selectRenterCategoryByRenterId(map) ;
+                List<String> categories = categoryXES.stream().map(c -> c.getCategoryId().toString()).collect(Collectors.toList()) ;
+                queryBean.setCategories(categories);
             } else {
                 // 租户的商户
                 merchantIds = vendorsRpcService.queryRenterMerhantList(queryBean.getRenterHeader()) ;
@@ -424,13 +435,15 @@ public class ProductHandle {
         log.info("setClientProductQueryBean 入参：{}", JSONUtil.toJsonString(queryBean));
         String renterId = vendorsRpcService.queryRenterId(queryBean.getAppId()) ;
         queryBean.setRenterId(renterId);
-        // 设置类别
-        HashMap map = new HashMap();
-        map.put("appId", queryBean.getAppId()) ;
-        map.put("categoryClass", "3");
-        List<AoyiBaseCategoryX> categoryXES = categoryXMapper.selectRenterCategory(map) ;
-        List<String> categories = categoryXES.stream().map(c -> String.valueOf(c.getCategoryId())).collect(Collectors.toList()) ;
-        queryBean.setCategories(categories);
+        if (StringUtils.isBlank(queryBean.getCategory())) {
+            // 设置类别
+            HashMap map = new HashMap();
+            map.put("appId", queryBean.getAppId()) ;
+            map.put("categoryClass", "3");
+            List<AoyiBaseCategoryX> categoryXES = categoryXMapper.selectRenterCategoryByAppId(map) ;
+            List<String> categories = categoryXES.stream().map(c -> String.valueOf(c.getCategoryId())).collect(Collectors.toList()) ;
+            queryBean.setCategories(categories);
+        }
         // 获取可读取的商户配置
         List<Integer> merchantIds = vendorsRpcService.queryMerhantListByAppId(queryBean.getAppId()) ;
         queryBean.setMerchantIds(merchantIds);

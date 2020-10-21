@@ -370,6 +370,9 @@ public class ProductDao {
                 aoyiProdIndexExample.setOrderByClause("created_at desc");
             }
         }
+        if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0) {
+            criteria.andCategoryIn(queryBean.getCategories()) ;
+        }
 
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
 

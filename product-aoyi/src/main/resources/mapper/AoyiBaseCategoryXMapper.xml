@@ -256,7 +256,7 @@
     FROM renter_category rc left JOIN aoyi_base_category ac ON rc.category_id = ac.category_id
     WHERE app_id = #{appId} and renter_id = #{renterId}
   </select>
-  <select id="selectRenterCategory" resultType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" parameterType="Map">
+  <select id="selectRenterCategoryByAppId" resultType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" parameterType="Map">
     select ac.category_id categoryId,
     ac.category_name categoryName,
     ac.parent_id parentId,
@@ -270,6 +270,18 @@
     <if test="parentId != null">
       and ac.parent_id = #{parentId}
     </if>
+  </select>
+  <select id="selectRenterCategoryByRenterId" resultType="com.fengchao.product.aoyi.model.AoyiBaseCategoryX" parameterType="Map">
+    select DISTINCT(ac.category_id) categoryId,
+    ac.category_name categoryName,
+    ac.parent_id parentId,
+    ac.category_class categoryClass,
+    ac.category_icon categoryIcon,
+    ac.category_desc categoryDesc,
+    rc.is_show isShow,
+    rc.sort_order sortOrder
+    FROM renter_category rc LEFT JOIN aoyi_base_category ac ON rc.category_id = ac.category_id
+    WHERE rc.renter_id = #{renterId} AND ac.category_class = #{categoryClass}
   </select>
 
 

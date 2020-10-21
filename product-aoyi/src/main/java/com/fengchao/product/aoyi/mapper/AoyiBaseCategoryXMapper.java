@@ -51,5 +51,7 @@ public interface AoyiBaseCategoryXMapper {
 
     List<CategoryBean> selectRentIdList(HashMap map) ;
 
-    List<AoyiBaseCategoryX> selectRenterCategory(HashMap map);
+    List<AoyiBaseCategoryX> selectRenterCategoryByAppId(HashMap map);
+
+    List<AoyiBaseCategoryX> selectRenterCategoryByRenterId(HashMap map);
 }
