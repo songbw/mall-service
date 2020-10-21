@@ -256,6 +256,8 @@ public class ProductHandle {
                 if (appSkuStates != null && appSkuStates.size() > 0) {
                     starSku.setStatus(appSkuStates.get(0).getState());
                 }
+                List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+                starSkuBean.setPropertyList(skuProperties);
                 starSkuBeans.add(starSkuBean) ;
             });
         }
