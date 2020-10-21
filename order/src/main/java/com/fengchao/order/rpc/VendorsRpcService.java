@@ -137,6 +137,7 @@ public class VendorsRpcService {
             // 获取所有租户下的所有商户信息
             if (queryBean.getMerchantHeader() != 0) {
                 appIds = queryAppIdListByMerchantId(queryBean.getMerchantHeader()) ;
+                queryBean.setMerchantId(queryBean.getMerchantHeader());
             }
             if (StringUtils.isBlank(queryBean.getAppId()) && queryBean.getMerchantHeader() == 0) {
                 if (StringUtils.isNotBlank(queryBean.getRenterId())) {
