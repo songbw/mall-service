@@ -92,10 +92,12 @@ public class ProductServiceImpl implements ProductService {
             AoyiProdIndexX prodIndexX = new AoyiProdIndexX();
             BeanUtils.copyProperties(prodIndex, prodIndexX);
             productHandle.setProductXClient(prodIndexX, queryBean.getRenterId());
-            BeanUtils.copyProperties(prodIndexX, infoBean);
-            List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(prodIndexX.getMpu(), queryBean.getAppId());
-            infoBean.setPromotion(promotionInfoBeans);
-            prodIndices.add(infoBean);
+            if ("1".equals(prodIndexX.getState())) {
+                BeanUtils.copyProperties(prodIndexX, infoBean);
+                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(prodIndexX.getMpu(), queryBean.getAppId());
+                infoBean.setPromotion(promotionInfoBeans);
+                prodIndices.add(infoBean);
+            }
 
         });
 //        int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());

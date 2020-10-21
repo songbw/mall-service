@@ -175,20 +175,23 @@ public class ProductHandle {
      * @param renterId  租户ID
      */
     public void setProductXClient(AoyiProdIndexX prodIndexX, String renterId) {
-        // 图片全路径
-        updateImage(prodIndexX) ;
-        // 获取多sku主图信息
-        getStarSkuImagesUrl(prodIndexX);
-        // 添加star sku列表
-//        addStarSkuClient(prodIndexX, renterId) ;
-        // 添加 star sku
-        prodIndexX.setSkuList(getStarSkuListByMpuForClient(prodIndexX.getSkuid(), renterId));
-        // 设置租户价格
-        setRenterPriceByMpu(renterId, prodIndexX);
         // 设置租户状态
         setRenterStateByMpu(renterId, prodIndexX);
-        // 添加property
-        setPropertyList(prodIndexX);
+        if ("1".equals(prodIndexX.getState())) {
+            // 图片全路径
+            updateImage(prodIndexX) ;
+            // 获取多sku主图信息
+            getStarSkuImagesUrl(prodIndexX);
+            // 添加star sku列表
+    //        addStarSkuClient(prodIndexX, renterId) ;
+            // 添加 star sku
+            prodIndexX.setSkuList(getStarSkuListByMpuForClient(prodIndexX.getSkuid(), renterId));
+            // 设置租户价格
+            setRenterPriceByMpu(renterId, prodIndexX);
+
+            // 添加property
+            setPropertyList(prodIndexX);
+        }
     }
 
     /**
