@@ -753,4 +753,9 @@ public class AdminProdController {
         return appSkuStateService.updateBatchState(beans) ;
     }
 
+    @PutMapping("merchant/state")
+    public OperaResponse batchUpdateMerchantState(@RequestBody AoyiProdIndex prodIndex) {
+        return prodService.updateBatchStateByMerchantId(prodIndex) ;
+    }
+
 }

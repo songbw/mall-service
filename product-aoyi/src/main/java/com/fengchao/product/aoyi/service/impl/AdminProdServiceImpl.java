@@ -933,4 +933,12 @@ public class AdminProdServiceImpl implements AdminProdService {
         }
         return prodIndexX;
     }
+
+    @Override
+    public OperaResponse updateBatchStateByMerchantId(AoyiProdIndex prodIndex) {
+        OperaResponse response = new OperaResponse() ;
+        productDao.updateByMerchantIdAndState(prodIndex);
+        response.setData(prodIndex);
+        return response;
+    }
 }

@@ -515,4 +515,21 @@ public class ProductDao {
         return aoyiProdIndexList;
     }
 
+    /**
+     * 根据merchantId 批量上下架商品
+     * @param bean
+     */
+    public void updateByMerchantIdAndState(AoyiProdIndex bean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMerchantIdEqualTo(bean.getMerchantId());
+        criteria.andStateEqualTo(bean.getState()) ;
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        BeanUtils.copyProperties(bean, aoyiProdIndex);
+        aoyiProdIndex.setId(null);
+        aoyiProdIndex.setUpdatedAt(new Date());
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
 }

@@ -85,4 +85,6 @@ public interface AdminProdService {
     OperaResponse updateBatch(List<AoyiProdIndex> beans);
 
     AoyiProdIndexX findByMpu(String mpu) ;
+
+    OperaResponse updateBatchStateByMerchantId(AoyiProdIndex prodIndex);
 }
