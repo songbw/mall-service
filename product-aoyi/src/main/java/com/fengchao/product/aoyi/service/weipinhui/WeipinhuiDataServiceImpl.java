@@ -302,6 +302,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
                         if (!exsitItemIdList.contains(aoyiProdIndex.getSkuid())) {
                             aoyiProdIndex.setState("0");
+                            aoyiProdIndex.setType(2);
                             insertAoyiProdIndexList.add(aoyiProdIndex);
                         }
                     }

@@ -119,6 +119,7 @@ public class AsyncTask {
                             aoyiProdIndexWithBLOBs.setState(spuBean.getStatus() + "");
                             aoyiProdIndexWithBLOBs.setIntroduction(spuBean.getDetailInfo());
                             aoyiProdIndexWithBLOBs.setCrossBorder(spuBean.getCrossBorder());
+                            aoyiProdIndexWithBLOBs.setType(2);
                             List<AoyiProdIndex> aoyiProdIndices =  productDao.findBySkuId(spuBean.getSpuId(), aoyiProdIndexWithBLOBs.getMerchantId()) ;
                             if (aoyiProdIndices == null || aoyiProdIndices.size() == 0) {
                                 // insert spu
