@@ -463,6 +463,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     }
                     // 处理销售价格
                     aoyiProdIndex.setPrice(aoyiSkuResDtoList.get(0).getSellPrice());
+                    aoyiProdIndex.setSprice(aoyiSkuResDtoList.get(0).getPriceCent());
 
                     // x..执行更新spu
                     log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
