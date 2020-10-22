@@ -227,6 +227,8 @@ public class ProductHandle {
                 starSkuBean.setAppSkuPriceList(getAppSkuPriceListByStarSku(renterId,starSku));
                 // 租户状态列表
                 starSkuBean.setAppSkuStateList(getAppSkuStateListByStarSku(renterId, starSku));
+                List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+                starSkuBean.setPropertyList(skuProperties);
                 starSkuBeans.add(starSkuBean) ;
             });
         }
