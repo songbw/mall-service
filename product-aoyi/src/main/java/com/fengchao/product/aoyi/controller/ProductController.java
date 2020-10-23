@@ -151,7 +151,7 @@ public class ProductController {
      * @throws ProductException
      */
     @GetMapping("/mpuIds")
-    private OperaResult selectByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
+    private OperaResult selectByMpuIdList(@RequestHeader("renter") String renterId, @RequestParam("mpuIdList") List<String> mpuIdList, OperaResult result) throws ProductException {
         log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
         if (mpuIdList.size() > 60) {
             result.setCode(200001);
@@ -160,7 +160,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndexX> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList);
+            List<AoyiProdIndexX> productInfoBeanList = service.selectProductListByMpuIdList(mpuIdList, renterId);
 
             result.getData().put("result", productInfoBeanList);
         } catch (Exception e) {

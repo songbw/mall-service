@@ -504,22 +504,22 @@ public class ProductServiceImpl implements ProductService {
 
     @DataSource(DataSourceNames.TWO)
     @Override
-    public List<AoyiProdIndexX> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
+    public List<AoyiProdIndexX> selectProductListByMpuIdList(List<String> mpuIdList, String renterId) throws Exception {
         // 1. 查询商品信息
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
         productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
-            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-            aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
-            BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
-            List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
-            List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = new ArrayList<>() ;
-            starSkus.forEach(starSku -> {
-                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = new com.fengchao.product.aoyi.bean.StarSkuBean() ;
-                BeanUtils.copyProperties(starSku, starSkuBean);
-                starSkuBeans.add(starSkuBean) ;
-            });
-            aoyiProdIndexX.setSkuList(starSkuBeans);
+            AoyiProdIndexX aoyiProdIndexX = productHandle.convertProductXByProd(aoyiProdIndex, renterId) ;
+//            aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
+//            BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
+//            List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+//            List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = new ArrayList<>() ;
+//            starSkus.forEach(starSku -> {
+//                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = new com.fengchao.product.aoyi.bean.StarSkuBean() ;
+//                BeanUtils.copyProperties(starSku, starSkuBean);
+//                starSkuBeans.add(starSkuBean) ;
+//            });
+//            aoyiProdIndexX.setSkuList(starSkuBeans);
             aoyiProdIndexList.add(aoyiProdIndexX);
         });
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));

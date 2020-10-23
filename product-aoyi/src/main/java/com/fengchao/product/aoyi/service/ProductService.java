@@ -42,7 +42,7 @@ public interface ProductService {
      */
     List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception;
 
-    List<AoyiProdIndexX> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception ;
+    List<AoyiProdIndexX> selectProductListByMpuIdList(List<String> mpuIdList, String renterId) throws Exception ;
 
     /**
      * 关爱通价格查询
