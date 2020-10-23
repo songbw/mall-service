@@ -270,7 +270,7 @@ public class ProductHandle {
      * @param renterId 租户ID
      * @return  star sku 列表
      */
-    private List<StarSkuBean> getStarSkuListByMpuForClient(String skuId, String renterId) {
+    public List<StarSkuBean> getStarSkuListByMpuForClient(String skuId, String renterId) {
         List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
         List<StarSku> starSkus = starSkuDao.selectBySpuId(skuId) ;
         if (starSkus != null && starSkus.size() >0) {

@@ -32,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -565,12 +562,23 @@ public class ProductServiceImpl implements ProductService {
         appSkuPrice.setRenterId(renterId);
         List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
-            appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-            appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
-            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-            if (appSkuPrices != null && appSkuPrices.size() > 0) {
-                aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
+            if (aoyiProdIndex.getType() == 2) {
+                // 获取 star sku list
+                List<StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
+                // 获取最小值
+                Optional<StarSkuBean > starSkuOpt= starSkuBeans.stream().min(Comparator.comparingInt(StarSkuBean ::getPrice));
+                StarSkuBean starSkuBean = starSkuOpt.get() ;
+                BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+                aoyiProdIndex.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+            } else {
+                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
+                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+                if (appSkuPrices != null && appSkuPrices.size() > 0) {
+                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
+                }
             }
+
         });
 
 
