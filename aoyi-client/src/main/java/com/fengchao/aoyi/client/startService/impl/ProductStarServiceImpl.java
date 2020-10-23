@@ -119,15 +119,17 @@ public class ProductStarServiceImpl implements ProductStarService {
 //        params.put("areaId", "4524130,4524157,4524163");
 //        params.put("skuIds", "5769");
         params.put("codes", bean.getCodes());
-        OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_FIND_SKU_INVENTORY, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
+//        OperaResponse response = StarHttpClient.post(params,OperaResponse.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_FIND_SKU_INVENTORY, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
+        String response = StarHttpClient.post(params,String.class, starClientConfig.getBaseUrl(), StarHttpClient.STAR_GOOD_FIND_SKU_INVENTORY, starClientConfig.getAppKey(), starClientConfig.getAppSecret()) ;
         log.info("查询商品库存, 返回结果：{}", JSONUtil.toJsonString(response));
-        if (response.getCode() == 0) {
-            response.setCode(200);
-        } else {
-            response.setCode(response.getCode());
-            response.setMsg(response.getMessage());
-        }
-        return response;
+//        if (response.getCode() == 0) {
+//            response.setCode(200);
+//        } else {
+//            response.setCode(response.getCode());
+//            response.setMsg(response.getMessage());
+//        }
+//        return response;
+        return new OperaResponse();
     }
 
     @Override
