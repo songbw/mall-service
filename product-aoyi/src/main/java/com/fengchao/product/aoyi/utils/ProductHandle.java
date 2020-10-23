@@ -16,9 +16,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @EnableConfigurationProperties({ESConfig.class})
@@ -183,9 +181,8 @@ public class ProductHandle {
             // 获取多sku主图信息
             getStarSkuImagesUrl(prodIndexX);
             // 添加star sku列表
-    //        addStarSkuClient(prodIndexX, renterId) ;
-            // 添加 star sku
-            prodIndexX.setSkuList(getStarSkuListByMpuForClient(prodIndexX.getSkuid(), renterId));
+            addStarSkuListClient(prodIndexX, renterId) ;
+
             // 设置租户价格
             setRenterPriceByMpu(renterId, prodIndexX);
 
@@ -203,11 +200,43 @@ public class ProductHandle {
         if (prodIndexX.getType() == 2) {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
+            List<StarSkuBean> starSkus = prodIndexX.getSkuList() ;
+
+            // 获取最小值
+            Optional<StarSkuBean > starSkuOpt= starSkus.stream().min(Comparator.comparingInt(StarSkuBean ::getPrice));
+            StarSkuBean starSkuBean = starSkuOpt.get() ;
+            prodIndexX.setStarSku(starSkuBean);
+            BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+            BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
+            prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+            prodIndexX.setSprice(bigDecimalSprice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
         }
         // 租户价格列表
         prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
         // 租户状态列表
         prodIndexX.setAppSkuStateList(getAppSkuStateListByMpu(renterId, prodIndexX.getMpu()));
+    }
+
+    /**
+     * 为MPU 添加 SKU
+     * @param prodIndexX 源MPU
+     * @param renterId  租户ID
+     */
+    private void addStarSkuListClient(AoyiProdIndexX prodIndexX, String renterId) {
+        if (prodIndexX.getType() == 2) {
+            // 添加 star sku
+            prodIndexX.setSkuList(getStarSkuListByMpuForClient(prodIndexX.getSkuid(), renterId));
+            List<StarSkuBean> starSkus = prodIndexX.getSkuList() ;
+
+            // 获取最小值
+            Optional<StarSkuBean > starSkuOpt= starSkus.stream().min(Comparator.comparingInt(StarSkuBean ::getPrice));
+            StarSkuBean starSkuBean = starSkuOpt.get() ;
+            prodIndexX.setStarSku(starSkuBean);
+            BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+            BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
+            prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+            prodIndexX.setSprice(bigDecimalSprice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+        }
     }
 
     /**

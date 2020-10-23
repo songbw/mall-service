@@ -526,8 +526,12 @@ public class ProductDao {
         criteria.andStateEqualTo(bean.getState()) ;
 
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
-        BeanUtils.copyProperties(bean, aoyiProdIndex);
-        aoyiProdIndex.setId(null);
+        if (bean.getMerchantId() != null && bean.getMerchantId() != 0) {
+            aoyiProdIndex.setMerchantId(bean.getMerchantId());
+        }
+        if (!StringUtils.isEmpty(bean.getState())) {
+            aoyiProdIndex.setState(bean.getState());
+        }
         aoyiProdIndex.setUpdatedAt(new Date());
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
     }
