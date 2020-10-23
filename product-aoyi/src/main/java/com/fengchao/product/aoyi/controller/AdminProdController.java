@@ -7,11 +7,10 @@ import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.model.AppSkuState;
-import com.fengchao.product.aoyi.model.StarSku;
+import com.fengchao.product.aoyi.model.StarSkuBean;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.AppSkuPriceService;
 import com.fengchao.product.aoyi.service.AppSkuStateService;
-import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
@@ -710,12 +709,12 @@ public class AdminProdController {
     }
 
     @PutMapping("star/sku")
-    public OperaResponse updateStarSku(@RequestBody StarSku bean) {
+    public OperaResponse updateStarSku(@RequestBody StarSkuBean bean) {
         return prodService.updateSkuPriceAndState(bean) ;
     }
 
     @PutMapping("batch/star/sku")
-    public OperaResponse batchUpdateStarSku(@RequestBody List<StarSku> beans) {
+    public OperaResponse batchUpdateStarSku(@RequestBody List<StarSkuBean> beans) {
         return prodService.batchUpdateSkuPriceAndState(beans) ;
     }
 

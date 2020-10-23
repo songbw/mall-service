@@ -7,7 +7,7 @@ import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.mapper.AppSkuStateMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AppSkuState;
-import com.fengchao.product.aoyi.model.StarSku;
+import com.fengchao.product.aoyi.model.StarSkuBean;
 import com.fengchao.product.aoyi.service.AppSkuStateService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -140,9 +140,9 @@ public class AppSkuStateServiceImpl implements AppSkuStateService {
                     checkState = checkState(Integer.parseInt(aoyiProdIndex.getState()), bean.getState(), appSkuState) ;
                 }
             } else {
-                List<StarSku> starSkus = starSkuDao.selectBySpuIdAndCode(bean.getMpu(), bean.getSkuId()) ;
+                List<StarSkuBean> starSkus = starSkuDao.selectBySpuIdAndCode(bean.getMpu(), bean.getSkuId()) ;
                 if (starSkus != null && starSkus.size() > 0) {
-                    StarSku starSku = starSkus.get(0) ;
+                    StarSkuBean starSku = starSkus.get(0) ;
                     checkState = checkState(starSku.getStatus(), bean.getState(), appSkuState) ;
                 }
             }

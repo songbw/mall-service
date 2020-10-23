@@ -230,7 +230,7 @@ public class ProductAoyiApplicationTests {
 						JSONObject skuDetailResJson = JSONObject.parseObject(skuDetailResString) ;
 						JSONArray skuDetailData = skuDetailResJson.getJSONArray("data") ;
 						JSONObject jsonObject = skuDetailData.getJSONObject(0) ;
-						StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
+						StarSkuBean skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSkuBean>(){});
 						skuBean.setSpuId(spuArray.getString(i));
 						// insert spu
 						List<AoyiProdIndex> aoyiProdIndices =  productDao.findBySkuId(spuArray.getString(i), 4) ;
@@ -332,9 +332,9 @@ public class ProductAoyiApplicationTests {
 	public void spuPrice() {
 		List<AoyiProdIndex> aoyiProdIndices = productDao.selectAoyiProdIndexListByMerchant(4) ;
 		aoyiProdIndices.forEach(aoyiProdIndex -> {
-			List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+			List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
 			if (starSkus != null && starSkus.size() > 0) {
-				StarSku starSku = starSkus.get(0) ;
+				StarSkuBean starSku = starSkus.get(0) ;
 				BigDecimal bigDecimalPrice = new BigDecimal(starSku.getPrice()) ;
 				String price = bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString() ;
 				aoyiProdIndex.setPrice(price);

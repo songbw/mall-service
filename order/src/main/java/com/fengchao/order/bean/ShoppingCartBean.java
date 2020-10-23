@@ -27,7 +27,7 @@ public class ShoppingCartBean extends AoyiProdIndex {
 
     private Integer perLimited = -1;
 
-    private StarSku starSku ;
+    private StarSkuBean starSku ;
 
     public Integer getId() {
         return id;
@@ -118,12 +118,12 @@ public class ShoppingCartBean extends AoyiProdIndex {
     }
 
     @Override
-    public StarSku getStarSku() {
+    public StarSkuBean getStarSku() {
         return starSku;
     }
 
     @Override
-    public void setStarSku(StarSku starSku) {
+    public void setStarSku(StarSkuBean starSku) {
         this.starSku = starSku;
     }
 }

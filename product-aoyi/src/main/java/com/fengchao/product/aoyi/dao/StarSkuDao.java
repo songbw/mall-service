@@ -5,7 +5,7 @@ import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.constants.IStatusEnum;
 import com.fengchao.product.aoyi.mapper.StarSkuMapper;
 import com.fengchao.product.aoyi.mapper.StarSkuXMapper;
-import com.fengchao.product.aoyi.model.StarSku;
+import com.fengchao.product.aoyi.model.StarSkuBean;
 import com.fengchao.product.aoyi.model.StarSkuExample;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class StarSkuDao {
      *
      * @param starSkuList
      */
-    public void batchInsert(List<StarSku> starSkuList) {
+    public void batchInsert(List<StarSkuBean> starSkuList) {
         starSkuXMapper.batchInsert(starSkuList);
     }
 
@@ -47,11 +47,11 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectBySpuId(String spuId) {
+    public List<StarSkuBean> selectBySpuId(String spuId) {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdEqualTo(spuId) ;
-        List<StarSku> list = starSkuMapper.selectByExample(example);
+        List<StarSkuBean> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -60,12 +60,12 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectBySpuIdAndCode(String spuId, String code) {
+    public List<StarSkuBean> selectBySpuIdAndCode(String spuId, String code) {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdEqualTo(spuId) ;
         criteria.andCodeEqualTo(code) ;
-        List<StarSku> list = starSkuMapper.selectByExample(example);
+        List<StarSkuBean> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -74,10 +74,10 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectAll() {
+    public List<StarSkuBean> selectAll() {
         StarSkuExample example = new StarSkuExample();
         example.setOrderByClause("create_time desc");
-        List<StarSku> list = starSkuMapper.selectByExample(example);
+        List<StarSkuBean> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -87,7 +87,7 @@ public class StarSkuDao {
      * @param skuIdList
      * @return
      */
-    public List<StarSku> selectBySkuIdList(List<String> skuIdList) {
+    public List<StarSkuBean> selectBySkuIdList(List<String> skuIdList) {
         StarSkuExample starSkuExample = new StarSkuExample();
 
         StarSkuExample.Criteria criteria = starSkuExample.createCriteria();
@@ -95,7 +95,7 @@ public class StarSkuDao {
 
         criteria.andSkuIdIn(skuIdList);
 
-        List<StarSku> starSkuList = starSkuMapper.selectByExample(starSkuExample);
+        List<StarSkuBean> starSkuList = starSkuMapper.selectByExample(starSkuExample);
 
         return starSkuList;
     }
@@ -106,7 +106,7 @@ public class StarSkuDao {
      * @param skuId
      * @return
      */
-    public StarSku selectBySkuId(String skuId) {
+    public StarSkuBean selectBySkuId(String skuId) {
         StarSkuExample starSkuExample = new StarSkuExample();
 
         StarSkuExample.Criteria criteria = starSkuExample.createCriteria();
@@ -114,7 +114,7 @@ public class StarSkuDao {
 
         criteria.andSkuIdEqualTo(skuId);
 
-        List<StarSku> starSkuList = starSkuMapper.selectByExample(starSkuExample);
+        List<StarSkuBean> starSkuList = starSkuMapper.selectByExample(starSkuExample);
 
         if (CollectionUtils.isEmpty(starSkuList)) {
             return null;
@@ -129,7 +129,7 @@ public class StarSkuDao {
      * 根据code跟新价格
      * @param starSku
      */
-    public void updatePriceByCode(StarSku starSku) {
+    public void updatePriceByCode(StarSkuBean starSku) {
         starSku.setUpdateTime(new Date());
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
@@ -142,11 +142,11 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectByCodeList(List<String> codeList) {
+    public List<StarSkuBean> selectByCodeList(List<String> codeList) {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeIn(codeList) ;
-        List<StarSku> list = starSkuMapper.selectByExample(example);
+        List<StarSkuBean> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -155,11 +155,11 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectBySpuIds(List<String> spuIds) {
+    public List<StarSkuBean> selectBySpuIds(List<String> spuIds) {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdIn(spuIds) ;
-        List<StarSku> list = starSkuMapper.selectByExample(example);
+        List<StarSkuBean> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -168,11 +168,11 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectByCode(String code) {
+    public List<StarSkuBean> selectByCode(String code) {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andCodeEqualTo(code) ;
-        List<StarSku> list = starSkuMapper.selectByExample(example);
+        List<StarSkuBean> list = starSkuMapper.selectByExample(example);
         return list;
     }
 
@@ -180,7 +180,7 @@ public class StarSkuDao {
      * 根据code更新上下架状态
      * @param starSku
      */
-    public void updateStatusByCode(StarSku starSku) {
+    public void updateStatusByCode(StarSkuBean starSku) {
         starSku.setUpdateTime(new Date());
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
@@ -193,7 +193,7 @@ public class StarSkuDao {
      * @param bean
      */
     public void updateStatusByCodeAndSpuId(StateBean bean) {
-        StarSku starSku = new StarSku() ;
+        StarSkuBean starSku = new StarSkuBean() ;
         starSku.setCode(bean.getSkuId());
         starSku.setSpuId(bean.getSpuId());
         starSku.setStatus(Integer.valueOf(bean.getState()));
@@ -210,7 +210,7 @@ public class StarSkuDao {
      * @param bean
      */
     public void updatePriceByCodeAndSpuId(PriceBean bean) {
-        StarSku starSku = new StarSku() ;
+        StarSkuBean starSku = new StarSkuBean() ;
         starSku.setCode(bean.getSkuId());
         starSku.setSpuId(bean.getSpuId());
         // 建议销售价
@@ -243,12 +243,12 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectUBySpuId(String spuId) {
+    public List<StarSkuBean> selectUBySpuId(String spuId) {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdEqualTo(spuId) ;
         criteria.andStatusEqualTo(1) ;
-        List<StarSku> list = starSkuMapper.selectByExample(example);
+        List<StarSkuBean> list = starSkuMapper.selectByExample(example);
         return list;
     }
 

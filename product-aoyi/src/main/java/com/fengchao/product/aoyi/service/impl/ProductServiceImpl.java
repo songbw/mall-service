@@ -3,7 +3,6 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
-import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.constants.ProductConstant;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
@@ -14,6 +13,7 @@ import com.fengchao.product.aoyi.feign.ESService;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.*;
+import com.fengchao.product.aoyi.model.StarSkuBean;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
@@ -278,7 +278,7 @@ public class ProductServiceImpl implements ProductService {
                         queryBean.getCountyId(), queryBean.getCityId());
             } else {
                 // 查询spu信息
-                StarSku starSku =  starSkuDao.selectBySkuId(sku.getSkuId());
+                StarSkuBean starSku =  starSkuDao.selectBySkuId(sku.getSkuId());
 
                 // 执行rpc查询库存
                 AoyiQueryInventoryResDto aoyiQueryInventoryResDto =
@@ -512,10 +512,10 @@ public class ProductServiceImpl implements ProductService {
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
             BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
-            List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
-            List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
+            List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+            List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = new ArrayList<>() ;
             starSkus.forEach(starSku -> {
-                StarSkuBean starSkuBean = new StarSkuBean() ;
+                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = new com.fengchao.product.aoyi.bean.StarSkuBean() ;
                 BeanUtils.copyProperties(starSku, starSkuBean);
                 starSkuBeans.add(starSkuBean) ;
             });
@@ -564,10 +564,10 @@ public class ProductServiceImpl implements ProductService {
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
             if (aoyiProdIndex.getType() == 2) {
                 // 获取 star sku list
-                List<StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
+                List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
                 // 获取最小值
-                Optional<StarSkuBean > starSkuOpt= starSkuBeans.stream().min(Comparator.comparingInt(StarSkuBean ::getPrice));
-                StarSkuBean starSkuBean = starSkuOpt.get() ;
+                Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkuBeans.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
+                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = starSkuOpt.get() ;
                 BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
                 aoyiProdIndex.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
             } else {
@@ -654,32 +654,11 @@ public class ProductServiceImpl implements ProductService {
         String renterId = vendorsRpcService.queryRenterId(appId) ;
         // 根据MPU查询商品表
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
-        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-        appSkuPrice.setRenterId(renterId);
         bean.forEach(aoyiProdIndex -> {
             AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
-            appSkuPrice.setMpu(aoyiProdIndex1.getMpu());
-            appSkuPrice.setSkuId(aoyiProdIndex1.getSkuid());
-            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-            if (appSkuPrices != null && appSkuPrices.size() >0) {
-                aoyiProdIndex1.setPrice(appSkuPrices.get(0).getPrice().toString());
-            }
-            aoyiProdIndex1 = productHandle.updateImageExample(aoyiProdIndex1) ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
-            if (StringUtils.isNotBlank(aoyiProdIndex.getSkuid())) {
-                List<StarSku> starSkus = starSkuDao.selectByCode(aoyiProdIndex.getSkuid()) ;
-                if (starSkus != null && starSkus.size() > 0) {
-                    StarSku starSku = starSkus.get(0) ;
-                    appSkuPrice.setMpu(starSku.getSpuId());
-                    appSkuPrice.setSkuId(starSku.getCode());
-                    List<AppSkuPrice> appSkuPrices1 = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                    if (appSkuPrices1 != null && appSkuPrices1.size() >0) {
-                        starSku.setPrice(appSkuPrices1.get(0).getPrice().intValue());
-                    }
-                    aoyiProdIndexX.setStarSku(starSku);
-                }
-            }
+            productHandle.getProductXClientBySkuCode(aoyiProdIndexX, renterId, aoyiProdIndex.getSkuid()) ;
             aoyiProdIndexList.add(aoyiProdIndexX);
         });
 
@@ -695,7 +674,7 @@ public class ProductServiceImpl implements ProductService {
         BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
         List<String> codes = new ArrayList<>();
         codes.add(code);
-        List<StarSku> starSkus = starSkuDao.selectByCodeList(codes) ;
+        List<StarSkuBean> starSkus = starSkuDao.selectByCodeList(codes) ;
         if (starSkus != null && starSkus.size() > 0) {
             aoyiProdIndexX.setStarSku(starSkus.get(0));
         }

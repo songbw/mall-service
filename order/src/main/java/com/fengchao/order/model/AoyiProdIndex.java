@@ -1,6 +1,7 @@
 package com.fengchao.order.model;
 
 import com.fengchao.order.bean.StarSku;
+import com.fengchao.order.bean.StarSkuBean;
 
 import java.util.Date;
 
@@ -55,7 +56,7 @@ public class AoyiProdIndex {
 
     private String compareUrl;
 
-    private StarSku starSku ;
+    private StarSkuBean starSku ;
 
     public Integer getId() {
         return id;
@@ -257,11 +258,11 @@ public class AoyiProdIndex {
         this.compareUrl = compareUrl == null ? null : compareUrl.trim();
     }
 
-    public StarSku getStarSku() {
+    public StarSkuBean getStarSku() {
         return starSku;
     }
 
-    public void setStarSku(StarSku starSku) {
+    public void setStarSku(StarSkuBean starSku) {
         this.starSku = starSku;
     }
 }

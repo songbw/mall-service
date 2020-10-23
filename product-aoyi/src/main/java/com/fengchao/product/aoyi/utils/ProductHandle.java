@@ -1,7 +1,6 @@
 package com.fengchao.product.aoyi.utils;
 
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
-import com.fengchao.product.aoyi.bean.StarSkuBean;
 import com.fengchao.product.aoyi.config.ESConfig;
 import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.dao.*;
@@ -191,6 +190,40 @@ public class ProductHandle {
         }
     }
 
+    public void getProductXClientBySkuCode(AoyiProdIndexX prodIndexX, String renterId, String skuCode) {
+        setRenterStateByMpu(renterId, prodIndexX);
+        // 图片全路径
+        updateImage(prodIndexX) ;
+        if ("1".equals(prodIndexX.getState())) {
+            // 设置租户价格
+            setRenterPriceByMpu(renterId, prodIndexX);
+            // 添加property
+            setPropertyList(prodIndexX);
+            if (StringUtils.isNotBlank(skuCode)) {
+                List<StarSkuBean> starSkus = starSkuDao.selectByCode(skuCode) ;
+                if (starSkus != null && starSkus.size() > 0) {
+                    StarSkuBean starSku = starSkus.get(0) ;
+
+                    com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = new com.fengchao.product.aoyi.bean.StarSkuBean() ;
+                    BeanUtils.copyProperties(starSku, starSkuBean);
+                    // 租户价格列表
+                    List<AppSkuPrice> appSkuPrices = getAppSkuPriceListByStarSku(renterId,starSku) ;
+                    if (appSkuPrices != null && appSkuPrices.size() > 0) {
+                        starSku.setPrice(appSkuPrices.get(0).getPrice().intValue());
+                    }
+                    // 租户状态列表
+                    List<AppSkuState> appSkuStates =  getAppSkuStateListByStarSku(renterId, starSku) ;
+                    if (appSkuStates != null && appSkuStates.size() > 0) {
+                        starSku.setStatus(appSkuStates.get(0).getState());
+                    }
+                    List<StarProperty> skuProperties = starPropertyDao.selectByProductIdAndType(starSku.getId(), 1) ;
+                    starSkuBean.setPropertyList(skuProperties);
+                    prodIndexX.setStarSku(starSkuBean);
+                }
+            }
+        }
+    }
+
     /**
      * 为MPU 添加 SKU
      * @param prodIndexX 源MPU
@@ -200,11 +233,11 @@ public class ProductHandle {
         if (prodIndexX.getType() == 2) {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
-            List<StarSkuBean> starSkus = prodIndexX.getSkuList() ;
+            List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkus = prodIndexX.getSkuList() ;
 
             // 获取最小值
-            Optional<StarSkuBean > starSkuOpt= starSkus.stream().min(Comparator.comparingInt(StarSkuBean ::getPrice));
-            StarSkuBean starSkuBean = starSkuOpt.get() ;
+            Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkus.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
+            com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = starSkuOpt.get() ;
             prodIndexX.setStarSku(starSkuBean);
             BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
             BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
@@ -226,11 +259,11 @@ public class ProductHandle {
         if (prodIndexX.getType() == 2) {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpuForClient(prodIndexX.getSkuid(), renterId));
-            List<StarSkuBean> starSkus = prodIndexX.getSkuList() ;
+            List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkus = prodIndexX.getSkuList() ;
 
             // 获取最小值
-            Optional<StarSkuBean > starSkuOpt= starSkus.stream().min(Comparator.comparingInt(StarSkuBean ::getPrice));
-            StarSkuBean starSkuBean = starSkuOpt.get() ;
+            Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkus.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
+            com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = starSkuOpt.get() ;
             prodIndexX.setStarSku(starSkuBean);
             BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
             BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
@@ -245,12 +278,12 @@ public class ProductHandle {
      * @param renterId 租户ID
      * @return  star sku 列表
      */
-    private List<StarSkuBean> getStarSkuListByMpu(String skuId, String renterId) {
-        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
-        List<StarSku> starSkus = starSkuDao.selectBySpuId(skuId) ;
+    private List<com.fengchao.product.aoyi.bean.StarSkuBean> getStarSkuListByMpu(String skuId, String renterId) {
+        List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = new ArrayList<>() ;
+        List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(skuId) ;
         if (starSkus != null && starSkus.size() >0) {
             starSkus.forEach(starSku -> {
-                StarSkuBean starSkuBean = new StarSkuBean() ;
+                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = new com.fengchao.product.aoyi.bean.StarSkuBean() ;
                 BeanUtils.copyProperties(starSku, starSkuBean);
                 // 租户价格列表
                 starSkuBean.setAppSkuPriceList(getAppSkuPriceListByStarSku(renterId,starSku));
@@ -270,12 +303,12 @@ public class ProductHandle {
      * @param renterId 租户ID
      * @return  star sku 列表
      */
-    public List<StarSkuBean> getStarSkuListByMpuForClient(String skuId, String renterId) {
-        List<StarSkuBean> starSkuBeans = new ArrayList<>() ;
-        List<StarSku> starSkus = starSkuDao.selectBySpuId(skuId) ;
+    public List<com.fengchao.product.aoyi.bean.StarSkuBean> getStarSkuListByMpuForClient(String skuId, String renterId) {
+        List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = new ArrayList<>() ;
+        List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(skuId) ;
         if (starSkus != null && starSkus.size() >0) {
             starSkus.forEach(starSku -> {
-                StarSkuBean starSkuBean = new StarSkuBean() ;
+                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = new com.fengchao.product.aoyi.bean.StarSkuBean() ;
                 BeanUtils.copyProperties(starSku, starSkuBean);
                 // 租户价格列表
                 List<AppSkuPrice> appSkuPrices = getAppSkuPriceListByStarSku(renterId,starSku) ;
@@ -301,7 +334,7 @@ public class ProductHandle {
      * @param starSku   sku
      * @return  租户价格列表
      */
-    private List<AppSkuPrice> getAppSkuPriceListByStarSku(String renterId, StarSku starSku) {
+    private List<AppSkuPrice> getAppSkuPriceListByStarSku(String renterId, StarSkuBean starSku) {
         AppSkuPrice appSkuPrice = new AppSkuPrice() ;
         appSkuPrice.setRenterId(renterId);
         appSkuPrice.setMpu(starSku.getSpuId());
@@ -364,7 +397,7 @@ public class ProductHandle {
      * @param starSku   sku
      * @return  租户上下架状态列表
      */
-    private List<AppSkuState> getAppSkuStateListByStarSku(String renterId, StarSku starSku) {
+    private List<AppSkuState> getAppSkuStateListByStarSku(String renterId, StarSkuBean starSku) {
         AppSkuState appSkuState = new AppSkuState() ;
         appSkuState.setRenterId(renterId);
         appSkuState.setMpu(starSku.getSpuId());

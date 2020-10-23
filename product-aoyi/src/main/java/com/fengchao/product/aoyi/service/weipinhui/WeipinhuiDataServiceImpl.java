@@ -478,19 +478,19 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             aoyiSkuResDtoList.stream().map(a -> a.getSkuId()).collect(Collectors.toList());
 
                     // 数据库查询
-                    List<StarSku> exsitStarSkuList = starSkuDao.selectBySkuIdList(skuIdList);
+                    List<StarSkuBean> exsitStarSkuList = starSkuDao.selectBySkuIdList(skuIdList);
                     List<String> exsitSkuIdList =
                             exsitStarSkuList.stream().map(e -> e.getSkuId()).collect(Collectors.toList());
 
                     // 4.2.2 过滤掉已经存在sku
-                    List<StarSku> insertStarSkuList = new ArrayList<>(); // 过滤掉已存在的sku之后，剩下的需要插入的sku信息
+                    List<StarSkuBean> insertStarSkuList = new ArrayList<>(); // 过滤掉已存在的sku之后，剩下的需要插入的sku信息
                     List<StarPropertyBean> candidateStarPropertyList = new ArrayList<>(); // 待插入的商品规格列表信息
                     List<AyFcImages> skuImageList = new ArrayList<>(); // 待插入ay_fc_images表的信息
                     // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                     for (AoyiSkuResDto aoyiSkuResDto : aoyiSkuResDtoList) { // 遍历需要插入的数据，根据sku判断其中有无已经存在的数据
                         if (!exsitSkuIdList.contains(aoyiSkuResDto.getSkuId())) { // 如果不存在
                             // a.组装sku
-                            StarSku starSku = new StarSku();
+                            StarSkuBean starSku = new StarSkuBean();
                             // String code;
                             // purchaseQty;
 
@@ -533,10 +533,10 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     }
 
                     // x..  这里在获取一下刚才批量插入的sku数据, 主要是为了获取新插入的id，然后作为sku_property的属性
-                    Map<String, StarSku> starSkuMap = new HashMap<>(); // key: skuId, value: starSku;
+                    Map<String, StarSkuBean> starSkuMap = new HashMap<>(); // key: skuId, value: starSku;
                     if (CollectionUtils.isNotEmpty(insertStarSkuList)) {
                         List<String> _skuIdList = insertStarSkuList.stream().map(i -> i.getSkuId()).collect(Collectors.toList());
-                        List<StarSku>  _starSkuList = starSkuDao.selectBySkuIdList(_skuIdList);
+                        List<StarSkuBean>  _starSkuList = starSkuDao.selectBySkuIdList(_skuIdList);
 
                         starSkuMap = _starSkuList.stream().collect(Collectors.toMap(_s -> _s.getSkuId(), _s -> _s));
                     }
@@ -561,7 +561,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         for (StarPropertyBean candidateStarProperty : candidateStarPropertyList) {
                             if (!exsitPropertyIdList.contains(candidateStarProperty.getProductId())) {
                                 // !!xx  将productId修改为startSku中的id
-                                StarSku _starSku = starSkuMap.get(candidateStarProperty.getWphSkuId());
+                                StarSkuBean _starSku = starSkuMap.get(candidateStarProperty.getWphSkuId());
                                 if (_starSku != null) {
                                     candidateStarProperty.setProductId(_starSku.getId());
                                 }
@@ -623,9 +623,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 List<String> productionIdList = starPropertyList.stream().map(s -> String.valueOf(s.getProductId())).collect(Collectors.toList());
 
                 // 查询
-                List<StarSku> starSkuList = starSkuDao.selectBySkuIdList(productionIdList);
+                List<StarSkuBean> starSkuList = starSkuDao.selectBySkuIdList(productionIdList);
                 // 转map
-                Map<String, StarSku> _map = starSkuList.stream().collect(Collectors.toMap(s -> s.getSkuId(), s -> s));
+                Map<String, StarSkuBean> _map = starSkuList.stream().collect(Collectors.toMap(s -> s.getSkuId(), s -> s));
 
                 // starPropertyDao.updateByPrimaryKeySelective
 

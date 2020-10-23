@@ -3,7 +3,6 @@ package com.fengchao.product.aoyi.bean;
 import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.model.AppSkuState;
 import com.fengchao.product.aoyi.model.StarProperty;
-import com.fengchao.product.aoyi.model.StarSku;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +14,7 @@ import java.util.List;
  **/
 @Getter
 @Setter
-public class StarSkuBean extends StarSku {
+public class StarSkuBean extends com.fengchao.product.aoyi.model.StarSkuBean {
 
     private List<StarProperty> propertyList ;
 
