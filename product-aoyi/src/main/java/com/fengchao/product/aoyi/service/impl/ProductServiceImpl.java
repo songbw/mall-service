@@ -562,23 +562,12 @@ public class ProductServiceImpl implements ProductService {
         appSkuPrice.setRenterId(renterId);
         List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
-            if (aoyiProdIndex.getType() == 2) {
-                // 获取 star sku list
-                List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
-                // 获取最小值
-                Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkuBeans.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
-                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = starSkuOpt.get() ;
-                BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
-                aoyiProdIndex.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-            } else {
-                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
-                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                if (appSkuPrices != null && appSkuPrices.size() > 0) {
-                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
-                }
+            appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+            appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+            if (appSkuPrices != null && appSkuPrices.size() > 0) {
+                aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
             }
-
         });
 
 
