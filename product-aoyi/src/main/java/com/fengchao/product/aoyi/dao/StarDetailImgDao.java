@@ -36,4 +36,14 @@ public class StarDetailImgDao {
 
         return list;
     }
+
+    public List<StarDetailImg> selectBySpuIds(List<Integer> spuIds) {
+        StarDetailImgExample example = new StarDetailImgExample();
+        StarDetailImgExample.Criteria criteria = example.createCriteria();
+        criteria.andSpuIdIn(spuIds) ;
+
+        List<StarDetailImg> list = mapper.selectByExample(example);
+
+        return list;
+    }
 }

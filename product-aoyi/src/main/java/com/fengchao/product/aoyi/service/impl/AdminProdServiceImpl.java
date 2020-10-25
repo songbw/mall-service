@@ -15,7 +15,7 @@ import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.feign.VendorsServiceClient;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
-import com.fengchao.product.aoyi.model.StarSkuBean;
+import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
@@ -166,7 +166,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             aoyiProdIndexXMapper.selectSearchLimit(map).forEach(aoyiProdIndex -> {
                 spus.add(aoyiProdIndex.getSkuid()) ;
                 aoyiProdIndex = productHandle.updateImageWithBLOBS(aoyiProdIndex) ;
-                List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+                List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
                 List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = new ArrayList<>() ;
                 starSkus.forEach(starSku -> {
                     com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = new com.fengchao.product.aoyi.bean.StarSkuBean() ;
@@ -351,9 +351,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());
             AoyiProdIndexWithBLOBs temp = mapper.selectByPrimaryKey(bean.getId()) ;
-            List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
+            List<StarSku> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
             if (starSkus != null && starSkus.size() > 0) {
-                StarSkuBean starSku = starSkus.get(0) ;
+                StarSku starSku = starSkus.get(0) ;
                 if (StringUtils.isNotBlank(bean.getPrice())) {
                     BigDecimal bigDecimalPrice = new BigDecimal(bean.getPrice()) ;
                     int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
@@ -795,7 +795,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public OperaResponse updateSkuPriceAndState(StarSkuBean bean) {
+    public OperaResponse updateSkuPriceAndState(StarSku bean) {
         OperaResponse operaResponse = new OperaResponse() ;
         if (bean == null || bean.getId() == null || bean.getId() <= 0) {
             operaResponse.setCode(200200);
@@ -808,7 +808,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public OperaResponse batchUpdateSkuPriceAndState(List<StarSkuBean> beans) {
+    public OperaResponse batchUpdateSkuPriceAndState(List<StarSku> beans) {
         OperaResponse operaResponse = new OperaResponse() ;
         if (beans == null || beans.size() == 0) {
             operaResponse.setCode(200200);
@@ -876,7 +876,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             }
             productDao.updateStateById(bean) ;
             // 查询是否有sku
-            List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
+            List<StarSku> starSkus = starSkuDao.selectBySpuId(aoyiProdIndex.getSkuid()) ;
             if (starSkus != null && starSkus.size() > 0) {
                 starSkus.forEach(starSku -> {
                     if (starSku.getPrice() != 0) {
@@ -902,9 +902,9 @@ public class AdminProdServiceImpl implements AdminProdService {
         beans.forEach(bean -> {
             if (bean.getId() != null) {
                 AoyiProdIndexWithBLOBs temp = mapper.selectByPrimaryKey(bean.getId()) ;
-                List<StarSkuBean> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
+                List<StarSku> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
                 if (starSkus != null && starSkus.size() > 0) {
-                    StarSkuBean starSku = starSkus.get(0) ;
+                    StarSku starSku = starSkus.get(0) ;
                     if (StringUtils.isNotBlank(bean.getPrice())) {
                         BigDecimal bigDecimalPrice = new BigDecimal(bean.getPrice()) ;
                         int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;

@@ -161,10 +161,10 @@ public class AsyncTask {
                         JSONArray skuDetailData = skuDetailResJson.getJSONArray("data") ;
                         for (int h = 0; h < skuDetailData.size(); h++) {
                             JSONObject jsonObject = skuDetailData.getJSONObject(h) ;
-                            StarSkuBean skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSkuBean>(){});
+                            StarSku skuBean = JSON.parseObject(jsonObject.toJSONString(), new TypeReference<StarSku>(){});
                             skuBean.setSpuId(spuArray.getString(i));
                             // insert spu
-                            List<StarSkuBean> starSkus = starSkuDao.selectBySpuIdAndCode(spuArray.getString(i), skuBean.getCode()) ;
+                            List<StarSku> starSkus = starSkuDao.selectBySpuIdAndCode(spuArray.getString(i), skuBean.getCode()) ;
                             if (starSkus == null || starSkus.size() == 0) {
                                 starSkuMapper.insertSelective(skuBean) ;
                                 JSONArray propertyArray = jsonObject.getJSONArray("skuPropertyList") ;
@@ -189,11 +189,11 @@ public class AsyncTask {
 
     @Async
     public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
-        List<StarSkuBean> starSkus = starSkuDao.selectAll() ;
+        List<StarSku> starSkus = starSkuDao.selectAll() ;
         List<String> codes = new ArrayList<>() ;
         String code = "" ;
         int i = 1 ;
-        for (StarSkuBean starSku: starSkus) {
+        for (StarSku starSku: starSkus) {
             if (i%200 == 0) {
                 codes.add(code) ;
                 code = "";
@@ -234,7 +234,7 @@ public class AsyncTask {
 
                     BigDecimal bigDecimalR = new BigDecimal(retailPrice) ;
                     int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue() ;
-                    StarSkuBean starSku = new StarSkuBean() ;
+                    StarSku starSku = new StarSku() ;
                     starSku.setCode(skuCode);
                     starSku.setSprice(sprice);
                     starSku.setAdvisePrice(advisePrice);
@@ -249,9 +249,9 @@ public class AsyncTask {
                     starSku.setPrice(advisePrice);
 
                     starSku.setStatus(ProductStatusEnum.PUT_OFF.getValue());
-                    List<StarSkuBean> starSkus1 = starSkuDao.selectByCode(skuCode) ;
+                    List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode) ;
                     if (!starSkus1.isEmpty()) {
-                        StarSkuBean checkSku = starSkus1.get(0) ;
+                        StarSku checkSku = starSkus1.get(0) ;
                         // 销售价格哪个小就用那个
                         if (checkSku.getPrice() < starSku.getPrice() && checkSku.getPrice() > starSku.getSprice()) {
                             starSku.setPrice(checkSku.getPrice());
@@ -271,7 +271,7 @@ public class AsyncTask {
                         }
                     }
                 } else {
-                    StarSkuBean starSku = new StarSkuBean() ;
+                    StarSku starSku = new StarSku() ;
                     starSku.setCode(skuCode);
                     starSku.setStatus(ProductStatusEnum.PUT_ON.getValue());
                     starSkuDao.updateStatusByCode(starSku);

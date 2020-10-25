@@ -59,6 +59,15 @@ public class StarPropertyDao {
         return list;
     }
 
+    public List<StarProperty> selectByProductIdsAndType(List<Integer> productIds, Integer type) {
+        StarPropertyExample example = new StarPropertyExample();
+        StarPropertyExample.Criteria criteria = example.createCriteria();
+        criteria.andProductIdIn(productIds) ;
+        criteria.andTypeEqualTo(type) ;
+        List<StarProperty> list = starPropertyMapper.selectByExample(example);
+        return list;
+    }
+
     /**
      * 根据productId和type查询属性信息
      *

@@ -46,4 +46,17 @@ public class AppSkuPriceDao {
 
         return mapper.selectByExample(example);
     }
+
+    public List<AppSkuPrice> batchSelectByRenterIdAndMpuAndSku(String renterId, List<String> mpus, List<String> skuIds) {
+        AppSkuPriceExample example = new AppSkuPriceExample();
+        AppSkuPriceExample.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(renterId)) {
+            criteria.andRenterIdEqualTo(renterId) ;
+        }
+        criteria.andMpuIn(mpus) ;
+        criteria.andSkuIdIn(skuIds) ;
+
+        return mapper.selectByExample(example);
+    }
+
 }

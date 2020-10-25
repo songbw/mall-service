@@ -5,7 +5,7 @@ import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
-import com.fengchao.product.aoyi.model.StarSkuBean;
+import com.fengchao.product.aoyi.model.StarSku;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -72,8 +72,8 @@ public interface AdminProdService {
 
     void fix();
 
-    OperaResponse updateSkuPriceAndState(StarSkuBean bean);
-    OperaResponse batchUpdateSkuPriceAndState(List<StarSkuBean> beans);
+    OperaResponse updateSkuPriceAndState(StarSku bean);
+    OperaResponse batchUpdateSkuPriceAndState(List<StarSku> beans);
 
     OperaResponse updateSpuState(List<AoyiProdIndex> beans);
 

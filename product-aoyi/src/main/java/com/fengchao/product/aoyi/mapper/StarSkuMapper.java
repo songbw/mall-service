@@ -1,6 +1,6 @@
 package com.fengchao.product.aoyi.mapper;
 
-import com.fengchao.product.aoyi.model.StarSkuBean;
+import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -12,19 +12,19 @@ public interface StarSkuMapper {
 
     int deleteByPrimaryKey(Integer id);
 
-    int insert(StarSkuBean record);
+    int insert(StarSku record);
 
-    int insertSelective(StarSkuBean record);
+    int insertSelective(StarSku record);
 
-    List<StarSkuBean> selectByExample(StarSkuExample example);
+    List<StarSku> selectByExample(StarSkuExample example);
 
-    StarSkuBean selectByPrimaryKey(Integer id);
+    StarSku selectByPrimaryKey(Integer id);
 
-    int updateByExampleSelective(@Param("record") StarSkuBean record, @Param("example") StarSkuExample example);
+    int updateByExampleSelective(@Param("record") StarSku record, @Param("example") StarSkuExample example);
 
-    int updateByExample(@Param("record") StarSkuBean record, @Param("example") StarSkuExample example);
+    int updateByExample(@Param("record") StarSku record, @Param("example") StarSkuExample example);
 
-    int updateByPrimaryKeySelective(StarSkuBean record);
+    int updateByPrimaryKeySelective(StarSku record);
 
-    int updateByPrimaryKey(StarSkuBean record);
+    int updateByPrimaryKey(StarSku record);
 }

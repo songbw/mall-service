@@ -2,7 +2,7 @@ package com.fengchao.product.aoyi.model;
 
 import java.util.Date;
 
-public class StarSkuBean {
+public class StarSku {
     private Integer id;
 
     private String code;

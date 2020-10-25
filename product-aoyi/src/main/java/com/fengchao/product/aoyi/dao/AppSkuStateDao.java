@@ -1,6 +1,8 @@
 package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.mapper.AppSkuStateMapper;
+import com.fengchao.product.aoyi.model.AppSkuPrice;
+import com.fengchao.product.aoyi.model.AppSkuPriceExample;
 import com.fengchao.product.aoyi.model.AppSkuState;
 import com.fengchao.product.aoyi.model.AppSkuStateExample;
 import org.apache.commons.lang.StringUtils;
@@ -50,5 +52,17 @@ public class AppSkuStateDao {
         List<AppSkuState> list = mapper.selectByExample(example);
 
         return list;
+    }
+
+    public List<AppSkuState> batchSelectByRenterIdAndMpuAndSku(String renterId, List<String> mpus, List<String> skuIds) {
+        AppSkuStateExample example = new AppSkuStateExample();
+        AppSkuStateExample.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(renterId)) {
+            criteria.andRenterIdEqualTo(renterId) ;
+        }
+        criteria.andMpuIn(mpus) ;
+        criteria.andSkuIdIn(skuIds) ;
+
+        return mapper.selectByExample(example);
     }
 }

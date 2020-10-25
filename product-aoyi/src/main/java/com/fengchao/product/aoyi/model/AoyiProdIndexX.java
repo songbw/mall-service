@@ -29,7 +29,7 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
      */
     private List<com.fengchao.product.aoyi.bean.StarSkuBean> skuList ;
 
-    private StarSkuBean starSku ;
+    private StarSku starSku ;
 
     private BigDecimal renterPrice ;
 
@@ -93,11 +93,11 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
         this.skuList = skuList;
     }
 
-    public StarSkuBean getStarSku() {
+    public StarSku getStarSku() {
         return starSku;
     }
 
-    public void setStarSku(StarSkuBean starSku) {
+    public void setStarSku(StarSku starSku) {
         this.starSku = starSku;
     }
 

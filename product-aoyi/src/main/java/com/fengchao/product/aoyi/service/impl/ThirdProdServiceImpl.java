@@ -7,7 +7,7 @@ import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.BaseService;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
-import com.fengchao.product.aoyi.model.StarSkuBean;
+import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
@@ -275,7 +275,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             bean.setSkuId(bean.getSpuId());
             // 上架状态数量
             if ("0".equals(bean.getState())) {
-                List<StarSkuBean> starSkus = starSkuDao.selectUBySpuId(bean.getSpuId());
+                List<StarSku> starSkus = starSkuDao.selectUBySpuId(bean.getSpuId());
                 if ((starSkus == null || starSkus.size()==0)) {
                     productDao.updateState(bean);
                 }
