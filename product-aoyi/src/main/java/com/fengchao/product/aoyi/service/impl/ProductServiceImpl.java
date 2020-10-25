@@ -551,25 +551,33 @@ public class ProductServiceImpl implements ProductService {
         AppSkuPrice appSkuPrice = new AppSkuPrice() ;
         appSkuPrice.setRenterId(renterId);
         List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
-        aoyiProdIndexList.forEach(aoyiProdIndex -> {
-            if (aoyiProdIndex.getType() == 2) {
-                // 获取 star sku list
-                List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
-                // 获取最小值
-                Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkuBeans.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
-                com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = starSkuOpt.get() ;
-                BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
-                aoyiProdIndex.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-            } else {
-                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
-                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-                if (appSkuPrices != null && appSkuPrices.size() > 0) {
-                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
-                }
-            }
-
-        });
+        List<AoyiProdIndexX> prodIndexXList = aoyiProdIndexList.stream().map(prodIndex -> {
+            AoyiProdIndexX prodIndexX = new AoyiProdIndexX();
+            BeanUtils.copyProperties(prodIndex, prodIndexX);
+            // 图片全路径
+            productHandle.updateImage(prodIndexX) ;
+            return prodIndexX;
+        }).collect(Collectors.toList());
+        productHandle.batchGetStarSkuListByMpuForClient(prodIndexXList, renterId) ;
+//        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+//            if (aoyiProdIndex.getType() == 2) {
+//                // 获取 star sku list
+//                List<StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
+//                // 获取最小值
+//                Optional<StarSkuBean> starSkuOpt= starSkuBeans.stream().min(Comparator.comparingInt(StarSkuBean::getPrice));
+//                StarSkuBean starSkuBean = starSkuOpt.get() ;
+//                BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+//                aoyiProdIndex.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+//            } else {
+//                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
+//                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
+//                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
+//                if (appSkuPrices != null && appSkuPrices.size() > 0) {
+//                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
+//                }
+//            }
+//
+//        });
 
 
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
