@@ -51,9 +51,9 @@
         </filter>
         -->
 
-<!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
-<!--            <level>DEBUG</level>-->
-<!--        </filter>-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
     </appender>
 
     <logger name="com.fengchao.product.aoyi.mapper" level="DEBUG"/>
