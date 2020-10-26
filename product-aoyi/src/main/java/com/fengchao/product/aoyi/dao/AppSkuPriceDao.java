@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,6 +53,12 @@ public class AppSkuPriceDao {
         AppSkuPriceExample.Criteria criteria = example.createCriteria();
         if (StringUtils.isNotBlank(renterId)) {
             criteria.andRenterIdEqualTo(renterId) ;
+        }
+        if (mpus == null || mpus.size() == 0) {
+            return new ArrayList<>();
+        }
+        if (skuIds == null || skuIds.size() == 0) {
+            return new ArrayList<>();
         }
         criteria.andMpuIn(mpus) ;
         criteria.andSkuIdIn(skuIds) ;
