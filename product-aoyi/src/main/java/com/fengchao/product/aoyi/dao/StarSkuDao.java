@@ -155,10 +155,13 @@ public class StarSkuDao {
      *
      * @return
      */
-    public List<StarSku> selectBySpuIds(List<String> spuIds) {
+    public List<StarSku> selectBySpuIds(List<String> spuIds, Integer status) {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdIn(spuIds) ;
+        if (status != -1) {
+            criteria.andStatusEqualTo(status) ;
+        }
         List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }

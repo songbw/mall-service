@@ -479,7 +479,7 @@ public class ProductHandle {
 
     private List<StarSkuBean> batchGetStarSkuListByMpu(List<String> skuIds, String renterId) {
         if (skuIds != null && skuIds.size() > 0) {
-            List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds) ;
+            List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds, -1) ;
             List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
                 StarSkuBean starSkuBean = new StarSkuBean() ;
                 BeanUtils.copyProperties(starSku, starSkuBean);
@@ -550,7 +550,7 @@ public class ProductHandle {
      */
     private List<StarSkuBean> batchGetStarSkuListByMpuClient(List<String> skuIds, String renterId) {
         // TODO 客户端批量添加star sku
-        List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds) ;
+        List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds, 1) ;
         List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
             StarSkuBean starSkuBean = new StarSkuBean() ;
             BeanUtils.copyProperties(starSku, starSkuBean);
