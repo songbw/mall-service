@@ -256,20 +256,6 @@ public class ProductHandle {
 
         // set star sku bean
         prodIndexXES.forEach(prodIndexX -> {
-            if (prodIndexX.getType() == 2) {
-                List<StarSkuBean> starSkuBeanList = new ArrayList<>();
-                for (int i = 0; i < starSkuBeans.size(); i++) {
-                    StarSkuBean starSkuBean = starSkuBeans.get(i);
-                    if (prodIndexX.getSkuid().equals(starSkuBean.getSpuId())) {
-                        starSkuBeanList.add(starSkuBean) ;
-                        starSkuBeans.remove(i) ;
-                        i = i - 1 ;
-                    }
-                }
-                if (starSkuBeanList != null && starSkuBeanList.size() > 0) {
-                    prodIndexX.setSkuList(starSkuBeanList);
-                }
-            }
             // set prod sku price
             List<AppSkuPrice> appSkuPriceList = new ArrayList<>();
             for (int i = 0; i < appSkuPrices.size(); i++) {
@@ -282,6 +268,26 @@ public class ProductHandle {
             }
             if (appSkuPriceList != null && appSkuPriceList.size() > 0) {
                 prodIndexX.setPrice(appSkuPriceList.get(0).getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+            }
+            // set star sku
+            if (prodIndexX.getType() == 2) {
+                List<StarSkuBean> starSkuBeanList = new ArrayList<>();
+                for (int i = 0; i < starSkuBeans.size(); i++) {
+                    StarSkuBean starSkuBean = starSkuBeans.get(i);
+                    if (prodIndexX.getSkuid().equals(starSkuBean.getSpuId())) {
+                        starSkuBeanList.add(starSkuBean) ;
+                        starSkuBeans.remove(i) ;
+                        i = i - 1 ;
+                    }
+                }
+                if (starSkuBeanList != null && starSkuBeanList.size() > 0) {
+                    // 获取最小值
+                    Optional<StarSkuBean> starSkuOpt= starSkuBeanList.stream().min(Comparator.comparingInt(StarSkuBean::getPrice));
+                    StarSkuBean starSkuBean = starSkuOpt.get() ;
+                    BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+                    prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                    prodIndexX.setSkuList(starSkuBeanList);
+                }
             }
             // set prod sku state
             List<AppSkuState> appSkuStateList = new ArrayList<>();

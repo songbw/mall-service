@@ -559,7 +559,7 @@ public class ProductServiceImpl implements ProductService {
             return prodIndexX;
         }).collect(Collectors.toList());
         productHandle.batchGetStarSkuListByMpuForClient(prodIndexXList, renterId) ;
-//        aoyiProdIndexList.forEach(aoyiProdIndex -> {
+//        prodIndexXList.forEach(aoyiProdIndex -> {
 //            if (aoyiProdIndex.getType() == 2) {
 //                // 获取 star sku list
 //                List<StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
