@@ -478,63 +478,68 @@ public class ProductHandle {
     }
 
     private List<StarSkuBean> batchGetStarSkuListByMpu(List<String> skuIds, String renterId) {
-        List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds) ;
-        List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
-            StarSkuBean starSkuBean = new StarSkuBean() ;
-            BeanUtils.copyProperties(starSku, starSkuBean);
-            return starSkuBean;
-        }).collect(Collectors.toList());
-        List<String> mpus = starSkus.stream().map(starSku -> starSku.getSpuId()).distinct().collect(Collectors.toList());
-        List<String> codes = starSkus.stream().map(starSku -> starSku.getCode()).distinct().collect(Collectors.toList());
-        List<Integer> ids = starSkus.stream().map(starSku -> starSku.getId()).collect(Collectors.toList());
-        // 批量租户价格列表
-        List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
-        // 批量租户状态列表
-        List<AppSkuState> appSkuStates = appSkuStateDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
-        // 批量属性列表
-        List<StarProperty> skuProperties = starPropertyDao.selectByProductIdsAndType(ids,1) ;
-        starSkuBeans.forEach(starSkuBean -> {
-            // set property
-            List<StarProperty> starProperties = new ArrayList<>();
-            for (int i = 0; i < skuProperties.size(); i++) {
-                StarProperty starProperty = skuProperties.get(i);
-                if (starSkuBean.getId() == starProperty.getProductId()) {
-                    starProperties.add(starProperty);
-                    skuProperties.remove(i) ;
-                    i = i - 1;
+        if (skuIds != null && skuIds.size() > 0) {
+            List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds) ;
+            List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
+                StarSkuBean starSkuBean = new StarSkuBean() ;
+                BeanUtils.copyProperties(starSku, starSkuBean);
+                return starSkuBean;
+            }).collect(Collectors.toList());
+            List<String> mpus = starSkus.stream().map(starSku -> starSku.getSpuId()).distinct().collect(Collectors.toList());
+            List<String> codes = starSkus.stream().map(starSku -> starSku.getCode()).distinct().collect(Collectors.toList());
+            List<Integer> ids = starSkus.stream().map(starSku -> starSku.getId()).collect(Collectors.toList());
+            // 批量租户价格列表
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
+            // 批量租户状态列表
+            List<AppSkuState> appSkuStates = appSkuStateDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
+            // 批量属性列表
+            List<StarProperty> skuProperties = starPropertyDao.selectByProductIdsAndType(ids,1) ;
+            starSkuBeans.forEach(starSkuBean -> {
+                // set property
+                List<StarProperty> starProperties = new ArrayList<>();
+                for (int i = 0; i < skuProperties.size(); i++) {
+                    StarProperty starProperty = skuProperties.get(i);
+                    if (starSkuBean.getId() == starProperty.getProductId()) {
+                        starProperties.add(starProperty);
+                        skuProperties.remove(i) ;
+                        i = i - 1;
+                    }
                 }
-            }
-            if (starProperties != null && starProperties.size() > 0) {
-                starSkuBean.setPropertyList(starProperties);
-            }
-            // set app sku price
-            List<AppSkuPrice> appSkuPriceList = new ArrayList<>();
-            for (int i = 0; i < appSkuPrices.size(); i++) {
-                AppSkuPrice appSkuPrice = appSkuPrices.get(i);
-                if (starSkuBean.getSpuId().equals(appSkuPrice.getMpu()) && starSkuBean.getCode().equals(appSkuPrice.getSkuId())) {
-                    appSkuPriceList.add(appSkuPrice);
-                    appSkuPrices.remove(i);
-                    i = i - 1;
+                if (starProperties != null && starProperties.size() > 0) {
+                    starSkuBean.setPropertyList(starProperties);
                 }
-            }
-            if (appSkuPriceList != null && appSkuPriceList.size() > 0) {
-                starSkuBean.setAppSkuPriceList(appSkuPriceList);
-            }
-            // set app sku state
-            List<AppSkuState> appSkuStateList = new ArrayList<>();
-            for (int i = 0; i < appSkuStates.size(); i++) {
-                AppSkuState appSkuState = appSkuStates.get(i);
-                if (starSkuBean.getSpuId().equals(appSkuState.getMpu()) && starSkuBean.getCode().equals(appSkuState.getSkuId())) {
-                    appSkuStateList.add(appSkuState);
-                    appSkuStates.remove(i);
-                    i = i - 1;
+                // set app sku price
+                List<AppSkuPrice> appSkuPriceList = new ArrayList<>();
+                for (int i = 0; i < appSkuPrices.size(); i++) {
+                    AppSkuPrice appSkuPrice = appSkuPrices.get(i);
+                    if (starSkuBean.getSpuId().equals(appSkuPrice.getMpu()) && starSkuBean.getCode().equals(appSkuPrice.getSkuId())) {
+                        appSkuPriceList.add(appSkuPrice);
+                        appSkuPrices.remove(i);
+                        i = i - 1;
+                    }
                 }
-            }
-            if (appSkuStateList != null && appSkuStateList.size() > 0) {
-                starSkuBean.setAppSkuStateList(appSkuStateList);
-            }
-        });
-        return starSkuBeans ;
+                if (appSkuPriceList != null && appSkuPriceList.size() > 0) {
+                    starSkuBean.setAppSkuPriceList(appSkuPriceList);
+                }
+                // set app sku state
+                List<AppSkuState> appSkuStateList = new ArrayList<>();
+                for (int i = 0; i < appSkuStates.size(); i++) {
+                    AppSkuState appSkuState = appSkuStates.get(i);
+                    if (starSkuBean.getSpuId().equals(appSkuState.getMpu()) && starSkuBean.getCode().equals(appSkuState.getSkuId())) {
+                        appSkuStateList.add(appSkuState);
+                        appSkuStates.remove(i);
+                        i = i - 1;
+                    }
+                }
+                if (appSkuStateList != null && appSkuStateList.size() > 0) {
+                    starSkuBean.setAppSkuStateList(appSkuStateList);
+                }
+            });
+            return starSkuBeans ;
+        } else {
+            return new ArrayList<>() ;
+        }
+
     }
 
     /**
