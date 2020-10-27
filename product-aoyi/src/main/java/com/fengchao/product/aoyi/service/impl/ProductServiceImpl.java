@@ -590,44 +590,13 @@ public class ProductServiceImpl implements ProductService {
         String renterId = vendorsRpcService.queryRenterId(appId) ;
         // 根据MPU查询商品表
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
-        // TODO 获取MPU LIST,匹配查询 star list
-        List<String> mpuList = bean.stream().map(c -> c.getMpu()).collect(Collectors.toList());
-        List<String> codeList = bean.stream().map(c-> c.getSkuid()).collect(Collectors.toList());
-        List<AoyiProdIndex> prodIndices = productDao.selectAoyiProdIndexListByMpuIdList(mpuList) ;
-        List<StarSku> starSkus = starSkuDao.selectByCodeList(codeList) ;
-        List<Integer> starSkuIds = starSkus.stream().map(starSku -> starSku.getId()).collect(Collectors.toList());
-        List<StarProperty> starProperties = starPropertyDao.selectByProductIdsAndType(starSkuIds,1);
-        List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
-            StarSkuBean starSkuBean = new StarSkuBean() ;
-            BeanUtils.copyProperties(starSku, starSkuBean);
-            List<StarProperty> starPropertyList = new ArrayList<>();
-            for (int i = 0; i < starProperties.size(); i++) {
-                StarProperty starProperty = starProperties.get(i);
-                if (starSkuBean.getId() == starProperty.getProductId()) {
-                    starPropertyList.add(starProperty);
-                    starProperties.remove(i);
-                    i = i - 1 ;
-                }
-            }
-            if (starPropertyList != null && starPropertyList.size() > 0) {
-                starSkuBean.setPropertyList(starPropertyList);
-            }
-            return starSkuBean ;
-        }).collect(Collectors.toList()) ;
-
-        aoyiProdIndexList = prodIndices.stream().map(prodIndex -> {
-            AoyiProdIndexX prodIndexX = new AoyiProdIndexX();
-            BeanUtils.copyProperties(prodIndex, prodIndexX);
-            for (int i = 0; i < starSkuBeans.size(); i++) {
-                StarSkuBean starSkuBean = starSkuBeans.get(i) ;
-                if (starSkuBean.getSpuId().equals(prodIndexX.getSkuid())) {
-                    prodIndexX.setStarSku(starSkuBean);
-                    starSkuBeans.remove(i);
-                    break;
-                }
-            }
-            return prodIndexX;
-        }).collect(Collectors.toList());
+        bean.forEach(aoyiProdIndex -> {
+            AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
+            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+            BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
+            productHandle.getProductXClientBySkuCode(aoyiProdIndexX, renterId, aoyiProdIndex.getSkuid()) ;
+            aoyiProdIndexList.add(aoyiProdIndexX);
+        });
 
         log.debug("批量查询 selectProductListByMpuIdListAndCode 返回结果：{}", JSON.toJSONString(aoyiProdIndexList));
 
