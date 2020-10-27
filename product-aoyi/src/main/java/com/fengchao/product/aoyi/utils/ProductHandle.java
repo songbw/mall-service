@@ -303,6 +303,7 @@ public class ProductHandle {
                 prodIndexX.setState(appSkuStateList.get(0).getState().toString());
             }
         });
+        log.debug("batchGetStarSkuListByMpuForClient 输出结果：{}", JSONUtil.toJsonString(prodIndexXES));
     }
 
     public void getProductXClientBySkuCode(AoyiProdIndexX prodIndexX, String renterId, String skuCode) {
