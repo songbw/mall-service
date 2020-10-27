@@ -629,13 +629,7 @@ public class ProductServiceImpl implements ProductService {
             return prodIndexX;
         }).collect(Collectors.toList());
 
-//        bean.forEach(aoyiProdIndex -> {
-//            AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
-//            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-//            BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
-//            productHandle.getProductXClientBySkuCode(aoyiProdIndexX, renterId, aoyiProdIndex.getSkuid()) ;
-//            aoyiProdIndexList.add(aoyiProdIndexX);
-//        });
+        log.debug("批量查询 selectProductListByMpuIdListAndCode 返回结果：{}", JSON.toJSONString(aoyiProdIndexList));
 
         return aoyiProdIndexList;
     }
@@ -658,6 +652,7 @@ public class ProductServiceImpl implements ProductService {
             aoyiProdIndexX.setStarSku(starSkuBean);
         }
         response.setData(aoyiProdIndexX);
+        log.debug("findSpuAndSku 返回结果：{}", JSON.toJSONString(aoyiProdIndexX));
         return response;
     }
 
