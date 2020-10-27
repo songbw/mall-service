@@ -97,47 +97,6 @@ public class ProductServiceImpl implements ProductService {
             }
 
         });
-//        int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
-//        HashMap map = new HashMap();
-//        map.put("pageNo", offset);
-//        map.put("pageSize", queryBean.getPageSize());
-//        if(queryBean.getCategory()!=null&&!queryBean.getCategory().equals(""))
-//            map.put("category", queryBean.getCategory());
-//        if(queryBean.getBrand()!=null&&!queryBean.getBrand().equals(""))
-//            map.put("brand", queryBean.getBrand());
-//        if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
-//            map.put("priceOrder", queryBean.getPriceOrder());
-//        if(queryBean.getAppId()!=null&&!queryBean.getAppId().equals(""))
-//            map.put("appId", "%" + queryBean.getAppId() + "%");
-//
-//        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size() > 0) {
-//            map.put("merchantCodes", queryBean.getMerchantCodes()) ;
-//        }
-//        if (queryBean.getMerchantCodes() != null && queryBean.getMerchantCodes().size()>0) {
-//            map.put("merchantIds", queryBean.getMerchantIds()) ;
-//        }
-
-//        total = mapper.selectLimitCount(map);
-//        AppSkuPrice appSkuPrice = new AppSkuPrice() ;
-//        appSkuPrice.setRenterId(queryBean.getRenterId());
-//        if (total > 0) {
-//            mapper.selectLimit(map).forEach(aoyiProdIndex -> {
-//                // 查询star_sku表
-//                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-//                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
-//                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-//                if (appSkuPrices != null && appSkuPrices.size() >0) {
-//                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
-//                }
-//                ProductInfoBean infoBean = new ProductInfoBean();
-//                aoyiProdIndex = productHandle.updateImage(aoyiProdIndex) ;
-//                BeanUtils.copyProperties(aoyiProdIndex, infoBean);
-//                List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
-//                infoBean.setPromotion(promotionInfoBeans);
-//                prodIndices.add(infoBean);
-//            });
-//        }
-
         pageBean = PageBean.build(pageBean, prodIndices, total, queryBean.getPageNo(), queryBean.getPageSize());
         return pageBean;
     }
@@ -559,27 +518,6 @@ public class ProductServiceImpl implements ProductService {
             return prodIndexX;
         }).collect(Collectors.toList());
         productHandle.batchGetStarSkuListByMpuForClient(prodIndexXList, renterId) ;
-//        prodIndexXList.forEach(aoyiProdIndex -> {
-//            if (aoyiProdIndex.getType() == 2) {
-//                // 获取 star sku list
-//                List<StarSkuBean> starSkuBeans = productHandle.getStarSkuListByMpuForClient(aoyiProdIndex.getSkuid(), renterId);
-//                // 获取最小值
-//                Optional<StarSkuBean> starSkuOpt= starSkuBeans.stream().min(Comparator.comparingInt(StarSkuBean::getPrice));
-//                StarSkuBean starSkuBean = starSkuOpt.get() ;
-//                BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
-//                aoyiProdIndex.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-//            } else {
-//                appSkuPrice.setMpu(aoyiProdIndex.getMpu());
-//                appSkuPrice.setSkuId(aoyiProdIndex.getSkuid());
-//                List<AppSkuPrice> appSkuPrices = appSkuPriceDao.selectByRenterIdAndMpuAndSku(appSkuPrice) ;
-//                if (appSkuPrices != null && appSkuPrices.size() > 0) {
-//                    aoyiProdIndex.setPrice(appSkuPrices.get(0).getPrice().toString());
-//                }
-//            }
-//
-//        });
-
-
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;
     }
@@ -652,13 +590,52 @@ public class ProductServiceImpl implements ProductService {
         String renterId = vendorsRpcService.queryRenterId(appId) ;
         // 根据MPU查询商品表
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
-        bean.forEach(aoyiProdIndex -> {
-            AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
-            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-            BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
-            productHandle.getProductXClientBySkuCode(aoyiProdIndexX, renterId, aoyiProdIndex.getSkuid()) ;
-            aoyiProdIndexList.add(aoyiProdIndexX);
-        });
+        // TODO 获取MPU LIST,匹配查询 star list
+        List<String> mpuList = bean.stream().map(c -> c.getMpu()).collect(Collectors.toList());
+        List<String> codeList = bean.stream().map(c-> c.getSkuid()).collect(Collectors.toList());
+        List<AoyiProdIndex> prodIndices = productDao.selectAoyiProdIndexListByMpuIdList(mpuList) ;
+        List<StarSku> starSkus = starSkuDao.selectByCodeList(codeList) ;
+        List<Integer> starSkuIds = starSkus.stream().map(starSku -> starSku.getId()).collect(Collectors.toList());
+        List<StarProperty> starProperties = starPropertyDao.selectByProductIdsAndType(starSkuIds,1);
+        List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
+            StarSkuBean starSkuBean = new StarSkuBean() ;
+            BeanUtils.copyProperties(starSku, starSkuBean);
+            List<StarProperty> starPropertyList = new ArrayList<>();
+            for (int i = 0; i < starProperties.size(); i++) {
+                StarProperty starProperty = starProperties.get(i);
+                if (starSkuBean.getId() == starProperty.getProductId()) {
+                    starPropertyList.add(starProperty);
+                    starProperties.remove(i);
+                    i = i - 1 ;
+                }
+            }
+            if (starPropertyList != null && starPropertyList.size() > 0) {
+                starSkuBean.setPropertyList(starPropertyList);
+            }
+            return starSkuBean ;
+        }).collect(Collectors.toList()) ;
+
+        aoyiProdIndexList = prodIndices.stream().map(prodIndex -> {
+            AoyiProdIndexX prodIndexX = new AoyiProdIndexX();
+            BeanUtils.copyProperties(prodIndex, prodIndexX);
+            for (int i = 0; i < starSkuBeans.size(); i++) {
+                StarSkuBean starSkuBean = starSkuBeans.get(i) ;
+                if (starSkuBean.getSpuId().equals(prodIndexX.getSkuid())) {
+                    prodIndexX.setStarSku(starSkuBean);
+                    starSkuBeans.remove(i);
+                    break;
+                }
+            }
+            return prodIndexX;
+        }).collect(Collectors.toList());
+
+//        bean.forEach(aoyiProdIndex -> {
+//            AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
+//            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+//            BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
+//            productHandle.getProductXClientBySkuCode(aoyiProdIndexX, renterId, aoyiProdIndex.getSkuid()) ;
+//            aoyiProdIndexList.add(aoyiProdIndexX);
+//        });
 
         return aoyiProdIndexList;
     }
@@ -674,7 +651,9 @@ public class ProductServiceImpl implements ProductService {
         codes.add(code);
         List<StarSku> starSkus = starSkuDao.selectByCodeList(codes) ;
         if (starSkus != null && starSkus.size() > 0) {
-            aoyiProdIndexX.setStarSku(starSkus.get(0));
+            StarSkuBean starSkuBean = new StarSkuBean();
+            BeanUtils.copyProperties(starSkus.get(0), starSkuBean);
+            aoyiProdIndexX.setStarSku(starSkuBean);
         }
         response.setData(aoyiProdIndexX);
         return response;

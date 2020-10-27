@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fengchao.product.aoyi.bean.StarSkuBean;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -27,9 +28,9 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
     /**
      * sku信息
      */
-    private List<com.fengchao.product.aoyi.bean.StarSkuBean> skuList ;
+    private List<StarSkuBean> skuList ;
 
-    private StarSku starSku ;
+    private StarSkuBean starSku ;
 
     private BigDecimal renterPrice ;
 
@@ -93,11 +94,11 @@ public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
         this.skuList = skuList;
     }
 
-    public StarSku getStarSku() {
+    public StarSkuBean getStarSku() {
         return starSku;
     }
 
-    public void setStarSku(StarSku starSku) {
+    public void setStarSku(StarSkuBean starSku) {
         this.starSku = starSku;
     }
 
