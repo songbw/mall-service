@@ -653,6 +653,8 @@ public class ProductServiceImpl implements ProductService {
         if (starSkus != null && starSkus.size() > 0) {
             StarSkuBean starSkuBean = new StarSkuBean();
             BeanUtils.copyProperties(starSkus.get(0), starSkuBean);
+            List<StarProperty> starProperties = starPropertyDao.selectByProductIdAndType(starSkuBean.getId(), 1);
+            starSkuBean.setPropertyList(starProperties);
             aoyiProdIndexX.setStarSku(starSkuBean);
         }
         response.setData(aoyiProdIndexX);

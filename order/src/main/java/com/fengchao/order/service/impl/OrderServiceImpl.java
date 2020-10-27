@@ -487,7 +487,17 @@ public class OrderServiceImpl implements OrderService {
         // orderDetail.setCreatedAt(date);
         // orderDetail.setUpdatedAt(date);
         orderDetail.setOrderId(bean.getId());
-
+        if (prodIndexWithBLOBs.getType() == 2) {
+            StarSkuBean starSkuBean = prodIndexWithBLOBs.getStarSku();
+            if (starSkuBean != null) {
+                List<StarProperty> starProperties = starSkuBean.getPropertyList();
+                if (starProperties != null && starProperties.size() > 0) {
+                    starProperties.forEach(starProperty -> {
+                        prodIndexWithBLOBs.setModel(prodIndexWithBLOBs.getModel() + " " + starProperty.getVal());
+                    });
+                }
+            }
+        }
         orderDetail.setModel(prodIndexWithBLOBs.getModel());
         orderDetail.setName(prodIndexWithBLOBs.getName());
         orderDetail.setProductType(prodIndexWithBLOBs.getType());
