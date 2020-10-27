@@ -493,7 +493,11 @@ public class OrderServiceImpl implements OrderService {
                 List<StarProperty> starProperties = starSkuBean.getPropertyList();
                 if (starProperties != null && starProperties.size() > 0) {
                     starProperties.forEach(starProperty -> {
-                        prodIndexWithBLOBs.setModel(prodIndexWithBLOBs.getModel() + " " + starProperty.getVal());
+                        if (StringUtils.isEmpty(prodIndexWithBLOBs.getModel())) {
+                            prodIndexWithBLOBs.setModel(starProperty.getVal());
+                        } else {
+                            prodIndexWithBLOBs.setModel(prodIndexWithBLOBs.getModel() + " " + starProperty.getVal());
+                        }
                     });
                 }
             }
