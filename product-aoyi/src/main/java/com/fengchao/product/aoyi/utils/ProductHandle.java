@@ -283,7 +283,7 @@ public class ProductHandle {
                     StarSkuBean starSkuBean = starSkuOpt.get() ;
                     BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
                     prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-                    prodIndexX.setSkuList(starSkuBeanList);
+//                    prodIndexX.setSkuList(starSkuBeanList);
                 }
             }
             // set prod sku state
