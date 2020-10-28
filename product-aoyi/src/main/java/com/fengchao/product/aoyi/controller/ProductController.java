@@ -190,7 +190,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndex> productInfoBeanList = service.getProdsByMpus(mpuIdList, appId);
+            List<AoyiProdIndexX> productInfoBeanList = service.getProdsByMpus(mpuIdList, appId);
 
             result.getData().put("result", productInfoBeanList);
         } catch (Exception e) {

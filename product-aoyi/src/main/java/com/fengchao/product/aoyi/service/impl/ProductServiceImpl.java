@@ -503,7 +503,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList, String appId) {
+    public List<AoyiProdIndexX> getProdsByMpus(List<String> mpuIdList, String appId) {
         // 1. 查询商品信息
         String renterId = vendorsRpcService.queryRenterId(appId) ;
         log.debug("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
@@ -518,8 +518,8 @@ public class ProductServiceImpl implements ProductService {
             return prodIndexX;
         }).collect(Collectors.toList());
         productHandle.batchGetStarSkuListByMpuForClient(prodIndexXList, renterId) ;
-        log.debug("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
-        return aoyiProdIndexList;
+        log.debug("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(prodIndexXList));
+        return prodIndexXList;
     }
 
     @Override
