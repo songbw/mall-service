@@ -5,10 +5,12 @@ import com.fengchao.product.aoyi.model.AppSkuPrice;
 import com.fengchao.product.aoyi.model.AppSkuPriceExample;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @Author song
@@ -48,6 +50,7 @@ public class AppSkuPriceDao {
         return mapper.selectByExample(example);
     }
 
+
     public List<AppSkuPrice> batchSelectByRenterIdAndMpuAndSku(String renterId, List<String> mpus, List<String> skuIds) {
         AppSkuPriceExample example = new AppSkuPriceExample();
         AppSkuPriceExample.Criteria criteria = example.createCriteria();
@@ -64,6 +67,26 @@ public class AppSkuPriceDao {
         criteria.andSkuIdIn(skuIds) ;
 
         return mapper.selectByExample(example);
+    }
+
+    @Async
+    public CompletableFuture<List<AppSkuPrice>> batchSelectByRenterIdAndMpuAndSkuAsync(String renterId, List<String> mpus, List<String> skuIds) {
+        AppSkuPriceExample example = new AppSkuPriceExample();
+        AppSkuPriceExample.Criteria criteria = example.createCriteria();
+        List<AppSkuPrice> list = new ArrayList<>();
+        if (StringUtils.isNotBlank(renterId)) {
+            criteria.andRenterIdEqualTo(renterId) ;
+        }
+        if (mpus == null || mpus.size() == 0) {
+            return CompletableFuture.completedFuture(list);
+        }
+        if (skuIds == null || skuIds.size() == 0) {
+            return CompletableFuture.completedFuture(list);
+        }
+        criteria.andMpuIn(mpus) ;
+        criteria.andSkuIdIn(skuIds) ;
+        list = mapper.selectByExample(example);
+        return CompletableFuture.completedFuture(list);
     }
 
 }

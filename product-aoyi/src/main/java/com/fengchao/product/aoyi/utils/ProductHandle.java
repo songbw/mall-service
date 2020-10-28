@@ -13,10 +13,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @EnableConfigurationProperties({ESConfig.class})
@@ -249,46 +252,47 @@ public class ProductHandle {
         log.debug("batchGetStarSkuListByMpuForClient 入参：{}, renterId: {}", JSONUtil.toJsonString(prodIndexXES), renterId);
         List<String> skuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() == 2).map(prodIndexX -> prodIndexX.getSkuid()).collect(Collectors.toList());
         List<String> mpuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() != 2).map(prodIndexX -> prodIndexX.getMpu()).collect(Collectors.toList());
-        // 租户价格列表
-        List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpuIds, mpuIds);
+
 //        List<AppSkuState> appSkuStates = appSkuStateDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpuIds, mpuIds);
-        // TODO SET PRODS STAR SKU
-        List<StarSkuBean> starSkuBeans = batchGetStarSkuListByMpuClient(skuIds, renterId);
 
-        // set star sku bean
-        prodIndexXES.forEach(prodIndexX -> {
-
-            // set star sku
-            if (prodIndexX.getType() == 2) {
-                List<StarSkuBean> starSkuBeanList = new ArrayList<>();
-                for (int i = 0; i < starSkuBeans.size(); i++) {
-                    StarSkuBean starSkuBean = starSkuBeans.get(i);
-                    if (prodIndexX.getSkuid().equals(starSkuBean.getSpuId())) {
-                        starSkuBeanList.add(starSkuBean) ;
-                        starSkuBeans.remove(i) ;
-                        i = i - 1 ;
+        try {
+            // 租户价格列表
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSkuAsync(renterId, mpuIds, mpuIds).get();
+            // TODO SET PRODS STAR SKU
+            List<StarSkuBean> starSkuBeans = batchGetStarSkuListByMpuClient(skuIds, renterId).get();
+            // set star sku bean
+            prodIndexXES.forEach(prodIndexX -> {
+                // set star sku
+                if (prodIndexX.getType() == 2) {
+                    List<StarSkuBean> starSkuBeanList = new ArrayList<>();
+                    for (int i = 0; i < starSkuBeans.size(); i++) {
+                        StarSkuBean starSkuBean = starSkuBeans.get(i);
+                        if (prodIndexX.getSkuid().equals(starSkuBean.getSpuId())) {
+                            starSkuBeanList.add(starSkuBean) ;
+                            starSkuBeans.remove(i) ;
+                            i = i - 1 ;
+                        }
                     }
-                }
-                if (starSkuBeanList != null && starSkuBeanList.size() > 0) {
-                    // 获取最小值
-                    Optional<StarSkuBean> starSkuOpt= starSkuBeanList.stream().min(Comparator.comparingInt(StarSkuBean::getPrice));
-                    StarSkuBean starSkuBean = starSkuOpt.get() ;
-                    BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
-                    prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                    if (starSkuBeanList != null && starSkuBeanList.size() > 0) {
+                        // 获取最小值
+                        Optional<StarSkuBean> starSkuOpt= starSkuBeanList.stream().min(Comparator.comparingInt(StarSkuBean::getPrice));
+                        StarSkuBean starSkuBean = starSkuOpt.get() ;
+                        BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+                        prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
 //                    prodIndexX.setSkuList(starSkuBeanList);
-                }
-            } else {
-                // set prod sku price
-                for (int i = 0; i < appSkuPrices.size(); i++) {
-                    AppSkuPrice appSkuPrice = appSkuPrices.get(i);
-                    if (prodIndexX.getMpu().equals(appSkuPrice.getMpu())) {
-                        prodIndexX.setPrice(appSkuPrice.getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-                        appSkuPrices.remove(i);
-                        i = i - 1;
+                    }
+                } else {
+                    // set prod sku price
+                    for (int i = 0; i < appSkuPrices.size(); i++) {
+                        AppSkuPrice appSkuPrice = appSkuPrices.get(i);
+                        if (prodIndexX.getMpu().equals(appSkuPrice.getMpu())) {
+                            prodIndexX.setPrice(appSkuPrice.getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                            appSkuPrices.remove(i);
+                            i = i - 1;
+                        }
                     }
                 }
-            }
-            // set prod sku state
+                // set prod sku state
 //            for (int i = 0; i < appSkuStates.size(); i++) {
 //                AppSkuState appSkuState = appSkuStates.get(i);
 //                if (prodIndexX.getMpu().equals(appSkuState.getMpu())) {
@@ -297,7 +301,14 @@ public class ProductHandle {
 //                    i = i - 1;
 //                }
 //            }
-        });
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
         log.debug("batchGetStarSkuListByMpuForClient 输出结果：{}", JSONUtil.toJsonString(prodIndexXES));
     }
 
@@ -550,7 +561,8 @@ public class ProductHandle {
      * @param renterId
      * @return
      */
-    private List<StarSkuBean> batchGetStarSkuListByMpuClient(List<String> skuIds, String renterId) {
+    @Async
+    private CompletableFuture<List<StarSkuBean>> batchGetStarSkuListByMpuClient(List<String> skuIds, String renterId) {
         // TODO 客户端批量添加star sku
         List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds, 1) ;
         List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
@@ -605,7 +617,7 @@ public class ProductHandle {
 //            }
         });
         log.debug("batchGetStarSkuListByMpuClient 返回结果：{}", JSONUtil.toJsonString(starSkuBeans));
-        return starSkuBeans ;
+        return CompletableFuture.completedFuture(starSkuBeans) ;
     }
 
     /**
