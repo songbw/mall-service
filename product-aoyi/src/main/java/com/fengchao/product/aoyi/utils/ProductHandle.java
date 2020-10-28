@@ -246,6 +246,7 @@ public class ProductHandle {
     }
 
     public void batchGetStarSkuListByMpuForClient(List<AoyiProdIndexX> prodIndexXES, String renterId) {
+        log.debug("batchGetStarSkuListByMpuForClient 入参：{}, renterId: {}", JSONUtil.toJsonString(prodIndexXES), renterId);
         List<String> skuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() == 2).map(prodIndexX -> prodIndexX.getSkuid()).collect(Collectors.toList());
         List<String> mpuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() != 2).map(prodIndexX -> prodIndexX.getMpu()).collect(Collectors.toList());
         // 租户价格列表
