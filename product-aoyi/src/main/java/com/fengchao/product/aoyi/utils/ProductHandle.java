@@ -258,17 +258,13 @@ public class ProductHandle {
         // set star sku bean
         prodIndexXES.forEach(prodIndexX -> {
             // set prod sku price
-            List<AppSkuPrice> appSkuPriceList = new ArrayList<>();
             for (int i = 0; i < appSkuPrices.size(); i++) {
                 AppSkuPrice appSkuPrice = appSkuPrices.get(i);
                 if (prodIndexX.getMpu().equals(appSkuPrice.getMpu())) {
-                    appSkuPriceList.add(appSkuPrice) ;
+                    prodIndexX.setPrice(appSkuPrice.getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
                     appSkuPrices.remove(i);
                     i = i - 1;
                 }
-            }
-            if (appSkuPriceList != null && appSkuPriceList.size() > 0) {
-                prodIndexX.setPrice(appSkuPriceList.get(0).getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
             }
             // set star sku
             if (prodIndexX.getType() == 2) {
@@ -291,17 +287,13 @@ public class ProductHandle {
                 }
             }
             // set prod sku state
-            List<AppSkuState> appSkuStateList = new ArrayList<>();
             for (int i = 0; i < appSkuStates.size(); i++) {
                 AppSkuState appSkuState = appSkuStates.get(i);
                 if (prodIndexX.getMpu().equals(appSkuState.getMpu())) {
-                    appSkuStateList.add(appSkuState) ;
+                    prodIndexX.setState(appSkuState.getState().toString());
                     appSkuStates.remove(i);
                     i = i - 1;
                 }
-            }
-            if (appSkuStateList != null && appSkuStateList.size() > 0) {
-                prodIndexX.setState(appSkuStateList.get(0).getState().toString());
             }
         });
         log.debug("batchGetStarSkuListByMpuForClient 输出结果：{}", JSONUtil.toJsonString(prodIndexXES));
