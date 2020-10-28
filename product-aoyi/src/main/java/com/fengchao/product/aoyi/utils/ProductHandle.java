@@ -257,15 +257,7 @@ public class ProductHandle {
 
         // set star sku bean
         prodIndexXES.forEach(prodIndexX -> {
-            // set prod sku price
-            for (int i = 0; i < appSkuPrices.size(); i++) {
-                AppSkuPrice appSkuPrice = appSkuPrices.get(i);
-                if (prodIndexX.getMpu().equals(appSkuPrice.getMpu())) {
-                    prodIndexX.setPrice(appSkuPrice.getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-                    appSkuPrices.remove(i);
-                    i = i - 1;
-                }
-            }
+
             // set star sku
             if (prodIndexX.getType() == 2) {
                 List<StarSkuBean> starSkuBeanList = new ArrayList<>();
@@ -284,6 +276,16 @@ public class ProductHandle {
                     BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
                     prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
 //                    prodIndexX.setSkuList(starSkuBeanList);
+                }
+            } else {
+                // set prod sku price
+                for (int i = 0; i < appSkuPrices.size(); i++) {
+                    AppSkuPrice appSkuPrice = appSkuPrices.get(i);
+                    if (prodIndexX.getMpu().equals(appSkuPrice.getMpu())) {
+                        prodIndexX.setPrice(appSkuPrice.getPrice().divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                        appSkuPrices.remove(i);
+                        i = i - 1;
+                    }
                 }
             }
             // set prod sku state
