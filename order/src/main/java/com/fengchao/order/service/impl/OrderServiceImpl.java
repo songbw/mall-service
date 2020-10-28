@@ -1015,7 +1015,7 @@ public class OrderServiceImpl implements OrderService {
         // 3. 处理唯品会的子订单
         List<Logisticsbean> weipinhuiLogisticsBean = new ArrayList<>();
         for (OrderDetailX orderDetailX : logistics) {
-            if (orderDetailX.getSkuId().startsWith(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的单子
+            if (orderDetailX.getSkuId().startsWith(OrderConstants.MERCHANTNO_WEIPINHUI) && orders.get(0).getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) { // 唯品会的单子
 
                 if (org.apache.commons.lang.StringUtils.isBlank(orderDetailX.getLogisticsId())) { // 如果没有物流信息
                     // rpc 查询唯品会物流信息
