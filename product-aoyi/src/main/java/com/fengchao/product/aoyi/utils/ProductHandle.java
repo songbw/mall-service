@@ -613,6 +613,7 @@ public class ProductHandle {
                 starSkuBean.setStatus(appSkuStateList.get(0).getState());
             }
         });
+        log.debug("batchGetStarSkuListByMpuClient 返回结果：{}", JSONUtil.toJsonString(starSkuBeans));
         return starSkuBeans ;
     }
 
