@@ -251,7 +251,7 @@ public class ProductHandle {
         List<String> mpuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() != 2).map(prodIndexX -> prodIndexX.getMpu()).collect(Collectors.toList());
         // 租户价格列表
         List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpuIds, mpuIds);
-        List<AppSkuState> appSkuStates = appSkuStateDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpuIds, mpuIds);
+//        List<AppSkuState> appSkuStates = appSkuStateDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpuIds, mpuIds);
         // TODO SET PRODS STAR SKU
         List<StarSkuBean> starSkuBeans = batchGetStarSkuListByMpuClient(skuIds, renterId);
 
@@ -287,14 +287,14 @@ public class ProductHandle {
                 }
             }
             // set prod sku state
-            for (int i = 0; i < appSkuStates.size(); i++) {
-                AppSkuState appSkuState = appSkuStates.get(i);
-                if (prodIndexX.getMpu().equals(appSkuState.getMpu())) {
-                    prodIndexX.setState(appSkuState.getState().toString());
-                    appSkuStates.remove(i);
-                    i = i - 1;
-                }
-            }
+//            for (int i = 0; i < appSkuStates.size(); i++) {
+//                AppSkuState appSkuState = appSkuStates.get(i);
+//                if (prodIndexX.getMpu().equals(appSkuState.getMpu())) {
+//                    prodIndexX.setState(appSkuState.getState().toString());
+//                    appSkuStates.remove(i);
+//                    i = i - 1;
+//                }
+//            }
         });
         log.debug("batchGetStarSkuListByMpuForClient 输出结果：{}", JSONUtil.toJsonString(prodIndexXES));
     }
@@ -558,7 +558,6 @@ public class ProductHandle {
         }).collect(Collectors.toList());
         List<String> mpus = starSkus.stream().map(starSku -> starSku.getSpuId()).distinct().collect(Collectors.toList());
         List<String> codes = starSkus.stream().map(starSku -> starSku.getCode()).distinct().collect(Collectors.toList());
-        List<Integer> ids = starSkus.stream().map(starSku -> starSku.getId()).collect(Collectors.toList());
         // 批量租户价格列表
         List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
         // 批量租户状态列表
