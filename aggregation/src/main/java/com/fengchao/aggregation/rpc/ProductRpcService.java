@@ -68,6 +68,7 @@ public class ProductRpcService {
      */
     @Async
     private CompletableFuture<List<AoyiProdIndex>> findProductListByMpus(List<String> mpus, String appId) {
+        log.debug("findProductListByMpus 开始-----------------------------");
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
         OperaResult operaResult = productService.findProductListByMpuIdList(mpus, appId);
         // 处理返回
