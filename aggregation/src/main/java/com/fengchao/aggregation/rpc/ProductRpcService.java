@@ -6,10 +6,13 @@ import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.model.AoyiProdIndex;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @Author tom
@@ -45,7 +48,13 @@ public class ProductRpcService {
                     subMpuList = mpuIdList.subList(i, i + 50) ;
                 }
                 i = i + 49 ;
-                couponBeanList.addAll(findProductListByMpus(subMpuList, appId)) ;
+                try {
+                    couponBeanList.addAll(findProductListByMpus(subMpuList, appId).get()) ;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return couponBeanList;
@@ -57,7 +66,8 @@ public class ProductRpcService {
      * @param appId
      * @return
      */
-    private List<AoyiProdIndex> findProductListByMpus(List<String> mpus, String appId) {
+    @Async
+    private CompletableFuture<List<AoyiProdIndex>> findProductListByMpus(List<String> mpus, String appId) {
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
         OperaResult operaResult = productService.findProductListByMpuIdList(mpus, appId);
         // 处理返回
@@ -69,6 +79,6 @@ public class ProductRpcService {
         } else {
             log.warn("根据mpu集合查询产品信息 调用product rpc服务 错误!");
         }
-        return couponBeanList ;
+        return CompletableFuture.completedFuture(couponBeanList) ;
     }
 }
