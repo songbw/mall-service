@@ -81,7 +81,7 @@
       and category like #{category}
     </if>
     <if test="appId != null" >
-      and o.app_id like #{appId}
+      and o.app_id = #{appId}
     </if>
     GROUP BY mpu
     <if test="categories != null">
