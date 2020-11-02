@@ -1836,6 +1836,25 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public OperaResponse findMpusSaleCount(OrderQueryBean queryBean) {
+        OperaResponse response = new OperaResponse();
+        HashMap map = new HashMap();
+        if (!StringUtils.isEmpty(queryBean.getStartTime()))
+            map.put("dateStart", queryBean.getStartTime() + " 00:00:00") ;
+        if (!StringUtils.isEmpty(queryBean.getEndTime()))
+            map.put("dateEnd", queryBean.getEndTime() + " 23:59:59") ;
+        if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
+            map.put("categories", queryBean.getCategories()) ;
+        if (!StringUtils.isEmpty(queryBean.getCategory()))
+            map.put("category", queryBean.getCategory() + "%") ;
+        map.put("limit", queryBean.getPageSize()) ;
+        map.put("appId", queryBean.getAppId()) ;
+        List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectMpuSaleCount(map) ;
+        response.setData(orderDetailXES);
+        return response;
+    }
+
     private String fetchGroupKey(Order order) {
         String tradeNo = order.getTradeNo();
         String key = tradeNo.substring(tradeNo.length() - 8, tradeNo.length());

@@ -31,4 +31,6 @@ public interface OrderDetailXMapper {
     List<OrderDetailX> selectBySubOrderId(String orderId);
 
     String selectComCode(String logisticsId);
+
+    List<OrderDetailX> selectMpuSaleCount(HashMap map) ;
 }

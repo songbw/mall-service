@@ -61,6 +61,8 @@ public class OrderDetailX implements Serializable {
 
     private BigDecimal sprice;
 
+    private Integer saleCount ;
+
     public Integer getId() {
         return id;
     }
@@ -283,5 +285,13 @@ public class OrderDetailX implements Serializable {
 
     public void setSprice(BigDecimal sprice) {
         this.sprice = sprice;
+    }
+
+    public Integer getSaleCount() {
+        return saleCount;
+    }
+
+    public void setSaleCount(Integer saleCount) {
+        this.saleCount = saleCount;
     }
 }

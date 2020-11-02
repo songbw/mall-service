@@ -507,4 +507,9 @@ public class OrderController {
     private OperaResponse sendOrderDetailByOutTradeNoAndPaymentNo(String openId, String paymentNo, String appId) {
         return service.sendTradeInfo(openId, paymentNo, appId);
     }
+
+    @PostMapping("saleCount")
+    private OperaResponse findMpusSaleCount(@RequestBody OrderQueryBean queryBean) {
+        return service.findMpusSaleCount(queryBean) ;
+    }
 }

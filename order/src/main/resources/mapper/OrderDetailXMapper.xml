@@ -67,6 +67,33 @@
     from order_detail
     where logistics_id = #{logisticsId}
   </select>
+  <select id="selectMpuSaleCount" resultType="com.fengchao.order.model.OrderDetailX"  parameterType="Map">
+    select mpu, name, count(mpu) saleCount, category
+    from order_detail od RIGHT JOIN orders o ON o.id = od.order_id
+    WHERE od.status > 0
+    <if test="dateStart != null" >
+      <![CDATA[ and od.created_at >= #{dateStart,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="dateEnd != null" >
+      <![CDATA[ and od.created_at <= #{dateEnd,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="category != null" >
+      and category like #{category}
+    </if>
+    <if test="appId != null" >
+      and o.app_id like #{appId}
+    </if>
+    GROUP BY mpu
+    <if test="categories != null">
+      HAVING category in
+      <foreach item="item" index="index" collection="categories"
+               open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    ORDER BY saleCount desc
+    limit #{limit}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from order_detail
     where id = #{id,jdbcType=INTEGER}
