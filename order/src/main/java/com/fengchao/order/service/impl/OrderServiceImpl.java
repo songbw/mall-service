@@ -1851,7 +1851,13 @@ public class OrderServiceImpl implements OrderService {
         map.put("limit", queryBean.getPageSize()) ;
         map.put("appId", queryBean.getAppId()) ;
         List<OrderDetailX> orderDetailXES = orderDetailXMapper.selectMpuSaleCount(map) ;
-        response.setData(orderDetailXES);
+        List<AoyiProdIndex> prodIndices = orderDetailXES.stream().map(orderDetailX -> {
+            AoyiProdIndex prodIndex = new AoyiProdIndex();
+            prodIndex.setMpu(orderDetailX.getMpu());
+            prodIndex.setSkuid(orderDetailX.getSkuId());
+            return prodIndex;
+        }).collect(Collectors.toList());
+        response = productService.selectByMpuIdListAndSkuCodes(prodIndices, queryBean.getAppId());
         return response;
     }
 

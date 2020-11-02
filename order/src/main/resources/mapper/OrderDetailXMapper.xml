@@ -68,7 +68,7 @@
     where logistics_id = #{logisticsId}
   </select>
   <select id="selectMpuSaleCount" resultType="com.fengchao.order.model.OrderDetailX"  parameterType="Map">
-    select mpu, name, count(mpu) saleCount, category
+    select mpu, sku_id, name, count(mpu) saleCount, category
     from order_detail od RIGHT JOIN orders o ON o.id = od.order_id
     WHERE od.status > 0
     <if test="dateStart != null" >
