@@ -564,22 +564,23 @@ public class ProductHandle {
     @Async
     private CompletableFuture<List<StarSkuBean>> batchGetStarSkuListByMpuClient(List<String> skuIds, String renterId) {
         // TODO 客户端批量添加star sku
-        List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds, 1) ;
-        List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
-            StarSkuBean starSkuBean = new StarSkuBean() ;
-            BeanUtils.copyProperties(starSku, starSkuBean);
-            return starSkuBean;
-        }).collect(Collectors.toList());
-        List<String> mpus = starSkus.stream().map(starSku -> starSku.getSpuId()).distinct().collect(Collectors.toList());
-        List<String> codes = starSkus.stream().map(starSku -> starSku.getCode()).distinct().collect(Collectors.toList());
-        // 批量租户价格列表
-        List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
-        // 批量租户状态列表
+        if (skuIds != null && skuIds.size() > 0) {
+            List<StarSku> starSkus = starSkuDao.selectBySpuIds(skuIds, 1) ;
+            List<StarSkuBean> starSkuBeans = starSkus.stream().map(starSku -> {
+                StarSkuBean starSkuBean = new StarSkuBean() ;
+                BeanUtils.copyProperties(starSku, starSkuBean);
+                return starSkuBean;
+            }).collect(Collectors.toList());
+            List<String> mpus = starSkus.stream().map(starSku -> starSku.getSpuId()).distinct().collect(Collectors.toList());
+            List<String> codes = starSkus.stream().map(starSku -> starSku.getCode()).distinct().collect(Collectors.toList());
+            // 批量租户价格列表
+            List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
+            // 批量租户状态列表
 //        List<AppSkuState> appSkuStates = appSkuStateDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpus, codes) ;
-        // 批量属性列表
+            // 批量属性列表
 //        List<StarProperty> skuProperties = starPropertyDao.selectByProductIdsAndType(ids,1) ;
-        starSkuBeans.forEach(starSkuBean -> {
-            // set property
+            starSkuBeans.forEach(starSkuBean -> {
+                // set property
 //            List<StarProperty> starProperties = new ArrayList<>();
 //            for (int i = 0; i < skuProperties.size(); i++) {
 //                StarProperty starProperty = skuProperties.get(i);
@@ -593,16 +594,16 @@ public class ProductHandle {
 //                starSkuBean.setPropertyList(starProperties);
 //            }
 
-            // set app sku price
-            for (int i = 0; i < appSkuPrices.size(); i++) {
-                AppSkuPrice appSkuPrice = appSkuPrices.get(i);
-                if (starSkuBean.getSpuId().equals(appSkuPrice.getMpu()) && starSkuBean.getCode().equals(appSkuPrice.getSkuId())) {
-                    starSkuBean.setPrice(appSkuPrice.getPrice().intValue());
-                    appSkuPrices.remove(i);
-                    i = i - 1;
+                // set app sku price
+                for (int i = 0; i < appSkuPrices.size(); i++) {
+                    AppSkuPrice appSkuPrice = appSkuPrices.get(i);
+                    if (starSkuBean.getSpuId().equals(appSkuPrice.getMpu()) && starSkuBean.getCode().equals(appSkuPrice.getSkuId())) {
+                        starSkuBean.setPrice(appSkuPrice.getPrice().intValue());
+                        appSkuPrices.remove(i);
+                        i = i - 1;
+                    }
                 }
-            }
-            // set app sku state
+                // set app sku state
 //            List<AppSkuState> appSkuStateList = new ArrayList<>();
 //            for (int i = 0; i < appSkuStates.size(); i++) {
 //                AppSkuState appSkuState = appSkuStates.get(i);
@@ -615,9 +616,11 @@ public class ProductHandle {
 //            if (appSkuStateList != null && appSkuStateList.size() > 0) {
 //                starSkuBean.setStatus(appSkuStateList.get(0).getState());
 //            }
-        });
-        log.debug("batchGetStarSkuListByMpuClient 返回结果：{}", JSONUtil.toJsonString(starSkuBeans));
-        return CompletableFuture.completedFuture(starSkuBeans) ;
+            });
+            log.debug("batchGetStarSkuListByMpuClient 返回结果：{}", JSONUtil.toJsonString(starSkuBeans));
+            return CompletableFuture.completedFuture(starSkuBeans) ;
+        }
+        return CompletableFuture.completedFuture(null) ;
     }
 
     /**

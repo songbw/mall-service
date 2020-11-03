@@ -2,11 +2,13 @@ package com.fengchao.equity.rpc;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fengchao.equity.bean.OperaResponse;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.bean.PageBean;
 import com.fengchao.equity.bean.QueryProdBean;
 import com.fengchao.equity.bean.vo.PageVo;
 import com.fengchao.equity.feign.ProdService;
+import com.fengchao.equity.feign.VendorsService;
 import com.fengchao.equity.model.AoyiProdIndex;
 import com.fengchao.equity.model.Platform;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +27,12 @@ import java.util.List;
 public class ProductRpcService {
 
     private ProdService productService;
+    private VendorsService vendorsService ;
 
     @Autowired
-    public ProductRpcService(ProdService productService) {
+    public ProductRpcService(ProdService productService, VendorsService vendorsService) {
         this.productService = productService;
+        this.vendorsService = vendorsService;
     }
 
     /**
@@ -37,7 +41,12 @@ public class ProductRpcService {
      * @param mpuIdList
      * @return
      */
-    public List<AoyiProdIndex> findProductListByMpuIdList(List<String> mpuIdList) {
+    public List<AoyiProdIndex> findProductListByMpuIdList(List<String> mpuIdList, String appId) {
+        OperaResponse<String> response = vendorsService.queryRenterId(appId) ;
+        String render = "" ;
+        if (response.getCode() == 200) {
+            render = response.getData() ;
+        }
         // 返回值
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
 
@@ -50,7 +59,7 @@ public class ProductRpcService {
                     subMpuList = mpuIdList.subList(i, i + 50) ;
                 }
                 i = i + 49 ;
-                couponBeanList.addAll(findProductListByMpus(subMpuList)) ;
+                couponBeanList.addAll(findProductListByMpus(subMpuList, render)) ;
             }
         }
         return couponBeanList;
@@ -61,9 +70,9 @@ public class ProductRpcService {
      * @param mpus
      * @return
      */
-    private List<AoyiProdIndex> findProductListByMpus(List<String> mpus) {
+    private List<AoyiProdIndex> findProductListByMpus(List<String> mpus, String renter) {
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
-        OperaResult operaResult = productService.findProductListByMpuIdList("", mpus);
+        OperaResult operaResult = productService.findProductListByMpuIdList(renter, mpus);
         // 处理返回
         if (operaResult.getCode() == 200) {
             List<AoyiProdIndex> _couponBeanList = (List<AoyiProdIndex>) operaResult.getData().get("result");

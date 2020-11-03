@@ -1,5 +1,6 @@
 package com.fengchao.equity.feign.hystric;
 
+import com.fengchao.equity.bean.OperaResponse;
 import com.fengchao.equity.bean.OperaResult;
 import com.fengchao.equity.feign.VendorsService;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,14 @@ public class VendorsServiceH implements VendorsService {
         OperaResult result = new OperaResult();
         result.setCode(404);
         result.setMsg("多商户服务失败 " + id);
+        return result;
+    }
+
+    @Override
+    public OperaResponse<String> queryRenterId(String appId) {
+        OperaResponse result = new OperaResponse();
+        result.setCode(404);
+        result.setMsg("多商户服务失败 " + appId);
         return result;
     }
 }

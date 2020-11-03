@@ -286,7 +286,7 @@ public class PromotionServiceImpl implements PromotionService {
 //        List<Integer> scheduleIdList = mpuXMapper.selectscheduleIdList(promotion.getId());
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
         if (!mpuIdList.isEmpty()) {
-            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList, promotion.getAppId());
             for (AoyiProdIndex prod : aoyiProdIndices) {
                 if (prod != null) {
                     aoyiProdMap.put(prod.getMpu(), prod);
@@ -397,7 +397,7 @@ public class PromotionServiceImpl implements PromotionService {
             promotionMpus = mpuXMapper.selectByPrimaryMpu(promotion.getId());
             List<String> mpuIdList = mpuXMapper.selectMpuList(promotion.getId());
             Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<>();
-            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList, promotion.getAppId());
             for (AoyiProdIndex prod : aoyiProdIndices) {
                 if (prod != null) {
                     aoyiProdMap.put(prod.getMpu(), prod);
@@ -557,7 +557,7 @@ public class PromotionServiceImpl implements PromotionService {
             PageHelper.startPage(1, finalNum);
             List<String> mpuIdList = mpuXMapper.selectDaliyMpuList(promotion.getId(), schedule.getId());
             Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
-            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+            List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList, promotion.getAppId());
             for (AoyiProdIndex prod : aoyiProdIndices) {
                 if (prod != null) {
                     aoyiProdMap.put(prod.getMpu(), prod);
@@ -699,7 +699,7 @@ public class PromotionServiceImpl implements PromotionService {
             }
         }
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap<String, AoyiProdIndex>();
-        List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList);
+        List<AoyiProdIndex> aoyiProdIndices = prodService.findProductListByMpuIdList(mpuIdList, bean.getAppId());
         for (AoyiProdIndex prod : aoyiProdIndices) {
             if (prod != null) {
                 aoyiProdMap.put(prod.getMpu(), prod);

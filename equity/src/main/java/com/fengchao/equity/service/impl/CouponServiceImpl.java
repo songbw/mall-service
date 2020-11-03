@@ -219,7 +219,7 @@ public class CouponServiceImpl implements CouponService {
         }
         List<AoyiProdIndex> productList = new ArrayList<>();
         if(coupon.getScenarioType() == 1){
-            productList = prodService.findProductListByMpuIdList(Arrays.asList(coupon.getCouponMpus().split(",")));
+            productList = prodService.findProductListByMpuIdList(Arrays.asList(coupon.getCouponMpus().split(",")), coupon.getAppId());
             if(!map.isEmpty()){
                 for(AoyiProdIndex product: productList){
                     String skuId = map.get(product.getMpu());
