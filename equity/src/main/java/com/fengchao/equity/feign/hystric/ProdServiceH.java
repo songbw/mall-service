@@ -28,7 +28,7 @@ public class ProdServiceH implements ProdService {
     }
 
     @Override
-    public OperaResult findProductListByMpuIdList(List<String> mpuIdList, String renter) {
+    public OperaResult findProductListByMpuIdList(String renter, List<String> mpuIdList) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         result.setCode(404);

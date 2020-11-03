@@ -63,7 +63,7 @@ public class ProductRpcService {
      */
     private List<AoyiProdIndex> findProductListByMpus(List<String> mpus) {
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
-        OperaResult operaResult = productService.findProductListByMpuIdList(mpus, "");
+        OperaResult operaResult = productService.findProductListByMpuIdList("", mpus);
         // 处理返回
         if (operaResult.getCode() == 200) {
             List<AoyiProdIndex> _couponBeanList = (List<AoyiProdIndex>) operaResult.getData().get("result");
