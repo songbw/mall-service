@@ -224,7 +224,7 @@ public class CouponServiceImpl implements CouponService {
                 for(AoyiProdIndex product: productList){
                     String skuId = map.get(product.getMpu());
                     List<StarSkuBean> skuList = product.getSkuList();
-                    if(!skuList.isEmpty() && skuList.size() > 1){
+                    if(skuList != null && skuList.size() > 0){
                         for(StarSkuBean skuBean: skuList){
                             if(skuBean.getCode().equals(skuId)){
                                 List<StarSkuBean> skus = new ArrayList<>();
