@@ -18,7 +18,7 @@ public interface ProdService {
     OperaResult findProdList(@RequestBody QueryProdBean queryProdBean, @RequestHeader("appId") String appId);
 
     @RequestMapping(value = "/prod/mpuIds", method = RequestMethod.GET)
-    OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList);
+    OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, @RequestHeader("renter") String renter);
 
     @RequestMapping(value = "/adminProd/search", method = RequestMethod.POST)
     OperaResult searchProd(@RequestBody QueryProdBean queryProdBean, @RequestHeader("merchant") Integer merchantHeader);
