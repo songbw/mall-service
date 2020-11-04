@@ -74,8 +74,9 @@ public interface OrderService {
      *  3.(已支付)下单人数-
      *
      * @return
+     * @param renterId
      */
-    DayStatisticsBean findOverviewStatistics() throws Exception;
+    DayStatisticsBean findOverviewStatistics(String renterId) throws Exception;
 
     /**
      * 获取商户的关于订单的整体运营数据

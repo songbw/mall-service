@@ -9,7 +9,6 @@ import com.fengchao.order.model.Order;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface OrderMapper {
     int deleteByPrimaryKey(Integer id);
@@ -52,22 +51,25 @@ public interface OrderMapper {
      * 查询已支付订单的总额
      *
      * @return
+     * @param map
      */
-    Float selectPayedOrdersAmount();
+    Float selectPayedOrdersAmount(HashMap map);
 
     /**
      * 查询已支付的订单总数
      *
      * @return
+     * @param map
      */
-    int selectPayedOrdersCount();
+    int selectPayedOrdersCount(HashMap map);
 
     /**
      * 查询下单(已支付)人数
      *
      * @return
+     * @param map
      */
-    int selectPayedOdersUserCount();
+    int selectPayedOdersUserCount(HashMap map);
 
     List<PromotionPaymentBean> selectDayPromotionPaymentCount(HashMap map) ;
 

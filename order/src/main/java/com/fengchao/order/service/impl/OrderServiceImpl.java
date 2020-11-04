@@ -1206,11 +1206,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public DayStatisticsBean findOverviewStatistics() throws Exception {
+    public DayStatisticsBean findOverviewStatistics(String renterId) throws Exception {
+        List<String> appIds = null;
+        if (!StringUtils.isEmpty(renterId) && "0".equals(renterId)) {
+            // TODO 查询APPId
+            appIds = vendorsRpcService.queryAppIdListByRenterId(renterId) ;
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        if (appIds != null && appIds.size() > 0) {
+            map.put("appIds", appIds);
+        }
         // 1.获取订单支付总额; 2.(已支付)订单总量; 3.(已支付)下单人数
-        Float dayPaymentCount = orderMapper.selectPayedOrdersAmount(); // 获取订单支付总额 SUM(sale_amount)
-        int dayCount = orderMapper.selectPayedOrdersCount(); // (已支付)订单总量 count(id) FROM orders
-        int dayPeopleCount = orderMapper.selectPayedOdersUserCount(); // (已支付)下单人数 count(DISTINCT(open_id))
+        Float dayPaymentCount = orderMapper.selectPayedOrdersAmount(map); // 获取订单支付总额 SUM(sale_amount)
+        int dayCount = orderMapper.selectPayedOrdersCount(map); // (已支付)订单总量 count(id) FROM orders
+        int dayPeopleCount = orderMapper.selectPayedOdersUserCount(map); // (已支付)下单人数 count(DISTINCT(open_id))
 
         DayStatisticsBean dayStatisticsBean = new DayStatisticsBean();
         dayStatisticsBean.setOrderPaymentAmount(dayPaymentCount);

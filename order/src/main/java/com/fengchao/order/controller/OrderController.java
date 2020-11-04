@@ -267,11 +267,11 @@ public class OrderController {
      * @return
      */
     @GetMapping("/statistics")
-    private OperaResponse statistics(OperaResponse operaResponse) {
+    private OperaResponse statistics(@RequestHeader("renter") String renterId, OperaResponse operaResponse) {
         log.info("获取平台的关于订单的总体统计数据 入参:无");
 
         try {
-            DayStatisticsBean dayStatisticsBean = service.findOverviewStatistics();
+            DayStatisticsBean dayStatisticsBean = service.findOverviewStatistics(renterId);
             operaResponse.setData(dayStatisticsBean);
         } catch (Exception e) {
             log.error("获取平台的关于订单的总体统计数据 异常:{}", e.getMessage(), e);
