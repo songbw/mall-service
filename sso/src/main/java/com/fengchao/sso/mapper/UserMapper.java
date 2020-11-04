@@ -3,6 +3,8 @@ package com.fengchao.sso.mapper;
 import com.fengchao.sso.bean.UserBean;
 import com.fengchao.sso.model.User;
 
+import java.util.HashMap;
+
 public interface UserMapper {
     int deleteByPrimaryKey(String id);
 
@@ -20,5 +22,5 @@ public interface UserMapper {
 
     int updateByUsername(UserBean userBean);
 
-    int selectCount() ;
+    int selectCount(HashMap map) ;
 }

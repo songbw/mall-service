@@ -34,8 +34,16 @@
     from s_user
     where open_id = #{openId} and i_app_id = #{iAppId}
   </select>
-    <select id="selectCount" resultType="java.lang.Integer">
+    <select id="selectCount" resultType="java.lang.Integer" parameterType="Map">
       select count(id) from s_user
+      WHERE 1 = 1
+      <if test="appIds != null">
+        and i_app_id in
+        <foreach item="item" index="index" collection="appIds"
+                 open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from s_user

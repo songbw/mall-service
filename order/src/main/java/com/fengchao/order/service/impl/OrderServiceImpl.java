@@ -1209,7 +1209,7 @@ public class OrderServiceImpl implements OrderService {
     public DayStatisticsBean findOverviewStatistics(String renterId) throws Exception {
         List<String> appIds = null;
         if (!StringUtils.isEmpty(renterId) && "0".equals(renterId)) {
-            // TODO 查询APPId
+            // 查询APPId
             appIds = vendorsRpcService.queryAppIdListByRenterId(renterId) ;
         }
         HashMap<String, Object> map = new HashMap<>();

@@ -145,9 +145,9 @@ public class UserController {
     }
 
     @GetMapping("/count")
-    public OperaResult count(OperaResult result) {
-        log.info("查询用户总数,入参:无");
-        result.getData().put("count", service.findUserCount());
+    public OperaResult count(@RequestHeader("renter") String renterId,  OperaResult result) {
+        log.info("查询用户总数,入参:{}", renterId);
+        result.getData().put("count", service.findUserCount(renterId));
         log.info("查询用户总数,返回:{}", JSONUtil.toJsonString(result));
         return result;
     }

@@ -6,7 +6,6 @@ import com.fengchao.sso.feign.PinganClientService;
 import com.fengchao.sso.model.SUser;
 import com.fengchao.sso.rpc.VendorsRpcService;
 import com.fengchao.sso.util.OperaResult;
-import com.github.pagehelper.PageHelper;
 import com.fengchao.sso.mapper.UserMapper;
 import com.fengchao.sso.mapper.custom.LoginCustomMapper;
 import com.fengchao.sso.model.Login;
@@ -15,13 +14,10 @@ import com.fengchao.sso.service.IUserService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -112,8 +108,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public int findUserCount() {
-        return mapper.selectCount();
+    public int findUserCount(String renterId) {
+        List<String> appIds = null;
+        if (!StringUtils.isEmpty(renterId) && "0".equals(renterId)) {
+            // 查询APPId
+            appIds = vendorsRpcService.queryAppIdList(renterId) ;
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        if (appIds != null && appIds.size() > 0) {
+            map.put("appIds", appIds);
+        }
+        return mapper.selectCount(map);
     }
 
     @Override

@@ -31,7 +31,7 @@ public interface IUserService {
 
     OperaResult findPingAnUser(String userToken) ;
 
-    int findUserCount() ;
+    int findUserCount(String renterId) ;
 
     List<SUser> findByAppIdAndOpenIds(String appId, List<String> openIds) ;
 }

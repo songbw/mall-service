@@ -240,7 +240,7 @@
     SELECT SUM(sale_amount) FROM orders
     WHERE pay_status = 5
     <if test="appIds != null">
-      and orders.app_id in
+      and app_id in
       <foreach item="item" index="index" collection="appIds"
                open="(" separator="," close=")">
         #{item}
@@ -251,7 +251,7 @@
     SELECT count(id) FROM orders
     WHERE pay_status = 5
     <if test="appIds != null">
-      and orders.app_id in
+      and app_id in
       <foreach item="item" index="index" collection="appIds"
                open="(" separator="," close=")">
         #{item}
@@ -262,7 +262,7 @@
     SELECT count(DISTINCT(open_id)) FROM orders
     WHERE pay_status = 5
     <if test="appIds != null">
-      and orders.app_id in
+      and app_id in
       <foreach item="item" index="index" collection="appIds"
                open="(" separator="," close=")">
         #{item}
