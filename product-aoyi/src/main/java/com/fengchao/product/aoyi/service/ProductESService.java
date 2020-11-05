@@ -26,4 +26,6 @@ public interface ProductESService {
     int delete(int id) ;
 
     OperaResponse topKeyword(String appId) ;
+
+    OperaResponse topKeywordAdmin(String renterId) ;
 }

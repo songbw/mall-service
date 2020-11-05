@@ -246,7 +246,7 @@ public class ProductESServiceImpl implements ProductESService {
 
     @Override
     public OperaResponse topKeyword(String appId) {
-        // TODO topKeyword
+        // topKeyword
         OperaResponse operaResponse = new OperaResponse();
         SearchRequest request = new SearchRequest("productkeyword");
         // 通过SearchSourceBuilder构建搜索参数
@@ -286,6 +286,68 @@ public class ProductESServiceImpl implements ProductESService {
                 hotWork.setAppId(appId);
                 hotWorks.add(hotWork) ;
                 log.debug("topKeyword response: {}, {}", bucket.getDocCount(), bucket.getKeyAsString());
+            }
+            operaResponse.setData(hotWorks);
+            return operaResponse ;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public OperaResponse topKeywordAdmin(String renterId) {
+        // TODO topKeyword
+        OperaResponse operaResponse = new OperaResponse();
+        SearchRequest request = new SearchRequest("productkeyword");
+        // 通过SearchSourceBuilder构建搜索参数
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // 通过QueryBuilders构建ES查询条件，这里查询所有文档，复杂的查询语句设置请参考前面的章节。
+        builder.query(QueryBuilders.matchAllQuery());
+//        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+//        TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("appId", appId) ;
+//        boolQueryBuilder.must(stateTermQueryBuilder);
+//        builder.query(boolQueryBuilder);
+        // 创建terms桶聚合，聚合名字=by_shop, 字段=shop_id，根据shop_id分组
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("appCount")
+                .field("appId");
+
+        // 嵌套聚合
+        // 设置Avg指标聚合，聚合名字=avg_price, 字段=price，计算平均价格
+        aggregationBuilder.subAggregation(AggregationBuilders.terms("topCount").field("keyword"));
+
+        // 设置聚合查询
+        builder.aggregation(aggregationBuilder);
+        // 设置聚合查询
+        builder.aggregation(aggregationBuilder);
+        // 设置搜索条件
+        request.source(builder) ;
+        builder.size(0) ;
+
+        try{
+            SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
+            log.info("topKeyword result: {}", request.toString());
+            // 处理聚合查询结果
+            Aggregations aggregations = response.getAggregations();
+
+            // 根据by_shop名字查询terms聚合结果
+            Terms appCountAggregation = aggregations.get("appCount");
+            List<HotWork> hotWorks = new ArrayList<>();
+
+            // 遍历terms聚合结果
+            for (Terms.Bucket bucket  : appCountAggregation.getBuckets()) {
+                // 因为是根据shop_id分组，因此可以直接将桶的key转换成int类型
+//                int shopId = bucket.getKeyAsNumber().intValue();
+//                for (Terms.Bucket bucket1: bucket.getAggregations().get("topCount"))
+//                HotWork hotWork = new HotWork();
+//                hotWork.setCount(bucket.getDocCount());
+//                hotWork.setWork(bucket.getKeyAsString()) ;
+//                hotWorks.add(hotWork) ;
+                log.debug("appCount response: {}, {}", bucket.getDocCount(), bucket.getKeyAsString());
+                Terms topCountAggregation = bucket.getAggregations().get("topCount") ;
+                for (Terms.Bucket bucket1 : topCountAggregation.getBuckets()) {
+                    log.debug("topKeyword response: {}, {}", bucket1.getDocCount(), bucket1.getKeyAsString());
+                }
             }
             operaResponse.setData(hotWorks);
             return operaResponse ;

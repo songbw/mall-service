@@ -48,4 +48,10 @@ public class ProdESController {
         OperaResponse response = new OperaResponse() ;
         return service.topKeyword(appId);
     }
+
+    @GetMapping("/admin/top")
+    public OperaResponse topKeywordAdmin(@RequestHeader("renter") String renterId) {
+        OperaResponse response = new OperaResponse() ;
+        return service.topKeywordAdmin(renterId);
+    }
 }
