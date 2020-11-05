@@ -10,6 +10,7 @@ import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.ProductESService;
+import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -251,7 +252,11 @@ public class ProductESServiceImpl implements ProductESService {
         // 通过SearchSourceBuilder构建搜索参数
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // 通过QueryBuilders构建ES查询条件，这里查询所有文档，复杂的查询语句设置请参考前面的章节。
-        builder.query(QueryBuilders.matchAllQuery());
+//        builder.query(QueryBuilders.matchAllQuery());
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("appId", appId) ;
+        boolQueryBuilder.must(stateTermQueryBuilder);
+        builder.query(boolQueryBuilder);
         // 创建terms桶聚合，聚合名字=by_shop, 字段=shop_id，根据shop_id分组
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("topCount")
                 .field("keyword");
@@ -266,6 +271,7 @@ public class ProductESServiceImpl implements ProductESService {
             log.info("topKeyword result: {}", request.toString());
             // 处理聚合查询结果
             Aggregations aggregations = response.getAggregations();
+            log.debug("topKeyword response: {}", JSONUtil.toJsonString(aggregations));
             // 根据by_shop名字查询terms聚合结果
             Terms topCountAggregation = aggregations.get("topCount");
             // 遍历terms聚合结果
