@@ -270,7 +270,7 @@ public class ProductESServiceImpl implements ProductESService {
 
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
-            log.info("topKeyword result: {}", request.toString());
+            log.debug("topKeyword result: {}", request.toString());
             // 处理聚合查询结果
             Aggregations aggregations = response.getAggregations();
 
