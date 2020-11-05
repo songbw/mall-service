@@ -305,6 +305,9 @@ public class ProductESServiceImpl implements ProductESService {
         // TODO topKeyword
         if (!StringUtils.isEmpty(renterId) && !"0".equals(renterId)) {
             appIds = vendorsRpcService.queryAppIdList(renterId) ;
+            if (appIds == null || appIds.size() ==0) {
+                return operaResponse;
+            }
         }
 
         SearchRequest request = new SearchRequest("productkeyword");
