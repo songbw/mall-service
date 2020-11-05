@@ -362,6 +362,7 @@ public class ProductESServiceImpl implements ProductESService {
                     log.debug("topKeyword response: {}, {}", bucket1.getDocCount(), bucket1.getKeyAsString());
                 }
                 adminHotWord.setHotWordList(hotWords);
+                adminHotWords.add(adminHotWord);
             }
             operaResponse.setData(adminHotWords);
             return operaResponse ;
