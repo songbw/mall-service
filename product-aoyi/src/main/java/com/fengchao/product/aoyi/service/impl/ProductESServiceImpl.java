@@ -271,15 +271,17 @@ public class ProductESServiceImpl implements ProductESService {
             log.info("topKeyword result: {}", request.toString());
             // 处理聚合查询结果
             Aggregations aggregations = response.getAggregations();
-            log.debug("topKeyword response: {}", JSONUtil.toJsonString(aggregations));
+
             // 根据by_shop名字查询terms聚合结果
             Terms topCountAggregation = aggregations.get("topCount");
+
             // 遍历terms聚合结果
             for (Terms.Bucket bucket  : topCountAggregation.getBuckets()) {
                 // 因为是根据shop_id分组，因此可以直接将桶的key转换成int类型
-                int shopId = bucket.getKeyAsNumber().intValue();
+//                int shopId = bucket.getKeyAsNumber().intValue();
                 bucket.getDocCount();
                 bucket.getKeyAsString() ;
+                log.debug("topKeyword response: {}, {}", bucket.getDocCount(), bucket.getKeyAsString());
 
             }
             operaResponse.setData(topCountAggregation.getBuckets());
