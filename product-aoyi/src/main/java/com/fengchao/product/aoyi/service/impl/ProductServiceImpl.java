@@ -592,10 +592,13 @@ public class ProductServiceImpl implements ProductService {
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
         bean.forEach(aoyiProdIndex -> {
             AoyiProdIndex aoyiProdIndex1 = productDao.selectByMpu(aoyiProdIndex.getMpu()) ;
-            AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
-            BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
-            productHandle.getProductXClientBySkuCode(aoyiProdIndexX, renterId, aoyiProdIndex.getSkuid()) ;
-            aoyiProdIndexList.add(aoyiProdIndexX);
+            if (aoyiProdIndex1 != null) {
+                AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
+                BeanUtils.copyProperties(aoyiProdIndex1, aoyiProdIndexX);
+                productHandle.getProductXClientBySkuCode(aoyiProdIndexX, renterId, aoyiProdIndex.getSkuid()) ;
+                aoyiProdIndexList.add(aoyiProdIndexX);
+            }
+
         });
 
         log.debug("批量查询 selectProductListByMpuIdListAndCode 返回结果：{}", JSON.toJSONString(aoyiProdIndexList));
