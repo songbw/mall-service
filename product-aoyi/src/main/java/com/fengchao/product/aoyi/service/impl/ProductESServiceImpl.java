@@ -22,6 +22,10 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -237,6 +241,47 @@ public class ProductESServiceImpl implements ProductESService {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    @Override
+    public OperaResponse topKeyword(String appId) {
+        // TODO topKeyword
+        OperaResponse operaResponse = new OperaResponse();
+        SearchRequest request = new SearchRequest("productkeyword");
+        // 通过SearchSourceBuilder构建搜索参数
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // 通过QueryBuilders构建ES查询条件，这里查询所有文档，复杂的查询语句设置请参考前面的章节。
+        builder.query(QueryBuilders.matchAllQuery());
+        // 创建terms桶聚合，聚合名字=by_shop, 字段=shop_id，根据shop_id分组
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("topCount")
+                .field("keyword");
+        // 设置聚合查询
+        builder.aggregation(aggregationBuilder);
+        // 设置搜索条件
+        request.source(builder) ;
+        builder.size(0) ;
+
+        try{
+            SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
+            log.info("topKeyword result: {}", request.toString());
+            // 处理聚合查询结果
+            Aggregations aggregations = response.getAggregations();
+            // 根据by_shop名字查询terms聚合结果
+            Terms topCountAggregation = aggregations.get("topCount");
+            // 遍历terms聚合结果
+            for (Terms.Bucket bucket  : topCountAggregation.getBuckets()) {
+                // 因为是根据shop_id分组，因此可以直接将桶的key转换成int类型
+                int shopId = bucket.getKeyAsNumber().intValue();
+                bucket.getDocCount();
+                bucket.getKeyAsString() ;
+
+            }
+            operaResponse.setData(topCountAggregation.getBuckets());
+            return operaResponse ;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private List<PromotionInfoBean> findPromotionBySku(String skuId, String appId) {

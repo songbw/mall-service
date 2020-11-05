@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.service;
 
+import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.PageBean;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
@@ -23,4 +24,6 @@ public interface ProductESService {
     PageBean queryByCategoryPrefix(ProductQueryBean queryBean);
 
     int delete(int id) ;
+
+    OperaResponse topKeyword(String appId) ;
 }

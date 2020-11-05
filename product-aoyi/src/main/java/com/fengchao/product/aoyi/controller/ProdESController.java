@@ -42,4 +42,10 @@ public class ProdESController {
         result.getData().put("result", service.delete(id)) ;
         return result;
     }
+
+    @GetMapping("/top")
+    public OperaResponse topKeyword(@RequestHeader("appId") String appId) {
+        OperaResponse response = new OperaResponse() ;
+        return service.topKeyword(appId);
+    }
 }
