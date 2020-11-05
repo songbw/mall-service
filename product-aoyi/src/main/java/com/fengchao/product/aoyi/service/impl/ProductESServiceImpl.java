@@ -274,17 +274,20 @@ public class ProductESServiceImpl implements ProductESService {
 
             // 根据by_shop名字查询terms聚合结果
             Terms topCountAggregation = aggregations.get("topCount");
+            List<HotWork> hotWorks = new ArrayList<>();
 
             // 遍历terms聚合结果
             for (Terms.Bucket bucket  : topCountAggregation.getBuckets()) {
                 // 因为是根据shop_id分组，因此可以直接将桶的key转换成int类型
 //                int shopId = bucket.getKeyAsNumber().intValue();
-                bucket.getDocCount();
-                bucket.getKeyAsString() ;
+                HotWork hotWork = new HotWork();
+                hotWork.setCount(bucket.getDocCount());
+                hotWork.setWork(bucket.getKeyAsString()) ;
+                hotWork.setAppId(appId);
+                hotWorks.add(hotWork) ;
                 log.debug("topKeyword response: {}, {}", bucket.getDocCount(), bucket.getKeyAsString());
-
             }
-            operaResponse.setData(topCountAggregation.getBuckets());
+            operaResponse.setData(hotWorks);
             return operaResponse ;
         }catch (Exception e){
             e.printStackTrace();
