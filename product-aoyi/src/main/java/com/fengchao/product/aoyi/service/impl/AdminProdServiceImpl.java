@@ -191,6 +191,9 @@ public class AdminProdServiceImpl implements AdminProdService {
             return pageInfoBean ;
         }
         PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
+        if (pageInfo.getTotal() == 0) {
+            return pageInfoBean;
+        }
         BeanUtils.copyProperties(pageInfo, pageInfoBean);
         List<AoyiProdIndex> list = pageInfo.getList();
         // 关联属性添加
