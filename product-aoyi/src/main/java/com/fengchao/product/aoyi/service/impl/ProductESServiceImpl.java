@@ -318,8 +318,6 @@ public class ProductESServiceImpl implements ProductESService {
 
         // 设置聚合查询
         builder.aggregation(aggregationBuilder);
-        // 设置聚合查询
-        builder.aggregation(aggregationBuilder);
         // 设置搜索条件
         request.source(builder) ;
         builder.size(0) ;
