@@ -9,6 +9,7 @@ import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
+import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import com.fengchao.product.aoyi.service.ProductESService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
@@ -49,13 +50,15 @@ public class ProductESServiceImpl implements ProductESService {
     private ESConfig esConfig;
     private EquityService equityService ;
     private ProductHandle productHandle ;
+    private VendorsRpcService vendorsRpcService ;
 
     @Autowired
-    public ProductESServiceImpl(RestHighLevelClient restHighLevelClient, ESConfig esConfig, EquityService equityService, ProductHandle productHandle) {
+    public ProductESServiceImpl(RestHighLevelClient restHighLevelClient, ESConfig esConfig, EquityService equityService, ProductHandle productHandle, VendorsRpcService vendorsRpcService) {
         this.restHighLevelClient = restHighLevelClient;
         this.esConfig = esConfig;
         this.equityService = equityService;
         this.productHandle = productHandle;
+        this.vendorsRpcService = vendorsRpcService ;
     }
 
     @Override
@@ -297,17 +300,27 @@ public class ProductESServiceImpl implements ProductESService {
 
     @Override
     public OperaResponse topKeywordAdmin(String renterId) {
-        // TODO topKeyword
         OperaResponse operaResponse = new OperaResponse();
+        List<String> appIds = new ArrayList<>();
+        // TODO topKeyword
+        if (!StringUtils.isEmpty(renterId) && !"0".equals(renterId)) {
+            appIds = vendorsRpcService.queryAppIdList(renterId) ;
+        }
+
         SearchRequest request = new SearchRequest("productkeyword");
         // 通过SearchSourceBuilder构建搜索参数
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // 通过QueryBuilders构建ES查询条件，这里查询所有文档，复杂的查询语句设置请参考前面的章节。
-        builder.query(QueryBuilders.matchAllQuery());
-//        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-//        TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("appId", appId) ;
-//        boolQueryBuilder.must(stateTermQueryBuilder);
-//        builder.query(boolQueryBuilder);
+//        builder.query(QueryBuilders.matchAllQuery());
+        if (appIds != null && appIds.size() > 0) {
+            for (String appId: appIds) {
+                BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+                TermQueryBuilder appTermQueryBuilder =  QueryBuilders.termQuery("appId", appId) ;
+                boolQueryBuilder.must(appTermQueryBuilder);
+                builder.query(boolQueryBuilder);
+            }
+        }
+
         // 创建terms桶聚合，聚合名字=by_shop, 字段=shop_id，根据shop_id分组
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("appCount")
                 .field("appId");
