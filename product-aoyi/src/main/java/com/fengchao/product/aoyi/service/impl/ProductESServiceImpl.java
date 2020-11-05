@@ -11,7 +11,6 @@ import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import com.fengchao.product.aoyi.service.ProductESService;
-import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.fengchao.product.aoyi.utils.ProductHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -277,16 +276,15 @@ public class ProductESServiceImpl implements ProductESService {
 
             // 根据by_shop名字查询terms聚合结果
             Terms topCountAggregation = aggregations.get("topCount");
-            List<HotWork> hotWorks = new ArrayList<>();
+            List<HotWord> hotWorks = new ArrayList<>();
 
             // 遍历terms聚合结果
             for (Terms.Bucket bucket  : topCountAggregation.getBuckets()) {
                 // 因为是根据shop_id分组，因此可以直接将桶的key转换成int类型
 //                int shopId = bucket.getKeyAsNumber().intValue();
-                HotWork hotWork = new HotWork();
+                HotWord hotWork = new HotWord();
                 hotWork.setCount(bucket.getDocCount());
                 hotWork.setWork(bucket.getKeyAsString()) ;
-                hotWork.setAppId(appId);
                 hotWorks.add(hotWork) ;
                 log.debug("topKeyword response: {}, {}", bucket.getDocCount(), bucket.getKeyAsString());
             }
@@ -346,24 +344,26 @@ public class ProductESServiceImpl implements ProductESService {
 
             // 根据by_shop名字查询terms聚合结果
             Terms appCountAggregation = aggregations.get("appCount");
-            List<HotWork> hotWorks = new ArrayList<>();
+            List<AdminHotWord> adminHotWords = new ArrayList<>();
 
             // 遍历terms聚合结果
             for (Terms.Bucket bucket  : appCountAggregation.getBuckets()) {
                 // 因为是根据shop_id分组，因此可以直接将桶的key转换成int类型
-//                int shopId = bucket.getKeyAsNumber().intValue();
-//                for (Terms.Bucket bucket1: bucket.getAggregations().get("topCount"))
-//                HotWork hotWork = new HotWork();
-//                hotWork.setCount(bucket.getDocCount());
-//                hotWork.setWork(bucket.getKeyAsString()) ;
-//                hotWorks.add(hotWork) ;
+                AdminHotWord adminHotWord = new AdminHotWord();
+                adminHotWord.setAppId(bucket.getKeyAsString());
+                List<HotWord> hotWords = new ArrayList<>();
                 log.debug("appCount response: {}, {}", bucket.getDocCount(), bucket.getKeyAsString());
                 Terms topCountAggregation = bucket.getAggregations().get("topCount") ;
                 for (Terms.Bucket bucket1 : topCountAggregation.getBuckets()) {
+                    HotWord hotWork = new HotWord();
+                    hotWork.setCount(bucket1.getDocCount());
+                    hotWork.setWork(bucket1.getKeyAsString()) ;
+                    hotWords.add(hotWork) ;
                     log.debug("topKeyword response: {}, {}", bucket1.getDocCount(), bucket1.getKeyAsString());
                 }
+                adminHotWord.setHotWordList(hotWords);
             }
-            operaResponse.setData(hotWorks);
+            operaResponse.setData(adminHotWords);
             return operaResponse ;
         }catch (Exception e){
             e.printStackTrace();

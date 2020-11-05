@@ -9,8 +9,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class HotWork {
+public class HotWord {
     private String work ;
     private Long count ;
-    private String appId ;
 }
