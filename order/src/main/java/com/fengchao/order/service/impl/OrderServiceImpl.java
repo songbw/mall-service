@@ -1866,7 +1866,21 @@ public class OrderServiceImpl implements OrderService {
             prodIndex.setSkuid(orderDetailX.getSkuId());
             return prodIndex;
         }).collect(Collectors.toList());
+        Map<String, Integer> mpuSaleCountMap = orderDetailXES.stream().collect(Collectors.toMap(OrderDetailX::getMpu, OrderDetailX::getSaleCount));
+
         response = productService.selectByMpuIdListAndSkuCodes(prodIndices, queryBean.getAppId());
+        if (response.getCode() == 200) {
+            Object object = response.getData();
+            String jsonString = JSON.toJSONString(object);
+            List<AoyiProdIndex> aoyiProdIndices = JSONObject.parseArray(jsonString, AoyiProdIndex.class);
+            prodIndices = aoyiProdIndices.stream().map(aoyiProdIndex -> {
+                int saleCount = mpuSaleCountMap.get(aoyiProdIndex.getMpu());
+                aoyiProdIndex.setSaleCount(saleCount);
+                return aoyiProdIndex ;
+            }).collect(Collectors.toList());
+            response.setData(prodIndices);
+            return response;
+        }
         return response;
     }
 
