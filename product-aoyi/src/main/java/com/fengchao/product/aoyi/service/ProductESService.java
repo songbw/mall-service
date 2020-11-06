@@ -27,5 +27,5 @@ public interface ProductESService {
 
     OperaResponse topKeyword(ProductQueryBean queryBean) ;
 
-    OperaResponse topKeywordAdmin(String renterId) ;
+    OperaResponse topKeywordAdmin(ProductQueryBean queryBean) ;
 }

@@ -301,12 +301,12 @@ public class ProductESServiceImpl implements ProductESService {
     }
 
     @Override
-    public OperaResponse topKeywordAdmin(String renterId) {
+    public OperaResponse topKeywordAdmin(ProductQueryBean queryBean) {
         OperaResponse operaResponse = new OperaResponse();
         List<String> appIds = new ArrayList<>();
-        // TODO topKeyword
-        if (!StringUtils.isEmpty(renterId) && !"0".equals(renterId)) {
-            appIds = vendorsRpcService.queryAppIdList(renterId) ;
+        // topKeyword
+        if (!StringUtils.isEmpty(queryBean.getRenterHeader()) && !"0".equals(queryBean.getRenterHeader())) {
+            appIds = vendorsRpcService.queryAppIdList(queryBean.getRenterHeader()) ;
             if (appIds == null || appIds.size() ==0) {
                 return operaResponse;
             }
@@ -317,14 +317,18 @@ public class ProductESServiceImpl implements ProductESService {
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // 通过QueryBuilders构建ES查询条件，这里查询所有文档，复杂的查询语句设置请参考前面的章节。
 //        builder.query(QueryBuilders.matchAllQuery());
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         if (appIds != null && appIds.size() > 0) {
             for (String appId: appIds) {
-                BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
                 TermQueryBuilder appTermQueryBuilder =  QueryBuilders.termQuery("appId", appId) ;
                 boolQueryBuilder.must(appTermQueryBuilder);
-                builder.query(boolQueryBuilder);
             }
         }
+        if (!StringUtils.isEmpty(queryBean.getStartTime()) && !StringUtils.isEmpty(queryBean.getEndTime())) {
+            RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("createdAt").gte(queryBean.getStartTime()).lte(queryBean.getEndTime()) ;
+            boolQueryBuilder.must(rangeQueryBuilder);
+        }
+        builder.query(boolQueryBuilder);
 
         // 创建terms桶聚合，聚合名字=by_shop, 字段=shop_id，根据shop_id分组
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("appCount")
@@ -332,7 +336,7 @@ public class ProductESServiceImpl implements ProductESService {
 
         // 嵌套聚合
         // 设置Avg指标聚合，聚合名字=avg_price, 字段=price，计算平均价格
-        aggregationBuilder.subAggregation(AggregationBuilders.terms("topCount").field("keyword"));
+        aggregationBuilder.subAggregation(AggregationBuilders.terms("topCount").field("keyword").size(queryBean.getPageSize()));
 
         // 设置聚合查询
         builder.aggregation(aggregationBuilder);
