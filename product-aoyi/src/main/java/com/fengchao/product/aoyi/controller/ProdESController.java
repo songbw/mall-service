@@ -54,12 +54,13 @@ public class ProdESController {
     }
 
     @GetMapping("/admin/top")
-    public OperaResponse topKeywordAdmin(@RequestHeader("renter") String renterId, String startTime, String endTime) {
+    public OperaResponse topKeywordAdmin(@RequestHeader("renter") String renterId, String startTime, String endTime, Integer pageSize) {
         OperaResponse response = new OperaResponse() ;
         ProductQueryBean queryBean = new ProductQueryBean();
         queryBean.setRenterHeader(renterId);
         queryBean.setStartTime(startTime);
         queryBean.setEndTime(endTime);
+        queryBean.setPageSize(pageSize);
         return service.topKeywordAdmin(queryBean);
     }
 }
