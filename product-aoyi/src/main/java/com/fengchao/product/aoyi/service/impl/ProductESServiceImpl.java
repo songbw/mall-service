@@ -247,7 +247,7 @@ public class ProductESServiceImpl implements ProductESService {
     }
 
     @Override
-    public OperaResponse topKeyword(String appId) {
+    public OperaResponse topKeyword(ProductQueryBean queryBean) {
         // topKeyword
         OperaResponse operaResponse = new OperaResponse();
         SearchRequest request = new SearchRequest("productkeyword");
@@ -256,10 +256,12 @@ public class ProductESServiceImpl implements ProductESService {
         // 通过QueryBuilders构建ES查询条件，这里查询所有文档，复杂的查询语句设置请参考前面的章节。
 //        builder.query(QueryBuilders.matchAllQuery());
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("appId", appId) ;
+        TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("appId", queryBean.getAppId()) ;
         boolQueryBuilder.must(stateTermQueryBuilder);
-        RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("createdAt").gte("2020-10-01").lte("2020-10-30") ;
-        boolQueryBuilder.must(rangeQueryBuilder);
+        if (!StringUtils.isEmpty(queryBean.getStartTime()) && !StringUtils.isEmpty(queryBean.getEndTime())) {
+            RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("createdAt").gte(queryBean.getStartTime()).lte(queryBean.getEndTime()) ;
+            boolQueryBuilder.must(rangeQueryBuilder);
+        }
         builder.query(boolQueryBuilder);
         // 创建terms桶聚合，聚合名字=by_shop, 字段=shop_id，根据shop_id分组
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("topCount")

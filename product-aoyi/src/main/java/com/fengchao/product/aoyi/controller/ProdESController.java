@@ -44,9 +44,13 @@ public class ProdESController {
     }
 
     @GetMapping("/top")
-    public OperaResponse topKeyword(@RequestHeader("appId") String appId) {
+    public OperaResponse topKeyword(@RequestHeader("appId") String appId, String startTime, String endTime) {
         OperaResponse response = new OperaResponse() ;
-        return service.topKeyword(appId);
+        ProductQueryBean queryBean = new ProductQueryBean();
+        queryBean.setAppId(appId);
+        queryBean.setStartTime(startTime);
+        queryBean.setEndTime(endTime);
+        return service.topKeyword(queryBean);
     }
 
     @GetMapping("/admin/top")
