@@ -258,6 +258,8 @@ public class ProductESServiceImpl implements ProductESService {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         TermQueryBuilder stateTermQueryBuilder =  QueryBuilders.termQuery("appId", appId) ;
         boolQueryBuilder.must(stateTermQueryBuilder);
+        RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("createdAt").gte("2020-10-01").lte("2020-10-30") ;
+        boolQueryBuilder.must(rangeQueryBuilder);
         builder.query(boolQueryBuilder);
         // 创建terms桶聚合，聚合名字=by_shop, 字段=shop_id，根据shop_id分组
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("topCount")
