@@ -336,6 +336,9 @@ public class ProductESServiceImpl implements ProductESService {
 
         // 嵌套聚合
         // 设置Avg指标聚合，聚合名字=avg_price, 字段=price，计算平均价格
+        if (queryBean.getPageSize() == null || queryBean.getPageSize() == 0) {
+            queryBean.setPageSize(10);
+        }
         aggregationBuilder.subAggregation(AggregationBuilders.terms("topCount").field("keyword").size(queryBean.getPageSize()));
 
         // 设置聚合查询
