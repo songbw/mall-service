@@ -70,7 +70,13 @@ public class ProductRpcService {
     private CompletableFuture<List<AoyiProdIndex>> findProductListByMpus(List<String> mpus, String appId, String type) {
         log.debug("findProductListByMpus 开始-----------------------------");
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
-        OperaResult operaResult = productService.findProductListByMpuIdList(mpus, appId, type);
+
+        OperaResult operaResult = new OperaResult() ;
+        if ("admin".equals(type)) {
+            operaResult = productService.findProductListByMpuIdListAdmin(mpus, appId);
+        } else {
+            operaResult = productService.findProductListByMpuIdList(mpus, appId);
+        }
         // 处理返回
         if (operaResult.getCode() == 200) {
             List<AoyiProdIndex> _couponBeanList = (List<AoyiProdIndex>) operaResult.getData().get("result");

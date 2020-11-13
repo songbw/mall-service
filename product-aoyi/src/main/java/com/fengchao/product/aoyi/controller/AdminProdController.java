@@ -4,13 +4,11 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ExportProuctOverRangeException;
 import com.fengchao.product.aoyi.exception.ProductException;
-import com.fengchao.product.aoyi.model.AoyiProdIndex;
-import com.fengchao.product.aoyi.model.AppSkuPrice;
-import com.fengchao.product.aoyi.model.AppSkuState;
-import com.fengchao.product.aoyi.model.StarSku;
+import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.AppSkuPriceService;
 import com.fengchao.product.aoyi.service.AppSkuStateService;
+import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.DateUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import com.github.pagehelper.PageInfo;
@@ -42,12 +40,14 @@ public class AdminProdController {
     private AdminProdService prodService;
     private AppSkuPriceService appSkuPriceService ;
     private AppSkuStateService appSkuStateService ;
+    private ProductService productService ;
 
     @Autowired
-    public AdminProdController(AdminProdService prodService, AppSkuPriceService appSkuPriceService, AppSkuStateService appSkuStateService) {
+    public AdminProdController(AdminProdService prodService, AppSkuPriceService appSkuPriceService, AppSkuStateService appSkuStateService, ProductService productService) {
         this.prodService = prodService;
         this.appSkuPriceService = appSkuPriceService;
         this.appSkuStateService = appSkuStateService;
+        this.productService = productService ;
     }
 
     @GetMapping("prodList")
@@ -755,6 +755,27 @@ public class AdminProdController {
     @PutMapping("merchant/state")
     public OperaResponse batchUpdateMerchantState(@RequestBody AoyiProdIndex prodIndex) {
         return prodService.updateBatchStateByMerchantId(prodIndex) ;
+    }
+
+    @GetMapping("/getByMpus")
+    private OperaResult getProdsByMpus(@RequestParam("mpuIdList") List<String> mpuIdList, @RequestParam("appId") String appId, OperaResult result) throws ProductException {
+        log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
+        if (mpuIdList.size() > 60) {
+            result.setCode(200001);
+            result.setMsg("mpu 列表数量超过50！");
+            return result ;
+        }
+        try {
+            // 查询
+            List<AoyiProdIndexX> productInfoBeanList = productService.getProdsByMpus(mpuIdList, appId, "admin");
+
+            result.getData().put("result", productInfoBeanList);
+        } catch (Exception e) {
+            log.error("根据mup集合查询产品信息 异常:{}", e.getMessage(), e);
+            result.setCode(500);
+            result.setMsg("根据mup集合查询产品信息 异常");
+        }
+        return result;
     }
 
 }
