@@ -461,6 +461,7 @@ public class AggregationServiceImpl implements AggregationService {
         }
         for (int i = 0; i < AggregationArray.size(); i++) {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
+            String name = AggregationArray.getJSONObject(i).getString("name");
             if (type == 3 || type == 10) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
                 for (int j = 0; j < jsonArray.size(); j++) {
@@ -472,6 +473,7 @@ public class AggregationServiceImpl implements AggregationService {
                             if (!"1".equals(aoyiProdIndex.getState())) {
                                 // TODO 写map 发邮件
                                 jsonObject.put("aggrId", aggregation.getId()) ;
+                                jsonObject.put("aggrName", name) ;
                                 jsonObjects.add(jsonObject) ;
                                 log.debug("del mpu is {}", jsonObject.toJSONString());
                                 jsonArray.remove(j) ;
@@ -502,11 +504,12 @@ public class AggregationServiceImpl implements AggregationService {
             }
             if (type == 4 || type == 9) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
-                if (type == 9) {
+                if (type == 4) {
                     log.debug("aggregation data is {}", AggregationArray.getJSONObject(i).toJSONString());
                 }
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
+
                     for (int m = 0; m < array.size(); m++) {
                         JSONObject jsonObject = array.getJSONObject(m);
                         String mpu = array.getJSONObject(m).getString("mpu");
@@ -514,6 +517,12 @@ public class AggregationServiceImpl implements AggregationService {
                             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
                             if(aoyiProdIndex != null){
                                 if (!"1".equals(aoyiProdIndex.getState())) {
+                                    if (type == 4) {
+                                        String title = jsonArray.getJSONObject(j).getString("title") ;
+                                        name = "商品楼层 " + "-" + title ;
+                                    }
+                                    jsonObject.put("aggrId", aggregation.getId()) ;
+                                    jsonObject.put("aggrName", name) ;
                                     jsonObjects.add(jsonObject) ;
                                     log.debug("del mpu is {}", jsonObject.toJSONString());
                                     array.remove(m) ;
