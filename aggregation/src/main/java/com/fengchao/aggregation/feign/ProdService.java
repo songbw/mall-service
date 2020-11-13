@@ -13,5 +13,5 @@ import java.util.List;
 public interface ProdService {
 
     @RequestMapping(value = "/prod/getByMpus", method = RequestMethod.GET)
-    OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, @RequestParam("appId") String appId, String type);
+    OperaResult findProductListByMpuIdList(@RequestParam("mpuIdList") List<String> mpuIdList, @RequestParam("appId") String appId,@RequestParam("type") String type);
 }
