@@ -412,6 +412,10 @@ public class AggregationServiceImpl implements AggregationService {
         }
         JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
 
+        if(aggregation.getContent() == null || aggregation.getContent().equals("") ){
+//            return delMpus;
+            return;
+        }
         for (int i = 0; i < AggregationArray.size(); i++) {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
             if (type == 3 /* PromotionType */ || type == 10 /* HorizontalGoodType */ ) {
