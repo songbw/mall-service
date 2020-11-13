@@ -3,11 +3,9 @@ package com.fengchao.aggregation.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fengchao.aggregation.bean.AggregationBean;
-import com.fengchao.aggregation.bean.OperaResult;
-import com.fengchao.aggregation.bean.PageBean;
-import com.fengchao.aggregation.bean.QueryBean;
+import com.fengchao.aggregation.bean.*;
 import com.fengchao.aggregation.exception.AggregationException;
+import com.fengchao.aggregation.feign.BaseService;
 import com.fengchao.aggregation.feign.EquityService;
 import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.mapper.*;
@@ -34,6 +32,8 @@ public class AggregationServiceImpl implements AggregationService {
     private ProductRpcService productRpcService;
     @Autowired
     private EquityService equityService;
+    @Autowired
+    private BaseService baseService ;
 
     @Override
     public PageBean findAggregation(QueryBean bean, Integer merchantId) throws AggregationException {
@@ -398,13 +398,22 @@ public class AggregationServiceImpl implements AggregationService {
                 for (Aggregation aggregation: aggregations) {
                     List<JSONObject> jsonObjects = convertContentAdmin(aggregation) ;
                     allDelMpus.addAll(jsonObjects) ;
-                    log.debug("del mpu array list is {}", JSONUtil.toJsonString(allDelMpus));
+
                     if (aggregation.getId() != null) {
                         mapper.updateByPrimaryKeySelective(aggregation) ;
                     }
                 }
             }
+            if (allDelMpus != null && allDelMpus.size() > 0) {
+                // TODO 发邮件
+                log.debug("del mpu array list is {}", JSONUtil.toJsonString(allDelMpus));
+                Email email = new Email() ;
+                String address = "tom.jing@weesharing.com,bingwei.song@weesharing.com" ;
+                email.setContent(JSONUtil.toJsonString(allDelMpus));
+                email.setEmail(address.split(","));
+                baseService.sendMail(email) ;
 
+            }
         }
     }
 
@@ -471,11 +480,10 @@ public class AggregationServiceImpl implements AggregationService {
                         AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
                         if(aoyiProdIndex != null){
                             if (!"1".equals(aoyiProdIndex.getState())) {
-                                // TODO 写map 发邮件
+                                // 写map 发邮件
                                 jsonObject.put("aggrId", aggregation.getId()) ;
                                 jsonObject.put("aggrName", name) ;
                                 jsonObjects.add(jsonObject) ;
-                                log.debug("del mpu is {}", jsonObject.toJSONString());
                                 jsonArray.remove(j) ;
                                 j = j - 1 ;
                             }
@@ -504,9 +512,6 @@ public class AggregationServiceImpl implements AggregationService {
             }
             if (type == 4 || type == 9) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
-                if (type == 4) {
-                    log.debug("aggregation data is {}", AggregationArray.getJSONObject(i).toJSONString());
-                }
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
 
@@ -524,7 +529,6 @@ public class AggregationServiceImpl implements AggregationService {
                                     jsonObject.put("aggrId", aggregation.getId()) ;
                                     jsonObject.put("aggrName", name) ;
                                     jsonObjects.add(jsonObject) ;
-                                    log.debug("del mpu is {}", jsonObject.toJSONString());
                                     array.remove(m) ;
                                     m = m - 1 ;
                                 }
@@ -554,7 +558,6 @@ public class AggregationServiceImpl implements AggregationService {
             }
         }
         aggregation.setContent(AggregationArray.toString());
-        log.debug("convert del mpu array list is {}", JSONUtil.toJsonString(jsonObjects));
         return jsonObjects;
     }
 }
