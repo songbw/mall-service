@@ -252,4 +252,11 @@
         where status = 1 and home_page = true
         and app_id = #{appId,jdbcType=VARCHAR}
     </select>
+  <select id="selectAllLimit" resultType="com.fengchao.aggregation.model.Aggregation" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from aggregation
+    where status = 1
+    limit #{pageNo},#{pageSize}
+  </select>
 </mapper>

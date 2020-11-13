@@ -393,7 +393,7 @@ public class AggregationServiceImpl implements AggregationService {
             for (int i = 0; i < total/bean.getLimit() + 1; i++) {
                 map.put("pageNo", i+bean.getLimit());
                 i = i + bean.getLimit() ;
-                aggregations = mapper.selectLimit(map);
+                aggregations = mapper.selectAllLimit(map);
                 for (Aggregation aggregation: aggregations) {
                     aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId(), aggregation.getId()) ;
                     if (aggregation.getId() != null) {
