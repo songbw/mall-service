@@ -463,7 +463,6 @@ public class AggregationServiceImpl implements AggregationService {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
             if (type == 3 || type == 10) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
-                log.debug("aggregation data is {}", AggregationArray.getJSONObject(i).toJSONString());
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(j);
                     String mpu = jsonObject.getString("mpu");
@@ -472,6 +471,7 @@ public class AggregationServiceImpl implements AggregationService {
                         if(aoyiProdIndex != null){
                             if (!"1".equals(aoyiProdIndex.getState())) {
                                 // TODO 写map 发邮件
+                                jsonObject.put("aggrId", aggregation.getId()) ;
                                 jsonObjects.add(jsonObject) ;
                                 log.debug("del mpu is {}", jsonObject.toJSONString());
                                 jsonArray.remove(j) ;
@@ -502,7 +502,9 @@ public class AggregationServiceImpl implements AggregationService {
             }
             if (type == 4 || type == 9) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
-                log.debug("aggregation data is {}", AggregationArray.getJSONObject(i).toJSONString());
+                if (type == 9) {
+                    log.debug("aggregation data is {}", AggregationArray.getJSONObject(i).toJSONString());
+                }
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
                     for (int m = 0; m < array.size(); m++) {
