@@ -395,7 +395,6 @@ public class AggregationServiceImpl implements AggregationService {
                 map.put("pageNo", i+bean.getLimit());
                 i = i + bean.getLimit() ;
                 aggregations = mapper.selectAllLimit(map);
-                log.debug("aggregation list is {}", JSONUtil.toJsonString(aggregations));
                 for (Aggregation aggregation: aggregations) {
                     aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId(), aggregation.getId()) ;
                     if (aggregation.getId() != null) {
@@ -469,7 +468,7 @@ public class AggregationServiceImpl implements AggregationService {
                         if(aoyiProdIndex != null){
                             if (!"1".equals(aoyiProdIndex.getState())) {
                                 // TODO 写map 发邮件
-                                log.info("del mpu is {}", jsonObject.toJSONString());
+                                log.debug("del mpu is {}", jsonObject.toJSONString());
                                 jsonArray.remove(j) ;
                                 j = j - 1 ;
                             }
@@ -507,8 +506,8 @@ public class AggregationServiceImpl implements AggregationService {
                             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
                             if(aoyiProdIndex != null){
                                 if (!"1".equals(aoyiProdIndex.getState())) {
-                                    log.info("del mpu is {}", jsonObject.toJSONString());
-                                    jsonArray.remove(j) ;
+                                    log.debug("del mpu is {}", jsonObject.toJSONString());
+                                    array.remove(j) ;
                                     j = j - 1 ;
                                 }
                                 String imageUrl = aoyiProdIndex.getImagesUrl();
