@@ -395,7 +395,7 @@ public class AggregationServiceImpl implements AggregationService {
                 i = i + bean.getLimit() ;
                 aggregations = mapper.selectLimit(map);
                 aggregations.forEach(aggregation -> {
-                    convertContentAdmin(aggregation) ;
+                    aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId()) ;
                     mapper.updateByPrimaryKeySelective(aggregation) ;
                 });
             }
@@ -403,18 +403,12 @@ public class AggregationServiceImpl implements AggregationService {
         }
     }
 
-    public void convertContentAdmin(Aggregation aggregation) throws AggregationException {
-        List<JSONObject> delMpus = new ArrayList<>();
+    public Aggregation convertContentAdmin(String content, String appId) throws AggregationException {
         List<String> mpus = new ArrayList<>();
-//        Aggregation aggregation = new Aggregation();
-        if(aggregation.getContent() == null || aggregation.getContent().equals("") ){
-//            return delMpus;
-        }
-        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
-
-        if(aggregation.getContent() == null || aggregation.getContent().equals("") ){
-//            return delMpus;
-            return;
+        Aggregation aggregation = new Aggregation();
+        JSONArray AggregationArray = JSONObject.parseArray(content);
+        if(content == null || content.equals("") ){
+            return aggregation;
         }
         for (int i = 0; i < AggregationArray.size(); i++) {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
@@ -445,12 +439,12 @@ public class AggregationServiceImpl implements AggregationService {
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
         Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
-            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, aggregation.getAppId(), "admin");
+            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, appId, "admin");
             for(AoyiProdIndex prod: aoyiProdIndices){
                 aoyiProdMap.put(prod.getMpu(), prod);
             }
 
-            OperaResult onlinePromotion = equityService.findOnlinePromotion(aggregation.getAppId());
+            OperaResult onlinePromotion = equityService.findOnlinePromotion(appId);
             if (onlinePromotion.getCode() == 200) {
                 Object object = onlinePromotion.getData().get("result");
                 List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
@@ -472,9 +466,8 @@ public class AggregationServiceImpl implements AggregationService {
                             if (!"1".equals(aoyiProdIndex.getState())) {
                                 // TODO 写map 发邮件
                                 log.info("del mpu is {}", jsonObject.toJSONString());
-                                delMpus.add(jsonObject) ;
-//                                jsonArray.remove(j) ;
-//                                j = j - 1 ;
+                                jsonArray.remove(j) ;
+                                j = j - 1 ;
                             }
                             String imageUrl = aoyiProdIndex.getImagesUrl();
                             if (imageUrl != null && (!"".equals(imageUrl))) {
@@ -510,11 +503,9 @@ public class AggregationServiceImpl implements AggregationService {
                             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
                             if(aoyiProdIndex != null){
                                 if (!"1".equals(aoyiProdIndex.getState())) {
-                                    // TODO 写map 发邮件
                                     log.info("del mpu is {}", jsonObject.toJSONString());
-                                    delMpus.add(jsonObject) ;
-//                                    jsonArray.remove(j) ;
-//                                    j = j - 1 ;
+                                    jsonArray.remove(j) ;
+                                    j = j - 1 ;
                                 }
                                 String imageUrl = aoyiProdIndex.getImagesUrl();
                                 if (imageUrl != null && (!"".equals(imageUrl))) {
@@ -542,6 +533,6 @@ public class AggregationServiceImpl implements AggregationService {
             }
         }
         aggregation.setContent(AggregationArray.toString());
-//        return delMpus;
+        return aggregation;
     }
 }
