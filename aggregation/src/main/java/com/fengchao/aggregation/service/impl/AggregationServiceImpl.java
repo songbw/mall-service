@@ -463,6 +463,7 @@ public class AggregationServiceImpl implements AggregationService {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
             if (type == 3 || type == 10) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                log.debug("aggregation data is {}", AggregationArray.getJSONObject(i).getJSONObject("data").toJSONString());
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(j);
                     String mpu = jsonObject.getString("mpu");
@@ -501,6 +502,7 @@ public class AggregationServiceImpl implements AggregationService {
             }
             if (type == 4 || type == 9) {
                 JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                log.debug("aggregation data is {}", AggregationArray.getJSONObject(i).getJSONObject("data").toJSONString());
                 for (int j = 0; j < jsonArray.size(); j++) {
                     JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
                     for (int m = 0; m < array.size(); m++) {
