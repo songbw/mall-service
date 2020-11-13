@@ -403,12 +403,12 @@ public class AggregationServiceImpl implements AggregationService {
         }
     }
 
-    public List<JSONObject> convertContentAdmin(Aggregation aggregation) throws AggregationException {
+    public void convertContentAdmin(Aggregation aggregation) throws AggregationException {
         List<JSONObject> delMpus = new ArrayList<>();
         List<String> mpus = new ArrayList<>();
 //        Aggregation aggregation = new Aggregation();
         if(aggregation.getContent() == null || aggregation.getContent().equals("") ){
-            return delMpus;
+//            return delMpus;
         }
         JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
 
@@ -538,6 +538,6 @@ public class AggregationServiceImpl implements AggregationService {
             }
         }
         aggregation.setContent(AggregationArray.toString());
-        return delMpus;
+//        return delMpus;
     }
 }
