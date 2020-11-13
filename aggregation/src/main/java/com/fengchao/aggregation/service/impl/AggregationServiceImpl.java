@@ -385,7 +385,7 @@ public class AggregationServiceImpl implements AggregationService {
         AggregationBean bean = new AggregationBean() ;
         bean.setLimit(20);
         HashMap map = new HashMap();
-
+        List<JSONObject> allDelMpus = new ArrayList<>();
         map.put("pageSize",bean.getLimit());
         map.put("status",1);
         List<Aggregation> aggregations = new ArrayList<>();
@@ -397,7 +397,8 @@ public class AggregationServiceImpl implements AggregationService {
                 aggregations = mapper.selectAllLimit(map);
                 for (Aggregation aggregation: aggregations) {
                     List<JSONObject> jsonObjects = convertContentAdmin(aggregation) ;
-                    log.debug("del mpu array list is {}", JSONUtil.toJsonString(jsonObjects));
+                    allDelMpus.addAll(jsonObjects) ;
+                    log.debug("del mpu array list is {}", JSONUtil.toJsonString(allDelMpus));
                     if (aggregation.getId() != null) {
                         mapper.updateByPrimaryKeySelective(aggregation) ;
                     }
