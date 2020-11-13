@@ -507,8 +507,8 @@ public class AggregationServiceImpl implements AggregationService {
                             if(aoyiProdIndex != null){
                                 if (!"1".equals(aoyiProdIndex.getState())) {
                                     log.debug("del mpu is {}", jsonObject.toJSONString());
-                                    array.remove(j) ;
-                                    j = j - 1 ;
+                                    array.remove(m) ;
+                                    m = m - 1 ;
                                 }
                                 String imageUrl = aoyiProdIndex.getImagesUrl();
                                 if (imageUrl != null && (!"".equals(imageUrl))) {
