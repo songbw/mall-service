@@ -15,6 +15,7 @@ import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.rpc.ProductRpcService;
 import com.fengchao.aggregation.service.AggregationService;
 import com.fengchao.aggregation.utils.CosUtil;
+import com.fengchao.aggregation.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -394,7 +395,7 @@ public class AggregationServiceImpl implements AggregationService {
                 map.put("pageNo", i+bean.getLimit());
                 i = i + bean.getLimit() ;
                 aggregations = mapper.selectAllLimit(map);
-                log.debug("aggregation list is {}", JSON.toJSONString(aggregations));
+                log.debug("aggregation list is {}", JSONUtil.toJsonString(aggregations));
                 for (Aggregation aggregation: aggregations) {
                     aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId(), aggregation.getId()) ;
                     if (aggregation.getId() != null) {
