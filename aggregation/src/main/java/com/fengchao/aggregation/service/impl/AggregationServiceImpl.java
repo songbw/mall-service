@@ -395,7 +395,8 @@ public class AggregationServiceImpl implements AggregationService {
                 i = i + bean.getLimit() ;
                 aggregations = mapper.selectLimit(map);
                 aggregations.forEach(aggregation -> {
-                    aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId()) ;
+                    aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId(), aggregation.getId()) ;
+
                     mapper.updateByPrimaryKeySelective(aggregation) ;
                 });
             }
@@ -403,7 +404,7 @@ public class AggregationServiceImpl implements AggregationService {
         }
     }
 
-    public Aggregation convertContentAdmin(String content, String appId) throws AggregationException {
+    public Aggregation convertContentAdmin(String content, String appId, Integer id) throws AggregationException {
         List<String> mpus = new ArrayList<>();
         Aggregation aggregation = new Aggregation();
         JSONArray AggregationArray = JSONObject.parseArray(content);
@@ -533,6 +534,7 @@ public class AggregationServiceImpl implements AggregationService {
             }
         }
         aggregation.setContent(AggregationArray.toString());
+        aggregation.setId(id);
         return aggregation;
     }
 }
