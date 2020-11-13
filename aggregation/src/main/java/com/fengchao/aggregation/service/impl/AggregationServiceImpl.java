@@ -396,7 +396,8 @@ public class AggregationServiceImpl implements AggregationService {
                 i = i + bean.getLimit() ;
                 aggregations = mapper.selectAllLimit(map);
                 for (Aggregation aggregation: aggregations) {
-                    aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId(), aggregation.getId()) ;
+                    List<JSONObject> jsonObjects = convertContentAdmin(aggregation) ;
+                    log.debug("del mpu array list is {}", JSONUtil.toJsonString(jsonObjects));
                     if (aggregation.getId() != null) {
                         mapper.updateByPrimaryKeySelective(aggregation) ;
                     }
@@ -406,12 +407,13 @@ public class AggregationServiceImpl implements AggregationService {
         }
     }
 
-    public Aggregation convertContentAdmin(String content, String appId, Integer id) throws AggregationException {
+    public List<JSONObject> convertContentAdmin(Aggregation aggregation) throws AggregationException {
+        List<JSONObject> jsonObjects = new ArrayList<>();
         List<String> mpus = new ArrayList<>();
-        Aggregation aggregation = new Aggregation();
-        JSONArray AggregationArray = JSONObject.parseArray(content);
-        if(content == null || content.equals("") ){
-            return aggregation;
+//        Aggregation aggregation = new Aggregation();
+        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
+        if(aggregation.getContent() == null || aggregation.getContent().equals("") ){
+            return jsonObjects;
         }
         for (int i = 0; i < AggregationArray.size(); i++) {
             int type = AggregationArray.getJSONObject(i).getInteger("type");
@@ -442,12 +444,12 @@ public class AggregationServiceImpl implements AggregationService {
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
         Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
-            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, appId, "admin");
+            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, aggregation.getAppId(), "admin");
             for(AoyiProdIndex prod: aoyiProdIndices){
                 aoyiProdMap.put(prod.getMpu(), prod);
             }
 
-            OperaResult onlinePromotion = equityService.findOnlinePromotion(appId);
+            OperaResult onlinePromotion = equityService.findOnlinePromotion(aggregation.getAppId());
             if (onlinePromotion.getCode() == 200) {
                 Object object = onlinePromotion.getData().get("result");
                 List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
@@ -468,6 +470,7 @@ public class AggregationServiceImpl implements AggregationService {
                         if(aoyiProdIndex != null){
                             if (!"1".equals(aoyiProdIndex.getState())) {
                                 // TODO 写map 发邮件
+                                jsonObjects.add(jsonObject) ;
                                 log.debug("del mpu is {}", jsonObject.toJSONString());
                                 jsonArray.remove(j) ;
                                 j = j - 1 ;
@@ -506,6 +509,7 @@ public class AggregationServiceImpl implements AggregationService {
                             AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
                             if(aoyiProdIndex != null){
                                 if (!"1".equals(aoyiProdIndex.getState())) {
+                                    jsonObjects.add(jsonObject) ;
                                     log.debug("del mpu is {}", jsonObject.toJSONString());
                                     array.remove(m) ;
                                     m = m - 1 ;
@@ -536,7 +540,7 @@ public class AggregationServiceImpl implements AggregationService {
             }
         }
         aggregation.setContent(AggregationArray.toString());
-        aggregation.setId(id);
-        return aggregation;
+        log.debug("convert del mpu array list is {}", JSONUtil.toJsonString(jsonObjects));
+        return jsonObjects;
     }
 }
