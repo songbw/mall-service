@@ -396,8 +396,9 @@ public class AggregationServiceImpl implements AggregationService {
                 aggregations = mapper.selectLimit(map);
                 aggregations.forEach(aggregation -> {
                     aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId(), aggregation.getId()) ;
-
-                    mapper.updateByPrimaryKeySelective(aggregation) ;
+                    if (aggregation.getId() != null) {
+                        mapper.updateByPrimaryKeySelective(aggregation) ;
+                    }
                 });
             }
 
