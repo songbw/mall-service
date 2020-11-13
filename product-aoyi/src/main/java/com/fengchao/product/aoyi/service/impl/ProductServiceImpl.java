@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -503,7 +502,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<AoyiProdIndexX> getProdsByMpus(List<String> mpuIdList, String appId) {
+    public List<AoyiProdIndexX> getProdsByMpus(List<String> mpuIdList, String appId, String type) {
         // 1. 查询商品信息
         String renterId = vendorsRpcService.queryRenterId(appId) ;
         log.debug("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
@@ -517,7 +516,7 @@ public class ProductServiceImpl implements ProductService {
             productHandle.updateImage(prodIndexX) ;
             return prodIndexX;
         }).collect(Collectors.toList());
-        productHandle.batchGetStarSkuListByMpuForClient(prodIndexXList, renterId) ;
+        productHandle.batchGetStarSkuListByMpuForClient(prodIndexXList, renterId, type) ;
         log.debug("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(prodIndexXList));
         return prodIndexXList;
     }

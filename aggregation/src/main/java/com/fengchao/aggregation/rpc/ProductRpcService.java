@@ -35,7 +35,7 @@ public class ProductRpcService {
      * @param mpuIdList
      * @return
      */
-    public List<AoyiProdIndex> findProductListByMpuIdList(List<String> mpuIdList, String appId) {
+    public List<AoyiProdIndex> findProductListByMpuIdList(List<String> mpuIdList, String appId, String type) {
         // 返回值
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class ProductRpcService {
                 }
                 i = i + 49 ;
                 try {
-                    couponBeanList.addAll(findProductListByMpus(subMpuList, appId).get()) ;
+                    couponBeanList.addAll(findProductListByMpus(subMpuList, appId, type).get()) ;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -67,10 +67,10 @@ public class ProductRpcService {
      * @return
      */
     @Async
-    private CompletableFuture<List<AoyiProdIndex>> findProductListByMpus(List<String> mpus, String appId) {
+    private CompletableFuture<List<AoyiProdIndex>> findProductListByMpus(List<String> mpus, String appId, String type) {
         log.debug("findProductListByMpus 开始-----------------------------");
         List<AoyiProdIndex> couponBeanList = new ArrayList<>();
-        OperaResult operaResult = productService.findProductListByMpuIdList(mpus, appId);
+        OperaResult operaResult = productService.findProductListByMpuIdList(mpus, appId, type);
         // 处理返回
         if (operaResult.getCode() == 200) {
             List<AoyiProdIndex> _couponBeanList = (List<AoyiProdIndex>) operaResult.getData().get("result");

@@ -11,7 +11,7 @@ import java.util.List;
 public class ProdServiceH implements ProdService {
 
     @Override
-    public OperaResult findProductListByMpuIdList(List<String> mpuIdList, String appId) {
+    public OperaResult findProductListByMpuIdList(List<String> mpuIdList, String appId, String type) {
         OperaResult result = new OperaResult();
         ObjectMapper objectMapper = new ObjectMapper();
         result.setCode(404);

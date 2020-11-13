@@ -106,4 +106,11 @@ public class AdminAggregationController {
         result.getData().put("result",i);
         return result;
     }
+
+    @GetMapping("delmpu")
+    public OperaResult delMpus(){
+
+        aggregationService.updateMpuPriceAndStateForAggregation();;
+        return new OperaResult();
+    }
 }

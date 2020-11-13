@@ -23,4 +23,6 @@ public interface AggregationService {
     Aggregation findHomePage(String appId);
 
     Aggregation findAdminAggregationById(Integer id);
+
+    void updateMpuPriceAndStateForAggregation() ;
 }

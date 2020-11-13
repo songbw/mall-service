@@ -158,7 +158,7 @@ public class AggregationServiceImpl implements AggregationService {
         Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
         Map<String, PromotionMpu> promotionMap = new HashMap();
         if(!mpus.isEmpty()){
-            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, appId);
+            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, appId, "");
             for(AoyiProdIndex prod: aoyiProdIndices){
                 aoyiProdMap.put(prod.getMpu(), prod);
             }
@@ -377,5 +377,167 @@ public class AggregationServiceImpl implements AggregationService {
     @Override
     public Aggregation findAdminAggregationById(Integer id) {
         return mapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public void updateMpuPriceAndStateForAggregation() {
+        AggregationBean bean = new AggregationBean() ;
+        bean.setLimit(20);
+        HashMap map = new HashMap();
+
+        map.put("pageSize",bean.getLimit());
+        map.put("status",1);
+        List<Aggregation> aggregations = new ArrayList<>();
+        int total  = mapper.selectCount(map);
+        if (total > 0) {
+            for (int i = 0; i < total/bean.getLimit() + 1; i++) {
+                map.put("pageNo", i+bean.getLimit());
+                i = i + bean.getLimit() ;
+                aggregations = mapper.selectLimit(map);
+                aggregations.forEach(aggregation -> {
+                    convertContentAdmin(aggregation) ;
+                    mapper.updateByPrimaryKeySelective(aggregation) ;
+                });
+            }
+
+        }
+    }
+
+    public List<JSONObject> convertContentAdmin(Aggregation aggregation) throws AggregationException {
+        List<JSONObject> delMpus = new ArrayList<>();
+        List<String> mpus = new ArrayList<>();
+//        Aggregation aggregation = new Aggregation();
+        if(aggregation.getContent() == null || aggregation.getContent().equals("") ){
+            return delMpus;
+        }
+        JSONArray AggregationArray = JSONObject.parseArray(aggregation.getContent());
+
+        for (int i = 0; i < AggregationArray.size(); i++) {
+            int type = AggregationArray.getJSONObject(i).getInteger("type");
+            if (type == 3 /* PromotionType */ || type == 10 /* HorizontalGoodType */ ) {
+                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    String mpu = jsonArray.getJSONObject(j).getString("mpu");
+                    if(mpu != null && !mpu.equals("")){
+                        mpus.add(mpu);
+                    }
+                }
+            } else if (type == 4  /* GoodsType */ || type == 9 /* PromotionListType */) {
+                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
+                    for (int m = 0; m < array.size(); m++){
+                        String mpu = array.getJSONObject(m).getString("mpu");
+                        if(mpu != null && !mpu.equals("")){
+                            mpus.add(mpu);
+                        }
+                    }
+                }
+            }
+        }
+        HashSet<String> hashSet = new HashSet<>(mpus);
+        mpus.clear();
+        mpus.addAll(hashSet);
+        Map<String, AoyiProdIndex> aoyiProdMap = new HashMap();
+        Map<String, PromotionMpu> promotionMap = new HashMap();
+        if(!mpus.isEmpty()){
+            List<AoyiProdIndex> aoyiProdIndices = productRpcService.findProductListByMpuIdList(mpus, aggregation.getAppId(), "admin");
+            for(AoyiProdIndex prod: aoyiProdIndices){
+                aoyiProdMap.put(prod.getMpu(), prod);
+            }
+
+            OperaResult onlinePromotion = equityService.findOnlinePromotion(aggregation.getAppId());
+            if (onlinePromotion.getCode() == 200) {
+                Object object = onlinePromotion.getData().get("result");
+                List<PromotionMpu> promotionMpus = JSONObject.parseArray(JSON.toJSONString(object), PromotionMpu.class);
+                for(PromotionMpu mpu: promotionMpus){
+                    promotionMap.put(mpu.getMpu(), mpu);
+                }
+            }
+        }
+        for (int i = 0; i < AggregationArray.size(); i++) {
+            int type = AggregationArray.getJSONObject(i).getInteger("type");
+            if (type == 3 || type == 10) {
+                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(j);
+                    String mpu = jsonObject.getString("mpu");
+                    if (mpu != null && !mpu.equals("")) {
+                        AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
+                        if(aoyiProdIndex != null){
+                            if (!"1".equals(aoyiProdIndex.getState())) {
+                                // TODO 写map 发邮件
+                                log.info("del mpu is {}", jsonObject.toJSONString());
+                                delMpus.add(jsonObject) ;
+//                                jsonArray.remove(j) ;
+//                                j = j - 1 ;
+                            }
+                            String imageUrl = aoyiProdIndex.getImagesUrl();
+                            if (imageUrl != null && (!"".equals(imageUrl))) {
+                                String image = "";
+                                if (imageUrl.indexOf("/") == 0) {
+                                    image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                                } else {
+                                    image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                                }
+                                aoyiProdIndex.setImage(image);
+                            }
+                            jsonObject.put("imagePath", aoyiProdIndex.getImage());
+                            jsonObject.put("price", aoyiProdIndex.getPrice());
+                            jsonObject.put("name", aoyiProdIndex.getName());
+                            jsonObject.put("subTitle", aoyiProdIndex.getSubTitle());
+                            jsonObject.put("state", aoyiProdIndex.getState());
+                            PromotionMpu promotionMpu = promotionMap.get(mpu);
+                            if (type == 10 && promotionMpu != null) {
+                                jsonObject.put("discount", promotionMpu.getDiscount());
+                            }
+                        }
+                    }
+                }
+            }
+            if (type == 4 || type == 9) {
+                JSONArray jsonArray = AggregationArray.getJSONObject(i).getJSONObject("data").getJSONArray("list");
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    JSONArray array = jsonArray.getJSONObject(j).getJSONArray("skus");
+                    for (int m = 0; m < array.size(); m++) {
+                        JSONObject jsonObject = array.getJSONObject(m);
+                        String mpu = array.getJSONObject(m).getString("mpu");
+                        if (mpu != null && !mpu.equals("")) {
+                            AoyiProdIndex aoyiProdIndex = aoyiProdMap.get(mpu);
+                            if(aoyiProdIndex != null){
+                                if (!"1".equals(aoyiProdIndex.getState())) {
+                                    // TODO 写map 发邮件
+                                    log.info("del mpu is {}", jsonObject.toJSONString());
+                                    delMpus.add(jsonObject) ;
+//                                    jsonArray.remove(j) ;
+//                                    j = j - 1 ;
+                                }
+                                String imageUrl = aoyiProdIndex.getImagesUrl();
+                                if (imageUrl != null && (!"".equals(imageUrl))) {
+                                    String image = "";
+                                    if (imageUrl.indexOf("/") == 0) {
+                                        image = CosUtil.iWalletUrlT + imageUrl.split(":")[0];
+                                    } else {
+                                        image = CosUtil.baseAoyiProdUrl + imageUrl.split(":")[0];
+                                    }
+                                    aoyiProdIndex.setImage(image);
+                                }
+                                PromotionMpu promotionMpu = promotionMap.get(mpu);
+                                jsonObject.put("price", aoyiProdIndex.getPrice());
+                                jsonObject.put("imagePath", aoyiProdIndex.getImage());
+                                jsonObject.put("name", aoyiProdIndex.getName());
+                                jsonObject.put("subTitle", aoyiProdIndex.getSubTitle());
+                                jsonObject.put("state", aoyiProdIndex.getState());
+                                if (type == 4 && promotionMpu != null) {
+                                    jsonObject.put("discount", promotionMpu.getDiscount());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        aggregation.setContent(AggregationArray.toString());
+        return delMpus;
     }
 }

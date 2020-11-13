@@ -181,7 +181,7 @@ public class ProductController {
     }
 
     @GetMapping("/getByMpus")
-    private OperaResult getProdsByMpus(@RequestParam("mpuIdList") List<String> mpuIdList, @RequestParam("appId") String appId, OperaResult result) throws ProductException {
+    private OperaResult getProdsByMpus(@RequestParam("mpuIdList") List<String> mpuIdList, @RequestParam("appId") String appId, String type, OperaResult result) throws ProductException {
         log.debug("根据mup集合查询产品信息 入参:{}", JSONUtil.toJsonString(mpuIdList));
         if (mpuIdList.size() > 60) {
             result.setCode(200001);
@@ -190,7 +190,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndexX> productInfoBeanList = service.getProdsByMpus(mpuIdList, appId);
+            List<AoyiProdIndexX> productInfoBeanList = service.getProdsByMpus(mpuIdList, appId, type);
 
             result.getData().put("result", productInfoBeanList);
         } catch (Exception e) {

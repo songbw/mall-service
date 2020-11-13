@@ -49,7 +49,7 @@ public class WeipinhuiTests {
         }
     }
 
-
+    @Ignore
     @Test
     public void testQueryItemDetail() {
         try {

@@ -27,6 +27,7 @@ public class ImportWeipinhuiAddressTests {
     @Autowired
     private WeipinhuiAddressMapper weipinhuiAddressMapper;
 
+    @Ignore
     @Test
     public void importAddress() {
         String fileFullName = "/Users/tom/Downloads/addressimport.xlsx";

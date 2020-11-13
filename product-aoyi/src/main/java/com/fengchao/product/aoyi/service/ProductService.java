@@ -54,7 +54,7 @@ public interface ProductService {
 
     OperaResponse search(ProductQueryBean queryBean) ;
 
-    List<AoyiProdIndexX> getProdsByMpus(List<String> mpuIdList, String appId);
+    List<AoyiProdIndexX> getProdsByMpus(List<String> mpuIdList, String appId, String type);
 
     /**
      * 查询自营库存
