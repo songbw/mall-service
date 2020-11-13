@@ -394,12 +394,12 @@ public class AggregationServiceImpl implements AggregationService {
                 map.put("pageNo", i+bean.getLimit());
                 i = i + bean.getLimit() ;
                 aggregations = mapper.selectLimit(map);
-                aggregations.forEach(aggregation -> {
+                for (Aggregation aggregation: aggregations) {
                     aggregation = convertContentAdmin(aggregation.getContent(), aggregation.getAppId(), aggregation.getId()) ;
                     if (aggregation.getId() != null) {
                         mapper.updateByPrimaryKeySelective(aggregation) ;
                     }
-                });
+                }
             }
 
         }
