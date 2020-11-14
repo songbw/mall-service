@@ -420,7 +420,7 @@ public class AggregationServiceImpl implements AggregationService {
                     detail.append("\r\n-------------------------------------------------------\r\n") ;
                 }
                 Email email = new Email() ;
-                String address = "tom.jing@weesharing.com,bingwei.song@weesharing.com" ;
+                String address = "tom.jing@weesharing.com,bingwei.song@weesharing.com,lin.zhou@weesharing.com,leo.yu@weesharing.com,710203558@qq.com" ;
                 email.setContent(detail.toString());
                 email.setSubject("聚合页清理下架商品清单");
                 email.setEmail(address.split(","));
