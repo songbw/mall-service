@@ -407,7 +407,7 @@ public class AggregationServiceImpl implements AggregationService {
             if (allDelMpus != null && allDelMpus.size() > 0) {
                 // TODO 发邮件
                 log.debug("del mpu array list is {}", JSONUtil.toJsonString(allDelMpus));
-                StringBuilder detail = new StringBuilder("\r\n下架商品清单" + "-------------------------------------------------------\r\n");
+                StringBuilder detail = new StringBuilder("\r\n聚合页清理下架商品清单" + "-------------------------------------------------------\r\n");
                 for (int i =0; i < allDelMpus.size(); i++) {
                     JSONObject jsonObject = allDelMpus.get(i) ;
                     detail.append("组件编号：" + jsonObject.getString("aggrId") + "\r\n") ;
@@ -421,6 +421,7 @@ public class AggregationServiceImpl implements AggregationService {
                 Email email = new Email() ;
                 String address = "tom.jing@weesharing.com,bingwei.song@weesharing.com" ;
                 email.setContent(detail.toString());
+                email.setSubject("聚合页清理下架商品清单");
                 email.setEmail(address.split(","));
                 baseService.sendMail(email) ;
 
