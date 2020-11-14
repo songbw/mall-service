@@ -23,7 +23,7 @@ public class JobRunnerDispatcher implements JobRunner {
 
 
     static {
-        JOB_RUNNER_MAP.put("virtualInvalid", new AggMpuStateRunnerJobImpl());
+        JOB_RUNNER_MAP.put("aggregationClean", new AggMpuStateRunnerJobImpl());
     }
 
     @Override
