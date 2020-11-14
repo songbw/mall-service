@@ -407,9 +407,20 @@ public class AggregationServiceImpl implements AggregationService {
             if (allDelMpus != null && allDelMpus.size() > 0) {
                 // TODO 发邮件
                 log.debug("del mpu array list is {}", JSONUtil.toJsonString(allDelMpus));
+                StringBuilder detail = new StringBuilder("\r\n下架商品清单" + "-------------------------------------------------------\r\n");
+                for (int i =0; i < allDelMpus.size(); i++) {
+                    JSONObject jsonObject = allDelMpus.get(i) ;
+                    detail.append("组件编号：" + jsonObject.getString("aggrId") + "\r\n") ;
+                    detail.append("组件名称：" + jsonObject.getString("aggrName") + "\r\n") ;
+                    detail.append("商品编号MPU：" + jsonObject.getString("mpu") + "\r\n") ;
+                    detail.append("商品编号SKU：" + jsonObject.getString("skuid") + "\r\n") ;
+                    detail.append("商品名称：" + jsonObject.getString("name") + "\r\n") ;
+                    detail.append("商品类目编号：" + jsonObject.getString("category") + "\r\n") ;
+                    detail.append("\r\n-------------------------------------------------------\r\n") ;
+                }
                 Email email = new Email() ;
                 String address = "tom.jing@weesharing.com,bingwei.song@weesharing.com" ;
-                email.setContent(JSONUtil.toJsonString(allDelMpus));
+                email.setContent(detail.toString());
                 email.setEmail(address.split(","));
                 baseService.sendMail(email) ;
 
@@ -483,6 +494,7 @@ public class AggregationServiceImpl implements AggregationService {
                                 // 写map 发邮件
                                 jsonObject.put("aggrId", aggregation.getId()) ;
                                 jsonObject.put("aggrName", name) ;
+                                jsonObject.put("category", aoyiProdIndex.getCategory()) ;
                                 jsonObjects.add(jsonObject) ;
                                 jsonArray.remove(j) ;
                                 j = j - 1 ;
@@ -528,6 +540,7 @@ public class AggregationServiceImpl implements AggregationService {
                                     }
                                     jsonObject.put("aggrId", aggregation.getId()) ;
                                     jsonObject.put("aggrName", name) ;
+                                    jsonObject.put("category", aoyiProdIndex.getCategory()) ;
                                     jsonObjects.add(jsonObject) ;
                                     array.remove(m) ;
                                     m = m - 1 ;
