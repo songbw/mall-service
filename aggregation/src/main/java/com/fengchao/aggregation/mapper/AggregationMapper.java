@@ -34,4 +34,6 @@ public interface AggregationMapper {
     Aggregation selectHomePageByAppId(String appId);
 
     List<Aggregation> selectAllLimit(HashMap map);
+
+    List<Aggregation> selectInIds(List<Integer> ids);
 }

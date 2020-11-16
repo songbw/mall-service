@@ -5,6 +5,8 @@ import com.fengchao.aggregation.bean.PageBean;
 import com.fengchao.aggregation.bean.QueryBean;
 import com.fengchao.aggregation.model.Aggregation;
 
+import java.util.List;
+
 public interface AggregationService {
     PageBean findAggregation(QueryBean bean, Integer merchantId);
 
@@ -26,5 +28,5 @@ public interface AggregationService {
 
     void updateMpuPriceAndStateForAggregationBatch() ;
 
-    void updateMpuPriceAndStateForAggregation(Integer id) ;
+    void updateMpuPriceAndStateForAggregation(List<Integer> ids) ;
 }

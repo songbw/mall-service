@@ -15,8 +15,8 @@
     <result column="app_id" property="appId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, effective_date, background_color,home_page, group_id, status,
-    merchant_id, header, content, app_id appId
+    id, name, effective_date effectiveDate, background_color backgroundColor,home_page homePage, group_id groupId, status,
+    merchant_id merchantId, header, content, app_id appId
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
@@ -258,5 +258,17 @@
     from aggregation
     where status = 1
     limit #{pageNo},#{pageSize}
+  </select>
+  <select id="selectInIds" resultType="com.fengchao.aggregation.model.Aggregation">
+    select
+    <include refid="Base_Column_List" />
+    from aggregation
+    where 1 = 1
+    <if test="ids !=null">
+      and id in
+      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
   </select>
 </mapper>

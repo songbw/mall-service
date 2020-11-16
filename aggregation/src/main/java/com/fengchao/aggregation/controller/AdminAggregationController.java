@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/adminAggregation", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AdminAggregationController {
@@ -113,9 +115,15 @@ public class AdminAggregationController {
         return new OperaResult();
     }
 
-    @GetMapping("cleanMpu")
-    public OperaResult delMpus(int id){
-        aggregationService.updateMpuPriceAndStateForAggregation(id);;
-        return new OperaResult();
+    @PostMapping("cleanMpu")
+    public OperaResult delMpus(@RequestBody List<Integer> ids){
+        OperaResult operaResult = new OperaResult();
+        if (ids == null || ids.size() == 0) {
+            operaResult.setCode(1000000);
+            operaResult.setMsg("ids 不能为空");
+            return operaResult;
+        }
+        aggregationService.updateMpuPriceAndStateForAggregation(ids);
+        return operaResult;
     }
 }

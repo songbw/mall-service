@@ -432,13 +432,21 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public void updateMpuPriceAndStateForAggregation(Integer id) {
-        Aggregation aggregation = mapper.selectByPrimaryKey(id);
-        List<JSONObject> jsonObjects = convertContentAdmin(aggregation) ;
-        if (jsonObjects != null && jsonObjects.size() > 0) {
-            mapper.updateByPrimaryKeySelective(aggregation) ;
-            sendMali(jsonObjects);
+    public void updateMpuPriceAndStateForAggregation(List<Integer> ids) {
+        List<JSONObject> allDelMpus = new ArrayList<>();
+        List<Aggregation> aggregations = mapper.selectInIds(ids);
+        for (Aggregation aggregation: aggregations) {
+            List<JSONObject> jsonObjects = convertContentAdmin(aggregation) ;
+            if (jsonObjects != null && jsonObjects.size() > 0) {
+                allDelMpus.addAll(jsonObjects) ;
+                mapper.updateByPrimaryKeySelective(aggregation) ;
+
+            }
         }
+        if (allDelMpus != null && allDelMpus.size() > 0) {
+            sendMali(allDelMpus);
+        }
+
     }
 
     public List<JSONObject> convertContentAdmin(Aggregation aggregation) throws AggregationException {
