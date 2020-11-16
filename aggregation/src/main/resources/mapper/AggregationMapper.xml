@@ -259,7 +259,7 @@
     where status = 1
     limit #{pageNo},#{pageSize}
   </select>
-  <select id="selectInIds" resultType="com.fengchao.aggregation.model.Aggregation" parameterType="list">
+  <select id="selectInIds" resultType="com.fengchao.aggregation.model.Aggregation" parameterType="java.util.ArrayList">
     select
     <include refid="Base_Column_List" />
     from aggregation
