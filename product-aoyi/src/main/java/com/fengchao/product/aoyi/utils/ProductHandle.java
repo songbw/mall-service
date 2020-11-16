@@ -378,7 +378,8 @@ public class ProductHandle {
     public void batchAddStarSkuList(List<AoyiProdIndexX> prodIndexXES, String renterId) {
         // TODO 管理端批量添加
         List<String> skuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() == 2).map(prodIndexX -> prodIndexX.getSkuid()).collect(Collectors.toList());
-        List<String> mpuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() != 2).map(prodIndexX -> prodIndexX.getMpu()).collect(Collectors.toList());
+//        List<String> mpuIds = prodIndexXES.stream().filter(prodIndexX -> prodIndexX.getType() != 2).map(prodIndexX -> prodIndexX.getMpu()).collect(Collectors.toList());
+        List<String> mpuIds = prodIndexXES.stream().map(prodIndexX -> prodIndexX.getMpu()).collect(Collectors.toList());
         // 租户价格列表
         List<AppSkuPrice> appSkuPrices = appSkuPriceDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpuIds, mpuIds);
         List<AppSkuState> appSkuStates = appSkuStateDao.batchSelectByRenterIdAndMpuAndSku(renterId, mpuIds, mpuIds);
