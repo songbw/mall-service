@@ -9,12 +9,15 @@ import com.fengchao.aggregation.model.Aggregation;
 import com.fengchao.aggregation.model.AggregationGroup;
 import com.fengchao.aggregation.service.AggregationGroupService;
 import com.fengchao.aggregation.service.AggregationService;
+import com.fengchao.aggregation.utils.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/adminAggregation", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AdminAggregationController {
@@ -123,6 +126,7 @@ public class AdminAggregationController {
             operaResult.setMsg("ids 不能为空");
             return operaResult;
         }
+        log.debug("cleanMpu 入参： {}", JSONUtil.toJsonString(ids));
         aggregationService.updateMpuPriceAndStateForAggregation(ids);
         return operaResult;
     }
