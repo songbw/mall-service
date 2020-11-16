@@ -24,5 +24,7 @@ public interface AggregationService {
 
     Aggregation findAdminAggregationById(Integer id);
 
-    void updateMpuPriceAndStateForAggregation() ;
+    void updateMpuPriceAndStateForAggregationBatch() ;
+
+    void updateMpuPriceAndStateForAggregation(Integer id) ;
 }

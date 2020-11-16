@@ -7,7 +7,6 @@ import com.fengchao.aggregation.bean.*;
 import com.fengchao.aggregation.exception.AggregationException;
 import com.fengchao.aggregation.feign.BaseService;
 import com.fengchao.aggregation.feign.EquityService;
-import com.fengchao.aggregation.feign.ProdService;
 import com.fengchao.aggregation.mapper.*;
 import com.fengchao.aggregation.model.*;
 import com.fengchao.aggregation.rpc.ProductRpcService;
@@ -381,7 +380,7 @@ public class AggregationServiceImpl implements AggregationService {
     }
 
     @Override
-    public void updateMpuPriceAndStateForAggregation() {
+    public void updateMpuPriceAndStateForAggregationBatch() {
         AggregationBean bean = new AggregationBean() ;
         bean.setLimit(20);
         HashMap map = new HashMap();
@@ -398,35 +397,47 @@ public class AggregationServiceImpl implements AggregationService {
                 for (Aggregation aggregation: aggregations) {
                     List<JSONObject> jsonObjects = convertContentAdmin(aggregation) ;
                     allDelMpus.addAll(jsonObjects) ;
-
                     if (aggregation.getId() != null) {
                         mapper.updateByPrimaryKeySelective(aggregation) ;
                     }
                 }
             }
             if (allDelMpus != null && allDelMpus.size() > 0) {
-                // 发邮件
-                log.debug("del mpu array list is {}", JSONUtil.toJsonString(allDelMpus));
-                StringBuilder detail = new StringBuilder("\r\n聚合页清理下架商品清单" + "-------------------------------------------------------\r\n");
-                for (int i =0; i < allDelMpus.size(); i++) {
-                    JSONObject jsonObject = allDelMpus.get(i) ;
-                    detail.append("\r\n聚合页编号：" + jsonObject.getString("aggrId") + "\r\n") ;
-                    detail.append("聚合页名称：" + jsonObject.getString("aggrTitle") + "\r\n") ;
-                    detail.append("组件名称：" + jsonObject.getString("aggrName") + "\r\n") ;
-                    detail.append("商品编号MPU：" + jsonObject.getString("mpu") + "\r\n") ;
-                    detail.append("商品编号SKU：" + jsonObject.getString("skuid") + "\r\n") ;
-                    detail.append("商品名称：" + jsonObject.getString("name") + "\r\n") ;
-                    detail.append("商品类目编号：" + jsonObject.getString("category") + "\r\n") ;
-                    detail.append("\r\n-------------------------------------------------------\r\n") ;
-                }
-                Email email = new Email() ;
-                String address = "tom.jing@weesharing.com,bingwei.song@weesharing.com,lin.zhou@weesharing.com,leo.yu@weesharing.com,710203558@qq.com" ;
-                email.setContent(detail.toString());
-                email.setSubject("聚合页清理下架商品清单");
-                email.setEmail(address.split(","));
-                baseService.sendMail(email) ;
-
+                sendMali(allDelMpus);
             }
+        }
+    }
+
+    private void sendMali(List<JSONObject> allDelMpus) {
+        // 发邮件
+        log.debug("del mpu array list is {}", JSONUtil.toJsonString(allDelMpus));
+        StringBuilder detail = new StringBuilder("\r\n聚合页清理下架商品清单" + "-------------------------------------------------------\r\n");
+        for (int i =0; i < allDelMpus.size(); i++) {
+            JSONObject jsonObject = allDelMpus.get(i) ;
+            detail.append("\r\n聚合页编号：" + jsonObject.getString("aggrId") + "\r\n") ;
+            detail.append("聚合页名称：" + jsonObject.getString("aggrTitle") + "\r\n") ;
+            detail.append("组件名称：" + jsonObject.getString("aggrName") + "\r\n") ;
+            detail.append("商品编号MPU：" + jsonObject.getString("mpu") + "\r\n") ;
+            detail.append("商品编号SKU：" + jsonObject.getString("skuid") + "\r\n") ;
+            detail.append("商品名称：" + jsonObject.getString("name") + "\r\n") ;
+            detail.append("商品类目编号：" + jsonObject.getString("category") + "\r\n") ;
+            detail.append("\r\n-------------------------------------------------------\r\n") ;
+        }
+        Email email = new Email() ;
+        String address = "tom.jing@weesharing.com,bingwei.song@weesharing.com,lin.zhou@weesharing.com,leo.yu@weesharing.com,710203558@qq.com" ;
+        email.setContent(detail.toString());
+        email.setSubject("聚合页清理下架商品清单");
+        email.setEmail(address.split(","));
+        baseService.sendMail(email) ;
+    }
+
+    @Override
+    public void updateMpuPriceAndStateForAggregation(Integer id) {
+        Aggregation aggregation = mapper.selectByPrimaryKey(id);
+        List<JSONObject> jsonObjects = convertContentAdmin(aggregation) ;
+        if (jsonObjects != null && jsonObjects.size() > 0) {
+            mapper.updateByPrimaryKeySelective(aggregation) ;
+            sendMali(jsonObjects);
         }
     }
 

@@ -24,7 +24,7 @@ public class AggMpuStateRunnerJobImpl implements JobRunner {
             // 业务逻辑
             LOGGER.info("我要执行更新聚合页MPU操作：" + jobContext);
             AggregationService service = BeanContext.getApplicationContext().getBean(AggregationService.class);
-            service.updateMpuPriceAndStateForAggregation();
+            service.updateMpuPriceAndStateForAggregationBatch();
         } catch (Exception e) {
             LOGGER.info("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());

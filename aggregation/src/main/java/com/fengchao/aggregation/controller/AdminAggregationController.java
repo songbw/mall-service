@@ -107,10 +107,15 @@ public class AdminAggregationController {
         return result;
     }
 
-    @GetMapping("delmpu")
-    public OperaResult delMpus(){
+    @GetMapping("batch/cleanMpu")
+    public OperaResult batchDelMpus(){
+        aggregationService.updateMpuPriceAndStateForAggregationBatch();;
+        return new OperaResult();
+    }
 
-        aggregationService.updateMpuPriceAndStateForAggregation();;
+    @GetMapping("cleanMpu")
+    public OperaResult delMpus(int id){
+        aggregationService.updateMpuPriceAndStateForAggregation(id);;
         return new OperaResult();
     }
 }
