@@ -15,8 +15,8 @@
     <result column="app_id" property="appId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, effective_date effectiveDate, background_color backgroundColor,home_page homePage, group_id groupId, status,
-    merchant_id merchantId, header, content, app_id appId
+    id, name, effective_date, background_color,home_page, group_id, status,
+    merchant_id, header, content, app_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
@@ -252,14 +252,14 @@
         where status = 1 and home_page = true
         and app_id = #{appId,jdbcType=VARCHAR}
     </select>
-  <select id="selectAllLimit" resultType="com.fengchao.aggregation.model.Aggregation" parameterType="Map">
+  <select id="selectAllLimit" resultMap="BaseResultMap" parameterType="Map">
     select
     <include refid="Base_Column_List" />
     from aggregation
     where status = 1
     limit #{pageNo},#{pageSize}
   </select>
-  <select id="selectInIds" resultType="com.fengchao.aggregation.model.Aggregation" parameterType="java.util.ArrayList">
+  <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.ArrayList">
     select
     <include refid="Base_Column_List" />
     from aggregation
