@@ -41,7 +41,7 @@ public class AppSkuPriceDao {
     public List<AppSkuPrice> selectByRenterIdAndMpuAndSku(AppSkuPrice bean) {
         AppSkuPriceExample example = new AppSkuPriceExample();
         AppSkuPriceExample.Criteria criteria = example.createCriteria();
-        if (StringUtils.isNotBlank(bean.getRenterId())) {
+        if (StringUtils.isNotBlank(bean.getRenterId()) && !"0".equals(bean.getRenterId())) {
             criteria.andRenterIdEqualTo(bean.getRenterId()) ;
         }
         criteria.andMpuEqualTo(bean.getMpu()) ;
@@ -54,7 +54,7 @@ public class AppSkuPriceDao {
     public List<AppSkuPrice> batchSelectByRenterIdAndMpuAndSku(String renterId, List<String> mpus, List<String> skuIds) {
         AppSkuPriceExample example = new AppSkuPriceExample();
         AppSkuPriceExample.Criteria criteria = example.createCriteria();
-        if (StringUtils.isNotBlank(renterId)) {
+        if (StringUtils.isNotBlank(renterId) && !"0".equals(renterId)) {
             criteria.andRenterIdEqualTo(renterId) ;
         }
         if (mpus == null || mpus.size() == 0) {
@@ -74,7 +74,7 @@ public class AppSkuPriceDao {
         AppSkuPriceExample example = new AppSkuPriceExample();
         AppSkuPriceExample.Criteria criteria = example.createCriteria();
         List<AppSkuPrice> list = new ArrayList<>();
-        if (StringUtils.isNotBlank(renterId)) {
+        if (StringUtils.isNotBlank(renterId) && !"0".equals(renterId)) {
             criteria.andRenterIdEqualTo(renterId) ;
         }
         if (mpus == null || mpus.size() == 0) {

@@ -44,7 +44,7 @@ public class AppSkuStateDao {
     public List<AppSkuState> selectByRenterIdAndMpuAndSku(AppSkuState bean) {
         AppSkuStateExample example = new AppSkuStateExample();
         AppSkuStateExample.Criteria criteria = example.createCriteria();
-        if (StringUtils.isNotBlank(bean.getRenterId())) {
+        if (StringUtils.isNotBlank(bean.getRenterId()) && !"0".equals(bean.getRenterId())) {
             criteria.andRenterIdEqualTo(bean.getRenterId()) ;
         }
         criteria.andMpuEqualTo(bean.getMpu()) ;
@@ -58,7 +58,7 @@ public class AppSkuStateDao {
     public List<AppSkuState> batchSelectByRenterIdAndMpuAndSku(String renterId, List<String> mpus, List<String> skuIds) {
         AppSkuStateExample example = new AppSkuStateExample();
         AppSkuStateExample.Criteria criteria = example.createCriteria();
-        if (StringUtils.isNotBlank(renterId)) {
+        if (StringUtils.isNotBlank(renterId) && !"0".equals(renterId)) {
             criteria.andRenterIdEqualTo(renterId) ;
         }
         if (mpus == null || mpus.size() == 0) {
