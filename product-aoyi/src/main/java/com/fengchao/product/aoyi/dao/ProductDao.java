@@ -14,6 +14,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -536,6 +537,7 @@ public class ProductDao {
      * 更新商品价格和状态
      * @param bean
      */
+    @Async
     public void updateByMerchantId(AoyiProdIndex bean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
