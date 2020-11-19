@@ -235,7 +235,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     public OperaResponse updateState(StateBean bean) {
         OperaResponse operaResponse = new OperaResponse();
         if ("1".equals(bean.getState())) {
-            AoyiProdIndex aoyiProdIndex = new AoyiProdIndex() ;
+            AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs() ;
             if (StringUtils.isEmpty(bean.getSpuId())) {
                 aoyiProdIndex = productDao.selectByMpu(bean.getSkuId()) ;
             } else {

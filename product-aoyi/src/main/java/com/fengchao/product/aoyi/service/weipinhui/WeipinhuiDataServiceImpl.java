@@ -291,7 +291,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     }
 
                     // 查询数据库是否已存在数据
-                    List<AoyiProdIndex> exsitAoyiprodIndexList =
+                    List<AoyiProdIndexWithBLOBs> exsitAoyiprodIndexList =
                             productDao.selectAoyiProdIndexListByMpuIdList(itemIdList);
 
                     List<String> exsitItemIdList =
@@ -396,9 +396,9 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             while (true) {
                 // 数据库查询一批spu
                 productQueryBean.setPageNo(pageNum);
-                PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(productQueryBean);
+                PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectPageable(productQueryBean);
 
-                List<AoyiProdIndex> aoyiProdIndexList = pageInfo.getList();
+                List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = pageInfo.getList();
 
                 log.info("同步商品详情 获取itermIdList 第{}页{}条 >>>>> 数据:{}",
                         pageNum, aoyiProdIndexList.size(), JSONUtil.toJsonStringWithoutNull(aoyiProdIndexList));
@@ -410,7 +410,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                 // 2. 遍历itemId列表，查询详情信息
                 int itemIdIndex = 0; // 该for需要的itemId的计数
-                for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) { // 遍历itemId列表
+                for (AoyiProdIndexWithBLOBs aoyiProdIndex : aoyiProdIndexList) { // 遍历itemId列表
                     String itemId = aoyiProdIndex.getSkuid();
                     totalItemIdCount++;
                     itemIdIndex++;
@@ -721,7 +721,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
      * @param aoyiProdIndex
      * @return
      */
-    private AoyiProdIndexWithBLOBs convertToAoyiProdIndexWithBLOBs(AoyiProdIndex aoyiProdIndex) {
+    private AoyiProdIndexWithBLOBs convertToAoyiProdIndexWithBLOBs(AoyiProdIndexWithBLOBs aoyiProdIndex) {
         AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = new AoyiProdIndexWithBLOBs();
 
         aoyiProdIndexWithBLOBs.setId(aoyiProdIndex.getId());
