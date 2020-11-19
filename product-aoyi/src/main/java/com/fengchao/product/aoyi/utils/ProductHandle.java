@@ -114,7 +114,7 @@ public class ProductHandle {
         });
     }
 
-    public AoyiProdIndex updateImageExample(AoyiProdIndex aoyiProdIndex) {
+    public AoyiProdIndexWithBLOBs updateImageExample(AoyiProdIndexWithBLOBs aoyiProdIndex) {
         if (aoyiProdIndex.getImage() == null || "".equals(aoyiProdIndex.getImage())) {
             String imageUrl = aoyiProdIndex.getImagesUrl();
             if (imageUrl != null && (!"".equals(imageUrl))) {
@@ -152,7 +152,7 @@ public class ProductHandle {
      * @param queryBean   商品查询条件
      * @return    整合后的商品信息数据
      */
-    public List<AoyiProdIndexX> convertProdIndexListToXList(List<AoyiProdIndex> prodIndexList, ProductQueryBean queryBean) {
+    public List<AoyiProdIndexX> convertProdIndexListToXList(List<AoyiProdIndexWithBLOBs> prodIndexList, ProductQueryBean queryBean) {
 //        List<AoyiProdIndexX> prodIndexXList = new ArrayList<>() ;
 //        if (prodIndexList != null) {
 //            prodIndexList.forEach(aoyiProdIndex -> {

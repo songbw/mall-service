@@ -78,10 +78,10 @@ public class ProductServiceImpl implements ProductService {
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
         // 根据APPID查询renterId
         productHandle.setClientProductQueryBean(queryBean);
-        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, queryBean.getMerchantCodes());
+        PageInfo<AoyiProdIndexWithBLOBs> prodIndexPageInfo = productDao.selectListByCategories(queryBean, queryBean.getMerchantCodes());
         PageBean pageBean = new PageBean();
         int total = (int) prodIndexPageInfo.getTotal();
-        List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndices = prodIndexPageInfo.getList() ;
         List<ProductInfoBean> prodIndices = new ArrayList<>();
         aoyiProdIndices.forEach(prodIndex -> {
             ProductInfoBean infoBean = new ProductInfoBean();
@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
         // 获取可读取的商户配置
         productHandle.setClientProductQueryBean(queryBean);
-        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectPageable(queryBean);
+        PageInfo<AoyiProdIndexWithBLOBs> prodIndexPageInfo = productDao.selectPageable(queryBean);
         log.debug("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
         productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
@@ -116,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
         productInfoBeanPageInfo.setPages(prodIndexPageInfo.getPages());
         productInfoBeanPageInfo.setEndRow(prodIndexPageInfo.getEndRow());
 
-        List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndices = prodIndexPageInfo.getList() ;
         List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
         aoyiProdIndices.forEach(aoyiProdIndex -> {
             aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
@@ -135,7 +135,7 @@ public class ProductServiceImpl implements ProductService {
         // 根据APPID查询renterId
         productHandle.setClientProductQueryBean(queryBean);
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
-        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, queryBean.getMerchantCodes());
+        PageInfo<AoyiProdIndexWithBLOBs> prodIndexPageInfo = productDao.selectListByCategories(queryBean, queryBean.getMerchantCodes());
         log.debug("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
         productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
@@ -145,7 +145,7 @@ public class ProductServiceImpl implements ProductService {
         productInfoBeanPageInfo.setPages(prodIndexPageInfo.getPages());
         productInfoBeanPageInfo.setEndRow(prodIndexPageInfo.getEndRow());
 
-        List<AoyiProdIndex> aoyiProdIndices = prodIndexPageInfo.getList() ;
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndices = prodIndexPageInfo.getList() ;
         List<ProductInfoBean> productInfoBeans = new ArrayList<>() ;
         AppSkuPrice appSkuPrice = new AppSkuPrice() ;
         appSkuPrice.setRenterId(queryBean.getRenterId());
@@ -423,7 +423,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception {
         // 1. 查询商品信息
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
-        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
 
         // 2. 查询商品品类信息
@@ -447,7 +447,7 @@ public class ProductServiceImpl implements ProductService {
 
         // 3. 组装结果dto
         List<ProductInfoBean> productInfoBeanList = new ArrayList<>();
-        for (AoyiProdIndex aoyiProdIndex : aoyiProdIndexList) {
+        for (AoyiProdIndexWithBLOBs aoyiProdIndex : aoyiProdIndexList) {
             ProductInfoBean productInfoBean = convertToProductInfoBean(aoyiProdIndex);
 
             Integer categoryId = Integer.valueOf(productInfoBean.getCategory());
@@ -508,7 +508,7 @@ public class ProductServiceImpl implements ProductService {
         log.debug("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
         AppSkuPrice appSkuPrice = new AppSkuPrice() ;
         appSkuPrice.setRenterId(renterId);
-        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
         List<AoyiProdIndexX> prodIndexXList = aoyiProdIndexList.stream().map(prodIndex -> {
             AoyiProdIndexX prodIndexX = new AoyiProdIndexX();
             BeanUtils.copyProperties(prodIndex, prodIndexX);
@@ -530,7 +530,7 @@ public class ProductServiceImpl implements ProductService {
             mpuList.add(inventoryMpus.getMpu()) ;
         });
         List<InventoryMpus> inventories = new ArrayList<>() ;
-        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuList);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuList);
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
             for (InventoryMpus inventory: queryBean.getInventories()) {
                 if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){
@@ -608,7 +608,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public OperaResponse findSpuAndSku(String mpu, String code) {
         OperaResponse response = new OperaResponse() ;
-        AoyiProdIndex aoyiProdIndex = productDao.selectByMpu(mpu) ;
+        AoyiProdIndexWithBLOBs aoyiProdIndex = productDao.selectByMpu(mpu) ;
         aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
         AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
         BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
@@ -658,7 +658,7 @@ public class ProductServiceImpl implements ProductService {
      * @param aoyiProdIndex
      * @return
      */
-    private ProductInfoBean convertToProductInfoBean(AoyiProdIndex aoyiProdIndex) {
+    private ProductInfoBean convertToProductInfoBean(AoyiProdIndexWithBLOBs aoyiProdIndex) {
         ProductInfoBean productInfoBean = new ProductInfoBean();
 
         productInfoBean.setId(aoyiProdIndex.getId());

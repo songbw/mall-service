@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.vo.ProductExportResVo;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.github.pagehelper.PageInfo;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public interface AdminProdService {
     PageBean findProdList(Integer offset, Integer limit, String state, Integer merchantId);
-    PageInfo<AoyiProdIndex> findProdListV2(ProductQueryBean queryBean);
+    PageInfo<AoyiProdIndexWithBLOBs> findProdListV2(ProductQueryBean queryBean);
 
     PageBean selectNameList(SerachBean bean);
 

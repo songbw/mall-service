@@ -106,7 +106,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public PageInfo<AoyiProdIndex> findProdListV2(ProductQueryBean queryBean) {
+    public PageInfo<AoyiProdIndexWithBLOBs> findProdListV2(ProductQueryBean queryBean) {
         if (queryBean.getMerchantId() == 0) {
             // TODO 获取租户下的所有商户信息
             List<Integer> merchantIds = new ArrayList<>() ;
@@ -114,11 +114,11 @@ public class AdminProdServiceImpl implements AdminProdService {
         } else {
             queryBean.setMerchantId(queryBean.getMerchantId());
         }
-        PageInfo<AoyiProdIndex> pageInfoBean = new PageInfo<>() ;
-        List<AoyiProdIndex> aoyiProdIndices = new ArrayList<>() ;
-        PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
+        PageInfo<AoyiProdIndexWithBLOBs> pageInfoBean = new PageInfo<>() ;
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndices = new ArrayList<>() ;
+        PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectPageable(queryBean) ;
         BeanUtils.copyProperties(pageInfo, pageInfoBean);
-        List<AoyiProdIndex> list = pageInfo.getList();
+        List<AoyiProdIndexWithBLOBs> list = pageInfo.getList();
         if (list != null) {
             list.forEach(aoyiProdIndex -> {
                 aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex) ;
@@ -190,12 +190,12 @@ public class AdminProdServiceImpl implements AdminProdService {
         if (queryBean == null) {
             return pageInfoBean ;
         }
-        PageInfo<AoyiProdIndex> pageInfo = productDao.selectPageable(queryBean) ;
+        PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectPageable(queryBean) ;
         if (pageInfo.getTotal() == 0) {
             return pageInfoBean;
         }
         BeanUtils.copyProperties(pageInfo, pageInfoBean);
-        List<AoyiProdIndex> list = pageInfo.getList();
+        List<AoyiProdIndexWithBLOBs> list = pageInfo.getList();
         // 关联属性添加
         List<AoyiProdIndexX> aoyiProdIndices = productHandle.convertProdIndexListToXList(list, queryBean) ;
         pageInfoBean.setList(aoyiProdIndices);

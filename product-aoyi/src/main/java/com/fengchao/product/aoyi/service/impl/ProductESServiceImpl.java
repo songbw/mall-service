@@ -8,6 +8,7 @@ import com.fengchao.product.aoyi.config.ESConfig;
 import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.feign.EquityService;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.rpc.VendorsRpcService;
 import com.fengchao.product.aoyi.service.ProductESService;
@@ -219,7 +220,7 @@ public class ProductESServiceImpl implements ProductESService {
                 // doc 转 json
                 String sourceAsString = documentFields.getSourceAsString() ;
                 // json 转对象
-                AoyiProdIndex aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndex.class) ;
+                AoyiProdIndexWithBLOBs aoyiProdIndex = objectMapper.readValue(sourceAsString, AoyiProdIndexWithBLOBs.class) ;
                 aoyiProdIndex = productHandle.updateImageExample(aoyiProdIndex);
                 BeanUtils.copyProperties(aoyiProdIndex, infoBean);
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());

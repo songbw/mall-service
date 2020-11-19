@@ -63,13 +63,13 @@ public class ProductDao {
      * @param mpuIdList
      * @return
      */
-    public List<AoyiProdIndex> selectAoyiProdIndexListByMpuIdList(List<String> mpuIdList) {
+    public List<AoyiProdIndexWithBLOBs> selectAoyiProdIndexListByMpuIdList(List<String> mpuIdList) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
 
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andMpuIn(mpuIdList);
 
-        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = aoyiProdIndexMapper.selectByExampleWithBLOBs(aoyiProdIndexExample);
 
         return aoyiProdIndexList;
     }
@@ -162,11 +162,11 @@ public class ProductDao {
      * @param mpu
      * @return
      */
-    public AoyiProdIndex selectByMpu(String mpu) {
+    public AoyiProdIndexWithBLOBs selectByMpu(String mpu) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andMpuEqualTo(mpu);
-        List<AoyiProdIndex> aoyiProdIndices = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndices = aoyiProdIndexMapper.selectByExampleWithBLOBs(aoyiProdIndexExample);
         if (aoyiProdIndices != null && aoyiProdIndices.size() > 0) {
             return aoyiProdIndices.get(0) ;
         }
@@ -277,7 +277,7 @@ public class ProductDao {
      * @param queryBean
      * @return
      */
-    public PageInfo<AoyiProdIndex> selectListByCategories(ProductQueryBean queryBean, List<String> codes) {
+    public PageInfo<AoyiProdIndexWithBLOBs> selectListByCategories(ProductQueryBean queryBean, List<String> codes) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         if (queryBean.getBrand() != null && !queryBean.getBrand().equals(""))
@@ -300,8 +300,8 @@ public class ProductDao {
             criteria.andCategoryIn(queryBean.getCategories());
         criteria.andStateEqualTo("1");
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
-        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
-        PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = aoyiProdIndexMapper.selectByExampleWithBLOBs(aoyiProdIndexExample);
+        PageInfo<AoyiProdIndexWithBLOBs> pageInfo = new PageInfo(aoyiProdIndexList);
 
         return pageInfo;
     }
@@ -312,7 +312,7 @@ public class ProductDao {
      * @param queryBean
      * @return
      */
-    public PageInfo<AoyiProdIndex> selectPageable(ProductQueryBean queryBean) {
+    public PageInfo<AoyiProdIndexWithBLOBs> selectPageable(ProductQueryBean queryBean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         if (StringUtils.isBlank(queryBean.getPriceOrder())) {
             aoyiProdIndexExample.setOrderByClause("created_at desc");
@@ -376,9 +376,9 @@ public class ProductDao {
 
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
 
-        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = aoyiProdIndexMapper.selectByExampleWithBLOBs(aoyiProdIndexExample);
 
-        PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);
+        PageInfo<AoyiProdIndexWithBLOBs> pageInfo = new PageInfo(aoyiProdIndexList);
 
         return pageInfo;
     }
