@@ -16,8 +16,6 @@
     <result column="price" jdbcType="VARCHAR" property="price" />
     <result column="iprice" jdbcType="INTEGER" property="iprice" />
     <result column="sprice" jdbcType="VARCHAR" property="sprice" />
-    <result column="images_url" jdbcType="VARCHAR" property="imagesUrl" />
-    <result column="introduction_url" jdbcType="VARCHAR" property="introductionUrl" />
     <result column="merchant_id" jdbcType="INTEGER" property="merchantId" />
     <result column="inventory" jdbcType="INTEGER" property="inventory" />
     <result column="brand_id" jdbcType="INTEGER" property="brandId" />
@@ -33,9 +31,12 @@
     <result column="floor_price" jdbcType="VARCHAR" property="floorPrice" />
     <result column="cross_border" jdbcType="INTEGER" property="crossBorder" />
     <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
+    <result column="merchant_sort" jdbcType="INTEGER" property="merchantSort" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
     <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
+    <result column="images_url" jdbcType="LONGVARCHAR" property="imagesUrl" />
+    <result column="introduction_url" jdbcType="LONGVARCHAR" property="introductionUrl" />
     <result column="prodParams" jdbcType="LONGVARCHAR" property="prodparams" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -98,12 +99,12 @@
   </sql>
   <sql id="Base_Column_List">
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
-    iprice, sprice, images_url, introduction_url, merchant_id, inventory, brand_id, mpu, 
-    created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate, 
-    floor_price, cross_border, merchant_code
+    iprice, sprice, merchant_id, inventory, brand_id, mpu, created_at, updated_at, sync_at, 
+    type, compare_url, sub_title, compare_price, tax_rate, floor_price, cross_border, 
+    merchant_code, merchant_sort
   </sql>
   <sql id="Blob_Column_List">
-    introduction, prodParams
+    introduction, images_url, introduction_url, prodParams
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexExample" resultMap="ResultMapWithBLOBs">
     select
@@ -158,24 +159,26 @@
       image, model, name, 
       weight, upc, saleUnit, 
       state, price, iprice, 
-      sprice, images_url, introduction_url, 
-      merchant_id, inventory, brand_id, 
-      mpu, created_at, updated_at, 
-      sync_at, type, compare_url, 
-      sub_title, compare_price, tax_rate, 
-      floor_price, cross_border, merchant_code, 
-      introduction, prodParams)
+      sprice, merchant_id, inventory, 
+      brand_id, mpu, created_at, 
+      updated_at, sync_at, type, 
+      compare_url, sub_title, compare_price, 
+      tax_rate, floor_price, cross_border, 
+      merchant_code, merchant_sort, introduction, 
+      images_url, introduction_url, prodParams
+      )
     values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, #{saleunit,jdbcType=VARCHAR}, 
       #{state,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{iprice,jdbcType=INTEGER}, 
-      #{sprice,jdbcType=VARCHAR}, #{imagesUrl,jdbcType=VARCHAR}, #{introductionUrl,jdbcType=VARCHAR}, 
-      #{merchantId,jdbcType=INTEGER}, #{inventory,jdbcType=INTEGER}, #{brandId,jdbcType=INTEGER}, 
-      #{mpu,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
-      #{syncAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{compareUrl,jdbcType=VARCHAR}, 
-      #{subTitle,jdbcType=VARCHAR}, #{comparePrice,jdbcType=VARCHAR}, #{taxRate,jdbcType=VARCHAR}, 
-      #{floorPrice,jdbcType=VARCHAR}, #{crossBorder,jdbcType=INTEGER}, #{merchantCode,jdbcType=VARCHAR}, 
-      #{introduction,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR})
+      #{sprice,jdbcType=VARCHAR}, #{merchantId,jdbcType=INTEGER}, #{inventory,jdbcType=INTEGER}, 
+      #{brandId,jdbcType=INTEGER}, #{mpu,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP}, #{syncAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, 
+      #{compareUrl,jdbcType=VARCHAR}, #{subTitle,jdbcType=VARCHAR}, #{comparePrice,jdbcType=VARCHAR}, 
+      #{taxRate,jdbcType=VARCHAR}, #{floorPrice,jdbcType=VARCHAR}, #{crossBorder,jdbcType=INTEGER}, 
+      #{merchantCode,jdbcType=VARCHAR}, #{merchantSort,jdbcType=INTEGER}, #{introduction,jdbcType=LONGVARCHAR}, 
+      #{imagesUrl,jdbcType=LONGVARCHAR}, #{introductionUrl,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
     insert into aoyi_prod_index
@@ -218,12 +221,6 @@
       </if>
       <if test="sprice != null">
         sprice,
-      </if>
-      <if test="imagesUrl != null">
-        images_url,
-      </if>
-      <if test="introductionUrl != null">
-        introduction_url,
       </if>
       <if test="merchantId != null">
         merchant_id,
@@ -270,8 +267,17 @@
       <if test="merchantCode != null">
         merchant_code,
       </if>
+      <if test="merchantSort != null">
+        merchant_sort,
+      </if>
       <if test="introduction != null">
         introduction,
+      </if>
+      <if test="imagesUrl != null">
+        images_url,
+      </if>
+      <if test="introductionUrl != null">
+        introduction_url,
       </if>
       <if test="prodparams != null">
         prodParams,
@@ -316,12 +322,6 @@
       </if>
       <if test="sprice != null">
         #{sprice,jdbcType=VARCHAR},
-      </if>
-      <if test="imagesUrl != null">
-        #{imagesUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="introductionUrl != null">
-        #{introductionUrl,jdbcType=VARCHAR},
       </if>
       <if test="merchantId != null">
         #{merchantId,jdbcType=INTEGER},
@@ -368,8 +368,17 @@
       <if test="merchantCode != null">
         #{merchantCode,jdbcType=VARCHAR},
       </if>
+      <if test="merchantSort != null">
+        #{merchantSort,jdbcType=INTEGER},
+      </if>
       <if test="introduction != null">
         #{introduction,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="imagesUrl != null">
+        #{imagesUrl,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="introductionUrl != null">
+        #{introductionUrl,jdbcType=LONGVARCHAR},
       </if>
       <if test="prodparams != null">
         #{prodparams,jdbcType=LONGVARCHAR},
@@ -427,12 +436,6 @@
       <if test="record.sprice != null">
         sprice = #{record.sprice,jdbcType=VARCHAR},
       </if>
-      <if test="record.imagesUrl != null">
-        images_url = #{record.imagesUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="record.introductionUrl != null">
-        introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
-      </if>
       <if test="record.merchantId != null">
         merchant_id = #{record.merchantId,jdbcType=INTEGER},
       </if>
@@ -478,8 +481,17 @@
       <if test="record.merchantCode != null">
         merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
       </if>
+      <if test="record.merchantSort != null">
+        merchant_sort = #{record.merchantSort,jdbcType=INTEGER},
+      </if>
       <if test="record.introduction != null">
         introduction = #{record.introduction,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.imagesUrl != null">
+        images_url = #{record.imagesUrl,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.introductionUrl != null">
+        introduction_url = #{record.introductionUrl,jdbcType=LONGVARCHAR},
       </if>
       <if test="record.prodparams != null">
         prodParams = #{record.prodparams,jdbcType=LONGVARCHAR},
@@ -505,8 +517,6 @@
       price = #{record.price,jdbcType=VARCHAR},
       iprice = #{record.iprice,jdbcType=INTEGER},
       sprice = #{record.sprice,jdbcType=VARCHAR},
-      images_url = #{record.imagesUrl,jdbcType=VARCHAR},
-      introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
       merchant_id = #{record.merchantId,jdbcType=INTEGER},
       inventory = #{record.inventory,jdbcType=INTEGER},
       brand_id = #{record.brandId,jdbcType=INTEGER},
@@ -522,7 +532,10 @@
       floor_price = #{record.floorPrice,jdbcType=VARCHAR},
       cross_border = #{record.crossBorder,jdbcType=INTEGER},
       merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
+      merchant_sort = #{record.merchantSort,jdbcType=INTEGER},
       introduction = #{record.introduction,jdbcType=LONGVARCHAR},
+      images_url = #{record.imagesUrl,jdbcType=LONGVARCHAR},
+      introduction_url = #{record.introductionUrl,jdbcType=LONGVARCHAR},
       prodParams = #{record.prodparams,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -544,8 +557,6 @@
       price = #{record.price,jdbcType=VARCHAR},
       iprice = #{record.iprice,jdbcType=INTEGER},
       sprice = #{record.sprice,jdbcType=VARCHAR},
-      images_url = #{record.imagesUrl,jdbcType=VARCHAR},
-      introduction_url = #{record.introductionUrl,jdbcType=VARCHAR},
       merchant_id = #{record.merchantId,jdbcType=INTEGER},
       inventory = #{record.inventory,jdbcType=INTEGER},
       brand_id = #{record.brandId,jdbcType=INTEGER},
@@ -560,7 +571,8 @@
       tax_rate = #{record.taxRate,jdbcType=VARCHAR},
       floor_price = #{record.floorPrice,jdbcType=VARCHAR},
       cross_border = #{record.crossBorder,jdbcType=INTEGER},
-      merchant_code = #{record.merchantCode,jdbcType=VARCHAR}
+      merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
+      merchant_sort = #{record.merchantSort,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -607,12 +619,6 @@
       <if test="sprice != null">
         sprice = #{sprice,jdbcType=VARCHAR},
       </if>
-      <if test="imagesUrl != null">
-        images_url = #{imagesUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="introductionUrl != null">
-        introduction_url = #{introductionUrl,jdbcType=VARCHAR},
-      </if>
       <if test="merchantId != null">
         merchant_id = #{merchantId,jdbcType=INTEGER},
       </if>
@@ -658,8 +664,17 @@
       <if test="merchantCode != null">
         merchant_code = #{merchantCode,jdbcType=VARCHAR},
       </if>
+      <if test="merchantSort != null">
+        merchant_sort = #{merchantSort,jdbcType=INTEGER},
+      </if>
       <if test="introduction != null">
         introduction = #{introduction,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="imagesUrl != null">
+        images_url = #{imagesUrl,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="introductionUrl != null">
+        introduction_url = #{introductionUrl,jdbcType=LONGVARCHAR},
       </if>
       <if test="prodparams != null">
         prodParams = #{prodparams,jdbcType=LONGVARCHAR},
@@ -682,8 +697,6 @@
       price = #{price,jdbcType=VARCHAR},
       iprice = #{iprice,jdbcType=INTEGER},
       sprice = #{sprice,jdbcType=VARCHAR},
-      images_url = #{imagesUrl,jdbcType=VARCHAR},
-      introduction_url = #{introductionUrl,jdbcType=VARCHAR},
       merchant_id = #{merchantId,jdbcType=INTEGER},
       inventory = #{inventory,jdbcType=INTEGER},
       brand_id = #{brandId,jdbcType=INTEGER},
@@ -699,7 +712,10 @@
       floor_price = #{floorPrice,jdbcType=VARCHAR},
       cross_border = #{crossBorder,jdbcType=INTEGER},
       merchant_code = #{merchantCode,jdbcType=VARCHAR},
+      merchant_sort = #{merchantSort,jdbcType=INTEGER},
       introduction = #{introduction,jdbcType=LONGVARCHAR},
+      images_url = #{imagesUrl,jdbcType=LONGVARCHAR},
+      introduction_url = #{introductionUrl,jdbcType=LONGVARCHAR},
       prodParams = #{prodparams,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -718,8 +734,6 @@
       price = #{price,jdbcType=VARCHAR},
       iprice = #{iprice,jdbcType=INTEGER},
       sprice = #{sprice,jdbcType=VARCHAR},
-      images_url = #{imagesUrl,jdbcType=VARCHAR},
-      introduction_url = #{introductionUrl,jdbcType=VARCHAR},
       merchant_id = #{merchantId,jdbcType=INTEGER},
       inventory = #{inventory,jdbcType=INTEGER},
       brand_id = #{brandId,jdbcType=INTEGER},
@@ -734,7 +748,8 @@
       tax_rate = #{taxRate,jdbcType=VARCHAR},
       floor_price = #{floorPrice,jdbcType=VARCHAR},
       cross_border = #{crossBorder,jdbcType=INTEGER},
-      merchant_code = #{merchantCode,jdbcType=VARCHAR}
+      merchant_code = #{merchantCode,jdbcType=VARCHAR},
+      merchant_sort = #{merchantSort,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

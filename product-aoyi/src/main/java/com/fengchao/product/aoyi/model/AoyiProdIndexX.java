@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AoyiProdIndexX extends AoyiProdIndex implements Serializable {
+public class AoyiProdIndexX extends AoyiProdIndexWithBLOBs implements Serializable {
 
     private String imageExtend;
 

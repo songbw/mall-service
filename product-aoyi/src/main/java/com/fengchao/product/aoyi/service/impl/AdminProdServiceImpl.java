@@ -945,4 +945,12 @@ public class AdminProdServiceImpl implements AdminProdService {
         response.setData(prodIndex);
         return response;
     }
+
+    @Override
+    public OperaResponse updateMerchantSortByMerchantId(AoyiProdIndex prodIndex) {
+        OperaResponse response = new OperaResponse() ;
+        productDao.updateByMerchantId(prodIndex);
+        response.setData(prodIndex);
+        return response;
+    }
 }

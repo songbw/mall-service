@@ -87,4 +87,6 @@ public interface AdminProdService {
     AoyiProdIndexX findByMpu(String mpu) ;
 
     OperaResponse updateBatchStateByMerchantId(AoyiProdIndex prodIndex);
+
+    OperaResponse updateMerchantSortByMerchantId(AoyiProdIndex prodIndex);
 }

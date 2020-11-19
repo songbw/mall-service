@@ -31,10 +31,6 @@ public class AoyiProdIndex {
 
     private String sprice;
 
-    private String imagesUrl;
-
-    private String introductionUrl;
-
     private Integer merchantId;
 
     private Integer inventory;
@@ -64,6 +60,8 @@ public class AoyiProdIndex {
     private Integer crossBorder;
 
     private String merchantCode;
+
+    private Integer merchantSort;
 
     public Integer getId() {
         return id;
@@ -175,22 +173,6 @@ public class AoyiProdIndex {
 
     public void setSprice(String sprice) {
         this.sprice = sprice == null ? null : sprice.trim();
-    }
-
-    public String getImagesUrl() {
-        return imagesUrl;
-    }
-
-    public void setImagesUrl(String imagesUrl) {
-        this.imagesUrl = imagesUrl == null ? null : imagesUrl.trim();
-    }
-
-    public String getIntroductionUrl() {
-        return introductionUrl;
-    }
-
-    public void setIntroductionUrl(String introductionUrl) {
-        this.introductionUrl = introductionUrl == null ? null : introductionUrl.trim();
     }
 
     public Integer getMerchantId() {
@@ -311,5 +293,13 @@ public class AoyiProdIndex {
 
     public void setMerchantCode(String merchantCode) {
         this.merchantCode = merchantCode == null ? null : merchantCode.trim();
+    }
+
+    public Integer getMerchantSort() {
+        return merchantSort;
+    }
+
+    public void setMerchantSort(Integer merchantSort) {
+        this.merchantSort = merchantSort;
     }
 }

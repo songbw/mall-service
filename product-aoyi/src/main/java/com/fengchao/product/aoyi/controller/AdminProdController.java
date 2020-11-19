@@ -778,4 +778,9 @@ public class AdminProdController {
         return result;
     }
 
+    @PutMapping("merchant/sort")
+    public OperaResponse updateMerchantSort(@RequestBody AoyiProdIndex prodIndex) {
+        return prodService.updateMerchantSortByMerchantId(prodIndex) ;
+    }
+
 }

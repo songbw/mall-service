@@ -532,4 +532,19 @@ public class ProductDao {
         aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
     }
 
+    /**
+     * 更新商品价格和状态
+     * @param bean
+     */
+    public void updateByMerchantId(AoyiProdIndex bean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMerchantIdEqualTo(bean.getMerchantId()) ;
+
+        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
+        aoyiProdIndex.setMerchantSort(bean.getMerchantSort());
+        aoyiProdIndex.setUpdatedAt(new Date());
+        aoyiProdIndexMapper.updateByExampleSelective(aoyiProdIndex, aoyiProdIndexExample);
+    }
+
 }

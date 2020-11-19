@@ -1065,146 +1065,6 @@ public class AoyiProdIndexExample {
             return (Criteria) this;
         }
 
-        public Criteria andImagesUrlIsNull() {
-            addCriterion("images_url is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlIsNotNull() {
-            addCriterion("images_url is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlEqualTo(String value) {
-            addCriterion("images_url =", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlNotEqualTo(String value) {
-            addCriterion("images_url <>", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlGreaterThan(String value) {
-            addCriterion("images_url >", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlGreaterThanOrEqualTo(String value) {
-            addCriterion("images_url >=", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlLessThan(String value) {
-            addCriterion("images_url <", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlLessThanOrEqualTo(String value) {
-            addCriterion("images_url <=", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlLike(String value) {
-            addCriterion("images_url like", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlNotLike(String value) {
-            addCriterion("images_url not like", value, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlIn(List<String> values) {
-            addCriterion("images_url in", values, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlNotIn(List<String> values) {
-            addCriterion("images_url not in", values, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlBetween(String value1, String value2) {
-            addCriterion("images_url between", value1, value2, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andImagesUrlNotBetween(String value1, String value2) {
-            addCriterion("images_url not between", value1, value2, "imagesUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlIsNull() {
-            addCriterion("introduction_url is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlIsNotNull() {
-            addCriterion("introduction_url is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlEqualTo(String value) {
-            addCriterion("introduction_url =", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlNotEqualTo(String value) {
-            addCriterion("introduction_url <>", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlGreaterThan(String value) {
-            addCriterion("introduction_url >", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlGreaterThanOrEqualTo(String value) {
-            addCriterion("introduction_url >=", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlLessThan(String value) {
-            addCriterion("introduction_url <", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlLessThanOrEqualTo(String value) {
-            addCriterion("introduction_url <=", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlLike(String value) {
-            addCriterion("introduction_url like", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlNotLike(String value) {
-            addCriterion("introduction_url not like", value, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlIn(List<String> values) {
-            addCriterion("introduction_url in", values, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlNotIn(List<String> values) {
-            addCriterion("introduction_url not in", values, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlBetween(String value1, String value2) {
-            addCriterion("introduction_url between", value1, value2, "introductionUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andIntroductionUrlNotBetween(String value1, String value2) {
-            addCriterion("introduction_url not between", value1, value2, "introductionUrl");
-            return (Criteria) this;
-        }
-
         public Criteria andMerchantIdIsNull() {
             addCriterion("merchant_id is null");
             return (Criteria) this;
@@ -2172,6 +2032,66 @@ public class AoyiProdIndexExample {
 
         public Criteria andMerchantCodeNotBetween(String value1, String value2) {
             addCriterion("merchant_code not between", value1, value2, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortIsNull() {
+            addCriterion("merchant_sort is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortIsNotNull() {
+            addCriterion("merchant_sort is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortEqualTo(Integer value) {
+            addCriterion("merchant_sort =", value, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortNotEqualTo(Integer value) {
+            addCriterion("merchant_sort <>", value, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortGreaterThan(Integer value) {
+            addCriterion("merchant_sort >", value, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortGreaterThanOrEqualTo(Integer value) {
+            addCriterion("merchant_sort >=", value, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortLessThan(Integer value) {
+            addCriterion("merchant_sort <", value, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortLessThanOrEqualTo(Integer value) {
+            addCriterion("merchant_sort <=", value, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortIn(List<Integer> values) {
+            addCriterion("merchant_sort in", values, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortNotIn(List<Integer> values) {
+            addCriterion("merchant_sort not in", values, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortBetween(Integer value1, Integer value2) {
+            addCriterion("merchant_sort between", value1, value2, "merchantSort");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantSortNotBetween(Integer value1, Integer value2) {
+            addCriterion("merchant_sort not between", value1, value2, "merchantSort");
             return (Criteria) this;
         }
     }
