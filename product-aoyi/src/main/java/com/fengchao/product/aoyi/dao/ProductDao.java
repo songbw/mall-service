@@ -316,9 +316,11 @@ public class ProductDao {
     public PageInfo<AoyiProdIndexWithBLOBs> selectPageable(ProductQueryBean queryBean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
         if (StringUtils.isBlank(queryBean.getPriceOrder())) {
+            aoyiProdIndexExample.setOrderByClause("merchant_sort desc");
             aoyiProdIndexExample.setOrderByClause("created_at desc");
         } else {
             aoyiProdIndexExample.setOrderByClause("price " + queryBean.getPriceOrder());
+            aoyiProdIndexExample.setOrderByClause("merchant_sort desc");
         }
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
 
