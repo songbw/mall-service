@@ -316,12 +316,19 @@ public class ProductDao {
      */
     public PageInfo<AoyiProdIndexWithBLOBs> selectPageable(ProductQueryBean queryBean) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
-        if (StringUtils.isBlank(queryBean.getPriceOrder())) {
-            aoyiProdIndexExample.setOrderByClause("merchant_sort desc, created_at desc");
-//            aoyiProdIndexExample.setOrderByClause("created_at desc");
-        } else {
-            aoyiProdIndexExample.setOrderByClause("price " + queryBean.getPriceOrder() + ", merchant_sort desc");
-//            aoyiProdIndexExample.setOrderByClause("merchant_sort desc");
+        String sortValue = "";
+        if (StringUtils.isNotBlank(queryBean.getSortValue())) {
+            sortValue = sortValue + queryBean.getSortValue() + " desc" ;
+        }
+        if (!StringUtils.isBlank(queryBean.getPriceOrder())) {
+            if (StringUtils.isNotBlank(sortValue)) {
+                sortValue = sortValue + ", price " + queryBean.getPriceOrder() ;
+            } else {
+                sortValue = sortValue + "price " + queryBean.getPriceOrder() ;
+            }
+        }
+        if (StringUtils.isNotBlank(sortValue)) {
+            aoyiProdIndexExample.setOrderByClause(sortValue);
         }
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
 
