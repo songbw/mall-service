@@ -350,10 +350,34 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public int update(AoyiProdIndex bean) throws ProductException {
+    public OperaResult update(AoyiProdIndex bean) throws ProductException {
+        OperaResult result = new OperaResult() ;
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());
             AoyiProdIndexWithBLOBs temp = mapper.selectByPrimaryKey(bean.getId()) ;
+            // 判断最低价格
+            if (StringUtils.isNotBlank(bean.getPrice())) {
+                BigDecimal price = new BigDecimal(bean.getPrice()) ;
+                SysCompany sysCompany = vendorsRpcService.queryMerchantById(temp.getMerchantId()) ;
+                if (!"0".equals(sysCompany.getRate())) {
+                    BigDecimal sPrice = null;
+                    if (StringUtils.isNotBlank(bean.getSprice())) {
+                        sPrice = new BigDecimal(bean.getSprice()) ;
+                    } else {
+                        if (StringUtils.isNotBlank(temp.getSprice())) {
+                            sPrice = new BigDecimal(temp.getSprice()) ;
+                        }
+                    }
+                    // 比较
+                    BigDecimal rateSprice = sPrice.multiply(new BigDecimal(1).add(new BigDecimal(sysCompany.getRate()))) ;
+                    if (price.compareTo(rateSprice) < 0) {
+                        result.setCode(200003);
+                        result.setMsg("销售价格低于最小利润价格");
+                        return result;
+                    }
+                }
+            }
+
             List<StarSku> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
             if (starSkus != null && starSkus.size() > 0) {
                 StarSku starSku = starSkus.get(0) ;
@@ -370,9 +394,12 @@ public class AdminProdServiceImpl implements AdminProdService {
             productDao.updateAoyiProduct(bean) ;
 //            aoyiProdIndexXMapper.updateByPrimaryKeySelective(bean);
         } else {
-            throw new ProductException(200002, "id为null或等于0");
+            result.setCode(200002);
+            result.setMsg("id为null或等于0");
+            return result;
         }
-        return bean.getId();
+        result.getData().put("result", bean.getId());
+        return result;
     }
 
     @Override
@@ -902,9 +929,34 @@ public class AdminProdServiceImpl implements AdminProdService {
     @Override
     public OperaResponse updateBatch(List<AoyiProdIndex> beans) {
         OperaResponse response = new OperaResponse() ;
-        beans.forEach(bean -> {
+        List<AoyiProdIndex> prodIndices = new ArrayList<>();
+        for (AoyiProdIndex bean: beans) {
             if (bean.getId() != null) {
                 AoyiProdIndexWithBLOBs temp = mapper.selectByPrimaryKey(bean.getId()) ;
+
+                // 判断最低价格
+                if (StringUtils.isNotBlank(bean.getPrice())) {
+                    BigDecimal price = new BigDecimal(bean.getPrice()) ;
+                    SysCompany sysCompany = vendorsRpcService.queryMerchantById(temp.getMerchantId()) ;
+                    if (!"0".equals(sysCompany.getRate())) {
+                        BigDecimal sPrice = null;
+                        if (StringUtils.isNotBlank(bean.getSprice())) {
+                            sPrice = new BigDecimal(bean.getSprice()) ;
+                        } else {
+                            if (StringUtils.isNotBlank(temp.getSprice())) {
+                                sPrice = new BigDecimal(temp.getSprice()) ;
+                            }
+                        }
+                        // 比较
+                        BigDecimal rateSprice = sPrice.multiply(new BigDecimal(1).add(new BigDecimal(sysCompany.getRate()))) ;
+                        if (price.compareTo(rateSprice) < 0) {
+                            prodIndices.add(bean) ;
+                            continue;
+
+                        }
+                    }
+                }
+
                 List<StarSku> starSkus = starSkuDao.selectBySpuId(temp.getSkuid()) ;
                 if (starSkus != null && starSkus.size() > 0) {
                     StarSku starSku = starSkus.get(0) ;
@@ -923,7 +975,13 @@ public class AdminProdServiceImpl implements AdminProdService {
                 BeanUtils.copyProperties(bean, aoyiProdIndexWithBLOBs);
                 mapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs) ;
             }
-        });
+        }
+        if (prodIndices != null && prodIndices.size() > 0) {
+            response.setCode(200003);
+            response.setMsg("销售价格低于最小利润价格");
+            response.setData(prodIndices);
+            return response;
+        }
         response.setData(beans);
         return response;
     }

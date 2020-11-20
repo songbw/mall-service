@@ -162,10 +162,7 @@ public class AdminProdController {
     @PutMapping
     public OperaResult update(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
 //        bean.setMerchantId(merchantId);
-
-        int id = prodService.update(bean);
-        result.getData().put("result", id);
-        return result;
+        return prodService.update(bean);
     }
 
     @PutMapping("price/state")

@@ -33,4 +33,6 @@ public class SysCompany {
 
     private Integer status;
 
+    private String rate ;
+
 }

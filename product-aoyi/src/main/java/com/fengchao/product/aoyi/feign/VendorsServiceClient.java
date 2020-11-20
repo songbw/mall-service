@@ -29,4 +29,7 @@ public interface VendorsServiceClient {
     @RequestMapping(value = "/renter/api/companiesByAppId/{appId}", method = RequestMethod.GET)
     OperaResponse<List<Integer>> queryAppIdMerchantList(@PathVariable("appId") String appId);
 
+    @RequestMapping(value = "/vendors/companiesByIds", method = RequestMethod.GET)
+    OperaResponse<List<SysCompany>> vendorInfoByIds(@RequestParam("idList") List<Integer> ids);
+
 }

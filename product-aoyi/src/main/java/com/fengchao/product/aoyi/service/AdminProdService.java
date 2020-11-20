@@ -38,7 +38,7 @@ public interface AdminProdService {
      */
     String add(AoyiProdIndex bean) throws ProductException;
 
-    int update(AoyiProdIndex bean) throws ProductException;
+    OperaResult update(AoyiProdIndex bean) throws ProductException;
 
     OperaResponse updateBatchPriceAndState(List<AoyiProdIndex> bean) throws ProductException;
 

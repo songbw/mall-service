@@ -26,6 +26,29 @@ public class VendorsRpcService {
         this.vendorsServiceClient = vendorsServiceClient;
     }
 
+    public SysCompany queryMerchantById(Integer merchantId) {
+        // 返回值
+        SysCompany sysCompany = new SysCompany();
+
+        // 执行rpc调用
+        log.info("查询所有的商户信息 调用vendors rpc服务 入参:无");
+
+        // 将merchantIdList转成Long型
+        OperaResponse<SysCompany> resultObject = vendorsServiceClient.vendorInfo(merchantId);
+        log.info("查询所有的商户信息 调用vendors rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+
+        // 处理返回
+        if (resultObject.getCode() == 200) {
+            sysCompany = resultObject.getData();
+        } else {
+            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+        }
+
+        log.info("VendorsRpcService#queryMerchantById调用vendors rpc服务 返回:{}",
+                JSONUtil.toJsonString(sysCompany));
+        return sysCompany;
+    }
+
     /**
      * 查询所有的商户信息
      *
@@ -112,5 +135,29 @@ public class VendorsRpcService {
         }
         return renterCompanyList;
 
+    }
+
+    public List<SysCompany> queryMerchantListByIds(List<Integer> ids) {
+        // 返回值
+        List<SysCompany> sysCompanyList = new ArrayList<>();
+
+        // 执行rpc调用
+        log.info("查询所有的商户信息 调用vendors rpc服务 入参:无");
+
+        // 将merchantIdList转成Long型
+        OperaResponse<List<SysCompany>> resultObject = vendorsServiceClient.vendorInfoByIds(ids);
+        log.info("查询所有的商户信息 调用vendors rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+
+        // 处理返回
+        if (resultObject.getCode() == 200) {
+            sysCompanyList = resultObject.getData();
+        } else {
+            log.warn("查询所有的商户信息 调用vendors rpc服务 错误!");
+        }
+
+        log.info("VendorsRpcService#queryMerchantListByIds 调用vendors rpc服务 返回:{}",
+                JSONUtil.toJsonString(sysCompanyList));
+
+        return sysCompanyList;
     }
 }
