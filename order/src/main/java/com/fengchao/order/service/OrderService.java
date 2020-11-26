@@ -150,6 +150,8 @@ public interface OrderService {
 
     OperaResponse batchSelectByIds(List<Integer> orderIds) ;
 
+    OperaResponse batchSelectBySubOrderIds(List<String> subOrderIds) ;
+
     OperaResponse sendTradeInfo(String outerTradeNo, String paymentNo, String appId) ;
 
     OperaResponse findMpusSaleCount(OrderQueryBean queryBean) ;

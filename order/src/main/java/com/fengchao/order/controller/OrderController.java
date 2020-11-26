@@ -512,4 +512,9 @@ public class OrderController {
     private OperaResponse findMpusSaleCount(@RequestBody OrderQueryBean queryBean) {
         return service.findMpusSaleCount(queryBean) ;
     }
+
+    @PostMapping("/batch/subOrderId")
+    private OperaResponse selectBySubOrderIds(@RequestBody List<String> subOrderIds) {
+        return service.batchSelectBySubOrderIds(subOrderIds);
+    }
 }

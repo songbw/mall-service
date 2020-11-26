@@ -1783,6 +1783,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OperaResponse batchSelectBySubOrderIds(List<String> subOrderIds) {
+        return null;
+    }
+
+    @Override
     public OperaResponse sendTradeInfo(String openId, String paymentNo, String appId) {
         OperaResponse response = new OperaResponse() ;
         List<Orders> orders = ordersDao.selectOrdersByOpenIdAndPaymentNo(openId, paymentNo) ;

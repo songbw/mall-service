@@ -29,7 +29,7 @@ public class OrderDetailDao {
     /**
      * 唯品会的mpu前缀
      */
-    private static final String WEIPINHUI_MPU_PREFIX = "30";
+    private static final String WEIPINHUI_MPU_PREFIX = "3";
 
     private OrderDetailMapper orderDetailMapper;
     private OrdersMapper ordersMapper;
