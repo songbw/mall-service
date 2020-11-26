@@ -313,6 +313,26 @@
     </if>
     order by created_at desc
   </select>
+  <select id="selectBySubOrderIds" resultType="com.fengchao.order.bean.OrderDetailBean" parameterType="list">
+    select 	orders.id id, open_id openId, orders.app_id appId, trade_no tradeNo, aoyi_id aoyiId, company_cust_no companyCustNo, orders.merchant_id merchantId, merchant_no merchantNo,receiver_name receiverName, telephone,
+    mobile, email, province_id provinceId, city_id cityId, county_id countyId, town_id townId, address, zip, order_detail.remark, invoice_state invoiceState,province_name provinceName, city_name cityName,
+    invoice_type invoiceType, invoice_title invoiceTitle, payment_no paymentNo, payment_at paymentAt, invoice_content invoiceContent, payment,county_name countyName,
+    serv_Fee servFee, amount, type, orders.status, out_trade_no outTradeNo, payment_amount paymentAmount, payee, refund_fee refundFee, pay_type payType, payment_total_fee paymentTotalFee, payer,
+    pay_status payStatus, pay_order_category payOrderCategory, coupon_id couponId, coupon_code couponCode, coupon_discount couponDiscount, sale_amount saleAmount,
+    sub_order_id subOrderId, sku_id skuId, mpu, num,unit_price unitPrice, image, name, model, promotion_id promotionId, promotion_discount promotionDiscount,order_detail.id subId,
+    order_detail.created_at createdAt, order_detail.updated_at updatedAt, order_detail.logistics_id logisticsId, order_detail.logistics_content logisticsContent, order_detail.sale_price salePrice, order_detail.status subStatus, order_detail.mpu, order_detail.comcode, order_detail.sku_coupon_discount skuCouponDiscount, order_detail.complete_time completeTime
+    , order_detail.third_order_sn thirdOrderSn
+    from orders
+    RIGHT JOIN order_detail on order_detail.order_id = orders.id
+    where 1 = 1
+    <if test="list != null">
+      and order_detail.sub_order_id in
+      <foreach item="item" index="index" collection="list"
+               open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from orders
     where id = #{id,jdbcType=INTEGER}

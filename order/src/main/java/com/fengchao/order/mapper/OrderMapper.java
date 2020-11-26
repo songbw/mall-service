@@ -39,6 +39,8 @@ public interface OrderMapper {
 
     List<OrderDetailBean> selectOrderLimit(HashMap map);
 
+    List<OrderDetailBean> selectBySubOrderIds(List<String> ids);
+
     List<Order> selectByTradeNo(String tradeNo) ;
 
     List<Order> selectByOutTradeNo(String outTradeNo) ;

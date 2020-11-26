@@ -1784,7 +1784,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OperaResponse batchSelectBySubOrderIds(List<String> subOrderIds) {
-        return null;
+        OperaResponse response = new OperaResponse();
+        List<OrderDetailBean> orderDetails = orderMapper.selectBySubOrderIds(subOrderIds) ;
+        response.setData(orderDetails);
+        return response;
     }
 
     @Override
