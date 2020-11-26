@@ -187,6 +187,7 @@ public class ProductDao {
         aoyiProdIndexWithBLOBs.setModel(aoyiProdIndexX.getModel());
         aoyiProdIndexWithBLOBs.setMpu(aoyiProdIndexX.getMpu());
         aoyiProdIndexWithBLOBs.setMerchantId(aoyiProdIndexX.getMerchantId());
+        aoyiProdIndexWithBLOBs.setMerchantCode(aoyiProdIndexX.getMerchantCode());
         aoyiProdIndexWithBLOBs.setState(aoyiProdIndexX.getState());
         aoyiProdIndexWithBLOBs.setName(aoyiProdIndexX.getName());
         aoyiProdIndexWithBLOBs.setPrice(aoyiProdIndexX.getPrice());
@@ -276,12 +277,16 @@ public class ProductDao {
      * @param queryBean
      * @return
      */
-    public PageInfo<AoyiProdIndex> selectListByCategories(ProductQueryBean queryBean) {
+    public PageInfo<AoyiProdIndex> selectListByCategories(ProductQueryBean queryBean, List<String> codes) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
-
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         if (queryBean.getBrand() != null && !queryBean.getBrand().equals(""))
             criteria.andBrandEqualTo(queryBean.getBrand());
+        // 租户
+//        if (queryBean.getRenterId() != null && !queryBean.getRenterId().equals(""))
+//            criteria.andRenterIdEqualTo(queryBean.getRenterId());
+        if (codes != null && codes.size()>0)
+            criteria.andMerchantCodeIn(codes);
         if (queryBean.getPriceOrder() != null && !queryBean.getPriceOrder().equals(""))
             aoyiProdIndexExample.setOrderByClause("CAST(price AS DECIMAL) " + queryBean.getPriceOrder());
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)

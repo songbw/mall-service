@@ -2104,6 +2104,146 @@ public class AoyiProdIndexExample {
             addCriterion("cross_border not between", value1, value2, "crossBorder");
             return (Criteria) this;
         }
+
+        public Criteria andRenterIdIsNull() {
+            addCriterion("renter_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdIsNotNull() {
+            addCriterion("renter_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdEqualTo(String value) {
+            addCriterion("renter_id =", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdNotEqualTo(String value) {
+            addCriterion("renter_id <>", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdGreaterThan(String value) {
+            addCriterion("renter_id >", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdGreaterThanOrEqualTo(String value) {
+            addCriterion("renter_id >=", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdLessThan(String value) {
+            addCriterion("renter_id <", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdLessThanOrEqualTo(String value) {
+            addCriterion("renter_id <=", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdLike(String value) {
+            addCriterion("renter_id like", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdNotLike(String value) {
+            addCriterion("renter_id not like", value, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdIn(List<String> values) {
+            addCriterion("renter_id in", values, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdNotIn(List<String> values) {
+            addCriterion("renter_id not in", values, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdBetween(String value1, String value2) {
+            addCriterion("renter_id between", value1, value2, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenterIdNotBetween(String value1, String value2) {
+            addCriterion("renter_id not between", value1, value2, "renterId");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeIsNull() {
+            addCriterion("merchant_code is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeIsNotNull() {
+            addCriterion("merchant_code is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeEqualTo(String value) {
+            addCriterion("merchant_code =", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotEqualTo(String value) {
+            addCriterion("merchant_code <>", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeGreaterThan(String value) {
+            addCriterion("merchant_code >", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeGreaterThanOrEqualTo(String value) {
+            addCriterion("merchant_code >=", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeLessThan(String value) {
+            addCriterion("merchant_code <", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeLessThanOrEqualTo(String value) {
+            addCriterion("merchant_code <=", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeLike(String value) {
+            addCriterion("merchant_code like", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotLike(String value) {
+            addCriterion("merchant_code not like", value, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeIn(List<String> values) {
+            addCriterion("merchant_code in", values, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotIn(List<String> values) {
+            addCriterion("merchant_code not in", values, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeBetween(String value1, String value2) {
+            addCriterion("merchant_code between", value1, value2, "merchantCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andMerchantCodeNotBetween(String value1, String value2) {
+            addCriterion("merchant_code not between", value1, value2, "merchantCode");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

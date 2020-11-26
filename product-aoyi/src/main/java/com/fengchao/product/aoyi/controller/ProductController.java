@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
@@ -26,15 +27,17 @@ public class ProductController {
     private ProductService service;
 
     @PostMapping("/all")
-    private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId, OperaResult result) throws ProductException {
+    private OperaResult findList(@RequestBody @Valid ProductQueryBean queryBean,@RequestHeader("appId") String appId, @RequestHeader("renterId") String renterId, OperaResult result) throws ProductException {
         queryBean.setAppId(appId);
+        queryBean.setRenterId(renterId);
         result.getData().put("result", service.findList(queryBean)) ;
         return result;
     }
 
     @PostMapping("/all/categories")
-    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, OperaResult result) throws ProductException {
+    private OperaResult findListByCategories(@RequestBody ProductQueryBean queryBean, @RequestHeader("appId") String appId, @RequestHeader("renterId") String renterId, OperaResult result) throws ProductException {
         queryBean.setAppId(appId);
+        queryBean.setRenterId(renterId);
         result.getData().put("result", service.findListByCategories(queryBean)) ;
         return result;
     }
@@ -254,6 +257,8 @@ public class ProductController {
         }
         return service.findSpuAndSku(mpu, code);
     }
+
+
 
 
 }

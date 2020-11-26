@@ -126,6 +126,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         bean.setUpdatedAt(date);
         bean.setMpu(bean.getSkuid());
         bean.setMerchantId(2);
+        bean.setMerchantCode(bean.getSkuid().substring(bean.getSkuid().length() -2,bean.getSkuid().length())) ;
         packImg(bean);
         // 插入商品信息
         productDao.insertX(bean);

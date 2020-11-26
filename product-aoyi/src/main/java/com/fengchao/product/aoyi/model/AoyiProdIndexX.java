@@ -1,11 +1,13 @@
 package com.fengchao.product.aoyi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fengchao.product.aoyi.bean.StarSkuBean;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AoyiProdIndexX implements Serializable {
     private Integer id;
 
@@ -95,6 +97,8 @@ public class AoyiProdIndexX implements Serializable {
     private List<StarSkuBean> skuList ;
 
     private StarSku starSku ;
+
+    private String merchantCode ;
 
     public String getSubTitle() {
         return subTitle;
@@ -390,5 +394,13 @@ public class AoyiProdIndexX implements Serializable {
 
     public void setStarSku(StarSku starSku) {
         this.starSku = starSku;
+    }
+
+    public String getMerchantCode() {
+        return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode;
     }
 }

@@ -3,6 +3,8 @@ package com.fengchao.product.aoyi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.config.ESConfig;
+import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.constants.ProductConstant;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
@@ -28,6 +30,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +41,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@EnableConfigurationProperties({ESConfig.class})
 @Service
 @Slf4j
 public class ProductServiceImpl implements ProductService {
@@ -68,10 +72,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private WeipinhuiAddressDao weipinhuiAddressDao;
+    @Autowired
+    private ESConfig config;
 
     @DataSource(DataSourceNames.TWO)
     @Override
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
+        // 获取可读取的商户配置
+        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
+        List<String> codes = new ArrayList<>() ;
+        if (merchantCodeBean != null) {
+            codes = merchantCodeBean.getCodes() ;
+        }
         PageBean pageBean = new PageBean();
         int total = 0;
         int offset = PageBean.getOffset(queryBean.getPageNo(), queryBean.getPageSize());
@@ -84,6 +96,11 @@ public class ProductServiceImpl implements ProductService {
             map.put("brand", queryBean.getBrand());
         if(queryBean.getPriceOrder()!=null&&!queryBean.getPriceOrder().equals(""))
             map.put("priceOrder", queryBean.getPriceOrder());
+        if(queryBean.getAppId()!=null&&!queryBean.getAppId().equals(""))
+            map.put("appId", "%" + queryBean.getAppId() + "%");
+        if (codes != null && codes.size()>0) {
+            map.put("merchantCodes", codes) ;
+        }
         List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
@@ -103,7 +120,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageInfo<ProductInfoBean> findListByCategories(ProductQueryBean queryBean) throws ProductException {
         PageInfo<ProductInfoBean> productInfoBeanPageInfo = new PageInfo<>() ;
-        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean);
+        // 获取可读取的商户配置
+        MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
+        List<String> codes = new ArrayList<>() ;
+        if (merchantCodeBean != null) {
+            codes = merchantCodeBean.getCodes() ;
+        }
+        log.info("codes: {}", JSONUtil.toJsonString(codes));
+        PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, codes);
+        log.info("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
         productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
         productInfoBeanPageInfo.setPageSize(prodIndexPageInfo.getPageSize());
@@ -615,6 +640,11 @@ public class ProductServiceImpl implements ProductService {
         productInfoBean.setTaxRate(aoyiProdIndex.getTaxRate());
 
         return productInfoBean;
+    }
+
+    private MerchantCodeBean getMerchantCodesByAppId(String appId) {
+        log.info(JSONUtil.toJsonString(config.getRegion()));
+        return  config.getRegion().get(appId) ;
     }
 
 }

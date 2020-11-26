@@ -56,6 +56,8 @@
         </filter>
     </appender>
 
+    <logger name="com.fengchao.product.aoyi.mapper" level="DEBUG"/>
+
     <!-- 出错日志 appender  -->
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -81,6 +83,8 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+
+
 
     <!--<appender name="MyBatis" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
     <!--<file>${LOG_HOME}/logs/mybatis-sql.log</file>-->
@@ -115,7 +119,13 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="INFO" />
         <appender-ref ref="ERROR" />
-    </root>-->
+    </root> -->
+
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="INFO"/>
+        <appender-ref ref="ERROR"/>
+    </root>
 
 
 
