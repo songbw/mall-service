@@ -41,7 +41,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
     private static final Integer PAGESIZE = 20;
 
-    private static final String MERCHANT_CODE = "30";
+    private static final String MERCHANT_CODE = "3";
 
     private ProductConfig productConfig;
 
