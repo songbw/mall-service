@@ -280,7 +280,7 @@ public class ProductDao {
      */
     public PageInfo<AoyiProdIndexWithBLOBs> selectListByCategories(ProductQueryBean queryBean, List<String> codes) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
-//        aoyiProdIndexExample.setOrderByClause("merchant_sort desc");
+        aoyiProdIndexExample.setOrderByClause("merchant_sort desc");
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         if (queryBean.getBrand() != null && !queryBean.getBrand().equals(""))
             criteria.andBrandEqualTo(queryBean.getBrand());
