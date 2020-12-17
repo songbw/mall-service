@@ -418,7 +418,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                 if (payAmount > 0) { // 说明该用户单(支付单)在（"balance" 惠民商城余额;  "card" 惠民优选卡; "woa" 惠民商城联机账户）这几种支付方式中 (20191227 这里排除等于0的情况,因为等于0不用开发票)
                     // 遍历主订单
                     for (Orders _orders : ordersPaymentNoMap.get(paymentNo)) { // 遍历主订单
-                        if (_orders == null || _orders.getId() == null) {
+                        if (_orders == null || _orders.getId() == null || orderDetailMap.get(_orders.getId()) == null) {
                             continue;
                         }
                         // 遍历子订单
