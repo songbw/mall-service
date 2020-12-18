@@ -262,7 +262,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public String add(AoyiProdIndex requestProdParams) throws ProductException {
+    public String add(AoyiProdIndexWithBLOBs requestProdParams) throws ProductException {
         // 1. 判断sku是否重复
         List<AoyiProdIndex> aoyiProdIndexList =
                 productDao.selectAoyiProdIndexListBySKUAndMerchant(requestProdParams.getSkuid(), requestProdParams.getMerchantId());
@@ -350,7 +350,7 @@ public class AdminProdServiceImpl implements AdminProdService {
     }
 
     @Override
-    public OperaResult update(AoyiProdIndex bean) throws ProductException {
+    public OperaResult update(AoyiProdIndexWithBLOBs bean) throws ProductException {
         OperaResult result = new OperaResult() ;
         if (bean.getId() > 0) {
             bean.setUpdatedAt(new Date());

@@ -63,6 +63,8 @@ public class AoyiProdIndex {
 
     private Integer merchantSort;
 
+    private String appIds;
+
     public Integer getId() {
         return id;
     }
@@ -301,5 +303,13 @@ public class AoyiProdIndex {
 
     public void setMerchantSort(Integer merchantSort) {
         this.merchantSort = merchantSort;
+    }
+
+    public String getAppIds() {
+        return appIds;
+    }
+
+    public void setAppIds(String appIds) {
+        this.appIds = appIds == null ? null : appIds.trim();
     }
 }

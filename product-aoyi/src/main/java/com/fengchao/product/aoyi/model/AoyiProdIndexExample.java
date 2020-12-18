@@ -2094,6 +2094,76 @@ public class AoyiProdIndexExample {
             addCriterion("merchant_sort not between", value1, value2, "merchantSort");
             return (Criteria) this;
         }
+
+        public Criteria andAppIdsIsNull() {
+            addCriterion("app_ids is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsIsNotNull() {
+            addCriterion("app_ids is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsEqualTo(String value) {
+            addCriterion("app_ids =", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsNotEqualTo(String value) {
+            addCriterion("app_ids <>", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsGreaterThan(String value) {
+            addCriterion("app_ids >", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsGreaterThanOrEqualTo(String value) {
+            addCriterion("app_ids >=", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsLessThan(String value) {
+            addCriterion("app_ids <", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsLessThanOrEqualTo(String value) {
+            addCriterion("app_ids <=", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsLike(String value) {
+            addCriterion("app_ids like", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsNotLike(String value) {
+            addCriterion("app_ids not like", value, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsIn(List<String> values) {
+            addCriterion("app_ids in", values, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsNotIn(List<String> values) {
+            addCriterion("app_ids not in", values, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsBetween(String value1, String value2) {
+            addCriterion("app_ids between", value1, value2, "appIds");
+            return (Criteria) this;
+        }
+
+        public Criteria andAppIdsNotBetween(String value1, String value2) {
+            addCriterion("app_ids not between", value1, value2, "appIds");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

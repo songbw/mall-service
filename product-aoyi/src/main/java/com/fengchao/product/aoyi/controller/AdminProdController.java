@@ -133,7 +133,7 @@ public class AdminProdController {
      * @throws ProductException
      */
     @PostMapping
-    public OperaResult create(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId,
+    public OperaResult create(@RequestBody AoyiProdIndexWithBLOBs bean, @RequestHeader("merchant") Integer merchantId,
                               OperaResult result) throws ProductException {
         log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
         try {
@@ -160,7 +160,7 @@ public class AdminProdController {
     }
 
     @PutMapping
-    public OperaResult update(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
+    public OperaResult update(@RequestBody AoyiProdIndexWithBLOBs bean, @RequestHeader("merchant") Integer merchantId, OperaResult result) throws ProductException {
 //        bean.setMerchantId(merchantId);
         return prodService.update(bean);
     }

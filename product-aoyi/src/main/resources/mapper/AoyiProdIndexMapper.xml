@@ -32,6 +32,7 @@
     <result column="cross_border" jdbcType="INTEGER" property="crossBorder" />
     <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
     <result column="merchant_sort" jdbcType="INTEGER" property="merchantSort" />
+    <result column="app_ids" jdbcType="CHAR" property="appIds" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs">
     <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
@@ -101,7 +102,7 @@
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price, 
     iprice, sprice, merchant_id, inventory, brand_id, mpu, created_at, updated_at, sync_at, 
     type, compare_url, sub_title, compare_price, tax_rate, floor_price, cross_border, 
-    merchant_code, merchant_sort
+    merchant_code, merchant_sort, app_ids
   </sql>
   <sql id="Blob_Column_List">
     introduction, images_url, introduction_url, prodParams
@@ -164,9 +165,9 @@
       updated_at, sync_at, type, 
       compare_url, sub_title, compare_price, 
       tax_rate, floor_price, cross_border, 
-      merchant_code, merchant_sort, introduction, 
-      images_url, introduction_url, prodParams
-      )
+      merchant_code, merchant_sort, app_ids, 
+      introduction, images_url, introduction_url, 
+      prodParams)
     values (#{skuid,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
       #{image,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{weight,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, #{saleunit,jdbcType=VARCHAR}, 
@@ -176,9 +177,9 @@
       #{updatedAt,jdbcType=TIMESTAMP}, #{syncAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, 
       #{compareUrl,jdbcType=VARCHAR}, #{subTitle,jdbcType=VARCHAR}, #{comparePrice,jdbcType=VARCHAR}, 
       #{taxRate,jdbcType=VARCHAR}, #{floorPrice,jdbcType=VARCHAR}, #{crossBorder,jdbcType=INTEGER}, 
-      #{merchantCode,jdbcType=VARCHAR}, #{merchantSort,jdbcType=INTEGER}, #{introduction,jdbcType=LONGVARCHAR}, 
-      #{imagesUrl,jdbcType=LONGVARCHAR}, #{introductionUrl,jdbcType=LONGVARCHAR}, #{prodparams,jdbcType=LONGVARCHAR}
-      )
+      #{merchantCode,jdbcType=VARCHAR}, #{merchantSort,jdbcType=INTEGER}, #{appIds,jdbcType=CHAR}, 
+      #{introduction,jdbcType=LONGVARCHAR}, #{imagesUrl,jdbcType=LONGVARCHAR}, #{introductionUrl,jdbcType=LONGVARCHAR}, 
+      #{prodparams,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs" useGeneratedKeys="true">
     insert into aoyi_prod_index
@@ -269,6 +270,9 @@
       </if>
       <if test="merchantSort != null">
         merchant_sort,
+      </if>
+      <if test="appIds != null">
+        app_ids,
       </if>
       <if test="introduction != null">
         introduction,
@@ -370,6 +374,9 @@
       </if>
       <if test="merchantSort != null">
         #{merchantSort,jdbcType=INTEGER},
+      </if>
+      <if test="appIds != null">
+        #{appIds,jdbcType=CHAR},
       </if>
       <if test="introduction != null">
         #{introduction,jdbcType=LONGVARCHAR},
@@ -484,6 +491,9 @@
       <if test="record.merchantSort != null">
         merchant_sort = #{record.merchantSort,jdbcType=INTEGER},
       </if>
+      <if test="record.appIds != null">
+        app_ids = #{record.appIds,jdbcType=CHAR},
+      </if>
       <if test="record.introduction != null">
         introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -533,6 +543,7 @@
       cross_border = #{record.crossBorder,jdbcType=INTEGER},
       merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
       merchant_sort = #{record.merchantSort,jdbcType=INTEGER},
+      app_ids = #{record.appIds,jdbcType=CHAR},
       introduction = #{record.introduction,jdbcType=LONGVARCHAR},
       images_url = #{record.imagesUrl,jdbcType=LONGVARCHAR},
       introduction_url = #{record.introductionUrl,jdbcType=LONGVARCHAR},
@@ -572,7 +583,8 @@
       floor_price = #{record.floorPrice,jdbcType=VARCHAR},
       cross_border = #{record.crossBorder,jdbcType=INTEGER},
       merchant_code = #{record.merchantCode,jdbcType=VARCHAR},
-      merchant_sort = #{record.merchantSort,jdbcType=INTEGER}
+      merchant_sort = #{record.merchantSort,jdbcType=INTEGER},
+      app_ids = #{record.appIds,jdbcType=CHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -667,6 +679,9 @@
       <if test="merchantSort != null">
         merchant_sort = #{merchantSort,jdbcType=INTEGER},
       </if>
+      <if test="appIds != null">
+        app_ids = #{appIds,jdbcType=CHAR},
+      </if>
       <if test="introduction != null">
         introduction = #{introduction,jdbcType=LONGVARCHAR},
       </if>
@@ -713,6 +728,7 @@
       cross_border = #{crossBorder,jdbcType=INTEGER},
       merchant_code = #{merchantCode,jdbcType=VARCHAR},
       merchant_sort = #{merchantSort,jdbcType=INTEGER},
+      app_ids = #{appIds,jdbcType=CHAR},
       introduction = #{introduction,jdbcType=LONGVARCHAR},
       images_url = #{imagesUrl,jdbcType=LONGVARCHAR},
       introduction_url = #{introductionUrl,jdbcType=LONGVARCHAR},
@@ -749,7 +765,8 @@
       floor_price = #{floorPrice,jdbcType=VARCHAR},
       cross_border = #{crossBorder,jdbcType=INTEGER},
       merchant_code = #{merchantCode,jdbcType=VARCHAR},
-      merchant_sort = #{merchantSort,jdbcType=INTEGER}
+      merchant_sort = #{merchantSort,jdbcType=INTEGER},
+      app_ids = #{appIds,jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -237,11 +237,9 @@ public class ProductDao {
 
     /**
      * 更新产品信息
-     * @param bean
+     * @param aoyiProdIndex
      */
-    public int updateAoyiProduct(AoyiProdIndex bean) {
-        AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
-        BeanUtils.copyProperties(bean, aoyiProdIndex);
+    public int updateAoyiProduct(AoyiProdIndexWithBLOBs aoyiProdIndex) {
         aoyiProdIndex.setMerchantId(null);
         aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndex) ;
         return aoyiProdIndex.getId() ;
