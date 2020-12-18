@@ -239,7 +239,7 @@ public class ProductDao {
      * 更新产品信息
      * @param bean
      */
-    public int updateAoyiProduct(AoyiProdIndex bean) {
+    public int updateAoyiProduct(AoyiProdIndexWithBLOBs bean) {
         AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs();
         BeanUtils.copyProperties(bean, aoyiProdIndex);
         aoyiProdIndex.setMerchantId(null);
