@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service;
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.OperaResult;
+import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryX;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
@@ -37,5 +38,7 @@ public interface CategoryService {
     List<AoyiBaseCategoryX> findTwoLevelByAppId(String appId, int id) ;
 
     List<AoyiBaseCategoryX> findListByIdAndAppId(String appId, int id) ;
+
+    OperaResponse<AoyiBaseCategory> queryCategoryPageable(QueryBean queryBean) ;
 
 }

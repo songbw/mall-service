@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.controller;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.service.*;
+import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,6 +34,13 @@ public class SupplyProdController {
 
     @GetMapping("brand")
     private OperaResponse findBrand(QueryBean queryBean) {
+        log.debug("find brand 入参：{}", JSONUtil.toJsonString(queryBean));
         return brandService.selectBrandPageable(queryBean);
+    }
+
+    @GetMapping("category")
+    private OperaResponse findCategory(QueryBean queryBean) {
+        log.debug("find category 入参：{}", JSONUtil.toJsonString(queryBean));
+        return categoryService.queryCategoryPageable(queryBean);
     }
 }

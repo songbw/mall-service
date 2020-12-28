@@ -1,9 +1,12 @@
 package com.fengchao.product.aoyi.dao;
 
+import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryMapper;
 import com.fengchao.product.aoyi.mapper.AoyiBaseCategoryXMapper;
 import com.fengchao.product.aoyi.model.AoyiBaseCategory;
 import com.fengchao.product.aoyi.model.AoyiBaseCategoryExample;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -107,5 +110,19 @@ public class CategoryDao {
 
     public void batchInsert(List<AoyiBaseCategory> aoyiBaseCategoryList) {
         aoyiBaseCategoryXMapper.batchInsert(aoyiBaseCategoryList);
+    }
+
+    /**
+     * 分页查询分类列表
+     * @param queryBean
+     * @return
+     */
+    public PageInfo<AoyiBaseCategory> selectCategoryPageable(QueryBean queryBean) {
+        AoyiBaseCategoryExample example = new AoyiBaseCategoryExample();
+        AoyiBaseCategoryExample.Criteria criteria = example.createCriteria();
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize()) ;
+        List<AoyiBaseCategory> list = aoyiBaseCategoryMapper.selectByExample(example);
+        PageInfo<AoyiBaseCategory> pageInfo = new PageInfo(list);
+        return pageInfo;
     }
 }

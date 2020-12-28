@@ -24,6 +24,15 @@ mybatis:
   type-aliases-package: com.fengchao.product.aoyi.model
 
 spring:
+  elasticsearch:
+    host: 192.168.0.231
+    port: 9200
+    rest:
+      uris: ["http://192.168.0.231:9200"]
+  data:
+    elasticsearch:
+      cluster-name: docker-cluster
+      cluster-nodes: 192.168.0.231:9300
   #zipkin:
   #  baseUrl: http://localhost:9411
   #  locator:
@@ -31,7 +40,7 @@ spring:
   #      enabled: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: com.mysql.cj.jdbc.Driver
     druid:
       one:
         url: jdbc:mysql://139.9.114.143:3306/fc_mall?characterEncoding=utf8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useTimezone=true&serverTimezone=GMT%2B8
@@ -140,6 +149,25 @@ management:
     health:
       show-details: ALWAYS
 
+es:
+  esIndex: product
+  region:
+    "13":
+      codes:
+        - "104"
+    "14":
+      codes:
+        - "76"
+        - "81"
 
+logging:
+  file: /data/logs/product/log.log
+  pattern:
+    file: '%d %-5level [%thread] %logger : %msg%n'
+  level:
+    org.springframework.web: debug
+    com.fengchao.product.aoyi.controller: debug
+    com.fengchao.product.aoyi.service: debug
+    com.fengchao.product.aoyi.mapper: debug
 
 
