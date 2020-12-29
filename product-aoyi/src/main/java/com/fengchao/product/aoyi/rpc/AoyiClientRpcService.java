@@ -6,6 +6,7 @@ import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
+import com.fengchao.product.aoyi.utils.AlarmUtil;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,8 +141,8 @@ public class AoyiClientRpcService {
             aoyiItemDetailResDto = resultObject.getData();
         } else {
             log.warn("查询唯品会商品详情 调用aoyi-client rpc服务 错误!");
-
-            throw new Exception("查询唯品会商品详情 调用aoyi-client rpc服务 错误!!");
+            AlarmUtil.alarmAsync("查询唯品会商品详情 "+itemId+" 调用aoyi-client rpc服务 错误!", "出错了");
+//            throw new Exception("查询唯品会商品详情 调用aoyi-client rpc服务 错误!!");
         }
 
         log.info("AoyiClientRpcService#weipinhuiQueryItemDetial 调用aoyi-client rpc服务 返回:{}",
