@@ -9,8 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 产品供应
@@ -37,6 +40,12 @@ public class SupplyProdController {
     private OperaResponse findBrand(QueryBean queryBean) {
         log.debug("find brand 入参：{}", JSONUtil.toJsonString(queryBean));
         return brandService.selectBrandPageable(queryBean);
+    }
+
+    @PostMapping("notify/brand")
+    private OperaResponse notifyBrand(List<Integer> brandIds) {
+        log.debug("notify brand 入参：{}", JSONUtil.toJsonString(brandIds));
+        return brandService.selectBrandPageable( new QueryBean());
     }
 
     @GetMapping("category")
