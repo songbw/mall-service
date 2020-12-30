@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.CategoryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
+import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.dao.CategoryDao;
 import com.fengchao.product.aoyi.db.annotation.DataSource;
 import com.fengchao.product.aoyi.db.config.DataSourceNames;
@@ -110,6 +111,13 @@ public class CategoryServiceImpl implements CategoryService {
             element.setSubs(mapper.selectRenterCategoryByAppId(map));
         });
         return categories;
+    }
+
+    @Override
+    public OperaResponse<AoyiBaseCategory> queryCategoryPageable(QueryBean queryBean) {
+        OperaResponse response = new OperaResponse();
+        response.setData(categoryDao.selectCategoryPageable(queryBean));
+        return response;
     }
 
     //============================== private =======================

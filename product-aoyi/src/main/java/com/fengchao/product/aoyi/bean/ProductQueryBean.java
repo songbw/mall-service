@@ -31,5 +31,6 @@ public class ProductQueryBean extends QueryBean implements Serializable{
     private Integer merchantHeader;
     private String renterHeader;
     private String sortValue ;
+    private List<String> spus ;
 
 }

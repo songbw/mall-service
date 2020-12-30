@@ -41,9 +41,9 @@
             <!--<generatedKey column="id" sqlStatement="JDBC" />-->
         <!--</table>-->
 
-        <table tableName="aoyi_prod_index" enableInsert="true">
-            <generatedKey column="id" sqlStatement="JDBC" />
-        </table>
+<!--        <table tableName="aoyi_prod_index" enableInsert="true">-->
+<!--            <generatedKey column="id" sqlStatement="JDBC" />-->
+<!--        </table>-->
 <!--        <table tableName="star_brand" enableInsert="true">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
@@ -78,5 +78,17 @@
 <!--        <table tableName="app_rate_price" enableInsert="true">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC" />-->
 <!--        </table>-->
+        <table tableName="enterprise_brand" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="enterprise_category" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="enterprise_sku" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="enterprise_spu" enableInsert="true">
+            <generatedKey column="id" sqlStatement="JDBC" />
+        </table>
     </context>
 </generatorConfiguration>

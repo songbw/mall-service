@@ -15,7 +15,7 @@ eureka:
 
 spring:
   profiles:
-    active: dev
+    active: local
   application:
     name: product-aoyi
   cloud:

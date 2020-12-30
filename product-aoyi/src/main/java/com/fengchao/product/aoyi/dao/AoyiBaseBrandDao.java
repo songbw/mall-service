@@ -1,8 +1,12 @@
 package com.fengchao.product.aoyi.dao;
 
+import com.fengchao.product.aoyi.bean.QueryBean;
 import com.fengchao.product.aoyi.mapper.AoyiBaseBrandMapper;
 import com.fengchao.product.aoyi.mapper.AoyiBaseBrandXMapper;
 import com.fengchao.product.aoyi.model.AoyiBaseBrand;
+import com.fengchao.product.aoyi.model.AoyiBaseBrandExample;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,6 +57,20 @@ public class AoyiBaseBrandDao {
     public AoyiBaseBrand selectByBrandId(Integer brandId) {
         AoyiBaseBrand aoyiBaseBrand = aoyiBaseBrandMapper.selectByPrimaryKey(brandId);
         return aoyiBaseBrand;
+    }
+
+    /**
+     * 分页查询品牌
+     * @param queryBean
+     * @return
+     */
+    public PageInfo<AoyiBaseBrand> selectPageable(QueryBean queryBean) {
+        AoyiBaseBrandExample example = new AoyiBaseBrandExample();
+        AoyiBaseBrandExample.Criteria criteria = example.createCriteria();
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
+        List<AoyiBaseBrand> list = aoyiBaseBrandMapper.selectByExample(example) ;
+        PageInfo<AoyiBaseBrand> pageInfo = new PageInfo(list);
+        return pageInfo ;
     }
 
 
