@@ -396,7 +396,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             while (true) {
                 // 数据库查询一批spu
                 productQueryBean.setPageNo(pageNum);
-                PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectPageable(productQueryBean);
+                PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectNameIsNullPageable(productQueryBean);
 
                 List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = pageInfo.getList();
 
