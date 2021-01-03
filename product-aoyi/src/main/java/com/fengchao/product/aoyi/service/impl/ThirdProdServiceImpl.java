@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.config.ProductConfig;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
@@ -8,10 +9,12 @@ import com.fengchao.product.aoyi.feign.BaseService;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.model.StarSku;
+import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +61,14 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private StarSkuDao starSkuDao ;
     @Autowired
     private StarCategoryMapper starCategoryMapper ;
+    @Autowired
+    private AoyiClientRpcService aoyiClientRpcService ;
+    @Autowired
+    private AoyiBaseBrandDao aoyiBaseBrandDao ;
+    @Autowired
+    private ProductConfig productConfig;
+    @Autowired
+    private StarPropertyDao starPropertyDao ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -428,6 +439,20 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         OperaResponse response = new OperaResponse() ;
         asyncTask.executeAsyncStarCategory(aoyiClientService, starCategoryMapper);
         return response;
+    }
+
+    @Override
+    public OperaResponse asyncWphItemDetail() {
+        ProductQueryBean productQueryBean = new ProductQueryBean();
+        productQueryBean.setPageSize(10);
+        productQueryBean.setMerchantId(2);
+        productQueryBean.setSkuProfix("3");
+        productQueryBean.setPageNo(1);
+        PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectNameIsNullPageable(productQueryBean);
+        for (int i = 1; i <= pageInfo.getPageNum(); i++) {
+            asyncTask.executeAsyncWphItemDetail(productQueryBean, aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao);
+        }
+        return new OperaResponse();
     }
 
 }
