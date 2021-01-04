@@ -332,7 +332,7 @@ public class AsyncTask {
 
         List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = pageInfo.getList();
 
-        log.info("同步商品详情 获取itermIdList 第{}页{}条 >>>>> 数据:{}",
+        log.debug("同步商品详情 获取itermIdList 第{}页{}条 >>>>> 数据:{}",
                 pageNum, aoyiProdIndexList.size(), JSONUtil.toJsonStringWithoutNull(aoyiProdIndexList));
 
         if (CollectionUtils.isEmpty(aoyiProdIndexList)) {
@@ -462,7 +462,7 @@ public class AsyncTask {
 
             // 4.3 批量插入 sku 和 sku的商品规格
             // 4.3.1 批量插入 sku
-            log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入sku列表:{}个 数据:{}",
+            log.debug("同步商品详情 第{}页 第{}个itemId:{}, 插入sku列表:{}个 数据:{}",
                     pageNum, itemIdIndex, itemId, insertStarSkuList.size(), JSONUtil.toJsonStringWithoutNull(insertStarSkuList));
             if (CollectionUtils.isNotEmpty(insertStarSkuList)) {
                 starSkuDao.batchInsert(insertStarSkuList);
@@ -479,7 +479,7 @@ public class AsyncTask {
             }
 
             // 4.3.2 批量插入 sku的商品规格
-            log.info("同步商品详情 第{}页 第{}个itemId:{}, 待处理的proerty列表:{}个 数据:{}",
+            log.debug("同步商品详情 第{}页 第{}个itemId:{}, 待处理的proerty列表:{}个 数据:{}",
                     pageNum, itemIdIndex, itemId, candidateStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(candidateStarPropertyList));
 
             if (CollectionUtils.isNotEmpty(candidateStarPropertyList)) {
@@ -507,7 +507,7 @@ public class AsyncTask {
                     }
                 }
 
-                log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入的proerty列表:{}个 数据:{}",
+                log.debug("同步商品详情 第{}页 第{}个itemId:{}, 插入的proerty列表:{}个 数据:{}",
                         pageNum, itemIdIndex, itemId, insertStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(insertStarPropertyList));
                 // 执行批量插入商品规格
                 if (CollectionUtils.isNotEmpty(insertStarPropertyList)) {
@@ -520,7 +520,7 @@ public class AsyncTask {
             mainSpuImageList.addAll(detailSpuImageList);
             mainSpuImageList.addAll(skuImageList);
 
-            log.info("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
+            log.debug("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
                     pageNum, itemIdIndex, itemId, mainSpuImageList.size(), JSONUtil.toJsonStringWithoutNull(mainSpuImageList));
             if (CollectionUtils.isNotEmpty(mainSpuImageList)) {
                 ayFcImagesDao.batchInsert(mainSpuImageList);
