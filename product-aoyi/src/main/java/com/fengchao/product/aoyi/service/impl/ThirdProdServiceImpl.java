@@ -312,12 +312,12 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Override
     public void uploadProdImage() {
         List<AyFcImages> ayFcImages = ayFcImagesDao.findNoUploadImage();
-        logger.info("下载图片任务 数量为:{}", ayFcImages.size());
+        logger.debug("下载图片任务 数量为:{}", ayFcImages.size());
         if (ayFcImages != null && ayFcImages.size() > 0) {
             ayFcImages.forEach(image -> {
                 OperaResult result = baseService.downUpload(image);
 
-                logger.info("下载图片任务: {} 返回结果: {}",
+                logger.debug("下载图片任务: {} 返回结果: {}",
                         JSONUtil.toJsonString(image), JSONUtil.toJsonString(result));
 //                if (result.getCode() == 200) {
 //                    image.setStatus(1);

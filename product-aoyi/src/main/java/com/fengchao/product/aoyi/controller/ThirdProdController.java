@@ -190,7 +190,8 @@ public class ThirdProdController {
         log.info("开始同步唯品会商品");
         try {
             weipinhuiDataService.syncItemIdList(1, -1);
-            weipinhuiDataService.syncItemDetail(1, -1);
+//            weipinhuiDataService.syncItemDetail(1, -1);
+            service.asyncWphItemDetail() ;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @Component
 public class AsyncTask {
 
-    @Async
+    @Async("asyncServiceExecutor")
     public void executeAsyncProductTask(ProductDao productDao, WebTarget webTarget, List<AoyiProdIndex> prodIndices) {
         Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
         prodIndices.forEach(prodIndex -> {
@@ -54,7 +54,7 @@ public class AsyncTask {
         });
     }
 
-    @Async
+    @Async("asyncServiceExecutor")
     public void executeAsyncCategoryTask(WebTarget webTarget, List<AoyiBaseCategory> categories) {
         Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
         categories.forEach(category -> {
@@ -66,7 +66,7 @@ public class AsyncTask {
         });
     }
 
-    @Async
+    @Async("asyncServiceExecutor")
     public void executeAsyncBrandTask(WebTarget webTarget, List<AoyiBaseBrandX> brands) {
         Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
         brands.forEach(brand -> {
@@ -78,7 +78,7 @@ public class AsyncTask {
         });
     }
 
-    @Async
+    @Async("asyncServiceExecutor")
     public void executeAsyncStarProd(AoyiClientService aoyiClientService, ProductDao productDao, AoyiProdIndexMapper aoyiProdIndexMapper, StarDetailImgMapper starDetailImgMapper, StarPropertyMapper starPropertyMapper, StarSkuMapper starSkuMapper, StarSkuDao starSkuDao) {
         QueryBean queryBean = new QueryBean();
         queryBean.setPageSize(100);
@@ -192,7 +192,7 @@ public class AsyncTask {
         }
     }
 
-    @Async
+    @Async("asyncServiceExecutor")
     public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
         List<StarSku> starSkus = starSkuDao.selectAll();
         List<String> codes = new ArrayList<>();
@@ -285,7 +285,7 @@ public class AsyncTask {
         });
     }
 
-    @Async
+    @Async("asyncServiceExecutor")
     public void executeAsyncStarCategory(AoyiClientService aoyiClientService, StarCategoryMapper starCategoryMapper) {
         OperaResponse response = aoyiClientService.findProdCategory(null);
         if (response.getCode() == 200) {
