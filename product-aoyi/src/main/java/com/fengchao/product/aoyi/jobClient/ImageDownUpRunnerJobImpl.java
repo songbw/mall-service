@@ -20,12 +20,12 @@ public class ImageDownUpRunnerJobImpl implements JobRunner {
         try {
             BizLogger bizLogger = jobContext.getBizLogger();
 
-            LOGGER.info("我要执行图片下载上传操作：{}", JSONUtil.toJsonString(jobContext));
+            LOGGER.debug("我要执行图片下载上传操作：{}", JSONUtil.toJsonString(jobContext));
             ThirdProdService thirdProdService = BeanContext.getApplicationContext().getBean(ThirdProdService.class) ;
             thirdProdService.uploadProdImage();
-            bizLogger.info("图片下载上传成功");
+            bizLogger.debug("图片下载上传成功");
         } catch (Exception e) {
-            LOGGER.info("Run job failed!", e);
+            LOGGER.error("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
         }
         return new Result(Action.EXECUTE_SUCCESS, "执行成功了，哈哈");
