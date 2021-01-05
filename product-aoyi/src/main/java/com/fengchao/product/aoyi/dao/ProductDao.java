@@ -458,4 +458,32 @@ public class ProductDao {
         return aoyiProdIndexList;
     }
 
+    /**
+     * 分页查询product信息
+     *
+     * @param queryBean
+     * @return
+     */
+    public PageInfo<AoyiProdIndexWithBLOBs> selectNameIsNullPageable(ProductQueryBean queryBean) {
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+
+        if (queryBean.getMerchantId() != null && queryBean.getMerchantId() != 0) {
+            criteria.andMerchantIdEqualTo(queryBean.getMerchantId());
+        }
+        if (StringUtils.isNotBlank(queryBean.getSkuProfix())) {
+            criteria.andSkuidLike(queryBean.getSkuProfix() + "%");
+        }
+
+        criteria.andNameIsNull() ;
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
+
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = aoyiProdIndexMapper.selectByExampleWithBLOBs(aoyiProdIndexExample);
+
+        PageInfo<AoyiProdIndexWithBLOBs> pageInfo = new PageInfo(aoyiProdIndexList);
+
+        return pageInfo;
+    }
+
 }
