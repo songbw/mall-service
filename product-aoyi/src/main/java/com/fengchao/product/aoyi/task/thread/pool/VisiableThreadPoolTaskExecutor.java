@@ -22,7 +22,7 @@ public class VisiableThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
             return;
         }
 
-        log.debug("{}, {},taskCount [{}], completedTaskCount [{}], activeCount [{}], queueSize [{}]",
+        log.info("{}, {},taskCount [{}], completedTaskCount [{}], activeCount [{}], queueSize [{}]",
                 this.getThreadNamePrefix(),
                 prefix,
                 threadPoolExecutor.getTaskCount(),
