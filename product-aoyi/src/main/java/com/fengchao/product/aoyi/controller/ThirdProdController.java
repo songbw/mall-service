@@ -189,7 +189,7 @@ public class ThirdProdController {
         OperaResponse response = new OperaResponse();
         log.info("开始同步唯品会商品");
         try {
-//            weipinhuiDataService.syncItemIdList(1, -1);
+            weipinhuiDataService.syncItemIdList(1, -1);
 //            weipinhuiDataService.syncItemDetail(1, -1);
             service.asyncWphItemDetail() ;
         } catch (Exception e) {
