@@ -450,6 +450,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         productQueryBean.setPageNo(1);
         PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectNameIsNullPageable(productQueryBean);
         for (int i = 1; i <= pageInfo.getPages(); i++) {
+            productQueryBean.setPageNo(i);
             asyncTask.executeAsyncWphItemDetail(productQueryBean, aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao);
         }
         return new OperaResponse();

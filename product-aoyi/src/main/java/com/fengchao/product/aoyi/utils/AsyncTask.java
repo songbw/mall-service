@@ -474,7 +474,6 @@ public class AsyncTask {
             if (CollectionUtils.isNotEmpty(insertStarSkuList)) {
                 List<String> _skuIdList = insertStarSkuList.stream().map(i -> i.getSkuId()).collect(Collectors.toList());
                 List<StarSku> _starSkuList = starSkuDao.selectBySkuIdList(_skuIdList);
-                log.info("sku数据: {}, {}", JSONUtil.toJsonString(_starSkuList), JSONUtil.toJsonString(_skuIdList));
 
                 starSkuMap = _starSkuList.stream().collect(Collectors.toMap(_s -> _s.getSkuId(), _s -> _s));
             }
