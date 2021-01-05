@@ -353,7 +353,7 @@ public class ProductAoyiApplicationTests {
 	@Ignore
 	@Test
 	public void asyncWphItemDetail() {
-		thirdProdService.asyncWphItemDetail() ;
+		thirdProdService.asyncWphItemDetail(1, -1) ;
 	}
 
 }

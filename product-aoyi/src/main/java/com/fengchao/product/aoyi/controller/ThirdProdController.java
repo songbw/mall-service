@@ -191,7 +191,7 @@ public class ThirdProdController {
         try {
 //            weipinhuiDataService.syncItemIdList(1, -1);
 //            weipinhuiDataService.syncItemDetail(1, -1);
-            service.asyncWphItemDetail() ;
+            service.asyncWphItemDetail(1, -1) ;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
