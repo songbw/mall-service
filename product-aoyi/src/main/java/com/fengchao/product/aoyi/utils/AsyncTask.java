@@ -339,7 +339,7 @@ public class AsyncTask {
             List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = pageInfo.getList();
             int pageNum = i;
             log.info("同步商品详情 获取itermIdList 第{}页{}条 >>>>> 数据:{}",
-                    pageNum, aoyiProdIndexList.size(), JSONUtil.toJsonStringWithoutNull(productConfig));
+                    pageNum, aoyiProdIndexList.size(), JSONUtil.toJsonString(productQueryBean));
 
             if (CollectionUtils.isEmpty(aoyiProdIndexList)) {
                 log.error("同步商品详情 获取itermId列表 第{}页 无数据 任务停止!");
