@@ -559,7 +559,7 @@ public class AsyncTask {
             aoyiProdIndex.setMpu(itemId);
             aoyiProdIndex.setMerchantId(2);
             aoyiProdIndex.setType(2);
-            aoyiProdIndex.setMerchantCode(aoyiProdIndex.getSkuid().substring(0,2));
+            aoyiProdIndex.setMerchantCode(itemId.substring(0,2));
             aoyiProdIndex.setState(String.valueOf(ProductStatusEnum.PUT_ON.getValue())); // 下架状态
 //            for (AoyiProdIndexWithBLOBs aoyiProdIndex : aoyiProdIndexList) { // 遍历itemId列表
 //                String itemId = aoyiProdIndex.getSkuid();
@@ -628,9 +628,9 @@ public class AsyncTask {
             // x..执行更新spu
             log.debug("同步商品详情 第{}个itemId:{} 更新spu 数据库入参:{}",
                     itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
-            AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
+//            AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
 //                productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
-            aoyiProdIndexMapper.insertSelective(aoyiProdIndexWithBLOBs) ;
+            aoyiProdIndexMapper.insertSelective(aoyiProdIndex) ;
 
 
             // 4.2 新增sku
