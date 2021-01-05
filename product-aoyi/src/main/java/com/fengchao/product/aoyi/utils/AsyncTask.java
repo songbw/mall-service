@@ -354,7 +354,7 @@ public class AsyncTask {
                 e.printStackTrace();
                 log.error("aoyi rpc 出错！");
             }
-            log.info("同步商品详情 第{}页 第{}个itemId:{} rpc获取商品详情: {}",
+            log.debug("同步商品详情 第{}页 第{}个itemId:{} rpc获取商品详情: {}",
                     pageNum, itemIdIndex, itemId, JSONUtil.toJsonString(aoyiItemDetailResDto));
 
             if (aoyiItemDetailResDto == null) {
@@ -403,7 +403,7 @@ public class AsyncTask {
             aoyiProdIndex.setSprice(aoyiSkuResDtoList.get(0).getPriceCent());
 
             // x..执行更新spu
-            log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
+            log.debug("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
                     pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
             AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
             productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
