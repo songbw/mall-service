@@ -291,7 +291,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     }
 
                     // 查询数据库是否已存在数据
-                    List<AoyiProdIndex> exsitAoyiprodIndexList =
+                    List<AoyiProdIndexWithBLOBs> exsitAoyiprodIndexList =
                             productDao.selectAoyiProdIndexListByMpuIdList(itemIdList);
 
                     List<String> exsitItemIdList =

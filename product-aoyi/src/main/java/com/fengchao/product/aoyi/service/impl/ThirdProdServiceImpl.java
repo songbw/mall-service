@@ -1,16 +1,20 @@
 package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.config.ProductConfig;
 import com.fengchao.product.aoyi.dao.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
 import com.fengchao.product.aoyi.feign.BaseService;
 import com.fengchao.product.aoyi.mapper.*;
 import com.fengchao.product.aoyi.model.*;
+import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
+import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.github.ltsopensource.core.commons.utils.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,9 @@ import javax.ws.rs.client.WebTarget;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @Service
 public class ThirdProdServiceImpl implements ThirdProdService {
@@ -57,6 +64,11 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private StarSkuDao starSkuDao ;
     @Autowired
     private StarCategoryMapper starCategoryMapper ;
+    @Autowired
+    private AoyiClientRpcService aoyiClientRpcService ;
+    private AoyiBaseBrandDao aoyiBaseBrandDao;
+    private ProductConfig productConfig;
+    private StarPropertyDao starPropertyDao ;
 
     @Override
     public OperaResult add(AoyiProdIndexX bean){
@@ -427,6 +439,91 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         OperaResponse response = new OperaResponse() ;
         asyncTask.executeAsyncStarCategory(aoyiClientService, starCategoryMapper);
         return response;
+    }
+
+    @Override
+    public OperaResponse asyncWphItemDetail(Integer pageNumber, Integer maxPageCount) {
+
+        try {
+            int pageCount = 0;
+            int totalInsert = 0; // 记录一下执行一共插入的数据数量
+            //接收集合各段的 执行的返回结果
+            List <Future<String>> futureList = new ArrayList <Future<String>>();
+            while (true) {
+                // 1. 获取数据
+                List<AoyiItemDetailResDto> aoyiItemDetailResDtoList
+                        = aoyiClientRpcService.weipinhuiQueryItemsList(pageNumber, 20);
+
+                logger.debug("同步itemIdList 第{}页 共查询到{}条数据 >>>> {}",
+                        pageNumber, aoyiItemDetailResDtoList.size(), JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
+
+
+                // 2. 入库处理
+                if (CollectionUtils.isNotEmpty(aoyiItemDetailResDtoList)) {
+                    List<String> itemIdList = new ArrayList<>();
+                    for (AoyiItemDetailResDto aoyiItemDetailResDto : aoyiItemDetailResDtoList) {
+
+                        itemIdList.add(aoyiItemDetailResDto.getItemId());
+                    }
+
+                    // 查询数据库是否已存在数据
+                    List<AoyiProdIndexWithBLOBs> exsitAoyiprodIndexList =
+                            productDao.selectAoyiProdIndexListByMpuIdList(itemIdList);
+
+                    List<String> exsitItemIdList =
+                            exsitAoyiprodIndexList.stream().map(e -> e.getSkuid()).collect(Collectors.toList());
+
+                    // 去掉已存在的数据
+                    List<String> newItemList = new ArrayList<>(); // 准备插入的数据
+                    for (String item : itemIdList) {
+                        if (!exsitItemIdList.contains(item)) {
+                            newItemList.add(item);
+                        }
+                    }
+                    if (newItemList != null && newItemList.size() > 0) {
+                        futureList.add(asyncTask.executeAsyncWphItemDetailForSub(newItemList, aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao,aoyiProdIndexMapper));
+                    }
+
+                }
+
+                // 3. 判断是否需要继续同步
+                if (aoyiItemDetailResDtoList.size() == 0) {
+                    logger.debug("同步itemIdList 结束");
+                    break;
+                }
+
+                logger.debug("同步itemIdList 第{}页 累计插入数据{}条", pageNumber, totalInsert);
+
+                pageNumber++;
+                pageCount++;
+
+                //
+                if (maxPageCount != -1 && pageCount >= maxPageCount) {
+                    logger.warn("同步itemIdList 达到最大页数{}限制 停止同步!", maxPageCount);
+                    break;
+                }
+            } // end while
+
+            //对各个线程段结果进行解析
+            for (Future<String> future : futureList) {
+                String str;
+                if (null != future) {
+                    try {
+                        str = future.get().toString();
+                        logger.info("current thread id =" + Thread.currentThread().getName() + ",result=" + str);
+                    } catch (InterruptedException | ExecutionException e) {
+                        logger.info("线程运行异常！");
+                    }
+                } else {
+                    logger.info("线程运行异常！");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("同步品牌 异常:{}", e.getMessage(), e);
+        }
+
+//        asyncTask.executeAsyncWphItemDetail(aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao);
+        return new OperaResponse();
     }
 
 }

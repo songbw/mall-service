@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.config.MerchantCodeBean;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.service.ProductService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -174,7 +175,7 @@ public class ProductController {
         }
         try {
             // 查询
-            List<AoyiProdIndex> productInfoBeanList = service.getProdsByMpus(mpuIdList);
+            List<AoyiProdIndexWithBLOBs> productInfoBeanList = service.getProdsByMpus(mpuIdList);
 
             result.getData().put("result", productInfoBeanList);
         } catch (Exception e) {

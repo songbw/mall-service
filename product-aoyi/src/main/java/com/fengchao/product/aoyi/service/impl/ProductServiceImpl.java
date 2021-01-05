@@ -383,7 +383,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception {
         // 1. 查询商品信息
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
-        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
 
         // 2. 查询商品品类信息
@@ -426,7 +426,8 @@ public class ProductServiceImpl implements ProductService {
         // 1. 查询商品信息
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
-        productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex -> {
+        productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex1 -> {
+            AoyiProdIndex aoyiProdIndex= aoyiProdIndex1 ;
             AoyiProdIndexX aoyiProdIndexX = new AoyiProdIndexX() ;
             aoyiProdIndex = ProductHandle.updateImageExample(aoyiProdIndex) ;
             BeanUtils.copyProperties(aoyiProdIndex, aoyiProdIndexX);
@@ -472,10 +473,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList) {
+    public List<AoyiProdIndexWithBLOBs> getProdsByMpus(List<String> mpuIdList) {
         // 1. 查询商品信息
         log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
-        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
         log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;
     }
@@ -489,7 +490,7 @@ public class ProductServiceImpl implements ProductService {
             mpuList.add(inventoryMpus.getMpu()) ;
         });
         List<InventoryMpus> inventories = new ArrayList<>() ;
-        List<AoyiProdIndex> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuList);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuList);
         aoyiProdIndexList.forEach(aoyiProdIndex -> {
             for (InventoryMpus inventory: queryBean.getInventories()) {
                 if (aoyiProdIndex.getMpu().equals(inventory.getMpu())){

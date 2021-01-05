@@ -63,13 +63,13 @@ public class ProductDao {
      * @param mpuIdList
      * @return
      */
-    public List<AoyiProdIndex> selectAoyiProdIndexListByMpuIdList(List<String> mpuIdList) {
+    public List<AoyiProdIndexWithBLOBs> selectAoyiProdIndexListByMpuIdList(List<String> mpuIdList) {
         AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
 
         AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
         criteria.andMpuIn(mpuIdList);
 
-        List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
+        List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = aoyiProdIndexMapper.selectByExampleWithBLOBs(aoyiProdIndexExample);
 
         return aoyiProdIndexList;
     }

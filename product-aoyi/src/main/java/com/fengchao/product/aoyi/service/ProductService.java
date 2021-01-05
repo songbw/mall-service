@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
+import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
 import com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs;
 import com.github.pagehelper.PageInfo;
@@ -52,7 +53,7 @@ public interface ProductService {
 
     OperaResponse search(ProductQueryBean queryBean) ;
 
-    List<AoyiProdIndex> getProdsByMpus(List<String> mpuIdList);
+    List<AoyiProdIndexWithBLOBs> getProdsByMpus(List<String> mpuIdList);
 
     /**
      * 查询自营库存
