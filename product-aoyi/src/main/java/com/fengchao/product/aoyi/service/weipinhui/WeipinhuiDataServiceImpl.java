@@ -89,7 +89,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 List<BrandResDto> brandResDtoList = aoyiClientRpcService.weipinhuiGetBrand(pageNumber, PAGESIZE);
 
                 List<String> brandIdList = brandResDtoList.stream().map(b -> b.getBrandId()).collect(Collectors.toList());
-                log.info("同步品牌 第{}页 共{}条数据 >>>> {}",
+                log.debug("同步品牌 第{}页 共{}条数据 >>>> {}",
                         pageNumber, brandResDtoList.size(), JSONUtil.toJsonString(brandIdList));
 
                 // 2. 入库处理
@@ -114,7 +114,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     }
 
-                    log.info("同步品牌 第{}页 需要插入数据{}条: {}",
+                    log.debug("同步品牌 第{}页 需要插入数据{}条: {}",
                             pageNumber, newBrandIdList.size(), JSONUtil.toJsonString(newBrandIdList));
 
                     // 执行插入
@@ -127,7 +127,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                 // 3. 判断是否需要继续同步
                 if (brandResDtoList.size() == 0) {
-                    log.info("同步品牌 结束");
+                    log.debug("同步品牌 结束");
                     break;
                 }
 
@@ -141,7 +141,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     break;
                 }
 
-                log.info("同步品牌 累计插入数据{}条", totalInsert);
+                log.debug("同步品牌 累计插入数据{}条", totalInsert);
             } // end while
         } catch (Exception e) {
             log.error("同步品牌 异常:{}", e.getMessage(), e);
@@ -159,7 +159,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 // 1. 获取数据
                 List<CategoryResDto> categoryResDtoList = aoyiClientRpcService.weipinhuiGetCategory(pageNumber, PAGESIZE);
 
-                log.info("同步品类 第{}页 共{}条数据 >>>> {}",
+                log.debug("同步品类 第{}页 共{}条数据 >>>> {}",
                         pageNumber, categoryResDtoList.size(), JSONUtil.toJsonString(categoryResDtoList));
 
                 // 2. 将数据转map key:categoryId value:AoyiBaseCategory
@@ -210,7 +210,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         }
                     } // end for
 
-                    log.info("同步品类 生成品类数据:{}条, Map<Integer, AoyiBaseCategory>: {}",
+                    log.debug("同步品类 生成品类数据:{}条, Map<Integer, AoyiBaseCategory>: {}",
                             aoyiBaseCategoryMap.size(), JSONUtil.toJsonString(aoyiBaseCategoryMap));
 
                     // 3. 提取出上一步map的key集合，然后查询是否有需要插入的数据
@@ -223,7 +223,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         }
                     }
 
-                    log.info("同步品类 第{}页 共找到需要同步的数据{}条 数据是: {}",
+                    log.debug("同步品类 第{}页 共找到需要同步的数据{}条 数据是: {}",
                             pageNumber, aoyiBaseCategoryMap.size(), JSONUtil.toJsonString(aoyiBaseCategoryMap));
 
                     // 4. 批量插入数据库
@@ -235,11 +235,11 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     totalInsert = totalInsert + aoyiBaseCategoryMap.size();
                 } // end fi 如果分页查询到数据
 
-                log.info("同步品类 第{}页 累计插入数据{}条", pageNumber, totalInsert);
+                log.debug("同步品类 第{}页 累计插入数据{}条", pageNumber, totalInsert);
 
                 // 3. 判断是否需要继续同步
                 if (categoryResDtoList.size() == 0) {
-                    log.info("同步品类 结束");
+                    log.debug("同步品类 结束");
                     break;
                 }
 
@@ -269,7 +269,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 List<AoyiItemDetailResDto> aoyiItemDetailResDtoList
                         = aoyiClientRpcService.weipinhuiQueryItemsList(pageNumber, PAGESIZE);
 
-                log.info("同步itemIdList 第{}页 共查询到{}条数据 >>>> {}",
+                log.debug("同步itemIdList 第{}页 共查询到{}条数据 >>>> {}",
                         pageNumber, aoyiItemDetailResDtoList.size(), JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
 
                 // 2. 入库处理
@@ -307,7 +307,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                         }
                     }
 
-                    log.info("同步itemIdList 第{}页 需要插入数据{}条 内容:{}",
+                    log.debug("同步itemIdList 第{}页 需要插入数据{}条 内容:{}",
                             pageNumber, insertAoyiProdIndexList.size(), JSONUtil.toJsonStringWithoutNull(insertAoyiProdIndexList));
 
 
@@ -321,11 +321,11 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                 // 3. 判断是否需要继续同步
                 if (aoyiItemDetailResDtoList.size() == 0) {
-                    log.info("同步itemIdList 结束");
+                    log.debug("同步itemIdList 结束");
                     break;
                 }
 
-                log.info("同步itemIdList 第{}页 累计插入数据{}条", pageNumber, totalInsert);
+                log.debug("同步itemIdList 第{}页 累计插入数据{}条", pageNumber, totalInsert);
 
                 pageNumber++;
                 pageCount++;
@@ -396,15 +396,15 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             while (true) {
                 // 数据库查询一批spu
                 productQueryBean.setPageNo(pageNum);
-                PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectNameIsNullPageable(productQueryBean);
+                PageInfo<AoyiProdIndexWithBLOBs> pagedebug = productDao.selectNameIsNullPageable(productQueryBean);
 
-                List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = pageInfo.getList();
+                List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = pagedebug.getList();
 
-                log.info("同步商品详情 获取itermIdList 第{}页{}条 >>>>> 数据:{}",
+                log.debug("同步商品详情 获取itermIdList 第{}页{}条 >>>>> 数据:{}",
                         pageNum, aoyiProdIndexList.size(), JSONUtil.toJsonStringWithoutNull(aoyiProdIndexList));
 
                 if (CollectionUtils.isEmpty(aoyiProdIndexList)) {
-                    log.info("同步商品详情 获取itermId列表 第{}页 无数据 任务停止!");
+                    log.debug("同步商品详情 获取itermId列表 第{}页 无数据 任务停止!");
                     break;
                 }
 
@@ -417,7 +417,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     // 3. rpc 获取商品详情
                     AoyiItemDetailResDto aoyiItemDetailResDto = aoyiClientRpcService.weipinhuiQueryItemDetial(itemId);
-                    log.info("同步商品详情 第{}页 第{}个itemId:{} rpc获取商品详情: {}",
+                    log.debug("同步商品详情 第{}页 第{}个itemId:{} rpc获取商品详情: {}",
                             pageNum, itemIdIndex, itemId, JSONUtil.toJsonString(aoyiItemDetailResDto));
 
                     if (aoyiItemDetailResDto == null) {
@@ -466,7 +466,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     aoyiProdIndex.setSprice(aoyiSkuResDtoList.get(0).getPriceCent());
 
                     // x..执行更新spu
-                    log.info("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
+                    log.debug("同步商品详情 第{}页 第{}个itemId:{} 更新spu 数据库入参:{}",
                             pageNum, itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
                     AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
                     productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
@@ -525,7 +525,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                     // 4.3 批量插入 sku 和 sku的商品规格
                     // 4.3.1 批量插入 sku
-                    log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入sku列表:{}个 数据:{}",
+                    log.debug("同步商品详情 第{}页 第{}个itemId:{}, 插入sku列表:{}个 数据:{}",
                             pageNum, itemIdIndex, itemId, insertStarSkuList.size(), JSONUtil.toJsonStringWithoutNull(insertStarSkuList));
                     if (CollectionUtils.isNotEmpty(insertStarSkuList)) {
                         starSkuDao.batchInsert(insertStarSkuList);
@@ -542,7 +542,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     }
 
                     // 4.3.2 批量插入 sku的商品规格
-                    log.info("同步商品详情 第{}页 第{}个itemId:{}, 待处理的proerty列表:{}个 数据:{}",
+                    log.debug("同步商品详情 第{}页 第{}个itemId:{}, 待处理的proerty列表:{}个 数据:{}",
                             pageNum, itemIdIndex, itemId, candidateStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(candidateStarPropertyList));
 
                     if (CollectionUtils.isNotEmpty(candidateStarPropertyList)) {
@@ -570,7 +570,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                             }
                         }
 
-                        log.info("同步商品详情 第{}页 第{}个itemId:{}, 插入的proerty列表:{}个 数据:{}",
+                        log.debug("同步商品详情 第{}页 第{}个itemId:{}, 插入的proerty列表:{}个 数据:{}",
                                 pageNum, itemIdIndex, itemId, insertStarPropertyList.size(), JSONUtil.toJsonStringWithoutNull(insertStarPropertyList));
                         // 执行批量插入商品规格
                         if (CollectionUtils.isNotEmpty(insertStarPropertyList)) {
@@ -583,7 +583,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                     mainSpuImageList.addAll(detailSpuImageList);
                     mainSpuImageList.addAll(skuImageList);
 
-                    log.info("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
+                    log.debug("同步商品详情 第{}页 第{}个itemId:{} 插入图片数据:{}条 数据:{}",
                             pageNum, itemIdIndex, itemId, mainSpuImageList.size(), JSONUtil.toJsonStringWithoutNull(mainSpuImageList));
                     if (CollectionUtils.isNotEmpty(mainSpuImageList)) {
                          ayFcImagesDao.batchInsert(mainSpuImageList);
@@ -592,7 +592,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
 
                 // 6. 停止条件
                 if (maxPageCount != -1 && pageNum >= maxPageCount) {
-                    log.info("同步商品详情 第{}页 达到最大查询页数限制:{} 停止!", pageNum, maxPageCount);
+                    log.debug("同步商品详情 第{}页 达到最大查询页数限制:{} 停止!", pageNum, maxPageCount);
 
                     break;
                 }
@@ -600,10 +600,10 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
                 pageNum++;
             } // end while
 
-            log.info("同步商品详情 结束<<<<<< 共处理 itemId:{}个, 插入sku:{}个, property:{}个",
+            log.debug("同步商品详情 结束<<<<<< 共处理 itemId:{}个, 插入sku:{}个, property:{}个",
                     totalItemIdCount, totalSkuCount, totalPropertyCount);
         } catch (Exception e) {
-            log.info("同步商品详情 结束<<<<<<===== 共处理 itemId:{}个, 插入sku:{}个, property:{}个",
+            log.debug("同步商品详情 结束<<<<<<===== 共处理 itemId:{}个, 插入sku:{}个, property:{}个",
                     totalItemIdCount, totalSkuCount, totalPropertyCount);
             log.error("同步商品 异常:{}", e.getMessage(), e);
         }
@@ -617,7 +617,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             List<StarProperty> starPropertyList =
                     starPropertyDao.selectPageableByNamePrefix("sepc", currentPage, pageSize);
 
-            log.info("fixStarProperty 第{}页 数据量:{}", currentPage, starPropertyList.size());
+            log.debug("fixStarProperty 第{}页 数据量:{}", currentPage, starPropertyList.size());
 
             if (CollectionUtils.isNotEmpty(starPropertyList)) {
                 List<String> productionIdList = starPropertyList.stream().map(s -> String.valueOf(s.getProductId())).collect(Collectors.toList());
@@ -639,7 +639,7 @@ public class WeipinhuiDataServiceImpl implements WeipinhuiDataService {
             currentPage++;
         } // while end
 
-        log.info("fixStarProperty 第{}页 结束", currentPage);
+        log.debug("fixStarProperty 第{}页 结束", currentPage);
     }
 
     ///======================================== private ===================================================
