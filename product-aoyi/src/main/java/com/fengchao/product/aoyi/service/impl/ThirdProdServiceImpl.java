@@ -443,16 +443,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
 
     @Override
     public OperaResponse asyncWphItemDetail() {
-        ProductQueryBean productQueryBean = new ProductQueryBean();
-        productQueryBean.setPageSize(200);
-        productQueryBean.setMerchantId(2);
-        productQueryBean.setSkuProfix("3");
-        productQueryBean.setPageNo(1);
-        PageInfo<AoyiProdIndexWithBLOBs> pageInfo = productDao.selectNameIsNullPageable(productQueryBean);
-        for (int i = 1; i < pageInfo.getPages(); i++) {
-            productQueryBean.setPageNo(i);
-            asyncTask.executeAsyncWphItemDetail(productQueryBean, aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao);
-        }
+        asyncTask.executeAsyncWphItemDetail(aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao);
         return new OperaResponse();
     }
 
