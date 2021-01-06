@@ -226,7 +226,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                 if (profileBean != null) {
                     // 获取最新code
                     SkuCode lastCode = skuCodeMapper.selectLast();
-                    // logger.info(aoyiProdIndexX.getMerchantId() + "");
+                    // logger.debug(aoyiProdIndexX.getMerchantId() + "");
                     int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
                     // 添加商户信息
                     skuCode = new SkuCode();
@@ -323,7 +323,7 @@ public class AdminProdServiceImpl implements AdminProdService {
 
     @Override
     public OperaResponse updateBatchPriceAndState(List<AoyiProdIndex> bean) throws ProductException {
-        logger.info("批量更新价格状态，入参：{}", JSONUtil.toJsonString(bean));
+        logger.debug("批量更新价格状态，入参：{}", JSONUtil.toJsonString(bean));
         OperaResponse operaResponse = new OperaResponse() ;
         if (bean == null || bean.size() <= 0) {
             operaResponse.setData(200003); ;
@@ -343,7 +343,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             operaResponse.setMsg("存在未更新成功的数据。");
             operaResponse.setData(aoyiProdIndices);
         }
-        logger.info("批量更新价格状态，返回结果：{}", JSONUtil.toJsonString(operaResponse));
+        logger.debug("批量更新价格状态，返回结果：{}", JSONUtil.toJsonString(operaResponse));
         return operaResponse;
     }
 
@@ -401,7 +401,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                 sqlParamMap.put("merchantId", bean.getMerchantId());
             }
             sqlParamMap.put("categoryID", bean.getCategoryID());
-            logger.info("导出商品列表 查询条件为:{}", JSONUtil.toJsonString(sqlParamMap));
+            logger.debug("导出商品列表 查询条件为:{}", JSONUtil.toJsonString(sqlParamMap));
 
             // 2. 查询导出需要的相关数据
             // 2.1 查询所有商户信息
@@ -414,7 +414,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             List<AoyiBaseCategory> categorysWithClass1
                     = categoryDao.selectByCategoryClass(String.valueOf(CategoryClassEnum.LEVEL1.getValue()));
 
-            logger.info("导出商品列表 获取一级品类信息集合List<AoyiBaseCategory>:{}", JSONUtil.toJsonString(categorysWithClass1));
+            logger.debug("导出商品列表 获取一级品类信息集合List<AoyiBaseCategory>:{}", JSONUtil.toJsonString(categorysWithClass1));
 
             // 转map key:categoryId, value:AoyiBaseCategory
             Map<Integer, AoyiBaseCategory> categoryMapWithClass1 =
@@ -465,7 +465,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             Map<Integer, AoyiBaseCategory> categoryMapWithClass3 =
                     categorysWithClass3.stream().collect(Collectors.toMap(c -> c.getCategoryId(), c -> c));
 
-            logger.info("导出商品列表 获取三级品类共:{}个", categoryMapWithClass3.size());
+            logger.debug("导出商品列表 获取三级品类共:{}个", categoryMapWithClass3.size());
 
             // 3.查询导出数据
             // 3.1 分页查询商品表-批量查询，避免一次返回数据太多，并且还要利用返回的数据批量查询其他表，这样也避免查询时的入参太大
@@ -523,7 +523,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             throw e;
         }
 
-        logger.info("导出商品列表 导出数据列表个数List<ProductExportResVo> size:{}", productExportResVoList.size());
+        logger.debug("导出商品列表 导出数据列表个数List<ProductExportResVo> size:{}", productExportResVoList.size());
 
         return productExportResVoList;
     }
@@ -539,7 +539,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             HashMap sqlParamMap = new HashMap();
             sqlParamMap.put("floorPriceRate", floorPriceRate);
 
-            logger.info("导出商品价格列表 查询条件为:{}", JSONUtil.toJsonString(sqlParamMap));
+            logger.debug("导出商品价格列表 查询条件为:{}", JSONUtil.toJsonString(sqlParamMap));
 
             // 2. 查询导出需要的相关数据
             // 2.1 查询所有商户信息
@@ -611,7 +611,7 @@ public class AdminProdServiceImpl implements AdminProdService {
             throw e;
         }
 
-        logger.info("导出商品价格列表 导出数据列表个数List<ProductExportResVo> size:{}", productExportResVoList.size());
+        logger.debug("导出商品价格列表 导出数据列表个数List<ProductExportResVo> size:{}", productExportResVoList.size());
 
         return pageBean;
     }
@@ -706,7 +706,7 @@ public class AdminProdServiceImpl implements AdminProdService {
                     if (profileBean != null) {
                         // 获取最新code
                         SkuCode lastCode = skuCodeMapper.selectLast();
-                        // logger.info(aoyiProdIndexX.getMerchantId() + "");
+                        // logger.debug(aoyiProdIndexX.getMerchantId() + "");
                         int code = Integer.parseInt(lastCode.getMerchantCode()) + 1;
                         // 添加商户信息
                         skuCode = new SkuCode();
@@ -790,35 +790,35 @@ public class AdminProdServiceImpl implements AdminProdService {
             if ("1".equals(bean.getState())) {
                 if (StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                     ids.add(bean.getId()) ;
-                    logger.info("category is {}", bean.getId());
+                    logger.debug("category is {}", bean.getId());
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getPrice())) {
-                    logger.info("price is {}", bean.getId());
+                    logger.debug("price is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getSprice()) && aoyiProdIndex.getMerchantId() != 4) {
-                    logger.info("sprice is {}", bean.getId());
+                    logger.debug("sprice is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
                     if (starDetailImgs == null || starDetailImgs.size() == 0) {
-                        logger.info("image url is {}", bean.getId());
+                        logger.debug("image url is {}", bean.getId());
                         ids.add(bean.getId()) ;
                         continue;
                     }
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getImage())) {
                     if ((starDetailImgs == null || starDetailImgs.size() == 0) && StringUtils.isEmpty(aoyiProdIndex.getImagesUrl())) {
-                        logger.info("image is {}", bean.getId());
+                        logger.debug("image is {}", bean.getId());
                         ids.add(bean.getId());
                         continue;
                     }
                 }
                 if (StringUtils.isEmpty(aoyiProdIndex.getIntroductionUrl()) && StringUtils.isEmpty(aoyiProdIndex.getIntroduction())) {
-                    logger.info("introduction  url is {}", bean.getId());
+                    logger.debug("introduction  url is {}", bean.getId());
                     ids.add(bean.getId()) ;
                     continue;
                 }
