@@ -252,7 +252,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
             } else {
                 aoyiProdIndex = productDao.selectByMpu(bean.getSpuId()) ;
             }
-            logger.info("第三方更新状态接口，商品信息：{}", JSONUtil.toJsonString(aoyiProdIndex));
+            logger.debug("第三方更新状态接口，商品信息：{}", JSONUtil.toJsonString(aoyiProdIndex));
             if (org.apache.commons.lang.StringUtils.isEmpty(aoyiProdIndex.getCategory())) {
                 operaResponse.setCode(200100);
                 operaResponse.setMsg("类别不能为空");
@@ -312,18 +312,18 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     @Override
     public void uploadProdImage() {
         List<AyFcImages> ayFcImages = ayFcImagesDao.findNoUploadImage();
-        logger.info("下载图片任务 数量为:{}", ayFcImages.size());
+        logger.debug("下载图片任务 数量为:{}", ayFcImages.size());
         if (ayFcImages != null && ayFcImages.size() > 0) {
             ayFcImages.forEach(image -> {
                 OperaResult result = baseService.downUpload(image);
 
-                logger.info("下载图片任务: {} 返回结果: {}",
+                logger.debug("下载图片任务: {} 返回结果: {}",
                         JSONUtil.toJsonString(image), JSONUtil.toJsonString(result));
 //                if (result.getCode() == 200) {
 //                    image.setStatus(1);
 //                    ayFcImagesDao.updateStatus(image);
 //                } else {
-//                    logger.info("调用base服务失败：{}", JSONUtil.toJsonString(result));
+//                    logger.debug("调用base服务失败：{}", JSONUtil.toJsonString(result));
 //                }
             });
         }
@@ -420,7 +420,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
 
     @Override
     public OperaResponse syncStarProd() {
-        logger.info("syncStarProd");
+        logger.debug("syncStarProd");
         OperaResponse response = new OperaResponse() ;
         asyncTask.executeAsyncStarProd(aoyiClientService, productDao, aoyiProdIndexMapper, starDetailImgMapper, starPropertyMapper, starSkuMapper, starSkuDao);
         return response;
@@ -428,7 +428,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
 
     @Override
     public OperaResponse syncStarProdPrice() {
-        logger.info("syncStarProdPrice");
+        logger.debug("syncStarProdPrice");
         OperaResponse response = new OperaResponse() ;
         asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao, productDao);
         return response;
@@ -510,12 +510,12 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 if (null != future) {
                     try {
                         str = future.get().toString();
-                        logger.info("current thread id =" + Thread.currentThread().getName() + ",result=" + str);
+                        logger.debug("current thread id =" + Thread.currentThread().getName() + ",result=" + str);
                     } catch (InterruptedException | ExecutionException e) {
-                        logger.info("线程运行异常！");
+                        logger.debug("线程运行异常！");
                     }
                 } else {
-                    logger.info("线程运行异常！");
+                    logger.debug("线程运行异常！");
                 }
             }
         } catch (Exception e) {
