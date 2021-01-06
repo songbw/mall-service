@@ -141,7 +141,7 @@ public class AoyiClientRpcService {
         } else {
             log.warn("查询唯品会商品详情 调用aoyi-client rpc服务 错误!");
 
-            throw new Exception("查询唯品会商品详情 调用aoyi-client rpc服务 错误!!");
+//            throw new Exception("查询唯品会商品详情 调用aoyi-client rpc服务 错误!!");
         }
 
         log.info("AoyiClientRpcService#weipinhuiQueryItemDetial 调用aoyi-client rpc服务 返回:{}",
