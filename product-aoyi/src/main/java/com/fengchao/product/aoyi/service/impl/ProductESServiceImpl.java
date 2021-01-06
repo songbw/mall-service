@@ -104,8 +104,8 @@ public class ProductESServiceImpl implements ProductESService {
         request.source(builder);
         try{
             SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
-            log.info("result: {}", request.toString());
-//            log.info("response: {}", response.toString());
+            log.debug("result: {}", request.toString());
+//            log.debug("response: {}", response.toString());
             List<ProductInfoBean> aoyiProdIndices = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
@@ -120,7 +120,7 @@ public class ProductESServiceImpl implements ProductESService {
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);
                 aoyiProdIndices.add(infoBean);
-                log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
+                log.debug("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
             return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits() + ""), queryBean.getPageNo(), queryBean.getPageSize());
         }catch (Exception e){
@@ -192,7 +192,7 @@ public class ProductESServiceImpl implements ProductESService {
                 List<PromotionInfoBean> promotionInfoBeans = findPromotionBySku(aoyiProdIndex.getMpu(), queryBean.getAppId());
                 infoBean.setPromotion(promotionInfoBeans);
                 aoyiProdIndices.add(infoBean);
-                log.info("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
+                log.debug("result: {}, code: {}, status: {}", documentFields.toString(), response.status().getStatus(), response.status().name());
             }
             return PageBean.build(new PageBean(), aoyiProdIndices, Integer.parseInt(response.getHits().getTotalHits() + ""), queryBean.getPageNo(), queryBean.getPageSize());
         }catch (Exception e){
@@ -240,6 +240,6 @@ public class ProductESServiceImpl implements ProductESService {
         }
         // not exist: result: code: 201, status: CREATED
         // exist: result: code: 200, status: OK
-        log.info("result: code: {}, status: {}", response.status().getStatus(), response.status().name());
+        log.debug("result: code: {}, status: {}", response.status().getStatus(), response.status().name());
     }
 }
