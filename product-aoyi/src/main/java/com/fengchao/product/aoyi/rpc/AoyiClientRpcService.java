@@ -39,12 +39,12 @@ public class AoyiClientRpcService {
         List<BrandResDto> brandResDtoList = new ArrayList<>();
 
         // 执行rpc调用
-        log.info("查询唯品会品牌信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
+        log.debug("查询唯品会品牌信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
                 pageNumber, pageSize);
 
         // 将merchantIdList转成Long型
         OperaResponse<List<BrandResDto>> resultObject = aoyiClientService.weipinhuiGetBrand(pageNumber, pageSize);
-        log.info("查询唯品会品牌信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+        log.debug("查询唯品会品牌信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
 
         // 处理返回
         if (resultObject.getCode() == 200) {
@@ -53,7 +53,7 @@ public class AoyiClientRpcService {
             log.warn("查询唯品会品牌信息 调用aoyi-client rpc服务 错误!");
         }
 
-        log.info("AoyiClientRpcService#weipinhuiGetBrand 调用aoyi-client rpc服务 返回:{}",
+        log.debug("AoyiClientRpcService#weipinhuiGetBrand 调用aoyi-client rpc服务 返回:{}",
                 JSONUtil.toJsonString(brandResDtoList));
 
         return brandResDtoList;
@@ -69,12 +69,12 @@ public class AoyiClientRpcService {
         List<CategoryResDto> categoryResDtoList = new ArrayList<>();
 
         // 执行rpc调用
-        log.info("查询唯品会类目信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
+        log.debug("查询唯品会类目信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
                 pageNumber, pageSize);
 
         // 将merchantIdList转成Long型
         OperaResponse<List<CategoryResDto>> resultObject = aoyiClientService.weipinhuiGetCategory(pageNumber, pageSize);
-        log.info("查询唯品会类目信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+        log.debug("查询唯品会类目信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
 
         // 处理返回
         if (resultObject.getCode() == 200) {
@@ -83,7 +83,7 @@ public class AoyiClientRpcService {
             log.warn("查询唯品会类目信息 调用aoyi-client rpc服务 错误!");
         }
 
-        log.info("AoyiClientRpcService#weipinhuiGetCategory 调用aoyi-client rpc服务 返回:{}",
+        log.debug("AoyiClientRpcService#weipinhuiGetCategory 调用aoyi-client rpc服务 返回:{}",
                 JSONUtil.toJsonString(categoryResDtoList));
 
         return categoryResDtoList;
@@ -99,12 +99,12 @@ public class AoyiClientRpcService {
         List<AoyiItemDetailResDto> aoyiItemDetailResDtoList = new ArrayList<>();
 
         // 执行rpc调用
-        log.info("查询唯品会itemId列表信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
+        log.debug("查询唯品会itemId列表信息 调用aoyi-client rpc服务 入参 pageNumber:{}, pageSize:{}",
                 pageNumber, pageSize);
 
         // 将merchantIdList转成Long型
         OperaResponse<List<AoyiItemDetailResDto>> resultObject = aoyiClientService.weipinhuiQueryItemsList(pageNumber, pageSize);
-        log.info("查询唯品会itemId列表信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonStringWithoutNull(resultObject));
+        log.debug("查询唯品会itemId列表信息 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonStringWithoutNull(resultObject));
 
         // 处理返回
         if (resultObject.getCode() == 200) {
@@ -113,7 +113,7 @@ public class AoyiClientRpcService {
             log.warn("查询唯品会itemId列表信息 调用aoyi-client rpc服务 错误!");
         }
 
-        log.info("AoyiClientRpcService#weipinhuiQueryItemsList 调用aoyi-client rpc服务 返回:{}",
+        log.debug("AoyiClientRpcService#weipinhuiQueryItemsList 调用aoyi-client rpc服务 返回:{}",
                 JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
 
         return aoyiItemDetailResDtoList;
@@ -129,11 +129,11 @@ public class AoyiClientRpcService {
         AoyiItemDetailResDto aoyiItemDetailResDto = null;
 
         // 执行rpc调用
-        log.info("查询唯品会商品详情 调用aoyi-client rpc服务 入参:{}", itemId);
+        log.debug("查询唯品会商品详情 调用aoyi-client rpc服务 入参:{}", itemId);
 
         // 将merchantIdList转成Long型
         OperaResponse<AoyiItemDetailResDto> resultObject = aoyiClientService.weipinhuiQueryItemDetial(itemId);
-        log.info("查询唯品会商品详情 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
+        log.debug("查询唯品会商品详情 调用aoyi-client rpc服务 返回:{}", JSONUtil.toJsonString(resultObject));
 
         // 处理返回
         if (resultObject.getCode() == 200) {
@@ -144,7 +144,7 @@ public class AoyiClientRpcService {
 //            throw new Exception("查询唯品会商品详情 调用aoyi-client rpc服务 错误!!");
         }
 
-        log.info("AoyiClientRpcService#weipinhuiQueryItemDetial 调用aoyi-client rpc服务 返回:{}",
+        log.debug("AoyiClientRpcService#weipinhuiQueryItemDetial 调用aoyi-client rpc服务 返回:{}",
                 JSONUtil.toJsonString(aoyiItemDetailResDto));
 
         return aoyiItemDetailResDto;
@@ -165,12 +165,12 @@ public class AoyiClientRpcService {
         AoyiQueryInventoryResDto aoyiQueryInventoryResDto = null;
 
         try {
-            log.info("唯品会查询库存 调用aoyiClient rpc服务 入参 itemid:{}, skuId:{}, num:{}, divisionCode:{}",
+            log.debug("唯品会查询库存 调用aoyiClient rpc服务 入参 itemid:{}, skuId:{}, num:{}, divisionCode:{}",
                     itemId, skuId, num, divisionCode);
 
             OperaResponse<AoyiQueryInventoryResDto> operaResponse =
                     aoyiClientService.weipinhuiQueryItemInventory(itemId, skuId, num, divisionCode);
-            log.info("唯品会查询库存 调用aoyiClient rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
+            log.debug("唯品会查询库存 调用aoyiClient rpc服务 返回:{}", JSONUtil.toJsonString(operaResponse));
 
             // 处理返回
             if (operaResponse.getCode() == 200) {
@@ -186,7 +186,7 @@ public class AoyiClientRpcService {
             aoyiQueryInventoryResDto = null; // 这里返回null，是为了兼容调用该方法的已有逻辑!
         }
 
-        log.info("唯品会查询库存 AoyiClientRpcService#queryItemInventory 返回业务数据:{}",
+        log.debug("唯品会查询库存 AoyiClientRpcService#queryItemInventory 返回业务数据:{}",
                 JSONUtil.toJsonString(aoyiQueryInventoryResDto));
 
         return aoyiQueryInventoryResDto;
