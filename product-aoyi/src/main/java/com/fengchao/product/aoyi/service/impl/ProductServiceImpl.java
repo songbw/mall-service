@@ -126,9 +126,9 @@ public class ProductServiceImpl implements ProductService {
         if (merchantCodeBean != null) {
             codes = merchantCodeBean.getCodes() ;
         }
-        log.info("codes: {}", JSONUtil.toJsonString(codes));
+        log.debug("codes: {}", JSONUtil.toJsonString(codes));
         PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, codes);
-        log.info("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
+        log.debug("prodIndexPageInfo: {}", JSONUtil.toJsonString(prodIndexPageInfo));
         productInfoBeanPageInfo.setTotal(prodIndexPageInfo.getTotal());
         productInfoBeanPageInfo.setPageNum(prodIndexPageInfo.getPageNum());
         productInfoBeanPageInfo.setPageSize(prodIndexPageInfo.getPageSize());
@@ -199,7 +199,7 @@ public class ProductServiceImpl implements ProductService {
         otherInventoryQueryBean.setCountyId(queryBean.getCountyId());
         otherInventoryQueryBean.setSkus(otherSkuList);
 
-        log.info("查询库存  按照供应商分开商品 weipinhuiInventoryQueryBean:{}, otherInventoryQueryBean:{}",
+        log.debug("查询库存  按照供应商分开商品 weipinhuiInventoryQueryBean:{}, otherInventoryQueryBean:{}",
                 JSONUtil.toJsonString(weipinhuiInventoryQueryBean), JSONUtil.toJsonString(otherInventoryQueryBean));
 
         // 4. 分别进行库存查询
@@ -269,7 +269,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         operaResult.getData().put("result", inventoryBeans);
-        log.info("查询库存 ProductServiceImpl#findInventory 返回:{}", JSONUtil.toJsonString(operaResult));
+        log.debug("查询库存 ProductServiceImpl#findInventory 返回:{}", JSONUtil.toJsonString(operaResult));
 
         return operaResult;
     }
@@ -382,9 +382,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductInfoBean> queryProductListByMpuIdList(List<String> mpuIdList) throws Exception {
         // 1. 查询商品信息
-        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        log.debug("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
         List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
-        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        log.debug("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
 
         // 2. 查询商品品类信息
         List<Integer> categoryIdList = new ArrayList<>();
@@ -424,7 +424,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<AoyiProdIndexX> selectProductListByMpuIdList(List<String> mpuIdList) throws Exception {
         // 1. 查询商品信息
-        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        log.debug("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
         List<AoyiProdIndexX> aoyiProdIndexList = new ArrayList<>();
         productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList).forEach(aoyiProdIndex1 -> {
             AoyiProdIndex aoyiProdIndex= aoyiProdIndex1 ;
@@ -441,7 +441,7 @@ public class ProductServiceImpl implements ProductService {
             aoyiProdIndexX.setSkuList(starSkuBeans);
             aoyiProdIndexList.add(aoyiProdIndexX);
         });
-        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        log.debug("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;
     }
 
@@ -475,16 +475,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<AoyiProdIndexWithBLOBs> getProdsByMpus(List<String> mpuIdList) {
         // 1. 查询商品信息
-        log.info("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
+        log.debug("根据mup集合查询产品信息 数据库查询参数:{}", JSONUtil.toJsonString(mpuIdList));
         List<AoyiProdIndexWithBLOBs> aoyiProdIndexList = productDao.selectAoyiProdIndexListByMpuIdList(mpuIdList);
-        log.info("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
+        log.debug("根据mup集合查询产品信息 数据库返回:{}", JSONUtil.toJsonString(aoyiProdIndexList));
         return aoyiProdIndexList;
     }
 
     @Override
     public OperaResult findInventorySelf(InventorySelfQueryBean queryBean) {
         OperaResult result = new OperaResult();
-        log.info("根据mup集合查询库存信息 数据库查询参数:{}", JSONUtil.toJsonString(queryBean));
+        log.debug("根据mup集合查询库存信息 数据库查询参数:{}", JSONUtil.toJsonString(queryBean));
         List<String> mpuList = new ArrayList<>() ;
         queryBean.getInventories().forEach(inventoryMpus -> {
             mpuList.add(inventoryMpus.getMpu()) ;
@@ -502,44 +502,44 @@ public class ProductServiceImpl implements ProductService {
             }
         });
         result.getData().put("result", inventories) ;
-        log.info("根据mup集合查询库存信息 数据库查询返回结果:{}", JSONUtil.toJsonString(result));
+        log.debug("根据mup集合查询库存信息 数据库查询返回结果:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
     @Transactional
     @Override
     public OperaResult inventorySub(List<InventoryMpus> inventories) {
-        log.info("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
+        log.debug("扣减库存，入参{}", JSONUtil.toJsonString(inventories));
         OperaResult result = new OperaResult();
         for (InventoryMpus inventoryMpus : inventories) {
             try {
                 result = inventoryDao.inventorySub(inventoryMpus) ;
             } catch (SQLException e) {
-                log.info("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
-                log.info(e.getMessage());
+                log.debug("扣减库存，异常{}", JSONUtil.toJsonString(inventories));
+                log.debug(e.getMessage());
                 result.setCode(2000000);
                 result.setMsg("扣减库存失败。");
                 return result;
             }
         }
-        log.info("扣减库存，返回值{}", JSONUtil.toJsonString(result));
+        log.debug("扣减库存，返回值{}", JSONUtil.toJsonString(result));
         return result;
     }
 
     @Transactional
     @Override
     public OperaResult inventoryAdd(List<InventoryMpus> inventories) {
-        log.info("添加库存，入参{}", JSONUtil.toJsonString(inventories));
+        log.debug("添加库存，入参{}", JSONUtil.toJsonString(inventories));
         OperaResult result = new OperaResult();
         for (InventoryMpus inventoryMpus : inventories) {
             try {
                 result = inventoryDao.inventoryAdd(inventoryMpus) ;
             } catch (SQLException e) {
-                log.info("添加库存，异常{}", JSONUtil.toJsonString(inventories));
+                log.debug("添加库存，异常{}", JSONUtil.toJsonString(inventories));
                 e.printStackTrace();
             }
         }
-        log.info("添加库存，返回值{}", JSONUtil.toJsonString(result));
+        log.debug("添加库存，返回值{}", JSONUtil.toJsonString(result));
         return result;
     }
 
@@ -583,7 +583,7 @@ public class ProductServiceImpl implements ProductService {
 
     private List<CouponBean> selectCouponBySku(AoyiProdIndexX bean, String appId) {
         OperaResult result = equityService.selectCouponBySku(bean, appId);
-        log.info(JSON.toJSONString(result));
+        log.debug(JSON.toJSONString(result));
         if (result.getCode() == 200) {
             Map<String, Object> data = result.getData() ;
             Object object = data.get("result");
@@ -644,7 +644,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private MerchantCodeBean getMerchantCodesByAppId(String appId) {
-        log.info(JSONUtil.toJsonString(config.getRegion()));
+        log.debug(JSONUtil.toJsonString(config.getRegion()));
         return  config.getRegion().get(appId) ;
     }
 
