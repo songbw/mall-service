@@ -570,8 +570,7 @@ public class AsyncTask {
             try {
                 aoyiItemDetailResDto = aoyiClientRpcService.weipinhuiQueryItemDetial(itemId);
             } catch (Exception e) {
-                log.info("aoyi rpc 出错！");
-                e.printStackTrace();
+                log.info("aoyi rpc 出错！{}", e);
                 result = new AsyncResult <String>("fail,time=" + System.currentTimeMillis() + ",thread id=" + Thread.currentThread().getName() + ",itemId "+ itemId+" aoyi rpc 出错！");
                 continue;
             }
@@ -589,8 +588,12 @@ public class AsyncTask {
             // 获取brand名称
             String brandIdStr = aoyiItemDetailResDto.getBrandId() ;
             int brandId = Integer.valueOf(brandIdStr) ;
-            AoyiBaseBrand aoyiBaseBrand =
-                    aoyiBaseBrandDao.selectByBrandId(brandId);
+            AoyiBaseBrand aoyiBaseBrand = new AoyiBaseBrand() ;
+            try {
+                aoyiBaseBrand = aoyiBaseBrandDao.selectByBrandId(brandId);
+            } catch (Exception e) {
+                log.info("出错了: {}", e);
+            }
 
             aoyiProdIndex.setName(aoyiItemDetailResDto.getItemTitle()); // 商品名称spu名称
             // aoyiProdIndex.setState(aoyiItemDetailResDto.getCanSell() == "true" ? "1" : "0"); // 是否出售 "false" - 是否上架 0：下架；1：上架
