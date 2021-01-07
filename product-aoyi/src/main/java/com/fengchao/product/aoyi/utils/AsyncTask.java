@@ -589,11 +589,7 @@ public class AsyncTask {
             String brandIdStr = aoyiItemDetailResDto.getBrandId() ;
             int brandId = Integer.valueOf(brandIdStr) ;
             AoyiBaseBrand aoyiBaseBrand = new AoyiBaseBrand() ;
-            try {
-                aoyiBaseBrand = aoyiBaseBrandDao.selectByBrandId(brandId);
-            } catch (Exception e) {
-                log.info("出错了: {}", e);
-            }
+            aoyiBaseBrand = aoyiBaseBrandDao.selectByBrandId(brandId);
 
             aoyiProdIndex.setName(aoyiItemDetailResDto.getItemTitle()); // 商品名称spu名称
             // aoyiProdIndex.setState(aoyiItemDetailResDto.getCanSell() == "true" ? "1" : "0"); // 是否出售 "false" - 是否上架 0：下架；1：上架

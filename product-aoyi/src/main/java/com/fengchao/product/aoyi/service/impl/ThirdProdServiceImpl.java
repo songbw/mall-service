@@ -66,8 +66,11 @@ public class ThirdProdServiceImpl implements ThirdProdService {
     private StarCategoryMapper starCategoryMapper ;
     @Autowired
     private AoyiClientRpcService aoyiClientRpcService ;
+    @Autowired
     private AoyiBaseBrandDao aoyiBaseBrandDao;
+    @Autowired
     private ProductConfig productConfig;
+    @Autowired
     private StarPropertyDao starPropertyDao ;
 
     @Override
