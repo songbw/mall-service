@@ -554,6 +554,8 @@ public class AsyncTask {
         // 2. 遍历itemId列表，查询详情信息
         int itemIdIndex = 0; // 该for需要的itemId的计数
         for (String itemId : itemList) {
+            log.info("同步商品详情 获取itermId is {}条 >>>>>",
+                    itemId);
             AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs() ;
             aoyiProdIndex.setSkuid(itemId);
             aoyiProdIndex.setMpu(itemId);
