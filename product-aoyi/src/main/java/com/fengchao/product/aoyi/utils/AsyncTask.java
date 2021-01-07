@@ -544,7 +544,7 @@ public class AsyncTask {
         //声明future对象
         Future<String> result = new AsyncResult<String>("");
 
-        log.debug("同步商品详情 获取itermIdList {}条 >>>>> 数据:",
+        log.info("同步商品详情 获取itermIdList {}条 >>>>> 数据:",
                 itemList.size());
 
         if (CollectionUtils.isEmpty(itemList)) {
@@ -554,7 +554,7 @@ public class AsyncTask {
         // 2. 遍历itemId列表，查询详情信息
         int itemIdIndex = 0; // 该for需要的itemId的计数
         for (String itemId : itemList) {
-            log.info("同步商品详情 获取itermId is {}条 >>>>>",
+            log.debug("同步商品详情 获取itermId is {}条 >>>>>",
                     itemId);
             AoyiProdIndexWithBLOBs aoyiProdIndex = new AoyiProdIndexWithBLOBs() ;
             aoyiProdIndex.setSkuid(itemId);
@@ -570,7 +570,7 @@ public class AsyncTask {
             try {
                 aoyiItemDetailResDto = aoyiClientRpcService.weipinhuiQueryItemDetial(itemId);
             } catch (Exception e) {
-                log.info("aoyi rpc 出错！{}", e);
+                log.error("aoyi rpc 出错！{}", e);
                 result = new AsyncResult <String>("fail,time=" + System.currentTimeMillis() + ",thread id=" + Thread.currentThread().getName() + ",itemId "+ itemId+" aoyi rpc 出错！");
                 continue;
             }
@@ -578,7 +578,7 @@ public class AsyncTask {
                     itemIdIndex, itemId, JSONUtil.toJsonString(aoyiItemDetailResDto));
 
             if (aoyiItemDetailResDto == null) {
-                log.info("1.同步商品详情 第{}个itemId:{} rpc获取商品详情为空 继续...", itemIdIndex, itemId);
+                log.warn("1.同步商品详情 第{}个itemId:{} rpc获取商品详情为空 继续...", itemIdIndex, itemId);
                 result = new AsyncResult <String>("fail,time=" + System.currentTimeMillis() + ",thread id=" + Thread.currentThread().getName() + ",itemId "+ itemId+" aoyi rpc 出错！");
                 continue;
             }
@@ -627,7 +627,7 @@ public class AsyncTask {
             aoyiProdIndex.setSprice(aoyiSkuResDtoList.get(0).getPriceCent());
 
             // x..执行更新spu
-            log.info("同步商品详情 第{}个itemId:{} 更新spu 数据库入参:{}",
+            log.debug("同步商品详情 第{}个itemId:{} 更新spu 数据库入参:{}",
                     itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
 //            AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
 //                productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);
