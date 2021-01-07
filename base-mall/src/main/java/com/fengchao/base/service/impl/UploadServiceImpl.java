@@ -74,6 +74,7 @@ public class UploadServiceImpl implements UploadService {
         productService.imageBack(img.getId(), 1) ;
     }
 
+    @Async("asyncServiceExecutor")
     @Override
     public void batchDownUpload() {
         List<Future<String>> futureList = new ArrayList<Future<String>>();
