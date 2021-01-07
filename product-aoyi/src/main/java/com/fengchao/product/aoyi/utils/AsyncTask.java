@@ -587,8 +587,10 @@ public class AsyncTask {
             // 4. 入库处理 分为两步 4.1 更新 spu， 4.2 插入 sku
             // 4.1 更新spu
             // 获取brand名称
+            String brandIdStr = aoyiItemDetailResDto.getBrandId() ;
+            int brandId = Integer.valueOf(brandIdStr) ;
             AoyiBaseBrand aoyiBaseBrand =
-                    aoyiBaseBrandDao.selectByBrandId(Integer.valueOf(aoyiItemDetailResDto.getBrandId()));
+                    aoyiBaseBrandDao.selectByBrandId(brandId);
 
             aoyiProdIndex.setName(aoyiItemDetailResDto.getItemTitle()); // 商品名称spu名称
             // aoyiProdIndex.setState(aoyiItemDetailResDto.getCanSell() == "true" ? "1" : "0"); // 是否出售 "false" - 是否上架 0：下架；1：上架
