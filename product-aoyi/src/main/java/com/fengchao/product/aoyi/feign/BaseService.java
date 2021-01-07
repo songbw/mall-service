@@ -21,4 +21,7 @@ public interface BaseService {
 
     @RequestMapping(value = "/mail/send", method = RequestMethod.POST)
     OperaResponse sendMail(@RequestBody Email email);
+
+    @RequestMapping(value = "/batch/down/upload", method = RequestMethod.GET)
+    OperaResult batchDownUpload();
 }

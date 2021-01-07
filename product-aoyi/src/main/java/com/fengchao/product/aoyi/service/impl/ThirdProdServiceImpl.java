@@ -428,6 +428,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
         logger.info("syncStarProd");
         OperaResponse response = new OperaResponse() ;
         asyncTask.executeAsyncStarProd(aoyiClientService, productDao, aoyiProdIndexMapper, starDetailImgMapper, starPropertyMapper, starSkuMapper, starSkuDao);
+        baseService.batchDownUpload();
         return response;
     }
 
