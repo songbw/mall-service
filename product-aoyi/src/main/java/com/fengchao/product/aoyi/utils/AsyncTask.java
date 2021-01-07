@@ -544,7 +544,7 @@ public class AsyncTask {
         //声明future对象
         Future<String> result = new AsyncResult<String>("");
 
-        log.info("同步商品详情 获取itermIdList {}条 >>>>> 数据:",
+        log.debug("同步商品详情 获取itermIdList {}条 >>>>> 数据:",
                 itemList.size());
 
         if (CollectionUtils.isEmpty(itemList)) {
@@ -561,8 +561,6 @@ public class AsyncTask {
             aoyiProdIndex.setType(2);
             aoyiProdIndex.setMerchantCode(itemId.substring(0,2));
             aoyiProdIndex.setState(String.valueOf(ProductStatusEnum.PUT_ON.getValue())); // 下架状态
-//            for (AoyiProdIndexWithBLOBs aoyiProdIndex : aoyiProdIndexList) { // 遍历itemId列表
-//                String itemId = aoyiProdIndex.getSkuid();
             itemIdIndex++;
 
             // 3. rpc 获取商品详情
@@ -626,7 +624,7 @@ public class AsyncTask {
             aoyiProdIndex.setSprice(aoyiSkuResDtoList.get(0).getPriceCent());
 
             // x..执行更新spu
-            log.debug("同步商品详情 第{}个itemId:{} 更新spu 数据库入参:{}",
+            log.info("同步商品详情 第{}个itemId:{} 更新spu 数据库入参:{}",
                     itemIdIndex, itemId, JSONUtil.toJsonStringWithoutNull(aoyiProdIndex));
 //            AoyiProdIndexWithBLOBs aoyiProdIndexWithBLOBs = convertToAoyiProdIndexWithBLOBs(aoyiProdIndex);
 //                productDao.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs);

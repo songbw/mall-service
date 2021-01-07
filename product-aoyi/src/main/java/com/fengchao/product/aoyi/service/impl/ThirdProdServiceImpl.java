@@ -492,7 +492,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                     break;
                 }
 
-                logger.info("同步itemIdList 第{}页 累计插入数据{}条", pageNumber, totalInsert);
+                logger.debug("同步itemIdList 第{}页 累计插入数据{}条", pageNumber, totalInsert);
 
                 pageNumber++;
                 pageCount++;
