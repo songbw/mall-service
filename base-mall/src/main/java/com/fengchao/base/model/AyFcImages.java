@@ -1,4 +1,4 @@
-package com.fengchao.base.bean;
+package com.fengchao.base.model;
 
 import java.util.Date;
 
@@ -9,15 +9,15 @@ public class AyFcImages {
 
     private String ayImage;
 
+    private String path;
+
+    private String type;
+
     private Integer status;
 
     private Date createdAt;
 
     private Date updatedAt;
-
-    private String path;
-
-    private String type;
 
     public Long getId() {
         return id;
@@ -43,6 +43,22 @@ public class AyFcImages {
         this.ayImage = ayImage == null ? null : ayImage.trim();
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path == null ? null : path.trim();
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type == null ? null : type.trim();
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -65,21 +81,5 @@ public class AyFcImages {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

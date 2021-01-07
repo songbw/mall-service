@@ -1,6 +1,6 @@
 package com.fengchao.base.service;
 
-import com.fengchao.base.bean.AyFcImages;
+import com.fengchao.base.model.AyFcImages;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -13,4 +13,6 @@ public interface UploadService {
     String uploadRelative(MultipartFile file, String path) ;
 
     void downUpload(AyFcImages images) ;
+
+    void batchDownUpload() ;
 }
