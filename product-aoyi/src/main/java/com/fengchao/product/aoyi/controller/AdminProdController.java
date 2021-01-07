@@ -63,14 +63,14 @@ public class AdminProdController {
     @PostMapping("search")
     public OperaResult searchProd(@Valid @RequestBody SerachBean bean, @RequestHeader("merchant") Integer merchantHeader,
                                   OperaResult result) {
-        log.info("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantHeader);
+        log.debug("搜索商品 入参 bean:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantHeader);
 
         bean.setMerchantHeader(merchantHeader);
         PageBean pageBean = prodService.selectNameList(bean);
 //        PageBean pageBean = prodService.selectProductListPageable(bean);
         result.getData().put("result", pageBean);
 
-        log.info("搜索商品 返回:{}", JSONUtil.toJsonString(result));
+        log.debug("搜索商品 返回:{}", JSONUtil.toJsonString(result));
 
         return result;
     }
@@ -87,7 +87,7 @@ public class AdminProdController {
     @PostMapping
     public OperaResult create(@RequestBody AoyiProdIndex bean, @RequestHeader("merchant") Integer merchantId,
                               OperaResult result) throws ProductException {
-        log.info("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
+        log.debug("创建商品 入参 AoyiProdIndexX:{}, merchantId:{}", JSONUtil.toJsonString(bean), merchantId);
         try {
             // 入参校验
             if (bean.getMerchantId() <= 0) {
@@ -107,7 +107,7 @@ public class AdminProdController {
             result.setCode(500);
             result.setMsg(e.getMessage());
         }
-        log.info("创建商品 返回:{}", JSONUtil.toJsonString(result));
+        log.debug("创建商品 返回:{}", JSONUtil.toJsonString(result));
         return result;
     }
 
@@ -179,13 +179,13 @@ public class AdminProdController {
         // 创建HSSFWorkbook对象
         HSSFWorkbook workbook = null;
 
-        log.info("导出商品列表 入参:{}", JSONUtil.toJsonString(serachBean));
+        log.debug("导出商品列表 入参:{}", JSONUtil.toJsonString(serachBean));
         try {
             // 1.根据条件获取订单集合
             serachBean.setMerchantHeader(merchantHeader);
             List<ProductExportResVo> productExportResVoList = prodService.exportProductList(serachBean);
 
-            log.info("导出商品列表 获取导出记录{}条", productExportResVoList.size());
+            log.debug("导出商品列表 获取导出记录{}条", productExportResVoList.size());
             if (CollectionUtils.isEmpty(productExportResVoList)) {
                 throw new Exception("未找出有效的导出数据!");
             }
@@ -227,7 +227,7 @@ public class AdminProdController {
             }
 
             //
-            log.info("export product file finish");
+            log.debug("export product file finish");
         } catch (ExportProuctOverRangeException e) {
             log.error("导出文件异常了:{}", e.getMessage(), e);
 
@@ -310,17 +310,17 @@ public class AdminProdController {
         // 创建HSSFWorkbook对象
         HSSFWorkbook workbook = null;
 
-        log.info("导出商品价格列表 入参:{}", JSONUtil.toJsonString(floorPriceRate));
+        log.debug("导出商品价格列表 入参:{}", JSONUtil.toJsonString(floorPriceRate));
         try {
             DecimalFormat df = new DecimalFormat("0.00");
             String s = df.format((float)floorPriceRate/100);
             float param = Float.valueOf(s.trim()).floatValue();
-            log.info("导出商品价格列表 入参:{}", JSONUtil.toJsonString(param));
+            log.debug("导出商品价格列表 入参:{}", JSONUtil.toJsonString(param));
             // 1.根据条件获取订单集合
             PageBean pageBean = prodService.exportProductPriceList(param, pageNo, pageSize);
             List<ProductExportResVo> productExportResVoList = (List<ProductExportResVo>) pageBean.getList();
 
-            log.info("导出商品价格列表 获取导出记录{}条", productExportResVoList.size());
+            log.debug("导出商品价格列表 获取导出记录{}条", productExportResVoList.size());
             if (CollectionUtils.isEmpty(productExportResVoList)) {
                 throw new Exception("未找出有效的导出数据!");
             }
@@ -362,7 +362,7 @@ public class AdminProdController {
             }
 
             //
-            log.info("export product price file finish");
+            log.debug("export product price file finish");
         } catch (ExportProuctOverRangeException e) {
             log.error("导出文件异常了:{}", e.getMessage(), e);
 
@@ -577,7 +577,7 @@ public class AdminProdController {
 
             //
             if (currentRowNum % 100 == 0) {
-                log.info("导出商品列表 第{}行, 共{}行", currentRowNum, totalRowNum);
+                log.debug("导出商品列表 第{}行, 共{}行", currentRowNum, totalRowNum);
             }
             currentRowNum++;
             productExportResVo = null; // 释放
@@ -632,7 +632,7 @@ public class AdminProdController {
 
             //
             if (currentRowNum % 100 == 0) {
-                log.info("导出商品价格列表 第{}行, 共{}行", currentRowNum, totalRowNum);
+                log.debug("导出商品价格列表 第{}行, 共{}行", currentRowNum, totalRowNum);
             }
             currentRowNum++;
             productExportResVo = null; // 释放
