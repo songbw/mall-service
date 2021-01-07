@@ -457,7 +457,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                 List<AoyiItemDetailResDto> aoyiItemDetailResDtoList
                         = aoyiClientRpcService.weipinhuiQueryItemsList(pageNumber, 20);
 
-                logger.debug("同步itemIdList 第{}页 共查询到{}条数据 >>>> {}",
+                logger.info("同步itemIdList 第{}页 共查询到{}条数据 >>>> {}",
                         pageNumber, aoyiItemDetailResDtoList.size(), JSONUtil.toJsonStringWithoutNull(aoyiItemDetailResDtoList));
 
 
@@ -484,6 +484,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                         }
                     }
                     if (newItemList != null && newItemList.size() > 0) {
+                        logger.info("test 进去 》》》》》》》》》》》》》");
                         futureList.add(asyncTask.executeAsyncWphItemDetailForSub(newItemList, aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao,aoyiProdIndexMapper));
                     }
 
