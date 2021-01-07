@@ -577,7 +577,7 @@ public class AsyncTask {
                     itemIdIndex, itemId, JSONUtil.toJsonString(aoyiItemDetailResDto));
 
             if (aoyiItemDetailResDto == null) {
-                log.warn("同步商品详情 第{}个itemId:{} rpc获取商品详情为空 继续...", itemIdIndex, itemId);
+                log.info("1.同步商品详情 第{}个itemId:{} rpc获取商品详情为空 继续...", itemIdIndex, itemId);
                 result = new AsyncResult <String>("fail,time=" + System.currentTimeMillis() + ",thread id=" + Thread.currentThread().getName() + ",itemId "+ itemId+" aoyi rpc 出错！");
                 continue;
             }
@@ -615,7 +615,7 @@ public class AsyncTask {
             // x.. 获取sku list
             List<AoyiSkuResDto> aoyiSkuResDtoList = aoyiItemDetailResDto.getAoyiSkusResponses(); // rpc获取到的sku集合
             if (CollectionUtils.isEmpty(aoyiSkuResDtoList)) {
-                log.warn("同步商品详情 第{}个itemId:{} 其商品详情为空 继续......", itemIdIndex, itemId);
+                log.info("2.同步商品详情 第{}个itemId:{} 其商品详情为空 继续......", itemIdIndex, itemId);
                 result = new AsyncResult <String>("fail,time=" + System.currentTimeMillis() + ",thread id=" + Thread.currentThread().getName() + ",itemId "+ itemId+" aoyi rpc 出错！");
                 continue;
             }
