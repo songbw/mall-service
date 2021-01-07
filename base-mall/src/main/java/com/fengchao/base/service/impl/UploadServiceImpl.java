@@ -40,20 +40,20 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public void downUpload(AyFcImages img) {
-        log.info("下载上传图片入口参数 {}", JSONUtil.toJsonString(img));
+        log.debug("下载上传图片入口参数 {}", JSONUtil.toJsonString(img));
         String base = "aoyi";
         String array1[] = img.getAyImage().split(img.getType());
         // String fileName = array1[1];
         String fileName = img.getAyImage().substring(img.getAyImage().lastIndexOf("/") + 1);
         try {
-            log.info("下载上传图片 保存到本地 url:{}, fileName:{}, savePath:{}",
+            log.debug("下载上传图片 保存到本地 url:{}, fileName:{}, savePath:{}",
                     img.getAyImage(), fileName, base + img.getPath() + img.getType());
             URLConnectionDownloader.download(img.getAyImage(), fileName, base + img.getPath() + img.getType());
         } catch (Exception e) {
             log.error("下载上传图片异常:{}", e.getMessage(), e);
             productService.imageBack(img.getId(), 2) ;
         }
-        log.info("下载上传图片 本地路径:{} 上传路径:{}",
+        log.debug("下载上传图片 本地路径:{} 上传路径:{}",
                 base + img.getPath() + img.getType() + "/" + fileName, img.getPath() + img.getType() + "/" + fileName);
         CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + "/" + fileName),img.getPath() + img.getType() + "/" + fileName) ;
         productService.imageBack(img.getId(), 1) ;

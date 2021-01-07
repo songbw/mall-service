@@ -13,4 +13,6 @@ public interface UploadService {
     String uploadRelative(MultipartFile file, String path) ;
 
     void downUpload(AyFcImages images) ;
+
+    void asyncDownUpload(AyFcImages images) ;
 }
