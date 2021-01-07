@@ -82,7 +82,7 @@ public class UploadServiceImpl implements UploadService {
             if (list == null || list.size() == 0) {
                 break;
             }
-            futureList.add(asyncTask.asyncDownUpload(list, ayFcImagesMapper)) ;
+            futureList.add(asyncTask.asyncDownUpload(list, ayFcImagesDao)) ;
         }
         //对各个线程段结果进行解析
         for (Future<String> future : futureList) {

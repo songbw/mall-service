@@ -1,5 +1,6 @@
 package com.fengchao.base.task.thread.pool;
 
+import com.fengchao.base.dao.AyFcImagesDao;
 import com.fengchao.base.mapper.AyFcImagesMapper;
 import com.fengchao.base.model.AyFcImages;
 import com.fengchao.base.utils.CosUtil;
@@ -26,7 +27,7 @@ import java.util.concurrent.Future;
 public class AsyncTask {
 
     @Async("asyncServiceExecutor")
-    public Future<String> asyncDownUpload(List<AyFcImages> list, AyFcImagesMapper ayFcImagesMapper){
+    public Future<String> asyncDownUpload(List<AyFcImages> list, AyFcImagesDao ayFcImagesMapper){
         //声明future对象
         Future<String> result = new AsyncResult<String>("");
         for(AyFcImages img : list) {
@@ -49,7 +50,7 @@ public class AsyncTask {
                     base + img.getPath() + img.getType() + "/" + fileName, img.getPath() + img.getType() + "/" + fileName);
             CosUtil.upload(CosUtil.iWalletBucketName, new File(base + img.getPath() + img.getType() + "/" + fileName),img.getPath() + img.getType() + "/" + fileName) ;
             // 更新
-            ayFcImagesMapper.updateByPrimaryKey(img) ;
+            ayFcImagesMapper.updateStatus(img); ;
 
         }
         return result ;
