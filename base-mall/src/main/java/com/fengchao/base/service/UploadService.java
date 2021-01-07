@@ -14,5 +14,5 @@ public interface UploadService {
 
     void downUpload(AyFcImages images) ;
 
-    void asyncDownUpload(AyFcImages images) ;
+//    void asyncDownUpload(AyFcImages images) ;
 }
