@@ -568,9 +568,9 @@ public class AsyncTask {
             try {
                 aoyiItemDetailResDto = aoyiClientRpcService.weipinhuiQueryItemDetial(itemId);
             } catch (Exception e) {
+                log.info("aoyi rpc 出错！");
                 e.printStackTrace();
                 result = new AsyncResult <String>("fail,time=" + System.currentTimeMillis() + ",thread id=" + Thread.currentThread().getName() + ",itemId "+ itemId+" aoyi rpc 出错！");
-                log.error("aoyi rpc 出错！");
                 continue;
             }
             log.debug("同步商品详情 第{}个itemId:{} rpc获取商品详情: {}",
