@@ -483,9 +483,7 @@ public class ThirdProdServiceImpl implements ThirdProdService {
                             newItemList.add(item);
                         }
                     }
-                    logger.info("test 进去 》》》》》》》》》》》》》 {}", newItemList.size());
                     if (newItemList != null && newItemList.size() > 0) {
-                        logger.info("test 进去 》》》》》》》》》》》》》");
                         futureList.add(asyncTask.executeAsyncWphItemDetailForSub(newItemList, aoyiClientRpcService, aoyiBaseBrandDao, productConfig, productDao, starSkuDao, starPropertyDao, ayFcImagesDao,aoyiProdIndexMapper));
                     }
 
