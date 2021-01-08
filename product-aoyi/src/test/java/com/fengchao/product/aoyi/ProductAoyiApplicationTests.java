@@ -16,6 +16,7 @@ import com.fengchao.product.aoyi.model.*;
 import com.fengchao.product.aoyi.rpc.extmodel.SysCompany;
 import com.fengchao.product.aoyi.service.AdminProdService;
 import com.fengchao.product.aoyi.service.ProductService;
+import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.service.weipinhui.WeipinhuiDataService;
 import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -32,6 +34,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@EnableAsync
 @Slf4j
 @RunWith(SpringRunner.class)
 @ActiveProfiles("local")
@@ -71,6 +74,8 @@ public class ProductAoyiApplicationTests {
 
 	@Autowired
 	private WeipinhuiDataService weipinhuiDataService;
+	@Autowired
+	private ThirdProdService thirdProdService ;
 
 	@Ignore
 	@Test
@@ -343,6 +348,12 @@ public class ProductAoyiApplicationTests {
 				aoyiProdIndexMapper.updateByPrimaryKeySelective(aoyiProdIndexWithBLOBs) ;
 			}
 		});
+	}
+
+	@Ignore
+	@Test
+	public void asyncWphItemDetail() {
+		thirdProdService.asyncWphItemDetail(1, -1) ;
 	}
 
 }

@@ -20,12 +20,12 @@ public class StarProductSyncRunnerJobImpl implements JobRunner {
         try {
             BizLogger bizLogger = jobContext.getBizLogger();
 
-            LOGGER.info("我要同步怡亚通商品操作：{}", JSONUtil.toJsonString(jobContext));
+            LOGGER.debug("我要同步怡亚通商品操作：{}", JSONUtil.toJsonString(jobContext));
             ThirdProdService thirdProdService = BeanContext.getApplicationContext().getBean(ThirdProdService.class) ;
             thirdProdService.syncStarProd();
-            bizLogger.info("同步怡亚通商品成功");
+            bizLogger.debug("同步怡亚通商品成功");
         } catch (Exception e) {
-            LOGGER.info("Run job failed!", e);
+            LOGGER.error("Run job failed!", e);
             return new Result(Action.EXECUTE_FAILED, e.getMessage());
         }
         return new Result(Action.EXECUTE_SUCCESS, "执行成功了，哈哈");

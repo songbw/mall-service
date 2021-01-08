@@ -4,9 +4,6 @@ import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.exception.ProductException;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
 import com.fengchao.product.aoyi.model.AoyiProdIndexX;
-import com.fengchao.product.aoyi.model.AyFcImages;
-
-import java.util.List;
 
 public interface ThirdProdService {
 
@@ -37,4 +34,6 @@ public interface ThirdProdService {
     OperaResponse syncStarProdPrice() ;
 
     OperaResponse syncStarCategory() ;
+
+    OperaResponse asyncWphItemDetail(Integer pageNumber, Integer maxPageCount) ;
 }

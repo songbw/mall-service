@@ -35,4 +35,14 @@ public class BaseServiceH implements BaseService {
     public OperaResponse sendMail(Email email) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
+
+    @Override
+    public OperaResult batchDownUpload() {
+        OperaResult result = new OperaResult();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = "";
+        result.setCode(404);
+        result.setMsg("base服务失败 " + msg);
+        return result;
+    }
 }
