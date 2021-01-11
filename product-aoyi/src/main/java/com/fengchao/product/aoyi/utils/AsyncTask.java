@@ -195,56 +195,43 @@ public class AsyncTask {
     }
 
     @Async("asyncServiceExecutor")
-    public void executeAsyncStarProdPrice(AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
-        List<StarSku> starSkus = starSkuDao.selectAll();
-        List<String> codes = new ArrayList<>();
+    public Future<String> executeAsyncStarProdPrice(List<StarSku> list, AoyiClientService aoyiClientService, StarSkuDao starSkuDao, ProductDao productDao) {
+        //声明future对象
+        Future<String> result = new AsyncResult<String>("");
         String code = "";
         int i = 1;
-        for (StarSku starSku : starSkus) {
-            if (i % 200 == 0) {
-                codes.add(code);
-                code = "";
-//                i = 1;
-            }
+        for (StarSku starSku : list) {
             if (StringUtils.isEmpty(code)) {
-                i = i + 1;
                 code = starSku.getCode();
             } else {
-                i = i + 1;
                 code = code + "," + starSku.getCode();
             }
-            if (i >= starSkus.size()) {
-                codes.add(code);
-//                i = 1;
-            }
         }
-        log.info("test star codes count: {}", codes.size());
         List<String> spus = new ArrayList<>();
-        codes.forEach(c -> {
-            OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(c);
-            String skuPriceResString = JSON.toJSONString(priceResponse);
-            JSONObject skuDetailResJson = JSONObject.parseObject(skuPriceResString);
-            JSONArray skuPriceData = skuDetailResJson.getJSONArray("data");
-            for (int j = 0; j < skuPriceData.size(); j++) {
-                JSONObject skuPriceJson = skuPriceData.getJSONObject(j);
-                String channelPrice = skuPriceJson.getString("channelPrice");
-                String retailPrice = skuPriceJson.getString("retailPrice");
-                String skuCode = skuPriceJson.getString("code");
-                Integer status = skuPriceJson.getInteger("status");
-                if (StarSkuStatusEnum.PUT_ON.getValue() == status) {
-                    BigDecimal bigDecimalC = new BigDecimal(channelPrice);
-                    int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue();
+        OperaResponse priceResponse = aoyiClientService.findSkuSalePrice(code);
+        String skuPriceResString = JSON.toJSONString(priceResponse);
+        JSONObject skuDetailResJson = JSONObject.parseObject(skuPriceResString);
+        JSONArray skuPriceData = skuDetailResJson.getJSONArray("data");
+        for (int j = 0; j < skuPriceData.size(); j++) {
+            JSONObject skuPriceJson = skuPriceData.getJSONObject(j);
+            String channelPrice = skuPriceJson.getString("channelPrice");
+            String retailPrice = skuPriceJson.getString("retailPrice");
+            String skuCode = skuPriceJson.getString("code");
+            Integer status = skuPriceJson.getInteger("status");
+            if (StarSkuStatusEnum.PUT_ON.getValue() == status) {
+                BigDecimal bigDecimalC = new BigDecimal(channelPrice);
+                int sprice = bigDecimalC.multiply(new BigDecimal("100")).intValue();
 
 //                    BigDecimal bigDecimalPrice = new BigDecimal(0) ;
 //                    bigDecimalPrice = bigDecimalC.divide(new BigDecimal(0.9), 2, BigDecimal.ROUND_HALF_UP) ;
 //                    int price = bigDecimalPrice.multiply(new BigDecimal("100")).intValue() ;
 
-                    BigDecimal bigDecimalR = new BigDecimal(retailPrice);
-                    int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue();
-                    StarSku starSku = new StarSku();
-                    starSku.setCode(skuCode);
-                    starSku.setSprice(sprice);
-                    starSku.setAdvisePrice(advisePrice);
+                BigDecimal bigDecimalR = new BigDecimal(retailPrice);
+                int advisePrice = bigDecimalR.multiply(new BigDecimal("100")).intValue();
+                StarSku starSku = new StarSku();
+                starSku.setCode(skuCode);
+                starSku.setSprice(sprice);
+                starSku.setAdvisePrice(advisePrice);
 
 
 //                    if (price > advisePrice) {
@@ -252,39 +239,39 @@ public class AsyncTask {
 //                    } else {
 //                        starSku.setPrice(advisePrice);
 //                    }
-                    // 销售价格使用建议销售价
-                    starSku.setPrice(advisePrice);
+                // 销售价格使用建议销售价
+                starSku.setPrice(advisePrice);
 
-                    starSku.setStatus(ProductStatusEnum.PUT_OFF.getValue());
-                    List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode);
-                    if (!starSkus1.isEmpty()) {
-                        StarSku checkSku = starSkus1.get(0);
-                        // 销售价格哪个小就用那个
-                        if (checkSku.getPrice() < starSku.getPrice() && checkSku.getPrice() > starSku.getSprice()) {
-                            starSku.setPrice(checkSku.getPrice());
-                        }
-                        starSkuDao.updatePriceByCode(starSku);
-                        String spuId = checkSku.getSpuId();
-                        log.info("spu id is : {}", spuId);
-                        if (!spus.contains(spuId)) {
-                            spus.add(starSkus1.get(0).getSpuId());
-                            // 更新spu表价格
-                            PriceBean priceBean = new PriceBean();
-                            priceBean.setSkuId(starSkus1.get(0).getSpuId());
-                            priceBean.setMerchantId(4);
-                            priceBean.setPrice(new BigDecimal(starSku.getPrice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-                            priceBean.setSPrice(channelPrice);
-                            productDao.updatePrice(priceBean);
-                        }
+                starSku.setStatus(ProductStatusEnum.PUT_OFF.getValue());
+                List<StarSku> starSkus1 = starSkuDao.selectByCode(skuCode);
+                if (!starSkus1.isEmpty()) {
+                    StarSku checkSku = starSkus1.get(0);
+                    // 销售价格哪个小就用那个
+                    if (checkSku.getPrice() < starSku.getPrice() && checkSku.getPrice() > starSku.getSprice()) {
+                        starSku.setPrice(checkSku.getPrice());
                     }
-                } else {
-                    StarSku starSku = new StarSku();
-                    starSku.setCode(skuCode);
-                    starSku.setStatus(ProductStatusEnum.PUT_ON.getValue());
-                    starSkuDao.updateStatusByCode(starSku);
+                    starSkuDao.updatePriceByCode(starSku);
+                    String spuId = checkSku.getSpuId();
+                    log.debug("spu id is : {}", spuId);
+                    if (!spus.contains(spuId)) {
+                        spus.add(starSkus1.get(0).getSpuId());
+                        // 更新spu表价格
+                        PriceBean priceBean = new PriceBean();
+                        priceBean.setSkuId(starSkus1.get(0).getSpuId());
+                        priceBean.setMerchantId(4);
+                        priceBean.setPrice(new BigDecimal(starSku.getPrice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                        priceBean.setSPrice(channelPrice);
+                        productDao.updatePrice(priceBean);
+                    }
                 }
+            } else {
+                StarSku starSku = new StarSku();
+                starSku.setCode(skuCode);
+                starSku.setStatus(ProductStatusEnum.PUT_ON.getValue());
+                starSkuDao.updateStatusByCode(starSku);
             }
-        });
+        }
+        return result ;
     }
 
     @Async("asyncServiceExecutor")
