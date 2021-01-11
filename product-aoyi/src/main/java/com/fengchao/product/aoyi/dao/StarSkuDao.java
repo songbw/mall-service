@@ -1,12 +1,15 @@
 package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.bean.PriceBean;
+import com.fengchao.product.aoyi.bean.StarSkuQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.constants.IStatusEnum;
 import com.fengchao.product.aoyi.mapper.StarSkuMapper;
 import com.fengchao.product.aoyi.mapper.StarSkuXMapper;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -79,6 +82,18 @@ public class StarSkuDao {
         example.setOrderByClause("create_time desc");
         List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
+    }
+
+    /**
+     * 根据merchantCode查询数量
+     * @param merchantCode
+     * @return
+     */
+    public long selectAllCount(String merchantCode) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria();
+        criteria.andMerchantCodeEqualTo(merchantCode) ;
+        return starSkuMapper.countByExample(example) ;
     }
 
     /**
@@ -253,6 +268,22 @@ public class StarSkuDao {
         criteria.andStatusEqualTo(1) ;
         List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
+    }
+
+    /**
+     * 分页查询 star sku
+     * @param queryBean
+     * @return
+     */
+    public PageInfo<StarSku> selectPageable(StarSkuQueryBean queryBean) {
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria() ;
+        criteria.andMerchantCodeEqualTo(queryBean.getMerchantCode()) ;
+        example.setOrderByClause("create_time desc");
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
+        List<StarSku> list = starSkuMapper.selectByExample(example);
+        PageInfo<StarSku> pageInfo = new PageInfo(list);
+        return pageInfo;
     }
 
 }

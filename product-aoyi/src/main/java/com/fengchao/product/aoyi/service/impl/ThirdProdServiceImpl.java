@@ -16,6 +16,7 @@ import com.fengchao.product.aoyi.service.ThirdProdService;
 import com.fengchao.product.aoyi.utils.AsyncTask;
 import com.fengchao.product.aoyi.utils.HttpClient;
 import com.fengchao.product.aoyi.utils.JSONUtil;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -434,15 +435,41 @@ public class ThirdProdServiceImpl implements ThirdProdService {
 
     @Override
     public OperaResponse syncStarProdPrice() {
-        logger.info("syncStarProdPrice");
         OperaResponse response = new OperaResponse() ;
-        asyncTask.executeAsyncStarProdPrice(aoyiClientService, starSkuDao, productDao);
+        long count = starSkuDao.selectAllCount("141") ;
+        logger.info("syncStarProdPrice 同步数量：{}", count);
+        List <Future<String>> futureList = new ArrayList <Future<String>>();
+        StarSkuQueryBean queryBean = new StarSkuQueryBean() ;
+        queryBean.setMerchantCode("141");
+        queryBean.setPageSize(200);
+        for (int i = 0; i < (count / 200 + 1); i++) {
+            queryBean.setPageNo(i + 1);
+            PageInfo<StarSku> pageInfo = starSkuDao.selectPageable(queryBean) ;
+            List<StarSku> list = pageInfo.getList() ;
+            futureList.add(asyncTask.executeAsyncStarProdPrice(list, aoyiClientService, starSkuDao, productDao)) ;
+        }
+
+        //对各个线程段结果进行解析
+        for (Future<String> future : futureList) {
+            String str;
+            if (null != future) {
+                try {
+                    str = future.get().toString();
+                    logger.info("current thread id =" + Thread.currentThread().getName() + ",result=" + str);
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.info("线程运行异常！");
+                }
+            } else {
+                logger.info("线程运行异常！");
+            }
+        }
         return response;
     }
 
     @Override
     public OperaResponse syncStarCategory() {
         OperaResponse response = new OperaResponse() ;
+
         asyncTask.executeAsyncStarCategory(aoyiClientService, starCategoryMapper);
         return response;
     }
