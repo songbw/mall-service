@@ -12,5 +12,5 @@ public class OrderConstants {
     /**
      *
      */
-    public static final String MERCHANTNO_WEIPINHUI = "3";
+    public static final String MERCHANTNO_WEIPINHUI = "^3";
 }
