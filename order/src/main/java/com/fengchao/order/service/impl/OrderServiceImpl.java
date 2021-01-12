@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -307,7 +308,7 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) { // 遍历商户(商户单)
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
-                if (orderMerchantBean.getMerchantNo().equals(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的商品
+                if (orderMerchantBean.getMerchantNo().startsWith(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的商品
                     handleUnitPrice(orderMerchantBean);
                     weipinhuiOrderMerchantBeanList.add(orderMerchantBean);
                 } else {
