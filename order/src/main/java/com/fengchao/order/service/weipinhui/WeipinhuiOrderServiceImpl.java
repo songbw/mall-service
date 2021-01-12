@@ -94,7 +94,7 @@ public class WeipinhuiOrderServiceImpl implements WeipinhuiOrderService {
             // 1.订单信息
             AoyiRenderOrderRequest aoyiRenderOrderRequest = new AoyiRenderOrderRequest();
             if (!"1001".equals(orderParamBean.getCompanyCustNo()) && !"1002".equals(orderParamBean.getCompanyCustNo())) {
-                aoyiRenderOrderRequest.setSourceCode("ZhCityVip");
+//                aoyiRenderOrderRequest.setSourceCode("ZhCityVip");
             }
             aoyiRenderOrderRequest.setOrderNo(orderMerchantBean.getTradeNo()); // 订单号
             // aoyiRenderOrderRequest.setAmount(); // 订单总金额(不 含运费) 单位元
