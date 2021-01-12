@@ -308,7 +308,7 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderMerchantBean orderMerchantBean : orderMerchantBeans) { // 遍历商户(商户单)
             if (orderMerchantBean.getMerchantId() == OrderConstants.AOYI_MERCHANG_CODE) {
-                if (Pattern.matches(OrderConstants.MERCHANTNO_WEIPINHUI, orderMerchantBean.getMerchantNo())) { // 唯品会的商品
+                if (orderMerchantBean.getMerchantNo().startsWith(OrderConstants.MERCHANTNO_WEIPINHUI)) { // 唯品会的商品
                     handleUnitPrice(orderMerchantBean);
                     weipinhuiOrderMerchantBeanList.add(orderMerchantBean);
                 } else {
