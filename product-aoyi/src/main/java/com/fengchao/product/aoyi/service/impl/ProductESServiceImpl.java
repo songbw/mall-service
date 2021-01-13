@@ -57,8 +57,10 @@ public class ProductESServiceImpl implements ProductESService {
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
         List<String> codes = new ArrayList<>() ;
+        List<String> notcodes = new ArrayList<>() ;
         if (merchantCodeBean != null) {
             codes = merchantCodeBean.getCodes() ;
+            notcodes = merchantCodeBean.getNotcodes() ;
         }
         SearchRequest request = new SearchRequest();
         request.indices(esConfig.getEsIndex());
@@ -85,6 +87,14 @@ public class ProductESServiceImpl implements ProductESService {
             merchantCodeBoolQuery.should(shouldTermQueryBuilder) ;
         }
         boolQueryBuilder.must(merchantCodeBoolQuery) ;
+
+        //not merchant code
+        BoolQueryBuilder merchantCodeNotBoolQuery = QueryBuilders.boolQuery() ;
+        for (String code: notcodes) {
+            TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
+            merchantCodeNotBoolQuery.should(shouldTermQueryBuilder) ;
+        }
+        boolQueryBuilder.mustNot(merchantCodeNotBoolQuery) ;
 
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
         boolQueryBuilder.must(termQueryBuilder);

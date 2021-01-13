@@ -13,4 +13,5 @@ import java.util.List;
 @Getter
 public class MerchantCodeBean {
     private List<String> codes ;
+    private List<String> notcodes ;
 }
