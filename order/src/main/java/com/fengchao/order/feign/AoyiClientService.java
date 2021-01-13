@@ -14,7 +14,7 @@ import java.util.List;
 @FeignClient(value = "aoyi-client", url = "${rpc.feign.client.aoyiclient.url:}", fallbackFactory = AoyiClientServiceClientFallbackFactory.class)
 public interface AoyiClientService {
 
-    @RequestMapping(value = "/order", method = RequestMethod.POST)
+    @RequestMapping(value = "/order/gat", method = RequestMethod.POST)
     OperaResponse<List<SubOrderT>> order(@RequestBody OrderParamBean orderParamBean);
 
     @RequestMapping(value = "/product/price", method = RequestMethod.POST)
