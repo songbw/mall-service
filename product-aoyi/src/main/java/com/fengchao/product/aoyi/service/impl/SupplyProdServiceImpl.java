@@ -30,13 +30,26 @@ public class SupplyProdServiceImpl implements SupplyProdService {
     @Override
     public OperaResponse findProductPageable(ProductQueryBean queryBean) {
         OperaResponse response = new OperaResponse();
+        if (queryBean.getPageSize() > 200) {
+            queryBean.setPageSize(200);
+        }
         response.setData(productDao.selectPageable(queryBean));
         return response;
     }
 
     @Override
     public OperaResponse batchFindSkuBySpu(ProductQueryBean queryBean) {
+        OperaResponse response = new OperaResponse() ;
+        if (queryBean.getSpus() == null) {
+            return response ;
+        }
+        if (queryBean.getSpus().size() > 200) {
+            response.setCode(2000001);
+            response.setMsg("spus 必须小于200");
+            return response;
+        }
         List<StarSku> starSkus = starSkuDao.selectBySpuIds(queryBean.getSpus(), 1) ;
-        return null;
+        response.setData(starSkus);
+        return response;
     }
 }

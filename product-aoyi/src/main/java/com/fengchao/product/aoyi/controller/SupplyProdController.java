@@ -77,7 +77,7 @@ public class SupplyProdController {
     @PostMapping("sku")
     private OperaResponse findSku(@RequestBody ProductQueryBean queryBean) {
         log.debug("find product 入参：{}", JSONUtil.toJsonString(queryBean));
-        return supplyProdService.findProductPageable(queryBean);
+        return supplyProdService.batchFindSkuBySpu(queryBean);
     }
 
     @PostMapping("notify/sku")
