@@ -82,19 +82,24 @@ public class ProductESServiceImpl implements ProductESService {
         }
         // merchant code
         BoolQueryBuilder merchantCodeBoolQuery = QueryBuilders.boolQuery() ;
-        for (String code: codes) {
-            TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
-            merchantCodeBoolQuery.should(shouldTermQueryBuilder) ;
+        if (codes != null && codes.size() > 0) {
+            for (String code: codes) {
+                TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
+                merchantCodeBoolQuery.should(shouldTermQueryBuilder) ;
+            }
+            boolQueryBuilder.must(merchantCodeBoolQuery) ;
         }
-        boolQueryBuilder.must(merchantCodeBoolQuery) ;
 
         //not merchant code
         BoolQueryBuilder merchantCodeNotBoolQuery = QueryBuilders.boolQuery() ;
-        for (String code: notcodes) {
-            TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
-            merchantCodeNotBoolQuery.should(shouldTermQueryBuilder) ;
+        if (notcodes != null && notcodes.size() > 0) {
+            for (String code: notcodes) {
+                TermQueryBuilder shouldTermQueryBuilder = QueryBuilders.termQuery("merchant_code", code) ;
+                merchantCodeNotBoolQuery.should(shouldTermQueryBuilder) ;
+            }
+            boolQueryBuilder.mustNot(merchantCodeNotBoolQuery) ;
         }
-        boolQueryBuilder.mustNot(merchantCodeNotBoolQuery) ;
+
 
         TermQueryBuilder termQueryBuilder =  QueryBuilders.termQuery("state", "1") ;
         boolQueryBuilder.must(termQueryBuilder);
