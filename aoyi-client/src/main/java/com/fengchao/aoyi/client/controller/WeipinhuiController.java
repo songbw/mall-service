@@ -2,7 +2,6 @@ package com.fengchao.aoyi.client.controller;
 
 import com.fengchao.aoyi.client.bean.OperaResult;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiConfirmOrderRequest;
-import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiOrderLogisticsRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiReleaseOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.req.AoyiRenderOrderRequest;
 import com.fengchao.aoyi.client.bean.dto.weipinhui.res.*;
