@@ -3,9 +3,12 @@ package com.fengchao.product.aoyi.dao;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.StarSkuQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyBean;
 import com.fengchao.product.aoyi.constants.IStatusEnum;
 import com.fengchao.product.aoyi.mapper.StarSkuMapper;
 import com.fengchao.product.aoyi.mapper.StarSkuXMapper;
+import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
+import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
 import com.github.pagehelper.PageHelper;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author song
@@ -284,6 +288,26 @@ public class StarSkuDao {
         List<StarSku> list = starSkuMapper.selectByExample(example);
         PageInfo<StarSku> pageInfo = new PageInfo(list);
         return pageInfo;
+    }
+
+    /**
+     * 过滤供应商批量查询
+     * @param supplyBeans
+     * @return
+     */
+    public List<StarSku> selectProdBySpuIds(List<SupplyBean> supplyBeans) {
+        List<SupplyBean> supplyBeanList = supplyBeans.stream().filter(supplyBean -> supplyBean.getSpuId() != supplyBean.getSkuId()).collect(Collectors.toList());
+        if (supplyBeanList == null || supplyBeanList.size() == 0) {
+            return null ;
+        }
+        List<String> spuIds = supplyBeanList.stream().map(supplyBean -> supplyBean.getSpuId()).collect(Collectors.toList());
+        List<String> skuIds = supplyBeanList.stream().map(supplyBean -> supplyBean.getSkuId()).collect(Collectors.toList());
+        StarSkuExample example = new StarSkuExample();
+        StarSkuExample.Criteria criteria = example.createCriteria() ;
+        criteria.andSpuIdIn(spuIds) ;
+        criteria.andCodeIn(skuIds) ;
+        List<StarSku> list = starSkuMapper.selectByExample(example) ;
+        return list ;
     }
 
 }

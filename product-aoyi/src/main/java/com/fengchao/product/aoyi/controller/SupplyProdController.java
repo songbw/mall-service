@@ -1,6 +1,7 @@
 package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
+import com.fengchao.product.aoyi.bean.supply.SupplyBean;
 import com.fengchao.product.aoyi.dao.EnterpriseSyncBrandDao;
 import com.fengchao.product.aoyi.service.*;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -8,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 产品供应
@@ -84,5 +87,17 @@ public class SupplyProdController {
     private OperaResponse notifySku(@RequestBody EnterpriseSyncSkuNotifyBean notifyBean) {
         log.debug("notify sku 入参：{}", JSONUtil.toJsonString(notifyBean));
         return enterpriseSyncSkuService.notifyEnterpriseSku(notifyBean);
+    }
+
+    @PostMapping("price")
+    private OperaResponse findSkuPrice(@RequestBody List<SupplyBean> supplyBeans) {
+        log.debug("find product price 入参：{}", JSONUtil.toJsonString(supplyBeans));
+        return supplyProdService.batchFindSkuPrice(supplyBeans);
+    }
+
+    @PostMapping("state")
+    private OperaResponse findSkuState(@RequestBody List<SupplyBean> supplyBeans) {
+        log.debug("find product state 入参：{}", JSONUtil.toJsonString(supplyBeans));
+        return supplyProdService.batchFindSkuInventory(supplyBeans);
     }
 }

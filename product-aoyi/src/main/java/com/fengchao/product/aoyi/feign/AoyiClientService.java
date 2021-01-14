@@ -45,6 +45,9 @@ public interface AoyiClientService {
     @RequestMapping(value = "/star/product/price", method = RequestMethod.GET)
     OperaResponse findSkuSalePrice(@RequestParam("codes") String codes);
 
+    @RequestMapping(value = "/star/product/inventory", method = RequestMethod.GET)
+    OperaResponse findSkuInverntory(@RequestParam("codes") String codes);
+
     // 唯品会 begin
 
     /**

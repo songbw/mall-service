@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.dao;
 import com.fengchao.product.aoyi.bean.PriceBean;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyBean;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexMapper;
 import com.fengchao.product.aoyi.mapper.AoyiProdIndexXMapper;
 import com.fengchao.product.aoyi.model.AoyiProdIndex;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author song
@@ -586,6 +588,23 @@ public class ProductDao {
         PageInfo<AoyiProdIndexWithBLOBs> pageInfo = new PageInfo(aoyiProdIndexList);
 
         return pageInfo;
+    }
+
+    /**
+     * 过滤供应批量查询
+     * @param supplyBeans
+     * @return
+     */
+    public List<AoyiProdIndexWithBLOBs> selectProdBySpuIds(List<SupplyBean> supplyBeans) {
+        List<String> spuIds = supplyBeans.stream().filter(supplyBean -> supplyBean.getSpuId() == supplyBean.getSkuId()).map(supplyBean -> supplyBean.getSpuId()).collect(Collectors.toList());
+        if (spuIds == null || spuIds.size() == 0) {
+            return null ;
+        }
+        AoyiProdIndexExample aoyiProdIndexExample = new AoyiProdIndexExample();
+        AoyiProdIndexExample.Criteria criteria = aoyiProdIndexExample.createCriteria();
+        criteria.andMpuIn(spuIds) ;
+        List<AoyiProdIndexWithBLOBs> list = aoyiProdIndexMapper.selectByExampleWithBLOBs(aoyiProdIndexExample) ;
+        return list ;
     }
 
 }
