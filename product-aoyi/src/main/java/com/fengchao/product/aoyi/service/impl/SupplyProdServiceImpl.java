@@ -2,11 +2,16 @@ package com.fengchao.product.aoyi.service.impl;
 
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
+import com.fengchao.product.aoyi.bean.StarInventoryBean;
+import com.fengchao.product.aoyi.bean.supply.InventoryResponse;
 import com.fengchao.product.aoyi.bean.supply.SupplyBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyInventoryBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyPriceBean;
 import com.fengchao.product.aoyi.dao.ProductDao;
 import com.fengchao.product.aoyi.dao.StarSkuDao;
 import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
 import com.fengchao.product.aoyi.model.StarSku;
+import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.service.SupplyProdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author songbw
@@ -25,11 +29,13 @@ public class SupplyProdServiceImpl implements SupplyProdService {
 
     private final ProductDao productDao ;
     private final StarSkuDao starSkuDao ;
+    private final AoyiClientRpcService aoyiClientRpcService ;
 
     @Autowired
-    public SupplyProdServiceImpl(ProductDao productDao, StarSkuDao starSkuDao) {
+    public SupplyProdServiceImpl(ProductDao productDao, StarSkuDao starSkuDao, AoyiClientRpcService aoyiClientRpcService) {
         this.productDao = productDao;
         this.starSkuDao = starSkuDao;
+        this.aoyiClientRpcService = aoyiClientRpcService;
     }
 
     @Override
@@ -71,9 +77,9 @@ public class SupplyProdServiceImpl implements SupplyProdService {
         }
         List<AoyiProdIndexWithBLOBs> prodIndexWithBLOBs = productDao.selectProdBySpuIds(supplyBeans) ;
         List<StarSku> starSkus = starSkuDao.selectProdBySpuIds(supplyBeans) ;
-        List<SupplyBean> supplyBeanList = new ArrayList<>() ;
+        List<SupplyPriceBean> supplyBeanList = new ArrayList<>() ;
         prodIndexWithBLOBs.forEach(prod -> {
-            SupplyBean supplyBean = new SupplyBean() ;
+            SupplyPriceBean supplyBean = new SupplyPriceBean() ;
             supplyBean.setSpuId(prod.getMpu());
             supplyBean.setSkuId(prod.getMpu());
             supplyBean.setPrice(prod.getSprice());
@@ -81,7 +87,7 @@ public class SupplyProdServiceImpl implements SupplyProdService {
             supplyBeanList.add(supplyBean) ;
         });
         starSkus.forEach(starSku -> {
-            SupplyBean supplyBean = new SupplyBean() ;
+            SupplyPriceBean supplyBean = new SupplyPriceBean() ;
             supplyBean.setSpuId(starSku.getSpuId());
             supplyBean.setSkuId(starSku.getCode());
             supplyBean.setPrice(new BigDecimal(starSku.getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
@@ -93,18 +99,36 @@ public class SupplyProdServiceImpl implements SupplyProdService {
     }
 
     @Override
-    public OperaResponse batchFindSkuInventory(List<SupplyBean> supplyBeans) {
+    public OperaResponse batchFindSkuInventory(SupplyInventoryBean inventoryBean) {
         OperaResponse response = new OperaResponse() ;
-        if (supplyBeans== null) {
+        if (inventoryBean.getList() == null) {
             return response ;
         }
-        if (supplyBeans.size() > 50) {
+        if (inventoryBean.getList().size() > 50) {
             response.setCode(2000001);
             response.setMsg("列表数量 必须小于50");
             return response;
         }
-        List<AoyiProdIndexWithBLOBs> prodIndexWithBLOBs = productDao.selectProdBySpuIds(supplyBeans) ;
-        List<StarSku> starSkus = starSkuDao.selectProdBySpuIds(supplyBeans) ;
-        return null;
+        List<InventoryResponse> list = new ArrayList<>() ;
+        List<AoyiProdIndexWithBLOBs> prodIndexWithBLOBs = productDao.selectProdBySpuIds(inventoryBean.getList()) ;
+        prodIndexWithBLOBs.forEach(prod -> {
+            InventoryResponse inventoryResponse = new InventoryResponse() ;
+            inventoryResponse.setSpuId(prod.getMpu());
+            inventoryResponse.setSkuId(prod.getMpu());
+            inventoryResponse.setInventory(prod.getInventory().toString());
+            inventoryResponse.setStatus(prod.getState());
+            list.add(inventoryResponse) ;
+        });
+        List<StarInventoryBean> starInventoryBeans = aoyiClientRpcService.getStarInventory(inventoryBean);
+        starInventoryBeans.forEach(starInventoryBean -> {
+            InventoryResponse inventoryResponse = new InventoryResponse() ;
+            inventoryResponse.setSpuId(starInventoryBean.getSkuId());
+            inventoryResponse.setSkuId(starInventoryBean.getCode());
+            inventoryResponse.setInventory(starInventoryBean.getInventoryCount());
+            inventoryResponse.setStatus(starInventoryBean.getStatus());
+            list.add(inventoryResponse) ;
+        });
+        response.setData(list);
+        return response;
     }
 }

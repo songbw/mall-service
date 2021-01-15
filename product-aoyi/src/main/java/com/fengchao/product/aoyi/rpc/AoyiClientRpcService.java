@@ -1,7 +1,15 @@
 package com.fengchao.product.aoyi.rpc;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fengchao.product.aoyi.bean.OperaResponse;
+import com.fengchao.product.aoyi.bean.StarInventoryBean;
+import com.fengchao.product.aoyi.bean.StarInventoryRequestBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyInventoryBean;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
+import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
@@ -11,9 +19,12 @@ import com.fengchao.product.aoyi.utils.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author tom
@@ -191,5 +202,52 @@ public class AoyiClientRpcService {
                 JSONUtil.toJsonString(aoyiQueryInventoryResDto));
 
         return aoyiQueryInventoryResDto;
+    }
+
+    /**
+     * 查询star库存
+     * @param inventoryBean
+     * @return
+     */
+    public List<StarInventoryBean> getStarInventory(SupplyInventoryBean inventoryBean) {
+        List<String> skuIds = inventoryBean.getList().stream().filter(supplyBean -> supplyBean.getSpuId() != supplyBean.getSkuId()).map(supplyBean -> supplyBean.getSkuId()).collect(Collectors.toList());
+        if (skuIds == null || skuIds.size() == 0) {
+            return null ;
+        }
+        Map<String, String> map = inventoryBean.getList().stream().collect(Collectors.toMap(SupplyBean::getSkuId, SupplyBean::getSpuId)) ;
+        List<StarInventoryBean> inventoryBeans = new ArrayList<>();
+        StarInventoryRequestBean requestBean = new StarInventoryRequestBean() ;
+        requestBean.setAreaId(inventoryBean.getAreaId());
+        String code = "";
+        for (String skuId : skuIds) {
+            if (StringUtils.isEmpty(code)) {
+                code = skuId;
+            } else {
+                code = code + "," + skuId;
+            }
+        }
+        requestBean.setCodes(code);
+        OperaResponse response = aoyiClientService.findSkuInverntory(requestBean) ;
+        if (response.getCode() == 200) {
+            String skuInventoryResString = JSON.toJSONString(response);
+            JSONObject skuDetailResJson = JSONObject.parseObject(skuInventoryResString);
+            JSONArray skuInventoryData = skuDetailResJson.getJSONObject("data").getJSONArray("skuInvList");
+            for (int i = 0; i < skuInventoryData.size(); i++) {
+                JSONObject jsonObject = skuInventoryData.getJSONObject(i) ;
+                StarInventoryBean starInventoryBean = new StarInventoryBean();
+                starInventoryBean.setCode(jsonObject.getString("code"));
+                String spu = map.get(starInventoryBean.getCode()) ;
+                starInventoryBean.setSkuId(spu);
+                starInventoryBean.setInventoryCount(jsonObject.getString("inventoryCount"));
+                if ("0".equals(jsonObject.getString("status"))) {
+                    starInventoryBean.setStatus("1");
+                }
+                if ("1".equals(jsonObject.getString("status"))) {
+                    starInventoryBean.setStatus("0");
+                }
+                inventoryBeans.add(starInventoryBean) ;
+            }
+        }
+        return inventoryBeans ;
     }
 }

@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.supply.SupplyBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyInventoryBean;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ public interface SupplyProdService {
 
     OperaResponse batchFindSkuPrice(List<SupplyBean> supplyBeans) ;
 
-    OperaResponse batchFindSkuInventory(List<SupplyBean> supplyBeans) ;
+    OperaResponse batchFindSkuInventory(SupplyInventoryBean inventoryBean) ;
 }

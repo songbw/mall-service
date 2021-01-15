@@ -2,6 +2,7 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.bean.supply.SupplyBean;
+import com.fengchao.product.aoyi.bean.supply.SupplyInventoryBean;
 import com.fengchao.product.aoyi.dao.EnterpriseSyncBrandDao;
 import com.fengchao.product.aoyi.service.*;
 import com.fengchao.product.aoyi.utils.JSONUtil;
@@ -95,9 +96,9 @@ public class SupplyProdController {
         return supplyProdService.batchFindSkuPrice(supplyBeans);
     }
 
-    @PostMapping("state")
-    private OperaResponse findSkuState(@RequestBody List<SupplyBean> supplyBeans) {
-        log.debug("find product state 入参：{}", JSONUtil.toJsonString(supplyBeans));
-        return supplyProdService.batchFindSkuInventory(supplyBeans);
+    @PostMapping("inventory")
+    private OperaResponse findSkuInventory(@RequestBody SupplyInventoryBean inventoryBean) {
+        log.debug("find product inventory 入参：{}", JSONUtil.toJsonString(inventoryBean));
+        return supplyProdService.batchFindSkuInventory(inventoryBean);
     }
 }

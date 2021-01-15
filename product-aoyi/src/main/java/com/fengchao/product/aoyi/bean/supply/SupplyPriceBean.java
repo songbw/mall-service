@@ -5,11 +5,11 @@ import lombok.Setter;
 
 /**
  * @author songbw
- * @date 2021/1/14 15:19
+ * @date 2021/1/15 15:55
  */
 @Setter
 @Getter
-public class SupplyBean {
-    private String spuId ;
-    private String skuId ;
+public class SupplyPriceBean extends SupplyBean{
+    private String price ;
+    private String advisePrice ;
 }
