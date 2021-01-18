@@ -130,8 +130,10 @@ public class ProductServiceImpl implements ProductService {
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
         List<String> codes = new ArrayList<>() ;
+        List<String> notcodes = new ArrayList<>() ;
         if (merchantCodeBean != null) {
             codes = merchantCodeBean.getCodes() ;
+            notcodes = merchantCodeBean.getNotcodes() ;
         }
         log.debug("codes: {}", JSONUtil.toJsonString(codes));
         PageInfo<AoyiProdIndex> prodIndexPageInfo = productDao.selectListByCategories(queryBean, codes);

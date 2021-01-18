@@ -292,6 +292,9 @@ public class ProductDao {
         if (queryBean.getCategories() != null && queryBean.getCategories().size() > 0)
             criteria.andCategoryIn(queryBean.getCategories());
         criteria.andStateEqualTo("1");
+        if (queryBean.getNotMerchantCodes() != null && queryBean.getNotMerchantCodes().size() > 0) {
+            criteria.andMerchantCodeNotIn(queryBean.getNotMerchantCodes()) ;
+        }
         PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
         List<AoyiProdIndex> aoyiProdIndexList = aoyiProdIndexMapper.selectByExample(aoyiProdIndexExample);
         PageInfo<AoyiProdIndex> pageInfo = new PageInfo(aoyiProdIndexList);
