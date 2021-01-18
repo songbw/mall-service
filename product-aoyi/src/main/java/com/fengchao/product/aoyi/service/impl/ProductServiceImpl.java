@@ -81,8 +81,10 @@ public class ProductServiceImpl implements ProductService {
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
         List<String> codes = new ArrayList<>() ;
+        List<String> notcodes = new ArrayList<>() ;
         if (merchantCodeBean != null) {
             codes = merchantCodeBean.getCodes() ;
+            notcodes = merchantCodeBean.getNotcodes() ;
         }
         PageBean pageBean = new PageBean();
         int total = 0;
@@ -100,6 +102,9 @@ public class ProductServiceImpl implements ProductService {
             map.put("appId", "%" + queryBean.getAppId() + "%");
         if (codes != null && codes.size()>0) {
             map.put("merchantCodes", codes) ;
+        }
+        if (notcodes != null && notcodes.size()>0) {
+            map.put("notMerchantCodes", codes) ;
         }
         List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
