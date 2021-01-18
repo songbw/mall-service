@@ -105,9 +105,9 @@ public class ProductServiceImpl implements ProductService {
             map.put("merchantCodes", codes) ;
         }
         if (notcodes != null && notcodes.size()>0) {
-            map.put("notMerchantCodes", codes) ;
+            map.put("notMerchantCodes", notcodes) ;
         }
-        log.info("08 merchant bean is : {}", JSONUtil.toJsonString(map));
+        log.debug("08 merchant bean is : {}", JSONUtil.toJsonString(map));
         List<ProductInfoBean> prodIndices = new ArrayList<>();
         total = mapper.selectLimitCount(map);
         if (total > 0) {
