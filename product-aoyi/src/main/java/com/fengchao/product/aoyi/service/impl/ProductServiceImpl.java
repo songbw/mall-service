@@ -80,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
     public PageBean findList(ProductQueryBean queryBean) throws ProductException {
         // 获取可读取的商户配置
         MerchantCodeBean merchantCodeBean = getMerchantCodesByAppId(queryBean.getAppId()) ;
+        log.info("08 merchant bean is : {}", JSONUtil.toJsonString(merchantCodeBean));
         List<String> codes = new ArrayList<>() ;
         List<String> notcodes = new ArrayList<>() ;
         if (merchantCodeBean != null) {
