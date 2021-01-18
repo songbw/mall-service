@@ -31,6 +31,7 @@
     <result column="tax_rate" jdbcType="VARCHAR" property="taxRate" />
     <result column="floor_price" jdbcType="VARCHAR" property="floorPrice" />
     <result column="cross_border" jdbcType="INTEGER" property="crossBorder" />
+    <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fengchao.product.aoyi.model.AoyiProdIndexXWithBLOBs" extends="BaseResultMap" >
     <result column="introduction" property="introduction" jdbcType="LONGVARCHAR" />
@@ -38,7 +39,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, skuId, brand, category, image, model, name, weight, upc, saleUnit, state, price,
-    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate, floor_price, cross_border
+    sprice, images_url, introduction_url, merchant_id, inventory,brand_id, mpu, created_at, updated_at, sync_at, type, compare_url, sub_title, compare_price, tax_rate, floor_price, cross_border, merchant_code
   </sql>
   <sql id="Blob_Column_List" >
     introduction, prodParams
@@ -328,6 +329,18 @@
     <if test="brand !=null and brand !=''">
       and brand = #{brand}
     </if>
+    <if test="merchantCodes !=null and merchantCodes.size > 0">
+      and merchant_code in
+      <foreach collection="merchantCodes" index="index" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    <if test="notMerchantCodes !=null and notMerchantCodes.size > 0">
+      and merchant_code not in
+      <foreach collection="notMerchantCodes" index="index" item="item1" open="(" separator="," close=")">
+        #{item1}
+      </foreach>
+    </if>
   </select>
   <select id="selectLimit" resultMap="BaseResultMap" parameterType="Map">
     select
@@ -342,6 +355,18 @@
     </if>
     <if test="priceOrder !=null and priceOrder !=''">
       order by CAST(price AS DECIMAL) ${priceOrder}
+    </if>
+    <if test="merchantCodes !=null and merchantCodes.size > 0">
+      and merchant_code in
+      <foreach collection="merchantCodes" index="index" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    <if test="notMerchantCodes !=null and notMerchantCodes.size > 0">
+      and merchant_code not in
+      <foreach collection="notMerchantCodes" index="index" item="item1" open="(" separator="," close=")">
+        #{item1}
+      </foreach>
     </if>
     limit #{pageNo},#{pageSize}
   </select>
