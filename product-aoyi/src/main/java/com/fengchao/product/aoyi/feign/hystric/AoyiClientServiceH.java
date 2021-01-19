@@ -93,6 +93,11 @@ public class AoyiClientServiceH implements AoyiClientService {
     }
 
     @Override
+    public OperaResponse findSkuInverntory(StarInventoryRequestBean inventoryRequestBean) {
+        return HystrixDefaultFallback.defaultReponseFallback();
+    }
+
+    @Override
     public OperaResponse weipinhuiGetBrand(Integer pageNumber, Integer pageSize) {
         return HystrixDefaultFallback.defaultReponseFallback();
     }
