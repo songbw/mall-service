@@ -44,6 +44,7 @@ public class SupplyProdServiceImpl implements SupplyProdService {
         if (queryBean.getPageSize() > 200) {
             queryBean.setPageSize(200);
         }
+        queryBean.setState("1");
         response.setData(productDao.selectPageable(queryBean));
         return response;
     }
