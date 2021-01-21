@@ -79,22 +79,28 @@ public class SupplyProdServiceImpl implements SupplyProdService {
         List<AoyiProdIndexWithBLOBs> prodIndexWithBLOBs = productDao.selectProdBySpuIds(supplyBeans) ;
         List<StarSku> starSkus = starSkuDao.selectProdBySpuIds(supplyBeans) ;
         List<SupplyPriceBean> supplyBeanList = new ArrayList<>() ;
-        prodIndexWithBLOBs.forEach(prod -> {
-            SupplyPriceBean supplyBean = new SupplyPriceBean() ;
-            supplyBean.setSpuId(prod.getMpu());
-            supplyBean.setSkuId(prod.getMpu());
-            supplyBean.setPrice(prod.getSprice());
-            supplyBean.setAdvisePrice(prod.getPrice());
-            supplyBeanList.add(supplyBean) ;
-        });
-        starSkus.forEach(starSku -> {
-            SupplyPriceBean supplyBean = new SupplyPriceBean() ;
-            supplyBean.setSpuId(starSku.getSpuId());
-            supplyBean.setSkuId(starSku.getCode());
-            supplyBean.setPrice(new BigDecimal(starSku.getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-            supplyBean.setAdvisePrice(new BigDecimal(starSku.getAdvisePrice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-            supplyBeanList.add(supplyBean) ;
-        });
+        if (prodIndexWithBLOBs != null && prodIndexWithBLOBs.size() > 0) {
+            prodIndexWithBLOBs.forEach(prod -> {
+                SupplyPriceBean supplyBean = new SupplyPriceBean() ;
+                supplyBean.setSpuId(prod.getMpu());
+                supplyBean.setSkuId(prod.getMpu());
+                supplyBean.setPrice(prod.getSprice());
+                supplyBean.setAdvisePrice(prod.getPrice());
+                supplyBeanList.add(supplyBean) ;
+            });
+        }
+
+        if (starSkus != null && starSkus.size() > 0) {
+            starSkus.forEach(starSku -> {
+                SupplyPriceBean supplyBean = new SupplyPriceBean() ;
+                supplyBean.setSpuId(starSku.getSpuId());
+                supplyBean.setSkuId(starSku.getCode());
+                supplyBean.setPrice(new BigDecimal(starSku.getSprice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                supplyBean.setAdvisePrice(new BigDecimal(starSku.getAdvisePrice()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                supplyBeanList.add(supplyBean) ;
+            });
+        }
+
         response.setData(supplyBeanList);
         return response;
     }
