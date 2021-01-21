@@ -118,23 +118,29 @@ public class SupplyProdServiceImpl implements SupplyProdService {
         }
         List<InventoryResponse> list = new ArrayList<>() ;
         List<AoyiProdIndexWithBLOBs> prodIndexWithBLOBs = productDao.selectProdBySpuIds(inventoryBean.getList()) ;
-        prodIndexWithBLOBs.forEach(prod -> {
-            InventoryResponse inventoryResponse = new InventoryResponse() ;
-            inventoryResponse.setSpuId(prod.getMpu());
-            inventoryResponse.setSkuId(prod.getMpu());
-            inventoryResponse.setInventory(prod.getInventory().toString());
-            inventoryResponse.setStatus(prod.getState());
-            list.add(inventoryResponse) ;
-        });
+        if (prodIndexWithBLOBs != null && prodIndexWithBLOBs.size() > 0) {
+            prodIndexWithBLOBs.forEach(prod -> {
+                InventoryResponse inventoryResponse = new InventoryResponse() ;
+                inventoryResponse.setSpuId(prod.getMpu());
+                inventoryResponse.setSkuId(prod.getMpu());
+                inventoryResponse.setInventory(prod.getInventory().toString());
+                inventoryResponse.setStatus(prod.getState());
+                list.add(inventoryResponse) ;
+            });
+        }
+
         List<StarInventoryBean> starInventoryBeans = aoyiClientRpcService.getStarInventory(inventoryBean);
-        starInventoryBeans.forEach(starInventoryBean -> {
-            InventoryResponse inventoryResponse = new InventoryResponse() ;
-            inventoryResponse.setSpuId(starInventoryBean.getSkuId());
-            inventoryResponse.setSkuId(starInventoryBean.getCode());
-            inventoryResponse.setInventory(starInventoryBean.getInventoryCount());
-            inventoryResponse.setStatus(starInventoryBean.getStatus());
-            list.add(inventoryResponse) ;
-        });
+        if (starInventoryBeans != null && starInventoryBeans.size() > 0) {
+            starInventoryBeans.forEach(starInventoryBean -> {
+                InventoryResponse inventoryResponse = new InventoryResponse() ;
+                inventoryResponse.setSpuId(starInventoryBean.getSkuId());
+                inventoryResponse.setSkuId(starInventoryBean.getCode());
+                inventoryResponse.setInventory(starInventoryBean.getInventoryCount());
+                inventoryResponse.setStatus(starInventoryBean.getStatus());
+                list.add(inventoryResponse) ;
+            });
+        }
+
         response.setData(list);
         return response;
     }
