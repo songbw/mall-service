@@ -54,6 +54,7 @@ public class StarSkuDao {
         StarSkuExample example = new StarSkuExample();
         StarSkuExample.Criteria criteria = example.createCriteria();
         criteria.andSpuIdEqualTo(spuId) ;
+        criteria.andStatusEqualTo(1) ;
         List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
     }
