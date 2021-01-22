@@ -456,16 +456,22 @@ public class ProductHandle {
         if (prodIndexX.getType() == 2) {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpuForClient(prodIndexX.getSkuid(), renterId));
-            List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkus = prodIndexX.getSkuList() ;
-
-            // 获取最小值
-            Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkus.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
-            com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = starSkuOpt.get() ;
-            prodIndexX.setStarSku(starSkuBean);
-            BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
-            BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
-            prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-            prodIndexX.setSprice(bigDecimalSprice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+            List<StarSkuBean> starSkus = prodIndexX.getSkuList() ;
+            if (starSkus != null && starSkus.size() > 0) {
+                // 获取最小值
+                Optional<StarSkuBean> starSkuOpt= starSkus.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
+                StarSkuBean starSkuBean = new StarSkuBean();
+                if (starSkuOpt.isPresent()) {
+                    starSkuBean = starSkuOpt.get() ;
+                } else {
+                    starSkuBean = starSkus.get(0) ;
+                }
+                prodIndexX.setStarSku(starSkuBean);
+                BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+                BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
+                prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                prodIndexX.setSprice(bigDecimalSprice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+            }
         }
     }
 
