@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service.impl;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.bean.ProductQueryBean;
 import com.fengchao.product.aoyi.bean.StarInventoryBean;
+import com.fengchao.product.aoyi.bean.StarSkuBean;
 import com.fengchao.product.aoyi.bean.supply.InventoryResponse;
 import com.fengchao.product.aoyi.bean.supply.SupplyBean;
 import com.fengchao.product.aoyi.bean.supply.SupplyInventoryBean;
@@ -60,7 +61,7 @@ public class SupplyProdServiceImpl implements SupplyProdService {
             response.setMsg("spus 必须小于200");
             return response;
         }
-        List<StarSku> starSkus = starSkuDao.selectBySpuIds(queryBean.getSpus(), 1) ;
+        List<StarSkuBean> starSkus = starSkuDao.selectSkuBeanBySpuIds(queryBean.getSpus(), 1) ;
         response.setData(starSkus);
         return response;
     }

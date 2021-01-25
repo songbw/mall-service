@@ -1,14 +1,14 @@
 package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.bean.PriceBean;
+import com.fengchao.product.aoyi.bean.StarSkuBean;
 import com.fengchao.product.aoyi.bean.StarSkuQueryBean;
 import com.fengchao.product.aoyi.bean.StateBean;
 import com.fengchao.product.aoyi.bean.supply.SupplyBean;
 import com.fengchao.product.aoyi.constants.IStatusEnum;
 import com.fengchao.product.aoyi.mapper.StarSkuMapper;
 import com.fengchao.product.aoyi.mapper.StarSkuXMapper;
-import com.fengchao.product.aoyi.model.AoyiProdIndexExample;
-import com.fengchao.product.aoyi.model.AoyiProdIndexWithBLOBs;
+import com.fengchao.product.aoyi.model.StarProperty;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
 import com.github.pagehelper.PageHelper;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,11 +34,14 @@ public class StarSkuDao {
 
     private StarSkuXMapper starSkuXMapper;
 
+    private StarPropertyDao starPropertyDao ;
+
     @Autowired
     public StarSkuDao(StarSkuMapper starSkuMapper,
-                      StarSkuXMapper starSkuXMapper) {
+                      StarSkuXMapper starSkuXMapper, StarPropertyDao starPropertyDao) {
         this.starSkuMapper = starSkuMapper;
         this.starSkuXMapper = starSkuXMapper;
+        this.starPropertyDao = starPropertyDao;
     }
 
     /**
@@ -184,6 +188,32 @@ public class StarSkuDao {
         }
         List<StarSku> list = starSkuMapper.selectByExample(example);
         return list;
+    }
+
+    public List<StarSkuBean> selectSkuBeanBySpuIds(List<String> spuIds, Integer status) {
+        List<StarSku> starSkus = selectBySpuIds(spuIds, status) ;
+        List<StarSkuBean> starSkuBeans = new ArrayList<>();
+        if (starSkus != null && starSkus.size() > 0) {
+            List<Integer> ids = starSkus.stream().map(starSku -> starSku.getId()).collect(Collectors.toList());
+            List<StarProperty> skuProperties = starPropertyDao.selectByProductIdsAndType(ids,1) ;
+            starSkus.forEach(starSku -> {
+                StarSkuBean starSkuBean = new StarSkuBean() ;
+                // set property
+                List<StarProperty> starProperties = new ArrayList<>();
+                for (int i = 0; i < skuProperties.size(); i++) {
+                    StarProperty starProperty = skuProperties.get(i);
+                    if (starSku.getId() == starProperty.getProductId()) {
+                        starProperties.add(starProperty);
+                        skuProperties.remove(i) ;
+                        i = i - 1;
+                    }
+                }
+                if (starProperties != null && starProperties.size() > 0) {
+                    starSkuBean.setPropertyList(starProperties);
+                }
+            });
+        }
+        return starSkuBeans ;
     }
 
     /**
