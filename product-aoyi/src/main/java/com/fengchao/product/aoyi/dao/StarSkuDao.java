@@ -13,6 +13,7 @@ import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.model.StarSkuExample;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  * @Author song
  * @Date 20-2-4 下午5:41
  */
+@Slf4j
 @Component
 public class StarSkuDao {
 
@@ -193,6 +195,7 @@ public class StarSkuDao {
 
     public List<StarSkuBean> selectSkuBeanBySpuIds(List<String> spuIds, Integer status) {
         List<StarSku> starSkus = selectBySpuIds(spuIds, status) ;
+
         List<StarSkuBean> starSkuBeans = new ArrayList<>();
         if (starSkus != null && starSkus.size() > 0) {
             List<Integer> ids = starSkus.stream().map(starSku -> starSku.getId()).collect(Collectors.toList());
@@ -213,6 +216,7 @@ public class StarSkuDao {
                 if (starProperties != null && starProperties.size() > 0) {
                     starSkuBean.setPropertyList(starProperties);
                 }
+                starSkuBeans.add(starSkuBean) ;
             });
         }
         return starSkuBeans ;
