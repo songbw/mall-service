@@ -275,7 +275,14 @@ public class ProductHandle {
                     if (starSkuBeanList != null && starSkuBeanList.size() > 0) {
                         // 获取最小值
                         Optional<StarSkuBean> starSkuOpt= starSkuBeanList.stream().min(Comparator.comparingInt(StarSkuBean::getPrice));
-                        StarSkuBean starSkuBean = starSkuOpt.get() ;
+
+                        StarSkuBean starSkuBean = new StarSkuBean();
+                        if (starSkuOpt.isPresent()) {
+                            starSkuBean = starSkuOpt.get() ;
+                        } else {
+                            starSkuBean = starSkuBeanList.get(0) ;
+                        }
+
                         BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
                         prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
 //                    prodIndexX.setSkuList(starSkuBeanList);
@@ -359,15 +366,22 @@ public class ProductHandle {
             // 添加 star sku
             prodIndexX.setSkuList(getStarSkuListByMpu(prodIndexX.getSkuid(), renterId));
             List<com.fengchao.product.aoyi.bean.StarSkuBean> starSkus = prodIndexX.getSkuList() ;
+            if (starSkus != null && starSkus.size() > 0) {
+                // 获取最小值
+                Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkus.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
 
-            // 获取最小值
-            Optional<com.fengchao.product.aoyi.bean.StarSkuBean> starSkuOpt= starSkus.stream().min(Comparator.comparingInt(com.fengchao.product.aoyi.bean.StarSkuBean::getPrice));
-            com.fengchao.product.aoyi.bean.StarSkuBean starSkuBean = starSkuOpt.get() ;
-            prodIndexX.setStarSku(starSkuBean);
-            BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
-            BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
-            prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
-            prodIndexX.setSprice(bigDecimalSprice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                StarSkuBean starSkuBean = new StarSkuBean();
+                if (starSkuOpt.isPresent()) {
+                    starSkuBean = starSkuOpt.get() ;
+                } else {
+                    starSkuBean = starSkus.get(0) ;
+                }
+                prodIndexX.setStarSku(starSkuBean);
+                BigDecimal bigDecimalPrice = new BigDecimal(starSkuBean.getPrice());
+                BigDecimal bigDecimalSprice = new BigDecimal(starSkuBean.getSprice());
+                prodIndexX.setPrice(bigDecimalPrice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+                prodIndexX.setSprice(bigDecimalSprice.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toString());
+            }
         }
         // 租户价格列表
         prodIndexX.setAppSkuPriceList(getAppSkuPriceListByMpu(renterId, prodIndexX.getMpu()));
