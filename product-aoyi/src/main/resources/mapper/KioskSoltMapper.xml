@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengchao.product.aoyi.mapper.KioskSoltMapper">
+  <resultMap id="BaseResultMap" type="com.fengchao.product.aoyi.model.KioskSolt">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="solt_id" jdbcType="VARCHAR" property="soltId" />
+    <result column="solt_no" jdbcType="VARCHAR" property="soltNo" />
+    <result column="kiosk_id" jdbcType="VARCHAR" property="kioskId" />
+    <result column="product_id" jdbcType="VARCHAR" property="productId" />
+    <result column="qr_code" jdbcType="VARCHAR" property="qrCode" />
+    <result column="sku" jdbcType="VARCHAR" property="sku" />
+    <result column="upc" jdbcType="VARCHAR" property="upc" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="stock" jdbcType="INTEGER" property="stock" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, solt_id, solt_no, kiosk_id, product_id, qr_code, sku, upc, status, stock, created_at, 
+    updated_at
+  </sql>
+  <select id="selectByExample" parameterType="com.fengchao.product.aoyi.model.KioskSoltExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from kiosk_solt
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from kiosk_solt
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from kiosk_solt
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fengchao.product.aoyi.model.KioskSoltExample">
+    delete from kiosk_solt
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.KioskSolt" useGeneratedKeys="true">
+    insert into kiosk_solt (solt_id, solt_no, kiosk_id, 
+      product_id, qr_code, sku, 
+      upc, status, stock, 
+      created_at, updated_at)
+    values (#{soltId,jdbcType=VARCHAR}, #{soltNo,jdbcType=VARCHAR}, #{kioskId,jdbcType=VARCHAR}, 
+      #{productId,jdbcType=VARCHAR}, #{qrCode,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, 
+      #{upc,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{stock,jdbcType=INTEGER}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.fengchao.product.aoyi.model.KioskSolt" useGeneratedKeys="true">
+    insert into kiosk_solt
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="soltId != null">
+        solt_id,
+      </if>
+      <if test="soltNo != null">
+        solt_no,
+      </if>
+      <if test="kioskId != null">
+        kiosk_id,
+      </if>
+      <if test="productId != null">
+        product_id,
+      </if>
+      <if test="qrCode != null">
+        qr_code,
+      </if>
+      <if test="sku != null">
+        sku,
+      </if>
+      <if test="upc != null">
+        upc,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="stock != null">
+        stock,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="soltId != null">
+        #{soltId,jdbcType=VARCHAR},
+      </if>
+      <if test="soltNo != null">
+        #{soltNo,jdbcType=VARCHAR},
+      </if>
+      <if test="kioskId != null">
+        #{kioskId,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null">
+        #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="qrCode != null">
+        #{qrCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sku != null">
+        #{sku,jdbcType=VARCHAR},
+      </if>
+      <if test="upc != null">
+        #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="stock != null">
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fengchao.product.aoyi.model.KioskSoltExample" resultType="java.lang.Long">
+    select count(*) from kiosk_solt
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update kiosk_solt
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.soltId != null">
+        solt_id = #{record.soltId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.soltNo != null">
+        solt_no = #{record.soltNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kioskId != null">
+        kiosk_id = #{record.kioskId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.productId != null">
+        product_id = #{record.productId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qrCode != null">
+        qr_code = #{record.qrCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sku != null">
+        sku = #{record.sku,jdbcType=VARCHAR},
+      </if>
+      <if test="record.upc != null">
+        upc = #{record.upc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stock != null">
+        stock = #{record.stock,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdAt != null">
+        created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedAt != null">
+        updated_at = #{record.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update kiosk_solt
+    set id = #{record.id,jdbcType=INTEGER},
+      solt_id = #{record.soltId,jdbcType=VARCHAR},
+      solt_no = #{record.soltNo,jdbcType=VARCHAR},
+      kiosk_id = #{record.kioskId,jdbcType=VARCHAR},
+      product_id = #{record.productId,jdbcType=VARCHAR},
+      qr_code = #{record.qrCode,jdbcType=VARCHAR},
+      sku = #{record.sku,jdbcType=VARCHAR},
+      upc = #{record.upc,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=VARCHAR},
+      stock = #{record.stock,jdbcType=INTEGER},
+      created_at = #{record.createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{record.updatedAt,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fengchao.product.aoyi.model.KioskSolt">
+    update kiosk_solt
+    <set>
+      <if test="soltId != null">
+        solt_id = #{soltId,jdbcType=VARCHAR},
+      </if>
+      <if test="soltNo != null">
+        solt_no = #{soltNo,jdbcType=VARCHAR},
+      </if>
+      <if test="kioskId != null">
+        kiosk_id = #{kioskId,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null">
+        product_id = #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="qrCode != null">
+        qr_code = #{qrCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sku != null">
+        sku = #{sku,jdbcType=VARCHAR},
+      </if>
+      <if test="upc != null">
+        upc = #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="stock != null">
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fengchao.product.aoyi.model.KioskSolt">
+    update kiosk_solt
+    set solt_id = #{soltId,jdbcType=VARCHAR},
+      solt_no = #{soltNo,jdbcType=VARCHAR},
+      kiosk_id = #{kioskId,jdbcType=VARCHAR},
+      product_id = #{productId,jdbcType=VARCHAR},
+      qr_code = #{qrCode,jdbcType=VARCHAR},
+      sku = #{sku,jdbcType=VARCHAR},
+      upc = #{upc,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      stock = #{stock,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
