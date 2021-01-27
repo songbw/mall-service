@@ -34,6 +34,7 @@ public class FusionServiceImpl implements FusionService {
         OperaResponse response = new OperaResponse() ;
         FusionKioskBean kioskBean = new FusionKioskBean() ;
         kioskBean.setToken(aoyiClientConfig.getFusionToken());
+
         JSONObject jsonObject = HttpClient.postHeader(kioskBean, JSONObject.class, aoyiClientConfig.getFusionBaseUrl(), aoyiClientConfig.getFusionKioskPath(), aoyiClientConfig.getFusionAppKey()) ;
         log.info("查询所有设备 返回结果： {}", jsonObject.toJSONString());
         if (jsonObject != null) {
@@ -51,10 +52,11 @@ public class FusionServiceImpl implements FusionService {
     }
 
     @Override
-    public OperaResponse getAllSoltStatus() {
+    public OperaResponse getAllSoltStatus(String status) {
         OperaResponse response = new OperaResponse() ;
         FusionKioskBean kioskBean = new FusionKioskBean() ;
         kioskBean.setToken(aoyiClientConfig.getFusionToken());
+        kioskBean.setStatus(status);
         JSONObject jsonObject = HttpClient.postHeader(kioskBean, JSONObject.class, aoyiClientConfig.getFusionBaseUrl(), aoyiClientConfig.getFusionSoltPath(), aoyiClientConfig.getFusionAppKey()) ;
         log.info("查询所有货道状态 返回结果： {}", jsonObject.toJSONString());
         if (jsonObject != null) {

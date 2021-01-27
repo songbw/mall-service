@@ -10,6 +10,6 @@ public interface FusionService {
 
     OperaResponse getAllKiosk() ;
 
-    OperaResponse getAllSoltStatus() ;
+    OperaResponse getAllSoltStatus(String status) ;
 
 }
