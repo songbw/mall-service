@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.feign;
 
+import com.alibaba.fastjson.JSONArray;
 import com.fengchao.product.aoyi.bean.*;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceClientFallbackFactory;
 import com.fengchao.product.aoyi.feign.hystric.AoyiClientServiceH;
@@ -7,6 +8,7 @@ import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.BrandResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.CategoryResDto;
+import net.sf.json.JSONObject;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,4 +109,10 @@ public interface AoyiClientService {
                                                                @RequestParam("num") Integer num,
                                                                @RequestParam("divisionCode") String divisionCode);
     // 唯品会 end
+
+    @RequestMapping(value = "/fusion/kiosk", method = RequestMethod.GET)
+    OperaResponse<JSONArray> kiosk();
+
+    @RequestMapping(value = "/fusion/kiosk/slot/status", method = RequestMethod.GET)
+    OperaResponse<JSONArray> kioskSlotStatus(@RequestParam("status") String status);
 }

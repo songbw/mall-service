@@ -1,5 +1,6 @@
 package com.fengchao.product.aoyi.feign.hystric;
 
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fengchao.product.aoyi.bean.*;
@@ -131,6 +132,16 @@ public class AoyiClientServiceClientFallbackFactory implements FallbackFactory<A
 
             @Override
             public OperaResponse<AoyiQueryInventoryResDto> weipinhuiQueryItemInventory(String itemId, String skuId, Integer num, String divisionCode) {
+                return HystrixDefaultFallback.fallbackResponse(throwable);
+            }
+
+            @Override
+            public OperaResponse<JSONArray> kiosk() {
+                return HystrixDefaultFallback.fallbackResponse(throwable);
+            }
+
+            @Override
+            public OperaResponse<JSONArray> kioskSlotStatus(String status) {
                 return HystrixDefaultFallback.fallbackResponse(throwable);
             }
         };
