@@ -294,6 +294,19 @@ public class HttpClient {
         }
     }
 
+    public static <T> T postHeader(Object body, Class<T> obj, String baseUrl, String path, String key) throws AoyiClientException {
+        client = createClient();
+        WebTarget target = client.target(baseUrl).path(path);
+        T bean = null;
+        try {
+            bean = target.request(MediaType.APPLICATION_JSON_TYPE).header("x-api-key", key).post(Entity.entity(body, MediaType.APPLICATION_JSON_TYPE), obj);
+        } catch (Exception e) {
+            logger.error("Aoyi Client postHeader error : {}", e);
+            throw new AoyiClientException();
+        }
+        return bean;
+    }
+
     public static void main(String args[]) {
         JSONObject bean = null;
         System.out.println(bean.getString("CODE"));
