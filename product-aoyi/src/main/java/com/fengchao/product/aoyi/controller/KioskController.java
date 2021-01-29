@@ -53,4 +53,22 @@ public class KioskController {
         OperaResponse response = service.findByPageable(queryBean) ;
         return response ;
     }
+
+    @GetMapping("sync")
+    private OperaResponse syncKiosk() {
+        OperaResponse response = service.syncFusionKiosk() ;
+        return response;
+    }
+
+    @GetMapping("/slot/sync")
+    private OperaResponse syncKioskSlot(String status) {
+        OperaResponse response = service.syncFusionKioskSlot(status) ;
+        return response;
+    }
+
+    @GetMapping("/slot")
+    private OperaResponse findKioskSlot(String kioskId) {
+        OperaResponse response = service.findKioskSlot(kioskId) ;
+        return response;
+    }
 }

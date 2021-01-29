@@ -119,4 +119,12 @@ public class KioskServiceImpl implements KioskService {
         });
         return new OperaResponse() ;
     }
+
+    @Override
+    public OperaResponse findKioskSlot(String kioskId) {
+        List<KioskSolt> kioskSolts = dao.selectBykioskId(kioskId) ;
+        OperaResponse response = new OperaResponse() ;
+        response.setData(kioskSolts);
+        return response;
+    }
 }

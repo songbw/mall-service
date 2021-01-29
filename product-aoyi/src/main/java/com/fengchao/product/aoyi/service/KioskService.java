@@ -23,4 +23,6 @@ public interface KioskService {
     OperaResponse syncFusionKiosk() ;
 
     OperaResponse syncFusionKioskSlot(String status) ;
+
+    OperaResponse findKioskSlot(String kioskId) ;
 }

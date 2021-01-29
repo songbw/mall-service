@@ -80,4 +80,18 @@ public class KioskDao {
         }
         return null ;
     }
+
+    /**
+     * 根据设备ID查询货道信息
+     * @param kioskId
+     * @return
+     */
+    public List<KioskSolt> selectBykioskId(String kioskId) {
+        KioskSoltExample example = new KioskSoltExample();
+        KioskSoltExample.Criteria criteria = example.createCriteria();
+        criteria.andKioskIdEqualTo(kioskId) ;
+        List<KioskSolt> list = soltMapper.selectByExample(example) ;
+        return list ;
+    }
+
 }
