@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.service;
 import com.fengchao.product.aoyi.bean.KioskQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.model.Kiosk;
+import com.fengchao.product.aoyi.model.KioskSolt;
 
 /**
  * @author songbw
@@ -24,5 +25,13 @@ public interface KioskService {
 
     OperaResponse syncFusionKioskSlot(String status) ;
 
-    OperaResponse findKioskSlot(String kioskId) ;
+    OperaResponse findKioskSlotByKioskId(String kioskId) ;
+
+    OperaResponse deleteKioskSlot(Integer id) ;
+
+    OperaResponse addKioskSlot(KioskSolt solt) ;
+
+    OperaResponse updateKioskSlot(KioskSolt solt) ;
+
+    OperaResponse findKioskSlot(Integer id) ;
 }

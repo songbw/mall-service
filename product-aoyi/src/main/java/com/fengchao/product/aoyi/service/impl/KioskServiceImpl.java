@@ -121,10 +121,44 @@ public class KioskServiceImpl implements KioskService {
     }
 
     @Override
-    public OperaResponse findKioskSlot(String kioskId) {
+    public OperaResponse findKioskSlotByKioskId(String kioskId) {
         List<KioskSolt> kioskSolts = dao.selectBykioskId(kioskId) ;
         OperaResponse response = new OperaResponse() ;
         response.setData(kioskSolts);
+        return response;
+    }
+
+    @Override
+    public OperaResponse deleteKioskSlot(Integer id) {
+        OperaResponse response = new OperaResponse() ;
+        soltMapper.deleteByPrimaryKey(id) ;
+        return response;
+    }
+
+    @Override
+    public OperaResponse addKioskSlot(KioskSolt solt) {
+        OperaResponse response = new OperaResponse() ;
+        Date date = new Date();
+        solt.setCreatedAt(date);
+        solt.setUpdatedAt(date);
+        soltMapper.insertSelective(solt) ;
+        return response;
+    }
+
+    @Override
+    public OperaResponse updateKioskSlot(KioskSolt solt) {
+        OperaResponse response = new OperaResponse() ;
+        Date date = new Date();
+        solt.setUpdatedAt(date);
+        soltMapper.updateByPrimaryKeySelective(solt) ;
+        return response;
+    }
+
+    @Override
+    public OperaResponse findKioskSlot(Integer id) {
+        OperaResponse response = new OperaResponse() ;
+        KioskSolt solt = soltMapper.selectByPrimaryKey(id) ;
+        response.setData(solt);
         return response;
     }
 }

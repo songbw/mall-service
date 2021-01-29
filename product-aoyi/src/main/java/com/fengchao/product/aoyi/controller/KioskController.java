@@ -2,8 +2,8 @@ package com.fengchao.product.aoyi.controller;
 
 import com.fengchao.product.aoyi.bean.KioskQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
-import com.fengchao.product.aoyi.bean.OperaResult;
 import com.fengchao.product.aoyi.model.Kiosk;
+import com.fengchao.product.aoyi.model.KioskSolt;
 import com.fengchao.product.aoyi.service.KioskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -66,9 +66,33 @@ public class KioskController {
         return response;
     }
 
+    @GetMapping("/slot/kiosk")
+    private OperaResponse findKioskSlotByKioskId(String kioskId) {
+        OperaResponse response = service.findKioskSlotByKioskId(kioskId) ;
+        return response;
+    }
+
+    @DeleteMapping("/slot")
+    private OperaResponse deleteKioskSlot(Integer id) {
+        OperaResponse response = service.deleteKioskSlot(id) ;
+        return response;
+    }
+
+    @PostMapping("/slot")
+    private OperaResponse createKioskSlot(KioskSolt addKioskSlot) {
+        OperaResponse response = service.addKioskSlot(addKioskSlot) ;
+        return response;
+    }
+
+    @PutMapping("/slot")
+    private OperaResponse updateKioskSlot(KioskSolt addKioskSlot) {
+        OperaResponse response = service.updateKioskSlot(addKioskSlot) ;
+        return response;
+    }
+
     @GetMapping("/slot")
-    private OperaResponse findKioskSlot(String kioskId) {
-        OperaResponse response = service.findKioskSlot(kioskId) ;
+    private OperaResponse findKioskSlotBy(Integer id) {
+        OperaResponse response = service.findKioskSlot(id) ;
         return response;
     }
 }
