@@ -4,13 +4,17 @@ import com.fengchao.product.aoyi.bean.KioskQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.dao.KioskDao;
 import com.fengchao.product.aoyi.mapper.KioskMapper;
+import com.fengchao.product.aoyi.mapper.KioskSoltMapper;
 import com.fengchao.product.aoyi.model.Kiosk;
+import com.fengchao.product.aoyi.model.KioskSolt;
+import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.service.KioskService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author songbw
@@ -21,11 +25,15 @@ public class KioskServiceImpl implements KioskService {
 
     private final KioskDao dao ;
     private final KioskMapper mapper ;
+    private final AoyiClientRpcService aoyiClientRpcService ;
+    private final KioskSoltMapper soltMapper ;
 
     @Autowired
-    public KioskServiceImpl(KioskDao dao, KioskMapper mapper) {
+    public KioskServiceImpl(KioskDao dao, KioskMapper mapper, AoyiClientRpcService aoyiClientRpcService, KioskSoltMapper soltMapper) {
         this.dao = dao;
         this.mapper = mapper;
+        this.aoyiClientRpcService = aoyiClientRpcService;
+        this.soltMapper = soltMapper;
     }
 
     @Override
@@ -68,5 +76,47 @@ public class KioskServiceImpl implements KioskService {
         Kiosk kiosk = mapper.selectByPrimaryKey(id) ;
         response.setData(kiosk);
         return response;
+    }
+
+    @Override
+    public OperaResponse syncFusionKiosk() {
+        List<Kiosk> kiosks =  aoyiClientRpcService.getKiosks() ;
+        Date date = new Date() ;
+        kiosks.forEach(kiosk -> {
+            Kiosk temp = dao.selectByEquipmentId(kiosk.getEquipmentId()) ;
+            if (temp == null) {
+                // 添加
+                kiosk.setCreatedAt(date);
+                kiosk.setUpdatedAt(date);
+                mapper.insertSelective(kiosk) ;
+            } else {
+                // 修改
+                kiosk.setUpdatedAt(date);
+                kiosk.setId(temp.getId());
+                mapper.updateByPrimaryKey(kiosk) ;
+            }
+        });
+        return new OperaResponse() ;
+    }
+
+    @Override
+    public OperaResponse syncFusionKioskSlot(String status) {
+        List<KioskSolt> kioskSolts =  aoyiClientRpcService.getKioskSlotState(status) ;
+        Date date = new Date() ;
+        kioskSolts.forEach(kioskSolt -> {
+            KioskSolt temp = dao.selectBySlotId(kioskSolt.getKioskId()) ;
+            if (temp == null) {
+                // 添加
+                kioskSolt.setCreatedAt(date);
+                kioskSolt.setUpdatedAt(date);
+                soltMapper.insertSelective(kioskSolt) ;
+            } else {
+                // 修改
+                kioskSolt.setUpdatedAt(date);
+                kioskSolt.setId(temp.getId());
+                soltMapper.updateByPrimaryKey(kioskSolt) ;
+            }
+        });
+        return new OperaResponse() ;
     }
 }

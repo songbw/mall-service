@@ -19,4 +19,8 @@ public interface KioskService {
     OperaResponse delete(Integer id) ;
 
     OperaResponse find(Integer id) ;
+
+    OperaResponse syncFusionKiosk() ;
+
+    OperaResponse syncFusionKioskSlot(String status) ;
 }

@@ -9,6 +9,8 @@ import com.fengchao.product.aoyi.bean.StarInventoryRequestBean;
 import com.fengchao.product.aoyi.bean.supply.SupplyBean;
 import com.fengchao.product.aoyi.bean.supply.SupplyInventoryBean;
 import com.fengchao.product.aoyi.feign.AoyiClientService;
+import com.fengchao.product.aoyi.model.Kiosk;
+import com.fengchao.product.aoyi.model.KioskSolt;
 import com.fengchao.product.aoyi.model.StarSku;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiItemDetailResDto;
 import com.fengchao.product.aoyi.rpc.extmodel.weipinhui.AoyiQueryInventoryResDto;
@@ -249,5 +251,57 @@ public class AoyiClientRpcService {
             }
         }
         return inventoryBeans ;
+    }
+
+    /**
+     * 获取浮讯设备列表
+     * @return
+     */
+    public List<Kiosk> getKiosks() {
+        OperaResponse<JSONArray> response = aoyiClientService.kiosk() ;
+        List<Kiosk> list = new ArrayList<>() ;
+        if (response.getCode() == 200) {
+            JSONArray jsonArray = response.getData() ;
+            for (int i = 0; i < jsonArray.size(); i++) {
+                Kiosk kiosk = new Kiosk();
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                kiosk.setEquipmentId(jsonObject.getString("ID"));
+                kiosk.setEquipmentNo(jsonObject.getString("No"));
+                kiosk.setNetwork(jsonObject.getString("Network"));
+                kiosk.setModel(jsonObject.getString("Model"));
+                kiosk.setTag(jsonObject.getString("Tag"));
+                kiosk.setName(jsonObject.getString("Name"));
+                kiosk.setLocation(jsonObject.getString("Location"));
+                list.add(kiosk) ;
+            }
+        }
+        return list ;
+    }
+
+    /**
+     * 获取货道列表
+     * @param status
+     * @return
+     */
+    public List<KioskSolt> getKioskSlotState(String status) {
+        OperaResponse<JSONArray> response = aoyiClientService.kioskSlotStatus(status) ;
+        List<KioskSolt> list = new ArrayList<>() ;
+        if (response.getCode() == 200) {
+            JSONArray jsonArray = response.getData() ;
+            for (int i = 0; i < jsonArray.size(); i++) {
+                KioskSolt solt = new KioskSolt();
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                solt.setStatus(jsonObject.getString("Status"));
+                solt.setSoltNo(jsonObject.getString("NO"));
+                solt.setQrCode(jsonObject.getString("QrCode"));
+                solt.setKioskId(jsonObject.getString("KioskID"));
+                solt.setUpc(jsonObject.getString("UPC"));
+                solt.setProductId(jsonObject.getString("ProductID"));
+                solt.setSoltId(jsonObject.getString("ID"));
+                solt.setSku(jsonObject.getString("SKU"));
+                list.add(solt) ;
+            }
+        }
+        return list ;
     }
 }
