@@ -248,6 +248,7 @@ public class PaymentServiceImpl implements PaymentService {
         Map<String, Object> props = objectMapper.convertValue(paymentBean, Map.class);
         String messageString = Pkcs8Util.formatUrlMap(props, false, false) ;
         String sign = Pkcs8Util.getSM3(messageString + pingAnConfigBean.getPayAppKey()) ;
+        logger.info("平安支付回调 back notify sign： {}", sign);
         if (backSign.equals(sign)) {
             // 聚合支付服务
             AggPayBackBean aggPayBackBean = new AggPayBackBean() ;
