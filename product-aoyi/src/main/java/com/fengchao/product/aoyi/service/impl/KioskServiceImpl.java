@@ -51,6 +51,7 @@ public class KioskServiceImpl implements KioskService {
         kiosk.setCreatedAt(date);
         kiosk.setUpdatedAt(date);
         mapper.insertSelective(kiosk) ;
+        response.setData(kiosk);
         return response;
     }
 
@@ -60,6 +61,7 @@ public class KioskServiceImpl implements KioskService {
         Date date = new Date();
         kiosk.setUpdatedAt(date);
         mapper.updateByPrimaryKeySelective(kiosk) ;
+        response.setData(kiosk);
         return response;
     }
 
@@ -119,7 +121,9 @@ public class KioskServiceImpl implements KioskService {
                 soltMapper.updateByPrimaryKey(kioskSolt) ;
             }
         });
-        return new OperaResponse() ;
+        OperaResponse response = new OperaResponse() ;
+        response.setData(kioskSolts);
+        return response ;
     }
 
     @Override
@@ -144,6 +148,7 @@ public class KioskServiceImpl implements KioskService {
         solt.setCreatedAt(date);
         solt.setUpdatedAt(date);
         soltMapper.insertSelective(solt) ;
+        response.setData(solt);
         return response;
     }
 
@@ -153,6 +158,7 @@ public class KioskServiceImpl implements KioskService {
         Date date = new Date();
         solt.setUpdatedAt(date);
         soltMapper.updateByPrimaryKeySelective(solt) ;
+        response.setData(solt);
         return response;
     }
 
