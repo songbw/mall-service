@@ -96,7 +96,9 @@ public class KioskServiceImpl implements KioskService {
                 mapper.updateByPrimaryKey(kiosk) ;
             }
         });
-        return new OperaResponse() ;
+        OperaResponse response = new OperaResponse() ;
+        response.setData(kiosks);
+        return response ;
     }
 
     @Override
