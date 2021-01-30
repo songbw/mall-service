@@ -37,19 +37,19 @@ public class KioskController {
     }
 
     @PostMapping
-    private OperaResponse create(Kiosk kiosk) {
+    private OperaResponse create(@RequestBody Kiosk kiosk) {
         OperaResponse response = service.add(kiosk) ;
         return response ;
     }
 
     @PutMapping
-    private OperaResponse update(Kiosk kiosk) {
+    private OperaResponse update(@RequestBody Kiosk kiosk) {
         OperaResponse response = service.update(kiosk) ;
         return response ;
     }
 
     @PostMapping("all")
-    private OperaResponse findAll(KioskQueryBean queryBean) {
+    private OperaResponse findAll(@RequestBody KioskQueryBean queryBean) {
         OperaResponse response = service.findByPageable(queryBean) ;
         return response ;
     }
@@ -79,13 +79,13 @@ public class KioskController {
     }
 
     @PostMapping("/slot")
-    private OperaResponse createKioskSlot(KioskSolt addKioskSlot) {
+    private OperaResponse createKioskSlot(@RequestBody KioskSolt addKioskSlot) {
         OperaResponse response = service.addKioskSlot(addKioskSlot) ;
         return response;
     }
 
     @PutMapping("/slot")
-    private OperaResponse updateKioskSlot(KioskSolt addKioskSlot) {
+    private OperaResponse updateKioskSlot(@RequestBody KioskSolt addKioskSlot) {
         OperaResponse response = service.updateKioskSlot(addKioskSlot) ;
         return response;
     }
