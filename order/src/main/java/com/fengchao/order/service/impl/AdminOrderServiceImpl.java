@@ -386,9 +386,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         for (int i = 0; i < payMethodInfoBeans.size(); i++) {
             OrderPayMethodInfoBean bean = payMethodInfoBeans.get(i) ;
             Orders orders = ordersMap.get(bean.getOrderNo());
-            if (orders.getPayStatus() == null || 5 != orders.getPayStatus()) {
-                payMethodInfoBeans.remove(i) ;
-                i = i - 1 ;
+            if (orders != null) {
+                if (orders.getPayStatus() == null || 5 != orders.getPayStatus()) {
+                    payMethodInfoBeans.remove(i) ;
+                    i = i - 1 ;
+                }
             }
         }
 
