@@ -386,11 +386,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         for (int i = 0; i < payMethodInfoBeans.size(); i++) {
             OrderPayMethodInfoBean bean = payMethodInfoBeans.get(i) ;
             Orders orders = ordersMap.get(bean.getOrderNo());
-            if (orders != null) {
-                if (orders.getPayStatus() == null || 5 != orders.getPayStatus()) {
-                    payMethodInfoBeans.remove(i) ;
-                    i = i - 1 ;
-                }
+            if (orders == null || orders.getPayStatus() == null || 5 != orders.getPayStatus()) {
+                log.info("删除订单中未支付的异常信息： {}", JSONUtil.toJsonString(bean));
+                payMethodInfoBeans.remove(i) ;
+                i = i - 1 ;
             }
         }
 
