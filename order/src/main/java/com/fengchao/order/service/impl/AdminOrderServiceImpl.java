@@ -380,8 +380,15 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 转map， key ： paymentNo value: 主订单
         Map<String, Orders> ordersMap = new HashMap<>();
         for (Orders orders : ordersList) {
-            if (5 == orders.getPayStatus()) {
-                ordersMap.put(orders.getPaymentNo(), orders);
+            ordersMap.put(orders.getPaymentNo(), orders);
+        }
+
+        for (int i = 0; i < payMethodInfoBeans.size(); i++) {
+            OrderPayMethodInfoBean bean = payMethodInfoBeans.get(i) ;
+            Orders orders = ordersMap.get(bean.getOrderNo());
+            if ( 5 != orders.getPayStatus()) {
+                payMethodInfoBeans.remove(i) ;
+                i = i - 1 ;
             }
         }
 
