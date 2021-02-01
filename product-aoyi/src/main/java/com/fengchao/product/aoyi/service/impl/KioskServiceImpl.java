@@ -4,6 +4,7 @@ import com.fengchao.product.aoyi.bean.KioskBean;
 import com.fengchao.product.aoyi.bean.KioskQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.dao.KioskDao;
+import com.fengchao.product.aoyi.mapper.KioskImgMapper;
 import com.fengchao.product.aoyi.mapper.KioskMapper;
 import com.fengchao.product.aoyi.mapper.KioskSoltMapper;
 import com.fengchao.product.aoyi.model.Kiosk;
@@ -31,13 +32,15 @@ public class KioskServiceImpl implements KioskService {
     private final KioskMapper mapper ;
     private final AoyiClientRpcService aoyiClientRpcService ;
     private final KioskSoltMapper soltMapper ;
+    private final KioskImgMapper kioskImgMapper ;
 
     @Autowired
-    public KioskServiceImpl(KioskDao dao, KioskMapper mapper, AoyiClientRpcService aoyiClientRpcService, KioskSoltMapper soltMapper) {
+    public KioskServiceImpl(KioskDao dao, KioskMapper mapper, AoyiClientRpcService aoyiClientRpcService, KioskSoltMapper soltMapper, KioskImgMapper kioskImgMapper) {
         this.dao = dao;
         this.mapper = mapper;
         this.aoyiClientRpcService = aoyiClientRpcService;
         this.soltMapper = soltMapper;
+        this.kioskImgMapper = kioskImgMapper;
     }
 
     @Override
@@ -187,6 +190,42 @@ public class KioskServiceImpl implements KioskService {
         OperaResponse response = new OperaResponse() ;
         KioskSolt solt = soltMapper.selectByPrimaryKey(id) ;
         response.setData(solt);
+        return response;
+    }
+
+    @Override
+    public OperaResponse deleteKioskImg(Integer id) {
+        OperaResponse response = new OperaResponse() ;
+        kioskImgMapper.deleteByPrimaryKey(id) ;
+        return response;
+    }
+
+    @Override
+    public OperaResponse addKioskImg(KioskImg img) {
+        OperaResponse response = new OperaResponse() ;
+        Date date = new Date();
+        img.setCreatedAt(date);
+        img.setUpdatedAt(date);
+        kioskImgMapper.insertSelective(img) ;
+        response.setData(img);
+        return response;
+    }
+
+    @Override
+    public OperaResponse updateKioskImg(KioskImg img) {
+        OperaResponse response = new OperaResponse() ;
+        Date date = new Date();
+        img.setUpdatedAt(date);
+        kioskImgMapper.updateByPrimaryKey(img) ;
+        response.setData(img);
+        return response;
+    }
+
+    @Override
+    public OperaResponse deleteKioskImgByKioskId(Integer kioskId) {
+        dao.deleteImgByKioskId(kioskId);
+        OperaResponse response = new OperaResponse() ;
+        response.setData(kioskId);
         return response;
     }
 }

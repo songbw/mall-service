@@ -3,6 +3,7 @@ package com.fengchao.product.aoyi.controller;
 import com.fengchao.product.aoyi.bean.KioskQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.model.Kiosk;
+import com.fengchao.product.aoyi.model.KioskImg;
 import com.fengchao.product.aoyi.model.KioskSolt;
 import com.fengchao.product.aoyi.service.KioskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,30 @@ public class KioskController {
     @GetMapping("/slot")
     private OperaResponse findKioskSlotBy(Integer id) {
         OperaResponse response = service.findKioskSlot(id) ;
+        return response;
+    }
+
+    @DeleteMapping("/img")
+    private OperaResponse deleteKioskImg(Integer id) {
+        OperaResponse response = service.deleteKioskImg(id) ;
+        return response;
+    }
+
+    @PostMapping("/img")
+    private OperaResponse createKioskImg(@RequestBody KioskImg kioskImg) {
+        OperaResponse response = service.addKioskImg(kioskImg) ;
+        return response;
+    }
+
+    @PutMapping("/img")
+    private OperaResponse updateKioskImg(@RequestBody KioskImg kioskImg) {
+        OperaResponse response = service.updateKioskImg(kioskImg) ;
+        return response;
+    }
+
+    @DeleteMapping("/img/kiosk")
+    private OperaResponse deleteKioskImgByKioskId(Integer kioskId) {
+        OperaResponse response = service.deleteKioskImgByKioskId(kioskId) ;
         return response;
     }
 }

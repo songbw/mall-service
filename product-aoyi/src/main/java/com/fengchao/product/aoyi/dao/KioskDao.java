@@ -107,4 +107,15 @@ public class KioskDao {
         return list ;
     }
 
+    /**
+     * 删除指定设备所有图片
+     * @param kioskId
+     */
+    public void deleteImgByKioskId(Integer kioskId) {
+        KioskImgExample example = new KioskImgExample() ;
+        KioskImgExample.Criteria criteria = example.createCriteria() ;
+        criteria.andKioskIdEqualTo(kioskId) ;
+        kioskImgMapper.deleteByExample(example) ;
+    }
+
 }
