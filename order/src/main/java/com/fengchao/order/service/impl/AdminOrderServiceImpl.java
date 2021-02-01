@@ -380,7 +380,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         // 转map， key ： paymentNo value: 主订单
         Map<String, Orders> ordersMap = new HashMap<>();
         for (Orders orders : ordersList) {
-            ordersMap.put(orders.getPaymentNo(), orders);
+            if (5 == orders.getPayStatus()) {
+                ordersMap.put(orders.getPaymentNo(), orders);
+            }
         }
 
         // 再次转map  key: 主订单号  value：主订单
