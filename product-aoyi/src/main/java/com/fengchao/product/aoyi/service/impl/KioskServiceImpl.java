@@ -1,18 +1,22 @@
 package com.fengchao.product.aoyi.service.impl;
 
+import com.fengchao.product.aoyi.bean.KioskBean;
 import com.fengchao.product.aoyi.bean.KioskQueryBean;
 import com.fengchao.product.aoyi.bean.OperaResponse;
 import com.fengchao.product.aoyi.dao.KioskDao;
 import com.fengchao.product.aoyi.mapper.KioskMapper;
 import com.fengchao.product.aoyi.mapper.KioskSoltMapper;
 import com.fengchao.product.aoyi.model.Kiosk;
+import com.fengchao.product.aoyi.model.KioskImg;
 import com.fengchao.product.aoyi.model.KioskSolt;
 import com.fengchao.product.aoyi.rpc.AoyiClientRpcService;
 import com.fengchao.product.aoyi.service.KioskService;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,8 +43,20 @@ public class KioskServiceImpl implements KioskService {
     @Override
     public OperaResponse findByPageable(KioskQueryBean queryBean) {
         OperaResponse response = new OperaResponse() ;
+        PageInfo<KioskBean> pageInfoBean = new PageInfo<>() ;
         PageInfo<Kiosk> pageInfo = dao.selectByPageable(queryBean) ;
-        response.setData(pageInfo);
+        List<Kiosk> kiosks = pageInfo.getList() ;
+        List<KioskBean> kioskBeans = new ArrayList<>();
+        BeanUtils.copyProperties(pageInfo, pageInfoBean);
+        kiosks.forEach(kiosk -> {
+            List<KioskImg> imgs = dao.selectByKioskId(kiosk.getId()) ;
+            KioskBean kioskBean = new KioskBean() ;
+            BeanUtils.copyProperties(kiosk, kioskBean);
+            kioskBean.setImgs(imgs);
+            kioskBeans.add(kioskBean) ;
+        });
+        pageInfoBean.setList(kioskBeans);
+        response.setData(pageInfoBean);
         return response;
     }
 
@@ -75,8 +91,12 @@ public class KioskServiceImpl implements KioskService {
     @Override
     public OperaResponse find(Integer id) {
         OperaResponse response = new OperaResponse() ;
+        KioskBean kioskBean = new KioskBean() ;
         Kiosk kiosk = mapper.selectByPrimaryKey(id) ;
-        response.setData(kiosk);
+        BeanUtils.copyProperties(kiosk, kioskBean);
+        List<KioskImg> imgs = dao.selectByKioskId(kiosk.getId()) ;
+        kioskBean.setImgs(imgs);
+        response.setData(kioskBean);
         return response;
     }
 

@@ -1,12 +1,10 @@
 package com.fengchao.product.aoyi.dao;
 
 import com.fengchao.product.aoyi.bean.KioskQueryBean;
+import com.fengchao.product.aoyi.mapper.KioskImgMapper;
 import com.fengchao.product.aoyi.mapper.KioskMapper;
 import com.fengchao.product.aoyi.mapper.KioskSoltMapper;
-import com.fengchao.product.aoyi.model.Kiosk;
-import com.fengchao.product.aoyi.model.KioskExample;
-import com.fengchao.product.aoyi.model.KioskSolt;
-import com.fengchao.product.aoyi.model.KioskSoltExample;
+import com.fengchao.product.aoyi.model.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
@@ -24,11 +22,13 @@ public class KioskDao {
 
     private final KioskMapper  mapper;
     private final KioskSoltMapper soltMapper ;
+    private final KioskImgMapper kioskImgMapper ;
 
     @Autowired
-    public KioskDao(KioskMapper mapper, KioskSoltMapper soltMapper) {
+    public KioskDao(KioskMapper mapper, KioskSoltMapper soltMapper, KioskImgMapper kioskImgMapper) {
         this.mapper = mapper;
         this.soltMapper = soltMapper;
+        this.kioskImgMapper = kioskImgMapper;
     }
 
     public PageInfo<Kiosk> selectByPageable(KioskQueryBean queryBean) {
@@ -91,6 +91,19 @@ public class KioskDao {
         KioskSoltExample.Criteria criteria = example.createCriteria();
         criteria.andKioskIdEqualTo(kioskId) ;
         List<KioskSolt> list = soltMapper.selectByExample(example) ;
+        return list ;
+    }
+
+    /**
+     * 根据设备ID查询图片
+     * @param kioskId
+     * @return
+     */
+    public List<KioskImg> selectByKioskId(Integer kioskId) {
+        KioskImgExample example = new KioskImgExample() ;
+        KioskImgExample.Criteria criteria = example.createCriteria() ;
+        criteria.andKioskIdEqualTo(kioskId) ;
+        List<KioskImg> list = kioskImgMapper.selectByExample(example) ;
         return list ;
     }
 
