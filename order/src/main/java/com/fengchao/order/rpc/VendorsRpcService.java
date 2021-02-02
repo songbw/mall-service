@@ -148,6 +148,9 @@ public class VendorsRpcService {
         } else {
             // 租户
             appIds = queryAppIdListByRenterId(queryBean.getRenterHeader()) ;
+            if (queryBean.getMerchantHeader() != 0) {
+                queryBean.setMerchantId(queryBean.getMerchantHeader());
+            }
         }
         queryBean.setAppIds(appIds);
         log.info("setMerchantListForOrderBean 返回值：{}", JSONUtil.toJsonString(queryBean));
