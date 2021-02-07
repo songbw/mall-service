@@ -1,5 +1,6 @@
 package com.fengchao.base.dao;
 
+import com.fengchao.base.bean.QueryBean;
 import com.fengchao.base.mapper.AyFcImagesMapper;
 import com.fengchao.base.model.AyFcImages;
 import com.fengchao.base.model.AyFcImagesExample;
@@ -29,12 +30,12 @@ public class AyFcImagesDao {
      * 获取未上传图片列表
      * @return
      */
-    public List<AyFcImages> findNoUploadImage() {
+    public List<AyFcImages> findNoUploadImage(QueryBean queryBean) {
         AyFcImagesExample example = new AyFcImagesExample();
         AyFcImagesExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(0);
 
-        PageHelper.startPage(1, 2000);
+        PageHelper.startPage(queryBean.getPageNo(), queryBean.getPageSize());
         List<AyFcImages> images = fcImagesMapper.selectByExample(example);
         PageInfo<AyFcImages> pageInfo = new PageInfo(images);
         return images;
