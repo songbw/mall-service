@@ -1,5 +1,6 @@
 package com.fengchao.base.service.impl;
 
+import com.fengchao.base.bean.QueryBean;
 import com.fengchao.base.dao.AyFcImagesDao;
 import com.fengchao.base.feign.ProductService;
 import com.fengchao.base.mapper.AyFcImagesMapper;
@@ -78,12 +79,17 @@ public class UploadServiceImpl implements UploadService {
     @Override
     public void batchDownUpload() {
         List<Future<String>> futureList = new ArrayList<Future<String>>();
+        QueryBean queryBean = new QueryBean() ;
+        int i = 1 ;
+        queryBean.setPageSize(2000);
         while (true) {
-            List<AyFcImages> list = ayFcImagesDao.findNoUploadImage() ;
+            queryBean.setPageNo(i);
+            List<AyFcImages> list = ayFcImagesDao.findNoUploadImage(queryBean) ;
             if (list == null || list.size() == 0) {
                 break;
             }
             futureList.add(asyncTask.asyncDownUpload(list, ayFcImagesDao)) ;
+            i++ ;
         }
         //对各个线程段结果进行解析
         for (Future<String> future : futureList) {
