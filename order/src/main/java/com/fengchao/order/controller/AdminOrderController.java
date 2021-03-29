@@ -1153,6 +1153,7 @@ public class AdminOrderController {
             title.createCell(5).setCellValue("税率");
             title.createCell(6).setCellValue("含税金额");
             title.createCell(7).setCellValue("税额");
+            title.createCell(8).setCellValue("实际进货金额(元)");
 
             indexRow++;
 
@@ -1187,6 +1188,10 @@ public class AdminOrderController {
                 HSSFCell cell7 = currentRow.createCell(7); // 税额
                 cell7.setCellValue(exportReceiptBillVo.getTaxPrice() == null ?
                         "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getTaxPrice()));
+
+                HSSFCell cell8 = currentRow.createCell(8); // 税额
+                cell8.setCellValue(exportReceiptBillVo.getSprice() == null ?
+                        "--" : CalculateUtil.converFenToYuan(exportReceiptBillVo.getSprice()));
 
                 indexRow++;
             }

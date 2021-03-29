@@ -51,4 +51,9 @@ public class ExportReceiptBillVo {
      * 税额 单位分
      */
     private Integer taxPrice;
+
+    /**
+     * 进货单价 单位分
+     */
+    private Integer sprice ;
 }

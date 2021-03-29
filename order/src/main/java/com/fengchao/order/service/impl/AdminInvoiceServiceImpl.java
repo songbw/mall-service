@@ -427,6 +427,7 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                             if (_paymentInfoByMpuDimension == null) {
                                 _paymentInfoByMpuDimension = new PaymentInfoByMpuDimension();
                                 _paymentInfoByMpuDimension.setMpu(_orderDetail.getMpu()); // 设置mpu
+                                _paymentInfoByMpuDimension.setSprice(_orderDetail.getSprice().multiply(new BigDecimal("100")).intValue());
 
                                 stringpaymentInfoByMpuDimensionMap.put(_orderDetail.getMpu(), _paymentInfoByMpuDimension);
                             }
@@ -438,6 +439,11 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                             _paymentInfoByMpuDimension.setTotalPrice(_tp + CalculateUtil.convertYuanToFen(_orderDetail.getSalePrice().toString()) * _orderDetail.getNum());
 
                             totalAmount = totalAmount + CalculateUtil.convertYuanToFen(_orderDetail.getUnitPrice().toString()) * _orderDetail.getNum(); // 单位 分
+
+                            // 商品进货总价 单位分
+                            Integer _tps = _paymentInfoByMpuDimension.getSprice() == null ? 0 : _paymentInfoByMpuDimension.getSprice();
+                            _paymentInfoByMpuDimension.setSprice(_tps + CalculateUtil.convertYuanToFen(_orderDetail.getSprice().multiply(new BigDecimal("100")).toString()) * _orderDetail.getNum());
+
                         } // end 遍历子订单
                     } // end 遍历主订单
 
@@ -511,6 +517,11 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
                     _exportReceiptBillVo.setTotalPrice(
                             totalPrice + (_paymentInfoByMpuDimension.getHoldAmount() == null ? 0 : _paymentInfoByMpuDimension.getHoldAmount())); // 含税总额 单位分
 
+                    // 含税进货总额 单位分
+                    int totalsPrice = _exportReceiptBillVo.getSprice() == null ? 0 : _exportReceiptBillVo.getSprice();
+                    _exportReceiptBillVo.setSprice(
+                            totalsPrice + (_paymentInfoByMpuDimension.getHoldAmount() == null ? 0 : _paymentInfoByMpuDimension.getHoldAmount())); // 含税进货总额 单位分
+
                 }
             }
 
@@ -551,6 +562,8 @@ public class AdminInvoiceServiceImpl implements AdminInvoiceService {
          * mpuA所占的holdAmount是: (payAmount / (20 + 30) ) * 20
          */
         private Integer holdAmount;
+
+        private Integer sprice ;
     }
 
     /**
